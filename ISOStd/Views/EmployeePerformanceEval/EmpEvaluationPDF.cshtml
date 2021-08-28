@@ -1,0 +1,436 @@
+﻿@using System.Data
+@using ISOStd.Models;
+
+@{
+    ViewBag.Title = "IncidentReportPDF";
+
+    ISOStd.Models.EmpPerformanceEvalModels obj = new ISOStd.Models.EmpPerformanceEvalModels();
+    if (ViewBag.EmpEVal != null)
+    {
+        obj = ViewBag.EmpEVal;
+    }
+
+    DataSet dsEvalDetails = new DataSet();
+    if (ViewBag.PerformanceElement != null)
+    {
+        dsEvalDetails = ViewBag.PerformanceElement;
+    }
+    int iSrno = 0; int Weightage = 0;
+    decimal TotalScore = 0;
+    var SectionId = "";
+
+    ISOStd.Models.clsGlobal ObjGlobaldata = new ISOStd.Models.clsGlobal();
+
+    ISOStd.Models.EmpPerformanceElementsModels objElement = new ISOStd.Models.EmpPerformanceElementsModels();
+
+
+    System.Data.DataSet ObjMaxRate = new System.Data.DataSet();
+    if (ViewBag.MaxRate != null)
+    {
+        ObjMaxRate = ViewBag.MaxRate;
+    }
+
+    int sObjMaxRate = 0;
+
+    DataSet dsCompany = new DataSet();
+    if (ViewBag.CompanyInfo != null)
+    {
+        dsCompany = ViewBag.CompanyInfo;
+    }
+
+    Layout = "~/Views/Shared/_PrintLayout.cshtml";
+}
+
+<STYLE TYPE="text/css">
+    .breakhere {
+        page-break-after: always
+    }
+</STYLE>
+
+@*<div class="bp-header__main">
+        <img style="width:250px; height:70px;" src='@Url.Content("~/Images/companylogo.png")' />
+    </div>*@
+
+@Html.Partial("_ReportHeader", dsCompany)
+<div style="background-color:white">
+
+    <div>      
+            @*<h1 class="mb-0 text-center">Employee Evaluation Report</h1>*@
+            <table class="table table-lg table-bordered">
+                @*<table class="table table-dark table-bordered table-striped table-hover bg-blue-800">*@
+                <tr class="row">
+                    <td colspan="4">
+                        <h3>Report Details</h3>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="display-label">
+                            <b>
+                                Employee Name
+                            </b>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="display-field">
+                            @obj.emp_id
+                        </div>
+                    </td>
+                    <td>
+                        <div class="display-label">
+                            <b>
+                                Evaluation Date
+                            </b>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="display-field">
+                            @if (obj.Evaluation_DoneOn != null && obj.Evaluation_DoneOn > Convert.ToDateTime("01/01/0001"))
+                            {
+                                @obj.Evaluation_DoneOn.ToString("dd/MM/yyyy")
+                            }
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="display-label">
+                            <b>
+                                Evaluation Form
+                            </b>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="display-field">
+                            @if (obj.Evaluated_From != null && obj.Evaluated_From > Convert.ToDateTime("01/01/0001"))
+                            {
+                                @obj.Evaluated_From.ToString("dd/MM/yyyy")
+                            }
+                        </div>
+                    </td>
+                    <td>
+                        <div class="display-label">
+                            <b>
+                                Evaluation To
+                            </b>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="display-field">
+                            @if (obj.Evaluated_To != null && obj.Evaluated_To > Convert.ToDateTime("01/01/0001"))
+                            {
+                                @obj.Evaluated_To.ToString("dd/MM/yyyy")
+                            }
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="display-label">
+                            <b>
+                                Evaluation done by
+                            </b>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="display-field">
+                            @obj.Eval_DoneBy
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="display-label">
+                            <b>
+                                Weakness
+                            </b>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="display-field">
+                            @obj.Weakness
+                        </div>
+                    </td>
+
+                    <td>
+                        <div class="display-label">
+                            <b>
+                                Strengths
+                            </b>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="display-field">
+                            @obj.Strengths
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="display-label">
+                            <b>
+                                Need of training to enhance competence
+                            </b>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="display-field">
+                            @obj.Training_Reqd
+                        </div>
+                    </td>
+
+                    <td>
+                        <div class="display-label">
+                            <b>
+                                Action Taken
+                                @*If employee performance is not adequate, actions to be taken*@
+                            </b>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="display-field">
+                            @obj.Actions_Taken
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="display-label">
+                            <b>
+                                Evaluation Reviewed By
+                            </b>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="display-field">
+                            @obj.JrMgr
+                        </div>
+                    </td>
+                    <td>
+                        <div class="display-label">
+                            <b>
+                                Evaluation Approved By
+                            </b>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="display-field">
+                            @obj.SrMgr
+                        </div>
+                    </td>
+                </tr>
+                @if (obj.Comment_JrMgr != null && obj.Comment_JrMgr != "")
+                {
+                    <tr>
+                        <td>
+                            <div class="display-label">
+                                <b>
+                                    Evaluation Reviewed Date
+                                </b>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="display-field">
+                                @if (obj.JrMgr_Comment_Date != null && obj.JrMgr_Comment_Date > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    @obj.JrMgr_Comment_Date.ToString("dd/MM/yyyy")
+                                }
+                            </div>
+                        </td>
+                        <td>
+                            <div class="display-label">
+                                <b>
+                                    Evaluation Review Comments
+                                </b>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="display-field">
+                                @obj.Comment_JrMgr
+                            </div>
+                        </td>
+                    </tr>
+                }
+
+                @if (obj.Comment_SrMgr != null && obj.Comment_SrMgr != "")
+                {
+                    <tr>
+                        <td>
+                            <div class="display-label">
+                                <b>
+                                    Evaluation Approved Date
+                                </b>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="display-field">
+                                @if (obj.SrMgr_Comment_Date != null && obj.SrMgr_Comment_Date > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    @obj.SrMgr_Comment_Date.ToString("dd/MM/yyyy")
+                                }
+                            </div>
+                        </td>
+                        <td>
+                            <div class="display-label">
+                                <b>
+                                    Evaluation Approve Comments
+                                </b>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="display-field">
+                                @obj.Comment_SrMgr
+                            </div>
+                        </td>
+                    </tr>
+                }
+
+                <tr>
+                    <td>
+                        <div class="display-label">
+                            <b>
+                                Evaluation Status
+                            </b>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="display-field">
+                            @obj.sstatus
+                        </div>
+                    </td>
+                </tr>
+            </table>
+    </div>    
+    <br />
+    <br />
+    @if (ObjMaxRate.Tables.Count > 0)
+    {
+        sObjMaxRate = Convert.ToInt32(ObjMaxRate.Tables[0].Rows[0]["Weightage"].ToString());
+    }
+    @{
+        int Sq_No = 0; int SectionPer = 0; decimal GrandTotal = 0; string Msg = "";
+    }
+
+    @if (dsEvalDetails != null && dsEvalDetails.Tables.Count > 0 && dsEvalDetails.Tables[0].Rows.Count > 0)
+    {
+        <h5 for="Performance Details" style="background-color: #4cc4dd;  color: white; padding-left: 5px;">Employee Performance Details</h5>
+
+        <table class="table table-lg">
+            <tr>
+                <th> Sr. No.</th>
+                <th> Element</th>
+                <th> Rating</th>
+                <th> Weightage</th>
+            </tr>
+
+            @for (int i = 0; i < dsEvalDetails.Tables[0].Rows.Count; i++)
+            {
+                iSrno = iSrno + 1;
+                Sq_No = Sq_No + 1;
+
+                if (iSrno == 1)
+                {
+                    Weightage = Convert.ToInt32(dsEvalDetails.Tables[0].Rows[i]["Weightage"].ToString());
+                }
+
+
+                if (iSrno != 1 && SectionId != dsEvalDetails.Tables[0].Rows[i]["Section"].ToString())
+                {
+
+                    TotalScore = Weightage * SectionPer / ((Sq_No - 1) * sObjMaxRate);
+                    <tr>
+                        <td>Section Weightage</td>
+                        <td>@Weightage</td>
+                    </tr>
+                    <tr>
+                        <td>Total Score of above section(weightage : @SectionPer)</td>
+                        <td>@TotalScore (out of @SectionPer)</td>
+                    </tr>
+                    GrandTotal = GrandTotal + TotalScore;
+                }
+
+                if (iSrno == 1 || SectionId != dsEvalDetails.Tables[0].Rows[i]["Section"].ToString())
+                {
+                    <tr>
+
+                        <td colspan="4" style="font:bolder">
+                            @ObjGlobaldata.GetEmpPerformaceSectionById(dsEvalDetails.Tables[0].Rows[i]["Section"].ToString()) &nbsp;&nbsp;&#45;&nbsp;&nbsp;Weightage&#58;&nbsp;&nbsp;
+                            @dsEvalDetails.Tables[0].Rows[i]["Section_Weightage"].ToString()
+                        </td>
+                    </tr>
+                    {
+                        Sq_No = 1;
+                    }
+                }
+                <tr>
+                    <td>
+                        @*@iSrno*@
+                        @Sq_No
+                    </td>
+                    <td>
+                        @objElement.GetQuestionNameById(dsEvalDetails.Tables[0].Rows[i]["SQId"].ToString())
+                    </td>
+                    <td>
+                        @objElement.GetRatingNameById(dsEvalDetails.Tables[0].Rows[i]["SQ_OptionsId"].ToString())
+                    </td>
+                    <td>
+                        @(dsEvalDetails.Tables[0].Rows[i]["Weightage"].ToString())
+                    </td>
+                </tr>
+                if (iSrno != 1 && SectionId != dsEvalDetails.Tables[0].Rows[i]["Section"].ToString())
+                {
+                    Weightage = Convert.ToInt32(dsEvalDetails.Tables[0].Rows[i]["Weightage"].ToString());
+                }
+                if (SectionId == dsEvalDetails.Tables[0].Rows[i]["Section"].ToString())
+                {
+                    Weightage = Weightage + Convert.ToInt16(dsEvalDetails.Tables[0].Rows[i]["Weightage"].ToString());
+                }
+                SectionId = (dsEvalDetails.Tables[0].Rows[i]["Section"].ToString());
+                SectionPer = Convert.ToInt32(dsEvalDetails.Tables[0].Rows[i]["Section_Weightage"].ToString());
+            }
+
+            @{
+                TotalScore = Weightage * SectionPer / ((Sq_No) * sObjMaxRate);
+                GrandTotal = GrandTotal + TotalScore;
+            }
+            <tr>
+                <td>Section Weightage</td>
+                <td>@Weightage</td>
+            </tr>
+            <tr>
+                <td>Total Score of above section(Weightage : @SectionPer)</td>
+                <td>@TotalScore (out of @SectionPer)</td>
+            </tr>
+
+            @if (GrandTotal == 100)
+            {
+                Msg = "Outstanding";
+            }
+            else if (GrandTotal >= 80 && GrandTotal < 99)
+            {
+                Msg = "Excellent";
+            }
+            else if (GrandTotal >= 60 && GrandTotal < 79)
+            {
+                Msg = "Good";
+            }
+            else if (GrandTotal >= 40 && GrandTotal < 59)
+            {
+                Msg = "Moderate";
+            }
+            else if (GrandTotal >= 20 && GrandTotal < 39)
+            {
+                Msg = "Average";
+            }
+            else if (GrandTotal >= 1 && GrandTotal < 19)
+            {
+                Msg = "Poor";
+            }
+            <tr>
+                <td>Grand total Weightage</td>
+                <td>@GrandTotal % &nbsp;&nbsp;&#45;&nbsp;&nbsp;( @Msg )</td>
+            </tr>
+        </table>
+    }
+
+</div>

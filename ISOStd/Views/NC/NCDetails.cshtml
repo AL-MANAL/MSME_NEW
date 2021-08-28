@@ -1,0 +1,1362 @@
+﻿@model ISOStd.Models.NCModels
+@using System.Data;
+@{
+    ViewBag.Title = "NCDetails";
+
+    DataSet NcRelated = new DataSet();
+    DataSet Disposition = new DataSet();
+    DataSet DispAction = new DataSet();
+    DataSet Team = new DataSet();
+    DataSet RCA = new DataSet();
+    DataSet CA = new DataSet();
+    DataSet CAList = new DataSet();
+    DataSet Verification = new DataSet();
+    DataSet VerificationList = new DataSet();
+    DataSet NcStatus= new DataSet();
+
+    ISOStd.Models.NCModels ObjModel = new ISOStd.Models.NCModels();
+    ISOStd.Models.clsGlobal ObjGlobal = new ISOStd.Models.clsGlobal();
+
+
+    if (ViewBag.NcStatus != null)
+    {
+        NcStatus = ViewBag.NcStatus;
+    }
+
+    if (ViewBag.NcRelated != null)
+    {
+        NcRelated = ViewBag.NcRelated;
+    }
+
+    //Disposition
+    if (ViewBag.Disposition != null)
+    {
+        Disposition = ViewBag.Disposition;
+    }
+    if (ViewBag.DispAction != null)
+    {
+        DispAction = ViewBag.DispAction;
+    }
+
+    //Team
+    if (ViewBag.Team != null)
+    {
+        Team = ViewBag.Team;
+    }
+
+    //RCA
+    if (ViewBag.RCA != null)
+    {
+        RCA = ViewBag.RCA;
+    }
+
+    //CA
+    if (ViewBag.CA != null)
+    {
+        CA = ViewBag.CA;
+    }
+    if (ViewBag.CAList != null)
+    {
+        CAList = ViewBag.CAList;
+    }
+
+    //Verification
+    if (ViewBag.Verification != null)
+    {
+        Verification = ViewBag.Verification;
+    }
+    if (ViewBag.VerificationList != null)
+    {
+        VerificationList = ViewBag.VerificationList;
+    }
+
+    string login_user = ObjGlobal.GetCurrentUserSession().empid;
+}
+
+<style>
+    #TextDiv {
+        font-size: 2em;
+        text-align: center;
+        margin: 0 auto;
+    }
+</style>
+@section featured {
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a class="breadcrumb-item" onclick="HyperLinkProgressIconFunction();" href='@Url.Action("NCList", "NC", new { id_nc = Model.id_nc } )'>
+                        <span class="breadcrumb-item">Nonconformance & Corrective Action</span>
+                    </a>
+                    <span class="breadcrumb-item active">Nonconformance & Corrective Action Details</span>
+                </div>
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            <div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+                    @*@if (Obj.GetCurrentUserSession().IncidentRpt.Contains("4"))
+        {*@
+                    @*@using (Html.BeginForm("NCPDF", "NC", FormMethod.Post, new { id = "form1", name = "form1" }))
+        {
+            @Html.AntiForgeryToken()
+            <div class="breadcrumb-elements-item dropdown p-0">
+                <input type="hidden" id="id_nc" name="id_nc" value="@Model.id_nc" />
+
+                <button type="submit" class="dropdown-item">
+                    <i class="icon-printer2"></i> Report
+                </button>
+
+            </div>
+        }*@
+                    <div class="breadcrumb-elements-item dropdown">
+                        <a href='@Url.Action("NCPDF", "NC", new { id_nc = Model.id_nc })' title="PDF Report">
+                            <i class="icon-printer2"></i>Report 
+                        </a>
+                    </div>
+                    <div class="breadcrumb-elements-item dropdown">
+                        <a href='@Url.Action("NCPDFReportFormat", "NC", new { id_nc = Model.id_nc })' title="Format PDF Report" >
+                            <i class="icon-printer2"></i>Report Setting
+                        </a>
+                    </div>
+                    @*}*@
+                    @*<div class="breadcrumb-elements-item dropdown p-0">
+            <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                <i class="icon-gear mr-2"></i>
+                Settings
+            </a>
+            <div class="dropdown-menu dropdown-menu-right">
+                <div class="dropdown-divider"></div>
+                <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+            </div>
+        </div>*@
+                </div>
+            </div>
+
+        </div>
+    </div>
+}
+
+
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Nonconformance & Corrective Action Details</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="card-header bg-white header-elements-sm-inline">
+
+                <div class="header-elements">
+                    <div class="mt-2 mt-sm-0">
+                        @*@if (Obj.GetCurrentUserSession().Risk.Contains("3"))
+                        {*@
+                        @if (Model.nc_issuedto_statusId != "1")
+                        {
+                            <a class="btn bg-orange btn-labeled btn-labeled-left" data-style="radius" href='@Url.Action("NCEdit", "NC", new { id_nc = Model.id_nc })' title="Edit" onclick="HyperLinkProgressIconFunction()">
+                                <b>  <i class="icon-add-to-list"></i></b> Edit
+                            </a>
+                        }
+                        @*}*@
+                        @Html.ActionLink("Back to List", "NCList", null, new { @class = "btn btn-outline bg-orange text-orange border-orange", onclick = "HyperLinkProgressIconFunction()" })
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body">
+            <div class="container-fluid">
+                <table class="table table-dark table-bordered table-striped table-hover bg-blue-800">
+                    <thead></thead>
+                    <tbody>
+                        @*<tr class="row">
+            <td class="col" colspan="4" style="background-color: #4cc4dd; color: #fff; font-weight: bold;">NC</td>
+        </tr>*@
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.nc_no)
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @Html.DisplayFor(model => model.nc_no)
+                                </p>
+                            </td>
+                            @*<td class="col-xs-3 col-md-2">
+                <p class="bg-brown py-1 px-2 rounded">
+                    @Html.DisplayNameFor(model => model.division)
+                </p>
+            </td>
+            <td class="col">
+                <p class="bg-dark py-1 px-2 rounded">
+                    @Html.DisplayFor(model => model.division)
+                </p>
+            </td>*@
+                        </tr>
+                        @*<tr class="row">
+            <td class="col-xs-3 col-md-2">
+                <p class="bg-brown py-1 px-2 rounded">
+                    @Html.DisplayNameFor(model => model.department)
+                </p>
+            </td>
+            <td class="col">
+                <p class="bg-dark py-1 px-2 rounded">
+                    @Html.DisplayFor(model => model.department)
+                </p>
+            </td>
+            <td class="col-xs-3 col-md-2">
+                <p class="bg-brown py-1 px-2 rounded">
+                    @Html.DisplayNameFor(model => model.location)
+                </p>
+            </td>
+            <td class="col">
+                <p class="bg-dark py-1 px-2 rounded">
+                    @Html.DisplayFor(model => model.location)
+                </p>
+            </td>
+        </tr>*@
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.nc_detected_date)
+                                </p>
+                            </td>
+                            <td class="col">
+                                <span class="bg-dark py-1 px-2 rounded">
+                                    @if (Model.nc_detected_date != null && Model.nc_detected_date > Convert.ToDateTime("01/01/0001"))
+                                    {
+                                        @Html.Label(Model.nc_detected_date.ToString("dd/MM/yyyy"))
+                                    }
+                                </span>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.nc_reported_date)
+                                </p>
+                            </td>
+                            <td class="col">
+                                <span class="bg-dark py-1 px-2 rounded">
+                                    @if (Model.nc_reported_date != null && Model.nc_reported_date > Convert.ToDateTime("01/01/0001"))
+                                    {
+                                        @Html.Label(Model.nc_reported_date.ToString("dd/MM/yyyy"))
+                                    }
+                                </span>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.nc_reportedby)
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @Html.DisplayFor(model => model.nc_reportedby)
+                                    <br />
+                                    Email  Id : @ObjGlobal.GetMultiHrEmpEmailIdById(Model.emp_id)
+                                </p>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.nc_issueto)
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @Html.DisplayFor(model => model.nc_issueto)
+                                    <br />
+                                    Email  Id : @ObjGlobal.GetMultiHrEmpEmailIdById(Model.nc_issuetoId)
+                                </p>
+                            </td>
+                        </tr>
+                        <tr class="row">
+
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.nc_raise_dueto)
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @Html.DisplayFor(model => model.nc_raise_dueto)
+                                </p>
+                            </td>
+
+                            @*<tr class="row">
+                <td class="col-xs-3 col-md-2">
+                    <p class="bg-brown py-1 px-2 rounded">
+                        @Html.DisplayNameFor(model => model.nc_audit)
+                    </p>
+                </td>
+                <td class="col">
+                    <p class="bg-dark py-1 px-2 rounded">
+                        @Html.DisplayFor(model => model.nc_audit)
+                    </p>
+                </td>
+                <td class="col-xs-3 col-md-2">
+                    <p class="bg-brown py-1 px-2 rounded">
+                        @Html.DisplayNameFor(model => model.audit_no)
+                    </p>
+                </td>
+                <td class="col">
+                    <p class="bg-dark py-1 px-2 rounded">
+                        @Html.DisplayFor(model => model.audit_no)
+                    </p>
+                </td>
+            </tr>*@
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.nc_description)
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @Html.DisplayFor(model => model.nc_description)
+                                </p>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.nc_activity)
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @Html.DisplayFor(model => model.nc_activity)
+                                </p>
+                            </td>
+
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.nc_performed)
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @Html.DisplayFor(model => model.nc_performed)
+                                </p>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.nc_category)
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @Html.DisplayFor(model => model.nc_category)
+                                </p>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.nc_upload)
+                                </p>
+                            </td>
+                            <td class="col-xs-6 col-md-4">
+                                @if (Model.nc_upload != null && Model.nc_upload != "" && Model.nc_upload.Length > 0)
+                                {
+                                    foreach (var docs in Model.nc_upload.Trim(',').Split(','))
+                                    {
+                                        <p style="margin: 0px;" class="bg-dark py-1 px-2 rounded">
+                                            <span class="bg-dark py-1 px-2 rounded">
+                                                <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs})' target="_blank">Preview</a>
+                                            </span>
+                                        </p>
+                                    }
+                                }
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @*@Html.DisplayNameFor(model => model.nc_pnc)*@
+                                    <label title="NC-> NonConformance &#013;PNC-> Potential NonConformance">Why it is NC or PNC?</label>
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @Html.DisplayFor(model => model.nc_pnc)
+                                </p>
+                            </td>
+
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.nc_impact)
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @Html.DisplayFor(model => model.nc_impact)
+                                </p>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.nc_risk)
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @Html.DisplayFor(model => model.nc_risk)
+                                </p>
+                            </td>
+
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.risklevel)
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @Html.DisplayFor(model => model.risklevel)
+                                </p>
+                            </td>
+                        </tr>
+
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.nc_notifiedto)
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @Html.DisplayFor(model => model.nc_notifiedto)
+                                    <br />
+                                    Email Id : @ObjGlobal.GetMultiHrEmpEmailIdById(Model.nc_notifiedtoId)
+                                </p>
+                            </td>
+                        </tr>
+
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.nc_issuedto_status)
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @if (Model.nc_issuedto_statusId == "1")
+                                    {
+                                        @Html.DisplayFor(model => model.nc_issuedto_status)
+                                    }
+                                    else
+                                    {
+                                        @Html.DisplayFor(model => model.nc_initial_status)
+                                    }
+                                </p>
+                            </td>
+                        </tr>
+</table>
+                @if (NcRelated != null && NcRelated.Tables.Count > 0 && NcRelated.Tables[0].Rows.Count > 0)
+                {
+                    <br />
+                    <h2 class="bg-dark pl-sm-2">NC Related to</h2>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped table-hover datatable-responsive" id="table1">
+                            <thead>
+                                <tr class="bg-brown">
+
+                                    <th>Sl No</th>
+                                    <th>Which aspect(s)?</th>
+                                    <th>Brief explanation</th>
+                                    <th>Document reference</th>
+
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (int i = 0, j = 1; i < NcRelated.Tables[0].Rows.Count; i++, j++)
+                                {
+                                    <tr>
+
+                                        <td>
+                                            @j
+                                        </td>
+                                        <td>
+                                            @ObjGlobal.GetDropdownitemById(NcRelated.Tables[0].Rows[i]["nc_related_aspect"].ToString())
+                                        </td>
+                                        <td>
+                                            @(NcRelated.Tables[0].Rows[i]["nc_related_explain"].ToString())
+                                        </td>
+                                        <td>
+                                            @NcRelated.Tables[0].Rows[i]["nc_related_doc"].ToString()
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+
+
+
+                    </div>
+                }
+            </div>
+
+            @if (NcStatus != null && NcStatus.Tables.Count > 0 && NcStatus.Tables[0].Rows.Count > 0)
+            {
+                <br />
+                <h2 class="bg-dark pl-sm-2">NC Status</h2>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped table-hover datatable-responsive" id="tableNC">
+                        <thead>
+                            <tr class="bg-brown">
+
+                                <th>Sl No</th>
+                                <th>NC Issued To</th>
+                                <th>NC Status</th>
+                                <th>Date</th>
+                                <th>Comments if Rejected</th>
+                                <th>Upload if Rejected</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0, j = 1; i < NcStatus.Tables[0].Rows.Count; i++, j++)
+                            {
+                                <tr>
+                                    <td>
+                                        @j
+                                    </td>
+                                    <td>
+                                        @ObjGlobal.GetMultiHrEmpNameById(NcStatus.Tables[0].Rows[i]["nc_issuedto"].ToString())
+                                    </td>
+                                    <td>
+                                        @(NcStatus.Tables[0].Rows[i]["nc_stauts"].ToString())
+                                    </td>
+                                    <td>
+                                        @if (Model.nc_approve_reject_date != null && Model.nc_approve_reject_date > Convert.ToDateTime("01/01/0001"))
+                                        {
+                                            @Html.Label(Model.nc_approve_reject_date.ToString("dd/MM/yyyy"))
+                                        }
+                                    </td>
+                                    <td>
+                                        @NcStatus.Tables[0].Rows[i]["nc_reject_comment"].ToString()
+                                    </td>
+                                    <td>
+
+                                        @if (NcStatus.Tables[0].Rows[i]["nc_reject_upload"].ToString() != null && NcStatus.Tables[0].Rows[i]["nc_reject_upload"].ToString() != "" && NcStatus.Tables[0].Rows[i]["nc_reject_upload"].ToString().Length > 0)
+                                        {
+                                            foreach (var docs in NcStatus.Tables[0].Rows[i]["nc_reject_upload"].ToString().Trim(',').Split(','))
+                                            {
+                                                <p style="margin: 0px;" class="bg-dark py-1 px-2 rounded">
+                                                    <span class="bg-dark py-1 px-2 rounded">
+                                                        <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs})' target="_blank">Preview</a>
+                                                    </span>
+                                                </p>
+                                            }
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+
+        <hr />
+        @if (Model.nc_issuedto_statusId == "0" && !Model.nc_issuer_rejector.Contains(login_user) && !Model.nc_issuers.Contains(login_user) && Model.nc_issuetoId.Contains(login_user))
+        {
+            using (Html.BeginForm("NCApproveReject", "NC", FormMethod.Post, new { enctype = "multipart/form-data", id = "formstatus", name = "formstatus" }))
+            {
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary(true)
+                <input type="hidden" id="id_nc" name="id_nc" value="@Model.id_nc" />
+                <div class="card-body">
+
+                    @*<div>
+                        <h1>NC Status</h1>
+                        <a href='@Url.Action("NCApproveReject", "NC", new { id_nc = Model.id_nc, iStatus = 1, PendingFlg = "true" })' title="Accept NC" style="color:green;">
+                            <span class="badge badge-info">Accept</span>
+                        </a>
+                        <a href='@Url.Action("NCApproveReject", "NC", new { id_nc = Model.id_nc, iStatus = 2, PendingFlg = "true" })' title="Reject NC" style="color:red;">
+                            <span class="badge badge-danger">Reject</span>
+                        </a>
+                    </div>*@
+
+                    <div class="container-fluid">
+                        <div id="TextDiv">
+                            <h1>NC Status</h1>
+                            <label><input type="radio" id="nc_stauts" name="nc_stauts" value="1" required onchange="CheckedbyRequired()" />Accept</label> &nbsp;&nbsp;&nbsp;
+                            <label><input type="radio" id="nc_stauts" name="nc_stauts" value="2" required onchange="CheckedbyRequired()" />Reject</label>
+                        </div>
+                        <div class="card card-table">
+                            <table class="table table-bordered" id="commentstatus" style="display:none">
+                                <thead></thead>
+                                <tbody>
+                                    <tr class="row">
+                                        <td class="col-xs-3 col-md-2">   Reason for not accepting NC</td>
+                                        <td class="col"> <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="nc_reject_comment" name="nc_reject_comment"></textarea></td>
+                                    </tr>
+                                    <tr class="row">
+                                        <td class="col-xs-3 col-md-2">  Upload Document</td>
+                                        <td class="col">
+                                            <input type="file" name="nc_reject_upload" id="nc_reject_upload" title="Plan Report documents" onchange="FileFormatValidation(this)"
+                                                   accept=".pdf, .doc, .docx, .jpg, .jpeg, .xls, .xlsx, image/*" class="bootstrap-uploader" data-fouc required />
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+                    <button type="submit" id="btnCreate" value="Save" style="display:block;margin: 0 auto" class="btn bg-indigo-400" style="text-align:center" onclick="ProgressIconFunction('#formstatus')"><i class="icon-checkmark3 mr-2"></i> Save</button>
+                </div>
+            }
+        }
+
+        @if (Model.nc_initial_statusId == "1")
+        {
+            @*Disposition*@
+            if (Disposition.Tables.Count > 0 && Disposition.Tables[0].Rows.Count > 0)
+            {
+                if (Disposition.Tables[0].Rows[0]["disp_notifeddate"].ToString() != null && Disposition.Tables[0].Rows[0]["disp_notifeddate"].ToString() != "" && Convert.ToDateTime(Disposition.Tables[0].Rows[0]["disp_notifeddate"]) > Convert.ToDateTime("01/01/0001"))
+                {
+                    <h2 class="bg-dark pl-sm-2"> Immediate Action(Disposition)</h2>
+
+                    <div class="card-body">
+                        <div class="container-fluid">
+                            <table class="table table-dark table-bordered table-striped table-hover bg-blue-800">
+                                <thead></thead>
+                                <tbody>
+                                    <tr class="row">
+                                        <td class="col-xs-3 col-md-2">
+                                            <p class="bg-brown py-1 px-2 rounded">
+                                                @Html.DisplayNameFor(model => model.disp_action_taken)
+                                            </p>
+                                        </td>
+                                        <td class="col">
+                                            <p class="bg-dark py-1 px-2 rounded">
+                                                @ObjGlobal.GetDropdownitemById(Disposition.Tables[0].Rows[0]["disp_action_taken"].ToString())
+                                            </p>
+                                        </td>
+                                        <td class="col-xs-3 col-md-2">
+                                            <p class="bg-brown py-1 px-2 rounded">
+                                                @Html.DisplayNameFor(model => model.disp_explain)
+                                            </p>
+                                        </td>
+                                        <td class="col">
+                                            <p class="bg-dark py-1 px-2 rounded">
+                                                @*@Html.DisplayFor(model => model.disp_explain)*@
+                                                @Disposition.Tables[0].Rows[0]["disp_explain"].ToString()
+                                            </p>
+                                        </td>
+                                    </tr>
+                                    <tr class="row">
+                                        <td class="col-xs-3 col-md-2">
+                                            <p class="bg-brown py-1 px-2 rounded">
+                                                @Html.DisplayNameFor(model => model.disp_notifiedto)
+                                            </p>
+                                        </td>
+                                        <td class="col">
+                                            <p class="bg-dark py-1 px-2 rounded">
+                                                @*@Html.DisplayFor(model => model.disp_notifiedto)*@
+                                                @ObjGlobal.GetMultiHrEmpNameById(Disposition.Tables[0].Rows[0]["disp_notifiedto"].ToString())
+                                            </p>
+                                        </td>
+
+                                        <td class="col-xs-3 col-md-2">
+                                            <p class="bg-brown py-1 px-2 rounded">
+                                                @Html.DisplayNameFor(model => model.disp_notifeddate)
+                                            </p>
+                                        </td>
+                                        <td class="col">
+                                            <span class="bg-dark py-1 px-2 rounded">
+                                                @if (Disposition.Tables[0].Rows[0]["disp_notifeddate"].ToString() != null && Disposition.Tables[0].Rows[0]["disp_notifeddate"].ToString() != "")
+                                                {
+                                                    @Convert.ToDateTime(Disposition.Tables[0].Rows[0]["disp_notifeddate"].ToString()).ToString("dd/MM/yyyy")
+                                                }
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr class="row">
+                                        <td class="col-xs-3 col-md-2">
+                                            <p class="bg-brown py-1 px-2 rounded">
+                                                @Html.DisplayNameFor(model => model.disp_upload)
+                                            </p>
+                                        </td>
+                                        <td class="col">
+                                            @if (Disposition.Tables[0].Rows[0]["disp_upload"].ToString() != null && Disposition.Tables[0].Rows[0]["disp_upload"].ToString() != "" && Disposition.Tables[0].Rows[0]["disp_upload"].ToString().Length > 0)
+                                            {
+                                                foreach (var docs in Disposition.Tables[0].Rows[0]["disp_upload"].ToString().Trim(',').Split(','))
+                                                {
+                                                    <p class="bg-dark py-1 px-2 rounded" style="margin: 0px;">
+                                                        <span class="bg-dark py-1 px-2 rounded">
+                                                            <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank">Preview</a>
+                                                        </span>
+                                                    </p>
+                                                }
+                                            }
+                                        </td>
+                                    </tr>
+                            </table>
+                            @if (DispAction != null && DispAction.Tables.Count > 0 && DispAction.Tables[0].Rows.Count > 0)
+                            {
+                                @*<br />
+                                <h2 class="bg-dark pl-sm-2">Immediate Action(Dispostion) Details</h2>*@
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped table-hover datatable-responsive" id="table1">
+                                        <thead>
+                                            <tr class="bg-brown">
+                                                <th>Sl No</th>
+                                                <th>Action Taken/To be Taken</th>
+                                                <th>Person Responsible</th>
+                                                <th>Action completed on / Target date to complete</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @for (int i = 0, j = 1; i < DispAction.Tables[0].Rows.Count; i++, j++)
+                                            {
+                                                <tr>
+
+                                                    <td>
+                                                        @j
+                                                    </td>
+                                                    <td>
+                                                        @(DispAction.Tables[0].Rows[i]["disp_action"].ToString())
+                                                    </td>
+                                                    <td>
+                                                        @ObjGlobal.GetMultiHrEmpNameById(DispAction.Tables[0].Rows[i]["disp_resp_person"].ToString())
+                                                    </td>
+                                                    <td>
+                                                        @Convert.ToDateTime(DispAction.Tables[0].Rows[i]["disp_complete_date"].ToString()).ToString("dd/MM/yyyy")
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            }
+
+            @*Team*@
+            if (Team.Tables.Count > 0 && Team.Tables[0].Rows.Count > 0)
+            {
+                if (Team.Tables[0].Rows[0]["team_targetdate"].ToString() != null && Team.Tables[0].Rows[0]["team_targetdate"].ToString() != "" && Convert.ToDateTime(Team.Tables[0].Rows[0]["team_targetdate"].ToString()) > Convert.ToDateTime("01/01/0001"))
+                {
+                    <h2 class="bg-dark pl-sm-2">Team</h2>
+
+                    <div class="card-body">
+                        <div class="container-fluid">
+                            <table class="table table-dark table-bordered table-striped table-hover bg-blue-800">
+                                <thead></thead>
+                                <tbody>
+                                    <tr class="row">
+                                        <td class="col-xs-3 col-md-2">
+                                            <p class="bg-brown py-1 px-2 rounded">
+                                                @Html.DisplayNameFor(model => model.nc_team)
+                                            </p>
+                                        </td>
+                                        <td class="col">
+                                            <p class="bg-dark py-1 px-2 rounded">
+                                                @ObjGlobal.GetMultiHrEmpNameById(Team.Tables[0].Rows[0]["nc_team"].ToString())
+                                            </p>
+                                        </td>
+                                        <td class="col-xs-3 col-md-2">
+                                            <p class="bg-brown py-1 px-2 rounded">
+                                                @Html.DisplayNameFor(model => model.team_approvedby)
+                                            </p>
+                                        </td>
+                                        <td class="col">
+                                            <p class="bg-dark py-1 px-2 rounded">
+                                                @ObjGlobal.GetMultiHrEmpNameById(Team.Tables[0].Rows[0]["team_approvedby"].ToString())
+                                            </p>
+                                        </td>
+                                    </tr>
+                                    <tr class="row">
+                                        <td class="col-xs-3 col-md-2">
+                                            <p class="bg-brown py-1 px-2 rounded">
+                                                @Html.DisplayNameFor(model => model.team_notifiedto)
+                                            </p>
+                                        </td>
+                                        <td class="col">
+                                            <p class="bg-dark py-1 px-2 rounded">
+                                                @ObjGlobal.GetMultiHrEmpNameById(Team.Tables[0].Rows[0]["team_notifiedto"].ToString())
+                                            </p>
+                                        </td>
+
+                                        <td class="col-xs-3 col-md-2">
+                                            <p class="bg-brown py-1 px-2 rounded">
+                                                @Html.DisplayNameFor(model => model.team_targetdate)
+                                            </p>
+                                        </td>
+                                        <td class="col">
+                                            <span class="bg-dark py-1 px-2 rounded">
+                                                @if (Team.Tables[0].Rows[0]["team_targetdate"].ToString() != null && Team.Tables[0].Rows[0]["team_targetdate"].ToString() != "")
+                                                {
+                                                    @Convert.ToDateTime(Team.Tables[0].Rows[0]["team_targetdate"].ToString()).ToString("dd/MM/yyyy")
+                                                }
+                                            </span>
+                                        </td>
+                                    </tr>
+                            </table>
+                        </div>
+                    </div>
+                }
+            }
+
+
+            @*RCA*@
+            if (RCA.Tables.Count > 0 && RCA.Tables[0].Rows.Count > 0)
+            {
+                if (RCA.Tables[0].Rows[0]["rca_details"].ToString() != null && RCA.Tables[0].Rows[0]["rca_details"].ToString() != "")
+                {
+                    <h2 class="bg-dark pl-sm-2">Root Cause Analysis</h2>
+
+                    <div class="card-body">
+                        <div class="container-fluid">
+                            <table class="table table-dark table-bordered table-striped table-hover bg-blue-800">
+                                <thead></thead>
+                                <tbody>
+                                    <tr class="row">
+                                        <td class="col-xs-3 col-md-2">
+                                            <p class="bg-brown py-1 px-2 rounded">
+                                                @Html.DisplayNameFor(model => model.rca_startedon)
+                                            </p>
+                                        </td>
+                                        <td class="col">
+                                            <span class="bg-dark py-1 px-2 rounded">
+                                                @if (RCA.Tables[0].Rows[0]["rca_startedon"].ToString() != null && RCA.Tables[0].Rows[0]["rca_startedon"].ToString() != "")
+                                                {
+                                                    @Convert.ToDateTime(RCA.Tables[0].Rows[0]["rca_startedon"].ToString()).ToString("dd/MM/yyyy")
+                                                }
+                                            </span>
+                                        </td>
+                                        <td class="col-xs-3 col-md-2">
+                                            <p class="bg-brown py-1 px-2 rounded">
+                                                @Html.DisplayNameFor(model => model.rca_technique)
+                                            </p>
+                                        </td>
+                                        <td class="col">
+                                            <p class="bg-dark py-1 px-2 rounded">
+                                                @ObjGlobal.GetDropdownitemById(RCA.Tables[0].Rows[0]["rca_technique"].ToString())
+                                            </p>
+                                        </td>
+                                    </tr>
+                                    <tr class="row">
+                                        <td class="col-xs-3 col-md-2">
+                                            <p class="bg-brown py-1 px-2 rounded">
+                                                @Html.DisplayNameFor(model => model.rca_details)
+                                            </p>
+                                        </td>
+                                        <td class="col">
+                                            <p class="bg-dark py-1 px-2 rounded">
+                                                @RCA.Tables[0].Rows[0]["rca_details"].ToString()
+                                            </p>
+                                        </td>
+
+                                    </tr>
+                                    <tr class="row">                                       
+                                        <td class="col-xs-3 col-md-2">
+                                            <p class="bg-brown py-1 px-2 rounded">
+                                                @Html.DisplayNameFor(model => model.rca_upload)
+                                            </p>
+                                        </td>
+                                        <td class="col">
+                                            @if (RCA.Tables[0].Rows[0]["rca_upload"].ToString() != null && RCA.Tables[0].Rows[0]["rca_upload"].ToString() != "" && RCA.Tables[0].Rows[0]["rca_upload"].ToString().Length > 0)
+                                            {
+                                                foreach (var docs in RCA.Tables[0].Rows[0]["rca_upload"].ToString().Trim(',').Split(','))
+                                                {
+                                                    <p class="bg-dark py-1 px-2 rounded" style="margin: 0px;">
+                                                        <span class="bg-dark py-1 px-2 rounded">
+                                                            <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank">Preview</a>
+                                                        </span>
+                                                    </p>
+                                                }
+                                            }
+                                        </td>
+                                    </tr>
+                                    <tr class="row">
+                                        <td class="col-xs-3 col-md-2">
+                                            <p class="bg-brown py-1 px-2 rounded">
+                                                @Html.DisplayNameFor(model => model.rca_action)
+                                            </p>
+                                        </td>
+                                        <td class="col">
+                                            <p class="bg-dark py-1 px-2 rounded">
+                                                @RCA.Tables[0].Rows[0]["rca_action"].ToString()
+                                            </p>
+                                        </td>
+                                        <td class="col-xs-3 col-md-2">
+                                            <p class="bg-brown py-1 px-2 rounded">
+                                                @Html.DisplayNameFor(model => model.rca_justify)
+                                            </p>
+                                        </td>
+                                        <td class="col">
+                                            <p class="bg-dark py-1 px-2 rounded">
+                                                @RCA.Tables[0].Rows[0]["rca_justify"].ToString()
+                                            </p>
+                                        </td>
+                                    </tr>
+                                    <tr class="row">
+                                        <td class="col-xs-3 col-md-2">
+                                            <p class="bg-brown py-1 px-2 rounded">
+                                                @Html.DisplayNameFor(model => model.rca_reportedby)
+                                            </p>
+                                        </td>
+                                        <td class="col">
+                                            <p class="bg-dark py-1 px-2 rounded">
+                                                @ObjGlobal.GetMultiHrEmpNameById(RCA.Tables[0].Rows[0]["rca_reportedby"].ToString())
+                                            </p>
+                                        </td>
+                                        <td class="col-xs-3 col-md-2">
+                                            <p class="bg-brown py-1 px-2 rounded">
+                                                @Html.DisplayNameFor(model => model.rca_reporteddate)
+                                            </p>
+                                        </td>
+                                        <td class="col">
+                                            <span class="bg-dark py-1 px-2 rounded">
+                                                @if (RCA.Tables[0].Rows[0]["rca_reporteddate"].ToString() != null && RCA.Tables[0].Rows[0]["rca_reporteddate"].ToString() != "")
+                                                {
+                                                    @Convert.ToDateTime(RCA.Tables[0].Rows[0]["rca_reporteddate"].ToString()).ToString("dd/MM/yyyy")
+                                                }
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr class="row">
+                                        <td class="col-xs-3 col-md-2">
+                                            <p class="bg-brown py-1 px-2 rounded">
+                                                @Html.DisplayNameFor(model => model.rca_notifiedto)
+                                            </p>
+                                        </td>
+                                        <td class="col">
+                                            <span class="bg-dark py-1 px-2 rounded">
+                                                @ObjGlobal.GetMultiHrEmpNameById(RCA.Tables[0].Rows[0]["rca_notifiedto"].ToString())
+                                            </span>
+                                        </td>
+                                    </tr>
+                            </table>
+                        </div>
+                    </div>
+                }
+            }
+
+            @*CA*@
+            if (CA.Tables.Count > 0 && CA.Tables[0].Rows.Count > 0)
+            {
+                if (CA.Tables[0].Rows[0]["ca_notifed_date"].ToString() != null && CA.Tables[0].Rows[0]["ca_notifed_date"].ToString() != "" && Convert.ToDateTime(CA.Tables[0].Rows[0]["ca_notifed_date"].ToString()) > Convert.ToDateTime("01/01/0001"))
+                {
+                    <h2 class="bg-dark pl-sm-2">Corrective Action</h2>
+
+                    <div class="card-body">
+                        <div class="container-fluid">
+                            <table class="table table-dark table-bordered table-striped table-hover bg-blue-800">
+                                <thead></thead>
+                                <tbody>
+                                    <tr class="row">
+                                        <td class="col-xs-3 col-md-2">
+                                            <p class="bg-brown py-1 px-2 rounded">
+                                                @Html.DisplayNameFor(model => model.ca_verfiry_duedate)
+                                            </p>
+                                        </td>
+                                        <td class="col">
+                                            <p class="bg-dark py-1 px-2 rounded">
+                                                @if (CA.Tables[0].Rows[0]["ca_verfiry_duedate"].ToString() != null && CA.Tables[0].Rows[0]["ca_verfiry_duedate"].ToString() != "")
+                                                {
+                                                    @Convert.ToDateTime(CA.Tables[0].Rows[0]["ca_verfiry_duedate"].ToString()).ToString("dd/MM/yyyy")
+                                                }
+                                            </p>
+                                        </td>
+                                        <td class="col-xs-3 col-md-2">
+                                            <p class="bg-brown py-1 px-2 rounded">
+                                                @Html.DisplayNameFor(model => model.ca_proposed_by)
+                                            </p>
+                                        </td>
+                                        <td class="col">
+                                            <p class="bg-dark py-1 px-2 rounded">
+                                                @ObjGlobal.GetMultiHrEmpNameById(CA.Tables[0].Rows[0]["ca_proposed_by"].ToString())
+                                            </p>
+                                        </td>
+                                    </tr>
+                                    <tr class="row">
+                                        <td class="col-xs-3 col-md-2">
+                                            <p class="bg-brown py-1 px-2 rounded">
+                                                @Html.DisplayNameFor(model => model.ca_notifiedto)
+                                            </p>
+                                        </td>
+                                        <td class="col">
+                                            <p class="bg-dark py-1 px-2 rounded">
+                                                @ObjGlobal.GetMultiHrEmpNameById(CA.Tables[0].Rows[0]["ca_notifiedto"].ToString())
+                                            </p>
+                                        </td>
+
+                                        <td class="col-xs-3 col-md-2">
+                                            <p class="bg-brown py-1 px-2 rounded">
+                                                @Html.DisplayNameFor(model => model.ca_notifed_date)
+                                            </p>
+                                        </td>
+                                        <td class="col">
+                                            <p class="bg-dark py-1 px-2 rounded">
+                                                @if (CA.Tables[0].Rows[0]["ca_notifed_date"].ToString() != null && CA.Tables[0].Rows[0]["ca_notifed_date"].ToString() != "")
+                                                {
+                                                    @Convert.ToDateTime(CA.Tables[0].Rows[0]["ca_notifed_date"].ToString()).ToString("dd/MM/yyyy")
+                                                }
+                                            </p>
+                                        </td>
+                                    </tr>
+                            </table>
+                            @if (CAList != null && CAList.Tables.Count > 0 && CAList.Tables[0].Rows.Count > 0)
+                            {
+                                @*<br />
+                                <h2 class="bg-dark pl-sm-2">Corrective Action Details</h2>*@
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped table-hover datatable-responsive" id="table1">
+                                        <thead>
+                                            <tr class="bg-brown">
+                                                <th>Sl No</th>
+                                                @*<th>Division</th>
+                                                <th>Location</th>
+                                                <th>Department</th>
+                                                <th>Root cause </th>*@
+                                                <th>Corrective action</th>
+                                                <th>Resource required</th>
+                                                <th>Target date</th>
+                                                <th>Person responsible</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @for (int i = 0, j = 1; i < CAList.Tables[0].Rows.Count; i++, j++)
+                                            {
+                                                <tr>
+
+                                                    <td>
+                                                        @j
+                                                    </td>
+                                                    @*<td>
+                                                        @ObjGlobal.GetCompanyBranchNameById(CAList.Tables[0].Rows[i]["ca_div"].ToString())
+                                                    </td>
+                                                    <td>
+                                                        @ObjGlobal.GetDivisionLocationById(CAList.Tables[0].Rows[i]["ca_loc"].ToString())
+                                                    </td>
+                                                    <td>
+                                                        @ObjGlobal.GetDeptNameById(CAList.Tables[0].Rows[i]["ca_dept"].ToString())
+                                                    </td>
+                                                    <td>
+                                                        @(CAList.Tables[0].Rows[i]["ca_rootcause"].ToString())
+                                                    </td>*@
+                                                    <td>
+                                                        @(CAList.Tables[0].Rows[i]["ca_ca"].ToString())
+                                                    </td>
+                                                    <td>
+                                                        @(CAList.Tables[0].Rows[i]["ca_resource"].ToString())
+                                                    </td>
+                                                    <td>
+                                                        @Convert.ToDateTime(CAList.Tables[0].Rows[i]["ca_target_date"].ToString()).ToString("dd/MM/yyyy")
+                                                    </td>
+                                                    <td>
+                                                        @ObjGlobal.GetMultiHrEmpNameById(CAList.Tables[0].Rows[i]["ca_resp_person"].ToString())
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            }
+
+
+            @*Verification*@
+            if (Verification.Tables.Count > 0 && Verification.Tables[0].Rows.Count > 0)
+            {
+
+                if (Verification.Tables[0].Rows[0]["v_status"].ToString() != null && Verification.Tables[0].Rows[0]["v_status"].ToString() != "")
+                {
+                    <h2 class="bg-dark pl-sm-2">Verification</h2>
+                    <div class="card-body">
+                        <div class="container-fluid">
+                            <table class="table table-dark table-bordered table-striped table-hover bg-blue-800">
+                                <thead></thead>
+                                <tbody>
+                                    <tr class="row">
+
+                                        <td class="col-xs-3 col-md-2">
+                                            <p class="bg-brown py-1 px-2 rounded">
+                                                @Html.DisplayNameFor(model => model.v_implement)
+                                            </p>
+                                        </td>
+                                        <td class="col">
+                                            <p class="bg-dark py-1 px-2 rounded">
+                                                @ObjGlobal.GetDropdownitemById(Verification.Tables[0].Rows[0]["v_implement"].ToString())
+                                            </p>
+                                        </td>
+                                        <td class="col-xs-3 col-md-2">
+                                            <p class="bg-brown py-1 px-2 rounded">
+                                                @Html.DisplayNameFor(model => model.v_implement_explain)
+                                            </p>
+                                        </td>
+                                        <td class="col">
+                                            <p class="bg-dark py-1 px-2 rounded">
+                                                @(Verification.Tables[0].Rows[0]["v_implement_explain"].ToString())
+                                            </p>
+                                        </td>
+                                    </tr>
+                                    <tr class="row">
+                                        <td class="col-xs-3 col-md-2">
+                                            <p class="bg-brown py-1 px-2 rounded">
+                                                @Html.DisplayNameFor(model => model.v_rca)
+                                            </p>
+                                        </td>
+                                        <td class="col">
+                                            <p class="bg-dark py-1 px-2 rounded">
+                                                @(Verification.Tables[0].Rows[0]["v_rca"].ToString())
+                                            </p>
+                                        </td>
+
+                                        <td class="col-xs-3 col-md-2">
+                                            <p class="bg-brown py-1 px-2 rounded">
+                                                @Html.DisplayNameFor(model => model.v_rca_explain)
+                                            </p>
+                                        </td>
+                                        <td class="col">
+                                            <p class="bg-dark py-1 px-2 rounded">
+                                                @(Verification.Tables[0].Rows[0]["v_rca_explain"].ToString())
+                                            </p>
+                                        </td>
+                                    </tr>
+                                    <tr class="row">
+                                        <td class="col-xs-3 col-md-2">
+                                            <p class="bg-brown py-1 px-2 rounded">
+                                                @Html.DisplayNameFor(model => model.v_discrepancies)
+                                            </p>
+                                        </td>
+                                        <td class="col">
+                                            <p class="bg-dark py-1 px-2 rounded">
+                                                @(Verification.Tables[0].Rows[0]["v_discrepancies"].ToString())
+                                            </p>
+                                        </td>
+
+                                        <td class="col-xs-3 col-md-2">
+                                            <p class="bg-brown py-1 px-2 rounded">
+                                                @Html.DisplayNameFor(model => model.v_discrep_explain)
+                                            </p>
+                                        </td>
+                                        <td class="col">
+                                            <p class="bg-dark py-1 px-2 rounded">
+                                                @(Verification.Tables[0].Rows[0]["v_discrep_explain"].ToString())
+                                            </p>
+                                        </td>
+                                    </tr>
+                                    <tr class="row">
+                                        <td class="col-xs-3 col-md-2">
+                                            <p class="bg-brown py-1 px-2 rounded">
+                                                @Html.DisplayNameFor(model => model.v_upload)
+                                            </p>
+                                        </td>
+                                        <td class="col">
+                                            @if (Verification.Tables[0].Rows[0]["v_upload"].ToString() != null && Verification.Tables[0].Rows[0]["v_upload"].ToString() != "" && Verification.Tables[0].Rows[0]["v_upload"].ToString().Length > 0)
+                                            {
+                                                foreach (var docs in Verification.Tables[0].Rows[0]["v_upload"].ToString().Trim(',').Split(','))
+                                                {
+                                                    <p style="margin: 0px;" class="bg-dark py-1 px-2 rounded">
+                                                        <span class="bg-dark py-1 px-2 rounded">
+                                                            <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank">Preview</a>
+                                                        </span>
+                                                    </p>
+                                                }
+                                            }
+                                        </td>
+
+                                        <td class="col-xs-3 col-md-2">
+                                            <p class="bg-brown py-1 px-2 rounded">
+                                                @Html.DisplayNameFor(model => model.v_status)
+                                            </p>
+                                        </td>
+                                        <td class="col">
+                                            <p class="bg-dark py-1 px-2 rounded">
+                                                @ObjGlobal.GetDropdownitemById(Verification.Tables[0].Rows[0]["v_status"].ToString())
+                                            </p>
+                                        </td>
+                                    </tr>
+                                    <tr class="row">
+                                        <td class="col-xs-3 col-md-2">
+                                            <p class="bg-brown py-1 px-2 rounded">
+                                                @Html.DisplayNameFor(model => model.v_closed_date)
+                                            </p>
+                                        </td>
+                                        <td class="col">
+                                            <p class="bg-dark py-1 px-2 rounded">
+                                                @if (Verification.Tables[0].Rows[0]["v_closed_date"].ToString() != null && Verification.Tables[0].Rows[0]["v_closed_date"].ToString() != "")
+                                                {
+                                                    @Convert.ToDateTime(Verification.Tables[0].Rows[0]["v_closed_date"].ToString()).ToString("dd/MM/yyyy")
+                                                }
+                                            </p>
+                                        </td>
+                                        <td class="col-xs-3 col-md-2">
+                                            <p class="bg-brown py-1 px-2 rounded">
+                                                @Html.DisplayNameFor(model => model.v_verifiedto)
+                                            </p>
+                                        </td>
+                                        <td class="col">
+                                            <p class="bg-dark py-1 px-2 rounded">
+                                                @ObjGlobal.GetMultiHrEmpNameById(Verification.Tables[0].Rows[0]["v_verifiedto"].ToString())
+                                            </p>
+                                        </td>
+                                    </tr>
+                                    <tr class="row">
+                                        <td class="col-xs-3 col-md-2">
+                                            <p class="bg-brown py-1 px-2 rounded">
+                                                @Html.DisplayNameFor(model => model.v_verified_date)
+                                            </p>
+                                        </td>
+                                        <td class="col">
+                                            <p class="bg-dark py-1 px-2 rounded">
+                                                @if (Verification.Tables[0].Rows[0]["v_verified_date"].ToString() != null && Verification.Tables[0].Rows[0]["v_verified_date"].ToString() != "")
+                                                {
+                                                    @Convert.ToDateTime(Verification.Tables[0].Rows[0]["v_verified_date"].ToString()).ToString("dd/MM/yyyy")
+                                                }
+                                            </p>
+                                        </td>
+                                        <td class="col-xs-3 col-md-2">
+                                            <p class="bg-brown py-1 px-2 rounded">
+                                                @Html.DisplayNameFor(model => model.v_notifiedto)
+                                            </p>
+                                        </td>
+                                        <td class="col">
+                                            <p class="bg-dark py-1 px-2 rounded">
+                                                @ObjGlobal.GetMultiHrEmpNameById(Verification.Tables[0].Rows[0]["v_notifiedto"].ToString())
+                                            </p>
+                                        </td>
+                                    </tr>
+                            </table>
+                            @if (VerificationList != null && VerificationList.Tables.Count > 0 && VerificationList.Tables[0].Rows.Count > 0)
+                            {
+                                @*<br />
+                                <h2 class="bg-dark pl-sm-2">Verification Details</h2>*@
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped table-hover datatable-responsive" id="table1">
+                                        <thead>
+                                            <tr class="bg-brown">
+                                                <th>Sl No</th>
+                                                @*<th>Division</th>
+                                                <th>Location</th>
+                                                <th>Department</th>*@
+                                                <th>Corrective Action Proposed</th>
+                                                <th>Implementation status</th>
+                                                <th>Is Corrective Action effective?</th>
+                                                <th>If No, reasons</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @for (int i = 0, j = 1; i < VerificationList.Tables[0].Rows.Count; i++, j++)
+                                            {
+                                                <tr>
+
+                                                    <td>
+                                                        @j
+                                                    </td>
+                                                    @*<td>
+                                                        @ObjGlobal.GetCompanyBranchNameById(VerificationList.Tables[0].Rows[i]["ca_div"].ToString())
+                                                    </td>
+                                                    <td>
+                                                        @ObjGlobal.GetDivisionLocationById(VerificationList.Tables[0].Rows[i]["ca_loc"].ToString())
+                                                    </td>
+                                                    <td>
+                                                        @ObjGlobal.GetDeptNameById(VerificationList.Tables[0].Rows[i]["ca_dept"].ToString())
+                                                    </td>*@
+                                                    <td>
+                                                        @(VerificationList.Tables[0].Rows[i]["ca_ca"].ToString())
+                                                    </td>
+                                                    <td>
+                                                        @(VerificationList.Tables[0].Rows[i]["implement_status"].ToString())
+                                                    </td>
+                                                    <td>
+                                                        @(VerificationList.Tables[0].Rows[i]["ca_effective"].ToString())
+                                                    </td>
+                                                    <td>
+                                                        @(VerificationList.Tables[0].Rows[i]["reason"].ToString())
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            }
+
+        }
+
+    </div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript">
+
+     $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+        });
+
+        function FileFormatValidation(file) {
+            var ext = file.value.split(".").pop().toLowerCase();
+            if ($.inArray(ext, ["doc", "pdf", "docx", "jpg", "jpeg", "gif", "png","xlx","xlsx"]) == -1) {
+                file.value = "";
+
+
+                bootbox.alert({
+                    title: 'File Format',
+                    message: 'Invalid file format, please upload only doc, pdf, docx, jpg, jpeg, gif, png, xls,xlsx format.'
+                });
+            }
+        }
+
+        function CheckedbyRequired() {
+            var nc_status = $("input[type='radio'][id='nc_stauts']:checked").val();
+            if (nc_status == "2") {
+                $("#nc_reject_comment").attr('required', true);
+                document.getElementById("commentstatus").style.display = "table";
+            }
+            else {
+                $("#nc_reject_comment").attr('required', false);
+                document.getElementById("commentstatus").style.display = "none";
+            }
+        }
+    </script>
+}

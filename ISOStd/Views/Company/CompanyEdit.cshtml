@@ -1,0 +1,1228 @@
+﻿@model ISOStd.Models.CompanyModels
+@using System.Data;
+
+@{
+    ViewBag.Title = "CompanyEdit";
+    DataSet dsBranch = ViewBag.Branches;
+    //int itemcnt = 0;
+    //if (dsBranch != null && dsBranch.Tables.Count > 0 && dsBranch.Tables[0].Rows.Count > 0)
+    //{
+    //    itemcnt = dsBranch.Tables[0].Rows.Count;
+    //}
+    string lstCurrCode = "";
+    if (ViewBag.Currency_Code != null)
+    {
+        foreach (var data in ViewBag.Currency_Code)
+        {
+            lstCurrCode = lstCurrCode + data.Value + ":" + data.Text + ",";
+        }
+    }
+    }
+
+@section featured {  
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4><span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Home</span>
+                    </a>
+                    <a href="@Url.Action("CompanyDetails", "Company", new { CompanyID = Model.CompanyID })" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Company Profile</span>
+                    </a>
+                    <span class="breadcrumb-item active">Update Company Profile </span>
+                </div>
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>            
+
+            <div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        @*<button type="submit" class="dropdown-item">
+                                <i class="icon-address-book"></i> Branches
+                            </button>*@
+
+                        <button type="button" class="btn" data-toggle="modal" data-target="#modal_form_vertical"><i class="icon-address-book"></i>Branches</button>
+
+                    </div>
+
+                    @*<div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i>All settings</a>
+                        </div>
+                    </div>*@
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@using (Html.BeginForm("CompanyEdit", "Company", FormMethod.Post,
+                         new { enctype = "multipart/form-data", id = "CompanyEdit", name = "CompanyEdit" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+
+    <input type="hidden" name="CompanyID" id="CompanyID" value="@Model.CompanyID" />
+    <input type="hidden" name="Currency_Code" id="Currency_Code" value="@lstCurrCode" />
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Update Company Profile</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+
+            <div class="container-fluid">
+
+                <table class="table table-lg">
+                    <tbody>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.CompanyName)<text style="color:red">*</text>
+                            </td>
+                             <td class="col">
+                                <input class="form-control" type="text" id="CompanyName" name="CompanyName" value="@Model.CompanyName" required />
+                            </td>
+                            @*<td class="col">
+                                <span class="font-size-lg bg-dark py-1 px-2 rounded">@Html.DisplayFor(model => model.CompanyName)</span>
+                            </td>*@
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.Address)<text style="color:red">*</text>
+                            </td>
+                            <td class="col">
+                                <textarea id="Address" name="Address" required maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position">@Model.Address</textarea>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.City)<text style="color:red">*</text>
+                            </td>
+                            <td class="col">
+                                <input class="form-control" type="text" id="City" name="City" value="@Model.City" required />
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.Country)<text style="color:red">*</text>
+                            </td>
+                            <td class="col">
+                                @*<input class="form-control" type="text" id="Country" name="Country" value="@Model.Country" required />*@
+                                <select id="Country" name="Country" required="required" class="form-control select-fixed-multiple" data-fouc multiple>
+                                    @if (ViewBag.Country != null)
+                                    {
+                                        foreach (var data in ViewBag.Country)
+                                        {
+                                            if (Model.Country != null && Model.Country != "" && Array.IndexOf(Model.Country.ToString().Split(','), data.Value) >= 0)
+                                            {
+                                                <option value='@data.Value' selected>@data.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@data.Value'>@data.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                            </td>
+                        </tr>
+
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.Email_Id)<text style="color:red">*</text>
+                            </td>
+                            <td class="col">
+                                <input class="form-control" type="text" id="Email_Id" name="Email_Id" value="@Model.Email_Id" required />
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.PostalCode)<text style="color:red">*</text>
+                            </td>
+                            <td class="col">
+                                <input class="form-control" type="tel" id="PostalCode" name="PostalCode" required="required" value="@Model.PostalCode" maxlength="7" />
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.PhoneNumber)<text style="color:red">*</text>
+
+                            </td>
+                            <td class="col">
+
+                                <input class="form-control" type="text" id="PhoneNumber" name="PhoneNumber" required="required" @*pattern="[0-9]{10}"*@ title="This is an error message"
+                                       value="@Model.PhoneNumber" />
+
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.FaxNumber)
+
+                            </td>
+                            <td class="col">
+                                <input class="form-control" type="tel" id="FaxNumber" name="FaxNumber" value="@Model.FaxNumber" maxlength="15" />
+
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.Audit_Criteria)<text style="color:red">*</text>
+
+                            </td>
+                            <td class="col">
+                                <select id="Audit_Criteria" name="Audit_Criteria" required="required" class="form-control select-fixed-multiple" data-fouc multiple>
+                                    @if (ViewBag.IsoStdList != null)
+                                    {
+                                        foreach (var data in ViewBag.IsoStdList)
+                                        {
+                                            if (Model.Audit_Criteria != null && Model.Audit_Criteria != "" && Model.Audit_Criteria.ToString().Contains(data.Value))
+                                            {
+                                        <option value='@data.Value' selected>@data.Text</option>
+                                            }
+                                            else
+                                            {
+                                        <option value='@data.Value'>@data.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.Scope)<text style="color:red">*</text>
+
+                            </td>
+                            <td class="col">
+                                @*         <textarea id="Scope" name="Scope"  value="@Model.Scope" style="height:1000px;width:500px" ></textarea>*@
+                                @Html.TextAreaFor(model => model.Scope, new { @required = "required", @maxlength = "2000", @placeholder = "Textarea", @style = "overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;", @rows = "4", @cols = "4", @class = "form-control elastic maxlength-badge-position" })
+                            </td>
+                        </tr>
+
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.DisplayNameFor(model => model.Exclusion)<text style="color:red">*</text>
+
+                            </td>
+
+                            <td class="col">
+
+                                @Html.TextAreaFor(model => model.Exclusion, new { @required = "required", @maxlength = "2000", @placeholder = "Textarea", @style = "overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;", @rows = "4", @cols = "4", @class = "form-control elastic maxlength-badge-position" })
+
+                            </td>
+
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.logo)
+
+                            </td>
+                            <td class="col">
+
+                                <input type="file" name="CompanyLogo" id="CompanyLogo" value="@Model.logo" onchange="FileFormatValidation(this)" accept="image/*"
+                                       class="form-input-styled" data-fouc />
+
+                                @Html.ValidationMessageFor(model => model.logo)
+                                @if (@Model.logo != null && @Model.logo != "")
+                                {
+@*<img src="@Url.Content(@Model.logo)" style="width:90px;" />*@
+                                    <br />
+                                    <img src=" @Url.Content(@Model.logo)" class="img-thumbnail" alt="">
+                                }
+
+                            </td>
+                        </tr>
+
+                        <tr class="row">
+
+                            <td class="col-xs-3 col-md-2">
+                                @Html.DisplayNameFor(model => model.License)
+
+                            </td>
+                            <td class="col">
+                                <input type="file" name="License" id="License" title="Documents" onchange="FileFormatValidation(this)"
+                                    multiple="multiple" accept=".pdf, .doc, .docx,image/*" class="bootstrap-uploader" data-fouc />
+
+                                <span class="form-text text-muted"><code>(Hold Ctrl Key in case of multiple files or drag multiple files and drop here)</code></span>
+                                <br />
+
+                                @if (Model.License != null && Model.License != "" && Model.License.Length > 0)
+                                {
+
+                                    <h6><span class="bg-dark py-1 px-2 rounded">License List</span></h6>
+
+                                    <span class="form-text text-muted">
+                                        <code>(Uncheck in case to remove a uploaded file)
+                                        </code>
+                                    </span>
+
+                                    foreach (var docs in Model.License.Trim(',').Split(','))
+                                    {
+                                    <div class="form-check">
+                                        <label class="form-check-label">
+                                            <input type="checkbox" id="QCDocsVal" name="QCDocsVal" class="form-check-input-styled QCDocsVal" value="@docs.Trim(',')" checked title="Uncheck in case to remove a uploaded file" data-fouc />
+                                            <input type="hidden" id="QCDocsValselectall" name="QCDocsValselectall" />
+                                            <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" class="text-orange">
+                                              Preview
+                                            </a>
+                                        </label>
+                                    </div>
+                                    }
+                                }
+
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.expiry_date)<text style="color:red">*</text>
+                                </div>
+                            </td>
+                            <td class="col">
+
+                                @if (Model.expiry_date != null && Model.expiry_date > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    <input class="form-control" type="date" id="expiry_date" name="expiry_date" value="@Model.expiry_date.ToString("yyyy-MM-dd")" required />
+                                }
+                                else
+                                {
+                                    <input class="form-control" type="date" id="expiry_date" name="expiry_date" required />
+                                }
+
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+
+        </div>
+
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+            @Html.ActionLink("Cancel", "CompanyDetails", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+            <button class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" type="submit" value="Update" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i>Update</button>
+
+        </div>
+    </div>
+}
+
+@*@using (Html.BeginForm("AddNewBranch", "Company", FormMethod.Post,
+                             new { enctype = "multipart/form-data", id = "AddNewBranch", name = "AddNewBranch" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true)*@
+
+@*<fieldset>
+        <legend>CustomerModels</legend>
+        <input type="hidden" id="itemcnt" name="itemcnt" value="@itemcnt" />
+        <div class="editor-label" style="background-color: #4cc4dd; width: 100%; height: 30px; cursor: pointer;">
+            <label for="Branch_Details" style="color: white; padding-left: 5px;">Branch Details</label>
+
+        </div>
+        <input type="hidden" name="CompId" id="CompId" value="@Model.CompanyID" />
+        <table id="team-list1" style="width: 30%; float: left;">
+
+            <tr>
+                <td>
+                    <div class="editor-label">
+                        Branch Name
+                    </div>
+                </td>
+                <td>
+                    <input type="text" id="BranchName" name="BranchName" style="width: 200px;" required />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="editor-label">Address</div>
+                </td>
+                <td>
+                    <textarea id="BranchAddress" name="BranchAddress" required></textarea>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="editor-label">Currency Code</div>
+                </td>
+                <td>
+                    <select id="Curr_code" name="Curr_code" required="required">
+                        <option value=''>Select</option>
+                        @if (ViewBag.Currency_Code != null)
+                        {
+                            foreach (var data in @ViewBag.Currency_Code)
+                            {
+                                <option value='@data.Value'>@data.Text</option>
+                            }
+                        }
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="editor-label">Scope</div>
+                </td>
+                <td>
+                    <textarea id="scope" name="scope" style="height: 1000px; width: 500px"></textarea>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <div style="width: 100%; text-align: center;">
+                        @Html.ActionLink("Cancel", "CompanyDetails", null, new { @class = "ActionLink", onclick = "ProgressIconFunction('#CompanyEdit')" })
+                        <input type="submit" value="Add" onclick="ProgressIconFunction('#AddNewBranch')" />
+                    </div>
+                </td>
+            </tr>
+        </table>
+
+        <table id="team-list" style="width: 60%; float: right">
+            <tr>
+                <th>Branch Name</th>
+                <th>Address</th>
+                <th>Currency Code</th>
+                <th>Scope</th>
+                <th>Action</th>
+            </tr>
+            @if (dsBranch != null && dsBranch.Tables.Count > 0 && dsBranch.Tables[0].Rows.Count > 0)
+            {
+                for (int i = 0; i < dsBranch.Tables[0].Rows.Count; i++)
+                {
+                    string Name = "Name" + i;
+                    string Address = "Address" + i;
+                    string curr_code = "Curr_Code" + i;
+                    string scope = "scope" + i;
+                    <tr>
+                        <td>
+
+                            <input type="text" id="@Name" value="@dsBranch.Tables[0].Rows[i]["BranchName"].ToString()" />
+                        </td>
+                        <td>
+                            <textarea id="@Address">@dsBranch.Tables[0].Rows[i]["Address"].ToString()</textarea>
+                        </td>
+                        <td>
+
+                            <select id="@curr_code" name="@curr_code" required="required">
+                                @if (ViewBag.Currency_Code != null)
+                                {
+                                    foreach (var data in @ViewBag.Currency_Code)
+                                    {
+                                        if (data.Text == @dsBranch.Tables[0].Rows[i]["item_desc"].ToString())
+                                        {
+                                            <option value='@data.Value' selected>@data.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@data.Value'>@data.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                        </td>
+                        <td>
+                            <textarea id="@scope">@dsBranch.Tables[0].Rows[i]["scope"].ToString()</textarea>
+                        </td>
+                        <td>
+                            <a onclick="UpdateItem(@dsBranch.Tables[0].Rows[i]["id"].ToString(), @i)" title="Update Branch details">
+                                <img src="@Url.Content("~/images/updateIcon_small.png")" title="Update Branch details" />
+                            </a>
+                            <img src="@Url.Content("~/images/delete.png")" title="Delete Branch details"
+                                 onclick="DeleteItem(@dsBranch.Tables[0].Rows[i]["id"].ToString(), @i, this)" style="cursor:pointer;" />
+                        </td>
+                    </tr>
+
+                }
+
+
+            }
+        </table>
+
+    </fieldset>*@
+
+
+
+
+<h6 class="font-weight-semibold pt-2 mb-2">Update Division Details</h6>
+@*<div class="card">
+    <div class="card-header header-elements-inline bg-primary">
+        <h5 class="card-title"></h5>
+        <div class="header-elements">
+            <div class="list-icons">
+                <a class="list-icons-item" data-action="collapse"></a>
+
+            </div>
+        </div>
+    </div>
+    <div class="card-body">*@
+<div class="row">
+    @if (dsBranch != null && dsBranch.Tables.Count > 0 && dsBranch.Tables[0].Rows.Count > 0)
+    {
+        for (int i = 0; i < dsBranch.Tables[0].Rows.Count; i++)
+        {
+            string Parent = "Parent" + i;
+            string Name = "Name" + i;
+            string Code = "Code" + i;
+            string Address = "Address" + i;
+            string curr_code = "Curr_Code" + i;
+            string scope = "scope" + i;
+
+            <div class="col-md-3">
+
+                <div class="card card-body">
+
+                    <div class="media">
+                        <div class="media-body">
+                             <div class="form-group">                              
+                              
+                             @if (dsBranch.Tables[0].Rows[i]["parent_level"].ToString() == "0")
+                             {
+                                 <input id="@Parent" name="@Parent" value="0" hidden />
+                             }
+                             else
+                             {
+                                  <label>Parent Company:</label>
+                                  <select class="form-control select-search select2-hidden-accessible" data-fouc id="@Parent" name="@Parent" required >
+                               
+                                @if (ViewBag.Company != null)
+                                {
+                                    foreach (var item in @ViewBag.Company)
+                                    {
+                                        if (item.Value == @dsBranch.Tables[0].Rows[i]["parent_level"].ToString())
+                                        {
+                                            <option value='@item.Value' selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                             }
+                            
+                             </div>
+                            <div class="form-group">
+                                <label>Division Name:</label>
+                                <input class="form-control" type="text" id="@Name" value="@dsBranch.Tables[0].Rows[i]["BranchName"].ToString()" />
+                            </div>
+                             <div class="form-group">
+                                 <label>Division Code:</label>
+                                <input class="form-control" type="text" id="@Code" value="@dsBranch.Tables[0].Rows[i]["BranchCode"].ToString()" />
+                            </div>
+
+                             <div class="form-group">
+                                 <label>Country:</label>
+                                 @*<textarea class='form-control elastic maxlength-badge-position' maxlength='25' placeholder='Textarea' style='overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;' rows='4' cols='4' id="@Address">@dsBranch.Tables[0].Rows[i]["Address"].ToString()</textarea>*@
+                                 <select class="form-control select-search select2-hidden-accessible" data-fouc id="@Address" name="@Address" required="required" multiple>
+                                     @if (ViewBag.Country != null)
+                                     {
+                                         foreach (var data in ViewBag.Country)
+                                         {
+                                             if (dsBranch.Tables[0].Rows[i]["Address"].ToString().Contains(data.Value))
+                                             {
+                                                 <option value='@data.Value' selected>@data.Text</option>
+                                             }
+                                             else
+                                             {
+                                                 <option value='@data.Value'>@data.Text</option>
+                                             }
+                                         }
+                                     }
+                                 </select>
+                             </div>
+
+
+                            <div class="form-group">
+                                <label>Currency Code</label>
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="@curr_code" name="@curr_code" required="required">
+                                    @if (ViewBag.Currency_Code != null)
+                                    {
+                                        foreach (var data in @ViewBag.Currency_Code)
+                                        {
+                                            if (data.Text == @dsBranch.Tables[0].Rows[i]["item_desc"].ToString())
+                                            {
+                                                <option value='@data.Value' selected>@data.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@data.Value'>@data.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                            </div>
+
+
+                            <div class="form-group">
+                                <label>Scope</label>
+                                <textarea class='form-control elastic maxlength-badge-position' maxlength='25' placeholder='Textarea' style='overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;' rows='4' cols='4' id="@scope">@dsBranch.Tables[0].Rows[i]["scope"].ToString()</textarea>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                    <div class="card-footer d-flex justify-content-between">
+                        <span class='badge badge-info ripple2' tabindex="1" style='cursor: pointer;' onclick="UpdateItem(@dsBranch.Tables[0].Rows[i]["id"].ToString(), @i )" title="Update Branch details">Edit</span>
+
+                       
+@*                        <span class='badge badge-danger ripple2' tabindex="2" title="Delete Branch details"
+                              onclick="DeleteItem(@dsBranch.Tables[0].Rows[i]["id"].ToString(), @i, this)" style='cursor:pointer;'>Delete</span>
+*@
+
+
+                    </div>
+                </div>
+            </div>
+
+        }
+
+
+    }
+
+</div>
+
+
+
+@*<table class="table table-responsive-lg" id="team-list">
+        <tr>
+            <th>Branch Name</th>
+            <th>Address</th>
+            <th>Currency Code</th>
+            <th>Scope</th>
+            <th>Action</th>
+        </tr>
+        @if (dsBranch != null && dsBranch.Tables.Count > 0 && dsBranch.Tables[0].Rows.Count > 0)
+        {
+            for (int i = 0; i < dsBranch.Tables[0].Rows.Count; i++)
+            {
+                string Name = "Name" + i;
+                string Address = "Address" + i;
+                string curr_code = "Curr_Code" + i;
+                string scope = "scope" + i;
+                <tr>
+                    <td>
+
+                        <input class="form-control" type="text" id="@Name" value="@dsBranch.Tables[0].Rows[i]["BranchName"].ToString()" />
+                    </td>
+                    <td>
+                        <textarea class='form-control elastic maxlength-badge-position' maxlength='25' placeholder='Textarea' style='overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;' rows='4' cols='4' id="@Address">@dsBranch.Tables[0].Rows[i]["Address"].ToString()</textarea>
+                    </td>
+                    <td>
+
+                        <select class="form-control select-search select2-hidden-accessible" data-fouc id="@curr_code" name="@curr_code" required="required">
+                            @if (ViewBag.Currency_Code != null)
+                            {
+                                foreach (var data in @ViewBag.Currency_Code)
+                                {
+                                    if (data.Text == @dsBranch.Tables[0].Rows[i]["item_desc"].ToString())
+                                    {
+                                        <option value='@data.Value' selected>@data.Text</option>
+                                    }
+                                    else
+                                    {
+                                        <option value='@data.Value'>@data.Text</option>
+                                    }
+                                }
+                            }
+                        </select>
+                    </td>
+                    <td>
+                        <textarea class='form-control elastic maxlength-badge-position' maxlength='25' placeholder='Textarea' style='overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;' rows='4' cols='4' id="@scope">@dsBranch.Tables[0].Rows[i]["scope"].ToString()</textarea>
+                    </td>
+                    <td>
+
+
+                        <span class='badge badge-info ripple' style='cursor: pointer;' onclick="UpdateItem(@dsBranch.Tables[0].Rows[i]["id"].ToString(), @i )" title="Update Branch details">Edit</span>
+
+
+
+                        <span class='badge badge-danger ripple' title="Delete Branch details"
+                              onclick="DeleteItem(@dsBranch.Tables[0].Rows[i]["id"].ToString(), @i, this)" style='cursor:pointer;'>Delete</span>
+                    </td>
+                </tr>
+                }
+    }
+    </table>*@
+
+<div id="modal_form_vertical" class="modal fade" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Branch Details</h5>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <input type="hidden" name="CompId" id="CompId" value="@Model.CompanyID" />
+
+            <div class="modal-body">
+                  <div class="form-group">
+                    <div class="row">
+                        <div class="col">
+                            <label>Parent Company</label>
+                            <select class="form-control select-search select2-hidden-accessible" data-fouc id="parent_level" name="parent_level" required="required">
+                                <option value=''>Select</option>
+                                @if (ViewBag.Company != null)
+                                {
+                                    foreach (var data in ViewBag.Company)
+                                    {
+                                        <option value='@data.Value'>@data.Text</option>
+                                    }
+                                }
+                            </select>
+                            <span class="field-validation-error"><span id="owner-parent_level" style="display: none;">This field is required.</span></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col">
+                            <label> Branch Name</label>
+                            <input type="text" id="BranchName" name="BranchName" class="form-control" required />
+                            <span class="field-validation-error"><span id="owner-BranchName" style="display: none;">This field is required.</span></span>
+                        </div>
+
+
+                    </div>
+                </div>
+                  <div class="form-group">
+                    <div class="row">
+                        <div class="col">
+                            <label> Branch Code</label>
+                            <input type="text" id="BranchCode" name="BranchCode" class="form-control" required />
+                            <span class="field-validation-error"><span id="owner-BranchCode" style="display: none;">This field is required.</span></span>
+                        </div>
+
+
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col">
+                            <label>Country</label>
+                            @*<textarea id="BranchAddress" name="BranchAddress" required maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position"></textarea>*@
+                            <select class="form-control select-search select2-hidden-accessible" data-fouc id="BranchAddress" name="BranchAddress" required="required" multiple>
+                                <option value=''>Select</option>
+                                @if (ViewBag.Country != null)
+                                {
+                                    foreach (var data in @ViewBag.Country)
+                                    {
+                                        <option value='@data.Value'>@data.Text</option>
+                                    }
+                                }
+                            </select>
+                            <span class="field-validation-error"><span id="owner-BranchAddress" style="display: none;">This field is required.</span></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col">
+                            <label>Currency</label>
+                            <select class="form-control select-search select2-hidden-accessible" data-fouc id="Curr_code" name="Curr_code" required="required">
+                                <option value=''>Select</option>
+                                @if (ViewBag.Currency_Code != null)
+                                {
+                                    foreach (var data in @ViewBag.Currency_Code)
+                                    {
+                                        <option value='@data.Value'>@data.Text</option>
+                                    }
+                                }
+                            </select>
+                            <span class="field-validation-error"><span id="owner-Curr_code" style="display: none;">This field is required.</span></span>
+                        </div>
+
+
+
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="row">
+
+
+                        <div class="col">
+                            <label>Scope</label>
+                            <textarea id="scope" name="scope" maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position"></textarea>
+
+                            <span class="field-validation-error"><span id="owner-scope" style="display: none;">This field is required.</span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+
+                <button type="button" class="btn btn-link" data-dismiss="modal">Close</button>
+
+                <button id="add_branch" type="button" class="btn bg-primary" onclick="SaveNewItem();">Add</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript">
+        
+        var count = 0;
+        var vCompanyID = document.getElementById("CompanyID").value;
+            @*$(function () {
+
+            $('#expiry_date').datepicker({
+                dateFormat: "dd/mm/yy",
+                buttonImageOnly: true,
+                buttonImage: '../Images/Calender.png',
+                showOn: 'both',
+                changeMonth: true,
+                changeYear: true,
+            });
+
+            $("#QCDocsVal").click(function () {
+                if ($("#QCDocsVal").prop('checked')) {
+                    {
+                        $(this).prop('checked', true);
+                    }
+                }
+                else {
+
+                    $(this).prop('checked', false);
+                    document.getElementById("QCDocsValselectall").value = "DeleteQC";
+                }
+
+            });
+        });
+
+
+
+
+    function SaveItem(CompId, Id) {
+        var sName = $('#Name' + Id).val();
+        var sAddress = $('#Address' + Id).val();
+        var scurr_code = $('#Curr_Code' + Id).val();
+        var sscope = $('#scope' + Id).val();
+        var sCompId = CompId;
+
+        jQuery.ajax({
+            url: '@Url.Action("AddNewBranch", "Company")',
+            type: 'POST',
+            dataType: "json",
+            data: { 'Name': sName, 'Address': sAddress, 'Curr_code': scurr_code, 'CompId': sCompId, 'scope': sscope },
+            success: function (result) {
+                jAlert(result, "Message");
+            }
+        });
+    }*@
+        $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+                @:     text: '@TempData["alertdata"]',
+                @:     type: 'error'
+        @:}).show();
+                    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+                @:       text: '@TempData["Successdata"]',
+                @:       type: 'success'
+        @:}).show();
+    }
+
+
+            });
+
+
+        function UpdateItem(Itemno, Id) {
+            var sParent = $('#Parent' + Id).val();
+            var sName = $('#Name' + Id).val();
+            var sCode = $('#Code' + Id).val();
+            var selMulti = $.map($("#Address" + Id +" option:selected"), function (el, i) {
+                return $(el).val();
+            });
+            var sAddress = (selMulti.join(","));
+            //var sAddress = $('#Address' + Id +" option:selected").val();
+            var scurr_code = $('#Curr_Code' + Id).val();
+            var sscope = $('#scope' + Id).val();
+            var sItemno = Itemno;            
+            jQuery.ajax({
+                url: '@Url.Action("BranchEdit", "Company")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'Parent': sParent, 'Name': sName, 'Code': sCode, 'Address': sAddress, 'Curr_code': scurr_code, 'sItemNo': sItemno, 'scope': sscope },
+                success: function (result) {
+                    bootbox.alert({
+                        title: 'Branch',
+                        message: result
+                    });
+                }
+            });
+        }
+
+
+
+        function DeleteItem(Itemno, Id, btn) {
+            var sItemno = Itemno;
+            var vCompanyID = $('#CompanyID').val();
+            bootbox.confirm({
+                title: 'Confirm dialog',
+                message: 'Are you Sure you want to Delete the current Record?',
+                buttons: {
+                    confirm: {
+                        label: 'Yes',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'Cancel',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (r) {
+                    if (r == true) {
+
+
+                        jQuery.ajax({
+                            url: '@Url.Action("BranchDelete", "Company")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'sItemNo': sItemno },
+                    success: function (result) {
+                        var params = {
+                            CompanyID: vCompanyID
+                        };
+                        //// Add new params to the querystring dictionary
+                        queryString = $.param(params);
+                        window.location.href =
+                            window.location.protocol + "//" +
+                            window.location.host +
+                            window.location.pathname + '?' + queryString;
+                    }
+
+                });
+                return true;
+            }
+            else if (r == false) {
+                bootbox.hideAll();
+                return false;
+            }
+
+                 }
+    });
+}
+
+
+$('.form-check-input-styled').uniform();
+
+$("#QCDocsVal").click(function () {
+    if ($("#QCDocsVal").prop('checked')) {
+        {
+            $(this).prop('checked', true);
+        }
+    }
+    else {
+
+        $(this).prop('checked', false);
+        document.getElementById("QCDocsValselectall").value = "DeleteQC";
+    }
+
+});
+
+
+var swalInit = swal.mixin({
+    buttonsStyling: false,
+    confirmButtonClass: 'btn btn-primary',
+    cancelButtonClass: 'btn btn-light'
+});
+
+$('#modal_form_vertical').on('hide.bs.modal', function () {
+    reset();
+
+    if (count > 0) {
+        var params = {
+            CompanyID: vCompanyID
+        };
+        //// Add new params to the querystring dictionary
+        queryString = $.param(params);
+        window.location.href =
+            window.location.protocol + "//" +
+            window.location.host +
+            window.location.pathname + '?' + queryString;
+    }
+
+});
+function reset() {
+
+    // do something…
+    var ssnMessage = $('#owner-parent_level');
+    ssnMessage.hide();
+    var ssnMessage = $('#owner-BranchName');
+    ssnMessage.hide();
+    var ssnMessage = $('#owner-BranchCode');
+    ssnMessage.hide();
+    var ssnMessage = $('#owner-BranchAddress');
+    ssnMessage.hide();
+    var ssnMessage = $('#owner-Curr_code');
+    ssnMessage.hide();
+    var ssnMessage = $('#owner-scope');
+    ssnMessage.hide();
+    $('#parent_level').get(0).selectedIndex = 0;
+    $('#parent_level').trigger('change');
+    $('#BranchName').val("");
+    $('#BranchCode').val("");
+    //$('#BranchAddress').val("");
+    $('#BranchAddress').get(0).selectedIndex = 0;
+    $('#BranchAddress').trigger('change');
+    $('#Curr_code').get(0).selectedIndex = 0;
+    $('#Curr_code').trigger('change');
+    $('#scope').val("");
+}
+
+
+
+function Validation() {
+    var validflg = true;
+    var ssnMessage = "";
+
+    var sParent = $('#parent_level').val();
+    var sName = $('#BranchName').val();
+    var sCode = $('#BranchCode').val();
+    var sAddress = $('#BranchAddress').val();
+    var scurr_code = $('#Curr_code').val();
+    var sscope = $('#scope').val();
+    if (sParent == "") {
+
+        ssnMessage = $('#owner-parent_level');
+        ssnMessage.show();
+        validflg = false;
+    }
+    else {
+        var ssnMessage = $('#owner-parent_level');
+        ssnMessage.hide();
+    }
+    if (sName == "") {
+
+        ssnMessage = $('#owner-BranchName');
+        ssnMessage.show();
+        validflg = false;
+    }
+    else {
+        var ssnMessage = $('#owner-BranchName');
+        ssnMessage.hide();
+    }
+    if (sCode == "") {
+
+        ssnMessage = $('#owner-BranchCode');
+        ssnMessage.show();
+        validflg = false;
+    }
+    else {
+        var ssnMessage = $('#owner-BranchCode');
+        ssnMessage.hide();
+    }
+    if (sAddress == "") {
+
+        ssnMessage = $('#owner-BranchAddress');
+        ssnMessage.show();
+        validflg = false;
+    }
+    else {
+        var ssnMessage = $('#owner-BranchAddress');
+        ssnMessage.hide();
+    }
+
+    if (scurr_code == "") {
+        ssnMessage = $('#owner-Curr_code');
+        ssnMessage.show();
+        validflg = false;
+    }
+    else {
+        var ssnMessage = $('#owner-Curr_code');
+        ssnMessage.hide();
+    }
+
+    if (sscope == "") {
+        ssnMessage = $('#owner-scope');
+        ssnMessage.show();
+        validflg = false;
+
+    }
+    else {
+        var ssnMessage = $('#owner-scope');
+        ssnMessage.hide();
+    }
+    return validflg;
+}
+
+function SaveNewItem() {
+    var CompId = document.getElementById("CompanyID").value;
+    var sParent = $('#parent_level').val();
+    var sName = $('#BranchName').val();
+    var sCode = $('#BranchCode').val();
+    var sAddress = $('#BranchAddress').val();
+    var scurr_code = $('#Curr_code').val();
+    var sscope = $('#scope').val();
+
+    var sCompId = CompId;
+
+
+    if (Validation()) {
+
+        jQuery.ajax({
+            url: '@Url.Action("AddNewBranch", "Company")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'parent_level': sParent, 'BranchName': sName,'BranchCode': sCode, 'BranchAddress': sAddress, 'Curr_code': scurr_code, 'CompId': sCompId, 'scope': sscope },
+                    success: function (result) {
+                        //jAlert(result, "Message");
+                        //alert(result);
+
+                        // Defaults
+
+
+                        // Close button
+
+                        //swalInit({
+                        //    title: 'Good job!',
+                        //    text: 'You clicked the button!',
+                        //    type: 'success',
+                        //    showCloseButton: true
+                        //});
+
+                        count++;
+                        swalInit({
+                            title: 'Do you Want to enter Another Branch?',
+                            text: "Success!",
+                            type: 'success',
+                            showCancelButton: true,
+                            confirmButtonText: 'Yes',
+                            cancelButtonText: 'No',
+                            confirmButtonClass: 'btn btn-success',
+                            cancelButtonClass: 'btn btn-danger',
+                            buttonsStyling: false
+                        }).then(function (result) {
+                            if (result.value) {
+                                $('#modal_form_vertical').modal('show');
+
+                                $('#parent_level').get(0).selectedIndex = 0;
+                                $('#parent_level').trigger('change');
+                                $('#BranchName').val("");
+                                $('#BranchCode').val("");
+                                //$('#BranchAddress').val("");
+                                $('#BranchAddress').get(0).selectedIndex = 0;
+                                $('#BranchAddress').trigger('change');
+                                $('#Curr_code').get(0).selectedIndex = 0;
+                                $('#Curr_code').trigger('change');
+
+                                $('#scope').val("");
+                            }
+                            else if (result.dismiss === swal.DismissReason.cancel) {
+
+                                reset();
+                                $('#modal_form_vertical').modal('hide');
+                            }
+                        });
+                    }
+                });
+            }
+        }
+        @*function deleteRow(btn) {
+        var row = btn.parentNode.parentNode;
+        row.parentNode.removeChild(row);
+    }
+
+    function AddBranch() {
+        var cnt = document.getElementById("itemcnt").value;
+        var sCustomerId = document.getElementById("CompanyID").value;
+
+        document.getElementById("itemcnt").value = cnt;
+        // Find a <table> element with id="myTable":
+        var table = document.getElementById("team-list");
+        var CurrencyCode = "";
+
+
+        var sOptions = "";
+        var Codes = document.getElementById("Currency_Code").value;
+
+        var lstCodes = Codes.split(',');
+        for (var index = 0; index < lstCodes.length; index++) {
+            sOptions = sOptions + "<option value='" + lstCodes[index].Value + "'>" + lstCodes[index].Text + "</option>";
+        }
+
+        // Create an empty <tr> element and add it to the 1st position of the table:
+        var row = table.insertRow();
+
+        // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+        var cell1 = row.insertCell(0);
+        var cell2 = row.insertCell(1);
+        var cell3 = row.insertCell(2);
+        var cell4 = row.insertCell(3);
+        var cell5 = row.insertCell(4);
+
+        cell1.innerHTML = "<input type='text' id='Name" + cnt + "' name='Name" + cnt + "'>";
+        cell2.innerHTML = "<textarea id='Address" + cnt + "' name='Address" + cnt + "'></textarea>";
+        cell3.innerHTML = "<select id='Curr_Code" + cnt + "' name='Curr_Code" + cnt + "'>" + sOptions + "</seelct>";
+        cell2.innerHTML = "<textarea id='scope" + cnt + "' name='scope" + cnt + "'></textarea>";
+        cell4.innerHTML = "<img src='@Url.Content("~/images/save_icon.png")' onclick='SaveItem(" + sCustomerId + "," + cnt + " )' />";
+        cnt++;
+        document.getElementById("itemcnt").value = cnt;
+
+        jQuery.ajax({
+            url: '@Url.Action("GetCurrencyCode", "Company")',
+             type: 'POST',
+             dataType: "json",
+             success: function (result) {
+                 CurrencyCode = result;
+
+                 AddCurrencyCodeItem(cnt, result);
+             }
+         });
+    }
+
+        function AddCurrencyCodeItem(id, result) {
+            var varname = "Curr_Code" + id;
+            var x = document.getElementById(varname);
+            $("#Curr_Code" + id).empty();
+            var option = document.createElement("option");
+            option.text = "Select";
+            x.add(option);
+
+            //var list = result;
+            $.each(list, function (index, result) {
+                var option = document.createElement("option");
+                //alert(value);
+                option.text = value;
+                x.add(option);
+            });
+        }
+
+        function FileFormatValidation(file) {
+            var ext = file.value.split(".").pop().toLowerCase();
+            if ($.inArray(ext, ["jpg", "jpeg", "gif", "png", "pdf"]) == -1) {
+                file.value = "";
+                jAlert("Invalid file format, please upload only jpg, jpeg, gif format");
+            }
+            //else {
+            //    jAlert("Valid");
+            //}
+        }*@
+
+    </script>
+}

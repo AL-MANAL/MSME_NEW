@@ -1,0 +1,706 @@
+﻿@model ISOStd.Models.AuditLogModels
+
+@{
+    ViewBag.Title = "AddRCA";
+    //DateTime today = DateTime.Now;
+    string[] NotifiedtoArray = new string[0];
+    string[] ReportedByArray = new string[0];
+    int itemcnt1 = 0, itemcnts = 0;
+
+    if (ViewBag.ReportedByArray != null)
+    {
+        ReportedByArray = ViewBag.ReportedByArray;
+        itemcnt1 = ReportedByArray.Length;
+    }
+
+    if (ViewBag.NotifiedtoArray != null)
+    {
+        NotifiedtoArray = ViewBag.NotifiedtoArray;
+        itemcnts = NotifiedtoArray.Length;
+    }
+
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+}
+
+<script src='@Url.Content("~/global_assets/js/demo_pages/Audit_NC_RCA_form_wizard.js")'></script>
+
+@section featured {
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("AuditLogList", "AuditLog", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Audit Log List</span>
+                    </a>
+                    <span class="breadcrumb-item active">Root Cause Analysis</span>
+                </div>
+               
+            </div>
+
+        
+        </div>
+    </div>
+}
+<!-- Basic setup -->
+<div class="card">
+    <div class="card-header header-elements-inline bg-primary">
+        <h5 class="card-title">Root Cause Analysis</h5>
+        <div class="header-elements">
+            <div class="list-icons">
+                <a class="list-icons-item" data-action="collapse"></a>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        @*<table class="container-fluid">*@
+
+        <form class="wizard-form steps-validation" action="@Url.Action("AddRCA", "AuditLog")" data-fouc id="form1">
+            <input type="hidden" id="id_nc" name="id_nc" value="@Model.id_nc" />
+            <h6>Root Cause Analysis</h6>
+            <fieldset>
+                <table class="table table-lg">
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.Audit_no)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input type="text" class="form-control" id="Audit_no" name="Audit_no" value="@Model.Audit_no" readonly />
+                            </div>
+                        </td>
+
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.AuditDate)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @if (Model.AuditDate != null && Model.AuditDate > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    <input class="form-control required" type="date" id="AuditDate" name="AuditDate" value="@Model.AuditDate.ToString("yyyy-MM-dd")" readonly />
+                                }
+                                else
+                                {
+                                    <input class="form-control required" type="date" id="AuditDate" name="AuditDate" readonly />
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.nc_no)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input type="text" class="form-control" id="nc_no" name="nc_no" value="@Model.nc_no" readonly />
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.finding_category)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input type="text" class="form-control" id="finding_category" name="finding_category" value="@Model.finding_category" readonly />
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.branch)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input type="text" class="form-control" id="branch" name="branch" value="@Model.branch" readonly />
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.group_name)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input type="text" class="form-control" id="group_name" name="group_name" value="@Model.group_name" readonly />
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        @*<td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.team)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input type="text" class="form-control" id="team" name="team" value="@Model.team" readonly />
+                            </div>
+                        </td>*@
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.location)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input type="text" class="form-control" id="location" name="location" value="@Model.location" readonly />
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.finding_details)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="finding_details" name="finding_details" readonly> @Model.finding_details</textarea>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.rca_technique)
+                        </td>
+                        <td class="col-xs-6 col-md-4">
+                            <div class="editor-field">
+                                <select class="form-control-select3" data-fouc id="rca_technique" name="rca_technique">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.RCATechniqueList != null)
+                                    {
+                                        foreach (var item in ViewBag.RCATechniqueList)
+                                        {
+                                            if (item.Value == Model.rca_technique)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.rca_upload)
+                        </td>
+
+                        <td class="col">
+                            <input type="file" name="rca_upload" id="rca_upload" title="Documents" multiple="multiple" onchange="FileFormatValidation(this)" accept=".pdf, .doc, .docx, .jpg, .jpeg,.png,.xls,.xlsx,image/*" @*class="bootstrap-uploader"*@ />
+                            <span class="form-text text-muted"><code>(Hold Ctrl Key in case of multiple files)</code></span>
+                            @if (Model.rca_upload != null && Model.rca_upload != "" && Model.rca_upload.Length > 0)
+                            {
+                                <div class="editor-label">
+                                    <p style="font-weight: bold; margin: 0px;"> Docs. List:</p>
+                                </div>
+                                <p style="font-size: 11px; margin: 0px; color: red;">(Uncheck in case to remove a uploaded file)</p>
+                                foreach (var docs in Model.rca_upload.Trim(',').Split(','))
+                                {
+                                    <p style="margin: 0px;">
+                                        <input type="checkbox" id="QCDocsVal" name="QCDocsVal" class="QCDocsVal" value="@docs.Trim(',')" checked title="Uncheck in case to remove a uploaded file" />
+                                        <input type="hidden" id="QCDocsValselectall" name="QCDocsValselectall" />
+                                        <span class="bg-dark py-1 px-2 rounded">
+                                            <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs})' target="_blank">Preview</a>
+                                        </span>
+                                    </p>
+                                }
+                            }
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.rca_started_date)<text style="color: red;">*</text>
+                        </td>
+                        <td class="col-xs-6 col-md-4">
+                            @if (Model.rca_started_date != null && Model.rca_started_date > Convert.ToDateTime("01/01/0001"))
+                            {
+                                <input type="date" class="form-control" name="rca_started_date" id="rca_started_date" required value="@Model.rca_started_date.ToString("yyyy-MM-dd")" />
+                            }
+                            else
+                            {
+                                <input type="date" class="form-control" name="rca_started_date" id="rca_started_date" required />
+                            }
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.rca_details)
+                            </div>
+                        </td>
+                        <td class="col" colspan="3">
+                            <div class="editor-field">
+                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="rca_details" name="rca_details">@Model.rca_details</textarea>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.rca_action)
+                        </td>
+                        <td class="col-xs-6 col-md-4">
+                            <div class="editor-field">
+                                <select class="form-control-select3" data-fouc id="rca_action" name="rca_action">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.YesNo != null)
+                                    {
+                                        foreach (var item in ViewBag.YesNo)
+                                        {
+                                            if (item == Model.rca_action)
+                                            {
+                                                <option value='@item' selected>@item</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item'>@item</option>
+                                            }
+
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.rca_justify)
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="rca_justify" name="rca_justify">@Model.rca_justify</textarea>
+                            </div>
+                        </td>
+                    </tr>
+
+                </table>
+
+
+                @*Reported by*@
+                <table class="table table-lg">
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.rca_reportedby)
+                        </td>
+                        <td class="col-xs-6 col-md-4">
+                            <div class="editor-field">
+                                <select class="form-control-select3" data-fouc id="rca_reportedby" name="rca_reportedby" onchange="GetReportedByDetails()">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.EmpList != null)
+                                    {
+                                        foreach (var item in ViewBag.EmpList)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+             
+                <div style="display:none" id="ReportedBydiv">
+                    <div class="card-body">
+                        <input type="hidden" id="itemcnt1" name="itemcnt1" value="@itemcnt1" />
+
+                        <div class="card card-table table-responsive shadow-0 mb-0">
+                            <table class="table" id="team-list1">
+                                <tr class="bg-blue">
+                                    <th>Action</th>
+                                    <th>Id</th>
+                                    <th>Name</th>
+                                    <th>Division</th>
+                                    <th>Location</th>
+                                    <th>Department</th>
+                                    <th>Email</th>
+                                </tr>
+                                @if (ViewBag.ReportedByArray != null && ReportedByArray != null && ReportedByArray.Length > 0)
+                                {
+                                    for (int index = 0; index < ReportedByArray.Length; index++)
+                                    {
+                                        //string[] sEmp = @objIncidentLTIList.lstIncidentLTIModels[index].Emp_Id.Split(';');
+                                        <tr>
+                                            <td>
+                                                <span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span>
+                                                @*<img src='@Url.Content("~/images/cancel.png")' onclick='deleteRow1(this)' style='cursor:pointer; padding-right: 5px;' />Remove*@
+                                                <input type='hidden' id='aempno @index' name="aempno @index" value='@ReportedByArray[index]' />
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='aempid @index' name="aempid @index" readonly>@Obj.GetEmpIDByEmpNo(ReportedByArray[index])
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='aempname @index' name="aempname @index" readonly>@Obj.GetEmpHrNameById(ReportedByArray[index])
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='aempdiv @index' name="aempdiv @index" readonly>@Obj.GetCompanyBranchNameById(Obj.GetDivisionIdByHrEmpId(ReportedByArray[index]))
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='aemploc @index' name="aemploc @index" readonly>@Obj.GetDivisionLocationById(Obj.GetWorkLocationIdByHrEmpId(ReportedByArray[index]))
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='aempdept @index' name="aempdept @index" readonly>@Obj.GetDeptNameById(Obj.GetDeptIdByHrEmpId(ReportedByArray[index]))
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='aempemail @index' name="aempemail @index" readonly>@Obj.GetHrEmpEmailIdById(ReportedByArray[index])
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+
+                @*NotifiedTo*@
+                <table class="table table-lg">
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.rca_notifiedto)
+                        </td>
+                        <td class="col-xs-6 col-md-4">
+                            <div class="editor-field">
+                                <select class="form-control-select3" data-fouc id="rca_notifiedto" name="rca_notifiedto" onchange="GetNotifiedToDetails()">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.EmpList != null)
+                                    {
+                                        foreach (var item in ViewBag.EmpList)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+               
+                <div style="display:none" id="NotifiedTodiv">
+                    <div class="card-body">
+                        <input type="hidden" id="itemcnts" name="itemcnts" value="@itemcnts" />
+
+                        <div class="card card-table table-responsive shadow-0 mb-0">
+                            <table class="table" id="team-lists">
+                                <tr class="bg-blue">
+                                    <th>Action</th>
+                                    <th>Id</th>
+                                    <th>Name</th>
+                                    <th>Division</th>
+                                    <th>Location</th>
+                                    <th>Department</th>
+                                    <th>Email</th>
+                                </tr>
+                                @if (ViewBag.NotifiedtoArray != null && NotifiedtoArray != null && NotifiedtoArray.Length > 0)
+                                {
+                                    for (int index = 0; index < NotifiedtoArray.Length; index++)
+                                    {
+                                        //string[] sEmp = @objIncidentLTIList.lstIncidentLTIModels[index].Emp_Id.Split(';');
+                                        <tr>
+                                            <td>
+                                                <span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span>
+                                                @*<img src='@Url.Content("~/images/cancel.png")' onclick='deleteRow1(this)' style='cursor:pointer; padding-right: 5px;' />Remove*@
+                                                <input type='hidden' id='nempno @index' name="nempno @index" value='@NotifiedtoArray[index]' />
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='nempid @index' name="nempid @index" readonly>@Obj.GetEmpIDByEmpNo(NotifiedtoArray[index])
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='nempname @index' name="nempname @index" readonly>@Obj.GetEmpHrNameById(NotifiedtoArray[index])
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='nempdiv @index' name="nempdiv @index" readonly>@Obj.GetCompanyBranchNameById(Obj.GetDivisionIdByHrEmpId(NotifiedtoArray[index]))
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='nemploc @index' name="nemploc @index" readonly>@Obj.GetDivisionLocationById(Obj.GetWorkLocationIdByHrEmpId(NotifiedtoArray[index]))
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='nempdept @index' name="nempdept @index" readonly>@Obj.GetDeptNameById(Obj.GetDeptIdByHrEmpId(NotifiedtoArray[index]))
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='nempemail @index' name="nempemail @index" readonly>@Obj.GetHrEmpEmailIdById(NotifiedtoArray[index])
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </table>
+                        </div>
+                    </div>
+                </div>
+               
+                <table class="table table-lg">
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.rca_reporteddate)<text style="color: red;">*</text>
+                        </td>
+                        <td class="col-xs-6 col-md-4">
+                            @if (Model.rca_reporteddate != null && Model.rca_reporteddate > Convert.ToDateTime("01/01/0001"))
+                            {
+                                <input type="date" class="form-control" name="rca_reporteddate" id="rca_reporteddate" value="@Model.rca_reporteddate.ToString("yyyy-MM-dd")" onchange="checkRCADate()"/> 
+                            }
+                            else
+                            {
+                                <input type="date" class="form-control" name="rca_reporteddate" id="rca_reporteddate" onchange="checkRCADate()"/>
+                            }
+                        </td>
+                    </tr>
+                </table>
+            </fieldset>
+        </form>
+        @*</table>*@
+    </div>
+</div>
+<!-- /basic setup -->
+
+<script src='@Url.Content("~/global_assets/js/plugins/forms/wizards/steps2.min.js")'></script>
+<script>
+       var summary = {
+           summaryUrl: '@Url.Action("AddRCA", "AuditLog")'
+       };
+
+       var $ = jQuery.noConflict();
+</script>
+
+
+@section Scripts {
+    <script>
+
+    $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+
+        if (@itemcnt1 > 0) {
+         document.getElementById("ReportedBydiv").style.display = "block";
+        }
+
+        if (@itemcnts > 0) {
+            document.getElementById("NotifiedTodiv").style.display = "block";
+        }
+
+    });
+        function checkRCADate() {
+
+            var dt1 = document.getElementById("rca_reporteddate").value;
+            var dt2 = document.getElementById("rca_started_date").value;
+            if (new Date(dt2).getTime() > new Date(dt1).getTime()) {
+                bootbox.alert({
+                    title: 'Completed Date',
+                    message: 'Completed date must be greater than started date'
+                });
+                $('#rca_reporteddate').val("");
+            }
+           
+        }
+    var showClass = 'is-visible';
+    var hideClass = 'invisible';
+
+        function FileFormatValidation(file) {
+            var ext = file.value.split(".").pop().toLowerCase();
+            if ($.inArray(ext, ["pdf", "xlsx", "xls", "doc", "docx"]) == -1) {
+                file.value = "";
+                bootbox.alert({
+                    title: 'File type',
+                    message: 'Invalid file format, please upload only doc, pdf, docx, jpg, jpeg, gif, png format'
+                });
+            }
+        }
+
+        $("#QCDocsVal").click(function () {
+            if ($("#QCDocsVal").prop('checked')) {
+                {
+                    $(this).prop('checked', true);
+                }
+            }
+            else {
+                $(this).prop('checked', false);
+                document.getElementById("QCDocsValselectall").value = "DeleteQC";
+            }
+        });
+        function checkDate() {
+
+            var dt1 = document.getElementById("evaluation_date").value;
+            if (new Date(dt1).getTime() > new Date().getTime()) {
+                bootbox.alert({
+                    title: 'Evaluation Date',
+                    message: 'Evaluation cannot be greater then today.'
+                });
+                $('#evaluation_date').val("");
+            }
+        }
+
+
+         function reformatDate(dateStr) {
+             dArr = dateStr.split("-");  // ex input 2010-01-18
+             return dArr[2] + "/" + dArr[1] + "/" + dArr[0]; //ex out: 2018/01/10
+         }         
+
+
+    function GetNotifiedToDetails() {
+        var rca_notifiedto = $('#rca_notifiedto').val();
+        if (rca_notifiedto != "" && rca_notifiedto != null) {
+                jQuery.ajax({
+                    url: '@Url.Action("FunGetEmpDetails", "AuditLog")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'semp_no': rca_notifiedto },
+                    success: function (result) {
+                        if (result != null) {
+                            document.getElementById("NotifiedTodiv").style.display = "block";
+
+                            var nempno = $('#rca_notifiedto option:selected').val();
+                            var nempid = result.emp_id;
+                            var nempname = result.empname;
+                            var nempdiv = result.division;
+                            var nempdept = result.department;
+                            var nemploc = result.location;
+                            var nempemail = result.EmailId;
+                             
+            if (nempid != null && nempid != "") {
+        var cnt = document.getElementById("itemcnts").value;
+
+        document.getElementById("itemcnts").value = cnt;
+        // Find a <table> element with id="myTable":
+        var table = document.getElementById("team-lists");
+
+        // Create an empty <tr> element and add it to the 1st position of the table:
+        var row = table.insertRow();
+
+        // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+        var cell0 = row.insertCell(0);
+        var cell1 = row.insertCell(1);
+        var cell2 = row.insertCell(2);
+        var cell3 = row.insertCell(3);
+        var cell4 = row.insertCell(4);
+        var cell5 = row.insertCell(5);
+        var cell6 = row.insertCell(6);
+
+        cell0.innerHTML = "<span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span> <input type = 'hidden' id = 'nempno " + cnt + "' name = 'nempno " + cnt + "' value = '" + nempno + "'>";
+        cell1.innerHTML = "<input type='hidden' id='nempid " + cnt + "' name='nempid " + cnt + "' value='" + nempid + "'>" + nempid;
+        cell2.innerHTML = "<input type='hidden' id='nempname " + cnt + "' name='nempname " + cnt + "' value='" + nempname + "'>" + nempname;
+        cell3.innerHTML = "<input type='hidden' id='nempdiv " + cnt + "' name='nempdiv " + cnt + "' value='" + nempdiv + "'>" + nempdiv;
+        cell4.innerHTML = "<input type='hidden' id='nemploc " + cnt + "' name='nemploc " + cnt + "' value='" + nemploc + "'>" + nemploc;
+        cell5.innerHTML = "<input type='hidden' id='nempdept " + cnt + "' name='nempdept " + cnt + "' value='" + nempdept + "'>" + nempdept;
+        cell6.innerHTML = "<input type='hidden' id='nempemail " + cnt + "' name='nempemail " + cnt + "' value='" + nempemail + "'>" + nempemail;
+
+        cnt++;
+        document.getElementById("itemcnts").value = cnt;
+
+        $("#rca_notifiedto").val('').trigger('change');
+    
+                         }
+                        }
+                    }
+                });
+        }
+    }
+
+        function GetReportedByDetails() {
+            var rca_reportedby = $('#rca_reportedby').val();
+            if (rca_reportedby != "" && rca_reportedby != null) {
+                jQuery.ajax({
+                    url: '@Url.Action("FunGetEmpDetails", "AuditLog")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'semp_no': rca_reportedby },
+                    success: function (result) {
+                        if (result != null) {
+                            //document.getElementById("ReportedBydiv").classList.remove(hideClass);
+                            //document.getElementById("ReportedBydiv").classList.add(showClass);
+
+                            document.getElementById("ReportedBydiv").style.display = 'block';
+
+                            var aempno = $('#rca_reportedby option:selected').val();
+                            var aempid = result.emp_id;
+                            var aempname = result.empname;
+                            var aempdiv = result.division;
+                            var aempdept = result.department;
+                            var aemploc = result.location;
+                            var aempemail = result.EmailId;
+
+
+                            if (aempid != "" && aempid != null) {
+
+                                var cnt = document.getElementById("itemcnt1").value;
+
+                                document.getElementById("itemcnt1").value = cnt;
+                                // Find a <table> element with id="myTable":
+                                var table = document.getElementById("team-list1");
+
+                                // Create an empty <tr> element and add it to the 1st position of the table:
+                                var row = table.insertRow();
+
+                                // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                                var cell0 = row.insertCell(0);
+                                var cell1 = row.insertCell(1);
+                                var cell2 = row.insertCell(2);
+                                var cell3 = row.insertCell(3);
+                                var cell4 = row.insertCell(4);
+                                var cell5 = row.insertCell(5);
+                                var cell6 = row.insertCell(6);
+
+                                cell0.innerHTML = "<span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span>  <input type = 'hidden' id = 'aempno " + cnt + "' name = 'aempno " + cnt + "' value = '" + aempno + "'>";
+                                cell1.innerHTML = "<input type='hidden' id='aempid " + cnt + "' name='aempid " + cnt + "' value='" + aempid + "'>" + aempid;
+                                cell2.innerHTML = "<input type='hidden' id='aempname " + cnt + "' name='aempname " + cnt + "' value='" + aempname + "'>" + aempname;
+                                cell3.innerHTML = "<input type='hidden' id='aempdiv " + cnt + "' name='aempdiv " + cnt + "' value='" + aempdiv + "'>" + aempdiv;
+                                cell4.innerHTML = "<input type='hidden' id='aemploc " + cnt + "' name='aemploc " + cnt + "' value='" + aemploc + "'>" + aemploc;
+                                cell5.innerHTML = "<input type='hidden' id='aempdept " + cnt + "' name='aempdept " + cnt + "' value='" + aempdept + "'>" + aempdept;
+                                cell6.innerHTML = "<input type='hidden' id='aempemail " + cnt + "' name='aempemail " + cnt + "' value='" + aempemail + "'>" + aempemail;
+
+                                cnt++;
+                                document.getElementById("itemcnt1").value = cnt;
+
+                                //document.getElementById("hidden_card1").classList.remove(hideClass);
+                                //document.getElementById("hidden_card1").classList.add(showClass);
+
+                                $("#rca_reportedby").val('').trigger('change');
+
+                            }
+                        }
+                    }
+                });
+            }
+        }
+            
+        function deleteRow(btn) {
+            var row = btn.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+        }
+
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}
+

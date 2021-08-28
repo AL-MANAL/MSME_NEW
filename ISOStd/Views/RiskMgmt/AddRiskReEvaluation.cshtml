@@ -1,0 +1,526 @@
+﻿@model ISOStd.Models.RiskMgmtModels
+
+@{
+    ViewBag.Title = "";
+    DateTime today = DateTime.Now;
+}
+
+<script src='@Url.Content("~/global_assets/js/demo_pages/RiskReevaluat_form_wizard.js")'></script>
+
+@section featured {
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("RiskList", "RiskMgmt", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">
+                            Quality Related Risk
+                        </span>
+                    </a>
+                    <span class="breadcrumb-item active">Risk ReEvaluation</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+}
+<!-- Basic setup -->
+<div class="card">
+    <div class="card-header header-elements-inline bg-primary">
+        <h5 class="card-title">Risk ReEvaluation</h5>
+        <div class="header-elements">
+            <div class="list-icons">
+                <a class="list-icons-item" data-action="collapse"></a>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="container-fluid">
+
+            <form class="wizard-form steps-validation" action="@Url.Action("AddRiskReEvaluation", "RiskMgmt")" data-fouc id="form1">
+                <input type="hidden" id="risk_id" name="risk_id" value="@ViewBag.risk_id" />
+                <input type="hidden" id="risk_desc" name="risk_desc" value="@Model.risk_desc" />
+                <input type="hidden" id="risk_refno" name="risk_refno" value="@Model.risk_refno" />
+                <input type="hidden" id="risk_id_trans" name="risk_id_trans" value="@Model.risk_id_trans" />
+                <input type="hidden" id="initimpact_id" name="initimpact_id" value="@Model.initimpact_id" />
+                <input type="hidden" id="initlike_id" name="initlike_id" value="@Model.initlike_id" />
+                <h6>Risk ReEvaluation</h6>
+                <fieldset>
+                    <table class="table table-lg">
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.DisplayNameFor(model => model.initevaluation_date)
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    @if (Model.initevaluation_date != null && Model.initevaluation_date > Convert.ToDateTime("01/01/0001"))
+                                    {
+                                        @Html.Label(Model.initevaluation_date.ToString("dd/MM/yyyy"))
+                                    }                           
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                   Initial Risk Rating
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <input class="form-control" type="text" id="initrating" name="initrating" style="display:none;" readonly />
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="row">
+
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.DisplayNameFor(model => model.impact_id)<text style="color: red;">*</text>
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <select class="select-search1" data-fouc id="impact_id" name="impact_id" required onchange="GetRiskRating()">
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.impact_id != null)
+                                        {
+                                            foreach (var item in ViewBag.impact_id)
+                                            {
+                                                if (item.Value == Model.impact_id)
+                                                {
+                                                    <option value='@item.Value' selected>@item.Text</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </td>
+
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.DisplayNameFor(model => model.like_id)<text style="color: red;">*</text>
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <select class="select-search1" data-fouc id="like_id" name="like_id" required onchange="GetRiskRating()">
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.like_id != null)
+                                        {
+                                            foreach (var item in ViewBag.like_id)
+                                            {
+                                                if (item.Value == Model.like_id)
+                                                {
+                                                    <option value='@item.Value' selected>@item.Text</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    Risk Rating
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <input class="form-control" type="text" id="rating" name="rating" style="display:none;" readonly />
+                                </div>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    <a href="#" data-toggle="popover" data-trigger="hover">Risk Matrix</a>
+                                </div>
+                            </td>
+
+                        </tr>
+                        <tr class="row">
+
+                            @*<td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.DisplayNameFor(model => model.Issue)
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <select class="form-control-select3" data-fouc id="Issue" name="Issue">
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.Issue != null)
+                                        {
+                                            foreach (var item in ViewBag.Issue)
+                                            {
+                                                if (item.Text == Model.Issue)
+                                                {
+                                                    <option value='@item.Value' selected>@item.Text</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </td>*@
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    ReEvaluation Date<text style="color:red;">*</text>
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    @if (Model.evaluation_date != null && Model.evaluation_date > Convert.ToDateTime("01/01/0001"))
+                                    {
+                                        <input class="form-control required" type="date" id="evaluation_date" name="evaluation_date" value="@Model.evaluation_date.ToString("yyyy-MM-dd")" onchange="checkDate()" />
+                                    }
+                                    else
+                                    {
+                                        <input class="form-control required" type="date" id="evaluation_date" name="evaluation_date" value="@today.ToString("yyyy-MM-dd")" onchange="checkDate()" />
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr class="row">
+
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.DisplayNameFor(model => model.risk_manager)<text style="color: red;">*</text>
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <select class="select-search1" data-fouc id="risk_manager" name="risk_manager" required>
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.Approver != null)
+                                        {
+                                            foreach (var item in ViewBag.Approver)
+                                            {
+                                                if (item.Text == Model.risk_manager)
+                                                {
+                                                    <option value='@item.Value' selected>@item.Text</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.DisplayNameFor(model => model.eval_notified_to)<text style="color: red;">*</text>
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <select class="select-search1" data-fouc id="eval_notified_to" name="eval_notified_to">
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.EmpList != null)
+                                        {
+                                            foreach (var item in ViewBag.EmpList)
+                                            {
+                                                if (item.Text == Model.eval_notified_to)
+                                                {
+                                                    <option value='@item.Value' selected>@item.Text</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </fieldset>
+
+
+
+            </form>
+        </div>
+    </div>
+</div>
+<!-- /basic setup -->
+
+<script src='@Url.Content("~/global_assets/js/plugins/forms/wizards/steps2.min.js")'></script>
+<script>
+       var summary = {
+           summaryUrl: '@Url.Action("AddRiskReEvaluation", "RiskMgmt")'
+       };
+
+       var $ = jQuery.noConflict();
+
+</script>
+
+
+
+
+
+@section Scripts {
+    <script>
+
+
+             //----zzz
+
+
+     $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+
+    //zzz----
+     -
+
+            $('[data-toggle="popover"]').popover({
+
+                html: true,
+                content: setData,
+                container: 'body'
+            });
+
+            function setData() {
+                var set_data = '';
+                var element = $(this);
+
+                $.ajax({
+                    url: '@Url.Action("RiskMatrix", "RiskMgmt")',
+                    methos: "post",
+                    async: false,
+                    success: function (data) {
+                        set_data = data;
+                    }
+                });
+                return set_data;
+            }
+         });
+        var impact = $('#impact_id').val();
+        var like = $('#like_id').val();
+
+        if (impact != "" && like != "") {
+
+            jQuery.ajax({
+                url: '@Url.Action("FunGetRiskRating", "RiskMgmt")',
+                type: 'POST',
+                dataType: "json",
+                //data: { impact: impact, like: like },
+                data: { like: like, impact: impact },
+                success: function (result) {
+                    if (result != null) {
+
+                        document.getElementById("rating").style.display = 'block';
+                        document.getElementById("rating").value = result.RiskRating;
+                        document.getElementById("rating").style.backgroundColor=result.color_code;
+                    }
+
+                }
+            });
+           
+        }
+        var initimpact = document.getElementById("initimpact_id").value;
+        var initlike = document.getElementById("initlike_id").value;
+
+        if (initimpact != "" && initlike != "") {
+
+            jQuery.ajax({
+                url: '@Url.Action("FunGetRiskRating", "RiskMgmt")',
+                type: 'POST',
+                dataType: "json",
+                //data: { impact: impact, like: like },
+                data: { like: initlike, impact: initimpact },
+                success: function (result) {
+                    if (result != null) {
+
+                        document.getElementById("initrating").style.display = 'block';
+                        document.getElementById("initrating").value = result.RiskRating;
+                        document.getElementById("initrating").style.backgroundColor = result.color_code;
+                    }
+
+                }
+            });
+        }
+        function checkDate() {
+
+            var dt1 = document.getElementById("evaluation_date").value;
+            if (new Date(dt1).getTime() > new Date().getTime()) {
+                bootbox.alert({
+                    title: 'Evaluation Date',
+                    message: 'Evaluation cannot be greater then today.'
+                });
+                $('#evaluation_date').val("");
+            }
+        }
+
+        function SetRiskType() {
+
+            var RiskType = $('#Risk_Type option:selected').text();
+
+            if (RiskType == "Opportunity") {
+                $('#impact_id').prop('disabled', true).trigger('change');
+                $('#like_id').prop('disabled', true).trigger('change');
+
+                $("#impact_id").val('').trigger('change');
+                $("#like_id").val('').trigger('change');
+
+                document.getElementById("rating").value = "";
+            }
+            else {
+                $('#impact_id').prop('disabled', false).trigger('change');
+                $('#like_id').prop('disabled', false).trigger('change');
+
+            }
+            }
+
+        function GetRiskRating() {
+
+            var impact = $('#impact_id').val();
+            var like = $('#like_id').val();
+
+            if (impact != "" && like != "") {
+                jQuery.ajax({
+                    url: '@Url.Action("FunGetRiskRating", "RiskMgmt")',
+                    type: 'POST',
+                    dataType: "json",
+                    //data: { impact: impact, like: like },
+                    data: { like: like, impact: impact },
+                    success: function (result) {
+                        if (result != null) {
+                            document.getElementById("rating").style.display = 'block';
+                            document.getElementById("rating").value = result.RiskRating;
+                            document.getElementById("rating").style.backgroundColor = result.color_code;
+                        }
+                    }
+                });
+            }
+            }
+
+      function GetDeptList() {
+            var selectedValues = [];
+            $("#branch_id :selected").each(function () {
+                selectedValues.push($(this).val());
+            });
+                jQuery.ajax({
+                    url: '@Url.Action("FunGetAllDeptList", "EmployeeDetails")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'branch': selectedValues },
+                    success: function (result) {
+                        GetLocList(selectedValues);
+                        $("#dept").children('option').remove();
+                        $("#dept").trigger('change');
+                        if (result != null && result.length > 0) {
+                            $.each(result, function (index, item) {
+                                $("#dept").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                                $("#dept").trigger('change');
+                            });
+                            return;
+                        }
+                        //else {
+                        //    bootbox.alert({
+                        //        title: 'Department List',
+                        //        message: 'No Department exists.'
+                        //    });
+                        //}
+                    }
+                });
+        }
+
+
+        function GetLocList(selectedValues) {
+            jQuery.ajax({
+                url: '@Url.Action("FunGetAllLocList", "EmployeeDetails")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'branch': selectedValues },
+                success: function (result) {
+                    $("#Location").children('option').remove();
+                    $("#Location").trigger('change');
+                    if (result != null && result.length > 0) {
+                        $.each(result, function (index, item) {
+                            $("#Location").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                            $("#Location").trigger('change');
+                        });
+                        return;
+                    }
+                    //else {
+                    //    bootbox.alert({
+                    //        title: 'Location List',
+                    //        message: 'No Location exists.'
+                    //    });
+                    //}
+                }
+            });
+        }
+
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

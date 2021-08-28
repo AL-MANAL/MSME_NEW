@@ -1,0 +1,1093 @@
+﻿@model ISOStd.Models.IncidentReportModels
+
+@{
+    ViewBag.Title = "";
+}
+
+<script src='@Url.Content("~/global_assets/js/demo_pages/incident_form_wizard.js")'></script>
+
+@section featured {
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("IncidentReportList", "IncidentReport", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">IncidentReport List</span>
+                    </a>
+                    <span class="breadcrumb-item active">Add Incident Report</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+}
+ 		<!-- Basic setup -->
+<div class="card">
+    <div class="card-header header-elements-inline bg-primary">
+        <h5 class="card-title">Add Incident Report</h5>
+        <div class="header-elements">
+            <div class="list-icons">
+                <a class="list-icons-item" data-action="collapse"></a>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="container-fluid">
+
+            <form class="wizard-form steps-validation"  enctype="multipart/form-data" data-fouc id="form1">
+                <h6>Incident Investigation</h6>
+                <fieldset>
+                    <table class="table table-lg">
+                        <tr class="row">
+                           
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.DisplayNameFor(model => model.accident_reportno)<text style="color:red;">*</text>
+
+                            </td>
+                            <td class="col">
+
+                                <select class="form-control form-control-select3" data-fouc id="accident_reportno" name="accident_reportno" required onchange="getAccidentDetails()">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.AccidentReport != null)
+                                    {
+                                        foreach (var item in ViewBag.AccidentReport)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    Incident Type
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <input class="form-control" type="text" disabled id="Incident_Type" name="Incident_Type" />
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    Date and timing of Accident
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                   <input class="form-control" type="text" disabled id="acc_date" name="acc_date" />
+                                </div>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    Date of Accident Report
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <input class="form-control" type="text" disabled id="reported_date" name="reported_date" />
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    Reported By
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <input class="form-control" type="text" disabled id="reported_by" name="reported_by" />
+                                </div>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    Details of accident
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <textarea maxlength="2000" placeholder="Textarea" disabled style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="details" name="details"></textarea>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            @*<td class="col-xs-3 col-md-2">
+
+                                @Html.DisplayNameFor(model => model.Occurred_onJob)
+
+                            </td>
+                            <td class="col">
+
+                                <select class="form-control form-control-select3" data-fouc id="Occurred_onJob" name="Occurred_onJob">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.YesNo != null)
+                                    {
+                                        foreach (var item in ViewBag.YesNo)
+                                        {
+                                            <option value='@item'>@item</option>
+                                        }
+                                    }
+                                </select>
+
+                            </td>*@
+                            <td class="col-xs-3 col-md-2">
+                                @Html.DisplayNameFor(model => model.Consequences)
+                            </td>
+                            <td class="col">
+                                @Html.TextAreaFor(model => model.Consequences, new { @maxlength = "2000", @placeholder = "Textarea", @style = "overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;", @rows = "4", @cols = "4", @class = "form-control elastic maxlength-badge-position" })
+                            </td>
+                       
+                            @*<td class="col-xs-3 col-md-2">
+                                @Html.DisplayNameFor(model => model.Actions_Taken)
+                            </td>
+                            <td class="col">
+                                @Html.TextAreaFor(model => model.Actions_Taken, new { @maxlength = "2000", @placeholder = "Textarea", @style = "overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;", @rows = "4", @cols = "4", @class = "form-control elastic maxlength-badge-position" })
+                            </td>*@
+                            <td class="col-xs-3 col-md-2">
+                                @Html.DisplayNameFor(model => model.Corrective_Measures)
+                            </td>
+                            <td class="col">
+                                @Html.TextAreaFor(model => model.Corrective_Measures, new { @maxlength = "2000", @placeholder = "Textarea", @style = "overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;", @rows = "4", @cols = "4", @class = "form-control elastic maxlength-badge-position" })
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.DisplayNameFor(model => model.Incident_Reasons)
+                            </td>
+                            <td class="col">
+                                @Html.TextAreaFor(model => model.Incident_Reasons, new { @maxlength = "2000", @placeholder = "Textarea", @style = "overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;", @rows = "4", @cols = "4", @class = "form-control elastic maxlength-badge-position" })
+                            </td>
+                             <td class="col-xs-3 col-md-2">
+                                @Html.DisplayNameFor(model => model.witness_stmt)
+                            </td>
+                            <td class="col">
+                                @Html.TextAreaFor(model => model.witness_stmt, new { @maxlength = "2000", @placeholder = "Textarea", @style = "overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;", @rows = "4", @cols = "4", @class = "form-control elastic maxlength-badge-position" })
+                            </td>
+                            @*<td class="col-xs-3 col-md-2">
+                                @Html.DisplayNameFor(model => model.InWork_Premises)
+                            </td>
+                            <td class="col">
+                                <select class="form-control form-control-select3" data-fouc id="InWork_Premises" name="InWork_Premises">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.YesNo != null)
+                                    {
+                                        foreach (var item in ViewBag.YesNo)
+                                        {
+                                            <option value='@item'>@item</option>
+                                        }
+                                    }
+                                </select>
+                            </td>*@
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.DisplayNameFor(model => model.WitnessedBy)
+                            </td>
+                            <td class="col">
+                                <select class="form-control form-control-select3" data-fouc id="WitnessedBy" multiple name="WitnessedBy">
+                                    @*<option value='' hidden>Select</option>*@
+                                    @if (ViewBag.EmpList != null)
+                                    {
+                                        foreach (var item in ViewBag.EmpList)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                @Html.DisplayNameFor(model => model.Witness_StmtDoc)
+                            </td>
+                            <td class="col">
+                                <input type="file" name="Witness_StmtDoc" id="Witness_StmtDoc" title="Documents" 
+                                       multiple="multiple" accept=".pdf, .doc, .docx,image/*" />
+                                <span class="form-text text-muted"><code>(Hold Ctrl Key in case of multiple files or drag multiple files and drop here)</code></span>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.DisplayNameFor(model => model.invest_team)
+                            </td>
+                            <td class="col">
+                                <select class="form-control form-control-select3" data-fouc id="invest_team" name="invest_team" multiple>
+                                    @*<option value='' hidden>Select</option>*@
+                                    @if (ViewBag.HSEEmp != null)
+                                    {
+                                        foreach (var item in ViewBag.HSEEmp)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                @Html.DisplayNameFor(model => model.DueDate)
+                            </td>
+                            <td class="col">
+                                <input type="date" id="DueDate" name="DueDate" class="form-control"/>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.DisplayNameFor(model => model.risk_incident)
+                            </td>
+                            <td class="col">
+                                @Html.TextAreaFor(model => model.risk_incident, new { @maxlength = "2000", @placeholder = "Textarea", @style = "overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;", @rows = "4", @cols = "4", @class = "form-control elastic maxlength-badge-position" })
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                @Html.DisplayNameFor(model => model.ext_witness)
+                            </td>
+                            <td class="col-xs-3 col-md-4">
+                                @Html.TextAreaFor(model => model.ext_witness, new { @maxlength = "2000", @placeholder = "Textarea", @style = "overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;", @rows = "4", @cols = "4", @class = "form-control elastic maxlength-badge-position" })
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.DisplayNameFor(model => model.report_upload)
+                            </td>
+                            <td class="col">
+                                <input type="file" name="report_upload" id="report_upload" title="Documents" 
+                                       multiple="multiple" accept=".pdf, .doc, .docx,image/*"/>
+                                <span class="form-text text-muted"><code>(Hold Ctrl Key in case of multiple files or drag multiple files and drop here)</code></span>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                @Html.DisplayNameFor(model => model.hse_officer)
+                            </td>
+                            <td class="col">
+                                <select class="form-control form-control-select3" data-fouc id="hse_officer" name="hse_officer">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.HSEEmp != null)
+                                    {
+                                        foreach (var item in ViewBag.HSEEmp)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                            </td>
+                        </tr>
+                                              
+                    </table>
+                </fieldset>
+                <h6>Injuries</h6>
+                <fieldset>
+                    <table class="table table-lg">
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.DisplayNameFor(model => model.Injuries)<text style="color:red;">*</text>
+                            </td>
+                            <td class="col-xs-3 col-md-3">
+
+                                <select class="form-control form-control-select3" data-fouc id="Injuries" name="Injuries" onchange="SetAccidentDetailsRequired()">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.YesNo != null)
+                                    {
+                                        foreach (var item in ViewBag.YesNo)
+                                        {
+                                            <option value='@item'>@item</option>
+                                        }
+                                    }
+                                </select>
+                            </td>
+                           
+                        </tr>
+                        </table>
+
+                    <fieldset class="border p-2">
+                        <legend class="font-weight-semibold"><i class="icon-file-text mr-2"></i> Main details</legend>
+                        <table class="table table-lg" id="table1">
+                          
+                            <tbody>
+                                <tr class="row">
+                                    <th class="col-xs-3 col-md-2" style="font-weight: bold;">Accident Type</th>
+                                    <td class="col">
+                                        <select class="form-control form-control-select3" data-fouc id="AccidentTypeSelect" name="AccidentTypeSelect">
+                                            <option value='' hidden>Select</option>
+                                            @if (ViewBag.AccidentType != null)
+                                            {
+                                                foreach (var item in ViewBag.AccidentType)
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+                                                }
+                                            }
+                                        </select>
+                                        @Html.ValidationMessageFor(model => model.AccidentTypeSelect)
+                                        <span class="field-validation-error"><span id="AccidentTypeSelect-message" style="display: none;">Please select Accident Type.</span></span>
+                                    </td>
+
+                                </tr>
+
+                                <tr class="row">
+                                    <th class="col-xs-3 col-md-2" style="font-weight: bold;">Name</th>
+                                    <td class="col">
+
+                                        <select class="form-control form-control-select3" data-fouc id="Emp_IdSelect" name="Emp_IdSelect">
+                                            <option value='' hidden>Select</option>
+                                            @if (ViewBag.EmpList != null)
+                                            {
+                                                foreach (var item in ViewBag.EmpList)
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+                                                }
+                                            }
+                                        </select>
+                                        @Html.ValidationMessageFor(model => model.Emp_IdSelect)
+                                        <span class="field-validation-error"><span id="Emp_IdSelect-message" style="display: none;">Please select Person.</span></span>
+                                    </td>
+
+                                </tr>
+                                <tr class="row">
+                                    <th class="col-xs-3 col-md-2" style="font-weight: bold;">LTI (Hrs)</th>
+                                    <td class="col">
+                                        <input class="form-control" type='number' id='LTI_Hrs' name="LTI_Hrs" />
+                                        @Html.ValidationMessageFor(model => model.LTI_Hrs)
+                                        <span class="field-validation-error"><span id="LTI_Hrs-message" style="display: none;">LTI Hours is required.</span></span>
+                                    </td>
+                                    <td class="col">
+                                        <input type="button" value="Add" class="btn btn-success" onclick="AddLTI()" /> <span class="text-primary font-italic">(Please click ADD button to add multiple entries)</span>
+                                    </td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                    </fieldset>
+
+                    <div class="card invisible" id="hidden card">
+                        <div class="card-header header-elements-inline">
+                            <h5 class="card-title">Details</h5>
+                            <div class="header-elements">
+                                <div class="list-icons">
+                                    <a class="list-icons-item" data-action="collapse"></a>
+
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+
+                            <input type="hidden" id="itemcnt" name="itemcnt" value="0" />
+
+                            <div class="card card-table table-responsive shadow-0 mb-0">
+                                <table class="table" id="team-list">
+                                    <tr class="bg-blue">
+                                        <th>Action</th>
+                                        <th>Accident Type</th>
+                                        <th>Name</th>
+                                        <th>LTI (Hrs)</th>
+                                    </tr>
+                                </table>
+
+                            </div>
+                        </div>
+                    </div>
+</fieldset>
+
+                <h6>Action Taken</h6>
+                <fieldset>
+                    <fieldset class="border p-2">
+                        <legend class="font-weight-semibold text-success">Actions</legend>
+
+                        <table class="table table-lg">
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.LabelFor(model => model.incident_action)
+                                    </div>
+                                </td>
+                                <td class="col">
+                                    <div class="editor-field">
+                                        <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="incident_action" name="incident_action"></textarea>
+                                        <span class="field-validation-error">
+                                            <label id="incident_action-message" class="validation-invalid-label" style="display: none" for="basic">This field is required.</label>
+                                        </span>
+                                    </div>
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.LabelFor(model => model.resp_pers)
+                                    </div>
+                                </td>
+                                <td class="col">
+                                    <div class="editor-field">
+                                        <select class="form-control form-control-select3" data-fouc id="resp_pers" name="resp_pers">
+                                            <option value='' hidden>Select</option>
+                                            @if (ViewBag.EmpList != null)
+                                            {
+                                                foreach (var item in ViewBag.EmpList)
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+                                                }
+                                            }
+                                        </select>
+                                        <span class="field-validation-error">
+                                            <label id="resp_pers-message" class="validation-invalid-label" style="display: none" for="basic">This field is required.</label>
+                                        </span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.LabelFor(model => model.target_date)
+                                    </div>
+                                </td>
+                                <td class="col">
+                                    <div class="editor-field">
+                                        <input type="date" id="target_date" name="target_date" class="form-control" />
+                                        <span class="field-validation-error">
+                                            <label id="target_date-message" class="validation-invalid-label" style="display: none" for="basic">This field is required.</label>
+                                        </span>
+                                    </div>
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.LabelFor(model => model.incident_status)
+                                    </div>
+                                </td>
+                                <td class="col">
+                                    <div class="editor-field">
+                                        <select class="form-control form-control-select3" data-fouc id="incident_status" name="incident_status">
+                                            <option value='' hidden>Select</option>
+                                            @if (ViewBag.Status != null)
+                                            {
+                                                foreach (var item in ViewBag.Status)
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+                                                }
+                                            }
+                                        </select>
+                                        <span class="field-validation-error">
+                                            <label id="incident_status-message" class="validation-invalid-label" style="display: none" for="basic">This field is required.</label>
+                                        </span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.LabelFor(model => model.contractor)
+                                    </div>
+                                </td>
+                                <td class="col">
+                                    <div class="editor-field">
+                                        <input type="text" class="form-control" id="contractor" name="contractor" />
+                                        @*<span class="field-validation-error">
+                                            <label id="contractor-message" class="validation-invalid-label" style="display: none" for="basic">This field is required.</label>
+                                        </span>*@
+                                    </div>
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.LabelFor(model => model.action_report)
+                                    </div>
+                                </td>
+                                <td class="col">
+                                    <div class="editor-field">
+                                        <input type="file" name="action_report" id="action_report" title="Documents"
+                                               multiple="multiple" accept=".pdf, .doc, .docx,image/*"/>
+                                        <span class="form-text text-muted"><code>(Hold Ctrl Key in case of multiple files)</code></span>
+                                     </div>
+                                </td>
+                            </tr>
+                          
+                            <tr class="row">
+                                <td class="col">
+                                    <input type="button" value="Add" class="btn btn-success" onclick="AddAction()" /><span class="text-primary font-italic">(Please click ADD button to add multiple entries)</span>
+                                </td>
+                            </tr>
+                        </table>
+                    </fieldset>
+                    <div class="card invisible" id="hidden card1">
+
+                        <div class="card-body">
+                            <input type="hidden" id="itemcnts" name="itemcnts" value="0" />
+                            <div class="card card-table table-responsive shadow-0 mb-0">
+                                <table class="table" id="team-list1">
+                                    <tr class="bg-blue">
+                                        <th>Action</th>
+                                        <th>Action to be taken</th>
+                                        <th>Responsible Person</th>
+                                        <th>Target Date</th>
+                                        <th>Status</th>
+                                        <th>Contractor</th>
+                                        <th>Report</th>
+                                    </tr>
+                                </table>
+
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+
+
+            </form>
+        </div>
+    </div>
+</div>
+<!-- /basic setup -->
+
+<script src='@Url.Content("~/global_assets/js/plugins/forms/wizards/steps2.min.js")'></script>
+<script>
+       var summary = {
+           summaryUrl: '@Url.Action("AddIncidentReport", "IncidentReport")'
+       };
+
+       var $ = jQuery.noConflict();
+
+</script>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+             //----zzz
+    $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+        //addToolTip();
+        InjuriesSelect();
+
+        //$('.select-fixed-single13').select2({
+        //    minimumResultsForSearch: Infinity,
+
+        //});
+
+
+    });
+    //zzz----
+
+
+        var showClass = 'is-visible';
+        var hideClass = 'invisible';
+
+
+        function addToolTip() {
+            jQuery.ajax({
+                url: '@Url.Action("FunGetIncidentDesc", "IncidentReport")',
+            type: 'POST',
+            dataType: "json",
+            //data: { Reviewer: Reviewer },
+            success: function (result) {
+                if (result != null) {
+                    displayToolTip(result);
+                }
+            }
+        });
+
+    }
+    function displayToolTip(result) {
+
+        var x = document.getElementById("Incident_Type");
+        for (var i = 1, j = 0; i < x.options.length; i++, j++) {
+            x.options[i].title = result[j];
+
+        }
+    }
+
+    function getAccidentDetails() {
+        var reportno = $("#accident_reportno").val();
+        jQuery.ajax({
+            url: '@Url.Action("FunGetAccidentReportDetails", "IncidentReport")',
+            type: 'POST',
+            dataType: "json",
+            data: { accident_reportno: reportno },
+            success: function (result) {
+                if (result != null) {
+                    var reported_date = new Date(parseInt(result.reported_date.substr(6)));
+                    var acc_date = new Date(parseInt(result.acc_date.substr(6)));
+                    document.getElementById("Incident_Type").value = result.Incident_Type;
+                    document.getElementById("reported_by").value = result.reported_by;
+                    document.getElementById("details").value = result.details;
+                    document.getElementById("acc_date").value = acc_date.toLocaleString();
+                    document.getElementById("reported_date").value = reported_date.toLocaleString();
+                }
+            }
+        });
+
+    }
+
+
+
+            function checkDate() {
+
+
+                var dt2 = document.getElementById("Reported_On").value;
+                var dt1 = document.getElementById("Incident_Datetime").value;
+
+                if (new Date(dt1).getTime() > new Date(dt2).getTime()) {
+
+                    bootbox.alert({
+                        title: 'Reported on Date',
+                        message: 'Reported on cannot be before Incident Date.'
+                    });
+                    $('#Reported_On').val("");
+                }
+            }
+
+
+
+            function checkDate2() {
+                var dt2 = document.getElementById("DueDate").value;
+                var dt1 = document.getElementById("Reported_On").value;
+
+                if (new Date(dt1).getTime() > new Date(dt2).getTime()) {
+
+                    bootbox.alert({
+                        title: 'Due Date',
+                        message: 'Due date cannot be before Reported Date.'
+                    });
+                    $('#DueDate').val("");
+                }
+            }
+
+
+            function checkDate3() {
+
+
+                var dt2 = document.getElementById("ClosedOn").value;
+                var dt1 = document.getElementById("Reported_On").value;
+
+                if (new Date(dt1).getTime() > new Date(dt2).getTime()) {
+
+                    bootbox.alert({
+                        title: 'Closed Date',
+                        message: 'Closed date cannot be before Reported Date.'
+                    });
+                    $('#ClosedOn').val("");
+                }
+            }
+
+
+
+
+
+
+
+    //function deleteRow(btn) {
+    //    var row = btn.parentNode.parentNode;
+    //    row.parentNode.removeChild(row);
+    //        }
+
+
+            function deleteRow(btn) {
+                var row = btn.parentNode.parentNode;
+                row.parentNode.removeChild(row);
+                var cnt = document.getElementById("itemcnt").value;
+                cnt--;
+
+                document.getElementById("itemcnt").value = cnt;
+                if (cnt == "0") {
+
+                    document.getElementById("btnCreate").classList.add(hideClass);
+                    document.getElementById("btnCreate").classList.remove(showClass);
+                    document.getElementById("hidden card").classList.remove(showClass);
+                    document.getElementById("hidden card").classList.add(hideClass);
+                }
+
+            }
+
+    function AddLTI() {
+
+        if (Validation() == true) {
+
+
+            var cnt = document.getElementById("itemcnt").value;
+
+            document.getElementById("itemcnt").value = cnt;
+            // Find a <table> element with id="myTable":
+            var table = document.getElementById("team-list");
+
+
+            // Create an empty <tr> element and add it to the 1st position of the table:
+            var row = table.insertRow();
+
+
+            // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+            var cell0 = row.insertCell(0);
+            var cell1 = row.insertCell(1);
+            var cell2 = row.insertCell(2);
+            var cell3 = row.insertCell(3);
+            //var cell4 = row.insertCell(4);
+            //var cell5 = row.insertCell(5);
+
+
+
+            var AccidentType = $('#AccidentTypeSelect').val();
+            var sAccidentTypeSelect = document.getElementById("AccidentTypeSelect");
+            var sAccidentTypeSelectText = sAccidentTypeSelect.options[sAccidentTypeSelect.selectedIndex].text;
+
+            var Emp_Id = $('#Emp_IdSelect').val();
+            var Emp_Name = $("#Emp_IdSelect option:selected").text();
+            var LTI_Hrs = $('#LTI_Hrs').val();
+
+            cell0.innerHTML = "<span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span>";
+           
+            cell1.innerHTML = "<select  id='AccidentType " + cnt + "' name='AccidentType " + cnt + "'><option value='" + AccidentType + "' selected>" + sAccidentTypeSelectText + "</option>@if (ViewBag.AccidentType != null)
+            {
+                foreach (var item in ViewBag.AccidentType)
+                { <option value='@item.Value'>@item.Text</option> }
+                }</select>";
+            cell2.innerHTML = "<select  id='Emp_Id " + cnt + "' name='Emp_Id " + cnt + "'><option value='" + Emp_Id + "' selected>" + Emp_Name + "</option>@if (ViewBag.EmpList != null)
+            {
+                foreach (var item in ViewBag.EmpList)
+                { <option value='@item.Value'>@item.Text</option> }
+                }</select>";
+         
+                cell3.innerHTML = "<input type='text' id='LTI_Hrs " + cnt + "' name='LTI_Hrs " + cnt + "' value='" + LTI_Hrs + "'>" ;
+
+                cnt++;
+            document.getElementById("itemcnt").value = cnt;
+
+
+            document.getElementById("hidden card").classList.remove(hideClass);
+            document.getElementById("hidden card").classList.add(showClass);
+            //ResetControl();
+
+
+            $("#AccidentTypeSelect").val('').trigger('change');
+            $("#Emp_IdSelect").val('').trigger('change');
+            document.getElementById("LTI_Hrs").value = "";
+            }
+
+        }
+
+
+        function Validation() {
+            var validflg = true;
+            var ssnMessage = "";
+
+            var x = document.getElementById("AccidentTypeSelect").value;
+
+            if (document.getElementById("AccidentTypeSelect").value == "") {
+                ssnMessage = $('#AccidentTypeSelect-message');
+                ssnMessage.show();
+
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#AccidentTypeSelect-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("Emp_IdSelect").value == "") {
+                ssnMessage = $('#Emp_IdSelect-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#Emp_IdSelect-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("LTI_Hrs").value == "" || parseInt(document.getElementById("LTI_Hrs").value) < 1) {
+                ssnMessage = $('#LTI_Hrs-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#LTI_Hrs-message');
+                ssnMessage.hide();
+            }
+
+            return validflg;
+        }
+
+
+        function SetAccidentDetailsRequired() {
+            if ($('#Injuries').val() == "Yes") {
+                $('#AccidentTypeSelect').prop('disabled', false).trigger('change');
+                $('#Emp_IdSelect').prop('disabled', false).trigger('change');
+                document.getElementById("LTI_Hrs").disabled = false;
+
+                document.getElementById("AccidentTypeSelect").style.background = "#fff";
+                document.getElementById("Emp_IdSelect").style.background = "#fff";
+                document.getElementById("LTI_Hrs").style.background = "#fff";
+
+            }
+            else {
+
+                $('#AccidentTypeSelect').prop('disabled', true).trigger('change');
+                $('#Emp_IdSelect').prop('disabled', true).trigger('change');
+                document.getElementById("LTI_Hrs").disabled = true;
+
+                document.getElementById("AccidentTypeSelect").style.background = "#efefe6";
+                document.getElementById("Emp_IdSelect").style.background = "#efefe6";
+                document.getElementById("LTI_Hrs").style.background = "#efefe6";
+
+                $("#AccidentTypeSelect-message").hide();
+                $("#Emp_IdSelect-message").hide();
+                $("#LTI_Hrs-message").hide();
+
+                $("#AccidentTypeSelect").val('').trigger('change');
+                $("#Emp_IdSelect").val('').trigger('change');
+                document.getElementById("LTI_Hrs").value = "";
+            }
+        }
+
+       
+
+
+        function InjuriesSelect() {
+
+
+               // $('#Injuries').prop('disabled', true).trigger('change');
+               // document.getElementById("Injuries").style.background = "#efefe6";
+               // $('#Injuries').val('').trigger('change');
+
+                $('#AccidentTypeSelect').prop('disabled', true).trigger('change');
+                $('#Emp_IdSelect').prop('disabled', true).trigger('change');
+                document.getElementById("LTI_Hrs").disabled = true;
+
+                document.getElementById("AccidentTypeSelect").style.background = "#efefe6";
+                document.getElementById("Emp_IdSelect").style.background = "#efefe6";
+                document.getElementById("LTI_Hrs").style.background = "#efefe6";
+
+                $("#AccidentTypeSelect-message").hide();
+                $("#Emp_IdSelect-message").hide();
+                $("#LTI_Hrs-message").hide();
+
+                $("#AccidentTypeSelect").val('').trigger('change');
+                $("#Emp_IdSelect").val('').trigger('change');
+                document.getElementById("LTI_Hrs").value = "";
+
+            
+        }
+        function Validation1() {
+            var validflg = true;
+            var ssnMessage = "";
+
+            if (document.getElementById("incident_action").value == "") {
+                ssnMessage = $('#incident_action-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#incident_action-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("resp_pers").value == "") {
+                ssnMessage = $('#resp_pers-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#resp_pers-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("target_date").value == "") {
+                ssnMessage = $('#target_date-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#target_date-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("incident_status").value == "") {
+                ssnMessage = $('#incident_status-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#incident_status-message');
+                ssnMessage.hide();
+            }
+            //if (document.getElementById("contractor").value == "") {
+            //    ssnMessage = $('#contractor-message');
+            //    ssnMessage.show();
+            //    validflg = false;
+            //}
+            //else {
+            //    ssnMessage = $('#contractor-message');
+            //    ssnMessage.hide();
+            //}
+
+            return validflg;
+        }
+        function AddAction() {
+
+            if (Validation1() == true) {
+
+                var cnt = document.getElementById("itemcnts").value;
+
+                document.getElementById("itemcnts").value = cnt;
+                // Find a <table> element with id="myTable":
+                var table = document.getElementById("team-list1");
+
+                // Create an empty <tr> element and add it to the 1st position of the table:
+                var row = table.insertRow();
+
+
+                // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                var cell0 = row.insertCell(0);
+                var cell1 = row.insertCell(1);
+                var cell2 = row.insertCell(2);
+                var cell3 = row.insertCell(3);
+                var cell4 = row.insertCell(4);
+
+                var cell5 = row.insertCell(5);
+                var cell6 = row.insertCell(6);
+
+
+
+                var incident_action = $('#incident_action').val();
+                var target_date = $('#target_date').val();
+                var contractor = $('#contractor').val();
+
+                var resp_pers = $('#resp_pers').val();
+                var resp_pers_val = document.getElementById("resp_pers");
+                var resp_pers_text = resp_pers_val.options[resp_pers_val.selectedIndex].text;
+
+                var incident_status = $('#incident_status').val();
+                var incident_status_val = document.getElementById("incident_status");
+                var incident_status_text = incident_status_val.options[incident_status_val.selectedIndex].text;
+
+                var action_report = $('#action_report').val();
+
+                var uploadServerPath = "";
+                if (action_report != "") {
+                    uploadServerPath = UploadDocument(cnt);
+                }
+
+
+                cell0.innerHTML = " <img src='@Url.Content("~/images/cancel.png")' onclick='deleteRow(this)' style='cursor:pointer; padding-right: 5px;'/>";
+                cell1.innerHTML = "<textarea maxlength='2000' placeholder='Textarea' style='overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;' rows='4' cols='4' class='form-control elastic maxlength-badge-position' id='incident_action " + cnt + "' name='incident_action " + cnt + "' value='" + incident_action + "'/>" + incident_action + "</textarea>";
+                cell2.innerHTML = "<select class='form-control select-fixed-multiple'  id='resp_pers " + cnt + "' name='resp_pers " + cnt + "' style='width:10em'><option value='" + resp_pers + "' selected>" + resp_pers_text + "</option>@if (ViewBag.EmpList != null)
+                {
+                    foreach (var item in ViewBag.EmpList)
+                    { <option value='@item.Value'>@item.Text</option> }
+                    }</select>";
+                cell3.innerHTML = "<input type='text' class='form-control' id='target_date " + cnt + "' name='target_date " + cnt + "' value='" + target_date + "' style='width:8em'>";
+                cell4.innerHTML = "<select class='form-control select-fixed-multiple'  id='incident_status " + cnt + "' name='incident_status " + cnt + "' style='width:10em'><option value='" + incident_status + "' selected>" + incident_status_text + "</option>@if (ViewBag.Status != null)
+                {
+                    foreach (var item in ViewBag.Status)
+                    { <option value='@item.Value'>@item.Text</option> }
+                    }</select>";
+
+                cell5.innerHTML = "<input type='text' class='form-control' id='contractor " + cnt + "' name='contractor " + cnt + "' value='" + contractor + "'>";
+                cell6.innerHTML = "<input type='hidden' id='action_report " + cnt + "' name='action_report " + cnt + "' value='" + uploadServerPath + "' >" + action_report;
+
+                cnt++;
+                document.getElementById("itemcnts").value = cnt;
+
+                document.getElementById("hidden card1").classList.remove(hideClass);
+                document.getElementById("hidden card1").classList.add(showClass);
+
+                document.getElementById("incident_action").value = "";
+                document.getElementById("target_date").value = "";
+                document.getElementById("contractor").value = "";
+                document.getElementById("action_report").value = "";
+                $("#resp_pers").val('').trigger('change');
+                $("#incident_status").val('').trigger('change');
+
+
+                ssnMessage = $('#incident_action-message');
+                ssnMessage.hide();
+                ssnMessage = $('#target_date-message');
+                ssnMessage.hide();
+                //ssnMessage = $('#contractor-message');
+                //ssnMessage.hide();
+                ssnMessage = $('#resp_pers-message');
+                ssnMessage.hide();
+                ssnMessage = $('#incident_status-message');
+                ssnMessage.hide();
+
+
+            }
+        }
+        function UploadDocument(ind) {
+            var action_report = ($("#action_report")).files; //$('#testfile').file;
+            var formData = new FormData();
+            var totalFiles = document.getElementById("action_report").files.length;
+            for (var i = 0; i < totalFiles; i++) {
+                var file = document.getElementById("action_report").files[i];
+                formData.append("action_report", file);
+            }
+            jQuery.ajax({
+                url: '@Url.Action("UploadDocument", "IncidentReport")',
+                type: 'POST',
+                contentType: false,
+                processData: false,
+                data: formData,
+                success: function (result) {
+                    document.getElementById("action_report " + ind).value = result;
+                    uploadServerPath = result;
+                    //jAlert(result);
+                    return result;
+                }
+            });
+        }
+        function FileFormatValidation(file) {
+            var Witness_StmtDoc = ($("#Witness_StmtDoc")).files; //$('#testfile').file;
+            var formData = new FormData();
+            var totalFiles = document.getElementById("Witness_StmtDoc").files.length;
+            for (var i = 0; i < totalFiles; i++) {
+                var file = document.getElementById("Witness_StmtDoc").files[i];
+                formData.append("Witness_StmtDoc", file);
+            }
+            jQuery.ajax({
+                url: '@Url.Action("UploadDocument", "IncidentReport")',
+                type: 'POST',
+                contentType: false,
+                processData: false,
+                data: formData,
+                success: function (result) {
+                   
+                    return result;
+                }
+            });
+        }
+    </script>
+}
+
+

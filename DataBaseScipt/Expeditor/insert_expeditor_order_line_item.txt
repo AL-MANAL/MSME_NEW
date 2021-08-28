@@ -1,0 +1,77 @@
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `insert_expeditor_order_line_item`(
+	IN pid int,
+	IN pBatchId int,
+	IN pCompany varchar(200),
+	IN pDivision varchar(200),
+	IN pArea varchar(200),
+	IN pDepartment varchar(200),
+	IN pSalesmanCode varchar(200),
+	IN pSalesmanName varchar(200),
+	IN pQuotationNo varchar(200),
+	IN pQuotationDate varchar(200),
+	IN pCustomerReferenceDate varchar(200),
+	IN pCustomerPurchaseorder varchar(200),
+	IN pKanooCustomerPOInternalId varchar(200),
+	IN pCustomerMaterialCode varchar(200),
+	IN pLineItemDescription varchar(200),
+	IN pQuantity varchar(200),
+	IN pUnit varchar(200),
+	IN pExpectedDeliveryDate varchar(200),
+	IN pKanooAgreedDeliveryDate varchar(200),
+	IN pSupplierPONo varchar(200),
+	IN pSupplierPODate varchar(200),
+	IN pMaterialCode varchar(200),
+	IN pMaterialDetail varchar(200),
+	IN pSupplierQty varchar(200),
+	IN pSupplierUnit varchar(200),
+	IN pShipmentMode varchar(200),
+	IN pExpectedReceivingDate varchar(200),
+	IN pAdvancePaymentStatus varchar(200),
+	IN pAdvancePaymentDoneOn varchar(200),
+	IN pCreatedBy int,
+	IN pIsProcessed bit
+)
+BEGIN
+	if(exists(select 0 from t_expeditor_order_uploads where KanooCustomerPOInternalId = pKanooCustomerPOInternalId and CustomerMaterialCode = pCustomerMaterialCode)) then
+    /*if(exists(select 0 from t_expeditor_order_uploads where CustomerPurchaseorder = pCustomerPurchaseorder and CustomerMaterialCode = pCustomerMaterialCode)) then*/
+
+		update t_expeditor_order_uploads set 
+        BatchId = BatchId+1,
+        Company = PCompany,
+        Division = pDivision,
+        Area = pArea,
+        Department = pDepartment, 
+        SalesmanCode = pSalesmanCode, 
+        SalesmanName = pSalesmanName,
+        QuotationNo = pQuotationNo, 
+        QuotationDate = pQuotationDate,
+        CustomerReferenceDate = pCustomerReferenceDate,
+        LineItemDescription = pLineItemDescription,
+        Quantity = pQuantity,
+        Unit = pUnit,
+        ExpectedDeliveryDate = pExpectedDeliveryDate,
+        /*ExpectedDeliveryDate = pExpectedDeliveryDate,*/
+        SupplierPONo = pSupplierPONo,
+        SupplierPODate = pSupplierPODate,
+        MaterialCode = pMaterialCode,
+        MaterialDetail = pMaterialDetail,
+        SupplierQty = pSupplierQty,
+        SupplierUnit = pSupplierUnit,
+        ShipmentMode = pShipmentMode,
+        ExpectedReceivingDate = pExpectedReceivingDate,
+        AdvancePaymentStatus = pAdvancePaymentStatus,
+        AdvancePaymentDoneOn = pAdvancePaymentDoneOn,
+        IsProcessed =pIsProcessed,
+        CustomerPurchaseorder = pCustomerPurchaseorder,
+        KanooAgreedDeliveryDate = pKanooAgreedDeliveryDate
+        where KanooCustomerPOInternalId = pKanooCustomerPOInternalId and CustomerMaterialCode = pCustomerMaterialCode;
+    	
+    else
+		
+        insert into t_expeditor_order_uploads(BatchId, Company, Division, Area, Department, SalesmanCode, SalesmanName, QuotationNo, QuotationDate, CustomerReferenceDate, CustomerPurchaseorder, KanooCustomerPOInternalId, CustomerMaterialCode, LineItemDescription, Quantity, Unit, ExpectedDeliveryDate, KanooAgreedDeliveryDate, SupplierPONo, SupplierPODate, MaterialCode, MaterialDetail, SupplierQty, SupplierUnit, ShipmentMode, ExpectedReceivingDate, AdvancePaymentStatus, AdvancePaymentDoneOn, CreatedBy, CreatedDate, IsProcessed)
+		select pBatchId, pCompany, pDivision, pArea, pDepartment, pSalesmanCode, pSalesmanName, pQuotationNo, pQuotationDate, pCustomerReferenceDate, pCustomerPurchaseorder, pKanooCustomerPOInternalId, pCustomerMaterialCode, pLineItemDescription, pQuantity, pUnit, pExpectedDeliveryDate, pKanooAgreedDeliveryDate, pSupplierPONo, pSupplierPODate, pMaterialCode, pMaterialDetail, pSupplierQty, pSupplierUnit, pShipmentMode, pExpectedReceivingDate, pAdvancePaymentStatus, pAdvancePaymentDoneOn, pCreatedBy, curdate(), 0;
+	
+    End If;
+END$$
+DELIMITER ;

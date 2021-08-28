@@ -1,0 +1,715 @@
+﻿@model ISOStd.Models.GenerateInspectionChecklistModels
+
+@{
+    ViewBag.Title = "GenerateChecklist";
+    System.Data.DataSet dsrating = new System.Data.DataSet();
+
+    if (ViewBag.InspectionRating != null)
+    {
+        dsrating = ViewBag.InspectionRating;
+    }
+    var z = ""; var QId = 0; var m = 0; var n = 0;
+}
+
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("InspectionList", "Inspection", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Audit Checklists</span>
+                    </a>
+                    <span class="breadcrumb-item active"> Perform Inspection</span>
+                </div>
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            <div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+                    @using (Html.BeginForm("GenerateInspectionChecklistReport", "Inspection", FormMethod.Post, new { id = "form2", name = "form2" }))
+                    {
+                        @Html.AntiForgeryToken()
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <input type="hidden" id="Category" name="Category" value="@Model.Category" />
+                        <input type="hidden" id="branchs" name="branchs" value="@Model.branch" />
+                        <button type="submit" class="dropdown-item">
+                            <i class="icon-printer2"></i> Report
+                        </button>
+                    </div>
+                    }
+                    @*<div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>*@
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@using (Html.BeginForm("GenerateInspectionChecklist", "Inspection", FormMethod.Post,
+                         new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <input type="hidden" id="branchs" name="branchs" value="@Model.branch" />
+
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Perform Inspection</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+
+                <table class="table table-lg">
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.Category)
+                        </td>
+                        <td class="col">
+                            @* @Html.EditorFor(model => model.Category, new { @disabled="disabled"})*@
+                            <input class="form-control" type="text" id="Category" name="Category" value="@Model.Category" readonly />
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.Inspection_date)<text style="color:red;">*</text>
+                        </td>
+                        <td class="col">
+                            <input class="form-control" type="date" id="Inspection_date" name="Inspection_date" required />
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.branch)
+                        </td>
+                        <td class="col">
+                            <input class="form-control" type="text" id="branch" name="branch" value="@ViewBag.sBranch" readonly />
+                            @*<select class="form-control select-fixed-multiple" @*multiple="multiple" readonly style="background-color:lightgrey" data-fouc id="branch" name="branch" @*onchange="GetDeptList()">
+                                @if (ViewBag.Branch != null)
+                                {
+                                    foreach (var data in ViewBag.Branch)
+                                    {
+                                        if (Array.IndexOf(Model.branch.ToString().Split(','), data.Value) >= 0)
+                                        {
+                                            <option value='@data.Value' selected>@data.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@data.Value'>@data.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>*@
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.Department)<text style="color:red;">*</text>
+                        </td>
+                        <td class="col">
+                            <select class="form-control select-fixed-multiple" data-fouc id="Department" name="Department" multiple="multiple" required>
+                                @if (ViewBag.Department != null)
+                                {
+                                    foreach (var item in ViewBag.Department)
+                                    {
+                                        if (Array.IndexOf(Model.Department.ToString().Split(','), item.Value) >= 0)
+                                        {
+                                            <option value='@item.Value' selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>                           
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.Inspection_by)<text style="color:red;">*</text>
+                        </td>
+                        <td class="col">
+                            <select class="form-control select-search select2-hidden-accessible" data-fouc id="Inspection_by" name="Inspection_by" required>
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.EmpLists != null)
+                                {
+                                    foreach (var item in ViewBag.EmpLists)
+                                    {
+                                        <option value='@item.Value'> @item.Text</option>
+                                    }
+                                }
+                            </select>
+                        </td>
+
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.Location)
+                        </td>
+                        <td class="col">
+                            <select class="select-fixed-single" data-fouc id="Location" name="Location" multiple="multiple">
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.Location != null)
+                                {
+                                    foreach (var item in ViewBag.Location)
+                                    {
+                                        if (Array.IndexOf(Model.Location.ToString().Split(','), item.Value) >= 0)
+                                        {
+                                            <option value='@item.Value' selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                        </td>
+                    </tr>
+                    <tr class="row">
+
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.Project)
+                        </td>
+                        <td class="col">
+
+                            @Html.EditorFor(model => model.Project, new { htmlAttributes = new { @class = "form-control" } })
+
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+
+                            @Html.LabelFor(model => model.TagNo)
+
+                        </td>
+                        <td class="col">
+
+                            @Html.EditorFor(model => model.TagNo, new { htmlAttributes = new { @class = "form-control" } })
+
+                        </td>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+
+                            @Html.LabelFor(model => model.Comment)
+
+                        </td>
+                        <td class="col">
+
+                            @Html.TextAreaFor(model => model.Comment, new { @required = "required", @maxlength = "2000", @placeholder = "Textarea", @style = "overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;", @rows = "4", @cols = "4", @class = "form-control elastic maxlength-badge-position" })
+
+                        </td>
+                    </tr>
+                </table>
+                <div class="card">
+                    <div class="card-body table-responsive">
+                        @*<div class="table-responsive">*@
+                            @*<table class="table table-bordered table-striped table-hover datatable-responsive" id="table1">*@
+                            <table class="table table-bordered table-striped table-hover datatable-responsive">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            Sr. No.
+                                        </th>
+                                        <th>
+                                            Items
+                                        </th>
+                                        @if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                                        {
+                                            for (int item = 0; item < dsrating.Tables[0].Rows.Count; item++)
+                                            {
+                                                <th>
+                                                    @dsrating.Tables[0].Rows[item]["inspection_rating"].ToString()
+                                                </th>
+                                            }
+                                        }
+                                        <th>Actions</th>
+                                        <th>Action By</th>
+                                        <th>
+                                            Upload
+                                        </th>
+
+                                    </tr>
+
+                                </thead>
+                                <tbody>
+                                    @if (ViewBag.InspectionQuestions != null)
+                                    {
+                                        int iSrno = 0, itmctn = 0;
+                                        foreach (var item in ViewBag.InspectionQuestions)
+                                        {
+
+                                            iSrno = iSrno + 1;
+                                            itmctn = itmctn + 1;
+                                            n = 0;
+                                            foreach (var data in ViewBag.SectionQuestions)
+                                            {
+
+                                                if (n >= m || QId == 0)
+                                                {
+                                                    if (z == "")
+                                                    {
+                                                        <tr>
+                                                            <td colspan="2">@data.Text</td>
+                                                            @*<td class="d-none"></td>*@
+                                                            <td class="d-none"></td>
+                                                            <td class="d-none"></td>
+                                                            <td class="d-none"></td>
+                                                            <td class="d-none"></td>
+                                                            <td class="d-none"></td>
+                                                            <td class="d-none"></td>
+
+
+                                                        </tr>
+
+                                                        z = data.Text;
+                                                        break;
+                                                    }
+                                                    else if (Convert.ToInt32(data.Value) != QId && z != data.Text)
+                                                    {
+                                                        <tr>
+                                                              <td colspan="2">@data.Text</td>
+                                                            @*<td class="d-none"></td>*@                                                          
+                                                            <td class="d-none"></td>
+                                                            <td class="d-none"></td>
+                                                            <td class="d-none"></td>
+                                                            <td class="d-none"></td>
+                                                            <td class="d-none"></td>
+                                                            <td class="d-none"></td>
+
+                                                        </tr>
+                                                        z = data.Text;
+                                                        break;
+                                                    }
+                                                    else if (Convert.ToInt32(data.Value) != QId && z == data.Text)
+                                                    {
+                                                        break;
+                                                    }
+                                                }
+                                                n++;
+                                            }
+
+                                                        <tr>
+                                                            <td>
+                                                                @iSrno
+                                                            </td>
+                                                            <td>
+                                                                @item.Text
+                                                                <input type="hidden" id="InspectionQuestions @item.Value" name="InspectionQuestions @item.Value" value="@item.Value" />
+                                                            </td>
+                                                            @if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                                                            {
+
+                                                                for (int rating = 0; rating < dsrating.Tables[0].Rows.Count; rating++)
+                                                                {
+                                                                    if (dsrating.Tables[0].Rows[rating]["inspection_rating"].ToString().ToLower() == "yes" || @dsrating.Tables[0].Rows[rating]["inspection_rating"].ToString().ToLower() == "good")
+                                                                    {
+                                                                        <td>
+                                                                            <input type="radio" id="id_inspection_rating @item.Value"
+                                                                                   name="id_inspection_rating @item.Value"
+                                                                                   class="id_inspection_rating @item.Value" value="@dsrating.Tables[0].Rows[rating]["id_inspection_rating"].ToString()" required checked />
+                                                                        </td>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <td>
+                                                                            <input type="radio" id="id_inspection_rating @item.Value"
+                                                                                   name="id_inspection_rating @item.Value"
+                                                                                   class="id_inspection_rating @item.Value" value="@dsrating.Tables[0].Rows[rating]["id_inspection_rating"].ToString()" required />
+                                                                        </td>
+                                                                    }
+                                                                }
+                                                            }
+                                                            <td>
+                                                                @*<div class="editor-field">
+               <input class="form-control" id="Action @itmctn" name="Action @itmctn"  />
+            </div>*@
+                                                                <input class="form-control" type="text" id="Action @itmctn" name="Action @itmctn" />
+                                                            </td>
+                                                            <td>
+                                                                @*<div class="editor-field">*@
+                                                                <select class="select-fixed-single" data-fouc id="ActionBy @itmctn" name="ActionBy @itmctn">
+                                                                    <option value='' hidden>Select</option>
+                                                                    @if (ViewBag.EmpLists != null)
+                                                                    {
+                                                                        foreach (var data in ViewBag.EmpLists)
+                                                                        {
+                                                                            <option value='@data.Value'>@data.Text</option>
+                                                                        }
+                                                                    }
+                                                                </select>
+                                                                @*</div>*@
+                                                            </td>
+                                                            <td>
+                                                                <input class="form-control" type="file" name="Upload @itmctn" id="Upload @itmctn" onchange="FileFormatValidation(this,@itmctn)" accept=".pdf" />
+                                                            </td>
+                                                        </tr>
+
+                                            QId = Convert.ToInt32(item.Value);
+                                            m++;
+                                        }
+                                        <div>
+                                            <input type="hidden" id="itmctn" name="itmctn" value="@itmctn" />
+                                        </div>
+
+                                    }
+                                </tbody>
+                            </table>
+                        @*</div>*@
+                    </div>
+                </div>
+                <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+
+                    @Html.ActionLink("Back to List", "InspectionList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+
+                    <button class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" type="submit" value="Save"><i class="icon-checkmark3 mr-2"></i> Save</button>
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </div>
+    @*<div style="width: 100%; text-align: center;">
+            @Html.ActionLink("Back to List", "InspectionList", null, new { @class = "ActionLink", onclick = "HyperLinkProgressIconFunction()" })
+            <input type="submit" value="Save" onclick="ProgressIconFunction('#form1')" />
+
+        </div>*@
+    <div id="dvItems" style="overflow: auto; display: none;">
+        <table id="team-list" style="width: 100%">
+            <tr>
+                <th>Evidence</th>
+            </tr>
+        </table>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        var table1 = function () {
+            //
+            // Setup module components
+            //
+
+            // Basic Datatable examples
+            var _componentDatatableBasic = function () {
+                if (!$().DataTable) {
+                    console.warn('Warning - datatables.min.js is not loaded.');
+                    return;
+                }
+
+                //Setting datatable defaults
+                $.extend($.fn.dataTable.defaults, {
+                    autoWidth: false,
+                    responsive: true,
+                    //columnDefs: [{
+                    //    orderable: false,
+                    //    width: 100,
+                    //    targets: [2, 3]
+                    //}],
+
+                    colReorder: false,
+                    dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                    //dom: 'lBfrtip',
+                    language: {
+                        search: '<span>Filter:</span> _INPUT_',
+                        searchPlaceholder: 'Type to filter...',
+                        lengthMenu: '<span>Show:</span> _MENU_',
+                        paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                    }
+                });
+
+
+                var table1 = $('#table1').DataTable({
+
+                    lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                    colReorder: {
+                        fixedColumnsLeft: 1
+                    },
+                   // stateSave: true,
+                    scrollX: true,
+                    scrollY: '350px',
+                    scrollCollapse: true,
+
+
+                    keys: {
+                        className: 'focus focus-success'
+                    },
+
+                    buttons: {
+                        buttons: [
+                            {
+                                extend: 'colvis',
+                                text: '<i class="icon-three-bars"></i>',
+                                className: 'btn bg-blue btn-icon dropdown-toggle'
+                            }
+                        ]
+                    }
+
+
+
+
+                });
+                // Adjust columns on window resize
+                setTimeout(function () {
+                    $(window).on('resize', function () {
+                        table1.columns.adjust();
+                    });
+                }, 100);
+
+
+                //Redraw table on click toggle. -------table.columns.adjust doesn't work properly upon calling after toggle (width increase/decrease = redraw table.).
+                $('.sidebar-control').on('click', function () {
+
+                    setTimeout(function () {
+                        //alert("gii");
+
+                        table.columns.adjust().draw();
+                        $("#table1").resize();
+                    }, 100);
+
+                });
+                //}
+
+                $('#table1').on('page.dt', function () {
+                    //table.draw();
+                    //alert("zzz1");
+                    $("#table1").resize();
+
+                });
+
+                $('#table1').on('column-visibility.dt', function () {
+                    //table.draw();
+                    //alert("zzz2");
+                    $("#table1").resize();
+
+                });
+
+                $('#table1').on('order.dt', function () {
+                    //table.draw();
+                    //alert("zzz3");
+                    $("#table1").resize();
+
+                });
+
+
+                $('#table1').on('responsive-display.dt', function () {
+                    //table.draw();
+                    //alert("zzz4");
+                    $("#table1").resize();
+
+                });
+
+
+                $('#table1').on('responsive-resize.dt', function () {
+                    //table.draw();
+                    //alert("zzz4");
+                    $("#table1").resize();
+
+                });
+
+
+                //.on('order.dt', function () {
+                //    table.columns.adjust().draw();
+                //    $("#qhse").resize(); })
+                //.on('search.dt', function () {
+                //    table.columns.adjust().draw();
+                //    $("#qhse").resize(); })
+
+                //.on('column-visibility.dt', function () {
+                //    table.columns.adjust().draw();
+                //    $("#qhse").resize();
+                //})
+
+            };
+
+
+            // Select2 for length menu styling
+            var _componentSelect2 = function () {
+                if (!$().select2) {
+                    console.warn('Warning - select2.min.js is not loaded.');
+                    return;
+                }
+
+                // Initialize
+                $('.dataTables_length select').select2({
+                    minimumResultsForSearch: Infinity,
+                    dropdownAutoWidth: true,
+                    width: 'auto'
+                });
+            };
+
+
+            //
+            // Return objects assigned to module
+            //
+
+            return {
+                init: function () {
+                    _componentDatatableBasic();
+                    _componentSelect2();
+                }
+            }
+        }();
+
+
+        // Initialize module
+        // ------------------------------
+
+        document.addEventListener('DOMContentLoaded', function () {
+            table1.init();
+        });
+        // when the submit is clicked
+        $("#form1 button[type='submit']").on("click", function (event) {
+
+            // traverse all the required elements looking for
+            var elements = document.getElementsByClassName("collapse");
+
+
+            for (var i = 0; i < elements.length; i++) {
+
+
+
+                elements[i].className += ' show';
+            }
+            ProgressIconFunction('#form1');
+        });
+
+         function FileFormatValidation(file,cnt) {
+
+             var ext = file.value.split(".").pop().toLowerCase();
+             if ($.inArray(ext, ["doc", "pdf", "docx", "jpg", "jpeg", "gif"]) == -1) {
+                 file.value = "";
+                 bootbox.alert({
+                     title: 'File type',
+                     message: 'Invalid file format, please upload only pdf format.'
+                 });
+             }
+             else {
+
+                 AddEvidence(cnt)
+             }
+
+         }
+             function AddEvidence(cnt) {
+
+                 var table = document.getElementById("team-list");
+                 var row = table.insertRow();
+                 var cell0 = row.insertCell(0);
+                 var n = "Upload" + " " + cnt;
+                 var Upload = document.getElementById(n).value;
+
+                 evidence_uploadServerPath = UploadDocument(cnt);
+                 cell0.innerHTML = "<input type='hidden' id='Upload" + cnt + "' name='Upload" + cnt + "' value='" + evidence_uploadServerPath + "'>" + Upload;
+
+             }
+
+             function UploadDocument(ind) {
+
+
+                 var Upload = ($("#Upload" + " " + ind)).files; //$('#testfile').file;
+
+                 var formData = new FormData();
+
+                 var totalFiles = document.getElementById("Upload" + " " + ind).files.length;
+
+                 for (var i = 0; i < totalFiles; i++) {
+                     var file = document.getElementById("Upload" + " " + ind).files[i];
+                     formData.append("Upload", file);
+                 }
+                 jQuery.ajax({
+                     url: '@Url.Action("UploadDocument", "Inspection")',
+                     type: 'POST',
+                     contentType: false,
+                     processData: false,
+                     data: formData,
+                     success: function (result) {
+
+                         //document.getElementById("evidence_upload" + " " + ind).value = result;
+                         document.getElementById("Upload" + ind).value = result;
+                         evidence_uploadServerPath = result;
+                         return result;
+                     }
+                 });
+        }
+
+        function GetDeptList() {
+            var selectedValues = [];
+            $("#branch :selected").each(function () {
+                selectedValues.push($(this).val());
+            });  
+                jQuery.ajax({
+                    url: '@Url.Action("FunGetAllDeptList", "EmployeeDetails")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'branch': selectedValues },
+                    success: function (result) {
+                        GetLocList(selectedValues);
+                        $("#Department").children('option').remove();
+                        $("#Department").trigger('change');
+                        if (result != null && result.length > 0) {
+                            $.each(result, function (index, item) {
+                                $("#Department").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                                $("#Department").trigger('change');
+                            });
+                            return;
+                        }
+                        //else {
+                        //    bootbox.alert({
+                        //        title: 'Department List',
+                        //        message: 'No Department exists.'
+                        //    });
+                        //}
+                    }
+                });          
+        }
+
+
+        function GetLocList(selectedValues) {                   
+            jQuery.ajax({
+                url: '@Url.Action("FunGetAllLocList", "EmployeeDetails")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'branch': selectedValues },
+                success: function (result) {
+                    $("#Location").children('option').remove();
+                    $("#Location").trigger('change');
+                    if (result != null && result.length > 0) {
+                        $.each(result, function (index, item) {
+                            $("#Location").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                            $("#Location").trigger('change');
+                        });
+                        return;
+                    }
+                    //else {
+                    //    bootbox.alert({
+                    //        title: 'Location List',
+                    //        message: 'No Location exists.'
+                    //    });
+                    //}
+                }
+            });       
+        }
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

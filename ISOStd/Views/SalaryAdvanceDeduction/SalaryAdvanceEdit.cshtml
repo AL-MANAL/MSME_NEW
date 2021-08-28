@@ -1,0 +1,139 @@
+﻿@model ISOStd.Models.SalaryAdvanceDeductionModels
+
+@{
+    ViewBag.Title = "SalaryAdvanceEdit";
+}
+
+
+<div class="groupedassets margin10">
+    <span class="groupedassetshead margin10 onestphdcolor">Update Salary Advance </span>
+</div>
+ <div id="divmsg">
+        @if (TempData["alertdata"] != null)
+        {
+            <span class="errMsg" style="color: red;">@TempData["alertdata"]</span>
+        }
+        @if (TempData["Successdata"] != null)
+        {
+            <span class="errMsg" style="color: green;">@TempData["Successdata"]</span>
+        }
+    </div>
+
+@using (Html.BeginForm()) {
+    @Html.ValidationSummary(true)
+    @Html.AntiForgeryToken()
+
+    <fieldset>
+        <legend>SalaryAdvanceDeductionModels</legend>
+
+        <div id="content">
+            <table id="tabcontent">
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.EmpId)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            @Model.EmpId
+                            <input type="hidden" id="EmpId" name="EmpId" value="@ViewBag.EmpId" />
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Adv_Amt)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.Adv_Amt)
+                            @Html.ValidationMessageFor(model => model.Adv_Amt)
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Num_Installment)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <select id="Num_Installment" name="Num_Installment">
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.Installments != null)
+                                {
+                                    for (int item=1; item < ViewBag.Installments; item++ )
+                                    {
+                                        if (item == @Model.Num_Installment)
+                                        {
+                                            <option value='@item' selected>@item</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@item'>@item</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                            @Html.ValidationMessageFor(model => model.Num_Installment)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Details)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.Details)
+                            @Html.ValidationMessageFor(model => model.Details)
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>
+
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.TransDate)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <input type="text" id="TransDate" name="TransDate" value="@Model.TransDate.ToString("dd/MM/yyyy")" required readonly />
+                            @Html.ValidationMessageFor(model => model.TransDate)
+                        </div>
+
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <br />
+        <div style="width: 100%; text-align: center;">
+            @Html.ActionLink("Back to List", "SalaryAdvanceList", new { EmpId= @ViewBag.EmpId})
+            <input type="submit" value="Update" />
+        </div>
+    </fieldset>
+}
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script>
+        $(function () {
+
+            $('#TransDate').datepicker({
+                dateFormat: "dd/mm/yy",
+                buttonImageOnly: true,
+                buttonImage: '../Images/Calender.png',
+                showOn: 'both',
+                changeMonth: true,
+                changeYear: true
+            });
+        });
+    </script>
+}

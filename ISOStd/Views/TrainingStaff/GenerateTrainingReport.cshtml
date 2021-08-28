@@ -1,0 +1,526 @@
+﻿@model ISOStd.Models.TrainingStaffModels
+@{
+    ViewBag.Title = "GenerateTrainingReport";
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+    ISOStd.Models.TrainingStaffModelsList objList = new ISOStd.Models.TrainingStaffModelsList();
+
+    if (ViewBag.TrainDetails != null)
+    {
+        objList = ViewBag.TrainDetails;
+    }
+}
+
+@section featured {
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("TrainingStaffList", "TrainingStaff", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Staff Training</span>
+                    </a>
+                    <span class="breadcrumb-item active">Generate Staff Training Report</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            <div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+                    @using (Html.BeginForm("GenerateTrainingReportPDF", "TrainingStaff", FormMethod.Post, new { id = "form", name = "form" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <div class="breadcrumb-elements-item dropdown p-0">
+                            <input type="hidden" id="id_training" name="id_training" value="@Model.id_training" />
+
+                            <button type="submit" class="dropdown-item">
+                                <i class="icon-printer2"></i> Report
+                            </button>
+
+                        </div>
+                    }
+                    @*<div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>*@
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">
+                Generate Training Report
+            </h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <div class="card-header bg-white header-elements-sm-inline">
+                <div class="header-elements">
+                    @Html.ActionLink("Back to List", "TrainingStaffList", null, new { @class = "btn btn-outline bg-orange text-orange border-orange ml-3", onclick = "HyperLinkProgressIconFunction()" })
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body">
+            <div class="container-fluid">
+                <table class="table table-dark table-bordered table-striped table-hover bg-blue-800">
+                    <thead></thead>
+                    <tbody>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-3">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.employee)
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @Html.DisplayFor(model => model.employee)
+                                </p>
+                            </td>
+
+                            <td class="col-xs-3 col-md-3">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.date_taining)
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @if (Model.date_taining > Convert.ToDateTime("01/01/0001"))
+                                    {
+                                        @Model.date_taining.ToString("dd/MM/yyyy")
+                                    }
+                                </p>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-3">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.dept_head)
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @Html.DisplayFor(model => model.dept_head)
+                                </p>
+                            </td>
+                            <td class="col-xs-3 col-md-3">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    Division
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @Html.DisplayFor(model => model.division)
+                                </p>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-3">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    Department
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @Html.DisplayFor(model => model.dept)
+                                </p>
+                            </td>
+                            <td class="col-xs-3 col-md-3">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    Designation
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @Html.DisplayFor(model => model.designation)
+                                </p>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            @*<td class="col-xs-3 col-md-3">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.comments)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <p class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.comments)
+                        </p>
+                    </td>*@
+                            <td class="col-xs-3 col-md-3">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.comment_head)
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @Html.DisplayFor(model => model.comment_head)
+                                </p>
+                            </td>
+                        </tr>
+
+                </table>
+
+                @if (objList.TrainList != null && objList.TrainList.Count > 0)
+                {
+                    <h2 class="bg-dark pl-sm-2"> Training Plan Details</h2>
+                    <div class="table-responsive">
+                        <table class="table-sm table-dark table-bordered table-striped table-hover">
+
+                            <thead>
+                                <tr class="bg-brown">
+                                    <th>Training Type</th>
+                                    <th>Scheduled Date</th>
+                                    <th>Justification</th>
+                                    <th>Acceptance</th>
+                                    <th>Suggestion</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                @for (int index = 0; index < objList.TrainList.Count; index++)
+                                {
+                                    <tr>
+                                        <td>@Obj.GetDropdownitemById(objList.TrainList[index].training_type)</td>
+                                        <td>
+                                            @if (objList.TrainList[index].scheduled_date > Convert.ToDateTime("01/01/0001"))
+                                            {
+                                                @objList.TrainList[index].scheduled_date.ToString("dd-MM-yyyy")
+                                            }
+                                        </td>
+                                        <td>@objList.TrainList[index].justification</td>
+                                        <td>@objList.TrainList[index].acceptance</td>
+                                        <td>@objList.TrainList[index].suggestion</td>
+                                    </tr>
+                                }
+
+                            </tbody>
+                        </table>
+                    </div>
+                }
+
+                <h2 class="bg-dark pl-sm-2"> Training Completion Details</h2>
+
+
+                @using (Html.BeginForm("GenerateTrainingReport", "TrainingStaff", FormMethod.Post,
+                                     new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary(true)
+                    <input type="hidden" id="id_training" name="id_training" value="@Model.id_training"/>
+                    <table class="table table-lg">
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.DisplayNameFor(model => model.start_date)<text style="color: red;">*</text>
+                            </td>
+                            <td class="col">
+                                @if (Model.start_date != null && Model.start_date > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    <input type="date" class="form-control" id="start_date" name="start_date" value="@Model.start_date.ToString("yyyy-MM-dd")" required onchange="GetFinalDate()" />
+                                }
+                                else
+                                {
+                                    <input type="date" class="form-control" id="start_date" name="start_date" required onchange="GetFinalDate()" />
+                                }
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                @Html.DisplayNameFor(model => model.end_date)
+                            </td>
+                            <td class="col">
+                                @if (Model.end_date != null && Model.end_date > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    <input type="date" class="form-control" id="end_date" name="end_date" value="@Model.end_date.ToString("yyyy-MM-dd")" required onchange="GetFinalDate()" />
+                                }
+                                else
+                                {
+                                    <input type="date" class="form-control" id="end_date" name="end_date" required onchange="GetFinalDate()" />
+                                }
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.DisplayNameFor(model => model.conducted_by)
+                            </td>
+                            <td class="col-xs-6 col-md-4">
+                                <div class="editor-field">
+                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="conducted_by" name="conducted_by">
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.EmpList != null)
+                                        {
+                                            foreach (var item in ViewBag.EmpList)
+                                            {
+                                                if (item.Value == Model.conducted_by)
+                                                {
+                                                    <option value='@item.Value' selected>@item.Text</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                @Html.DisplayNameFor(model => model.effective)
+                            </td>
+                            <td class="col-xs-6 col-md-4">
+                                <div class="editor-field">
+                                    <select class="form-control select-fixed-multiple" data-fouc id="effective" name="effective" onchange="GetEffiectiveDetails()">
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.Effectness != null)
+                                        {
+                                            foreach (var item in ViewBag.Effectness)
+                                            {
+                                                if (item.Value == Model.effective)
+                                                {
+                                                    <option value='@item.Value' selected>@item.Text</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.DisplayNameFor(model => model.details) <text style="color:red;">*</text>
+                            </td>
+                            <td class="col-xs-6 col-md-4">
+                                <textarea class="form-control" id="details" name="details" style="height:20em" required>@Model.details</textarea>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                @Html.DisplayNameFor(model => model.upload)
+                            </td>
+                            <td class="col">
+                                <input type="file" name="upload" id="upload" title="Documents" onchange="FileFormatValidation(this)"
+                                       multiple="multiple" accept=".pdf, .doc, .docx,.xls,.xlsx,.png,.jpeg,.jpg,.image/*" class="bootstrap-uploader" data-fouc />
+
+                                <span class="form-text text-muted"><code>(Hold Ctrl Key in case of multiple files or drag multiple files and drop here)</code></span>
+                                <br />
+                                @if (Model.upload != null && Model.upload != "" && Model.upload.Length > 0)
+                                {
+                                    <h6> <span class="bg-dark py-1 px-2 rounded">Document List</span></h6>
+
+                                    <span class="form-text text-muted">
+                                        <code>
+                                            (Uncheck in case to remove a uploaded file)
+                                        </code>
+                                    </span>
+                                    foreach (var docs in Model.upload.Trim(',').Split(','))
+                                    {
+                                        <div class="form-check">
+                                            <label class="form-check-label">
+                                                <input type="checkbox" id="QCDocsVal" name="QCDocsVal" class="form-check-input-styled QCDocsVal" value="@docs.Trim(',')" checked title="Uncheck in case to remove a uploaded file" data-fouc />
+                                                <input type="hidden" id="QCDocsValselectall" name="QCDocsValselectall" />
+                                                <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" class="text-orange">
+                                                    @System.IO.Path.GetFileName(docs)
+                                                </a>
+                                            </label>
+                                        </div>
+                                    }
+                                }
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.DisplayNameFor(model => model.reason) <text style="color:red;">*</text>
+                            </td>
+                            <td class="col-xs-6 col-md-4">
+                                <textarea class="form-control" id="reason" name="reason" required>@Model.reason</textarea>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                @Html.DisplayNameFor(model => model.recommendation) <text style="color:red;">*</text>
+                            </td>
+                            <td class="col-xs-6 col-md-4">
+                                <textarea class="form-control" id="recommendation" name="recommendation" required>@Model.recommendation</textarea>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.DisplayNameFor(model => model.training_status)
+                            </td>
+                            <td class="col-xs-6 col-md-4">
+                                <div class="editor-field">
+                                    <select class="form-control select-fixed-multiple" data-fouc id="training_status" name="training_status">
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.Status != null)
+                                        {
+                                            foreach (var item in ViewBag.Status)
+                                            {
+                                                if (item.Value == Model.training_status)
+                                                {
+                                                    <option value='@item.Value' selected>@item.Text</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+                                                }
+
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.DisplayNameFor(model => model.traing_required)
+                            </td>
+                            <td class="col-xs-6 col-md-4">
+                                <div class="editor-field">
+                                    <select class="form-control select-fixed-multiple" data-fouc id="traing_required" name="traing_required">
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.YesNo != null)
+                                        {
+                                            foreach (var item in ViewBag.YesNo)
+                                            {
+                                                if (item == Model.traing_required)
+                                                {
+                                                    <option value='@item' selected>@item</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@item'>@item</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </td>
+
+                            <td class="col-xs-3 col-md-2">
+                                @Html.DisplayNameFor(model => model.notify_to) <text style="color:red;">*</text>
+                            </td>
+                            <td class="col-xs-6 col-md-4">
+                                <div class="editor-field">
+                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="notify_to" name="notify_to" required>
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.DeptHead != null)
+                                        {
+                                            foreach (var item in ViewBag.DeptHead)
+                                            {
+                                                if (item.Value == Model.notify_to)
+                                                {
+                                                    <option value='@item.Value' selected>@item.Text</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+                        @Html.ActionLink("Back to List", "TrainingStaffList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+                        <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Generate Report</button>
+                    </div>
+                }
+            </div>
+        </div>       
+    </div>
+
+
+@section Scripts {
+    <script type="text/javascript">
+
+     $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+        });
+
+
+        function GetFinalDate() {
+            var dt1 = document.getElementById("start_date").value;          
+            var dt2 = document.getElementById("end_date").value; 
+            if (new Date(dt2).getTime() < new Date(dt1).getTime()) {
+                bootbox.alert({
+                    title: 'Date',
+                    message: 'End date cannot be before start date.'
+                });
+                document.getElementById("end_date").value = "";
+            }
+        }
+
+        $("#QCDocsVal").click(function () {
+            if ($("#QCDocsVal").prop('checked')) {
+                {
+                    $(this).prop('checked', true);
+                }
+            }
+            else {
+                $(this).prop('checked', false);
+                document.getElementById("QCDocsValselectall").value = "DeleteQC";
+            }
+        });
+
+        function FileFormatValidation(file) {
+            var ext = file.value.split(".").pop().toLowerCase();
+            if ($.inArray(ext, ["doc", "pdf", "docx", "xls", "xlsx", "jpg","jpeg","png"]) == -1) {
+                file.value = "";
+                jAlert("Invalid file format, please upload only doc, pdf, docx, xls, xlsx, png, jpeg, jpg");
+            }
+        }
+
+        function GetEffiectiveDetails() {
+            var seffective = $('#effective option:selected').text();
+            if (seffective.toLowerCase() == "no") {    
+                $('#reason').prop('required', true);               
+            }
+            else {
+                $('#reason').removeAttr('required');
+            }
+        }
+    </script>
+}
+
+

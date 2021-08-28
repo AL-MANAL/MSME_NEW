@@ -1,0 +1,124 @@
+﻿@model ISOStd.Models.SupplierPerpRatingModels
+@{
+    Layout = null;
+    ViewBag.Title = "SuppPerformanceEvalInfo";
+
+    ISOStd.Models.SupplierPerpRatingModelsList objList = new ISOStd.Models.SupplierPerpRatingModelsList();
+
+    if (ViewBag.PerformanceElement != null)
+    {
+        objList = ViewBag.PerformanceElement;
+    }
+    int Weightage = 0;
+    decimal TotalScore = 0;
+}
+<h4 style="text-align:center;border-bottom:1px solid #808080">Supplier Rating Information</h4>
+<p>
+    <label><b>Division:</b></label>@Html.DisplayFor(model => model.branch)
+</p>
+<p>
+    <label><b>Department:</b></label>@Html.DisplayFor(model => model.Department)
+    <label><b>Location:</b></label>@Html.DisplayFor(model => model.Location)
+</p>
+<p>
+    <label><b>Supplier Name:</b></label>@Html.DisplayFor(model => model.supplier_name)
+    <label><b>Evaluation Date:</b></label>
+    @if (Model.evalu_date != null && Model.evalu_date > Convert.ToDateTime("01/01/0001"))
+    {
+        @Model.evalu_date.ToString("dd/MM/yyyy")
+    }
+</p>
+<p>
+    <label><b>Auditor:</b></label>@Html.DisplayFor(model => model.auditor)
+    <label><b>Auditee:</b></label>@Html.DisplayFor(model => model.auditee)
+</p>
+<p>
+    <label><b>Overall Performace:</b></label>@Html.DisplayFor(model => model.overall_perf)
+ </p>
+
+<table style="width: 90%;">
+    <tr>
+        <th style="background-color: #e5eafe; color: #0099ff;">
+            Sr. No.
+        </th>
+        <th style="background-color: #e5eafe; color: #0099ff;">
+            Questions
+        </th>
+        <th style="background-color: #e5eafe; color: #0099ff;">
+            Rating
+        </th>
+        <th style="background-color: #e5eafe; color: #0099ff;">
+            Weightage
+        </th>
+    </tr>
+    @if (ViewBag.PerformanceElement != null)
+    {
+        int iSrno = 0;
+        foreach (var item in objList.PerpList)
+        {
+            iSrno = iSrno + 1;
+            Weightage = Weightage + Convert.ToInt16(item.SQ_Weightage);
+    <tr>
+        <td>
+            @iSrno
+        </td>
+        <td style="width: 500px; min-width: 500px; max-width: 500px;">
+            @item.SQId
+        </td>
+        <td style="width: 100px; min-width: 100px; max-width: 100px;">
+            @item.SQ_OptionsId
+        </td>
+        <td style="width: 100px; min-width: 100px; max-width: 100px;">
+            @item.SQ_Weightage
+        </td>
+    </tr>
+        }
+        {
+            TotalScore = Weightage * 100 / (iSrno * 10);
+        }
+    }
+</table>
+
+<table style="width: 90%;">
+    <tr>
+        <th style="background-color: #e5eafe; color: #0099ff;">
+            Exceptional
+        </th>
+        <th style="background-color: #e5eafe; color: #0099ff;">
+            Satisfactory
+        </th>
+        <th style="background-color: #e5eafe; color: #0099ff;">
+            Unsatisfactory
+        </th>
+        <th style="background-color: #e5eafe; color: #0099ff;">
+            N/A
+        </th>
+        <th style="background-color: #e5eafe; color: #0099ff;">
+            Insufficient info. to rate
+        </th>
+    </tr>
+    <tr>
+        <td>
+            @Model.exceptional
+        </td>
+        <td>
+            @Model.satisfactory
+        </td>
+        <td>
+            @Model.unsatisfactory
+        </td>
+        <td>
+            @Model.na
+        </td>
+        <td>
+            @Model.insufficient
+        </td>
+    </tr>
+
+    <tr>
+        <td>Total Score</td>
+        <td>@TotalScore</td>
+    </tr>
+
+</table>
+

@@ -1,0 +1,190 @@
+﻿@using System.Data
+@using ISOStd.Models;
+@{
+    ViewBag.Title = "AuditChecklistReport";
+    //  clsGlobal objGlobaldata = new clsGlobal();
+    // int iSrno = 0, majorCon = 0, minorCon = 0, observation = 0;
+    ISOStd.Models.GenerateAuditChecklistModels objChecklist = new ISOStd.Models.GenerateAuditChecklistModels();
+    ISOStd.Models.GenerateAuditChecklistModelsList AuditTransList = new ISOStd.Models.GenerateAuditChecklistModelsList();
+    //ISOStd.Models.AuditElementsModels obj = new ISOStd.Models.AuditElementsModels();
+
+    if (ViewBag.ChecklistDetails != null)
+    {
+        objChecklist = ViewBag.ChecklistDetails;
+    }
+
+    //DataSet dsItemList = new DataSet();
+    //if (ViewBag.AuditElement != null)
+    //{
+    //    dsItemList = ViewBag.AuditElement;
+    //}
+
+    //DataSet dsrating = new DataSet();
+    //if (ViewBag.AuditRating != null)
+    //{
+    //    dsrating = ViewBag.AuditRating;
+    //}
+    if (ViewBag.AuditTransList != null)
+    {
+        AuditTransList = ViewBag.AuditTransList;
+    }
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+
+
+    DataSet dsCompany = new DataSet();
+    if (ViewBag.CompanyInfo != null)
+    {
+        dsCompany = ViewBag.CompanyInfo;
+    }
+    Layout = "~/Views/Shared/_PrintLayout.cshtml";
+
+    int iSrno = 0;
+}
+
+@*<h1 class="mb-0 text-center"></h1>*@
+<br />
+@*<fieldset class="border p-2">
+    <legend class="font-weight-semibold text-center font-size-lg">Internal Audit Checklist</legend>*@
+@Html.Partial("_ReportHeader", dsCompany)
+<div style="background-color:white">
+    <table class="table table-lg">
+        <tr class="row">
+            <td colspan="4">
+                <h3>Report Details</h3>
+            </td>
+        </tr>
+        @*<tr>
+            <td>
+                <b>
+                    Checklist Reference
+                </b>
+            </td>
+            <td>
+                @objChecklist.ChecklistRef
+            </td>
+        </tr>*@
+        <tr>
+            <td>
+                <b>
+                    Division
+                </b>
+            </td>
+            <td>
+                @objChecklist.directorate
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                <b>
+                    Department
+                </b>
+            </td>
+            <td>
+                @if (objChecklist.grp_common == "common")
+                {
+                    @objChecklist.grp_common
+                }
+                else
+                {
+                    @objChecklist.grp
+                }
+            </td>
+        
+            @*<td>
+                <b>
+                   Team
+                </b>
+            </td>
+            <td>
+                @if (objChecklist.team_common == "common")
+                {
+                    @objChecklist.team_common
+                }
+                else
+                {
+                    @objChecklist.team
+                }
+            </td>*@
+        </tr>
+        <tr>
+            <td>
+                <b>
+                    Created On
+                </b>
+            </td>
+            <td>
+                @if (objChecklist.created_on != null && objChecklist.created_on > Convert.ToDateTime("01/01/0001"))
+                {
+                    @objChecklist.created_on.ToString("dd/MM/yyyy")
+                }
+            </td>
+            <td>
+                <b>
+                    Ammended On
+                </b>
+            </td>
+            <td>
+                @if (objChecklist.ammended_on != null && objChecklist.ammended_on > Convert.ToDateTime("01/01/0001"))
+                {
+                    @objChecklist.ammended_on.ToString("dd/MM/yyyy")
+                }
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <b>
+                    Prepared By
+                </b>
+            </td>
+            <td>
+                @objChecklist.prepared_by
+            </td>
+            <td>
+                <b>
+                    Notified To
+                </b>
+            </td>
+            <td>
+                @objChecklist.notified_to
+            </td>
+        </tr>
+        <tr>
+            <td colspan="4"></td>
+        </tr>
+    </table>
+</div>
+
+
+@if (ViewBag.AuditTransList != null && AuditTransList != null && AuditTransList.AuditCheckList.Count > 0 )
+{
+    <div id="Items">      
+        <table class="table table-lg">
+            <tr>
+                <th>Sr.No</th>
+                <th>Standard/Procedure</th>
+                <th>Clause/Section No</th>
+                <th>Question</th>
+            </tr>
+                    
+            @foreach (var item in AuditTransList.AuditCheckList)
+            {
+            iSrno = iSrno + 1;
+            <tr>
+                <td>
+                    @iSrno
+                </td>
+                <td>
+                    @item.IsoStd
+                </td>
+                <td>
+                    @item.Clause
+                </td>
+                <td>
+                    @item.Questions
+                </td>
+            </tr>
+            }
+        </table>
+    </div>
+}

@@ -1,0 +1,669 @@
+@model ISOStd.Models.EmployeeMasterModels
+@using System.Data;
+
+@{
+    ViewBag.Title = "";
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+}
+@section featured {
+
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("EmployeeList", "EmployeeDetails", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Employee Management</span>
+                    </a>
+                    <span class="breadcrumb-item active">Employee Management Details</span>
+
+                </div>
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider">
+                                </p>
+                                <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>*@
+
+        </div>
+    </div>
+
+}
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body bg-dark text-center card-img-top" style="background-image: url(../../../../global_assets/images/backgrounds/panel_bg.png); background-size: contain;">
+                <div class="card-img-actions d-inline-block mb-3">
+
+                    @if (Model.ProfilePic != null && Model.ProfilePic != "")
+                    {
+                        <img src="@Url.Content(Model.ProfilePic)" onerror="this.src='/images/1.png'" class="img-fluid rounded-circle" width="170" height="170" />
+                    }
+                    else
+                    {
+                      
+                        <img  src="@Url.Content("~/images/1.png")" onerror="this.src='/images/1.png'" class="img-fluid rounded-circle" width="170" height="170" />
+
+                    }
+
+                    
+                    <div class="card-img-actions-overlay rounded-circle">
+                        <a href='@Url.Action("EmployeeEdit", "EmployeeDetails", new { emp_no = Model.emp_no })' title="Edit" onclick="HyperLinkProgressIconFunction()" class="btn btn-outline bg-white text-white border-white border-2 btn-icon rounded-round">
+                            <i class="icon-pencil"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <h6 class="font-weight-semibold mb-0">@Model.emp_firstname @Model.emp_middlename @Model.emp_lastname</h6>
+            
+               
+            </div>
+
+            <div class="card-body p-0">
+               
+                <table class="table table-hover">
+
+                    <tr class="row">
+                        <td class="col">
+                            <b>  @Html.DisplayNameFor(model => model.emp_id)</b>
+                        </td>
+
+                        <td class="col">
+                            @Html.DisplayFor(model => model.emp_id)
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col">
+                            <b>  @Html.DisplayNameFor(model => model.dept_id)</b>
+                        </td>
+
+                        <td class="col">
+                            @Html.DisplayFor(model => model.dept_id)
+                        </td>
+                    </tr>
+
+                    <tr class="row">
+                        <td class="col">
+                            <b>  @Html.DisplayNameFor(model => model.Designation)</b>
+                        </td>
+
+                        <td class="col">
+                            @Html.DisplayFor(model => model.Designation)
+                        </td>
+                    </tr>
+
+                    <tr class="row">
+                        <td class="col">
+                            <b>  @Html.DisplayNameFor(model => model.Emp_work_location)</b>
+                        </td>
+
+                        <td class="col">
+                            @Html.DisplayFor(model => model.Emp_work_location)
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col">
+                            <b>  @Html.DisplayNameFor(model => model.Role)</b>
+                        </td>
+
+                        <td class="col">
+                            @Html.DisplayFor(model => model.Role)
+                        </td>
+                    </tr>
+
+
+                    <tr class="row">
+                        <td class="col text-nowrap">
+                            <b>  @Html.DisplayNameFor(model => model.Date_of_join)</b>
+                        </td>
+
+                        <td class="col">
+                            @Model.Date_of_join.ToString("dd/MM/yyyy")
+                        </td>
+                                    </tr>
+
+
+
+                </table>
+
+               
+                 
+             </div>
+        </div>
+    </div>
+    <div class="col-md-9">
+        <div class="card">
+
+            <div class="card-header header-elements-inline bg-primary">
+                <h5 class="card-title">Employee Management Details</h5>
+                <div class="header-elements">
+                    <div class="list-icons">
+                        <a class="list-icons-item" data-action="collapse"></a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div>
+
+
+            </div>
+
+            <div class="card-body">
+
+                <ul class="nav nav-tabs nav-tabs-top">
+                    <li class="nav-item"><a href="#solid-justified-tab1" class="nav-link active" data-toggle="tab"><h5><b>Personal</b></h5></a></li>
+                    <li class="nav-item"><a href="#solid-justified-tab2" class="nav-link" data-toggle="tab"><h5><b>Security</b></h5></a></li>
+                    
+
+                </ul>
+
+                <div class="tab-content">
+                    <div class="tab-pane fade show active" id="solid-justified-tab1">
+
+
+                        <table class="table table-hover">
+
+                            <tr class="row">
+                                <td class="col-md-3 col-xs-12">
+                                    <b>  @Html.DisplayNameFor(model => model.Nationaliity)</b>
+                                </td>
+
+                                <td class="col-md-3 col-xs-12">
+                                    @Html.DisplayFor(model => model.Nationaliity)
+                                </td>
+                                <td class="col-md-3 col-xs-12">
+                                    <b>  @Html.DisplayNameFor(model => model.Gender)</b>
+                                </td>
+
+                                <td class="col-md-3 col-xs-12">
+                                    @Html.DisplayFor(model => model.Gender)
+                                </td>
+                            </tr>
+
+                            <tr class="row">
+                                <td class="col-md-3 col-xs-12">
+                                    <b>  @Html.DisplayNameFor(model => model.Date_of_Birth)</b>
+                                </td>
+
+                                <td class="col-md-3 col-xs-12">
+                                    @if (Model.Date_of_Birth > Convert.ToDateTime("0001-01-01 00:00:00"))
+                                    {
+                                        @Model.Date_of_Birth.ToString("dd/MM/yyyy")
+                                    }
+                                </td>
+                                <td class="col-md-3 col-xs-12">
+                                    <b>  @Html.DisplayNameFor(model => model.Marital_status)</b>
+                                </td>
+
+                                <td class="col-md-3 col-xs-12">
+                                    @Html.DisplayFor(model => model.Marital_status)
+                                </td>
+                            </tr>
+                            <tr class="row">
+                                <td class="col-md-3 col-xs-12">
+                                    <b>  @Html.DisplayNameFor(model => model.EmailId)</b>
+                                </td>
+
+                                <td class="col-md-3 col-xs-12">
+                                    @Html.DisplayFor(model => model.EmailId)
+                                </td>
+                                <td class="col-md-3 col-xs-12">
+                                    <b>  @Html.DisplayNameFor(model => model.DeptInCharge)</b>
+                                </td>
+
+                                <td class="col-md-3 col-xs-12">
+                                    @Html.DisplayFor(model => model.DeptInCharge)
+                                </td>
+                            </tr>
+
+
+                            <tr class="row">
+                                <td class="col-md-3 col-xs-12">
+                                    <b>  @Html.DisplayNameFor(model => model.JobDesc)</b>
+                                </td>
+
+                                <td class="col-md-3 col-xs-12">
+                                    @if (Model != null && Model.JobDesc != null && Model.JobDesc != "")
+                                    {
+                                        <a href='@Url.Action("DisplayDocument", "Reports", new { Document = Model.JobDesc })' target="_blank"><font style="color: #0099ff;"> Preview</font></a>
+                                    }
+                                </td>
+                                <td class="col-md-3 col-xs-12">
+                                    <b>  @Html.DisplayNameFor(model => model.EvaluatedBy)</b>
+                                </td>
+
+                                <td class="col-md-3 col-xs-12">
+                                    @Html.DisplayFor(model => model.EvaluatedBy)
+                                </td>
+                            </tr>
+
+
+                            <tr class="row">
+                                <td class="col-md-3 col-xs-12">
+                                    <b>  @Html.DisplayNameFor(model => model.Emp_local_contact)</b>
+                                </td>
+
+                                <td class="col-md-3 col-xs-12">
+                                    @Html.DisplayFor(model => model.Emp_local_contact)
+                                </td>
+                                <td class="col-md-3 col-xs-12">
+                                    <b>  @Html.DisplayNameFor(model => model.Emp_native_phoneno)</b>
+                                </td>
+
+                                <td class="col-md-3 col-xs-12">
+                                    @Html.DisplayFor(model => model.Emp_native_phoneno)
+                                </td>
+                            </tr>
+
+                            <tr class="row">
+                                <td class="col-md-3 col-xs-12">
+                                    <b>  @Html.DisplayNameFor(model => model.Emp_native_country)</b>
+                                </td>
+
+                                <td class="col-md-3 col-xs-12">
+                                    @Html.DisplayFor(model => model.Emp_native_country)
+                                </td>
+                                <td class="col-md-3 col-xs-12">
+                                    <b>  @Html.DisplayNameFor(model => model.Emp_accomodation)</b>
+                                </td>
+
+                                <td class="col-md-3 col-xs-12">
+                                    @Html.DisplayFor(model => model.Emp_accomodation)
+                                </td>
+                            </tr>
+
+                            <tr class="row">
+                                <td class="col-md-3 col-xs-12">
+                                    <b>  @Html.DisplayNameFor(model => model.Date_of_join)</b>
+                                </td>
+
+                                <td class="col-md-3 col-xs-12">
+                                    @if (Model.Date_of_join > Convert.ToDateTime("0001-01-01 00:00:00"))
+                                    {
+                                        @Model.Date_of_join.ToString("dd/MM/yyyy")
+                                    }
+                                </td>
+                                <td class="col-md-3 col-xs-12">
+                                    <b>  @Html.DisplayNameFor(model => model.Logged_date)</b>
+                                </td>
+
+                                <td class="col-md-3 col-xs-12">
+                                    @if (Model.Logged_date > Convert.ToDateTime("0001-01-01 00:00:00"))
+                                    {
+                                        @Model.Logged_date.ToString("dd/MM/yyyy")
+                                    }
+                                </td>
+                            </tr>
+
+                            <tr class="row">
+                                <td class="col">
+                                    <b>  @Html.DisplayNameFor(model => model.MobileNo)</b>
+                                </td>
+
+                                <td class="col">
+
+                                    @Html.DisplayFor(model => model.MobileNo)
+                                </td>
+                              
+                            </tr>
+
+                            
+                        </table>
+
+                    </div>
+
+                    <div class="tab-pane fade" id="solid-justified-tab2">
+
+
+
+                        <table class="table table-hover">
+
+                            <tr class="row">
+                                <td class="col-md-3 col-xs-12">
+                                    <b>  @Html.DisplayNameFor(model => model.Passport_no)</b>
+                                </td>
+
+                                <td class="col-md-3 col-xs-12">
+                                    @Html.DisplayFor(model => model.Passport_no)
+                                </td>
+                                <td class="col-md-3 col-xs-12">
+                                    <b>  @Html.DisplayNameFor(model => model.PassportUpload)</b>
+                                </td>
+
+                                <td class="col-md-3 col-xs-12">
+                                    @if (Model != null && Model.PassportUpload != null && Model.PassportUpload != "")
+                                    {
+                                        <a href='@Url.Action("DisplayDocument", "Reports", new { Document = Model.PassportUpload })' target="_blank"><font style="color: #0099ff;"> Preview</font></a>
+                                    }
+                                </td>
+                            </tr>
+
+                            <tr class="row">
+                                <td class="col-md-3 col-xs-12">
+                                    <b>  @Html.DisplayNameFor(model => model.Passport_expiry)</b>
+                                </td>
+
+                                <td class="col-md-3 col-xs-12">
+                                    @if (Model.Passport_expiry > Convert.ToDateTime("0001-01-01 00:00:00"))
+                                    {
+                                        @Model.Passport_expiry.ToString("dd/MM/yyyy")
+                                    }
+
+                                </td>
+                                <td class="col-md-3 col-xs-12">
+                                    <b>  @Html.DisplayNameFor(model => model.UID_no)</b>
+                                </td>
+
+                                <td class="col-md-3 col-xs-12">
+                                    @Html.DisplayFor(model => model.UID_no)
+                                </td>
+                            </tr>
+                            <tr class="row">
+                                <td class="col-md-3 col-xs-12">
+                                    <b>  @Html.DisplayNameFor(model => model.Visa_Type)</b>
+                                </td>
+
+                                <td class="col-md-3 col-xs-12">
+                                    @Html.DisplayFor(model => model.Visa_Type)
+                                </td>
+                                <td class="col-md-3 col-xs-12">
+                                    <b>  @Html.DisplayNameFor(model => model.Visa_no)</b>
+                                </td>
+
+                                <td class="col-md-3 col-xs-12">
+                                    @Html.DisplayFor(model => model.Visa_no)
+                                </td>
+                            </tr>
+
+
+                            <tr class="row">
+                                <td class="col-md-3 col-xs-12">
+                                    <b>  @Html.DisplayNameFor(model => model.Visa_stamped_on)</b>
+                                </td>
+
+                                <td class="col-md-3 col-xs-12">
+                                    @if (Model.Visa_stamped_on > Convert.ToDateTime("0001-01-01 00:00:00"))
+                                    {
+                                        @Model.Visa_stamped_on.ToString("dd/MM/yyyy")
+                                    }
+                                </td>
+                                <td class="col-md-3 col-xs-12">
+                                    <b>  @Html.DisplayNameFor(model => model.Visa_upload)</b>
+                                </td>
+
+                                <td class="col-md-3 col-xs-12">
+                                    @if (Model != null && Model.Visa_upload != null && Model.Visa_upload != "")
+                                    {
+                                        <a href='@Url.Action("DisplayDocument", "Reports", new { Document = Model.Visa_upload })' target="_blank"><font style="color: #0099ff;"> Preview</font></a>
+                                    }
+                                </td>
+                            </tr>
+
+
+                            <tr class="row">
+                                <td class="col-md-3 col-xs-12">
+                                    <b>  @Html.DisplayNameFor(model => model.Eid_no)</b>
+                                </td>
+
+                                <td class="col-md-3 col-xs-12">
+                                    @Html.DisplayFor(model => model.Eid_no)
+                                </td>
+                                <td class="col-md-3 col-xs-12">
+                                    <b>  @Html.DisplayNameFor(model => model.EIDUpload)</b>
+                                </td>
+
+                                <td class="col-md-3 col-xs-12">
+                                    @if (Model != null && Model.EIDUpload != null && Model.EIDUpload != "")
+                                    {
+                                        <a href='@Url.Action("DisplayDocument", "Reports", new { Document = Model.EIDUpload })' target="_blank"><font style="color: #0099ff;"> Preview</font></a>
+                                    }
+                                </td>
+                            </tr>
+
+                            <tr class="row">
+                                <td class="col-md-3 col-xs-12">
+                                    <b>  @Html.DisplayNameFor(model => model.Eid_visa_date)</b>
+                                </td>
+
+                                <td class="col-md-3 col-xs-12">
+                                    @if (Model.Eid_visa_date > Convert.ToDateTime("0001-01-01 00:00:00"))
+                                    {
+                                        @Model.Eid_visa_date.ToString("dd/MM/yyyy")
+                                    }
+                                </td>
+                                <td class="col-md-3 col-xs-12">
+                                    <b>  @Html.DisplayNameFor(model => model.Labour_cardno)</b>
+                                </td>
+
+                                <td class="col-md-3 col-xs-12">
+                                    @Html.DisplayFor(model => model.Labour_cardno)
+                                </td>
+                            </tr>
+
+                            <tr class="row">
+                                <td class="col-md-3 col-xs-12">
+                                    <b>  @Html.DisplayNameFor(model => model.Labour_cardexpiry)</b>
+                                </td>
+
+                                <td class="col-md-3 col-xs-12">
+                                    @if (Model.Labour_cardexpiry > Convert.ToDateTime("0001-01-01 00:00:00"))
+                                    {
+                                        @Model.Labour_cardexpiry.ToString("dd/MM/yyyy")
+                                    }
+                                </td>
+                                <td class="col-md-3 col-xs-12">
+                                    <b>  @Html.DisplayNameFor(model => model.Health_insurance_provider)</b>
+                                </td>
+
+                                <td class="col-md-3 col-xs-12">
+                                    @Html.DisplayFor(model => model.Health_insurance_provider)
+                                </td>
+                            </tr>
+
+
+                            <tr class="row">
+                                <td class="col-md-3 col-xs-12">
+                                    <b>  @Html.DisplayNameFor(model => model.Health_Insurance_Expiry)</b>
+                                </td>
+
+                                <td class="col-md-3 col-xs-12">
+                                    @if (Model.Health_Insurance_Expiry > Convert.ToDateTime("0001-01-01 00:00:00"))
+                                    {
+                                        @Model.Health_Insurance_Expiry.ToString("dd/MM/yyyy")
+                                    }
+                                </td>
+                                <td class="col-md-3 col-xs-12">
+                                    <b>  @Html.DisplayNameFor(model => model.HealthCardUpload)</b>
+                                </td>
+
+                                <td class="col-md-3 col-xs-12">
+                                    @if (Model != null && Model.HealthCardUpload != null && Model.HealthCardUpload != "")
+                                    {
+                                        <a href='@Url.Action("DisplayDocument", "Reports", new { Document = Model.HealthCardUpload })' target="_blank"><font style="color: #0099ff;"> Preview</font></a>
+                                    }
+                                </td>
+                            </tr>
+
+
+
+
+
+                            <tr class="row">
+                                <td class="col-md-3 col-xs-12">
+                                    <b>  @Html.DisplayNameFor(model => model.HealthCardIssueDate)</b>
+                                </td>
+
+                                <td class="col-md-3 col-xs-12">
+                                    @if (Model.HealthCardIssueDate > Convert.ToDateTime("0001-01-01 00:00:00"))
+                                    {
+                                        @Model.HealthCardIssueDate.ToString("dd/MM/yyyy")
+                                    }
+                                </td>
+                                <td class="col-md-3 col-xs-12">
+                                    <b>  @Html.DisplayNameFor(model => model.HealthCardExpDate)</b>
+                                </td>
+
+                                <td class="col-md-3 col-xs-12">
+                                    @if (Model.HealthCardExpDate > Convert.ToDateTime("0001-01-01 00:00:00"))
+                                    {
+                                        @Model.HealthCardExpDate.ToString("dd/MM/yyyy")
+                                    }
+                                </td>
+                            </tr>
+
+
+                          
+
+                            <tr class="row">
+                                <td class="col-md-3 col-xs-12">
+                                    <b>  @Html.DisplayNameFor(model => model.Emp_info_no)</b>
+                                </td>
+
+                                <td class="col-md-3 col-xs-12">
+                                    @Html.DisplayFor(model => model.Emp_info_no)
+                                </td>
+                                <td class="col-md-3 col-xs-12">
+                                    <b>  @Html.DisplayNameFor(model => model.Date_of_exit)</b>
+                                </td>
+
+                                <td class="col-md-3 col-xs-12">
+                                    @if (Model.Date_of_exit > Convert.ToDateTime("0001-01-01 00:00:00"))
+                                    {
+                                        @Model.Date_of_exit.ToString("dd/MM/yyyy")
+                                    }
+                                </td>
+                            </tr>
+
+
+
+                            <tr class="row">
+                                <td class="col-md-3 col-xs-12">
+                                    <b>  @Html.DisplayNameFor(model => model.Custody_Documents)</b>
+                                </td>
+
+                                <td class="col-md-3 col-xs-12">
+                                    @Html.DisplayFor(model => model.Custody_Documents)
+                                </td>
+                                <td class="col-md-3 col-xs-12">
+                                    <b>  @Html.DisplayNameFor(model => model.Remarks)</b>
+                                </td>
+
+                                <td class="col-md-3 col-xs-12">
+                                    @Html.DisplayFor(model => model.Remarks)
+                                </td>
+                            </tr>
+
+
+
+
+
+
+
+                            <tr class="row">
+                                <td class="col">
+                                    <b>  @Html.DisplayNameFor(model => model.visa_Exp_date)</b>
+                                </td>
+
+                                <td class="col">
+
+                                    @if (Model.visa_Exp_date > Convert.ToDateTime("0001-01-01 00:00:00"))
+                                    {
+                                        @Model.visa_Exp_date.ToString("dd/MM/yyyy")
+                                    }
+                                </td>
+
+                            </tr>
+
+
+                        </table>
+
+                    </div>
+
+                  
+
+                </div>
+
+                
+            </div>
+
+            <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+
+                
+                        <a class="btn bg-orange btn-labeled btn-labeled-left" data-style="radius" href='@Url.Action("EmployeeEdit", "EmployeeDetails", new { emp_no = Model.emp_no })' title="Edit" onclick="HyperLinkProgressIconFunction()">
+                            <b><i class="icon-add-to-list"></i></b>Edit
+                        </a>
+                        @Html.ActionLink("Back to List", "EmployeeList", null, new { @class = "btn btn-outline bg-orange text-orange border-orange", onclick = "HyperLinkProgressIconFunction()" })
+
+
+             
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+</div>
+@section scripts {
+    <script>
+                       //----zzz
+    $(document).ready(function () {
+        @if (TempData["alertdata"] != null ) {
+           @: new Noty({
+           @:     text: '@TempData["alertdata"]',
+           @:     type: 'error'
+           @: }).show();
+        }
+        @if (@TempData["Successdata"] != null ) {
+        @:    new Noty({
+         @:       text: '@TempData["Successdata"]',
+         @:       type: 'success'
+         @:   }).show();
+        }
+    });
+    //zzz----
+    </script>
+
+
+}

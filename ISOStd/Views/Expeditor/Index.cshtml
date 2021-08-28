@@ -1,0 +1,910 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+<style>
+    .jexcel_content {
+        max-height: 800px !important;
+    }
+</style>
+
+@section featured {
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("Index", "Expeditor")" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Expeditor</span>
+                    </a>
+                    <span class="breadcrumb-item active">List</span>
+                </div>
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+}
+<script src="https://bossanova.uk/jspreadsheet/v4/jexcel.js"></script>
+<script src="https://jsuites.net/v4/jsuites.js"></script>
+<link rel="stylesheet" href="https://bossanova.uk/jspreadsheet/v4/jexcel.css" type="text/css" />
+<link rel="stylesheet" href="https://jsuites.net/v4/jsuites.css" type="text/css" />
+
+<h4>Expeditor Order Line Items</h4>
+<!-- Large panel -->
+<div id="panel_large" class="modal modal-right fade" tabindex="-1">
+    <div class="modal-dialog modal-dialog-scrollable modal-lg" style="max-width: 1300px !important">
+
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Update PO Details - <span id="modelTitle"></span></h5>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <!-- Main content -->
+            <div class="content-wrapper">
+
+                <!-- Inner content -->
+                <div class="content-inner">
+
+                    <!-- Content area -->
+                    <div class="content">
+
+                        <!-- Form inputs -->
+                        <div class="card">
+
+                            <div class="card-body">
+
+                                <form action="#" id="OrderEditModeForm">
+                                    <fieldset class="mb-3">
+                                        <legend class="text-uppercase font-size-sm font-weight-bold">Details</legend>
+                                        <input type="hidden" id="POrder_UploadedId" />
+                                        <div class="form-group row">
+                                            <label class="col-form-label col-lg-2">Company:</label>
+                                            <div class="col-lg-2">
+                                                <input type="text" id="Company" class="form-control" value="Kanoo" readonly>
+                                            </div>
+                                            <label class="col-form-label col-lg-2">Division:</label>
+                                            <div class="col-lg-2">
+                                                <input type="text" id="Division" class="form-control" value="Oil and Gas" readonly>
+                                            </div>
+                                            <label class="col-form-label col-lg-2">Area</label>
+                                            <div class="col-lg-2">
+                                                <input type="text" id="Area" class="form-control" value="Sushil" readonly>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group row">
+                                            <label class="col-form-label col-lg-2">Department:</label>
+                                            <div class="col-lg-2">
+                                                <input type="text" id="Department" class="form-control" value="Process" readonly>
+                                            </div>
+                                            <label class="col-form-label col-lg-2">Salesman Name & Code</label>
+                                            <div class="col-lg-6">
+                                                <input type="text" id="SalesmanDetails" class="form-control" value="Zaki" readonly>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label class="col-form-label col-lg-2">Quotation No</label>
+                                            <div class="col-lg-2">
+                                                <input type="text" id="QuotationNo" class="form-control" value="Sushil" readonly>
+                                            </div>
+                                            <label class="col-form-label col-lg-2">Quotation Date</label>
+                                            <div class="col-lg-2">
+                                                <input type="text" id="QuotationDate" class="form-control" value="Sushil" readonly>
+                                            </div>
+                                            <label class="col-form-label col-lg-2">Kanoo Customer PO Internal Id</label>
+                                            <div class="col-lg-2">
+                                                <input type="text" id="KanooCustomerPOInternalId" class="form-control" value="Sushil" readonly>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label class="col-form-label col-lg-2">Customer Order</label>
+                                            <div class="col-lg-4">
+                                                <input type="text" id="CustomerPurchaseorder" class="form-control" value="" readonly>
+                                            </div>
+                                            <label class="col-form-label col-lg-2">Customer Order Date</label>
+                                            <div class="col-lg-4">
+                                                <input type="text" id="CustomerReferenceDate" class="form-control" value="" readonly>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label class="col-form-label col-lg-2">Kanoo Invoice No.</label>
+                                            <div class="col-lg-4">
+                                                <input type="text" id="Pkanoo_invoice_no" class="form-control" value="">
+                                            </div>
+                                            <label class="col-form-label col-lg-2">Kanoo Invoice Date</label>
+                                            <div class="col-lg-4">
+                                                <input type="date" id="Pkanoo_invoice_date" class="form-control" value="">
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group row">
+                                            <div class="col-lg-12 table-responsive">
+                                                <table class="table table-hover" width='100%'>
+                                                    <thead>
+                                                        <tr>
+                                                            <th></th>
+                                                            <th>#</th>
+                                                            <th>Material Code</th>
+                                                            <th>Material Detail</th>
+                                                            <th>Unit</th>
+                                                            <th>QTY</th>
+                                                            @*<th>Supplier UNIT</th>
+                                                                <th>Supplier QTY</th>*@
+                                                            <th>Supplier Order(#)</th>
+                                                            <th>Supplier Order Date</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="OrderItem">
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </fieldset>
+                                    <fieldset class="mb-3">
+                                        <legend class="text-uppercase font-size-sm font-weight-bold">DETAILS TO BE UPDATED</legend>
+                                        <div class="form-group row">
+                                            <label class="col-form-label col-lg-2">Special Permit Status</label>
+                                            <div class="col-lg-4">
+                                                <input type="text" id="PSpecial_permit_status" class="form-control">
+                                            </div>
+                                            <label class="col-form-label col-lg-2">Advance Payment Done On</label>
+                                            <div class="col-lg-4">
+                                                <input type="date" id="PAdvancePaymentDoneOn" class="form-control">
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label class="col-form-label col-lg-2">Item Status</label>
+                                            <div class="col-lg-4">
+                                                <select class="form-control select-search select2-hidden-accessible" id="PItemStatus">
+                                                    <option value="0">Please Select Status</option>
+                                                    <option value="Manufacturing in progress">Manufacturing in progress</option>
+                                                    <option value="Ready For delivery">Ready For delivery</option>
+                                                </select>
+                                            </div>
+                                            <label class="col-form-label col-lg-2">Customer Payment Terms</label>
+                                            <div class="col-lg-4">
+                                                <input type="text" id="PCustomer_payment_terms" class="form-control">
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label class="col-form-label col-lg-2">Customer Delivery Terms</label>
+                                            <div class="col-lg-4">
+                                                <input type="text" id="PCustomer_delivery_terms" class="form-control">
+                                            </div>
+                                            <label class="col-form-label col-lg-2">Customer NMR Requirements</label>
+                                            <div class="col-lg-4">
+                                                <input type="text" id="PCustomer_nmr_requirements" class="form-control">
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label class="col-form-label col-lg-2">Supplier Delivery Terms</label>
+                                            <div class="col-lg-4">
+                                                <input type="text" id="PSupplier_delivery_terms" class="form-control" value="">
+                                            </div>
+                                            <label class="col-form-label col-lg-2">Supplier NMR Requirements</label>
+                                            <div class="col-lg-4">
+                                                <input type="text" id="PSupplier_nmr_requirements" class="form-control" value="">
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label class="col-form-label col-lg-2">Saber Requirements</label>
+                                            <div class="col-lg-4">
+                                                <input type="text" id="PSaber_requirements" class="form-control" value="">
+                                            </div>
+                                            <label class="col-form-label col-lg-2">Inspection Requirements</label>
+                                            <div class="col-lg-4">
+                                                <input type="text" id="PInspectionRequirments" class="form-control" value="">
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label class="col-form-label col-lg-2">Supplier Payment Terms</label>
+                                            <div class="col-lg-4">
+                                                <input type="text" id="PSupplier_payment_terms" class="form-control" value="">
+                                            </div>
+                                            <label class="col-form-label col-lg-2">Supplier Delivery Date</label>
+                                            <div class="col-lg-4">
+                                                <input type="date" id="PSupplier_delivery_date" class="form-control" value="">
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label class="col-form-label col-lg-2">Customer Receipt of Material or GR Date</label>
+                                            <div class="col-lg-10">
+                                                <input type="date" id="PCustomerReceiptofMaterialGRDate" class="form-control">
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label class="col-form-label col-lg-2">Details</label>
+                                            <div class="col-lg-10">
+                                                <textarea style="width:100%" rows="5" id="Proot_cause_of_details" cols="200"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label class="col-form-label col-lg-2">Activity Target Completion Date</label>
+                                            <div class="col-lg-10">
+                                                <input type="date" id="PActivityTargetCompletionDate" class="form-control">
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label class="col-form-label col-lg-2">Activity Delivery Completion Date</label>
+                                            <div class="col-lg-10">
+                                                <input type="date" id="PDelivery_date" class="form-control">
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label class="col-form-label col-lg-2">Delay Type</label>
+                                            <div class="col-lg-10">
+                                                <select class="form-control select-search select2-hidden-accessible" id="PDelayType">
+                                                    <option value="Please Select Delay Type If Any">Please Select Delay Type If Any</option>
+                                                    <option value="Covid related delays">Covid related delays</option>
+                                                    <option value="LCL shipments taking time">LCL shipments taking time</option>
+                                                    <option value="Manufacturer's delay">Manufacturer's delay</option>
+                                                    <option value="Inspection delays">Inspection delays</option>
+                                                    <option value="Custom clerance delays">Custom clerance delays</option>
+                                                    <option value="NMR delays">NMR delays</option>
+                                                    <option value="Saber delays">Saber delays</option>
+                                                    <option value="Short supply delays">Short supply delays</option>
+                                                    <option value="Delivery date shifting,PO cancellation procedural delays">Delivery date shifting,PO cancellation procedural delays</option>
+                                                    <option value="Shipment delay">Shipment delay</option>
+                                                    <option value="Mistake in supply">Mistake in supply</option>
+                                                    <option value="Naqel delays/Collection delays">Naqel delays/Collection delays</option>
+                                                    <option value="System error by customer/GCC cancellation leading to GR delay">System error by customer/GCC cancellation leading to GR delay</option>
+                                                    <option value="GCC got delayed">GCC got delayed</option>
+                                                    <option value="Aramco requesting new Truck request delaying GR">Aramco requesting new Truck request delaying GR</option>
+                                                    <option value="Truck request delay">Truck request delay</option>
+                                                    <option value="Information/clarification delay from Aramco">Information/clarification delay from Aramco</option>
+                                                    <option value="GCC got delayed but delivered on time">GCC got delayed but delivered on time</option>
+                                                    <option value="GCC ontime,delay in GR">GCC ontime,delay in GR</option>
+                                                    <option value="Stock reasons">Stock reasons</option>
+                                                    <option value="No details in symphony">No details in symphony</option>
+                                                    <option value="Lab test result delay">Lab test result delay</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label class="col-form-label col-lg-2">Reason for delay</label>
+                                            <div class="col-lg-4">
+                                                <input type="text" id="PDelay_reasons" class="form-control">
+                                            </div>
+                                            <label class="col-form-label col-lg-2">Delivery Note Date.</label>
+                                            <div class="col-lg-4">
+                                                <input type="date" id="PDeliveryNoteDate" class="form-control">
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label class="col-form-label col-lg-2">Delivery Status</label>
+                                            <div class="col-lg-4">
+                                                <select class="form-control select-search select2-hidden-accessible" id="PDeliveryStatus">
+                                                    <option value="1">Inprogress</option>
+                                                    <option value="2">Pending</option>
+                                                    <option value="3">OnHold</option>
+                                                    <option value="4">Completed</option>
+                                                    <option value="5">Cancelled</option>
+                                                </select>
+                                            </div>
+                                            <label class="col-form-label col-lg-2">Delivery Note No.</label>
+                                            <div class="col-lg-4">
+                                                <input type="text" id="PDeliveryNoteNo" class="form-control">
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label class="col-form-label col-lg-2">Follow-up Status<text style="color: red;">*</text></label>
+                                            <div class="col-lg-10">
+                                                <textarea id="PFollowUpStatus" class="form-control"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label class="col-form-label col-lg-2">Follow-up Date & Time<text style="color: red;">*</text></label>
+                                            <div class="col-lg-4">
+                                                <input type="datetime-local" id="PFollowUpDateTime" class="form-control" value="" max="2021-07-07T11:03">
+                                            </div>
+                                            <label class="col-form-label col-lg-2">Next Follow-up Date & Time </label>
+                                            <div class="col-lg-4">
+                                                <input type="datetime-local" id="PNextFollowUpDateTime" class="form-control" value="">
+                                            </div>
+                                        </div>
+                                    </fieldset>
+                                    <fieldset class="mb-3">
+                                        <legend class="text-uppercase font-size-sm font-weight-bold">General</legend>
+
+                                        <div class="form-group row">
+                                            <label class="col-form-label col-lg-1">B/L NO</label>
+                                            <div class="col-lg-3">
+                                                <input type="text" id="Pbill_no" class="form-control">
+                                            </div>
+
+                                            <label class="col-form-label col-lg-1">B/L DT</label>
+                                            <div class="col-lg-3">
+                                                <input type="date" id="Pbill_date" class="form-control">
+                                            </div>
+                                            <label class="col-form-label col-lg-1">B/L QTY</label>
+                                            <div class="col-lg-3">
+                                                <input type="text" id="Pbill_quantity" class="form-control">
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group row">
+                                            <label class="col-form-label col-lg-2">ETA</label>
+                                            <div class="col-lg-10">
+                                                <input type="date" id="Peta" class="form-control">
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group row">
+                                            <label class="col-form-label col-lg-2">Mode of Shipping</label>
+                                            <div class="col-lg-10">
+                                                <input type="text" id="ShipmentMode" class="form-control" readonly>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group row">
+                                            <label class="col-form-label col-lg-2">Shipping DOC RECT</label>
+                                            <div class="col-lg-10">
+                                                <input type="text" id="PShipping_doc_rect" class="form-control">
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group row">
+                                            <label class="col-form-label col-lg-2">Shipping DOC TO CCL DEPT</label>
+                                            <div class="col-lg-10">
+                                                <input type="text" id="PShipping_doc_to_ccl_dept" class="form-control">
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label class="col-form-label col-lg-2">Shipment Arrival Date at Warehouse</label>
+                                            <div class="col-lg-10">
+                                                <input type="date" id="PShipping_Arrival_Date" class="form-control">
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group row">
+                                            <label class="col-form-label col-lg-2">Material received status</label>
+                                            <div class="col-lg-10">
+                                                <input type="text" id="Pmaterial_recieved_status" class="form-control">
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group row">
+                                            <label class="col-form-label col-lg-2 cursor-pointer" for="PRRNoDate">PRR no/Date</label>
+                                            <div class="col-lg-5">
+                                                <input type="text" class="form-control" id="Pprr_no">
+                                            </div>
+                                            <div class="col-lg-5">
+                                                <input type="date" class="form-control" id="Pprr_date">
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group row">
+                                            <label class="col-form-label col-lg-2">SRV no/Date</label>
+                                            <div class="col-lg-5">
+                                                <input type="text" class="form-control" id="PSrv_no">
+                                            </div>
+                                            <div class="col-lg-5">
+                                                <input type="date" class="form-control" id="PSrv_date">
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group row">
+                                            <label class="col-form-label col-lg-2">ASN No & Qty </label>
+                                            <div class="col-lg-5">
+                                                <input type="text" id="Pasn_no" class="form-control">
+                                            </div>
+                                            <div class="col-lg-5">
+                                                <input type="text" class="form-control" id="Pasn_quantity">
+                                            </div>
+                                        </div>
+
+                                    </fieldset>
+                                    <div class="text-right">
+                                        <button type="button" onclick="UpdateMetaDataForOrder()" class="btn btn-primary">Submit <i class="icon-paperplane ml-2"></i></button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <!-- /form inputs -->
+
+                    </div>
+                    <!-- /content area -->
+
+                </div>
+                <!-- /inner content -->
+
+            </div>
+            <!-- /main content -->
+        </div>
+    </div>
+</div>
+<!-- /large panel -->
+<div class="card-group-control col-12 card" style="padding-top:5px">
+    <div class="form-group row">
+        <label class="col-form-label col-lg-2">Delivery Status</label>
+        <div class="col-lg-2">
+            <select class="form-control select-search select2-hidden-accessible" id="flt_DeliveryStatus">
+            </select>
+        </div>
+        <label class="col-form-label col-lg-2">Department:</label>
+        <div class="col-lg-2">
+            <select class="form-control select-search select2-hidden-accessible" id="flt_Department">
+            </select>
+        </div>
+        <label class="col-form-label col-lg-2">Sales Expeditor Name</label>
+        <div class="col-lg-2">
+            <select class="form-control" id="ftt_Salesman">
+                <option value="">Select All</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label class="col-form-label col-lg-2">From Date </label>
+        <div class="col-lg-2">
+            <input type="date" id="flt_FromDate" class="form-control" value="">
+        </div>
+        <label class="col-form-label col-lg-2">To Date</label>
+        <div class="col-lg-2">
+            <input type="date" id="flt_ToDate" class="form-control" value="">
+        </div>
+        <label class="col-form-label col-lg-2">Customer PO</label>
+        <div class="col-lg-2">
+            <select class="form-control" id="flt_CustomerPo">
+                <option value="">Select All</option>
+            </select>
+        </div>
+
+    </div>
+    <div class="form-group row">
+        <label class="col-form-label col-lg-2">Supplier PO</label>
+        <div class="col-lg-2">
+            <select class="form-control" id="flt_SupplierPo">
+                <option value="">Select All</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-group row text-right">
+        <div class="col-lg-12">
+            <button class="btn btn-success" onclick="RefreshSheet()">Search</button>
+            <button class="btn btn-danger" onclick="REfreshPage()">Reset</button>
+        </div>
+    </div>
+</div>
+<div class="table-responsive">
+    <div id="spreadsheet"></div>
+</div>
+<br>
+<script>
+
+    var reportUrl = '@Url.Action("GetExpeditorMaterialReport", "Expeditor")'
+
+    var currentDateToday = "@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")"
+    var maxWirth = (window.innerWidth - 350) + "px"
+
+    $('#Pkanoo_invoice_no,#Pprr_no,#PSrv_no,#Pasn_no,#PDeliveryNoteNo').keypress(function (e) {
+        var regex = new RegExp("^[a-zA-Z0-9\s]+$");
+        var str = String.fromCharCode(!e.charCode ? e.which : e.charCode);
+        if (regex.test(str)) {
+            return true;
+        }
+        e.preventDefault();
+        new Noty({
+            text: 'Input is not alphanumeric',
+            type: 'error'
+        }).show();
+        return false;
+    });
+
+
+    function GetFormModel(FromId) {
+        var jsonString = "{"
+
+        var elements = $('#'+FromId)[0];
+
+        for (var eI = 0; eI < elements.length; eI++) {
+            if (elements[eI].type == "hidden" || elements[eI].type == "date" || elements[eI].type == "text" || elements[eI].type == "select-one" || elements[eI].type == 'textarea' || elements[eI].type == 'datetime-local')
+                jsonString += '"' + elements[eI].id + '":"' + $('#' + elements[eI].id).val()+'",';
+        }
+
+        jsonString += '"Id":"0"}';
+
+        return JSON.parse(jsonString)
+    }
+
+    function ClearFormFields(FromId) {
+        var elements = $('#' + FromId)[0];
+
+        for (var eI = 0; eI < elements.length; eI++) {
+            if (elements[eI].type == "date" || elements[eI].type == "text" || elements[eI].type == "select-one" || elements[eI].type == 'textarea' || elements[eI].type == 'datetime-local')
+                $('#' + elements[eI].id).val('');
+        }
+    }
+
+    function ConvertObjectInArray(obj) {
+        return Object.keys(obj).map((key) => [key, obj[key]]);
+    }
+
+    var SelectedCheckItem = [];
+
+    function UpdateMetaDataForOrder() {
+
+        var checkItem = [];
+
+        if (SelectedCheckItem.length == 0) {
+            new Noty({
+                text: "Please select Item",
+                type: 'error'
+            }).show();
+            return false
+        }
+
+        $("input:checkbox[name='" + SelectedCheckItem[0]+"']:checked").each(function () {
+            checkItem.push($(this).attr("id"));
+        });
+
+        if (checkItem.length != 0)
+            SelectedCheckItem = checkItem;
+        else {
+            checkItem = SelectedCheckItem;
+        }
+
+        if ($('#PFollowUpStatus').val() == "" && $('#PFollowUpDateTime').val() == "") {
+            new Noty({
+                text: "Follow-up Details Requried",
+                type: 'error'
+            }).show();
+            return false
+        }
+
+        for (var cind = 0; cind < checkItem.length; cind++) {
+
+            var itemID = checkItem[cind].replace('check', '');
+
+            var model = GetFormModel('OrderEditModeForm');
+            model.POrder_UploadedId = itemID;
+            model.PFollowUpDateTime = $('#PFollowUpDateTime').val();
+            model.PNextFollowUpDateTime = $('#PNextFollowUpDateTime').val();
+
+            jQuery.ajax({
+                url: '@Url.Action("UpdateMetaDataForOrder", "Expeditor")',
+                type: 'POST',
+                dataType: "json",
+                data: model,
+                success: function (result) {
+                    new Noty({
+                        text: "Item updated successfully",
+                        type: 'success'
+                    }).show();
+                    $('#panel_large').modal('toggle');
+                    RefreshSheet();
+                }
+            });
+        }
+    }
+
+    var SelectedModelItems
+
+    function EditLineItem(index) {
+
+        if (index != "") {
+        ClearFormFields('OrderEditModeForm');
+
+        $('#SalesmanDetails').val(SelectedModelItems[index].SalesmanName + ' (' + SelectedModelItems[index].SalesmanCode + ')');
+            $('#PNextFollowUpDateTime').val(SelectedModelItems[index].PNextFollowUpDateTime);
+        var ArrayObject = ConvertObjectInArray(SelectedModelItems[index]);
+        for (var arrayInd = 0; arrayInd < ArrayObject.length; arrayInd++) {
+            var myEle = document.getElementById(ArrayObject[arrayInd][0]);
+            if (myEle) {
+                $('#' + ArrayObject[arrayInd][0]).val(ArrayObject[arrayInd][1])
+            }
+        }
+
+        new Noty({
+            text: "You have select Item No. : " + (index+1),
+            type: 'success'
+        }).show();
+        }
+    }
+
+    function GetSelectItem(id) {
+        $('#PFollowUpDateTime').attr('max', currentDateToday);
+        $('#PNextFollowUpDateTime').attr('min', currentDateToday);
+        jQuery.ajax({
+            url: '@Url.Action("GetMaterialById", "Expeditor")' + "?id=" + id,
+            type: 'GET',
+            dataType: "json",
+            success: function (result) {
+                ClearFormFields('OrderEditModeForm');
+                //console.log(result);
+                var ObjArray = new Array();
+                var ArrayObject = ConvertObjectInArray(result[0]);
+                SelectedModelItems = result;
+                $('#modelTitle').html(" PO :" + result[0].CustomerPurchaseorder + ", Date: " + result[0].CustomerReferenceDate.split(' ')[0]);
+                for (var arrayInd = 0; arrayInd < ArrayObject.length; arrayInd++) {
+                    var myEle = document.getElementById(ArrayObject[arrayInd][0]);
+                    if (myEle) {
+                        $('#' + ArrayObject[arrayInd][0]).val(ArrayObject[arrayInd][1])
+                    }
+                }
+
+                $('#SalesmanDetails').val(result[0].SalesmanName + ' (' + result[0].SalesmanCode + ')');
+
+                var groupHtmlBasedOnSPO = "";
+                $('#PNextFollowUpDateTime').val(result[0].PNextFollowUpDateTime)
+                $('#OrderItem').empty();
+                for (var oIndex = 0; oIndex < result.length; oIndex++) {
+                    groupHtmlBasedOnSPO = '<tr>' +
+                        '<td>' +
+                        '<input type="hidden" id="POrder_UploadedId_' + result[oIndex].Id+'" value="' + (oIndex)+'" />'+
+                        '<input id="check' + result[oIndex].Id + '" onclick="SelectCheckBox(this)" type="checkbox" name="checkItem' + result[oIndex].SupplierPONo + '" />' +
+                        '</td>' +
+                        '<td> Line item - ' + (oIndex + 1) + '</td>' +
+                        '<td>' + result[oIndex].CustomerMaterialCode+'</td>' +
+                        '<td>' + result[oIndex].LineItemDescription + '</td>' +
+                        '<td>' + result[oIndex].Unit + '</td>' +
+                        '<td>' + result[oIndex].Quantity + '</td>' +
+                        '<td>' + result[oIndex].SupplierPONo + '</td>' +
+                        '<td>' + result[oIndex].SupplierPODate + '</td>' +
+                        '</tr>';
+
+                    $('#OrderItem').append(groupHtmlBasedOnSPO);
+                    if (oIndex + 1 < result.length - 1 && result[oIndex].SupplierPONo != result[oIndex+1].SupplierPONo) {
+
+                    }
+                }
+
+                SelectedCheckItem = [];
+                //if (result[oIndex].PCustomer_sale_order_id != 0)
+                //    SelectedCheckItem.push(result[0].Id + '');
+
+                }
+            });
+    }
+
+    function SelectCheckBox(ele) {
+
+        if (SelectedCheckItem.length != 0 && $(ele).prop('checked') == true && ('checkItem' != ele.name || SelectedCheckItem.indexOf('checkItem') == -1)) {
+            new Noty({
+                text: "Please uncheck selected group then select this group",
+                type: 'error'
+            }).show();
+            $('#' + ele.id).prop("checked", false);
+            return false;
+        }
+
+        if ('checkItem' != ele.name) {
+            if ($(ele).prop('checked') == false) {
+                SelectedCheckItem.pop(ele.name);
+                $("input[name='" + ele.name + "']").each(function () {
+                    this.checked = false;
+                });
+            }
+            else {
+                SelectedCheckItem.push(ele.name);
+                $("input[name='" + ele.name + "']").each(function () {
+                    this.checked = true;
+                });
+
+                EditLineItem($('#POrder_UploadedId_' + ele.id.replace('check', '')).val());
+            }
+        } else {
+            if ($(ele).prop('checked') == false) {
+                SelectedCheckItem.pop(ele.name);
+
+
+            }
+            else {
+                if (SelectedCheckItem.indexOf(ele.name) == -1) {
+                    EditLineItem($('#POrder_UploadedId_' + ele.id.replace('check', '')).val());
+                    SelectedCheckItem.push(ele.name);
+                }
+            }
+        }
+
+
+    }
+
+    $('#select_all').change(function () {
+        var checkboxes = $(this).closest('form').find(':checkbox').not($(this));
+        checkboxes.prop('checked', $(this).is(':checked'));
+    });
+
+    LoadFilters();
+
+    function REfreshPage() {
+        LoadFilters();
+        RefreshSheet();
+    }
+
+    //RefreshSheet();
+    function LoadFilters() {
+        $('#flt_DeliveryStatus').val('')
+        $('#flt_FromDate').val('');
+        $('#flt_ToDate').val('');
+        $('#flt_Department').empty();
+        $('#ftt_Salesman').empty();
+        $('#flt_CustomerPo').empty();
+        $('#flt_SupplierPo').empty();
+        $('#flt_DeliveryStatus').empty();
+        $('#flt_Department').append('<option value="">Select All</option>');
+        $('#ftt_Salesman').append('<option value="">Select All</option>');
+        $('#flt_CustomerPo').append('<option value="">Select All</option>');
+        $('#flt_SupplierPo').append('<option value="">Select All</option>');
+        $('#flt_DeliveryStatus').append('<option value="">Select All</option>' +
+            '<option value = "1" > Inprogress</option>' +
+            '<option value="2">Pending</option>' +
+            '<option value="3">OnHold</option>' +
+            '<option value="4">Completed</option>' +
+            '<option value="5">Cancelled</option>');
+
+        jQuery.ajax({
+            url: '@Url.Action("GetFilters", "Expeditor")',
+            type: 'GET',
+            dataType: "json",
+            success: function (result) {
+
+                //console.log(result.department);
+                for (var di = 0; di < result.department.length; di++) {
+                    $('#flt_Department').append('<option value="' + result.department[di].Value + '">' + result.department[di].Value +'</option>');
+                }
+
+                for (var di = 0; di < result.salesmanName.length; di++) {
+                    $('#ftt_Salesman').append('<option value="' + result.salesmanName[di].Value + '">' + result.salesmanName[di].Value + '</option>');
+                }
+
+                for (var di = 0; di < result.customerpurchaseorder.length; di++) {
+                    if (result.customerpurchaseorder[di].Value != '')
+                        $('#flt_CustomerPo').append('<option value="' + result.customerpurchaseorder[di].Value + '">' + result.customerpurchaseorder[di].Value + '</option>');
+                }
+
+                for (var di = 0; di < result.supplierpono.length; di++) {
+                    if (result.supplierpono[di].Value != '')
+                    $('#flt_SupplierPo').append('<option value="' + result.supplierpono[di].Value + '">' + result.supplierpono[di].Value + '</option>');
+                }
+
+                $('#flt_Department').val('').trigger('chosen:updated');
+                $('#ftt_Salesman').val('').trigger('chosen:updated');
+                $('#flt_CustomerPo').val('').trigger('chosen:updated');
+                $('#flt_SupplierPo').val('').trigger('chosen:updated');
+                $('#flt_DeliveryStatus').val('').trigger('chosen:updated');
+            }
+        });
+    }
+
+    var selectionActive = function (instance, x1, y1, x2, y2, cell, origin) {
+        var cellName1 = jexcel.getColumnNameFromId([x1, y1]);
+        //console.log(y1)
+        //console.log(cellName1)
+        if (cellName1.substring(0, 1) == 'C') {
+            $('#panel_large').modal('toggle');
+            //console.log(instance.jexcel.getValueFromCoords(0, y1))
+            GetSelectItem(instance.jexcel.getValueFromCoords(0, y1))
+        }
+    }
+
+    var gridItems = [
+        { type: 'hidden', name: 'Id', title: 'Id', width: 100 },
+        { type: 'hidden', name: 'BatchId', title: 'BatchId', width: 200 },
+        { type: 'text', name: 'LineItemAction', title: 'Action', width: 200 },
+        { type: 'text', name: 'Company', title: 'Company', width: 200, align: 'left' },
+        { type: 'text', name: 'Division', title: 'Division', width: 200, align: 'left' },
+        { type: 'text', name: 'Area', title: 'Area', width: 200, align: 'left' },
+        { type: 'text', name: 'Department', title: 'Department', width: 200, align: 'left' },
+        { type: 'text', name: 'SalesmanCode', title: 'Salesman', width: 200, align: 'left' },
+        { type: 'text', name: 'SalesmanName', title: 'Sales expeditor name', width: 200, align: 'left' },
+        { type: 'text', name: 'QuotationNo', title: 'QuotationNo', width: 200, align: 'left' },
+        { type: 'text', name: 'QuotationDate', title: 'QuotationDate', width: 200, align: 'left' },
+        { type: 'text', name: 'CustomerReferenceDate', title: 'Customer order date', width: 200, align: 'left' },
+        { type: 'text', name: 'CustomerPurchaseorder', title: 'Customer Order', width: 200, align: 'left' },
+        { type: 'text', name: 'KanooCustomerPOInternalId', title: 'Kanoo Customer PO Internal Id', width: 200, align: 'left' },
+        { type: 'text', name: 'CustomerMaterialCode', title: 'Material code', width: 200, align: 'left' },
+        { type: 'text', name: 'LineItemDescription', title: 'Material detail', width: 200, align: 'left' },
+        { type: 'text', name: 'Quantity', title: 'ORDER QTY', width: 200, align: 'left' },
+        { type: 'text', name: 'Unit', title: 'UNIT', width: 200, align: 'left' },
+        { type: 'text', name: 'ExpectedDeliveryDate', title: 'Expected Delivery Date', width: 200, align: 'left' },
+        { type: 'text', name: 'KanooAgreedDeliveryDate', title: 'Kanoo Agreed Delivery Date', width: 200, align: 'left' },
+        { type: 'text', name: 'SpecialPermitStatus', title: 'SPECIAL PERMIT STATUS', width: 200, align: 'left' },
+        { type: 'text', name: 'Customer_payment_terms', title: 'Customer payment terms', width: 200, align: 'left' },
+        { type: 'text', name: 'Customer_delivery_terms', title: 'Customer delivery terms', width: 200, align: 'left' },
+        { type: 'text', name: 'Customer_nmr_requirements', title: 'Customer NMR requirements', width: 200, align: 'left' },
+        { type: 'text', name: 'SupplierPONo', title: 'Supplier order', width: 200, align: 'left' },
+        { type: 'text', name: 'SupplierPODate', title: 'Supplier order date', width: 200, align: 'left' },
+        { type: 'text', name: 'PSupplier_delivery_date', title: 'Supplier delivery date', width: 200, align: 'left' },
+        { type: 'text', name: 'Supplier_payment_terms', title: 'Supplier payment terms', width: 200, align: 'left' },
+        { type: 'text', name: 'Supplier_delivery_terms', title: 'Supplier delivery terms', width: 200, align: 'left' },
+        { type: 'text', name: 'Supplier_nmr_requirements', title: 'Supplier NMR requirements', width: 200, align: 'left' },
+        { type: 'text', name: 'Saber_requirements', title: 'Saber requirements', width: 200, align: 'left' },
+        { type: 'text', name: 'Bill_No', title: 'B/L NO', width: 200, align: 'left' },
+        { type: 'text', title: 'B/L DT', name: 'BillDate', width: 200, align: 'left' },
+        { type: 'text', title: 'B/L QTY', name: 'Bill_Quantity', width: 200, align: 'left' },
+        { type: 'text', title: 'ETA', name: 'DisplayETA', width: 200, align: 'left' },
+        { type: 'text', name: 'ShipmentMode', title: 'MODE OF SHIPPING', width: 200, align: 'left' },
+        { type: 'text', name: 'Shipping_Doc_Rect', title: 'SHIPPING DOC RECT', width: 200, align: 'left' },
+        { type: 'text', name: 'Shipping_Doc_to_CCL_Dept', title: 'SHIPPING DOC TO CCL DEPT', width: 200, align: 'left' },
+        { type: 'text', name: 'Material_recieved_status', title: 'Material received status', width: 200, align: 'left' },
+        { type: 'text', title: 'PRR Date', name: 'PRRDate', width: 200, align: 'left' },
+        { type: 'text', title: 'PRR No', name: 'PRR_No', width: 200, align: 'left' },
+        { type: 'text', title: 'SRV Date', name: 'SRVDate', width: 200, align: 'left' },
+        { type: 'text', name: 'SRV_No', title: 'SRV No', width: 200, align: 'left' },
+        { type: 'text', name: 'asn_no', title: 'ASN NO', width: 200, align: 'left' },
+        { type: 'text', name: 'Asn_quantity', title: 'ASN QTY', width: 200, align: 'left' },
+        { type: 'text', name: 'Delivery_Status', title: 'Material delivery to customer status', width: 200, align: 'left' },
+        { type: 'text', name: 'DeliveryNoteDate', title: 'Delivery Note Date', width: 200, align: 'left' },
+        { type: 'text', name: 'DeliveryNoteNo', title: 'Delivery Note No', width: 200, align: 'left' },
+        { type: 'text', name: 'CustomerReceiptofMaterial_GRDate', title: 'Customer receipt of material or GR date', width: 200, align: 'left' },
+        { type: 'text', name: 'kanoo_invoice_no', title: 'Kanoo Invoice No', width: 200, align: 'left' },
+        { type: 'text', name: 'Pkanoo_invoice_date', title: 'Kanoo Invoice Date', width: 200, align: 'left' },
+        { type: 'html', name: 'FollowUp', title: 'Follow up status date and time wise', width: 350, align: 'left' },
+        { type: 'html', name: 'NextFollowUpDateTime', title: 'Next Follow-Up Date', width: 350, align: 'left' },
+        { type: 'text', name: 'DelayType', title: 'Delay reasons from Menu', width: 200, align: 'left' },
+        { type: 'text', name: 'Delay_reasons', title: 'Delay Reasons', width: 200, align: 'left' },
+        { type: 'text', name: 'Root_cause_of_details', title: 'Root cause of delay out of all delays', width: 200, align: 'left' },
+    ];
+
+    jspreadsheet(document.getElementById('spreadsheet'), {
+        url: reportUrl+"?dep="
+            + "&status="
+            + "&salesman="
+            + "&fromDate="
+            + "&toDate="
+            + "&customerPo="
+            + "&supplierPo="
+        ,
+        tableOverflow: true,
+        onselection: selectionActive,
+        columns: gridItems,
+        filters: true,
+        pagination: 100,
+        paginationOptions: [10, 25, 50, 100],
+        tableWidth: maxWirth,
+        license: 'NDc4ZDc3NWJiNjIzNzU4MTVmNjA4MjdlYjk1MjlmZDZiYzk4MWM3ZmM2OTdiZDczOWQ2MGRkZjdhNTc4ODExNmMyMDZkZDIwNzExYzJmM2EwOTBiYWUxM2M0NGY1YzNiZmVmZTY1OGY5OWI2ZDg2NDMyNjgwOTFhZGQ2MzVlYmEsZXlKdVlXMWxJam9pY0dGMWJDNW9iMlJsYkNJc0ltUmhkR1VpT2pFMk5EY3pPRGc0TURBc0ltUnZiV0ZwYmlJNld5SnFjMmhsYkd3dWJtVjBJaXdpWTI5a1pYTmhibVJpYjNndVkyOXRJaXdpYW5Od2NtVmhaSE5vWldWMExtTnZiU0lzSW1OellpNWhjSEFpTENKalpIQnVMbWx2SWl3aWJHOWpZV3hvYjNOMElsMHNJbkJzWVc0aU9pSXlJbjA9',
+    });
+
+    function RefreshSheet() {
+
+        $('#spreadsheet').empty();
+
+        jspreadsheet(document.getElementById('spreadsheet'), {
+            url: reportUrl+"?dep=" + $('#flt_Department').val()
+                + "&status=" + $('#flt_DeliveryStatus').val()
+                + "&salesman=" + $('#ftt_Salesman').val()
+                + "&fromDate=" + $('#flt_FromDate').val()
+                + "&toDate=" + $('#flt_ToDate').val()
+                + "&customerPo=" + $('#flt_CustomerPo').val()
+                + "&supplierPo=" + $('#flt_SupplierPo').val()
+            ,
+            tableOverflow: true,
+            onselection: selectionActive,
+            columns: gridItems,
+            filters: true,
+            pagination: 100,
+            paginationOptions: [10, 25, 50, 100],
+            tableWidth: maxWirth,
+            license: 'NDc4ZDc3NWJiNjIzNzU4MTVmNjA4MjdlYjk1MjlmZDZiYzk4MWM3ZmM2OTdiZDczOWQ2MGRkZjdhNTc4ODExNmMyMDZkZDIwNzExYzJmM2EwOTBiYWUxM2M0NGY1YzNiZmVmZTY1OGY5OWI2ZDg2NDMyNjgwOTFhZGQ2MzVlYmEsZXlKdVlXMWxJam9pY0dGMWJDNW9iMlJsYkNJc0ltUmhkR1VpT2pFMk5EY3pPRGc0TURBc0ltUnZiV0ZwYmlJNld5SnFjMmhsYkd3dWJtVjBJaXdpWTI5a1pYTmhibVJpYjNndVkyOXRJaXdpYW5Od2NtVmhaSE5vWldWMExtTnZiU0lzSW1OellpNWhjSEFpTENKalpIQnVMbWx2SWl3aWJHOWpZV3hvYjNOMElsMHNJbkJzWVc0aU9pSXlJbjA9',
+        });
+    }
+</script>
+
+@section Scripts {
+
+    @Scripts.Render("~/bundles/jqueryval")
+}

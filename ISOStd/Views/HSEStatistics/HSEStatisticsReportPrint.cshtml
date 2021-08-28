@@ -1,0 +1,66 @@
+﻿@using System.Data;
+@{
+   
+    ViewBag.Title = "HSEStatisticsReport";
+
+    // ISOStd.Models.WasteManagementModels objModel = new ISOStd.Models.WasteManagementModels();
+    ISOStd.Models.clsGlobal obj = new ISOStd.Models.clsGlobal();
+    Layout = "~/Views/Shared/_PrintLayout.cshtml";
+    DataSet dsStatistics = new DataSet();
+    if (ViewBag.dsReport != null)
+    {
+        dsStatistics = ViewBag.dsReport;
+    }
+}
+
+
+    <div class="card">
+
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">HSE Statics Report</h5>
+            
+        </div>
+    
+        <div class="card-body">
+            @if (dsStatistics != null && dsStatistics.Tables.Count > 0 && dsStatistics.Tables[0].Rows.Count > 0)
+            {
+                if (ViewBag.Yearval != null || ViewBag.Monthval != null)
+                {
+                <table class="table table-lg">
+                    <thead class="table table-lg table-bordered">
+                        <tr class="bg-blue font-weight-bold">
+                            <th>Sl No. </th>
+                            <th>Parameter Name </th>
+                            <th>Total </th>
+                        </tr>
+                    </thead>
+                    @for (int i = 0, j = 1; i < dsStatistics.Tables[0].Rows.Count; i++, j++)
+                    {
+                        <tr>
+                            <td>
+                                @j
+                            </td>
+                            <td>
+                                @dsStatistics.Tables[0].Rows[i]["para_name"].ToString()
+                            </td>
+                            <td>
+                                @dsStatistics.Tables[0].Rows[i]["total"].ToString()
+                            </td>
+                        </tr>
+                    }
+
+                </table>
+                }
+            }
+        </div>
+
+
+    </div>
+    
+
+
+@section Scripts {
+    <script>
+      
+    </script>
+}

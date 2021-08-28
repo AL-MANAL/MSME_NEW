@@ -1,0 +1,37 @@
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `get_expeditor_items`(in PId int)
+BEGIN
+
+	select Id,BatchId,Company,Division,Area,Department,SalesmanCode,SalesmanName,QuotationNo,
+QuotationDate,CustomerReferenceDate,CustomerPurchaseorder,KanooCustomerPOInternalId,
+CustomerMaterialCode,LineItemDescription,Quantity,Unit,ExpectedDeliveryDate,
+KanooAgreedDeliveryDate,SupplierPONo,SupplierPODate,MaterialCode,MaterialDetail,
+SupplierQty,SupplierUnit,ShipmentMode,ExpectedReceivingDate,AdvancePaymentStatus,
+Customer_sale_order_id as PCustomer_sale_order_id,
+SpecialPermitStatus as PSpecial_permit_status,
+b.AdvancePaymentDoneOn,CreatedBy,CreatedDate,IsProcessed,Sale_order_date,supplier_order As Psupplier_order,supplier_order_date,
+supplier_delivery_date,supplier_payment_terms As psupplier_payment_terms,
+supplier_delivery_terms As psupplier_delivery_terms,supplier_nmr_requirements As psupplier_nmr_requirements,
+saber_requirements As psaber_requirements,bill_no As pbill_no,bill_date,bill_quantity As pbill_quantity,
+eta,mode_of_shipping As pmode_of_shipping,shipping_doc_rect As pshipping_doc_rect,
+shipping_doc_to_ccl_dept As pshipping_doc_to_ccl_dept,material_recieved_status As pmaterial_recieved_status,
+prr_no As pprr_no,prr_date,srv_no As psrv_no,srv_date,asn_no As pasn_no,
+asn_quantity As pasn_quantity,material_delivery_to_customer_status As pmaterial_delivery_to_customer_status,
+delivery_no As pdelivery_no,delivery_date,
+kanoo_invoice_no As pkanoo_invoice_no,kanoo_invoice_date,follow_up_status As Pfollow_upStatus,
+delay_reasons As pdelay_reasons,root_cause_of_details As proot_cause_of_details,Shipping_Arrival_Date,
+CustomerReceiptofMaterialGRDate,DeliveryNoteNo As PDeliveryNoteNo,Order_UploadedId as POrder_UploadedId,
+DeliveryStatus As PDeliveryStatus,DelayType As PDelayType,ActivityTargetCompletionDate As PActivityTargetCompletionDate,
+InspectionRequirments As PInspectionRequirments,ItemStatus As PItemStatus,
+Customer_payment_terms As PCustomer_payment_terms,Customer_nmr_requirements as PCustomer_nmr_requirements,
+Customer_delivery_terms as PCustomer_delivery_terms,date_format(NextFollowUpDateTime,'%d/%m/%YT%H:%i') As PNextFollowUpDateTime,
+        DeliveryNoteDate As PDeliveryNoteDate,
+    (Select group_concat(CONCAT(FollowUpDateTime,' - ',followupstatus))
+    from t_expeditor_order_followup  where expeditor_Order_Id = a.id) as followUp from t_expeditor_order_uploads a
+	left join t_expeditor_orders b
+	on a.Id = b.Order_UploadedId where
+	/* a.customermaterialcode = (SELECT customermaterialcode FROM t_expeditor_order_uploads where id =PId) and */
+	 a.KanooCustomerPOInternalId = (SELECT KanooCustomerPOInternalId FROM t_expeditor_order_uploads where id =PId);
+
+END$$
+DELIMITER ;

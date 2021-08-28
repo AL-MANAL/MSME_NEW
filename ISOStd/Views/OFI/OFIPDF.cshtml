@@ -1,0 +1,369 @@
+﻿@using System.Data
+@using ISOStd.Models;
+
+@{
+    ViewBag.Title = "OFIPDF";
+
+    DataSet dsCompany = new DataSet();
+    if (ViewBag.CompanyInfo != null)
+    {
+        dsCompany = ViewBag.CompanyInfo;
+    }
+
+    ISOStd.Models.OFIModels obj = new ISOStd.Models.OFIModels();
+    ISOStd.Models.clsGlobal ObjGlobal = new ISOStd.Models.clsGlobal();
+    ISOStd.Models.OFIModelsList ObjOFIActionList = new ISOStd.Models.OFIModelsList();
+    ISOStd.Models.OFIModelsList ObjOFIImpList = new ISOStd.Models.OFIModelsList();
+    ISOStd.Models.OFIModelsList ObjOFIDocList = new ISOStd.Models.OFIModelsList();
+
+    if (ViewBag.ObjOFIList != null)
+    {
+        obj = ViewBag.ObjOFIList;
+    }
+
+    if (ViewBag.ObjOFIActionList != null)
+    {
+        ObjOFIActionList = ViewBag.ObjOFIActionList;
+    }
+
+    if (ViewBag.ObjOFIImpList != null)
+    {
+        ObjOFIImpList = ViewBag.ObjOFIImpList;
+    }
+
+    if (ViewBag.ObjOFIDocList != null)
+    {
+        ObjOFIDocList = ViewBag.ObjOFIDocList;
+    }
+
+    Layout = "~/Views/Shared/_PrintLayout.cshtml";
+}
+
+<STYLE TYPE="text/css">
+    .breakhere {
+        page-break-after: always;
+    }
+</STYLE>
+
+@Html.Partial("_ReportHeader", dsCompany)
+
+<div style="background-color:white">
+    <div>
+        <table class="table table-lg table-bordered">
+            <tr class="row">
+                <td colspan="4">
+                    <h3>Report Details</h3>
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+                    Division
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.division
+                    </div>
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+                    Department
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.department
+                    </div>
+                </td>
+
+                <td class="font-size-lg font-weight-bold">
+                    Location
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.location
+                    </div>
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+                    Risk Number
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.risk_no
+                    </div>
+                </td>
+                <td class="font-size-lg font-weight-bold">
+                    Risk Description
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.risk_nodesc
+                    </div>
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">IO Reported By</td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.reportedby
+                    </div>
+                </td>
+
+                <td class="font-size-lg font-weight-bold">
+                    IO Reported Date
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @if (obj.reported_date != null && obj.reported_date > Convert.ToDateTime("01/01/0001"))
+                        {
+                            @Html.Label(obj.reported_date.ToString("dd/MM/yyyy"))
+                        }
+                    </div>
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">IO identified in</td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.identified_in
+                    </div>
+                </td>
+                <td class="font-size-lg font-weight-bold">Target date to achieve the planned improvement</td>
+                <td class="font-size-lg">
+                    <div>
+                        @if (obj.target_date != null && obj.target_date > Convert.ToDateTime("01/01/0001"))
+                        {
+                            @Html.Label(obj.target_date.ToString("dd/MM/yyyy"))
+                        }
+                    </div>
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+                    Identified Improvement Opportunity
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.opportunity
+                    </div>
+                </td>
+                <td class="font-size-lg font-weight-bold">
+                    Expected improvement
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.improvement
+                    </div>
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+                    To be approved by
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.approvedby
+                    </div>
+                </td>
+                <td class="font-size-lg font-weight-bold">
+                    Realization Approved by
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.realization_approved_by
+                    </div>
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+                    Actions Proposed by
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.action_proposedby
+                    </div>
+                </td>
+                <td class="font-size-lg font-weight-bold">
+                    Updated by
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.updatedby
+                    </div>
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+                    Any document to be updated?
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.updated
+                    </div>
+                </td>
+                <td class="font-size-lg font-weight-bold">
+                    Is expected improvement achieved?
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.improvement_achieve
+                    </div>
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+                    IO Status to be checked by
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.checkedby
+                    </div>
+                </td>
+                <td class="font-size-lg font-weight-bold">
+                    IO Status
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.ofi_status
+                    </div>
+                </td>
+            </tr>
+            @if (obj.checkedbystatus == "Approved")
+            {
+                <tr class="row">
+                    <td class="font-size-lg font-weight-bold">
+                        Remark
+                    </td>
+                    <td class="font-size-lg">
+                        <div>
+                            @obj.remark
+                        </div>
+                    </td>
+                </tr>
+            }
+        </table>
+    </div>
+    <div>
+        <br />
+        <br />
+        @if (ObjOFIActionList.OFIList != null && ObjOFIActionList.OFIList.Count > 0)
+        {
+            <div>
+                <h1>Actions to be taken to improve</h1>
+                <table class="table" id="team-list-count">
+                    <tr class="bg-blue">
+                        <th>Sl No.</th>
+                        <th>Action details</th>
+                        <th>Area to be improved</th>
+                        <th>Personnel Responsible</th>
+                        <th>Resource required</th>
+                        <th>Target Date</th>
+                    </tr>
+                    @for (int index = 0; index < ObjOFIActionList.OFIList.Count; index++)
+                    {
+                        <tr>
+                            <td>@(index + 1)</td>
+                            <td>
+                                @(ObjOFIActionList.OFIList[index].action_details)
+                            </td>
+                            <td>
+                                @obj.GetOFIAreaImprovedById(ObjOFIActionList.OFIList[index].area_improved)
+                            </td>
+                            <td>
+                                @ObjGlobal.GetMultiHrEmpNameById(ObjOFIActionList.OFIList[index].resp)
+                            </td>
+                            <td>
+                                @ObjOFIActionList.OFIList[index].resource
+                            </td>
+                            <td>
+                                @ObjOFIActionList.OFIList[index].action_target_date.ToString("yyyy-MM-dd")
+                            </td>
+                        </tr>
+                    }
+                </table>
+            </div>
+        }
+        <br />
+        <br />
+        @if (ObjOFIImpList.OFIList != null && ObjOFIImpList.OFIList.Count > 0)
+        {
+            <div>
+                <h1>Achieved Improvement Details</h1>
+                <table class="table" id="team-list-count">
+                    <tr class="bg-blue">
+                        <th>Sl No.</th>
+                        <th>Improvement Details</th>
+                        <th>Improvement Achieved in</th>
+                        <th>Measurable Value</th>
+                        <th>Upload</th>
+                    </tr>
+
+                    @for (int index = 0; index < ObjOFIImpList.OFIList.Count; index++)
+                    {
+                        <tr>
+                            <td>@(index + 1)</td>
+                            <td>
+                                @(ObjOFIImpList.OFIList[index].improve_details)
+                            </td>
+                            <td>
+                                @obj.GetOFIAreaImprovedById(ObjOFIImpList.OFIList[index].improve_achievedin)
+                            </td>
+                            <td>
+                                @ObjOFIImpList.OFIList[index].improve_measurable
+                            </td>
+                            <td>
+                                @if (ObjOFIImpList.OFIList[index].imporve_upload != null && ObjOFIImpList.OFIList[index].imporve_upload != "" && ObjOFIImpList.OFIList[index].imporve_upload.Length > 0)
+                                {
+                                    foreach (var docs in ObjOFIImpList.OFIList[index].imporve_upload.Trim(',').Split(','))
+                                    {
+                                        <div class="form-check">
+                                            <label class="form-check-label">
+                                                <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" class="text-orange">
+                                                    @System.IO.Path.GetFileName(docs)
+                                                </a>
+                                            </label>
+                                        </div>
+                                    }
+                                }
+                            </td>
+                        </tr>
+                    }
+                </table>
+            </div>
+        }
+        <br />
+        <br />
+        @if (ObjOFIDocList.OFIList != null && ObjOFIDocList.OFIList.Count > 0)
+        {
+            <div>
+                <h1>Document Details</h1>
+                <table class="table" id="team-list-count1">
+                    <tr class="bg-blue">
+                        <th>Sl No.</th>
+                        <th>Document Type</th>
+                        <th>Document Ref.</th>
+                        <th>Document Name</th>
+                    </tr>
+                    @for (int index = 0; index < ObjOFIDocList.OFIList.Count; index++)
+                    {
+                        <tr>
+                            <td>@(index + 1)</td>
+                            <td>
+                                @ObjGlobal.GetDocTypeByID(ObjOFIDocList.OFIList[index].doc_type)
+                            </td>
+                            <td>
+                                @ObjOFIDocList.OFIList[index].doc_ref
+                            </td>
+                            <td>
+                                @ObjOFIDocList.OFIList[index].doc_name
+                            </td>
+                        </tr>
+                    }
+                </table>
+            </div>
+        }
+        
+    </div>
+</div>
+

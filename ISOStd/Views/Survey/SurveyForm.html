@@ -1,0 +1,118 @@
+<html>  
+  
+<head> 
+	<style type="text/css">
+		.table {
+			border-collapse: collapse;
+			margin-top: 20px; 
+			margin-bottom: 15px; 
+			border: 1px solid #ddd; 
+			width: 100%;
+		}
+		
+		.table td, th {
+			border: 1px solid #ddd;
+			}
+			
+		.table th {
+			background-color: #e5eafe;
+			color: #0099ff;
+			font-size: 14px;
+			font-family: 'opensans', sans-serif;
+			white-space: normal;
+		}
+		.btn-info {
+			color: #fff;
+			width: 75px;
+			padding: 0px;
+			background-color: #31b0d5 !important;
+			border-color: #46b8da;
+			    height: 30px;
+		}
+    </style> 
+    <title></title>  
+	<script>
+	//Code for Chrome, to download json file
+	function saveText(text, filename){
+	  var a = document.createElement('a');
+	  a.setAttribute('href', 'data:text/plain;charset=utf-u,'+encodeURIComponent(text));
+	  a.setAttribute('download', filename);
+	  a.click()
+}
+
+//Code for Firefox, to download json file
+function download(filename, text) {
+  var element = document.createElement('a');
+  element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+  element.setAttribute('download', filename);
+
+  element.style.display = 'none';
+  document.body.appendChild(element);
+
+  element.click();
+
+  document.body.removeChild(element);
+}
+
+
+function GenerateResult()
+{	
+	var Qcnt= document.getElementById("Qcount").value;	
+	var objSurvey = [];
+	for(i=0; i < Qcnt; i++)
+	{	
+		var QuestionId= document.getElementById("rdbquestion"+ i).value; 
+		var answer= document.getElementById("rdbquestionVal"+ i).value; 		
+		objSurvey.push({id: QuestionId, answer: answer});	
+	}
+	var is_chrome = navigator.userAgent.toLowerCase().indexOf('chrome') > -1;
+	var is_FIREFOX = (navigator.userAgent.toString().toLowerCase().indexOf("firefox") != -1);
+	
+	if(is_chrome)
+	{	
+		saveText( JSON.stringify(objSurvey), "Feedback.json" );
+	}
+	if(is_FIREFOX)
+	{
+		download( "Feedback.json", JSON.stringify(objSurvey) );
+	}
+	alert("Thank you for your valuable feedback.")
+}
+
+function SetValue(id, vAnsValue)
+{
+	document.getElementById(id).value=vAnsValue;
+}
+	</script>
+</head>  
+  
+<body>
+    <table>
+        <tr>
+            <td>
+                <!--<img src="http://www.almanalmgt.com/wp-content/uploads/2015/08/al-manal-management-logo-web1.png" style="width:250px; height:60px;" />-->
+                <img src="../images/companylogo.png" style="width:250px; height:60px;" />
+                
+                <br />
+                <br />
+                <div style="text-align: center;font-size: 20px;font-weight: bold;">Client Satisfaction Survey Form</div>
+                <div style="border-top: 3px solid #22BCE5;"></div>
+                <p>
+                    <b>Dear customer</b>, as an ongoing commitment to provide quality product and service, MSME would be grateful if you could spare a few minutes
+                    and give us your assessment of our product and service to you. Your valuable comments and suggestions would go a long way in helping us to
+                    improve our product and service quality to bring to you our best.
+                </p>
+                <p style="color: grey;">
+                    *Please select the appropriate rating and click Done, Feedback file will be automatically generated.
+                    Please Email the Feedback.json file
+                </p>
+                <input type="hidden" id="Qcount" value="{Qcount}" />
+                <table class="table">
+                    {content}
+                </table>
+            </td>
+        </tr>
+    </table>	
+	<input class="btn-info" type="button" onclick="GenerateResult()" value="Done"/>
+</body>  
+</html> 

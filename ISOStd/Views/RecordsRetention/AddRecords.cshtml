@@ -1,0 +1,442 @@
+﻿@model ISOStd.Models.RecordsRetentionModels
+
+@{
+    ViewBag.Title = "AddRecords";
+}
+
+@section featured {
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("RecordsList", "RecordsRetention", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Record Management</span>
+                    </a>
+                    <span class="breadcrumb-item active"> Add Record Management</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+ }
+
+@using (Html.BeginForm("AddRecords", "RecordsRetention", FormMethod.Post, new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Add Record Management</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+
+                <table class="table table-lg">
+                    <tbody>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.branch)
+                            </td>
+                            <td class="col">
+                                <select class="form-control select-fixed-multiple" multiple="multiple" data-fouc id="branch" name="branch" onchange="GetDeptList()">
+                                    @*<option value='' hidden>Select</option>*@
+                                    @if (ViewBag.Branch != null)
+                                    {
+                                        foreach (var data in ViewBag.Branch)
+                                        {
+                                            if (Array.IndexOf(Model.branch.ToString().Split(','), data.Value) >= 0)
+                                            {
+                                                <option value='@data.Value' selected>@data.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@data.Value'>@data.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.Dept_id)
+                                <text style="color: red;">*</text>
+                            </td>
+                            <td class="col">
+                                <select class="form-control select-fixed-multiple" data-fouc id="Dept_id" name="Dept_id" multiple="multiple" required>
+
+                                    @if (ViewBag.DeptId != null)
+                                    {
+                                        foreach (var item in ViewBag.DeptId)
+                                        {
+                                            if (Array.IndexOf(Model.Dept_id.ToString().Split(','), item.Value) >= 0)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                                <br />
+                                @Html.ValidationMessageFor(m => m.Dept_id)
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.Work_Location)
+                                    <text style="color: red;">*</text>
+                                </div>
+                            </td>
+                            <td class="col">
+                                <select class="form-control select-fixed-multiple" data-fouc id="Work_Location" multiple="multiple" name="Work_Location" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.WorkLocation != null)
+                                    {
+                                        foreach (var item in ViewBag.WorkLocation)
+                                        {
+                                            if (Array.IndexOf(Model.Work_Location.ToString().Split(','), item.Value) >= 0)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                                <br />
+                                @Html.ValidationMessageFor(m => m.Work_Location)
+                            </td>                  
+                         
+
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.Doc_name)
+
+                            </td>
+                            <td class="col">
+
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="Doc_name" name="Doc_name">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.DocList != null)
+                                    {
+                                        foreach (var item in ViewBag.DocList)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                                <br />
+                                @* @Html.ValidationMessageFor(m => m.Doc_name)*@
+                            </td>
+
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.Generated_On)
+
+                            </td>
+                            <td class="col">
+
+                                <input type="date" id="Generated_On" name="Generated_On" class="form-control" />
+
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.Record_Title)<text style="color: red;">*</text>
+
+                            </td>
+                            <td class="col">
+
+                                @*<input type="text" id="Record_Title" name="Record_Title" required class="form-control" />*@
+                                @Html.EditorFor(m => m.Record_Title, new { htmlAttributes = new { @required = "required", @class = "form-control" } })
+                                @Html.ValidationMessageFor(m => m.Record_Title)
+
+                            </td>
+
+
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.Records_Type)
+                                @*Managment system  <text style="color: red;">*</text>*@
+                                <text style="color: red;">*</text>
+                            </td>
+                            <td class="col">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="Records_Type" name="Records_Type" onchange="GetRententionPeriod()" required>
+                                    <option value='' hidden>Select</option>
+
+                                    @if (ViewBag.RecordsType != null)
+                                    {
+                                        foreach (var item in ViewBag.RecordsType)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+
+                                <a href='@Url.Action("AddItems", "DropDownItems", new { Header_id = ViewBag.HeaderId })' title="Add Records" onclick="HyperLinkProgressIconFunction()">
+                                    <span class="badge badge-info">Add Record</span>
+                                </a>
+                                <br />
+                                @Html.ValidationMessageFor(m => m.Records_Type)
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.Retention_Period)
+
+                            </td>
+                            <td class="col">
+                                @*<div class="editor-field">
+                <textarea id="Retention_Period" name="Retention_Period" required></textarea>
+            </div>*@
+
+
+                                @*<select id="Retention_Period" name="Retention_Period" style="width: 180px;">
+                <option value='Select'>Select</option>
+                @if (ViewBag.RecordRetention != null)
+                {
+                    foreach (var item in ViewBag.RecordRetention)
+                    {
+
+                    <option value='@item.Value'>@item.Text</option>
+
+                    }
+                }
+            </select>*@
+                                @*<textarea id="Retention_Period" name="Retention_Period" required></textarea>*@
+                                <input type="text" id="Retention_Period" name="Retention_Period" readonly class="form-control" />
+
+                            </td>
+                           
+                        </tr>
+
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.retention_criteria) <text style="color:red">*</text>
+                            </td>
+                            <td class="col">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="retention_criteria" name="retention_criteria" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.CriteriaList != null)
+                                    {
+                                        foreach (var item in ViewBag.CriteriaList)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                                <br />
+                                @Html.ValidationMessageFor(m => m.retention_criteria)
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.Jobno)
+                            </td>
+                            <td class="col">
+                                @*<textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="Jobno" name="Jobno"></textarea>*@
+                                @Html.EditorFor(m => m.Jobno, new { htmlAttributes = new { @*@required = "required",*@@class = "form-control"
+                            }
+                        })
+                                @Html.ValidationMessageFor(m => m.Jobno)
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.Upload_Path)
+                                <text style="color: red;">*</text>
+                            </td>
+                            <td class="col">
+                                <input type="file" name="Upload_Path" id="Upload_Path" onchange="FileFormatValidation(this)" accept=".pdf, .doc, .docx,image/*" class="bootstrap-uploader" data-fouc required />
+
+                                @Html.ValidationMessage("Upload_Path", "This field is required")
+                            </td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+            </div>
+
+        </div>
+
+      
+
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+
+            @Html.ActionLink("Back to List", "RecordsList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+
+            <button class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" type="submit" value="Save" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Save</button>
+
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script>
+
+       
+                     //----zzz
+                    $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+                    });
+
+    //zzz----
+         function GetRententionPeriod() {
+            var idMgmt = $('#Records_Type').val();
+            if (idMgmt != '') {
+
+
+            jQuery.ajax({
+                url: '@Url.Action("FunRetention_PeriodList", "RecordsRetention")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'idMgmt' : idMgmt },
+                success: function (result) {
+                 
+                    $('#Retention_Period').prop('readonly', false);
+                    $('#Retention_Period').val(result);
+                    $('#Retention_Period').prop('readonly', true);
+
+                }
+                });
+            }
+        }
+
+                          
+            function FileFormatValidation(file) {
+                var ext = file.value.split(".").pop().toLowerCase();
+                if ($.inArray(ext, ["pdf", "xlsx", "xls", "doc", "docx"]) == -1) {
+                    file.value = "";
+                    bootbox.alert({
+                        title: 'File type',
+                        message: 'Invalid file format, please upload only doc, pdf, docx, jpg, jpeg, gif, png format'
+                    });
+                }
+        }
+
+        
+
+  function GetDeptList() {
+            var selectedValues = [];
+            $("#branch :selected").each(function () {
+                selectedValues.push($(this).val());
+            });           
+            jQuery.ajax({
+                url: '@Url.Action("FunGetAllDeptList", "EmployeeDetails")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'branch': selectedValues },
+                success: function (result) {
+                    GetLocList(selectedValues);
+                    $("#Dept_id").children('option').remove();
+                    $("#Dept_id").trigger('change');
+                    if (result != null && result.length > 0) {
+                        $.each(result, function (index, item) {
+                            $("#Dept_id").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                            $("#Dept_id").trigger('change');
+                        });
+                        return;
+                    }
+                    //else {
+                    //    bootbox.alert({
+                    //        title: 'Department List',
+                    //        message: 'No Department exists.'
+                    //    });
+                    //}
+                }
+            }); 
+          
+        }
+
+        function GetLocList(selectedValues) {                   
+            jQuery.ajax({
+                url: '@Url.Action("FunGetAllLocList", "EmployeeDetails")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'branch': selectedValues },
+                success: function (result) {
+                    $("#Work_Location").children('option').remove();
+                    $("#Work_Location").trigger('change');
+                    if (result != null && result.length > 0) {
+                        $.each(result, function (index, item) {
+                            $("#Work_Location").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                            $("#Work_Location").trigger('change');
+                        });
+                        return;
+                    }
+                    //else {
+                    //    bootbox.alert({
+                    //        title: 'Location List',
+                    //        message: 'No Location exists.'
+                    //    });
+                    //}
+                }
+            });       
+        }
+
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+
+  
+
+
+}
+

@@ -1,0 +1,470 @@
+﻿@model ISOStd.Models.PortalModels
+
+@{
+    ViewBag.Title = "SubCRMasterEdit";
+}
+
+@section featured {
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("SubCRMasterList", "Portal", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Sub-CR Master</span>
+                    </a>
+                    <span class="breadcrumb-item active">Update Sub-CR Master</span>
+                </div>
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+}
+
+@using (Html.BeginForm("SubCRMasterEdit", "Portal", FormMethod.Post,
+                     new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Update Sub-CR Master</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+                <input type="hidden" id="id_portal_master" name="id_portal_master" value="@Model.id_portal_master" />
+                <table class="table table-lg">
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.subcr_no)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input class="form-control" type="text" id="subcr_no" name="subcr_no" value="@Model.subcr_no" required />
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.commercial_name)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input class="form-control" type="text" id="commercial_name" name="commercial_name" value="@Model.commercial_name" required />
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.issue_date)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @if (Model.issue_date != null && Model.issue_date > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    <input class="form-control" type="date" id="issue_date" name="issue_date" value="@Model.issue_date.ToString("yyyy-MM-dd")" required />
+                                }
+                                else
+                                {
+                                    <input class="form-control" type="date" id="issue_date" name="issue_date" required />
+                                }
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.expiry_date)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @if (Model.expiry_date != null && Model.expiry_date > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    <input class="form-control" type="date" id="expiry_date" name="expiry_date" value="@Model.expiry_date.ToString("yyyy-MM-dd")" required />
+                                }
+                                else
+                                {
+                                    <input class="form-control" type="date" id="expiry_date" name="expiry_date" required />
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.isc_code)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input class="form-control" type="text" id="isc_code" name="isc_code" value="@Model.isc_code" required />
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.region)<text style="color:red;">*</text>
+                        </td>
+                        <td class="col">
+                            <select class="form-control select-fixed-multiple" data-fouc id="region" name="region" multiple="multiple" required>
+                                @if (ViewBag.Location != null)
+                                {
+                                    foreach (var item in ViewBag.Location)
+                                    {
+                                       if (Array.IndexOf(Model.region.ToString().Split(','), item.Value) >= 0)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                    }
+                                }
+                            </select>
+                            <br />
+                            @Html.ValidationMessageFor(m => m.region)
+                        </td>
+                    </tr>
+                    <tr class="row">
+
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.master_manager)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="master_manager" name="master_manager" required @*onchange="GetPIRank()"*@>
+                                    <option value='' hidden>Select</option>
+
+                                    @if (ViewBag.ManagerType != null)
+                                    {
+                                        foreach (var item in ViewBag.ManagerType)
+                                        {
+                                            if (item.Value == Model.master_manager)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.recommed_by_manager)@*<text style="color:red;">*</text>*@
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input type="text" class="form-control" id="recommed_by_manager" name="recommed_by_manager" value="@Model.recommed_by_manager"/>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.issue_authority)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="issue_authority" name="issue_authority" required>
+                                    <option value='' hidden>Select</option>
+
+                                    @if (ViewBag.IssueAuthority != null)
+                                    {
+                                        foreach (var item in ViewBag.IssueAuthority)
+                                        {
+                                            if (item.Value == Model.issue_authority)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                Upload
+                            </div>
+                        </td>
+                        <td class="col">
+                            <input type="file" name="upload" id="upload" title="Documents" onchange="FileFormatValidation(this)"
+                                   multiple="multiple" accept=".pdf, .doc, .docx,.xls,.xlsx,.png,.jpeg,.jpg,.image/*" @*class="bootstrap-uploader" data-fouc*@ />
+
+                            <span class="form-text text-muted"><code>(Hold Ctrl Key in case of multiple files or drag multiple files and drop here)</code></span>
+                            <br />
+                            @if (Model.upload != null && Model.upload != "" && Model.upload.Length > 0)
+                            {
+                                <h6> <span class="bg-dark py-1 px-2 rounded">Document List</span></h6>
+
+                                <span class="form-text text-muted">
+                                    <code>
+                                        (Uncheck in case to remove a uploaded file)
+                                    </code>
+                                </span>
+                                foreach (var docs in Model.upload.Trim(',').Split(','))
+                                {
+                                    <div class="form-check">
+                                        <label class="form-check-label">
+                                            <input type="checkbox" id="QCDocsVal" name="QCDocsVal" class="form-check-input-styled QCDocsVal" value="@docs.Trim(',')" checked title="Uncheck in case to remove a uploaded file" data-fouc />
+                                            <input type="hidden" id="QCDocsValselectall" name="QCDocsValselectall" />
+                                            <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" class="text-orange">
+                                                @System.IO.Path.GetFileName(docs)
+                                            </a>
+                                        </label>
+                                    </div>
+                                }
+                            }
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.activities)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="activities" name="activities" required> @Model.activities</textarea>
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.description)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="description" name="description">@Model.description</textarea>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.master_div)
+                        </td>
+                        <td class="col">
+                            <select class="form-control select-fixed-multiple" multiple="multiple" data-fouc id="master_div" name="master_div" onchange="GetDeptList()">
+                                @if (ViewBag.Branch != null)
+                                {
+                                    foreach (var data in ViewBag.Branch)
+                                    {
+                                        if (Array.IndexOf(Model.master_div.ToString().Split(','), data.Value) >= 0)
+                                        {
+                                            <option value='@data.Value' selected>@data.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@data.Value'>@data.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                        </td>
+
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.master_dept)<text style="color:red;">*</text>
+                        </td>
+                        <td class="col">
+                            <select class="form-control select-fixed-multiple" data-fouc id="master_dept" name="master_dept" multiple="multiple" required>
+                                @if (ViewBag.Department != null)
+                                {
+                                    foreach (var item in ViewBag.Department)
+                                    {
+                                        if (Array.IndexOf(Model.master_dept.ToString().Split(','), item.Value) >= 0)
+                                        {
+                                            <option value='@item.Value' selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                            <br />
+                            @Html.ValidationMessageFor(m => m.master_dept)
+                        </td>
+                    </tr>
+                    @*<tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                   Upload
+                                </div>
+                            </td>
+                            <td class="col-xs-3 col-md-4">
+                                <div class="editor-field">
+                                    <input type="file" name="upload" id="upload" onchange="FileFormatValidation(this)" multiple accept=".pdf,.xlsx,.xls,.doc,.docx,.image/*,.png,.jpeg,.jpg"  data-fouc />
+                                </div>
+                            </td>
+                        </tr>*@
+                </table>
+            </div>
+        </div>
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+            @Html.ActionLink("Back to List", "SubCRMasterList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+
+            <button type="submit" id="btnCreate" value="Add" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Update</button>
+        </div>
+    </div>
+}
+
+
+@section Scripts {
+    <script>
+                function FileFormatValidation(file) {
+                    var ext = file.value.split(".").pop().toLowerCase();
+                    if ($.inArray(ext, ["doc", "pdf", "docx", "xls", "xlsx", "png", "jpg", "jpeg"]) == -1) {
+                        file.value = "";
+                        jAlert("Invalid file format, please upload only doc, pdf, docx, xls, xlsx, png, jpeg, jpg format");
+                    }
+                }
+
+              function GetDeptList() {
+                    var selectedValues = [];
+                  $("#master_div :selected").each(function () {
+                        selectedValues.push($(this).val());
+                    });
+                    if (selectedValues != "") {
+                        jQuery.ajax({
+                            url: '@Url.Action("FunGetAllDeptList", "EmployeeDetails")',
+                            type: 'POST',
+                            dataType: "json",
+                            data: { 'branch': selectedValues },
+                            success: function (result) {
+                                //GetLocList(selectedValues);
+                                $("#master_dept").children('option').remove();
+                                $("#master_dept").trigger('change');
+                                if (result != null && result.length > 0) {
+                                    $.each(result, function (index, item) {
+                                        $("#master_dept").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                                        $("#master_dept").trigger('change');
+                                    });
+                                    return;
+                                }
+                                //else {
+                                //    bootbox.alert({
+                                //        title: 'Department List',
+                                //        message: 'No Department exists.'
+                                //    });
+                                //}
+                            }
+                        });
+                    }
+                    else {
+                        $("#master_dept").val('').trigger('change');
+                        //$("#Location").val('').trigger('change');
+                    }
+                }
+
+
+                @*function GetLocList(selectedValues) {
+                    jQuery.ajax({
+                        url: '@Url.Action("FunGetAllLocList", "EmployeeDetails")',
+                        type: 'POST',
+                        dataType: "json",
+                        data: { 'branch': selectedValues },
+                        success: function (result) {
+                            $("#Location").children('option').remove();
+                            $("#Location").trigger('change');
+                            if (result != null && result.length > 0) {
+                                $.each(result, function (index, item) {
+                                    $("#Location").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                                    $("#Location").trigger('change');
+                                });
+                                return;
+                            }
+                            else {
+                                bootbox.alert({
+                                    title: 'Location List',
+                                    message: 'No Location exists.'
+                                });
+                            }
+                        }
+                    });
+                }*@
+
+                @*function GetPIRank() {
+
+                     var priorityVal = $('#priority').val();
+                     var interestVal = $('#interest_level').val();
+                     var priority = $("#priority option:selected").text();
+                     var interest = $("#interest_level option:selected").text();
+
+                     if (priorityVal != "" && interestVal != "") {
+
+                         jQuery.ajax({
+                             url: '@Url.Action("funGetPIRank", "Parties")',
+                             type: 'POST',
+                             dataType: "json",
+                             data: { priority: priority, interest: interest },
+                             success: function (result) {
+                                 if (result != null) {
+                                     document.getElementById("pi_rank").value = result;
+                                 }
+
+                             }
+                         });
+
+                     }
+                 }*@
+        $('.form-check-input-styled').uniform();
+        $("#QCDocsVal").click(function () {
+            if ($("#QCDocsVal").prop('checked')) {
+                {
+                    $(this).prop('checked', true);
+                }
+            }
+            else {
+                $(this).prop('checked', false);
+                document.getElementById("QCDocsValselectall").value = "DeleteQC";
+            }
+        });
+
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

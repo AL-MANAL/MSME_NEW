@@ -1,0 +1,919 @@
+﻿@using PagedList;
+@using PagedList.Mvc;
+
+@model List<ISOStd.Models.MgmtDocumentsModels>
+
+@{
+    ViewBag.Title = "MgmtDocumentsList";
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+}
+               @{
+                   var ShowEdit = Obj.GetCurrentUserSession().InternalDoc.Contains("3") ? true : false;
+                   var ShowDownld = Obj.GetCurrentUserSession().InternalDoc.Contains("4") ? true : false;
+                   var ShowDel = Obj.GetCurrentUserSession().InternalDoc.Contains("5") ? true : false;
+                }
+
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("MgmtDocumentsList", "MgmtDocuments", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Internal Documents</span>
+                    </a>
+                    @*<span class="breadcrumb-item active"> Internal Documents</span>*@
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+}
+
+@*@using (Html.BeginForm("MgmtDocumentsListSearch", "MgmtDocuments", FormMethod.Post, new { id = "form1", name = "form1" }))
+    {*@
+
+
+
+@*<input type="hidden" id="ApprovestatusVal" name="ApprovestatusVal" value="@ViewBag.Approvestatus" />
+
+           <span style="margin-left:20px">   <b style="color:#31b0d5;">Approval Status</b></span>
+            <select id="Approvestatus" name="Approvestatus" required="" style="width:130px">
+                @if (ViewBag.ApprovestatusVal != null && ViewBag.Approvestatus != null)
+                {
+                    foreach (var item in ViewBag.Approvestatus)
+                    {
+                        if (item.Key == ViewBag.ApprovestatusVal)
+                        {
+                            <option value='@item.Key' selected>@item.Value</option>
+                        }
+                        else
+                        {
+                            <option value='@item.Key'>@item.Value</option>
+                        }
+                    }
+
+                }
+                else if (ViewBag.Approvestatus != null)
+                {
+                    foreach (var item in ViewBag.Approvestatus)
+                    {
+                        <option value='@item.Key'>@item.Value</option>
+                    }
+                }
+            </select>
+
+                <span style="margin-left:15px">   <b style="color:#31b0d5;">Dept</b></span>
+
+                <select id="Department" name="Department" style="width:150px">
+                    <option value='' hidden>Select</option>
+                    @if (ViewBag.Department != null && ViewBag.DeptSearch != null)
+                    {
+                        foreach (var item in ViewBag.Department)
+                        {
+                            if (item.Text == ViewBag.DeptSearch)
+                            {
+                                <option value='@item.Value' selected>@item.Text</option>
+                            }
+                            else
+                            {
+                                <option value='@item.Value'>@item.Text</option>
+                            }
+
+
+                        }
+                    }
+                    else
+                    {
+                        foreach (var item in ViewBag.Department)
+                        {
+                            <option value='@item.Value'>@item.Text</option>
+                        }
+                    }
+                </select>
+
+    if (Session["state"].ToString() == "1")
+    {
+                <span style="margin-left:15px">   <b style="color:#31b0d5;">Document Type</b></span>
+
+                <select id="Doctype" name="Doctype" style="width:120px">
+                    <option value='' hidden>Select</option>
+                    @if (ViewBag.DocumentType != null && ViewBag.DocumentType != null)
+                    {
+                        foreach (var item in ViewBag.DocumentType)
+                        {
+                            if (item.Text == ViewBag.Doctype1)
+                            {
+                                <option value='@item.Value' selected>@item.Text</option>
+                            }
+                            else
+                            {
+                                <option value='@item.Value'>@item.Text</option>
+                            }
+
+
+                        }
+                    }
+                    else
+                    {
+                        foreach (var item in ViewBag.Doctype1)
+                        {
+                            <option value='@item.Value'>@item.Text</option>
+                        }
+                    }
+                </select>
+    }
+
+          <span id="tab" style="color:#31b0d5;font-weight: bold; padding: 10px;">And/Or</span>
+
+
+
+                @Html.TextBox("SearchText", (string)ViewBag.SearchText, new { placeholder = "Search by Doc Ref or Name", style = "width:15%; " })
+                <button type="submit" class="btn btn-info" onclick="ProgressIconFunction('#form1')">
+                    <span class="glyphicon glyphicon-search"></span> Search
+                </button>*@
+
+@*if (Session["state"].ToString() == "1")
+    {
+
+    @Html.ActionLink("Add New", "AddMgmtDocuments", null, new { @class = "ActionLink", onclick = "HyperLinkProgressIconFunction()" })
+    }*@
+
+
+
+
+
+@*}*@
+
+<style>
+    .hidden {
+        display: none !important;
+    }
+</style>
+
+<div class="card">
+    <div class="card-header header-elements-inline bg-primary">
+        <h5 class="card-title">Internal Documents</h5>
+        <div class="header-elements">
+            <div class="list-icons">
+                <a class="list-icons-item" data-action="collapse"></a>
+
+            </div>
+        </div>
+    </div>
+
+    @if (Obj.GetCurrentUserSession().InternalDoc.Contains("3"))
+    {
+    <div class="card-body">
+
+        @*@if (Session["state"].ToString() == "1")
+        {*@
+        <a class="btn btn-outline bg-orange text-orange border-orange btn-ladda btn-ladda-progress ladda-button" data-style="radius" href='@Url.Action("AddMgmtDocuments", "MgmtDocuments")' title="Add New">
+            <span class="ladda-label">Add New</span>
+            <span class="ladda-spinner"></span>
+        </a>
+        @* }
+        *@
+    </div>
+    }
+    <div class="card-body">
+
+        <div class="options d-flex flex-fill">
+           @*@using (Html.BeginForm("MgmtDocumentsList", "MgmtDocuments", FormMethod.Post, new { id = "form1", name = "form1",style="width:20em" }))
+            {
+                if (ViewBag.Branch != null)
+                {*@
+                    <select class="select-fixed-single" data-fouc id="branch_name" name="branch_name" onchange="getDetails()">
+                        <option value='' hidden>Division</option>
+                        @if (ViewBag.Branch != null)
+                        {
+                            foreach (var item in ViewBag.Branch)
+                            {
+                                if (item.Value == ViewBag.Branch_name)
+                                {
+                                    <option value='@item.Value' selected>@item.Text</option>
+                                }
+                                else
+                                {
+                                    <option value='@item.Value'>@item.Text</option>
+                                }
+                            }
+                        }
+                    </select>
+                @*}
+            }*@
+
+        </div>
+    </div>
+
+    <table class="table table-bordered table-striped table-hover datatable-responsive" id="MgmtDocuments">
+        <thead>
+            <tr>
+                <th>
+                    Sl No
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.First().Department)
+                </th>
+                <th>
+                    Doc. Ref.
+                </th>
+                <th>
+                    Doc. Name
+                </th>
+                @if (ShowDownld)
+                {
+                    <th class="not-export-column">
+                        Document
+                    </th>
+                }
+               
+                <th>
+                    @Html.DisplayNameFor(model => model.First().DocLevels)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.First().Doctype)
+                </th>
+                <th>Issue / Rev No</th>
+                <th>Doc Date</th>
+
+                @*<th>ViewBy</th>*@
+                <th>Reviewer</th>
+                <th>Approver</th>
+                <th>Review Status</th>
+                <th>Approval Status</th>
+                <th>Division</th>
+                <th>Location</th>
+                <th data-priority="2" class="text-center not-export-column">Actions</th>
+
+                @*<th class="not-export-column">
+            Annexure
+        </th>
+
+        <th class="not-export-column">
+            History
+        </th>*@
+                @* <th style="width: 100px; min-width: 100px; max-width: 100px;">Reviewed Status</th>*@
+                @*<th style="width: 100px; min-width: 100px; max-width: 100px;">Prepared By</th>
+        <th style="width: 100px; min-width: 100px; max-width: 100px;">Reviewed By</th>*@
+
+                @*<th class="not-export-column">Edit</th>
+        <th class="not-export-column">Delete</th>*@
+
+            </tr>
+        </thead>
+
+        <tbody>
+            @if (Model != null && Model.Count() > 0)
+            {
+                int i = 0;
+                foreach (var item in Model)
+                {
+                    i = i + 1;
+            <tr>
+
+                @*<a href="#" data-toggle="popover" data-trigger="hover" id="@item.id_issue">@i</a>*@
+                <td>
+                    @Html.ActionLink(i.ToString(), "MgmtDocumentsDetails", new { idMgmt = item.idMgmt.ToString() }, new { data_toggle = "popover", data_trigger = "hover", id = item.idMgmt, onclick = "HyperLinkProgressIconFunction()" })
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Department)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DocRef)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DocName)
+                </td>
+                @if (ShowDownld)
+                {
+                    <td>
+                        @if (item.Approved_Status == "Approved")
+                        {
+                            if (item.DocUploadPath != "")
+                            {
+                                <a href='@Url.Action("DisplayDocument", "Reports", new { Document = item.DocUploadPath })' target="_blank" class="text-orange">Preview</a>
+                            }
+
+                        }
+                        else
+                        {
+                            <span class="badge badge-danger">Document Not Approved</span>
+                        }
+                    </td>
+                }
+                else
+                {
+                    <td><span class="badge badge-info">Not Allowed</span></td>
+
+                }
+               
+                <td>
+                    @Html.DisplayFor(modelItem => item.DocLevels)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Doctype)
+                </td>               
+                <td>
+                    @if (item.IssueNo != null && item.IssueNo != "")
+                    {
+                        var revNo = item.IssueNo + "/" + item.RevNo;
+                        @revNo;
+                    }
+                    else
+                    {
+                        @Html.DisplayFor(modelItem => item.RevNo)
+                    }
+
+                </td>
+                <td>
+                    @if (item.DocDate > Convert.ToDateTime("01/01/0001"))
+                    {
+                        @item.DocDate.ToString("dd/MM/yyyy")
+                    }
+                </td>
+
+                @*<td>
+                    @Html.DisplayFor(modelItem => item.view_by)
+                </td>*@
+                <td>
+                    @Html.DisplayFor(modelItem => item.ReviewedBy)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ApprovedBy)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Reviewed_Status)
+                    @if (item.Reviewers != "0")
+                    {
+                        <br />
+                        <span>Reviewed by:<b>@item.Reviewers</b></span>
+                    }
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Approved_Status)
+                    @if (item.Approvers != "0")
+                    {
+                        <br />
+                        <span>Approved by:<b>@item.Approvers</b></span>
+                    }
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.branch)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Location)
+                </td>
+                <td class="text-center">
+                    <div class="list-icons">
+                        <div class="list-icons-item dropdown">
+                            <a href="#" class="list-icons-item caret-0 dropdown-toggle" data-toggle="dropdown">
+                                <i class="icon-gear mr-2"></i>
+                            </a>
+
+                            <div class="dropdown-menu dropdown-menu-right">
+
+                                @if (Obj.GetCurrentUserSession().InternalDoc.Contains("3"))
+                                {
+                                    <a class="dropdown-item" href='@Url.Action("AddAnnexure", "MgmtDocuments", new { idMgmt = item.idMgmt.ToString() })' title="Add New Annexure" onclick="HyperLinkProgressIconFunction()">
+                                        @*<img src="@Url.Content("~/Images/icon_add.png")" title="Add Annexure" onclick="HyperLinkProgressIconFunction()" />*@
+                                        <i class="icon-add"></i>Add New Annexure
+                                    </a>
+                                }
+                                <a class="dropdown-item" href='@Url.Action("AnnexureList", "MgmtDocuments", new { idMgmt = item.idMgmt.ToString() })' title="View Annexure List" onclick="HyperLinkProgressIconFunction()">
+                                    @*<img src="@Url.Content("~/Images/icon_list.png")" title="View Annexure list" onclick="HyperLinkProgressIconFunction()" />*@
+                                    <i class="icon-list3"></i>View Annexure List
+                                </a>
+
+                                <a class="dropdown-item" href='@Url.Action("MgmtDocumentsHistoryList", "MgmtDocuments", new { idMgmt = item.idMgmt.ToString() })' title="View History" onclick="HyperLinkProgressIconFunction()">
+                                    @*<img src="@Url.Content("~/Images/historyicon.png")" onclick="HyperLinkProgressIconFunction()" />*@
+                                    <i class="icon-history"></i>View History
+                                </a>
+                                @if (ShowEdit)
+                                {
+                                    if (item.ReviewedBy.Contains(ViewBag.CurrentEmpName)
+                                    || item.ApprovedBy.Contains(ViewBag.CurrentEmpName)
+                                    || item.PreparedBy.Contains(ViewBag.CurrentEmpName)
+                                    || ViewBag.CurrentEmpName == item.UploadedBy)
+                                    {
+
+                                        <a class="dropdown-item" href='@Url.Action("MgmtDocumentsEdit", "MgmtDocuments", new { idMgmt = item.idMgmt })' title="Edit document details" onclick="HyperLinkProgressIconFunction()">
+                                            <i class="icon-pencil7"></i>Edit
+                                        </a>
+                                    }
+                                }
+                                <div class="dropdown-divider"></div>
+                                @if (ShowDel)
+                                {
+
+                                    <span class="dropdown-item text-center" title="Delete Internal Document" onclick="DeleteItems(@item.idMgmt)" style="cursor:pointer;"><i class="icon-bin"></i>Delete</span>
+                                }
+
+                            </div>
+                        </div>
+                    </div>
+                </td>
+
+
+                @*<td>
+
+            @if (Obj.GetCurrentUserSession().InternalDoc.Contains("3"))
+            {
+                <a href='@Url.Action("AddAnnexure", "MgmtDocuments", new { idMgmt = item.idMgmt.ToString() })' title="Add New Annexure" onclick="HyperLinkProgressIconFunction()">
+
+                    <i class="icon-add"></i>
+                </a>
+            }
+            <a href='@Url.Action("AnnexureList", "MgmtDocuments", new { idMgmt = item.idMgmt.ToString() })' title="View Annexure List" onclick="HyperLinkProgressIconFunction()">
+
+                <i class="icon-list3"></i>
+            </a>
+
+        </td>
+        <td>
+            <a href='@Url.Action("MgmtDocumentsHistoryList", "MgmtDocuments", new { idMgmt = item.idMgmt.ToString() })' title="View History" onclick="HyperLinkProgressIconFunction()">
+
+                <i class="icon-history"></i>
+            </a>
+        </td>*@
+                @* <td style="width:100px; min-width:100px; max-width:100px;">
+            @if (ViewBag.Role.ToLower() != "Preparer".ToLower() && item.Approved_Status.ToLower() == "Not Approved".ToLower() && item.ApprovedBy.Contains(ViewBag.CurrentEmpName))
+            {
+            <a href='@Url.Action("MgmtDocumentsApprove", "MgmtDocuments", new { idMgmt = item.idMgmt })' title="Approve document details" style="color:red;">
+                Approve
+            </a>
+            }
+            else
+            {
+            @item.Approved_Status
+            }
+        </td>*@
+
+                @*<td style="width:100px; min-width:100px; max-width:100px;word-wrap:break-word">
+            @Html.DisplayFor(modelItem => item.Reviewed_Status)
+        </td>*@
+                @*<td style="width:100px; min-width:100px; max-width:100px;word-wrap:break-word">
+            @Html.DisplayFor(modelItem => item.PreparedBy)
+        </td>
+        <td style="width:100px; min-width:100px; max-width:100px;word-wrap:break-word">
+            @Html.DisplayFor(modelItem => item.ReviewedBy)
+        </td>*@
+
+
+                @*<td>
+                @if (item.ReviewedBy.Contains(ViewBag.CurrentEmpName)
+        || item.ApprovedBy.Contains(ViewBag.CurrentEmpName)
+        || item.PreparedBy.Contains(ViewBag.CurrentEmpName)
+        || ViewBag.CurrentEmpName == item.UploadedBy)
+                {
+                    <a href='@Url.Action("MgmtDocumentsEdit", "MgmtDocuments", new { idMgmt = item.idMgmt })' title="Edit document details" onclick="HyperLinkProgressIconFunction()">
+                        <span class="badge badge-info">Edit</span>
+                    </a>
+                }
+
+            </td>
+
+            <td>
+                <span class="badge badge-danger" title="Delete Internal Document" onclick="DeleteItems(@item.idMgmt)" style="cursor:pointer;">Delete</span>
+            </td>*@
+
+            </tr>
+                }
+            }
+
+        </tbody>
+    </table>
+</div>
+
+
+@section scripts {
+    <script>    
+
+          $(document).ready(function () {
+
+        @if (TempData["alertdata"] != null ) {
+
+           @: new Noty({
+           @:     text: '@TempData["alertdata"]',
+           @:     type: 'error'
+           @: }).show();
+        }
+
+        @if (@TempData["Successdata"] != null ) {
+
+        @:    new Noty({
+         @:       text: '@TempData["Successdata"]',
+         @:       type: 'success'
+         @:   }).show();
+        }
+    });
+    //zzz----
+
+         function setData(id) {
+
+                var set_data = '';
+                var element = $(this);
+                var id = element.attr("id");
+                $.ajax({
+                       url: '@Url.Action("MgmtDocumentsInfo", "MgmtDocuments")',
+                    methos: "post",
+                    async: false,
+                    data: { id: id },
+                    success: function (data) {
+                        set_data = data;
+
+                    }
+
+                });
+
+                return set_data;
+            }
+       
+
+        var MgmtDocuments = function () {
+              @*var ShowEdit = @(Obj.GetCurrentUserSession().InternalDoc.Contains("3") ? "true" : "false");
+              var ShowDownld = @(Obj.GetCurrentUserSession().InternalDoc.Contains("4") ? "true" : "false");
+              var ShowDel = @(Obj.GetCurrentUserSession().InternalDoc.Contains("5") ? "true" : "false");*@
+            
+            // Basic Datatable examples
+            var _componentDatatableBasic = function () {
+                if (!$().DataTable) {
+                    console.warn('Warning - datatables.min.js is not loaded.');
+                    return;
+                }
+
+                //Setting datatable defaults
+                $.extend($.fn.dataTable.defaults, {
+                    autoWidth: false,
+                    responsive:true,
+                    columnDefs: [{
+                        orderable: false,
+                        //width: 100,
+                        targets: 'not-export-column'
+                 
+                    }],
+                    responsivePriority: 2, targets: -1, 
+                    colReorder: false,
+                    dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                    //dom: 'lBfrtip',
+                    language: {
+                        search: '<span>Filter:</span> _INPUT_',
+                        searchPlaceholder: 'Type to filter...',
+                        lengthMenu: '<span>Show:</span> _MENU_',
+                        paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                    }
+                });
+
+                var myClass = "";
+                var Delclass= @(Obj.GetCurrentUserSession().InternalDoc.Contains("4") ? "true" : "false");
+                if (Delclass == false) { myClass = 'hidden'  };
+
+                var table = $('#MgmtDocuments').DataTable({
+                    drawCallback: function () {
+                        $('[data-toggle="popover"]').popover({
+                            html: true,
+                            content: setData,
+                            container: 'body'
+                            //data: setData,
+                        });
+                        var dropdownMenu;
+
+                        // and when you show it, move it to the body                                     
+                        $('.datatable-responsive').on('show.bs.dropdown', function (e) {
+                        
+                            // grab the menu        
+                            dropdownMenu = $(e.target).find('.dropdown-menu');
+
+                            // detach it and append it to the body
+                            $('body').append(dropdownMenu.detach());
+
+                            // grab the new offset position
+                            var eOffset = $(e.target).offset();
+
+                            // make sure to place it where it would normally go (this could be improved)
+                            dropdownMenu.css({
+                                'display': 'block',
+                                'top': eOffset.top + $(e.target).outerHeight(),
+                                'left': eOffset.left
+                            });
+                        });
+
+                        // and when you hide it, reattach the drop down, and hide it normally                                                   
+                        $('.datatable-responsive').on('hide.bs.dropdown', function (e) {
+                            $(e.target).append(dropdownMenu.detach());
+                            dropdownMenu.hide();
+                        });
+
+                    },
+
+                    lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                    colReorder: {
+                        fixedColumnsLeft: 1
+                    },
+                    //stateSave: true,
+                    //stateSaveParams: function (settings, data) {
+                    //    for (var i = 0, ien = data.columns.length; i < ien; i++) {
+                    //        delete data.columns[i].visible;
+                    //        delete data.columns[i].search;
+                    //    }
+                    //},
+                    scrollY: '350px',
+                    scrollCollapse: true,
+                    
+                    keys: {
+                        className: 'focus focus-success'
+                    },
+
+                    buttons: {
+                        buttons: [
+                            {
+                                extend: 'copyHtml5',
+                                className: myClass,//className: 'btn btn-light',
+                                title: 'Internal Document History Data export',
+                                exportOptions: {
+                                    columns: ':visible :not(.not-export-column)'
+                                },
+                            },
+                            {
+                                extend: 'excelHtml5',
+                                className: myClass,//className: 'btn btn-light',
+                                title: 'Internal Document  Data export',
+                                exportOptions: {
+                                    columns: ':visible :not(.not-export-column)'
+                                },
+
+                            },
+                            {
+                                extend: 'pdfHtml5',
+                                className: myClass,//className: 'btn btn-light',
+                                title: 'Internal Document  Data export',
+                                exportOptions: {
+                                    columns: ':visible :not(.not-export-column)'
+                                },
+                            },
+                            {
+                                extend: 'csvHtml5',
+                                className: myClass,//className: 'btn btn-light',
+                                title: 'Internal Document  Data export',
+                                exportOptions: {
+                                    columns: ':visible :not(.not-export-column)'
+                                },
+                            },
+                            {
+                                extend: 'print',
+                                className: myClass,//className: 'btn btn-light',
+                                title: 'Internal Document  Data export',
+                                exportOptions: {
+                                    columns: ':visible :not(.not-export-column)'
+                                },
+                            },
+
+                            {
+                                extend: 'colvis',
+                                text: '<i class="icon-three-bars"></i>',
+                                className: 'btn bg-blue btn-icon dropdown-toggle',
+                                columns: ':visible:not(.not-export-column)'
+                            }
+                        ]
+                    }
+
+                });
+                // Adjust columns on window resize
+                setTimeout(function () {
+                    $(window).on('resize', function () {
+                        table.columns.adjust();
+                    });
+                }, 100);
+
+
+                //Redraw table on click toggle. -------table.columns.adjust doesn't work properly upon calling after toggle (width increase/decrease = redraw table.).
+                $('.sidebar-control').on('click', function () {
+
+                    setTimeout(function () {
+                        //alert("gii");
+
+                        table.columns.adjust().draw();
+                        $("#MgmtDocuments").resize();
+                    } , 100);
+
+                    });
+                //}
+
+                $('#MgmtDocuments').on('page.dt', function () {
+                    //table.draw();
+                    //alert("zzz1");
+                    $("#MgmtDocuments").resize();
+
+                });
+
+                $('#MgmtDocuments').on('column-visibility.dt', function () {
+                    //table.draw();
+                    //alert("zzz2");
+                    $("#MgmtDocuments").resize();
+
+                });
+
+                $('#MgmtDocuments').on('order.dt', function () {
+                    //table.draw();
+                    //alert("zzz3");
+                    $("#MgmtDocuments").resize();
+
+                });
+
+
+                $('#MgmtDocuments').on('responsive-display.dt', function () {
+                    //table.draw();
+                    //alert("zzz4");
+                    $("#MgmtDocuments").resize();
+
+                });
+
+
+                $('#MgmtDocuments').on('responsive-resize.dt', function () {
+                    //table.draw();
+                    //alert("zzz4");
+                    $("#MgmtDocuments").resize();
+
+                });
+
+
+                    //.on('order.dt', function () {
+                    //    table.columns.adjust().draw();
+                    //    $("#qhse").resize(); })
+                    //.on('search.dt', function () {
+                    //    table.columns.adjust().draw();
+                    //    $("#qhse").resize(); })
+
+                    //.on('column-visibility.dt', function () {
+                    //    table.columns.adjust().draw();
+                    //    $("#qhse").resize();
+                    //})
+            };
+
+            // Select2 for length menu styling
+            var _componentSelect2 = function () {
+                if (!$().select2) {
+                    console.warn('Warning - select2.min.js is not loaded.');
+                    return;
+                }
+
+                // Initialize
+                $('.dataTables_length select').select2({
+                    minimumResultsForSearch: Infinity,
+                    dropdownAutoWidth: true,
+                    width: 'auto'
+                });
+            };
+
+
+            //
+            // Return objects assigned to module
+            //
+
+            return {
+                init: function () {
+                    _componentDatatableBasic();
+                    _componentSelect2();
+                }
+            }
+        }();
+
+
+        // Initialize module
+        // ------------------------------
+
+        document.addEventListener('DOMContentLoaded', function () {
+            MgmtDocuments.init();
+        });
+
+
+
+
+        @*@Scripts.Render("~/bundles/jqueryval")*@
+
+
+        //$(function () {
+            @*$("#Doctype").chosen();
+            $("#Department").chosen();
+            $("#Approvestatus").chosen();
+
+        });
+
+
+        $(document).ready(function () {
+
+            $('[data-toggle="popover"]').popover({
+
+                title: setData,
+                html: true,
+                placement: 'right',
+                container: 'body'
+            });
+
+            function setData(id) {
+                var set_data = '';
+                var element = $(this);
+                var id = element.attr("id");
+                $.ajax({
+                    url: '@Url.Action("MgmtDocumentsInfo", "MgmtDocuments")',
+                    methos: "post",
+                    async: false,
+                    data: { id: id },
+                    success: function (data) {
+                        set_data = data;
+                    }
+
+                });
+                return set_data;
+            }
+        });
+                *@
+        function DeleteItems(idMgmt) {
+            bootbox.confirm({
+                title: 'Confirm dialog',
+                message: 'Are you Sure you want to Delete the current Record?',
+                buttons: {
+                    confirm: {
+                        label: 'Yes',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'Cancel',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (r) {
+                    if (r == true) {
+                    jQuery.ajax({
+                        url: '@Url.Action("MgmtDocDelete", "MgmtDocuments")',
+                        type: 'POST',
+                        dataType: "json",
+                        data: { 'idMgmt': idMgmt },
+                        success: function (result) {
+
+
+                            //// Add new params to the querystring dictionary
+
+
+                            window.location.href =
+                                window.location.protocol + "//" +
+                                window.location.host +
+                                window.location.pathname
+
+                        }
+                    });
+                    return true;
+                }
+                else if (r == false) {
+                        bootbox.hideAll();
+                        return false;
+                    }
+
+                }
+            });
+            }
+
+            function getDetails() {
+                var branch_name = document.getElementById("branch_name").value;
+                 var params = {
+                                        branch_name: branch_name,
+                                        //View: View
+                                    };
+                                    queryString = $.param(params);
+
+                                    window.location.href =
+                                        window.location.protocol + "//" +
+                                        window.location.host +
+                                        window.location.pathname +
+                                       '?' + queryString;
+
+                        }
+    </script>
+
+}

@@ -1,0 +1,319 @@
+﻿@model ISOStd.Models.GenerateAuditChecklistModels
+
+@{
+    ViewBag.Title = "Auditchecklist";
+}
+
+
+
+
+
+
+@section featured {
+
+
+
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+
+
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+
+                    <a href="@Url.Action("AuditChecklistList", "GenerateAuditChecklist" , null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Audit Checklists</span>
+                    </a>
+
+
+                    <span class="breadcrumb-item active"> Edit Audit Checklist Details</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            <div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+}
+
+@using (Html.BeginForm("AuditChecklistEdit", "GenerateAuditChecklist", FormMethod.Post,
+                     new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+
+    <input type="hidden" id="itemcnt" name="itemcnt" value="0" />
+
+    <input type="hidden" id="id_AuditChecklist" name="id_AuditChecklist" value="@Model.id_AuditChecklist" />
+
+
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Generate Audit Checklist</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+
+                <table class="table table-lg">
+                    <tbody>
+                        <tr class="row">
+
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.Itemno)
+
+                            </td>
+                            <td class="col">
+
+                                <input class="form-control" type="text" id="Itemno" name="Itemno" value="@Model.Itemno" readonly />
+
+
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.Department)<text style="color:red;">*</text>
+
+
+                            </td>
+                            <td class="col">
+
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="Department" name="Department" onchange="GetQuestions()" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.Department != null)
+                                    {
+                                        foreach (var data in ViewBag.Department)
+                                        {
+                                            if (data.Text == Model.Department)
+                                            {
+                                                <option value='@data.Value' selected>@data.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@data.Value'>@data.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+
+
+                            </td>
+
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.AuditCriteria)<text style="color:red;">*</text>
+
+                            </td>
+                            <td class="col">
+
+                                <select class="form-control select-fixed-multiple" multiple data-fouc id="AuditCriteria" name="AuditCriteria"  required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.AuditCriteria != null)
+                                    {
+                                        foreach (var data in ViewBag.AuditCriteria)
+                                        {
+                                            if (Model.AuditCriteria.Contains(data.Text))
+                                            {
+                                                <option value='@data.Value' selected>@data.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@data.Value'>@data.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+
+                            </td>
+
+                        </tr>
+                    </tbody>
+                </table>
+                <table class="table table-lg" id="tblMeetingList">
+                    <tr>
+                        <th colspan="2" style="background-color: #e5eafe; color: #0099ff;text-align:center">
+                            Audit Questions
+                        </th>
+                    </tr>
+                    <tr>
+
+                        <th style="background-color: #e5eafe; color: #0099ff;">
+                            Sl No
+                        </th>
+                        <th style="background-color: #e5eafe; color: #0099ff;">
+                            Element
+                        </th>
+                    </tr>
+                    @if (ViewBag.AuditElements != null)
+                    {
+                        int iSrno = 0;
+                        foreach (var item in ViewBag.AuditElements)
+                        {
+                            if (Model.Questions.Contains(item.Value))
+                            {
+                                iSrno = iSrno + 1;
+                                <tr>
+                                    <td>
+                                        @iSrno
+                                    </td>
+                                    <td>
+                                        @item.Text
+                                        <input type="hidden" id="Audit_Elements @item.Value" name="Audit_Elements @item.Value" value="@item.Value" />
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    }
+                    </table>
+            </div>
+
+            <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+
+                @Html.ActionLink("Back to List", "AuditChecklistList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+
+                <button class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" type="submit" value="Save" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Save</button>
+
+            </div>
+
+        </div>
+
+    </div>
+}
+
+        
+
+@section Scripts {
+    <script>
+         
+
+         function GetQuestions() {
+             var Department = $('#Department').val();
+             if (Department != "") {
+                 jQuery.ajax({
+                     url: '@Url.Action("GetQuestions", "GenerateAuditChecklist")',
+                     type: 'POST',
+                     dataType: "json",
+                     data: { 'Department': Department },
+                     success: function (result) {
+
+                         var table = document.getElementById("tblMeetingList");
+
+                         var cnt = result.length;
+                         document.getElementById("itemcnt").value = cnt;
+                         //document.getElementById("divAgendasTitle").style.display = "";
+
+
+                         while (table.rows.length > 0) {
+                             table.deleteRow(0);
+                         }
+
+                         if (result != "") {
+
+                             document.getElementById("tblMeetingList").style.display = "";
+
+                             var thTitleRow = table.insertRow();
+                             thTitleRow.style = "background-color: #4cc4dd; color: #fff; font-weight: bold;";
+                             var cellTitle0 = thTitleRow.insertCell(0);
+
+                             cellTitle0.innerHTML = "Audit Questions";
+                             table.rows[0].cells[0].colSpan = 2;
+                             table.rows[0].cells[0].style = "color:#fff";
+
+
+                             var theaderRow = table.insertRow();
+
+                             theaderRow.style = "background-color: #e5eafe; font-weight: bold;";
+                             var cellth0 = theaderRow.insertCell(0);
+                             var cellth1 = theaderRow.insertCell(1);
+
+
+
+
+                             cellth0.innerHTML = "<th>Sl.No</th>";
+                             cellth1.innerHTML = "<th>Questions</th>";
+
+
+                             table.rows[1].cells[0].style = "color:#0099ff;";
+                             table.rows[1].cells[1].style = "color:#0099ff";
+
+
+                             var list = result;
+
+                             for (var i = 0,j=1; i < result.length; i++,j++) {
+
+                                 // Create an empty <tr> element and add it to the 1st position of the table:
+                                 var row = table.insertRow();
+
+                                 // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                                 var cell0 = row.insertCell(0);
+                                 var cell1 = row.insertCell(1);
+
+
+                                 var Id = result[i].Value;
+
+                                 cell0.innerHTML = " <input type='hidden' id='slno " + j + "' name='slno " + j + "'>" + j;
+                                 cell1.innerHTML = " <input type='hidden' id='Audit_Elements " + i + "' name='Audit_Elements " + i + "' value='" + Id + "'>" + result[i].Text;
+
+                             }
+
+                         }
+                         else {
+                             document.getElementById("tblMeetingList").style.display = "none";
+                             bootbox.alert({
+                                 title: 'Questions',
+                                 message: 'No Questions exists, please add Questions and then try again'
+                             });
+                         }
+
+                     }
+                 });
+             }
+         }
+
+
+
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+
+}
+

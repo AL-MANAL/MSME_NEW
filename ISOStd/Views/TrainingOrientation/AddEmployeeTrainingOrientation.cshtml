@@ -1,0 +1,230 @@
+﻿@model ISOStd.Models.TrainingOrientationModels
+
+@{
+    ViewBag.Title = "";
+    System.Data.DataSet dsrating = new System.Data.DataSet();
+    System.Data.DataSet dsTopic = new System.Data.DataSet();
+
+    if (ViewBag.SurveyRating != null)
+    {
+        dsrating = ViewBag.SurveyRating;
+    }
+
+    if (ViewBag.TrainingOrientation != null)
+    {
+        dsTopic = ViewBag.TrainingOrientation;
+    }
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+}
+
+
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Home</span>
+                    </a>
+                    <span class="breadcrumb-item active">Orientation Training Planning</span>
+                </div>
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+               
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+}
+
+    <style>
+        .hidden {
+            display: none !important;
+        }
+    </style>
+
+@using (Html.BeginForm("AddEmployeeTrainingOrientation", "TrainingOrientation", FormMethod.Post,
+                     new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Orientation Training Planning</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+
+                <table class="table table-lg">
+                    <tr class="row">                    
+                        <td class="col-xs-3 col-md-4">
+                            <div class="editor-label">
+                                Employee Name<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <div class="editor-field">
+    				            <select class="form-control select-search select2-hidden-accessible" data-fouc id="Emp_id" name="Emp_id" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.EmpList != null)
+                                    {
+                                        foreach (var item in ViewBag.EmpList)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+ 				@* @Html.ValidationMessageFor(model => model.Emp_id)*@
+                            </div>
+                        </td>                      
+                    </tr>
+                  
+
+                </table>
+            </div>
+        </div>
+      
+    </div>
+
+       
+        
+
+    <div class="card">
+        <div class="card-body">
+            <div style="overflow-x:auto;">
+                <table class="table table-lg">
+                    <thead>
+
+                        <tr>
+                            <th>
+                                Sl.No
+                            </th>
+                            <th>
+                                Orientation Topics
+                            </th>
+                            @if (Obj.GetCurrentUserSession().Perftraining.Contains("4"))
+                            {
+                                <th>
+                                    Preview
+                                </th>
+                            }
+
+                            @if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                            {
+                                for (int item = 0; item < dsrating.Tables[0].Rows.Count; item++)
+                                {
+                                    <th>
+                                        @dsrating.Tables[0].Rows[item]["RatingOptions"].ToString()
+                                    </th>
+                                }
+                            }
+                    </thead>
+                    <tbody>
+                        @for (int i = 0, s = 0; i < dsTopic.Tables[0].Rows.Count; i++)
+                        {
+                            s = s + 1;
+                            <tr>
+                                <td>
+                                    @s
+                                </td>
+                                <td>
+                                    @dsTopic.Tables[0].Rows[i]["Topic"].ToString()
+                                    <input type="hidden" id="Topic @dsTopic.Tables[0].Rows[i]["TrainingOrientation_Id"].ToString()" name="Topic @dsTopic.Tables[0].Rows[i]["TrainingOrientation_Id"].ToString()" value="@dsTopic.Tables[0].Rows[i]["TrainingOrientation_Id"].ToString()" />
+                                </td> @if (Obj.GetCurrentUserSession().Perftraining.Contains("4"))
+                                {
+                                    <td>
+                                        @if (dsTopic.Tables[0].Rows[i]["DocUploadPath"].ToString() != "")
+                                        {
+                                            <a href='@Url.Action("DisplayDocument", "Reports", new { Document = dsTopic.Tables[0].Rows[i]["DocUploadPath"].ToString() })' target="_blank">Preview</a>
+                                        }
+                                    </td>
+                                }
+
+                                @if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                                {
+                                    for (int rating = 0; rating < dsrating.Tables[0].Rows.Count; rating++)
+                                    {
+                                        <td>
+                                            <input type="radio" id="SQ_OptionsId @dsTopic.Tables[0].Rows[i]["TrainingOrientation_Id"].ToString()"
+                                                   name="SQ_OptionsId @dsTopic.Tables[0].Rows[i]["TrainingOrientation_Id"].ToString()"
+                                                   class="SQ_OptionsId @dsTopic.Tables[0].Rows[i]["TrainingOrientation_Id"].ToString()" value="@dsrating.Tables[0].Rows[rating]["SQ_OptionsId"].ToString()" required />
+
+                                        </td>
+                                    }
+                                }
+
+                            </tr>
+
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        @if (Obj.GetCurrentUserSession().Perftraining.Contains("3"))
+        {
+            <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+                <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Add</button>
+            </div>
+        }
+
+    </div>
+}
+@section Scripts {
+    <script>
+
+        $(document).ready(function () {
+
+        @if (TempData["alertdata"] != null ) {
+
+           @: new Noty({
+                                                           @:     text: '@TempData["alertdata"]',
+                                                           @:     type: 'error'
+                                                           @: }).show();
+                                                  }
+
+        @if (@TempData["Successdata"] != null ) {
+
+        @:    new Noty({
+                                                         @:       text: '@TempData["Successdata"]',
+                                                         @:       type: 'success'
+         @:}).show();
+        }
+        });
+
+   
+
+
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

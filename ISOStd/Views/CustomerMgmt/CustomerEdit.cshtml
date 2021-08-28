@@ -1,0 +1,820 @@
+﻿@model ISOStd.Models.CustomerModels
+
+@{
+    ISOStd.Models.CustomerContactsModelsList objCustomerContactsList = new ISOStd.Models.CustomerContactsModelsList();
+
+    if (ViewBag.CustomerContactsList != null)
+    {
+        objCustomerContactsList = ViewBag.CustomerContactsList;
+    }
+   
+}
+
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                  <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Home</span>
+                    </a>
+                    <a href="@Url.Action("CustomerList", "CustomerMgmt", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Customer List</span>
+                    </a>
+                    <span class="breadcrumb-item active">Edit Customer Details</span>
+                </div>
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+}
+
+@using (Html.BeginForm("CustomerEdit", "CustomerMgmt", FormMethod.Post,
+                     new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+ <input type="hidden" name="CustID" id="CustID" value="@Model.CustID"/>
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Edit Customer Details</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+
+                <table class="table table-lg">
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.branch)
+                        </td>
+                        <td class="col">
+                            <select class="form-control select-fixed-multiple" multiple="multiple" data-fouc id="branch" name="branch" onchange="GetDeptList()">
+                                @*<option value='' hidden>Select</option>*@
+                                @if (ViewBag.Branch != null)
+                                {
+                                    foreach (var data in ViewBag.Branch)
+                                    {
+                                        if (Array.IndexOf(Model.branch.ToString().Split(','), data.Value) >= 0)
+                                        {
+                                            <option value='@data.Value' selected>@data.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@data.Value'>@data.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.Department)<text style="color:red;">*</text>
+                        </td>
+                        <td class="col">
+                            <select class="form-control select-fixed-multiple" data-fouc id="Department" name="Department" multiple="multiple" required>
+                                @if (ViewBag.Department != null)
+                                {
+                                    foreach (var item in ViewBag.Department)
+                                    {
+                                        if (Array.IndexOf(Model.Department.ToString().Split(','), item.Value) >= 0)
+                                        {
+                                            <option value='@item.Value' selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                            <br />
+                            @Html.ValidationMessageFor(m => m.Department)
+                        </td>
+
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.Location)<text style="color:red;">*</text>
+                        </td>
+                        <td class="col">
+                            <select class="form-control select-fixed-multiple" data-fouc id="Location" name="Location" multiple="multiple" required>
+                                @if (ViewBag.Location != null)
+                                {
+                                    foreach (var item in ViewBag.Location)
+                                    {
+                                        if (Array.IndexOf(Model.Location.ToString().Split(','), item.Value) >= 0)
+                                        {
+                                            <option value='@item.Value' selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                            <br />
+                            @Html.ValidationMessageFor(m => m.Location)
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <img src="@Url.Content("~/Images/contact-new.png")" title="Add Contact" onclick="DisplayContacts()" style="cursor:pointer;" />
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.CompanyName)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @Html.DisplayFor(model => model.CompanyName)
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Address)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="Address" name="Address">@Model.Address</textarea>
+
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Cust_Code)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.Cust_Code, new { htmlAttributes = new { @class = "form-control" } })
+
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.FaxNumber)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input class="form-control" type="text" id="FaxNumber" name="FaxNumber" value="@Model.FaxNumber" />
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.City)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.City, new { htmlAttributes = new { @class = "form-control" } })
+
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Country)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.Country, new { htmlAttributes = new { @class = "form-control" } })
+
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.PostalCode)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.PostalCode, new { htmlAttributes = new { @class = "form-control" } })
+
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.CustType)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="CustType" name="CustType" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.CustType != null)
+                                    {
+                                        foreach (var item in ViewBag.CustType)
+                                        {
+                                            if (item.Text == Model.CustType)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                                <br />
+                                @Html.ValidationMessageFor(m => m.CustType)
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Email_Id)
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <div class="editor-field">
+
+                                <input class="form-control" type="text" id="Email_Id" name="Email_Id" value="@Model.Email_Id" />
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.VatNo)
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <div class="editor-field">
+                                <input class="form-control" type="text" id="VatNo" name="VatNo" value="@Model.VatNo" />
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.LicenceExpiry)
+                        </td>
+                        <td class="col">
+                            @if (Model.LicenceExpiry > Convert.ToDateTime("01/01/0001"))
+                            {
+                                <input class="form-control" type="date" id="LicenceExpiry" name="LicenceExpiry" value="@Model.LicenceExpiry.ToString("yyyy-MM-dd")" />
+                            }
+                            else
+                            {
+                                <input class="form-control" type="date" id="LicenceExpiry" name="LicenceExpiry" />
+                            }
+
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.upload)<text style="color:red;"> *</text>
+                        </td>
+                        <td class="col">
+                            <input type="file" name="upload" id="upload" title="Documents" onchange="FileFormatValidation(this)"
+                                   multiple="multiple" accept=".pdf, .doc, .docx,image/*" class="bootstrap-uploader" data-fouc />
+
+                            <span class="form-text text-muted"><code>(Hold Ctrl Key in case of multiple files or drag multiple files and drop here)</code></span>
+                            <br />
+                            @if (Model.upload != null && Model.upload != "" && Model.upload.Length > 0)
+                            {
+                                <h6> <span class="bg-dark py-1 px-2 rounded">Document List</span></h6>
+
+                                <span class="form-text text-muted">
+                                    <code>
+                                        (Uncheck in case to remove a uploaded file)
+                                    </code>
+                                </span>
+                                foreach (var docs in Model.upload.Trim(',').Split(','))
+                                {
+                                    <div class="form-check">
+                                        <label class="form-check-label">
+                                            <input type="checkbox" id="QCDocsVal" name="QCDocsVal" class="form-check-input-styled QCDocsVal" value="@docs.Trim(',')" checked title="Uncheck in case to remove a uploaded file" data-fouc />
+                                            <input type="hidden" id="QCDocsValselectall" name="QCDocsValselectall" />
+                                            <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" class="text-orange">
+                                                @*@System.IO.Path.GetFileName(docs)*@preview
+                                            </a>
+                                        </label>
+                                    </div>
+                                }
+                            }
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+            @Html.ActionLink("Back to List", "CustomerList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+           
+            <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i>Save</button>
+        </div>
+    </div>
+        
+}
+ @if (@objCustomerContactsList.lstCustomerContacts != null && @objCustomerContactsList.lstCustomerContacts.Count > 0)
+ {
+      <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Sales Person Contact Details</h5>
+        </div>
+           <div class="card-body">
+            <div class="card card-table table-responsive shadow-0 mb-0">
+                <table class="table">
+                       <tr>
+                       <th>
+                           
+                               Name
+                                                
+                        </th>
+ 			  <th>
+                            
+                               Phone Number
+                                       
+                        </th>
+			  <th>
+                          
+                               Mobile Number
+                                               
+                        </th>
+			  <th>
+                          
+                               Email Id
+                                             
+                        </th>
+			  <th>
+                           Action
+                        </th>
+		    </tr>
+ @for (int index = 0; index < objCustomerContactsList.lstCustomerContacts.Count; index++)
+ {
+     string ContactsId = objCustomerContactsList.lstCustomerContacts[index].ContactsId;
+     string ContactPerson = System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(objCustomerContactsList.lstCustomerContacts[index].ContactPerson);
+     string EmailId = objCustomerContactsList.lstCustomerContacts[index].EmailId;
+     string PhoneNumber = objCustomerContactsList.lstCustomerContacts[index].PhoneNumber;
+     string MobileNumber = objCustomerContactsList.lstCustomerContacts[index].MobileNumber;
+               
+                    <tr>
+                      <td>
+                        
+                            
+                                @ContactPerson
+                           
+                        </td>
+ 			<td>
+                         
+                          
+                                @PhoneNumber
+                            
+                        </td>
+			<td>
+                          
+                          
+                                @MobileNumber
+                           
+                        </td>
+			<td>
+                          
+                           
+                                @EmailId
+                            
+                        </td>
+			<td>
+               
+                            <span class="badge badge-info" 
+                                onclick="EditContacts('@ContactsId', '@ContactPerson', '@EmailId', '@PhoneNumber', '@MobileNumber')" style="cursor:pointer;" >Edit</span>
+                               @* <img src="@Url.Content("~/Images/delete.png")" title="Delete User" onclick="DeleteItems(@ContactsId)" style="cursor:pointer;"/>*@
+                 <span class='badge badge-danger' title='Update' onclick='DeleteItems(@ContactsId)' style='cursor:pointer;'>Delete</span>      
+                  </td>
+		    </tr>
+ }
+</table>
+                </div>
+
+               </div>
+
+
+          </div>
+ }
+
+
+ @using (Html.BeginForm("CustomerContactEdit", "CustomerMgmt", FormMethod.Post, new { id = "form2", name = "form2" }))
+ {
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+  <input type="hidden" id="CustID" name="CustID" value="@Model.CustID" />
+        <input type="hidden" id="ContactsId" name="ContactsId" value="" />
+
+     <div id="editcontact" style="display:none">
+         <div class="card" id="hidden card">
+        <div class="card-header header-elements-inline">
+            <h5 class="card-title">Update Customer Contact</h5>
+          @*  <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+
+                    <a class="list-icons-item" data-action="remove"></a>
+                </div>
+            </div>*@
+        </div>
+
+        <div class="card-body">
+               <div class="container-fluid">
+                <table class="table table-lg">
+                    <tr class="row">
+  			<td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.CompanyName)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                               @Html.DisplayFor(model => model.CompanyName)                           
+                               
+                            </div>
+                        </td>
+			<td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.ContactPerson)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                              <input class="form-control" type="text" id="ContactPerson" name="ContactPerson" required />
+                            </div>
+                        </td>
+			</tr>
+			<tr class="row">
+  			<td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.EmailId)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                              <input class="form-control" type="text" id="EmailId" name="EmailId"  />
+                            </div>
+                        </td>
+			<td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.PhoneNumber)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                              <input class="form-control" type="text" id="PhoneNumber" name="PhoneNumber"  />
+                            </div>
+                        </td>
+			</tr>
+			<tr class="row">
+  			<td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.MobileNumber)
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <div class="editor-field">
+                              <input class="form-control" type="text" id="MobileNumber" name="MobileNumber"  />
+                            </div>
+                        </td>
+			
+			</tr>
+                </table>
+
+            </div>
+        </div>
+     <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+        
+            <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form2')"><i class="icon-checkmark3 mr-2"></i>Save</button>
+        </div>
+         </div>
+    </div>
+}
+
+ @using (Html.BeginForm("AddCustomerContact", "CustomerMgmt", FormMethod.Post, new { id = "form3", name = "form3" }))
+ {
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+  <input type="hidden" id="CustID" name="CustID" value="@Model.CustID" />
+      
+
+    <div id="addcontact" style="display:none">
+        <div class="card" id="hidden card1">
+        <div class="card-header header-elements-inline">
+            <h5 class="card-title">Add Customer Contact</h5>
+           @* <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+
+                    <a class="list-icons-item" data-action="remove"></a>
+                </div>
+            </div>*@
+        </div>
+
+        <div class="card-body">
+               <div class="container-fluid">
+                   <table class="table table-lg">
+                       <tr class="row">
+                           <td class="col-xs-3 col-md-2">
+                               <div class="editor-label">
+                                   @Html.LabelFor(model => model.CompanyName)
+                               </div>
+                           </td>
+                           <td class="col">
+                               <div class="editor-field">
+                                   @Html.DisplayFor(model => model.CompanyName)
+
+                               </div>
+                           </td>
+                           <td class="col-xs-3 col-md-2">
+                               <div class="editor-label">
+                                   @Html.LabelFor(model => model.ContactPerson)
+                               </div>
+                           </td>
+                           <td class="col">
+                               <div class="editor-field">
+                                   <input class="form-control" type="text" id="ContactPerson" name="ContactPerson" required />
+                               </div>
+                           </td>
+                       </tr>
+                       <tr class="row">
+                           <td class="col-xs-3 col-md-2">
+                               <div class="editor-label">
+                                   @Html.LabelFor(model => model.EmailId)
+                               </div>
+                           </td>
+                           <td class="col">
+                               <div class="editor-field">
+                                   <input class="form-control" type="text" id="EmailId" name="EmailId" />
+                               </div>
+                           </td>
+                           <td class="col-xs-3 col-md-2">
+                               <div class="editor-label">
+                                   @Html.LabelFor(model => model.PhoneNumber)
+                               </div>
+                           </td>
+                           <td class="col">
+                               <div class="editor-field">
+                                   <input class="form-control" type="text" id="PhoneNumber" name="PhoneNumber" />
+                               </div>
+                           </td>
+                       </tr>
+                       <tr class="row">
+                           <td class="col-xs-3 col-md-2">
+                               <div class="editor-label">
+                                   @Html.LabelFor(model => model.MobileNumber)
+                               </div>
+                           </td>
+                           <td class="col-xs-3 col-md-4">
+                               <div class="editor-field">
+                                   <input class="form-control" type="text" id="MobileNumber" name="MobileNumber" />
+                               </div>
+                           </td>
+                         </tr>
+                      
+                   </table>
+
+            </div>
+        </div>
+     <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+          
+            <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form3')"><i class="icon-checkmark3 mr-2"></i>Save</button>
+        </div>
+        </div>
+    </div>
+}
+@section Scripts {
+    <script>
+
+
+        $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+                        @:     text: '@TempData["alertdata"]',
+                        @:     type: 'error'
+                @:}).show();
+                               }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+                        @:       text: '@TempData["Successdata"]',
+                        @:       type: 'success'
+        @:}).show();
+                               }
+        });
+        // Default initialization
+        $('.form-check-input-styled').uniform();
+
+        var showClass = 'is-visible';
+        var hideClass = 'invisible';
+
+        function EditContacts(ContactsId, ContactPerson, EmailId, PhoneNumber, MobileNumber) {
+            ResetControls();
+
+            //document.getElementById("hidden card").classList.remove(hideClass);
+            //document.getElementById("hidden card").classList.add(showClass);
+
+            //document.getElementById("hidden card1").classList.remove(showClass);
+            //document.getElementById("hidden card1").classList.add(hideClass);
+
+            document.getElementById("editcontact").style.display = "block";
+            document.getElementById("addcontact").style.display = "none";
+
+            document.getElementById("ContactsId").value = ContactsId;
+            document.getElementById("ContactPerson").value = ContactPerson;
+            document.getElementById("MobileNumber").value = MobileNumber;
+            document.getElementById("EmailId").value = EmailId;
+            document.getElementById("PhoneNumber").value = PhoneNumber;
+        }
+        function DisplayContacts(){
+            ResetControls();
+            //document.getElementById("hidden card").classList.remove(showClass);
+            //document.getElementById("hidden card").classList.add(hideClass);
+            //document.getElementById("hidden card1").classList.remove(hideClass);
+            //document.getElementById("hidden card1").classList.add(showClass);
+
+
+            document.getElementById("addcontact").style.display = "block";
+            document.getElementById("editcontact").style.display = "none";
+        
+            document.getElementById("ContactsId").value = "";
+        }
+        function ResetControls() {
+            document.getElementById("ContactPerson").value = "";
+            document.getElementById("EmailId").value = "";
+            document.getElementById("PhoneNumber").value = "";
+            document.getElementById("MobileNumber").value = "";
+        }
+        function DeleteItems(ContactsId) {
+            var vCustID = $('#CustID').val();
+
+            bootbox.confirm({
+                title: 'Confirm dialog',
+                message: 'Are you Sure you want to Delete the current Record?',
+                buttons: {
+                    confirm: {
+                        label: 'Yes',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'Cancel',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (r) {
+                    if (r == true) {
+                        jQuery.ajax({
+
+                            url: '@Url.Action("CustomerContactDelete", "CustomerMgmt")',
+                                        type: 'POST',
+                                        dataType: "json",
+                                        data: { 'ContactsId': ContactsId },
+                                        success: function (result) {
+
+
+                                            //// Add new params to the querystring dictionary
+                                            var params = {
+                                                CustID: vCustID
+                                            };
+                                            queryString = $.param(params);
+
+                                            window.location.href =
+                          window.location.protocol + "//" +
+                          window.location.host +
+                          window.location.pathname +
+                         '?' + queryString;
+
+                                        }
+                                    });
+                                    return true;
+                                }
+                                else if (r == false) {
+                                    bootbox.hideAll();
+                                    return false;
+                                }
+
+                            }
+                        });
+        }
+        function FileFormatValidation(file) {
+            var ext = file.value.split(".").pop().toLowerCase();
+            if ($.inArray(ext, ["doc", "pdf", "docx", "xlsx", "xls", "jpg", "jpeg", "gif", "png"]) == -1) {
+                file.value = "";
+                jAlert("Invalid file format, please upload only doc, pdf, docx, jpg, jpeg, gif, png format");
+            }
+        }
+
+        $("#QCDocsVal").click(function () {
+            if ($("#QCDocsVal").prop('checked')) {
+                {
+                    $(this).prop('checked', true);
+                }
+            }
+            else {
+                $(this).prop('checked', false);
+                document.getElementById("QCDocsValselectall").value = "DeleteQC";
+            }
+        });
+
+         function GetDeptList() {
+            var selectedValues = [];
+            $("#branch :selected").each(function () {
+                selectedValues.push($(this).val());
+            });  
+                jQuery.ajax({
+                    url: '@Url.Action("FunGetAllDeptList", "EmployeeDetails")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'branch': selectedValues },
+                    success: function (result) {
+                        GetLocList(selectedValues);
+                        $("#Department").children('option').remove();
+                        $("#Department").trigger('change');
+                        if (result != null && result.length > 0) {
+                            $.each(result, function (index, item) {
+                                $("#Department").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                                $("#Department").trigger('change');
+                            });
+                            return;
+                        }
+                        //else {
+                        //    bootbox.alert({
+                        //        title: 'Department List',
+                        //        message: 'No Department exists.'
+                        //    });
+                        //}
+                    }
+                });          
+        }
+
+
+        function GetLocList(selectedValues) {                   
+            jQuery.ajax({
+                url: '@Url.Action("FunGetAllLocList", "EmployeeDetails")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'branch': selectedValues },
+                success: function (result) {
+                    $("#Location").children('option').remove();
+                    $("#Location").trigger('change');
+                    if (result != null && result.length > 0) {
+                        $.each(result, function (index, item) {
+                            $("#Location").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                            $("#Location").trigger('change');
+                        });
+                        return;
+                    }
+                    //else {
+                    //    bootbox.alert({
+                    //        title: 'Location List',
+                    //        message: 'No Location exists.'
+                    //    });
+                    //}
+                }
+            });       
+        }
+
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

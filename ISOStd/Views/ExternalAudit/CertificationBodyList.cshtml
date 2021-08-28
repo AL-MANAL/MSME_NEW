@@ -1,0 +1,98 @@
+﻿@model IEnumerable<ISOStd.Models.CertificationBodyModels>
+
+@{
+    ViewBag.Title = "CertificationBodyList";
+}
+
+<div class="groupedassets margin10">
+    <span class="groupedassetshead margin10 onestphdcolor">Certification Body List </span>
+</div>
+<div class="ActionLink">@Html.ActionLink("Add New", "AddCertificationBody", "ExternalAudit", null, new { @class = "ActionLink" })</div>
+
+<div id="divmsg">
+    @if (TempData["alertdata"] != null)
+    {
+        <span class="errMsg" style="color: red;font-weight: bold;">@TempData["alertdata"]</span>
+        }
+    @if (TempData["Successdata"] != null)
+    {
+        <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+        }
+</div>
+    <br /><br />
+<div id="content">
+    <table id="table1">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.CertName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Location)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.address)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.emailaddress)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.contact_name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PhoneNumber)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FaxNumber)
+            </th>
+            <th>Action</th>
+        </tr>
+        @if (Model !=null && Model.Count() > 0)
+        {
+        foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.ActionLink(item.CertName, "CertificationBodyDetails", new { CertID = item.CertID })
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Location)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.address)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.emailaddress)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.contact_name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PhoneNumber)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FaxNumber)
+                </td>
+                <td>
+                    <a href='@Url.Action("CertificationBodyEdit", "ExternalAudit", new { CertID = item.CertID })'  title="Edit Certificate Body details">
+                        <span class="glyphicon glyphicon glyphicon-edit iocnstatus-edit"></span></a>
+                    @*|
+            <a href="~/Views/Audit/AddInternalRescheduleAudit">
+                <img alt="Cancel" src='@Url.Content("~/Images/cancel.png")' /></a>*@
+                </td>
+            </tr>
+        }
+        }
+        
+        else
+        {
+            <tr>
+                <td colspan="9">
+                    <div style="text-align: center;">
+                        <h4 style="color: grey;">No data exists</h4>
+                    </div>
+                </td>
+            </tr>
+        }
+
+    </table>
+</div>

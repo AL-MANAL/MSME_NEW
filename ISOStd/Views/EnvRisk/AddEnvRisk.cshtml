@@ -1,0 +1,352 @@
+﻿@model ISOStd.Models.EnvRiskModels
+
+@{
+    ViewBag.Title = "";
+    DateTime today = DateTime.Now;
+}
+
+<script src='@Url.Content("~/global_assets/js/demo_pages/Env_form_wizard.js")'></script>
+
+@section featured {
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Home</span>
+                    </a>
+                    <a href="@Url.Action("EnvList", "EnvRisk", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Environmental Risk Assessment</span>
+                    </a>
+                    <span class="breadcrumb-item active">Report Environmental Risk Assessment</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+}
+<!-- Basic setup -->
+<div class="card">
+    <div class="card-header header-elements-inline bg-primary">
+        <h5 class="card-title">Report Environmental Risk Assessment</h5>
+        <div class="header-elements">
+            <div class="list-icons">
+                <a class="list-icons-item" data-action="collapse"></a>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="container-fluid">
+
+            <form class="wizard-form steps-validation" action="@Url.Action("AddEnvRisk", "EnvRisk")" data-fouc id="form1">
+                <h6>Environmental Aspect Reporting</h6>
+                <fieldset>
+                    <table class="table table-lg">
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.DisplayNameFor(model => model.branch_id)<text style="color: red;">*</text>
+                            </td>
+                            <td class="col">
+                                <select class="form-control-select3" data-fouc id="branch_id" name="branch_id" multiple="multiple" onchange="GetDeptList()" required>
+                                    @if (ViewBag.Branch != null)
+                                    {
+                                        foreach (var data in ViewBag.Branch)
+                                        {
+                                            if (Array.IndexOf(Model.branch_id.ToString().Split(','), data.Value) >= 0)
+                                            {
+                                                <option value='@data.Value' selected>@data.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@data.Value'>@data.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                @Html.DisplayNameFor(model => model.dept)<text style="color: red;">*</text>
+                            </td>
+                            <td class="col">
+                                <select class="form-control-select3" data-fouc id="dept" name="dept" multiple="multiple" @*onchange="GetEmployeeList()"*@ required>
+                                    @if (ViewBag.Department != null)
+                                    {
+                                        foreach (var data in ViewBag.Department)
+                                        {
+                                            if (Array.IndexOf(Model.dept.ToString().Split(','), data.Value) >= 0)
+                                            {
+                                                <option value='@data.Value' selected>@data.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@data.Value'>@data.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                            </td>
+
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.Location)<text style="color:red;">*</text>
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <select class="form-control-select3" data-fouc id="Location" name="Location" multiple="multiple" @*onchange="GetEmployeeList()"*@ required>
+                                        @if (ViewBag.Location != null)
+                                        {
+                                            foreach (var item in ViewBag.Location)
+                                            {
+                                                if (Array.IndexOf(Model.Location.ToString().Split(','), item.Value) >= 0)
+                                                {
+                                                    <option value='@item.Value' selected>@item.Text</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                @Html.DisplayNameFor(model => model.source_id)<text style="color: red;">*</text>
+                            </td>
+                            <td class="col">
+                                <select class="select-search1" data-fouc id="source_id" name="source_id" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.source_id != null)
+                                    {
+                                        foreach (var item in ViewBag.source_id)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.DisplayNameFor(model => model.impact)<text style="color: red;">*</text>
+                            </td>
+                            <td class="col">
+                                <select class="select-search1" data-fouc id="impact" name="impact" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.Impact != null)
+                                    {
+                                        foreach (var item in ViewBag.Impact)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.DisplayNameFor(model => model.area_affected)<text style="color: red;">*</text>
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="area_affected" name="area_affected" required></textarea>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="row">                         
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.DisplayNameFor(model => model.activity)<text style="color: red;">*</text>
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="activity" name="activity" required></textarea>
+                                </div>
+                            </td>
+
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.DisplayNameFor(model => model.product)<text style="color: red;">*</text>
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="product" name="product" required></textarea>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.DisplayNameFor(model => model.aspects)<text style="color: red;">*</text>
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="aspects" name="aspects" required></textarea>
+                                </div>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.reported_date)<text style="color:red;">*</text>
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <input class="form-control required" type="date" id="reported_date" name="reported_date" value="@today.ToString("yyyy-MM-dd")" onchange="checkDate()" />
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.DisplayNameFor(model => model.reported_by)<text style="color: red;">*</text>
+                            </td>
+                            <td class="col">
+                                <select class="select-search1" data-fouc id="reported_by" name="reported_by" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.EmpList != null)
+                                    {
+                                        foreach (var item in ViewBag.EmpList)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                @Html.DisplayNameFor(model => model.notified_to)<text style="color: red;">*</text>
+                            </td>
+                            <td class="col">
+                                <select class="select-search1" data-fouc id="notified_to" name="notified_to" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.EmpList != null)
+                                    {
+                                        foreach (var item in ViewBag.EmpList)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.DisplayNameFor(model => model.activity_type)<text style="color: red;">*</text>
+                            </td>
+                            <td class="col">
+                                <select class="select-search1" data-fouc id="activity_type" name="activity_type" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.Activity != null)
+                                    {
+                                        foreach (var item in ViewBag.Activity)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                            </td>
+                        </tr>
+</table>
+                </fieldset>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- /basic setup -->
+
+<script src='@Url.Content("~/global_assets/js/plugins/forms/wizards/steps2.min.js")'></script>
+<script>
+       var summary = {
+           summaryUrl: '@Url.Action("AddEnvRisk", "EnvRisk")'
+       };
+       var $ = jQuery.noConflict();
+</script>
+
+@section Scripts {
+    <script>
+
+     $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+         });
+
+        function GetDeptList() {
+            var selectedValues = [];
+            $("#branch_id :selected").each(function () {
+                selectedValues.push($(this).val());
+            });
+            var svalue = selectedValues.join(",");
+            /*GetEmployeeList();*/
+            updateDeptnlocation(svalue, "Location", "location");
+            updateDeptnlocation(svalue, "dept", "department");
+        }
+
+        //function GetEmployeeList() {
+        //    var sbranch = $.map($("#branch_id option:selected"), function (el, i) {
+        //        return $(el).val();
+        //    });
+        //    var sbvalue = (sbranch.join(","));
+
+        //    var sDepartment = $.map($("#dept option:selected"), function (el, i) {
+        //        return $(el).val();
+        //    });
+        //    var sdvalue = (sDepartment.join(","));
+
+        //    var sLocation = $.map($("#Location option:selected"), function (el, i) {
+        //        return $(el).val();
+        //    });
+        //    var slvalue = (sLocation.join(","));
+
+        //    updateEmployeeList(sbvalue, sdvalue, slvalue, "reported_by");
+        //    updateEmployeeList(sbvalue, sdvalue, slvalue, "notified_to");
+        //}
+
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

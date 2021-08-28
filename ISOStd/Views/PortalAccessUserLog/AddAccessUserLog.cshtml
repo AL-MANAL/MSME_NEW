@@ -1,0 +1,361 @@
+﻿@model ISOStd.Models.PortalAccessUserLogModels
+
+@{
+    ViewBag.Title = "AddAccessUserLog";
+}
+
+@section featured {
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("AccessUserLogList", "PortalAccessUserLog", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Portal Access User Log</span>
+                    </a>
+                    <span class="breadcrumb-item active">Add Portal Access User Log</span>
+                </div>
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+}
+
+@using (Html.BeginForm("AddAccessUserLog", "PortalAccessUserLog", FormMethod.Post,
+                     new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Add Portal Access User Log</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+                <table class="table table-lg">
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.portal_category)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="portal_category" name="portal_category" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.PortalCategory != null)
+                                    {
+                                        foreach (var item in ViewBag.PortalCategory)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.portal_name)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="portal_name" name="portal_name" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.PortalName != null)
+                                    {
+                                        foreach (var item in ViewBag.PortalName)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.portal_access_username)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="portal_access_username" name="portal_access_username" onchange="GetAccessUserDetails()" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.AccessUserName != null)
+                                    {
+                                        foreach (var item in ViewBag.AccessUserName)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.date_access)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input class="form-control" type="date" id="date_access" name="date_access" required />
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                Division
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input class="form-control" type="text" id="userdivision" name="userdivision" readonly />
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                Department
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input class="form-control" type="text" id="userdepartment" name="userdepartment" readonly />
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.requested_by)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="requested_by" name="requested_by" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.EmpList != null)
+                                    {
+                                        foreach (var item in ViewBag.EmpList)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.request_apporvedby)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="request_apporvedby" name="request_apporvedby" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.EmpList != null)
+                                    {
+                                        foreach (var item in ViewBag.EmpList)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                    </tr>
+                 
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.activity_performed)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="activity_performed" name="activity_performed" required></textarea>
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.remarks)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="remarks" name="remarks"></textarea>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.division)
+                        </td>
+                        <td class="col-xs-6 col-md-4">
+                            <select class="form-control select-fixed-multiple" multiple="multiple" data-fouc id="division" name="division" @*onchange="GetDeptList()"*@>
+                                @if (ViewBag.Branch != null)
+                                {
+                                    foreach (var data in ViewBag.Branch)
+                                    {
+                                        if (Array.IndexOf(Model.division.ToString().Split(','), data.Value) >= 0)
+                                        {
+                                            <option value='@data.Value' selected>@data.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@data.Value'>@data.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                Upload
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <div class="editor-field">
+                                <input type="file" name="upload" id="upload" onchange="FileFormatValidation(this)" multiple accept=".pdf,.xlsx,.xls,.doc,.docx,.image/*,.png,.jpeg,.jpg" @*class="bootstrap-uploader" data-fouc*@ />
+                                <span class="form-text text-muted"><code>(Hold Ctrl Key in case of multiple files or drag multiple files and drop here)</code></span>
+                            </div>
+                        </td>
+                    </tr>                
+                </table>
+            </div>
+        </div>
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+            @Html.ActionLink("Back to List", "AccessUserLogList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+
+            <button type="submit" id="btnCreate" value="Add" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Add</button>
+        </div>
+    </div>
+}
+
+
+@section Scripts {
+    <script>
+                function FileFormatValidation(file) {
+                    var ext = file.value.split(".").pop().toLowerCase();
+                    if ($.inArray(ext, ["doc", "pdf", "docx", "xls", "xlsx", "png", "jpg", "jpeg"]) == -1) {
+                        file.value = "";
+                        jAlert("Invalid file format, please upload only doc, pdf, docx, xls, xlsx, png, jpeg, jpg format");
+                    }
+                }
+
+              @*function GetDeptList() {
+                    var selectedValues = [];
+                  $("#master_div :selected").each(function () {
+                        selectedValues.push($(this).val());
+                    });
+                    if (selectedValues != "") {
+                        jQuery.ajax({
+                            url: '@Url.Action("FunGetAllDeptList", "EmployeeDetails")',
+                            type: 'POST',
+                            dataType: "json",
+                            data: { 'branch': selectedValues },
+                            success: function (result) {
+                                //GetLocList(selectedValues);
+                                $("#master_dept").children('option').remove();
+                                $("#master_dept").trigger('change');
+                                if (result != null && result.length > 0) {
+                                    $.each(result, function (index, item) {
+                                        $("#master_dept").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                                        $("#master_dept").trigger('change');
+                                    });
+                                    return;
+                                }
+                                else {
+                                    bootbox.alert({
+                                        title: 'Department List',
+                                        message: 'No Department exists.'
+                                    });
+                                }
+                            }
+                        });
+                    }
+                    else {
+                        $("#master_dept").val('').trigger('change');
+                        //$("#Location").val('').trigger('change');
+                    }
+                }*@
+
+
+                @*function GetLocList(selectedValues) {
+                    jQuery.ajax({
+                        url: '@Url.Action("FunGetAllLocList", "EmployeeDetails")',
+                        type: 'POST',
+                        dataType: "json",
+                        data: { 'branch': selectedValues },
+                        success: function (result) {
+                            $("#Location").children('option').remove();
+                            $("#Location").trigger('change');
+                            if (result != null && result.length > 0) {
+                                $.each(result, function (index, item) {
+                                    $("#Location").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                                    $("#Location").trigger('change');
+                                });
+                                return;
+                            }
+                            else {
+                                bootbox.alert({
+                                    title: 'Location List',
+                                    message: 'No Location exists.'
+                                });
+                            }
+                        }
+                    });
+                }*@             
+
+        function GetAccessUserDetails() {
+            var portal_access_username = $('#portal_access_username').val();
+            if (portal_access_username != "" && portal_access_username != null) {
+                jQuery.ajax({
+                    url: '@Url.Action("FunGetEmpDetails", "Portal")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'semp_no': portal_access_username },
+                    success: function (result) {
+                        if (result != null) {
+                            document.getElementById("userdivision").value =result.division /*$("#userdivision").value();*/
+                            document.getElementById("userdepartment").value = result.department/*$("#userdepartment").value();*/
+                        }
+                    }
+                });
+            }
+        }
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

@@ -1,0 +1,220 @@
+﻿@using System.Data
+@using ISOStd.Models;
+@{
+    ViewBag.Title = "GenerateInspectionChecklistReportToPDF";
+    clsGlobal objGlobaldata = new clsGlobal();
+    // int iSrno = 0;
+    ISOStd.Models.GenerateInspectionChecklistModels objChecklist = new ISOStd.Models.GenerateInspectionChecklistModels();
+    ISOStd.Models.InspectionChecklistModels obj = new ISOStd.Models.InspectionChecklistModels();
+
+
+    //DataSet dsItemList = new DataSet();
+    //if (ViewBag.InspectionQuestions != null)
+    //{
+    //    dsItemList = ViewBag.InspectionQuestions;
+    //}
+
+    DataSet dsrating = new DataSet();
+    if (ViewBag.InspectionRating != null)
+    {
+        dsrating = ViewBag.InspectionRating;
+    }
+
+   
+    var z = ""; var QId = 0; var m = 0; var n = 0;
+    Layout = "~/Views/Shared/_PrintLayout.cshtml";
+}
+
+
+<fieldset class="border p-2">
+    <legend class="font-weight-semibold text-center font-size-lg">Generate Inspection Checklist</legend>
+    <div>
+        <table class="table table-lg">
+            <tr>
+                <td>
+                    Category
+                </td>
+                <td>
+                    <input type="text" class="form-control" />
+                </td>
+                <td>
+                    Inspection Date
+                </td>
+                <td>
+                    <input type="text" class="form-control" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Division
+                </td>
+                <td>
+                    <input type="text" class="form-control" />
+                </td>
+                <td>
+                    Department
+                </td>
+                <td>
+                    <input type="text" class="form-control" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Inspection By
+                </td>
+                <td>
+                    <input type="text" class="form-control" />
+                </td>
+                <td>
+                    Location/Site
+                </td>
+                <td>
+                    <input type="text" class="form-control" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Project
+                </td>
+                <td>
+                    <input type="text" class="form-control" />
+                </td>
+                <td>
+                    Tag No
+                </td>
+                <td>
+                    <input type="text" class="form-control" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Comment
+                </td>
+                <td>
+                    <input type="text" class="form-control" />
+                </td>
+            </tr>
+        </table>
+    </div>
+</fieldset>
+
+<fieldset class="border p-2">
+    <div>
+        <table class="table table-lg">
+            <tr>
+                <th style="background-color: #e5eafe; color: #0099ff;">
+                    Sr. No.
+                </th>
+                <th style="background-color: #e5eafe; color: #0099ff;">
+                    Items
+                </th>
+                @if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                {
+                    for (int item = 0; item < dsrating.Tables[0].Rows.Count; item++)
+                    {
+                        <th style="background-color: #e5eafe; color: #0099ff;">
+                            @dsrating.Tables[0].Rows[item]["inspection_rating"].ToString()
+                        </th>
+                    }
+                }
+                <th style="background-color: #e5eafe; color: #0099ff;">Actions
+
+
+            </tr>
+            @if (ViewBag.InspectionQuestions != null)
+            {
+                int iSrno = 0, itmctn = 0;
+                foreach (var item in ViewBag.InspectionQuestions)
+                {
+
+                    iSrno = iSrno + 1;
+                    itmctn = itmctn + 1;
+                    n = 0;
+                    foreach (var data in ViewBag.SectionQuestions)
+                    {
+
+                        if (n >= m || QId == 0)
+                        {
+                            if (z == "")
+                            {
+                                <tr>
+                                    <td colspan="2">@data.Text</td>
+                                    @*<td class="d-none"></td>*@
+                                    <td class="d-none"></td>
+                                    <td class="d-none"></td>
+                                    <td class="d-none"></td>
+                                    <td class="d-none"></td>
+                                    
+
+                                </tr>
+
+                                z = data.Text;
+                                break;
+                            }
+                            else if (Convert.ToInt32(data.Value) != QId && z != data.Text)
+                            {
+                                <tr>
+                                    <td colspan="2">@data.Text</td>
+                                    @*<td class="d-none"></td>*@
+                                    <td class="d-none"></td>
+                                    <td class="d-none"></td>
+                                    <td class="d-none"></td>
+                                    <td class="d-none"></td>                                    
+
+                                </tr>
+                                z = data.Text;
+                                break;
+                            }
+                            else if (Convert.ToInt32(data.Value) != QId && z == data.Text)
+                            {
+                                break;
+                            }
+                        }
+                        n++;
+                    }
+                    <tr>
+                        <td>
+                            @iSrno
+                        </td>
+                        <td>
+                            @item.Text
+                            <input class="form-control" type="hidden" id="InspectionQuestions @item.Value" name="InspectionQuestions @item.Value" value="@item.Value" />
+                        </td>
+                        @if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                        {
+
+                            for (int rating = 0; rating < dsrating.Tables[0].Rows.Count; rating++)
+                            {
+                                <td>
+                                    <input type="checkbox" id="id_inspection_rating @item.Value"
+                                           name="id_inspection_rating @item.Value"
+                                           class="id_inspection_rating @item.Value form-control" value="@dsrating.Tables[0].Rows[rating]["id_inspection_rating"].ToString()" required />
+                                </td>
+                            }
+                        }
+                        <td>
+                            @*<textarea class="form-control" cols="8" rows="8"  id="Action @itmctn" name="Action @itmctn"></textarea>*@
+                            <input class="form-control" type="text" id="Action @item.Value" name="Action @item.Value" />
+                        </td>
+                    </tr>
+
+                    QId = Convert.ToInt32(item.Value);
+                    m++;
+                }
+                <tr>
+                    <td>
+                        <input type="hidden" id="itmctn" name="itmctn" value="@itmctn" />
+                    </td>
+                </tr>
+            }
+
+
+        </table>
+
+    </div>
+</fieldset>
+
+
+
+
+

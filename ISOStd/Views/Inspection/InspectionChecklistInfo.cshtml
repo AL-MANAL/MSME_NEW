@@ -1,0 +1,160 @@
+﻿@model ISOStd.Models.GenerateInspectionChecklistModels
+@{
+    Layout = null;
+    System.Data.DataSet dsrating = new System.Data.DataSet();
+
+    if (ViewBag.InspectionRating != null)
+    {
+        dsrating = ViewBag.InspectionRating;
+    }
+
+    ISOStd.Models.InspectionChecklistList objChecklist = new ISOStd.Models.InspectionChecklistList();
+
+    if (ViewBag.InspectionElement != null)
+    {
+        objChecklist = ViewBag.InspectionElement;
+    }
+
+    var z = ""; var QId = 0; var m = 0; var n = 0;
+
+}
+
+
+<div class="card alpha-success border-success">
+    <div class="card-header bg-info text-white">
+        <h4 class="text-center">Inspection Checklist Info</h4>
+    </div>
+    <div class="card-body">
+        <p>
+            Category:<code>
+                @Html.DisplayFor(model => model.Category)
+            </code>
+            Inspection Date:
+            @if (Model.Inspection_date != null && Model.Inspection_date > Convert.ToDateTime("01/01/0001"))
+            {<code>
+                    @Model.Inspection_date.ToString("dd/MM/yyyy")
+                </code>
+            }
+        </p>
+        <p>
+            Division:<code>
+                @Html.DisplayFor(model => model.branch)
+            </code>
+            Department:<code>@Html.DisplayFor(model => model.Department)</code>
+        </p>
+        <p>
+            Inspection By:<code>
+                @Html.DisplayFor(model => model.Inspection_by)
+            </code>
+            Location/Site:<code>@Html.DisplayFor(model => model.Location)</code>
+        </p>
+        <p>
+            Project:<code>
+                @Html.DisplayFor(model => model.Project)
+            </code>
+            Tag No:<code>@Html.DisplayFor(model => model.TagNo)</code>
+        </p>
+
+        <p>
+            Comment:<code>@Html.DisplayFor(model => model.Comment)</code>
+
+        </p>
+
+        <table class="table-xs table-bordered table-striped">
+            <tr>
+                <th style="background-color: #e5eafe; color: #0099ff;">
+                    Sr. No.
+                </th>
+                <th style="background-color: #e5eafe; color: #0099ff;">
+                    Items
+                </th>
+                <th style="background-color: #e5eafe; color: #0099ff;">
+                    Rating
+                </th>
+                <th style="background-color: #e5eafe; color: #0099ff;">
+                    Action
+                </th>
+                <th style="background-color: #e5eafe; color: #0099ff;">
+                    Action By
+                </th>
+
+            </tr>
+            @if (ViewBag.InspectionElement != null)
+            {
+                int iSrno = 0;
+                foreach (var item in objChecklist.lst)
+                {
+                    iSrno = iSrno + 1;
+                    n = 0;
+                    foreach (var data in ViewBag.SectionQuestions)
+                    {
+
+                        if (n >= m || QId == 0)
+                        {
+                            if (z == "")
+                            {
+                                <tr>
+                                    <td colspan="2">@data.Text</td>
+                                    @*<td class="d-none"></td>*@
+                                    <td class="d-none"></td>
+                                    <td class="d-none"></td>
+                                    <td class="d-none"></td>
+                                    <td class="d-none"></td>
+                                    <td class="d-none"></td>
+                                    <td class="d-none"></td>
+
+
+                                </tr>
+
+                                z = data.Text;
+                                break;
+                            }
+                            else if (Convert.ToInt32(data.Value) != QId && z != data.Text)
+                            {
+                                <tr>
+                                    <td colspan="2">@data.Text</td>
+                                    @*<td class="d-none"></td>*@
+                                    <td class="d-none"></td>
+                                    <td class="d-none"></td>
+                                    <td class="d-none"></td>
+                                    <td class="d-none"></td>
+                                    <td class="d-none"></td>
+                                    <td class="d-none"></td>
+
+                                </tr>
+                                z = data.Text;
+                                break;
+                            }
+                            else if (Convert.ToInt32(data.Value) != QId && z == data.Text)
+                            {
+                                break;
+                            }
+                        }
+                        n++;
+                    }
+                    <tr>
+                        <td>
+                            @iSrno
+                        </td>
+                        <td>
+                            @item.id_inspection_question
+                        </td>
+                        <td>
+                            @item.id_inspection_rating
+                        </td>
+                        <td>
+                            @item.Action
+                        </td>
+                        <td>
+                            @item.ActionBy
+                        </td>
+
+                    </tr>
+                    QId = Convert.ToInt32(item.id_ques);
+                    m++;
+                }
+            }
+        </table>
+    </div>
+
+</div>

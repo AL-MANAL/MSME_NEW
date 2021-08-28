@@ -1,0 +1,328 @@
+﻿@model ISOStd.Models.DocumentCreateRequestModels
+@{
+    ViewBag.Title = "DocCreateRequestDetails";
+    ISOStd.Models.clsGlobal obj = new ISOStd.Models.clsGlobal();
+}
+
+@section featured {
+
+    <div class="page-header page-header-light">
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("DocCreateRequestList", "DocumentCreateRequest", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Document Create Request List</span>
+                    </a>
+                    <span class="breadcrumb-item active"> Document Create Request Details</span>
+                </div>
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">                   
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+}
+
+<div class="card">
+    <div class="card-header header-elements-inline bg-primary">
+        <h5 class="card-title">Document Create Request Details</h5>
+        <div class="header-elements">
+            <div class="list-icons">
+                <a class="list-icons-item" data-action="collapse"></a>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <div class="container-fluid">
+            <table class="table table-dark table-bordered table-striped table-hover bg-blue-800">
+                <thead></thead>
+                <tbody>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.dcr_no)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <span class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.dcr_no)
+                            </span>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.date_request)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <span class="bg-dark py-1 px-2 rounded">
+                                @if (Model.date_request != null && Model.date_request > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    @Html.Label(Model.date_request.ToString("dd/MM/yyyy"))
+                                }
+                            </span>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.division)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <span class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.division)
+                            </span>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.department)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <span class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.department)
+                            </span>
+                        </td>
+                    </tr>                  
+                    <tr class="row">
+                       
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.upload)
+                            </p>
+                        </td>
+                        <td class="col">
+                            @if (Model.upload != null && Model.upload != "" && Model.upload.Length > 0)
+                            {
+                                foreach (var docs in Model.upload.Trim(',').Split(','))
+                                {
+                                    <p style="margin: 0px;" class="bg-dark py-1 px-2 rounded">
+
+                                        <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" style="color: orange;">
+                                            @*@System.IO.Path.GetFileName(docs)*@preview
+                                        </a>
+                                    </p>
+                                    <br />
+                                }
+                            }
+                        </td>
+                    </tr>
+                      <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.reason)
+                            </p>
+                        </td>
+                        <td class="col">
+                            @*<span class="bg-dark py-1 px-2 rounded">*@
+                                @Html.Raw(Model.reason)
+                            @*</span>*@
+                        </td>
+                      
+                        @*<td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.division)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <span class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.division)
+                            </span>
+                        </td>*@
+                    </tr>
+                      <tr class="row">
+                          <td class="col-xs-3 col-md-2">
+                              <p class="bg-brown py-1 px-2 rounded">
+                                  @Html.DisplayNameFor(model => model.checkedby)
+                              </p>
+                          </td>
+                          <td class="col">
+                              <span class="bg-dark py-1 px-2 rounded">
+                                  @Html.DisplayFor(model => model.checkedby)
+                              </span>
+                          </td>
+                          <td class="col-xs-3 col-md-2">
+                              <p class="bg-brown py-1 px-2 rounded">
+                                  @Html.DisplayNameFor(model => model.doc_control)
+                              </p>
+                          </td>
+                          <td class="col">
+                              <span class="bg-dark py-1 px-2 rounded">
+                                  @Html.DisplayFor(model => model.doc_control)
+                              </span>
+                          </td>
+
+                      </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.doc_status)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <span class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.doc_status)
+                            </span>
+                        </td>                        
+                    </tr>
+                    @if (Model.doc_statusId == "1" || Model.doc_statusId == "2")
+                    {
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.checklist_id)
+                                </p>
+                            </td>
+                            <td class="col">
+                                <span class="bg-dark py-1 px-2 rounded">
+                                    @Html.DisplayFor(model => model.checklist_id)
+                                </span>
+                            </td>                                          
+                           
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.checkedby_approve_date)
+                                </p>
+                            </td>
+                            <td class="col">
+                                @if (Model.checkedby_approve_date != null && Model.checkedby_approve_date > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    <span class="bg-dark py-1 px-2 rounded">
+                                        @Html.Label(Model.checkedby_approve_date.ToString("dd/MM/yyyy"))
+                                    </span>
+                                }
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.comments)
+                                </p>
+                            </td>
+                            <td colspan="3" class="col">
+                                <span class="bg-dark py-1 px-2 rounded">
+                                    @Html.DisplayFor(model => model.comments)
+                                </span>
+                            </td>
+                        </tr>
+                    }
+                    @if (Model.doc_statusId == "2")
+                    {
+                        @*<tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.doc_level)
+                                </p>
+                            </td>
+                            <td class="col">
+                                <span class="bg-dark py-1 px-2 rounded">
+                                    @Html.DisplayFor(model => model.doc_level)
+                                </span>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.doc_title)
+                                </p>
+                            </td>
+                            <td class="col">
+                                <span class="bg-dark py-1 px-2 rounded">
+                                    @Html.DisplayFor(model => model.doc_title)
+                                </span>
+                            </td>
+                        </tr>*@
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.serial_no)
+                                </p>
+                            </td>
+                            <td class="col">
+                                <span class="bg-dark py-1 px-2 rounded">
+                                    @Html.DisplayFor(model => model.serial_no)
+                                </span>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.new_doc_ref)
+                                </p>
+                            </td>
+                            <td colspan="3" class="col">
+                                <span class="bg-dark py-1 px-2 rounded">
+                                    @Html.DisplayFor(model => model.new_doc_ref)
+                                </span>
+                            </td>                           
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.controller_approve_date)
+                                </p>
+                            </td>
+                            <td class="col">
+                                @if (Model.controller_approve_date != null && Model.controller_approve_date > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    <span class="bg-dark py-1 px-2 rounded">
+                                        @Html.Label(Model.controller_approve_date.ToString("dd/MM/yyyy"))
+                                    </span>
+                                }
+                            </td>
+                        </tr>
+                    }
+
+            </table>
+        </div>
+    </div>
+    <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+        @Html.ActionLink("Back to List", "DocCreateRequestList", null, new { @class = "btn btn-outline bg-orange text-orange border-orange", onclick = "HyperLinkProgressIconFunction()" })
+    </div>
+</div>
+
+@section scripts {
+    <script>  
+    $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+    });  
+    </script>
+}
+
+

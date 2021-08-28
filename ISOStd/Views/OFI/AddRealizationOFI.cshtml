@@ -1,0 +1,730 @@
+﻿@model ISOStd.Models.OFIModels
+
+@{
+    ViewBag.Title = "AddRealizationOFI";
+
+    ISOStd.Models.clsGlobal objGlobaldata = new ISOStd.Models.clsGlobal();
+    ISOStd.Models.OFIModels OBJOFIMODEL = new ISOStd.Models.OFIModels();
+
+    int itemcnt = 0;
+    int itemcnt1 = 0;
+
+    string[] ApprovedtoArray = new string[0];
+    string[] ProposedByArray = new string[0];
+    if (ViewBag.ProposedByArray != null)
+    {
+        ProposedByArray = ViewBag.ProposedByArray;
+        itemcnt = ProposedByArray.Length;
+    }
+
+    if (ViewBag.ApprovedtoArray != null)
+    {
+        ApprovedtoArray = ViewBag.ApprovedtoArray;
+        itemcnt1 = ApprovedtoArray.Length;
+    }
+
+    ISOStd.Models.OFIModelsList ObjOFIList = new ISOStd.Models.OFIModelsList();
+    int itemcount = 0;
+
+    if (ViewBag.ObjOFIList != null)
+    {
+        ObjOFIList = ViewBag.ObjOFIList;
+        itemcount = ObjOFIList.OFIList.Count;
+    }
+}
+
+<script src='@Url.Content("~/global_assets/js/demo_pages/OFI_Realization_form_wizard.js")'></script>
+
+@section featured {
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("OFIList", "OFI", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Improvement Opportunity</span>
+                    </a>
+                    <span class="breadcrumb-item active">Realization of IO</span>
+                </div>
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+}
+<!-- Basic setup -->
+<div class="card">
+    <div class="card-header header-elements-inline bg-primary">
+        <h5 class="card-title">Realization of IO</h5>
+        <div class="header-elements">
+            <div class="list-icons">
+                <a class="list-icons-item" data-action="collapse"></a>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="container-fluid">
+            <form class="wizard-form steps-validation" enctype="multipart/form-data" @*action="@Url.Action("AddReportOFI", "OFI")"*@ data-fouc id="form1">
+                <h6>Realization of IO</h6>
+                <fieldset>
+                    <input type="hidden" id="id_ofi" name="id_ofi" value="@Model.id_ofi" />
+                    <table class="table table-lg">
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <b> @Html.DisplayNameFor(model => model.ofi_no)</b>
+                            </td>
+                            <td class="col">
+                                @Html.DisplayFor(model => model.ofi_no)
+                            </td>
+
+                            <td class="col-xs-3 col-md-2">
+                                <b> @Html.DisplayNameFor(model => model.reported_date)</b>
+                            </td>
+                            <td class="col">
+                                @if (Model.reported_date != null && Model.reported_date > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    @Html.Label(Model.reported_date.ToString("dd/MM/yyyy"))
+                                }                               
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <b>  @Html.DisplayNameFor(model => model.risk_no)</b>
+                            </td>
+                            <td class="col">
+                                @Html.DisplayFor(model => model.risk_no)
+                            </td>
+
+                            <td class="col-xs-3 col-md-2">
+                                <b>  Risk Description</b>
+                            </td>
+                            <td class="col">
+                                @Html.DisplayFor(model => model.risk_nodesc)
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <b>  @Html.DisplayNameFor(model => model.reportedby)</b>
+                            </td>
+                            <td class="col">
+                                @Html.DisplayFor(model => model.reportedby)
+                            </td>
+
+                            <td class="col-xs-3 col-md-2">
+                                <b>  @Html.DisplayNameFor(model => model.identified_in)</b>
+                            </td>
+                            <td class="col">
+                                @Html.DisplayFor(model => model.identified_in)
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <b>  @Html.DisplayNameFor(model => model.improvement)</b>
+                            </td>
+                            <td class="col">
+                                @Html.DisplayFor(model => model.improvement)
+                            </td>
+
+                            <td class="col-xs-3 col-md-2">
+                              <b>  @Html.DisplayNameFor(model => model.target_date)</b>
+                            </td>
+                            <td class="col">
+                                @if (Model.target_date != null && Model.target_date > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    @Html.Label(Model.target_date.ToString("dd/MM/yyyy"))
+                                }
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.DisplayNameFor(model => model.action_proposedby)<text style="color: red;">*</text>
+                                </div>
+                            </td>
+                            <td class="col-xs-6 col-md-4">
+                                <div class="editor-field">
+                                    <select class="form-control-select3" data-fouc id="action_proposedby" name="action_proposedby" onchange="GetProposedByDetails()">
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.EmpList != null)
+                                        {
+                                            foreach (var item in ViewBag.EmpList)
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                    <div id="proposedbydiv" style="display:none">
+                        <div class="card-body">
+                            <input type="hidden" id="itemcnt" name="itemcnt" value="@itemcnt" />
+                            <div class="card card-table table-responsive shadow-0 mb-0">
+                                <table class="table" id="team-list">
+                                    <tr class="bg-blue">
+                                        <th>Action</th>
+                                        <th>Id</th>
+                                        <th>Name</th>
+                                        <th>Division</th>
+                                        <th>Location</th>
+                                        <th>Department</th>
+                                        <th>Email</th>
+                                    </tr>
+                                    @if (ViewBag.ProposedByArray != null && ProposedByArray != null && ProposedByArray.Length > 0)
+                                    {
+                                        for (int index = 0; index < ProposedByArray.Length; index++)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    <span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span>
+                                                    @*<img src='@Url.Content("~/images/cancel.png")' onclick='deleteRow1(this)' style='cursor:pointer; padding-right: 5px;' />Remove*@
+                                                    <input type='hidden' id='empno @index' name="empno @index" value='@ProposedByArray[index]' />
+                                                </td>
+                                                <td>
+                                                    <input type='hidden' id='empid @index' name="empid @index" readonly>@objGlobaldata.GetEmpIDByEmpNo(ProposedByArray[index])
+                                                </td>
+                                                <td>
+                                                    <input type='hidden' id='empname @index' name="empname @index" readonly>@objGlobaldata.GetEmpHrNameById(ProposedByArray[index])
+                                                </td>
+                                                <td>
+                                                    <input type='hidden' id='empdiv @index' name="empdiv @index" readonly>@objGlobaldata.GetCompanyBranchNameById(objGlobaldata.GetDivisionIdByHrEmpId(ProposedByArray[index]))
+                                                </td>
+                                                <td>
+                                                    <input type='hidden' id='emploc @index' name="emploc @index" readonly>@objGlobaldata.GetDivisionLocationById(objGlobaldata.GetWorkLocationIdByHrEmpId(ProposedByArray[index]))
+                                                </td>
+                                                <td>
+                                                    <input type='hidden' id='empdept @index' name="empdept @index" readonly>@objGlobaldata.GetDeptNameById(objGlobaldata.GetDeptIdByHrEmpId(ProposedByArray[index]))
+                                                </td>
+                                                <td>
+                                                    <input type='hidden' id='empemail @index' name="empemail @index" readonly>@objGlobaldata.GetHrEmpEmailIdById(ProposedByArray[index])
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <table class="table table-lg" id="table1">
+                        <tbody>
+                            <tr class="row">
+                                <th class="col-xs-3 col-md-2" style="font-weight: bold;">Action details</th>
+                                <td class="col">
+                                  <textarea class="form-control" id="action_details" name="action_details"> </textarea>
+                                    @Html.ValidationMessageFor(model => model.action_details)
+                                    <span class="field-validation-error"><span id="action_details-message" style="display: none;">Please select Action Details.</span></span>
+                                </td>
+                                <th class="col-xs-3 col-md-2" style="font-weight: bold;">Area to be improved</th>
+                                <td class="col">
+                                    <select class="form-control-select3" data-fouc id="area_improved" name="area_improved">
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.AreaImproved != null)
+                                        {
+                                            foreach (var item in ViewBag.AreaImproved)
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    </select>
+                                    @Html.ValidationMessageFor(model => model.area_improved)
+                                    <span class="field-validation-error"><span id="area_improved-message" style="display: none;">Please select Area to be improved.</span></span>
+                                </td>
+                            </tr>
+                            <tr class="row">
+                                <th class="col-xs-3 col-md-2" style="font-weight: bold;">Personnel Responsible</th>
+                                <td class="col">
+                                    <select class="form-control-select3" data-fouc id="resp" name="resp">
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.EmpList != null)
+                                        {
+                                            foreach (var item in ViewBag.EmpList)
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    </select>
+                                    @Html.ValidationMessageFor(model => model.resp)
+                                    <span class="field-validation-error"><span id="resp-message" style="display: none;">Please select Personnel Responsible.</span></span>
+                                </td>
+                                <th class="col-xs-3 col-md-2" style="font-weight: bold;">Resource required</th>
+                                <td class="col">
+                                    <textarea class="form-control" id='resource' name="resource"></textarea>
+                                    @Html.ValidationMessageFor(model => model.resource)
+                                    <span class="field-validation-error"><span id="resource-message" style="display: none;" for="basic">Please write Resource required.</span></span>
+                                </td>
+                            </tr>                           
+                            <tr class="row">
+                                <th class="col-xs-3 col-md-2" style="font-weight: bold;">Target Date</th>
+                                <td class="col-xs-6 col-md-4">
+                                    <input class="form-control" type='date' id='action_target_date' name="action_target_date" />
+                                    @Html.ValidationMessageFor(model => model.action_target_date)
+                                    <span class="field-validation-error"><span id="action_target_date-message" style="display: none;" for="basic">Please select Target Date.</span></span>
+                                </td>
+                                <td class="col">
+                                    <img src='@Url.Content("~/images/icon_add.png")' onclick='AddActionInfo()' style='cursor:pointer; padding-right: 5px;' />Add
+                                </td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+                    <span class="form-text text-muted"><code>Please click Add or Plus button to add N number of Action details</code></span>
+                    <div id="actiondiv" style="display:none">
+                        <div class="card-header header-elements-inline">
+                            <h5 class="card-title">Actions to be taken to improve</h5>
+                            <div class="header-elements">
+                                <div class="list-icons">
+                                    <a class="list-icons-item" data-action="collapse"></a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-body" >
+                            <input type="hidden" id="itemcount" name="itemcount" value="@itemcount" />
+                            <div class="card card-table table-responsive shadow-0 mb-0">
+                                <table class="table" id="team-list-count">
+                                    <tr class="bg-blue">
+                                        <th>Action</th>
+                                        <th>Action details</th>
+                                        <th>Area to be improved</th>
+                                        <th>Personnel Responsible</th>
+                                        <th>Resource required</th>
+                                        <th>Target Date</th>
+                                    </tr>
+                                    @if (ObjOFIList.OFIList != null && ObjOFIList.OFIList.Count > 0)
+                                    {
+                                        for (int index = 0; index < ObjOFIList.OFIList.Count; index++)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    <img src='@Url.Content("~/images/cancel.png")' onclick='deleteRow(this)' style='cursor:pointer; padding-right: 5px;' />Remove
+                                                    <input type='hidden' id='id_ofi @index' name="id_ofi @index" value='@ObjOFIList.OFIList[index].id_ofi' />
+                                                </td>
+                                                <td>
+                                                    <input type='hidden' id='action_details @index' name="action_details @index" value='@ObjOFIList.OFIList[index].action_details'>@(ObjOFIList.OFIList[index].action_details)
+                                                </td>
+                                                <td>
+                                                    <input type='hidden' id='area_improved @index' name="area_improved @index" value='@ObjOFIList.OFIList[index].area_improved'>@OBJOFIMODEL.GetOFIAreaImprovedById(ObjOFIList.OFIList[index].area_improved)
+                                                </td>
+                                                <td>
+                                                    <input type='hidden' id='resp @index' name="resp @index" value='@ObjOFIList.OFIList[index].resp'>@objGlobaldata.GetMultiHrEmpNameById(ObjOFIList.OFIList[index].resp)
+                                                </td>
+                                                <td>
+                                                    <input type='hidden' id='resource @index' name="resource @index" value='@ObjOFIList.OFIList[index].resource'>@ObjOFIList.OFIList[index].resource
+                                                </td>                                               
+                                                <td>
+                                                    <input type='hidden' id='action_target_date @index' name="action_target_date @index" value='@ObjOFIList.OFIList[index].action_target_date.ToString("yyyy-MM-dd")'>@ObjOFIList.OFIList[index].action_target_date.ToString("yyyy-MM-dd")
+                                                </td>                                              
+                                            </tr>
+                                        }
+                                    }
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <table class="table table-lg">
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.DisplayNameFor(model => model.realization_approved_by)
+                            </td>
+                            <td class="col-xs-6 col-md-4">
+                                <div class="editor-field">
+                                    <select class="form-control-select3" data-fouc id="realization_approved_by" name="realization_approved_by" onchange="GetApprovedByDetails()">
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.Approver != null)
+                                        {
+                                            foreach (var item in ViewBag.Approver)
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                    <div id="notifiedtodiv" style="display:none">
+                        <div class="card-body">
+                            <input type="hidden" id="itemcnt1" name="itemcnt1" value="@itemcnt1" />
+
+                            <div class="card card-table table-responsive shadow-0 mb-0">
+                                <table class="table" id="team-list1">
+                                    <tr class="bg-blue">
+                                        <th>Action</th>
+                                        <th>Id</th>
+                                        <th>Name</th>
+                                        <th>Division</th>
+                                        <th>Location</th>
+                                        <th>Department</th>
+                                        <th>Email</th>
+                                    </tr>
+                                    @if (ViewBag.ApprovedtoArray != null && ApprovedtoArray != null && ApprovedtoArray.Length > 0)
+                                    {
+                                        for (int index = 0; index < ApprovedtoArray.Length; index++)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    <span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span>
+                                                    <input type='hidden' id='nempno @index' name="nempno @index" value='@ApprovedtoArray[index]' />
+                                                </td>
+                                                <td>
+                                                    <input type='hidden' id='nempid @index' name="nempid @index" readonly>@objGlobaldata.GetEmpIDByEmpNo(ApprovedtoArray[index])
+                                                </td>
+                                                <td>
+                                                    <input type='hidden' id='nempname @index' name="nempname @index" readonly>@objGlobaldata.GetEmpHrNameById(ApprovedtoArray[index])
+                                                </td>
+                                                <td>
+                                                    <input type='hidden' id='nempdiv @index' name="nempdiv @index" readonly>@objGlobaldata.GetCompanyBranchNameById(objGlobaldata.GetDivisionIdByHrEmpId(ApprovedtoArray[index]))
+                                                </td>
+                                                <td>
+                                                    <input type='hidden' id='nemploc @index' name="nemploc @index" readonly>@objGlobaldata.GetDivisionLocationById(objGlobaldata.GetWorkLocationIdByHrEmpId(ApprovedtoArray[index]))
+                                                </td>
+                                                <td>
+                                                    <input type='hidden' id='nempdept @index' name="nempdept @index" readonly>@objGlobaldata.GetDeptNameById(objGlobaldata.GetDeptIdByHrEmpId(ApprovedtoArray[index]))
+                                                </td>
+                                                <td>
+                                                    <input type='hidden' id='nempemail @index' name="nempemail @index" readonly>@objGlobaldata.GetHrEmpEmailIdById(ApprovedtoArray[index])
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </fieldset>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- /basic setup -->
+
+<script src='@Url.Content("~/global_assets/js/plugins/forms/wizards/steps2.min.js")'></script>
+<script>
+       var summary = {
+           summaryUrl: '@Url.Action("AddRealizationOFI", "OFI")'
+       };
+       var $ = jQuery.noConflict();
+</script>
+
+@section Scripts {
+    <script>
+     $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+         if (@itemcnt > 0)
+         {
+             document.getElementById("proposedbydiv").style.display = 'block';
+         }
+         if (@itemcnt1 > 0)
+         {
+             document.getElementById("notifiedtodiv").style.display = 'block';
+         }
+         if (@itemcount > 0)
+         {
+             document.getElementById("actiondiv").style.display = 'block';
+         }         
+        });
+
+        var showClass = 'is-visible';
+        var hideClass = 'invisible';
+
+        //$('.form-check-input-styled').uniform();
+        function FileFormatValidation(file) {
+            var ext = file.value.split(".").pop().toLowerCase();
+            if ($.inArray(ext, ["pdf", "xlsx", "xls", "doc", "docx", "jpg","jpeg","gif",".png"]) == -1) {
+                file.value = "";
+                bootbox.alert({
+                    title: 'File type',
+                    message: 'Invalid file format, please upload only doc, pdf, docx, xls, xls,jpg, jpeg, gif, png format'
+                });
+            }
+        }
+
+        function GetProposedByDetails() {
+            var action_proposedby = $('#action_proposedby').val();
+            if (action_proposedby != "" && action_proposedby != null) {
+                jQuery.ajax({
+                    url: '@Url.Action("FunGetEmpDetails", "EmployeeDetails")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'semp_no': action_proposedby },
+                    success: function (result) {
+                        if (result != null) {
+                            document.getElementById("proposedbydiv").style.display = 'block';
+
+                            var action_proposedby = $('#action_proposedby option:selected').val();
+                            var empid = result.emp_id;
+                            var empname = result.empname;
+                            var empdivision = result.division;
+                            var empdept = result.department;
+                            var emploc = result.location;
+                            var empemail = result.EmailId;
+
+                            if (empid != "") {
+                                var cnt = document.getElementById("itemcnt").value;
+
+                                document.getElementById("itemcnt").value = cnt;
+                                // Find a <table> element with id="myTable":
+                                var table = document.getElementById("team-list");
+
+                                // Create an empty <tr> element and add it to the 1st position of the table:
+                                var row = table.insertRow();
+
+
+                                // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                                var cell0 = row.insertCell(0);
+                                var cell1 = row.insertCell(1);
+                                var cell2 = row.insertCell(2);
+                                var cell3 = row.insertCell(3);
+                                var cell4 = row.insertCell(4);
+                                var cell5 = row.insertCell(5);
+                                var cell6 = row.insertCell(6);
+
+                                cell0.innerHTML = "<span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span> <input type='hidden' id='empno " + cnt + "' name='empno " + cnt + "' value='" + action_proposedby + "'>";
+                                cell1.innerHTML = "<input type='hidden' id='empid " + cnt + "' name='empid " + cnt + "' value='" + empid + "'>" + empid;
+                                cell2.innerHTML = "<input type='hidden' id='empname " + cnt + "' name='empname " + cnt + "' value='" + empname + "'>" + empname;
+                                cell3.innerHTML = "<input type='hidden' id='empdivision " + cnt + "' name='empdivision " + cnt + "' value='" + empdivision + "'>" + empdivision;
+                                cell4.innerHTML = "<input type='hidden' id='emploc " + cnt + "' name='emploc " + cnt + "' value='" + emploc + "'>" + emploc;
+                                cell5.innerHTML = "<input type='hidden' id='empdept " + cnt + "' name='empdept " + cnt + "' value='" + empdept + "'>" + empdept;
+                                cell6.innerHTML = "<input type='hidden' id='empemail " + cnt + "' name='empemail " + cnt + "' value='" + empemail + "'>" + empemail;
+
+                                cnt++;
+                                document.getElementById("itemcnt").value = cnt;
+
+                                $("#action_proposedby").val('').trigger('change');
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+
+        function GetApprovedByDetails() {
+            var realization_approved_by = $('#realization_approved_by').val();
+            if (realization_approved_by != "" && realization_approved_by != null) {
+                jQuery.ajax({
+                    url: '@Url.Action("FunGetEmpDetails", "EmployeeDetails")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'semp_no': realization_approved_by },
+                    success: function (result) {
+                        if (result != null) {
+                            document.getElementById("notifiedtodiv").style.display = 'block';
+
+                            var nempno = $('#realization_approved_by option:Selected').val();
+                            var nempid = result.emp_id;
+                            var nempname = result.empname;
+                            var nempdiv = result.division;
+                            var nempdept = result.department;
+                            var nemploc = result.location;
+                            var nempemail = result.EmailId;
+
+                            if (nempid != "") {
+                                var cnt = document.getElementById("itemcnt1").value;
+
+                                document.getElementById("itemcnt1").value = cnt;
+                                // Find a <table> element with id="myTable":
+                                var table = document.getElementById("team-list1");
+
+                                // Create an empty <tr> element and add it to the 1st position of the table:
+                                var row = table.insertRow();
+
+
+                                // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                                var cell0 = row.insertCell(0);
+                                var cell1 = row.insertCell(1);
+                                var cell2 = row.insertCell(2);
+                                var cell3 = row.insertCell(3);
+                                var cell4 = row.insertCell(4);
+                                var cell5 = row.insertCell(5);
+                                var cell6 = row.insertCell(6);
+
+                                cell0.innerHTML = "<span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span> <input type = 'hidden' id = 'nempno " + cnt + "' name = 'nempno " + cnt + "' value = '" + nempno + "'>";
+                                cell1.innerHTML = "<input type='hidden' id='nempid " + cnt + "' name='nempid " + cnt + "' value='" + nempid + "'>" + nempid;
+                                cell2.innerHTML = "<input type='hidden' id='nempname " + cnt + "' name='nempname " + cnt + "' value='" + nempname + "'>" + nempname;
+                                cell3.innerHTML = "<input type='hidden' id='nempdiv " + cnt + "' name='nempdiv " + cnt + "' value='" + nempdiv + "'>" + nempdiv;
+                                cell4.innerHTML = "<input type='hidden' id='nemploc " + cnt + "' name='nemploc " + cnt + "' value='" + nemploc + "'>" + nemploc;
+                                cell5.innerHTML = "<input type='hidden' id='nempdept " + cnt + "' name='nempdept " + cnt + "' value='" + nempdept + "'>" + nempdept;
+                                cell6.innerHTML = "<input type='hidden' id='nempemail " + cnt + "' name='nempemail " + cnt + "' value='" + nempemail + "'>" + nempemail;
+
+                                cnt++;
+                                document.getElementById("itemcnt1").value = cnt;
+
+                                $("#realization_approved_by").val('').trigger('change');
+                               }
+                        }
+                    }
+                });
+            }
+            }
+
+        function deleteRow(btn) {
+            var row = btn.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+        }
+
+     
+        function AddActionInfo() {
+
+        if (Validation() == true) {
+
+            var cnt = document.getElementById("itemcount").value;
+
+            document.getElementById("itemcount").value = cnt;
+            // Find a <table> element with id="myTable":
+            var table = document.getElementById("team-list-count");
+
+            // Create an empty <tr> element and add it to the 1st position of the table:
+            var row = table.insertRow();
+
+            // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+            var cell0 = row.insertCell(0);
+            var cell1 = row.insertCell(1);
+            var cell2 = row.insertCell(2);
+            var cell3 = row.insertCell(3);
+            var cell4 = row.insertCell(4);
+            var cell5 = row.insertCell(5);
+           
+
+            var action_details = $('#action_details').val();
+            var area_improved = $('#area_improved').val();
+            var area_improvedText = $("#area_improved option:selected").text();
+            var resp = $('#resp').val();
+            var respText = $("#resp option:selected").text();
+            var resource = $('#resource').val();
+            var action_target_date = /*reformatDate*/($("#action_target_date").val());
+            
+            cell0.innerHTML = " <img src='@Url.Content("~/images/cancel.png")' onclick='deleteRow(this)' style='cursor:pointer; padding-right: 5px;'/>Remove";
+            cell1.innerHTML = "<input type='hidden' id='action_details " + cnt + "' name='action_details " + cnt + "' value='" + action_details + "'>" + action_details;
+            cell2.innerHTML = "<input type='hidden' id='area_improved " + cnt + "' name='area_improved " + cnt + "' value='" + area_improved + "'>" + area_improvedText;
+            cell3.innerHTML = "<input type='hidden' id='resp " + cnt + "' name='resp " + cnt + "' value='" + resp + "'>" + respText;
+            cell4.innerHTML = "<input type='hidden' id='resource " + cnt + "' name='resource " + cnt + "' value='" + resource + "'>" + resource;
+            cell5.innerHTML = "<input type='hidden' id='action_target_date " + cnt + "' name='action_target_date " + cnt + "' value='" + action_target_date + "'>" + action_target_date;
+          
+            cnt++;
+            document.getElementById("itemcount").value = cnt;
+
+            //document.getElementById("hidden_card_count").classList.remove(hideClass);
+            //document.getElementById("hidden_card_count").classList.add(showClass);
+            document.getElementById("actiondiv").style.display = "block";
+            ResetControl();
+            }
+
+        }
+
+        function Validation() {
+            var validflg = true;
+            var ssnMessage = "";
+
+            if (document.getElementById("action_details").value == "") {
+                ssnMessage = $('#action_details-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#action_details-message');
+                ssnMessage.hide();
+            }
+
+            if (document.getElementById("area_improved").value == "") {
+                ssnMessage = $('#area_improved-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#area_improved-message');
+                ssnMessage.hide();
+            }
+
+            if (document.getElementById("resp").value == "") {
+                ssnMessage = $('#resp-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#resp-message');
+                ssnMessage.hide();
+            }
+
+            if (document.getElementById("resource").value == "") {
+                ssnMessage = $('#resource-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#resource-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("action_target_date").value == "") {
+                ssnMessage = $('#action_target_date-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#action_target_date-message');
+                ssnMessage.hide();
+            }
+
+
+            return validflg;
+        }
+
+        function ResetControl() {
+            document.getElementById("action_details").value = "";
+            $("#area_improved").val('').trigger('change');
+            $("#resp").val('').trigger('change');
+            document.getElementById("resource").value = "";
+            document.getElementById("action_target_date").value = "";           
+        }
+
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
+
+
+

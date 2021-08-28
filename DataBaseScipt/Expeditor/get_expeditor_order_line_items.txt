@@ -1,0 +1,27 @@
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `get_expeditor_order_line_items`(
+in PDep varchar(100),
+in PStatus varchar(100),
+in PFromDate varchar(100),
+in PToDate varchar(100),
+in PCustomerPo varchar(100),
+in PSupplierPo varchar(100),
+in PSalesman varchar(100)
+)
+BEGIN
+ 
+select *,
+    (Select group_concat(CONCAT('<p>',date_format(FollowUpDateTime,'%d/%m/%Y %H:%i'),' - ',followupstatus),'</p>') 
+    from t_expeditor_order_followup  where expeditor_Order_Id = a.id) as followUp
+    from t_expeditor_order_uploads a
+	left join t_expeditor_orders b
+	on a.Id = b.Order_UploadedId
+    where (PDep = '' or a.department = pdep) and 
+    (PStatus = '' or b.DeliveryStatus = PStatus) and
+    date(STR_TO_DATE(CustomerReferenceDate, '%e/%c/%Y %H:%i:%s')) >=   PFromDate  
+    && date(STR_TO_DATE(CustomerReferenceDate, '%e/%c/%Y %H:%i:%s'))  <= PToDate
+    and (PCustomerPo = '' or a.CustomerPurchaseorder=PCustomerPo)
+    and (PSupplierPo = '' or a.SupplierPONo=PSupplierPo)
+    and (PSalesman = '' or a.SalesmanName=PSalesman);
+END$$
+DELIMITER ;

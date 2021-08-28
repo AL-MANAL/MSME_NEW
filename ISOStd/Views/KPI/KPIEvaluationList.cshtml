@@ -1,0 +1,135 @@
+﻿@using PagedList;
+@using PagedList.Mvc;
+
+@model IPagedList<ISOStd.Models.KPIModels>
+
+@{
+    ViewBag.Title = "KPIEvaluationList";
+}
+
+<div class="groupedassets margin10">
+    <span class="groupedassetshead margin10 onestphdcolor">KPI Evaluation List </span>
+</div>
+<div class="ActionLink">@Html.ActionLink("Add New", "AddKPIEvaluation", null, new { @class = "ActionLink", onclick="HyperLinkProgressIconFunction()" })</div>
+<div id="divmsg">
+    @if (TempData["alertdata"] != null)
+    {
+        <span class="errMsg" style="color: red;font-weight: bold;">@TempData["alertdata"]</span>
+        }
+    @if (TempData["Successdata"] != null)
+    {
+        <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+        }
+</div>
+    <br />
+@Html.PagedListPager(Model, page => Url.Action("KPIEvaluationList",
+    new
+    {
+        page
+    }),
+    new PagedListRenderOptions() { Display = PagedListDisplayMode.IfNeeded, DisplayPageCountAndCurrentLocation = true })
+<div id="content">
+    <table id="table1">
+        <tr>
+           
+            <th>
+                @Html.DisplayNameFor(model => model.First().Dept)
+            </th>
+            @*<th>
+                @Html.DisplayNameFor(model => model.First().Dept_Head)
+            </th>*@
+            <th>
+                @Html.DisplayNameFor(model => model.First().KPI_Ref)
+               
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().Freq_of_Eval)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().SubProcess_InCharge)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().KPI_Estd_On)
+            </th>
+              <th>
+                @Html.DisplayNameFor(model => model.First().Key_Perf_Indicator)
+            </th>
+            @*<th>
+                @Html.DisplayNameFor(model => model.First().KPI_No)
+            </th>
+          
+            <th>
+                @Html.DisplayNameFor(model => model.Measurable_Value)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.KPI_Monitoring_Mechanism)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.NCR_Ref)
+            </th>*@
+            <th>Action</th>
+        </tr>
+        @if (Model !=null && Model.Count() > 0)
+        {
+        foreach (var item in Model)
+        {
+            <tr>
+                @*@Html.ActionLink(item.EvalId.ToString(), "KPIEvaluationDetails", new { EvalId = item.EvalId.ToString() })*@
+                <td>
+                    @Html.ActionLink(item.Dept.ToString(), "KPIEvaluationDetails", new { EvalId = item.EvalId.ToString() }, new { onclick="HyperLinkProgressIconFunction()"})
+                </td>
+                @*<td>
+                    @Html.DisplayFor(modelItem => item.Dept)
+                </td>*@
+               @* <td>
+                    @Html.DisplayFor(modelItem => item.Dept_Head)
+                </td>*@
+                <td>
+                    @Html.DisplayFor(modelItem => item.KPI_Ref)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Freq_of_Eval)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SubProcess_InCharge)
+                </td>
+                <td>
+                    @Html.Label(item.KPI_Estd_On.ToString("dd/MM/yyyy"))
+                </td>
+                 <td>
+                    @Html.DisplayFor(modelItem => item.Key_Perf_Indicator)
+                </td>
+               @* <td>
+                    @Html.DisplayFor(modelItem => item.KPI_No)
+                </td>
+               
+                <td>
+                    @Html.DisplayFor(modelItem => item.Measurable_Value)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.KPI_Monitoring_Mechanism)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.NCR_Ref)
+                </td>*@
+                <td>
+                    <a href='@Url.Action("KPIEvaluationEdit", "KPI", new { EvalId = item.EvalId })' title="Edit KPI Evaluation details" onclick="HyperLinkProgressIconFunction()">
+                        <span class="glyphicon glyphicon glyphicon-edit iocnstatus-edit" onclick="HyperLinkProgressIconFunction()"></span></a>
+                </td>
+            </tr>
+        }
+         }
+        else
+        {
+            <tr>
+                <td colspan="9">
+                    <div style="text-align: center;">
+                        <h4 style="color: grey;">No data exists</h4>
+                    </div>
+                </td>
+            </tr>
+        }
+
+    </table>
+</div>

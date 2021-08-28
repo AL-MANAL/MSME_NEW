@@ -1,0 +1,267 @@
+﻿@using System.Data
+@using ISOStd.Models;
+@{
+    ViewBag.Title = "InspectionChecklistReport";
+    clsGlobal objGlobaldata = new clsGlobal();
+    int iSrno = 0, majorCon = 0, minorCon = 0, observation = 0;
+    ISOStd.Models.GenerateInspectionChecklistModels objChecklist = new ISOStd.Models.GenerateInspectionChecklistModels();
+    ISOStd.Models.InspectionChecklistModels obj = new ISOStd.Models.InspectionChecklistModels();
+
+    if (ViewBag.ChecklistDetails != null)
+    {
+        objChecklist = ViewBag.ChecklistDetails;
+    }
+
+    DataSet dsItemList = new DataSet();
+    if (ViewBag.InspectionElement != null)
+    {
+        dsItemList = ViewBag.InspectionElement;
+    }
+
+    DataSet dsrating = new DataSet();
+    if (ViewBag.InspectionRating != null)
+    {
+        dsrating = ViewBag.InspectionRating;
+    }
+    Layout = "~/Views/Shared/_PrintLayout.cshtml";
+    var z = ""; var QId = 0;
+    var p = 0; var q = 0;
+
+    DataSet dsCompany = new DataSet();
+    if (ViewBag.CompanyInfo != null)
+    {
+        dsCompany = ViewBag.CompanyInfo;
+    }
+    Layout = "~/Views/Shared/_PrintLayout.cshtml";
+}
+
+
+@Html.Partial("_ReportHeader", dsCompany)
+<div style="background-color:white">
+
+    @*<fieldset class="border p-2">
+        <legend class="font-weight-semibold text-center font-size-lg">Internal Audit Checklist</legend>*@
+
+
+        <div>
+            <table class="table table-lg table-bordered">
+                <tr class="row">
+                    <td colspan="4">
+                        <h3>Report Details</h3>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="display-label">
+                            <b>  Category </b>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="display-field">
+                            @objChecklist.Category
+                        </div>
+                    </td>
+                    <td>
+                        <div class="display-label">
+                            <b> Inspection Date </b>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="display-field">
+
+                            @if (objChecklist.Inspection_date != null && objChecklist.Inspection_date > Convert.ToDateTime("01/01/0001"))
+                            {
+                                @objChecklist.Inspection_date.ToString("dd/MM/yyyy")
+                            }
+
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="display-label">
+                            <b> Division </b>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="display-field">
+                            @objChecklist.branch
+                        </div>
+                    </td>
+                    <td>
+                        <div class="display-label">
+                            <b> Department </b>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="display-field">
+                            @objChecklist.Department
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="display-label">
+                            <b> Inspection By </b>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="display-field">
+                            @objChecklist.Inspection_by
+                        </div>
+                    </td>
+                    <td>
+                        <div class="display-label">
+                            <b> Location/Site </b>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="display-field">
+                            @objChecklist.Location
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+
+                    <td>
+                        <div class="display-label">
+                            <b> Project </b>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="display-field">
+                            @objChecklist.Project
+                        </div>
+                    </td>
+                    <td>
+                        <div class="display-label">
+                            <b>  Tag No </b>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="display-field">
+                            @objChecklist.TagNo
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="display-label">
+                            <b>  Comment </b>
+                        </div>
+                    </td>
+                    <td colspan="3">
+                        <div class="display-field">
+                            @objChecklist.Comment
+                        </div>
+                    </td>
+                </tr>
+
+
+            </table>
+        </div>
+    @*</fieldset>*@
+    <br />
+    <br />
+    @if (dsItemList != null && dsItemList.Tables.Count > 0 && dsItemList.Tables[0].Rows.Count > 0)
+    {<fieldset class="border p-2">
+            <div id="Items">
+                <div class="editor-label">
+
+                </div>
+                <table class="table table-lg">
+                    <tr>
+                        <th>Sr.No</th>
+                        <th>Element</th>
+                        @if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                        {
+                            for (int item = 0; item < dsrating.Tables[0].Rows.Count; item++)
+                            {
+                                <th>
+                                    @dsrating.Tables[0].Rows[item]["inspection_rating"].ToString()
+                                </th>
+                            }
+                        }
+                        <th>Action</th>
+                    </tr>
+                    @for (int i = 0; i < dsItemList.Tables[0].Rows.Count; i++)
+                    {
+                        iSrno = iSrno + 1;
+                        q = 0;
+
+                        foreach (var data in ViewBag.SectionQuestions)
+                        {
+
+                            if (q >= p || QId == 0)
+                            {
+                                if (z == "")
+                                {
+                                    <tr>
+                                        <td colspan="2">@data.Text</td>
+                                        @*<td class="d-none"></td>*@
+                                        <td class="d-none"></td>
+                                        <td class="d-none"></td>
+                                        <td class="d-none"></td>
+                                        <td class="d-none"></td>
+                                    </tr>
+                                    z = data.Text;
+                                    break;
+                                }
+                                else if (Convert.ToInt32(data.Value) != QId && z != data.Text)
+                                {
+                                    <tr>
+                                        <td colspan="2">@data.Text</td>
+                                        @*<td class="d-none"></td>*@
+                                        <td class="d-none"></td>
+                                        <td class="d-none"></td>
+                                        <td class="d-none"></td>
+                                        <td class="d-none"></td>
+                                    </tr>
+                                    z = data.Text;
+                                    break;
+                                }
+                                else if (Convert.ToInt32(data.Value) != QId && z == data.Text)
+                                {
+                                    break;
+                                }
+                            }
+                            q++;
+                        }
+                        <tr>
+                            <td>
+                                @iSrno
+                            </td>
+                            <td>
+                                @obj.GetInspectionQuestionNameById(dsItemList.Tables[0].Rows[i]["id_inspection_question"].ToString())
+                            </td>
+
+                            @if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                            {
+                                for (int item = 0; item < dsrating.Tables[0].Rows.Count; item++)
+                                {
+                                    if (dsrating.Tables[0].Rows[item]["inspection_rating"].ToString() == obj.GetInspectionRatingNameById(dsItemList.Tables[0].Rows[i]["id_inspection_rating"].ToString()))
+                                    {
+
+                                        <td style="text-align:center; color:green;"><i class="icon-checkmark4"></i></td>
+                                    }
+                                    else
+                                    {
+                                        <td></td>
+                                    }
+                                }
+                            }
+                            <td>
+                                @(dsItemList.Tables[0].Rows[i]["Action"].ToString())
+                            </td>
+                        </tr>
+                        QId = Convert.ToInt32(dsItemList.Tables[0].Rows[i]["id_inspection_question"].ToString());
+                        p++;
+                    }
+                </table>
+            </div>
+        </fieldset>
+    }
+
+</div>
+
+

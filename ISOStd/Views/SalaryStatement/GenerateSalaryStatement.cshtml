@@ -1,0 +1,90 @@
+﻿@model ISOStd.Models.SalaryStatementModels
+@{
+    ViewBag.Title = "GenerateSalaryStatement";
+}
+
+<div class="groupedassets margin10">
+    <span class="groupedassetshead margin10 onestphdcolor">Generate Salary Statement </span>
+</div>
+ <div id="divmsg">
+        @if (TempData["alertdata"] != null)
+        {
+            <span class="errMsg" style="color: red;">@TempData["alertdata"]</span>
+        }
+        @if (TempData["Successdata"] != null)
+        {
+            <span class="errMsg" style="color: green;">@TempData["Successdata"]</span>
+        }
+    </div>
+
+@using (Html.BeginForm()) {
+    @Html.ValidationSummary(true)
+    @Html.AntiForgeryToken()
+
+    <fieldset>
+        <legend>SalaryAdvanceDeductionModels</legend>
+
+        <div id="content">
+            <table id="tabcontent">
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.SalaryFor_Month)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <input type="text" id="SalaryFor_Month" name="SalaryFor_Month" required readonly/>
+                             @Html.ValidationMessageFor(model => model.SalaryFor_Month)
+                        </div>
+                    </td>
+                    </tr>
+                <tr>
+                    <td colspan="2">
+                        <p style="color:red;">Note: Existing Salary statement for current month will be deleted and newly generated</p>
+                    </td>
+                </tr>
+                </table>
+            </div>
+         <div style="width: 100%; text-align: center;">
+            @Html.ActionLink("Back to List", "SalaryStatementList")
+            <input type="submit" value="Create" />
+        </div>
+        </fieldset>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script>
+        $(function () {
+
+            $("#SalaryFor_Month").datepicker({
+                dateFormat: 'MM yy',
+                changeMonth: true,
+                changeYear: true,
+                showButtonPanel: true,
+                buttonImageOnly: true,
+                buttonImage: '../Images/Calender.png',
+                minDate: 0,
+                maxDate:0,
+                showOn: 'both',
+                onClose: function (dateText, inst) {
+                    var month = $("#ui-datepicker-div .ui-datepicker-month :selected").val();
+                    var year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
+                    $(this).val($.datepicker.formatDate('MM yy', new Date(year, month, 1)));
+                }
+            });
+
+            $("#SalaryFor_Month").focus(function () {
+                $(".ui-datepicker-calendar").hide();
+                $("#ui-datepicker-div").position({
+                    my: "center top",
+                    at: "center bottom",
+                    of: $(this)
+                });
+            });
+           $("#SalaryFor_Month").datepicker("setDate", new Date());
+        });
+    </script>
+}

@@ -1,0 +1,1003 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+
+    var user = Obj.GetCurrentUserSession().empid;
+}
+
+
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>                               
+            </div>
+         </div>
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">                   
+                    <span class="breadcrumb-item active"><i class="icon-calendar mr-2"></i> QHSE Planner</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            <div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+                    <div class="float-right">
+                        <a class="btn btn-outline bg-orange text-orange border-orange btn-ladda btn-ladda-progress ladda-button" data-style="radius" href="@Url.Action("QHSE", "Home", null)" title="Dashboard">
+                            <i class="icon-stats-dots mr-2"> </i>Performance Dashboard
+                        </a>
+                        &nbsp;&nbsp;&nbsp;
+                        <a class="btn btn-outline bg-orange text-orange border-orange btn-ladda btn-ladda-progress ladda-button" data-style="radius" href="@Url.Action("Documents", "Documents", null)" title="Document Dashboard">
+                            <i class="icon-archive mr-2"> </i> Document Dashboard
+                        </a>
+                    </div>
+
+                    @*<div class="breadcrumb-elements-item dropdown p-0">
+            <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                <i class="icon-gear mr-2"></i>
+                Settings
+            </a>
+
+            <div class="dropdown-menu dropdown-menu-right">
+
+                <div class="dropdown-divider"></div>
+                <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+            </div>
+        </div>*@
+                </div>
+            </div>
+        </div>
+    </div>
+}
+<style>
+    .modal-open {
+    overflow: scroll;
+}
+</style>
+<div class="card">
+    <div class="card-header header-elements-inline bg-primary">
+        <h5 class="card-title">Event Planner</h5>
+        <div class="header-elements">
+            <div class="list-icons">
+                <a class="list-icons-item" data-action="collapse"></a>
+
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+       
+            <div class="row">
+                <div class="col-sm-3">
+                    @if (ViewBag.Branch != null)
+                    {
+                    <select class="form-control select-fixed-multiple" data-fouc id="branch_name" name="branch_name" onchange="getDetails()">
+                        <option value='' hidden selected>Branch</option>
+                        @if (ViewBag.Branch != null)
+                        {
+                        foreach (var item in ViewBag.Branch)
+                        {
+                        if (item.Value == ViewBag.Branch_name)
+                        {
+                        <option value='@item.Value' selected>@item.Text</option>
+                        }
+                        else
+                        {
+                        <option value='@item.Value'>@item.Text</option>
+                        }
+                        }
+                        }
+                    </select>
+                    }
+                </div>
+                <div class="col-sm-2">
+                    @if (ViewBag.Status != null)
+                    {
+                    <select class="form-control select-fixed-multiple" data-fouc id="eventstatus" name="eventstatus" onchange="getDetails()">
+                        <option value='' hidden selected>All Status</option>
+                        @if (ViewBag.Status != null)
+                        {
+                        foreach (var item in ViewBag.Status)
+                        {
+                        <option value='@item.Value'>@item.Text</option>
+                        }
+                        }
+                    </select>
+                    }
+                </div>
+                <div class="col-sm-2">
+                    @if (ViewBag.Priority != null)
+                    {
+                    <select class="form-control select-fixed-multiple" data-fouc id="eventpriority" name="eventpriority" onchange="getDetails()">
+                        <option value='' hidden selected>All Priority</option>
+                        @if (ViewBag.Priority != null)
+                        {
+                        foreach (var item in ViewBag.Priority)
+                        {
+                        <option value='@item.Value'>@item.Text</option>
+                        }
+                        }
+                    </select>
+                    }
+                </div>
+                <div class="col-sm-2">
+
+                    @if (ViewBag.Type != null)
+                    {
+                        <select class="form-control select-fixed-multiple" data-fouc id="eventtype" name="eventtype" onchange="getDetails()">
+                            <option value='' hidden>All Types</option>
+                            @if (ViewBag.Type != null)
+                {
+                    foreach (var item in ViewBag.Type)
+                    {
+                                    <option value='@item.Value'>@item.Text</option>
+                                }
+                            }
+                        </select>
+                    }
+                </div>
+                <div class="col-sm-2">
+
+                    @if (ViewBag.EmpList != null)
+                    {
+                        <select class="form-control select-fixed-multiple" data-fouc id="Personresponsible" name="Personresponsible" onchange="getDetails()">
+                            <option value='' hidden>All Resp Person</option>
+                            @if (ViewBag.EmpList != null)
+                {
+                    foreach (var item in ViewBag.EmpList)
+                    {
+                                    <option value='@item.Value'>@item.Text</option>
+                                }
+                            }
+                        </select>
+                    }
+                </div>
+            </div>
+       
+        <br />
+        <div class="container-fluid">
+
+            <div id="fullcalendar-basic">
+            </div>
+
+            <div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <!--Header-->
+                        <div class="modal-header">
+                            <h4 class="modal-title" id="eventTitle"></h4>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">×</span>
+                            </button>
+                        </div>
+                        <!--Body-->
+                        <div class="modal-body">
+                            <p id="pDetails"></p>
+                        </div>
+                        <!--Footer-->
+                        <div class="modal-footer">
+                            <button id="btnDelete" class="btn btn-danger">
+                                <span class="glyphicon glyphicon-remove"></span> Delete
+                            </button>
+                            <button id="btnEdit" class="btn btn-success" style="margin-right:5px;">
+                                <span class="glyphicon glyphicon-pencil"></span> Edit
+                            </button>
+                            <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="myModalSave" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title" id="myLargeModalLabel">Save Activity</h4>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">×</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form class="form-horizontal">
+                                <input type="hidden" id="hdEventID" value="0" />
+                                <div class="form-group row">
+                                    <div class="col-sm-1">
+                                        <label>Subject</label>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <input type="text" id="txtSubject" class="form-control" />
+                                    </div>
+                                    <div class="col-sm-1">
+                                        <label>Description</label>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <textarea id="txtDescription" rows="3" class="form-control"></textarea>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-sm-2">
+                                        <label>Start Date</label>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <input class="form-control" type="date" id="txtStart" />
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <div class="input-group">
+                                            <span class="input-group-prepend">
+                                                <span class="input-group-text"><i class="icon-watch2"></i></span>
+                                            </span><input type="text" class="form-control" id="starttime" value="00:00">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="checkbox">
+                                        <label><input type="checkbox" id="chkIsFullDay" checked="checked" />  Is Full Day event</label>
+                                    </div>
+                                </div>
+
+                                <div class="form-group row" id="divEndDate" style="display:none">
+                                    <div class="col-sm-2">
+                                        <label>End Date</label>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <input class="form-control" type="date" id="txtEnd" value="" />
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <div class="input-group">
+                                            <span class="input-group-prepend">
+                                                <span class="input-group-text"><i class="icon-watch2"></i></span>
+                                            </span><input type="text" class="form-control" id="endtime" value="00:00">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <div class="col-sm-1">
+                                        <label>Type</label>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <select class="form-control select-fixed-multiple" data-fouc id="event_type" name="event_type" onchange="GetEventStatus()">
+                                            <option value='' hidden>Select</option>
+                                            @if (ViewBag.Type != null)
+                                            {
+                                                foreach (var item in ViewBag.Type)
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+                                    <div class="col-sm-1">
+                                        <label>Status</label>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <select class="form-control select-fixed-multiple" data-fouc id="event_status" name="event_status">
+                                            <option value='' hidden>Select</option>
+                                            @if (ViewBag.Status != null)
+                                            {
+                                                foreach (var item in ViewBag.Status)
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <div class="col-sm-1">
+                                        <label>Person Responsible</label>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <select class="form-control select-fixed-multiple" multiple="multiple" data-fouc id="Person_responsible" name="Person_responsible">
+
+                                            @if (ViewBag.EmpList != null)
+                                            {
+                                                foreach (var item in ViewBag.EmpList)
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+                                    <div class="col-sm-1">
+                                        <label>Priority</label>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <select class="form-control select-fixed-multiple" data-fouc id="event_priority" name="event_priority">
+                                            <option value='' hidden>Select</option>
+                                            @if (ViewBag.Priority != null)
+                                            {
+                                                foreach (var item in ViewBag.Priority)
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+
+
+                                <div class="form-group row">
+
+                                    <div class="col-sm-1">
+                                        <label>Notification</label>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <select class="form-control select-fixed-multiple" data-fouc id="NotificationPeriod" name="NotificationPeriod">
+                                            <option value='' hidden>Select</option>
+                                            @if (ViewBag.NotificationPeriod != null)
+                                            {
+                                                foreach (var item in ViewBag.NotificationPeriod)
+                                                {
+                                                    <option value='@item.Key'>@item.Value</option>
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <input class="form-control" type="number" id="NotificationValue" name="NotificationValue" value="0" max="3" />
+
+                                        <span class="form-text text-muted"><code>(Alert on or before Start date)</code></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-sm-1">
+                                        <label>Notification To</label>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <select class="form-control select-fixed-multiple" multiple="multiple" data-fouc id="notification_to" name="notification_to">
+
+                                            @if (ViewBag.EmpList != null)
+                                            {
+                                                foreach (var item in ViewBag.EmpList)
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+                                 
+                                </div>
+
+                                <fieldset class="border p-2">
+                                    <legend class="font-weight-semibold"><i class="icon-file-text mr-2"></i>Comments</legend>
+                                    <div id="cDetails" class="table-responsive-sm"></div>
+                                    <textarea id="txtcomment" rows="3" placeholder="Add your comments" class="form-control"></textarea>
+                                </fieldset>
+                            </form>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" id="btnSave" class="btn btn-success">Save</button>
+                            <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+
+@section scripts {
+
+    <script>
+   //----zzz
+        $(document).ready(function () {
+
+              @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+
+        if ('@HttpContext.Current.Session["login"]' >'@DateTime.Now' && '@HttpContext.Current.Session["login"]'< '@DateTime.Now.AddSeconds(10)') {
+
+            new Noty({
+                text: 'You Have Successfully Logged in. Welcome !',
+                type: 'success'
+            }).show();
+        }
+
+        $('#starttime').AnyTime_picker({
+            format: '%H:%i'
+        });
+        $('#endtime').AnyTime_picker({
+            format: '%H:%i'
+        });
+
+        FetchEventAndRenderCalendar();
+
+        $('#btnDelete').click(function () {
+
+            var sDelete = selectedEvent.event.extendedProps.Logged_Id;
+            if (sDelete == @user) {
+            bootbox.confirm({
+                title: 'Confirm dialog',
+                message: 'Are you Sure you want to Delete?',
+                buttons: {
+                    confirm: {
+                        label: 'Yes',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'Cancel',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (r) {
+                    if (r == true) {
+                        $.ajax({
+                            type: "POST",
+                            url: '@Url.Action("DeleteEvent", "Home")',
+                            data: { 'eventID': selectedEvent.event.id },
+                            success: function (data) {
+                                if (data.status) {
+                                    //Refresh the calender
+                                    FetchEventAndRenderCalendar();
+                                    $('#myModal').modal('hide');
+                                }
+                            },
+                            error: function () {
+                                bootbox.alert({
+                                    title: 'Event Calender',
+                                    message: 'Failed'
+                                });
+                            }
+                        })
+                        return true;
+                    }
+                    else if (r == false) {
+                        bootbox.hideAll();
+                        return false;
+                    }
+                }
+                });
+            }
+            else {
+                bootbox.alert({
+                    title: 'Access Denied',
+                    message: 'Event is not created by you.'
+                });
+            }            
+        });
+        $('#btnEdit').click(function () {
+            //Open modal dialog for edit event
+            openAddEditForm();
+        })
+
+        $('#chkIsFullDay').change(function () {
+            if ($(this).is(':checked')) {
+                $('#divEndDate').hide();
+            }
+            else {
+                $('#divEndDate').show();
+            }
+        });
+        $('#btnSave').click(function () {
+            //Validation/
+            var event_type = $('#event_type :selected').text().trim();
+            var person_val = $('#Person_responsible :selected').text().trim();
+            if (event_type == "Training") {               
+                if (person_val == "") {
+                    bootbox.alert({
+                        title: 'Event Calender',
+                        message: 'Person responsible required'
+                    });
+                    return;
+                }
+            }
+
+            if ($('#txtSubject').val().trim() == "") {
+                bootbox.alert({
+                    title: 'Event Calender',
+                    message: 'Subject required'
+                });
+                return;
+            }
+            if ($('#txtStart').val().trim() == "") {
+
+                bootbox.alert({
+                    title: 'Event Calender',
+                    message: 'Start date required'
+                });
+                return;
+            }
+            if ($('#chkIsFullDay').is(':checked') == false && $('#txtEnd').val().trim() == "") {
+
+                bootbox.alert({
+                    title: 'Event Calender',
+                    message: 'End date required'
+                });
+                return;
+            }
+            if ($('#txtEnd').val() != "" && $('#txtStart').val() != "") {
+
+                var startDate = $('#txtStart').val();
+                var endDate = $('#txtEnd').val();
+                if (startDate > endDate) {
+
+                    bootbox.alert({
+                        title: 'Event Calender',
+                        message: 'Invalid end date'
+                    });
+                    return;
+                }
+            }
+
+            var data = {
+                id_event: $('#hdEventID').val(),
+                subject: $('#txtSubject').val().trim(),
+                start_date: $('#txtStart').val().trim(),
+                end_date: $('#chkIsFullDay').is(':checked') ? null : $('#txtEnd').val().trim(),
+                description: $('#txtDescription').val(),
+                full_day: $('#chkIsFullDay').is(':checked'),
+                Person_responsible: $('#Person_responsible').val(),
+                NotificationPeriod: $('#NotificationPeriod').val(),
+                NotificationValue: $('#NotificationValue').val(),
+                starttime: $('#starttime').val(),
+                endtime: $('#endtime').val(),
+                event_status: $('#event_status').val(),
+                event_type: $('#event_type').val(),
+                event_priority: $('#event_priority').val(),
+                comments: $('#txtcomment').val(),
+                notification_to: $('#notification_to').val(),
+            }
+            SaveEvent(data);
+            // call function for submit data to the server
+        })
+    });
+        var calendarBasicViewElement = document.querySelector('#fullcalendar-basic');
+        var events = [];
+        var selectedEvent = null;
+        function getDetails() {
+
+            FetchEventAndRenderCalendar();
+        }
+
+        function FetchEventAndRenderCalendar() {
+            var branch_name = document.getElementById("branch_name").value;
+            var event_status = document.getElementById("eventstatus").value;
+            var event_priority = document.getElementById("eventpriority").value;
+            var event_type = document.getElementById("eventtype").value;
+            var Person_responsible = document.getElementById("Personresponsible").value;
+           // var notification_to = document.getElementById("notification_to").value;
+            events = [];
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("GetEvents", "Home")',
+                data: { 'branch': branch_name, 'event_status': event_status, 'event_priority': event_priority, 'event_type': event_type, 'Person_responsible': Person_responsible},
+                success: function (data) {
+                    $.each(data, function (i, v) {
+                        var startdate = new Date(parseInt(v.start_date.substr(6)));
+                        var enddate = new Date(parseInt(v.end_date.substr(6)));
+                        startdate = startdate.toISOString();
+
+                        events.push({
+                            id: v.id_event,
+                            title: v.subject,
+                            description: v.description,
+                            start: startdate,
+                            end: enddate != null ? enddate : null,
+                            allDay: v.full_day,
+                            per_resp: v.Person_responsible,
+                            not_period: v.NotificationPeriod,
+                            not_value: v.NotificationValue,
+                            Person_name: v.Person_name,
+                            starttime: v.starttime,
+                            endtime: v.endtime,
+                            Logged_by: v.Logged_by,
+                            event_status: v.event_status,
+                            event_type: v.event_type,
+                            event_priority: v.event_priority,
+                            color: v.priority_color,
+                            commentList: v.commentList,
+                            sevent_status: v.sevent_status,
+                            sevent_type: v.sevent_type,
+                            sevent_priority: v.sevent_priority,
+                            notification_to: v.notification_to,
+                            Logged_Id: v.Logged_Id,
+                        });
+                    })
+
+                    GenerateCalender(events);
+                },
+                error: function (error) {
+                    bootbox.alert({
+                        title: 'Event Calender',
+                        message: 'Failed'
+                    });
+                }
+            })
+
+        }
+
+        function GenerateCalender(events) {
+            if ($('#fullcalendar-basic').children().length > 0) {
+                var node = document.getElementById('fullcalendar-basic');
+                node.innerHTML = "";
+            }
+            $(events).each(function (event) {
+
+                if (events[event].sevent_status != "Close") {
+                    events[event].editable = true;
+                }
+                else {
+                    events[event].editable = false;
+                }
+            });
+
+            var calendarBasicViewInit = new FullCalendar.Calendar(calendarBasicViewElement, {
+
+                plugins: ['dayGrid', 'interaction'],
+                header: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,dayGridWeek,dayGridDay'
+                },
+
+                //views: {
+                //    month: {
+                //        titleFormat: { year: 'numeric', month: 'long' },
+                //        columnHeaderFormat: {
+                //            weekday: 'long'
+                //        }
+                //    },
+                //    week: {
+                //        titleFormat: { year: 'numeric', month: 'short', day: 'numeric' },
+                //        columnHeaderFormat: {
+                //            weekday: 'short'
+                //        }
+                //    },
+                //    day: {
+                //        titleFormat: { year: 'numeric', month: 'long', day: 'numeric' },
+                //        columnHeaderFormat: {
+                //            weekday: 'short'
+                //        }
+                //    }
+                //},
+                //eventTimeFormat: {
+                //    hour: '2-digit',
+                //    minute: '2-digit',
+                //    meridiem: false
+                //},
+                defaultDate: new Date(),
+                editable: false,
+                events: events,
+                //eventLimit: true,
+
+                eventClick: function (calEvent, jsEvent, view) {
+                    selectedEvent = calEvent;
+
+                    var month = selectedEvent.event.start.getMonth() + 1;
+                    if (month < 10) {
+                        month = "0".concat(month);
+                    }
+                    var day = selectedEvent.event.start.getDate();
+                    if (day < 10) {
+                        day = "0".concat(day);
+                    }
+                    var year = selectedEvent.event.start.getFullYear();
+                    var startdate = year + "-" + month + "-" + day;
+
+                    if (selectedEvent.event.end != null) {
+                        var smonth = selectedEvent.event.end.getMonth() + 1;
+                        if (smonth < 10) {
+                            smonth = "0".concat(smonth);
+                        }
+                        var sday = selectedEvent.event.end.getDate();
+                        if (sday < 10) {
+                            sday = "0".concat(sday);
+                        }
+                        var syear = selectedEvent.event.end.getFullYear();
+                        var enddate = syear + "-" + smonth + "-" + sday;
+                    }
+
+                    $('#myModal #eventTitle').text(calEvent.event.title);
+
+                    var $description = $('<div/>');
+                    $description.append($('<p/>').html('<b>Start Date: </b>' + startdate + " " + calEvent.event.extendedProps.starttime));
+                    if (calEvent.event.end != null) {
+                        $description.append($('<p/>').html('<b>End Date: </b>' + enddate + " " + calEvent.event.extendedProps.endtime));
+                    }
+                    $description.append($('<p/>').html('<b>Description: </b>' + calEvent.event.extendedProps.description));
+                    $description.append($('<p/>').html('<b>Person Responsible: </b>' + calEvent.event.extendedProps.Person_name));
+                    $description.append($('<p/>').html('<b>Status: </b>' + calEvent.event.extendedProps.sevent_status));
+                    $description.append($('<p/>').html('<b>Type: </b>' + calEvent.event.extendedProps.sevent_type));
+                    $description.append($('<p/>').html('<b>Priority: </b>' + calEvent.event.extendedProps.sevent_priority));
+                    $description.append($('<p/>').html('<b>Notification: </b>' + calEvent.event.extendedProps.not_value + ' ' + calEvent.event.extendedProps.not_period));
+                    $description.append($('<p/>').html('<b>Logged By: </b>' + calEvent.event.extendedProps.Logged_by));
+                    $description.append($('<p/>').html('<b>Comments:</b>'));
+                    var s = '<table class="table"><tbody>';
+                    $.each(calEvent.event.extendedProps.commentList, function (key, item) {
+                        var logdate = new Date(parseInt(item.logged_date.substr(6)));
+
+                        s = s + '<tr><td><div class="d-flex align-items-center"><i class="icon-user mr-3 icon-2x"></i>' + item.Logged_by + '</div></td><td>' + item.comments + '</td><td>' + logdate.toLocaleString() + '</td></tr>';
+
+                    });
+
+                    $description.append(s);
+                    $('#myModal #pDetails').empty().html($description);
+
+                    $('#myModal').modal();
+                },
+                selectable: true,
+                select: function (start, end) {
+                    selectedEvent = {
+                        id: 0,
+                        title: '',
+                        description: '',
+                        start: start,
+                        end: end,
+                        allDay: false,
+                        per_resp: '',
+                        not_period: '',
+                        not_value: '',
+                        starttime: '00:00',
+                        endtime: '00:00',
+                        event_status: '',
+                        event_type: '',
+                        event_priority: '',
+                        commentList: '',
+                        notification_to: '',
+                    };
+                    openSaveForm();
+
+                },
+                eventDrop: function (event) {
+
+                    var month = event.event.start.getMonth() + 1;
+                    if (month < 10) {
+                        month = "0".concat(month);
+                    }
+                    var day = event.event.start.getDate();
+                    if (day < 10) {
+                        day = "0".concat(day);
+                    }
+                    var year = event.event.start.getFullYear();
+                    var startdate = year + "-" + month + "-" + day;
+
+                    if (event.event.end != null) {
+                        var smonth = event.event.end.getMonth() + 1;
+                        if (smonth < 10) {
+                            smonth = "0".concat(smonth);
+                        }
+                        var sday = event.event.end.getDate();
+                        if (sday < 10) {
+                            sday = "0".concat(sday);
+                        }
+                        var syear = event.event.end.getFullYear();
+                        var enddate = syear + "-" + smonth + "-" + sday;
+                    }
+
+                    var data = {
+                        id_event: event.event.id,
+                        subject: event.event.title,
+                        start_date: startdate,
+                        end_date: event.event.end != null ? enddate : null,
+                        description: event.event.extendedProps.description,
+                        full_day: event.event.allDay,
+                        Person_responsible: event.event.extendedProps.per_resp,
+                        NotificationPeriod: event.event.extendedProps.not_period,
+                        NotificationValue: event.event.extendedProps.not_value,
+                        starttime: event.event.extendedProps.starttime,
+                        endtime: event.event.extendedProps.endtime,
+                        event_status: event.event.extendedProps.event_status,
+                        event_type: event.event.extendedProps.event_type,
+                        event_priority: event.event.extendedProps.event_priority,
+                        commentList: event.event.extendedProps.commentList,
+                        notification_to: event.event.extendedProps.notification_to,
+                    };
+                    SaveEvent(data);
+                }
+
+            }).render();
+        }
+        function openAddEditForm() {
+            var Eventstatus = selectedEvent.event.extendedProps.sevent_status;
+
+            if (Eventstatus != "Close") {
+            if (selectedEvent != null) {
+                var month = selectedEvent.event.start.getMonth() + 1;
+                if (month < 10) {
+                    month = "0".concat(month);
+                }
+                var day = selectedEvent.event.start.getDate();
+                if (day < 10) {
+                    day = "0".concat(day);
+                }
+                var year = selectedEvent.event.start.getFullYear();
+                var startdate = year + "-" + month + "-" + day;
+                if (selectedEvent.event.end != null) {
+                    var smonth = selectedEvent.event.end.getMonth() + 1;
+                    if (smonth < 10) {
+                        smonth = "0".concat(smonth);
+                    }
+                    var sday = selectedEvent.event.end.getDate();
+                    if (sday < 10) {
+                        sday = "0".concat(sday);
+                    }
+                    var syear = selectedEvent.event.end.getFullYear();
+                    var enddate = syear + "-" + smonth + "-" + sday;
+                }
+                var respVal = selectedEvent.event.extendedProps.per_resp.split(',');
+                $('#Person_responsible option').filter(function () {
+                    return respVal.indexOf($(this).val()) > -1; //Options text exists in array
+                }).prop('selected', true).trigger('change'); //Set selected
+
+                var notVal = selectedEvent.event.extendedProps.notification_to.split(',');
+                $('#notification_to option').filter(function () {
+                    return notVal.indexOf($(this).val()) > -1; //Options text exists in array
+                }).prop('selected', true).trigger('change'); //Set selected
+
+                $('#hdEventID').val(selectedEvent.event.id);
+                $('#txtSubject').val(selectedEvent.event.title);
+                $('#txtStart').val(startdate);
+
+                $('#chkIsFullDay').prop("checked", selectedEvent.event.allDay || false);
+                $('#chkIsFullDay').change();
+                $('#txtEnd').val(selectedEvent.event.end != null ? enddate : '');
+                $('#txtDescription').val(selectedEvent.event.extendedProps.description);
+                //$('#Person_responsible').val(selectedEvent.event.extendedProps.per_resp).trigger('change');
+                $('#NotificationPeriod').val(selectedEvent.event.extendedProps.not_period).trigger('change');
+                $('#NotificationValue').val(selectedEvent.event.extendedProps.not_value);
+                $('#starttime').val(selectedEvent.event.extendedProps.starttime);
+                $('#endtime').val(selectedEvent.event.extendedProps.endtime);
+                $('#event_status').val(selectedEvent.event.extendedProps.event_status).trigger('change');
+                $('#event_type').val(selectedEvent.event.extendedProps.event_type).trigger('change');
+                $('#event_priority').val(selectedEvent.event.extendedProps.event_priority).trigger('change');
+                $('#txtcomment').val('');
+
+                var s = '<table class="table"><tbody>';
+                $.each(selectedEvent.event.extendedProps.commentList, function (key, item) {
+                    var logdate = new Date(parseInt(item.logged_date.substr(6)));
+
+                    s = s + '<tr><td><div class="d-flex align-items-center"><i class="icon-user mr-3 icon-2x"></i>' + item.Logged_by + '</div></td><td>' + item.comments + '</td><td>' + logdate.toLocaleString() + '</td></tr>';
+
+                });
+                s = s + '</tbody></table>';
+                $('#myModalSave #cDetails').empty().html(s);
+
+            }
+            $('#myModal').modal('hide');
+                $('#myModalSave').modal();
+            }
+            else if (Eventstatus == "Close") {
+                bootbox.alert({
+                    title: 'Event Status',
+                    message: 'Event status is closed can not edit the Event details'
+                });
+            }
+        }
+
+        function openSaveForm() {
+            if (selectedEvent != null) {
+                var startdate = selectedEvent.start.startStr;
+
+                if (selectedEvent.start.end != null) {
+
+                    var enddate = selectedEvent.start.endStr;
+                }
+
+
+                $('#hdEventID').val(selectedEvent.id);
+                $('#txtSubject').val(selectedEvent.title);
+                $('#txtStart').val(startdate);
+
+                $('#chkIsFullDay').prop("checked", selectedEvent.allDay || false);
+                $('#chkIsFullDay').change();
+                $('#txtEnd').val(selectedEvent.start.end != null ? enddate : '');
+                $('#txtDescription').val(selectedEvent.description);
+                $('#Person_responsible').val(selectedEvent.per_resp).trigger('change');
+                $('#NotificationPeriod').val(selectedEvent.not_period).trigger('change');
+                $('#NotificationValue').val(selectedEvent.not_value);
+                $('#starttime').val(selectedEvent.starttime);
+                $('#endtime').val(selectedEvent.endtime);
+                $('#event_status').val(selectedEvent.event_status).trigger('change');
+                $('#event_type').val(selectedEvent.event_type).trigger('change');
+                $('#event_priority').val(selectedEvent.event_priority).trigger('change');
+                $('#notification_to').val(selectedEvent.notification_to).trigger('change');
+                $('#txtcomment').val('');
+                $('#myModalSave #cDetails').empty();
+            }
+            $('#myModal').modal('hide');
+            $('#myModalSave').modal();
+        }
+        function SaveEvent(data) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("SaveEvent", "Home")',
+                data: data,
+                success: function (data) {
+                    if (data.status) {
+                        //Refresh the calender
+                        FetchEventAndRenderCalendar();
+                        $('#myModalSave').modal('hide');
+                    }
+                },
+                error: function () {
+
+                    bootbox.alert({
+                        title: 'Event Calender',
+                        message: 'Failed'
+                    });
+                }
+            })
+        }
+
+        function GetEventStatus() {           
+
+            var Type = $('#event_type :selected').text();;
+                      
+            if (Type == "Training")
+                jQuery.ajax({
+                    url: '@Url.Action("FunGetStatusList", "Home")',
+                    type: 'POST',
+                    dataType: "json",
+                    //data: { '':  },
+                    success: function (result) {
+                        if (result != null && result.length > 0) {
+                            $('#event_status').children('option').remove();
+                            $("#event_status").trigger('change');
+                            $.each(result, function (index, item) {
+                                $("#event_status").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                                $("#event_status").trigger('change');
+                            });
+                            $('#event_status').trigger('change');
+                            return;
+                        }
+                    }
+                });
+            else {
+                 jQuery.ajax({
+                    url: '@Url.Action("FunGetStatusList1", "Home")',
+                    type: 'POST',
+                    dataType: "json",
+                    //data: { '':  },
+                    success: function (result) {
+                        if (result != null && result.length > 0) {
+                            $('#event_status').children('option').remove();
+                            $("#event_status").trigger('change');
+                            $.each(result, function (index, item) {
+                                $("#event_status").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                                $("#event_status").trigger('change');
+                            });
+                            $('#event_status').trigger('change');
+                            return;
+                        }
+                    }
+                });
+            }
+       }
+
+    </script>
+    <!-- Demo pages scripts used -->
+    <script src='@Url.Content("~/global_assets/js/demo_pages/gallery.js")'></script>
+
+    <!-- Theme JS files -->
+    <script src='@Url.Content("~/global_assets/js/plugins/media/fancybox.min.js")'></script>
+}

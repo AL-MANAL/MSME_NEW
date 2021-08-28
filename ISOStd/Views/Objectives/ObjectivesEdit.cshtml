@@ -1,0 +1,1447 @@
+﻿@model ISOStd.Models.ObjectivesModels
+@using System.Data;
+
+@{
+    ViewBag.Title = "ObjectivesEdit";
+    //DataSet dsObjDetails = new DataSet();
+    //int itemcnt = 0;
+    //if (ViewBag.dsObjDetails != null)
+    //{
+    //    dsObjDetails = ViewBag.dsObjDetails;
+    //    itemcnt = dsObjDetails.Tables.Count;
+    //}
+
+    int itemcnt1 = 0;
+    string[] Estld_byArray = new string[0];
+    if (ViewBag.Estld_byArray != null)
+    {
+        Estld_byArray = ViewBag.Estld_byArray;
+        itemcnt1 = Estld_byArray.Length;
+    }
+    ISOStd.Models.clsGlobal objGlobaldata = new ISOStd.Models.clsGlobal();
+}
+
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("ObjectivesList", "Objectives", new { View = ViewBag.View })" class="breadcrumb-item">
+                        @if (ViewBag.View == "1")
+                        {
+                            <span class="breadcrumb-item">Quality Objectives </span>
+                            <span class="breadcrumb-item active"> Update Quality Objectives </span>
+                        }
+                        else if (ViewBag.View == "2")
+                        {
+                            <span class="breadcrumb-item">Health & Safety Objectives </span>
+                            <span class="breadcrumb-item active"> Update Health & Safety Objectives </span>
+                        }
+                        else if (ViewBag.View == "3")
+                        {
+                            <span class="breadcrumb-item">Environment Objectives </span>
+                            <span class="breadcrumb-item active"> Update Environment Objectives </span>
+                        }
+                    </a>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                    <div class="breadcrumb justify-content-center">
+                        <div class="breadcrumb-elements-item dropdown p-0">
+                            <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                                <i class="icon-gear mr-2"></i>
+                                Settings
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <div class="dropdown-divider"></div>
+                                <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>*@
+        </div>
+    </div>
+}
+
+
+@using (Html.BeginForm("ObjectivesEdit", "Objectives", FormMethod.Post,
+                         new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <input type="hidden" id="userbranch" name="userbranch" value="@ViewBag.userbranch" />
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            @if (ViewBag.View == "1")
+            {
+                <h5 class="card-title">Update Quality Objectives</h5>
+            }
+            else if (ViewBag.View == "2")
+            {
+                <h5 class="card-title">Update Health & Safety Objectives</h5>
+            }
+            else if (ViewBag.View == "3")
+            {
+                <h5 class="card-title">Update Environment Objectives</h5>
+            }
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <input type="hidden" id="branch_view" name="branch_view" value="@Model.branch_view" />
+            <input type="hidden" id="view" name="view" value="@ViewBag.View" />
+            <div class="container-fluid">
+                <input type="hidden" id="Objectives_Id" name="Objectives_Id" value="@Model.Objectives_Id" />
+                <input type="hidden" id="ObjectivesTrans_Id" name="ObjectivesTrans_Id" value="@Model.ObjectivesTrans_Id" />
+                <table class="table table-lg">
+                    <tr class="row">
+
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.Audit_Criteria) <text style="color: red;">*</text>
+                        </td>
+                        <td class="col-xs-6 col-md-4">
+                            @*<div class="editor-field">
+                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="Audit_criteria" name="Audit_criteria" multiple required>
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.AuditCriteria != null)
+                                        {
+                                            foreach (var item in ViewBag.AuditCriteria)
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>*@
+                            <input type="text" class="form-control" id="Audit_Criteria" name="Audit_Criteria" value="@ViewBag.IsostdName" readonly />
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.Estld_by) <text style="color: red;">*</text>
+                        </td>
+                        <td class="col">
+                            <select id="Estld_by" name="Estld_by" class="form-control select-fixed-multiple" multiple="multiple" onchange="GetEstablisedDetails()" data-fouc>
+                                @*<option value='' hidden>Select</option>*@
+                                @if (ViewBag.EmpLists != null)
+                                {
+                                    foreach (var data in ViewBag.EmpLists)
+                                    {
+                                        @*if (Array.IndexOf(Model.Estld_by.ToString().Split(','), data.Value) >= 0)
+                                            {
+                                                <option value='@data.Value' selected>@data.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@data.Value'>@data.Text</option>
+                                            }*@
+                                        <option value='@data.Value'>@data.Text</option>
+                                    }
+                                }
+                            </select>
+                            @Html.ValidationMessageFor(model => model.Estld_by)
+                        </td>
+                    </tr>
+                </table>
+                <div id="estdiv" @*style="display:none"*@>
+                    <div class="card-body">
+                        <input type="hidden" id="itemcnt1" name="itemcnt1" value="@itemcnt1" />
+
+                        <div class="card card-table table-responsive shadow-0 mb-0">
+                            <table class="table" id="team-list1">
+                                <tr class="bg-blue">
+                                    <th>Action</th>
+                                    <th>Id</th>
+                                    <th>Name</th>
+                                    <th>Division</th>
+                                    <th>Department</th>
+                                    <th>Email</th>
+                                </tr>
+                                @if (ViewBag.Estld_byArray != null && Estld_byArray != null && Estld_byArray.Length > 0)
+                                {
+                                    for (int index = 0; index < Estld_byArray.Length; index++)
+                                    {
+                                        //string[] sEmp = @objIncidentLTIList.lstIncidentLTIModels[index].Emp_Id.Split(';');
+                                        <tr>
+                                            <td>
+                                                <span class='badge badge-info' onclick='deleteRow1(this)' style='cursor:pointer;'>Delete</span>
+                                                <input type='hidden' id='nempno @index' name="nempno @index" value='@Estld_byArray[index]' />
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='nempid @index' name="nempid @index" readonly>@objGlobaldata.GetEmpIDByEmpNo(Estld_byArray[index])
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='nempname @index' name="nempname @index" readonly>@objGlobaldata.GetEmpHrNameById(Estld_byArray[index])
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='nempdiv @index' name="nempdiv @index" readonly>@objGlobaldata.GetCompanyBranchNameById(objGlobaldata.GetDivisionIdByHrEmpId(Estld_byArray[index]))
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='nempdept @index' name="nempdept @index" readonly>@objGlobaldata.GetDeptNameById(objGlobaldata.GetDeptIdByHrEmpId(Estld_byArray[index]))
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='nempemail @index' name="nempemail @index" readonly>@objGlobaldata.GetHrEmpEmailIdById(Estld_byArray[index])
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <table class="table table-lg">
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.objective_level)<text style="color: red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="objective_level" name="objective_level" required onchange="SetDivision()">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.Objlevel != null)
+                                    {
+                                        foreach (var data in ViewBag.Objlevel)
+                                        {
+                                            if (data.Value == Model.objective_level)
+                                            {
+                                                <option value='@data.Value' selected>@data.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@data.Value'>@data.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                                @Html.ValidationMessageFor(model => model.objective_level)
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.branch)<text style="color: red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-fixed-multiple" @*multiple="multiple"*@ data-fouc id="branch" name="branch" @*onchange="GetApproverList()"*@>
+                                    <option value="">Select</option>
+                                    @if (ViewBag.Branch != null)
+                                    {
+                                        foreach (var data in ViewBag.Branch)
+                                        {
+                                            if (Array.IndexOf(Model.branch.ToString().Split(','), data.Value) >= 0)
+                                            {
+                                                <option value='@data.Value' selected>@data.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@data.Value'>@data.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                                @Html.ValidationMessageFor(model => model.branch)
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Dept)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-fixed-multiple" multiple="multiple" data-fouc id="Dept" name="Dept" @*onchange="GetApproverList()"*@>
+                                    @*<option value='' hidden>Select</option>*@
+                                    @if (ViewBag.DeptList != null)
+                                    {
+                                        foreach (var data in ViewBag.DeptList)
+                                        {
+                                            if (Array.IndexOf(Model.Dept.ToString().Split(','), data.Value) >= 0)
+                                            {
+                                                <option value='@data.Value' selected>@data.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@data.Value'>@data.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                                @Html.ValidationMessageFor(model => model.Dept)
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Location)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-fixed-multiple" multiple="multiple" data-fouc id="Location" name="Location" @*onchange="GetApproverList()"*@>
+                                    @*<option value='' hidden>Select</option>*@
+                                    @if (ViewBag.Location != null)
+                                    {
+                                        foreach (var data in ViewBag.Location)
+                                        {
+                                            if (Array.IndexOf(Model.Location.ToString().Split(','), data.Value) >= 0)
+                                            {
+                                                <option value='@data.Value' selected>@data.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@data.Value'>@data.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                                @Html.ValidationMessageFor(model => model.Location)
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+                <br />
+                @*Objectives Details*@
+
+                <fieldset class="border p-2">
+                    <legend class="font-weight-semibold"><i class="icon-file-text mr-2"></i>Objectives Details</legend>
+                    <table class="table table-lg" id="table1">
+
+                        <tbody>
+                            <tr class="row">
+                                <th class="col-xs-3 col-md-2" style="font-weight: bold;">    @Html.LabelFor(model => model.Obj_Estld_On)<text style="color: red;">*</text></th>
+                                <td class="col">
+                                    @if (Model.Obj_Estld_On != null && Model.Obj_Estld_On > Convert.ToDateTime("01/01/0001"))
+                                    {
+                                        @Html.Label(Model.Obj_Estld_On.ToString("dd/MM/yyyy"))
+                                    }
+                                </td>
+                                <th class="col-xs-3 col-md-2" style="font-weight: bold;">
+                                    @Html.LabelFor(model => model.Obj_Ref)
+                                </th>
+                                <td class="col">
+                                    @Html.DisplayFor(model => model.Obj_Ref)
+                                </td>
+                            </tr>
+
+                            <tr class="row">
+                                <th class="col-xs-3 col-md-2" style="font-weight: bold;">
+                                    @Html.LabelFor(model => model.Objectives_val)<text style="color: red;">*</text>
+                                </th>
+                                <td class="col">
+                                    <input type="text" class="form-control" name="Objectives_val" id="Objectives_val" value="@Model.Objectives_val" required />
+                                </td>
+                                <th class="col-xs-3 col-md-2" style="font-weight: bold;">
+                                    @Html.LabelFor(model => model.Base_Line_Value)<text style="color: red;">*</text>
+                                </th>
+                                <td class="col">
+                                    <input type="text" class="form-control" name="Base_Line_Value" id="Base_Line_Value" value="@Model.Base_Line_Value" required />
+                                </td>
+                            </tr>
+                            <tr class="row">
+                                <th class="col-xs-3 col-md-2" style="font-weight: bold;">@Html.LabelFor(model => model.baseline_data)</th>
+                                <td class="col">
+                                    <input type="text" class="form-control" name="baseline_data" id="baseline_data" value="@Model.baseline_data" required />
+                                </td>
+                                <th class="col-xs-3 col-md-2" style="font-weight: bold;">  @Html.LabelFor(model => model.Action_Plan)@*<text style="color: red;">*</text></th>*@
+                                <td class="col">
+                                    <input type="file" name="Action_Plan" id="Action_Plan" title="Action Plan" onchange="FileFormatValidation(this)" accept=".pdf, .doc, .docx, .xls, .xlsx, image/*"
+                                           class="bootstrap-uploader" data-fouc />
+                                    @if (Model.Action_Plan != null && Model.Action_Plan != "" && Model.Action_Plan.Length > 0)
+                                    {
+                                        foreach (var docs in Model.Action_Plan.Trim(',').Split(','))
+                                        {
+                                            <span class="bg-dark py-1 px-2 rounded">
+                                                <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs})' target="_blank">Preview</a>
+                                            </span>
+                                        }
+                                    }
+                                </td>
+                            </tr>
+                            <tr class="row">
+                                <th class="col-xs-3 col-md-2" style="font-weight: bold;">@Html.LabelFor(model => model.Obj_Target)</th>
+                                <td class="col">
+                                    <input type="text" class="form-control" name="Obj_Target" id="Obj_Target" value="@Model.Obj_Target" required />
+                                </td>
+                                <th class="col-xs-3 col-md-2" style="font-weight: bold;">
+                                    @Html.LabelFor(model => model.Accepted_Value)<text style="color: red;">*</text>
+                                </th>
+                                <td class="col">
+                                    <input type="text" class="form-control" name="Accepted_Value" id="Accepted_Value" value="@Model.Accepted_Value" required />
+                                </td>
+                            </tr>
+                            <tr class="row">
+                                <th class="col-xs-3 col-md-2" style="font-weight: bold;"> @Html.LabelFor(model => model.unit)<text style="color: red;">*</text></th>
+                                <td class="col">
+                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="unit" name="unit" required>
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.Unit != null)
+                                        {
+                                            foreach (var item in ViewBag.Unit)
+                                            {
+                                                if (item.Value == Model.unit)
+                                                {
+                                                    <option value='@item.Value' selected>@item.Text</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </td>
+
+                                <th class="col-xs-3 col-md-2" style="font-weight: bold;">
+                                    @Html.LabelFor(model => model.Target_Date)<text style="color: red;">*</text>
+
+                                </th>
+                                <td class="col">
+                                    @if (Model.Target_Date != null && Model.Target_Date > Convert.ToDateTime("01/01/0001"))
+                                    {
+                                        <input type="date" class="form-control" name="Target_Date" value="@Model.Target_Date.ToString("yyyy-MM-dd")" required onchange="checkDate2()" />
+                                    }
+                                    else
+                                    {
+                                        <input type="date" class="form-control" name="Target_Date" value="Target_Date" required onchange="checkDate2()" />
+                                    }
+                                </td>
+                            </tr>
+
+                            <tr class="row">
+                                <th class="col-xs-3 col-md-2" style="font-weight: bold;">
+                                    @Html.LabelFor(model => model.Freq_of_Eval)<text style="color: red;">*</text>
+                                </th>
+                                <td class="col">
+                                    @*<select class="form-control select-search select2-hidden-accessible" data-fouc id="Freq_of_Eval" name="Freq_of_Eval" required>
+                                            <option value='' hidden>Select</option>
+                                            @if (ViewBag.Freq_of_Eval != null)
+                                            {
+                                                foreach (var item in ViewBag.Freq_of_Eval)
+                                                {
+                                                    if (item.Value == Model.Freq_of_Eval)
+                                                    {
+                                                        <option value='@item.Value' selected>@item.Text</option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value='@item.Value'>@item.Text</option>
+                                                    }
+                                                }
+                                            }
+                                        </select>*@
+                                    @Html.DisplayFor(model => model.Freq_of_Eval)
+                                </td>
+
+                                <th class="col-xs-3 col-md-2" style="font-weight: bold;">
+                                    @Html.LabelFor(model => model.Monitoring_Mechanism)<text style="color: red;">*</text>
+                                </th>
+                                <td class="col">
+                                    <input type="text" class="form-control" name="Monitoring_Mechanism" id="Monitoring_Mechanism" value="@Model.Monitoring_Mechanism" required />
+                                </td>
+                            </tr>
+                            <tr class="row">
+                                <th class="col-xs-3 col-md-2" style="font-weight: bold;">  @Html.LabelFor(model => model.obj_inline)<text style="color: red;">*</text></th>
+                                <td class="col">
+                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="obj_inline" name="obj_inline" required>
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.ObjectInlineWith != null)
+                                        {
+                                            foreach (var item in ViewBag.ObjectInlineWith)
+                                            {
+                                                if (item.Value == Model.obj_inline)
+                                                {
+                                                    <option value='@item.Value' selected>@item.Text</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </td>
+
+                                <th class="col-xs-3 col-md-2" style="font-weight: bold;">@Html.LabelFor(model => model.Risk_ifObjFails)<text style="color: red;">*</text></th>
+                                <td class="col">
+                                    <input type="text" class="form-control" name="Risk_ifObjFails" id="Risk_ifObjFails" value="@Model.Risk_ifObjFails" required />
+                                </td>
+                            </tr>
+                            <tr class="row">
+                                <th class="col-xs-3 col-md-2" style="font-weight: bold;">  @Html.LabelFor(model => model.Approved_By)<text style="color: red;">*</text></th>
+                                <td class="col-xs-6 col-md-4">
+                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="Approved_By" name="Approved_By" required>
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.Approver != null)
+                                        {
+                                            foreach (var item in ViewBag.Approver)
+                                            {
+                                                if (item.Value == Model.Approved_By)
+                                                {
+                                                    <option value='@item.Value' selected>@item.Text</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </td>
+                                @*<td class="col">
+                                        <img src='@Url.Content("~/images/icon_add.png")' onclick='AddAudit()' style='cursor:pointer; padding-right: 5px;' />Add
+                                    </td>*@
+                            </tr>
+                        </tbody>
+                    </table>
+                </fieldset>
+
+                @* <span class="form-text text-muted"><code>Please click Add or Plus button to add N number of Objective details</code></span>
+
+                    <div class="card invisible" id="hidden card">
+                        <div class="card-header header-elements-inline">
+                            <h5 class="card-title">Objectives Details</h5>
+                            <div class="header-elements">
+                                <div class="list-icons">
+                                    <a class="list-icons-item" data-action="collapse"></a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+
+                            <input type="hidden" id="itemcnt" name="itemcnt" value="@itemcnt" />
+
+                            <div class="card card-table table-responsive shadow-0 mb-0">
+                                <table class="table" id="team-list">
+                                    <tr class="bg-blue">
+                                        <th>Action</th>
+                                        <th>Object Reference</th>
+                                        <th>Established On</th>
+                                        <th>Description</th>
+                                        <th>Baseline Value</th>
+                                        <th>Source of baseline data</th>
+                                        <th>File Upload</th>
+                                        <th>Target Value</th>
+                                        <th>Accepted Value</th>
+                                        <th>Unit</th>
+                                        <th>Target Date</th>
+                                        <th>Frequency</th>
+                                        <th>Monitoring Parameter</th>
+                                        <th>Objective Inline with</th>
+                                        <th>Risk,if not achieved</th>
+                                        <th>Approved By</th>
+                                    </tr>
+                                    @if (dsObjDetails != null && dsObjDetails.Tables.Count > 0 && dsObjDetails.Tables[0].Rows.Count > 0)
+                                    {
+                                        for (int i = 0; i < dsObjDetails.Tables[0].Rows.Count; i++)
+                                        {
+                                    <tr id="@i">
+                                        <td>
+                                            @
+                            <span class="badge badge-info" onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span>
+                            <input type='hidden' id='ObjectivesTrans_Id @i' name="ObjectivesTrans_Id @i" value='@dsObjDetails.Tables[0].Rows[i]["ObjectivesTrans_Id"].ToString()' />
+
+                            </td>
+                            <td>
+                                @dsObjDetails.Tables[0].Rows[i]["Obj_Ref"].ToString()
+                            </td>
+                            <td>
+                                @if (dsObjDetails.Tables[0].Rows[i]["Obj_Estld_On"].ToString() != null && dsObjDetails.Tables[0].Rows[i]["Obj_Estld_On"].ToString() != "")
+                                {
+                                    @Convert.ToDateTime(dsObjDetails.Tables[0].Rows[i]["Obj_Estld_On"].ToString()).ToString("dd/MM/yyyy")
+                                }
+                            </td>
+                            <td>
+                                @dsObjDetails.Tables[0].Rows[i]["Objectives_val"].ToString()
+                            </td>
+                            <td>
+                                @dsObjDetails.Tables[0].Rows[i]["Base_Line_Value"].ToString()
+                            </td>
+                            <td>
+                                @dsObjDetails.Tables[0].Rows[i]["baseline_data"].ToString()
+                            </td>
+                            <td>
+                                @if (dsObjDetails.Tables[0].Rows[i]["Action_Plan"].ToString() != "")
+                                {
+                                    <a href='@Url.Action("DisplayDocument", "Reports", new { Document = dsObjDetails.Tables[0].Rows[i]["Action_Plan"].ToString() })' target="_blank">Preview</a>
+                                }
+                                else
+                                {
+                                    <p>Not Available</p>
+                                }
+                            </td>
+                            <td>
+                                @dsObjDetails.Tables[0].Rows[i]["Obj_Target"].ToString()
+                            </td>
+                            <td>
+                                @dsObjDetails.Tables[0].Rows[i]["Accepted_Value"].ToString()
+                            </td>
+                            <td>
+                                @dsObjDetails.Tables[0].Rows[i]["unit"].ToString()
+                            </td>
+                            <td>
+                                @if (dsObjDetails.Tables[0].Rows[i]["Target_Date"].ToString() != null && dsObjDetails.Tables[0].Rows[i]["Target_Date"].ToString() != "")
+                                {
+                                    @Convert.ToDateTime(dsObjDetails.Tables[0].Rows[i]["Target_Date"].ToString()).ToString("dd/MM/yyyy")
+                                }
+                            </td>
+                            <td>
+                                @dsObjDetails.Tables[0].Rows[i]["Monitoring_Mechanism"].ToString()
+                            </td>
+                            <td>
+                                @objGlobaldata.GetDropdownitemById(dsObjDetails.Tables[0].Rows[i]["Freq_of_Eval"].ToString())
+                            </td>
+                            <td>
+                                @dsObjDetails.Tables[0].Rows[i]["Monitoring_Mechanism"].ToString()
+                            </td>
+                            <td>
+                                @dsObjDetails.Tables[0].Rows[i]["obj_inline"].ToString()
+                            </td>
+                            <td>
+                                @dsObjDetails.Tables[0].Rows[i]["Risk_ifObjFails"].ToString()
+                            </td>
+                            <td>
+                                @objGlobaldata.GetEmpHrNameById(dsObjDetails.Tables[0].Rows[i]["Approved_By"].ToString())
+                            </td>
+                            </tr>
+                        }
+                        }
+                        </table>
+                        </div>
+                                </div>*@
+            </div>
+        </div>
+    </div>
+    <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+        @Html.ActionLink("Back to List", "ObjectivesList", new { View = ViewBag.View }, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+        <div class="mt-2 mt-sm-0">
+            <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Update</button>
+        </div>
+    </div>
+
+}
+
+
+@section Scripts {
+    <script>
+
+  $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+      SetDivisionEdit();
+
+
+      //GetEstablisedDetails();
+    });
+    //zzz----
+
+        var showClass = 'is-visible';
+        var hideClass = 'invisible';
+        var Action_PlanServerPath = "";
+        function Validation() {
+            var validflg = true;
+            var ssnMessage = "";
+            if (document.getElementById("Obj_Estld_On").value == "") {
+                ssnMessage = $('#Obj_Estld_On-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#Obj_Estld_On-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("Objectives_val").value == "") {
+                ssnMessage = $('#Objectives_val-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#Objectives_val-message');
+                ssnMessage.hide();
+            }
+
+            if (document.getElementById("Base_Line_Value").value == "") {
+                ssnMessage = $('#Base_Line_Value-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#Base_Line_Value-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("Obj_Target").value == "") {
+                ssnMessage = $('#Obj_Target-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#Obj_Target-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("Accepted_Value").value == "") {
+                ssnMessage = $('#Accepted_Value-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#Accepted_Value-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("baseline_data").value == "") {
+                ssnMessage = $('#baseline_data-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#baseline_data-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("Approved_By").value == "") {
+                ssnMessage = $('#Approved_By-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#Approved_By-message');
+                ssnMessage.hide();
+            }
+            //if (document.getElementById("Risk_ifObjFails").value == "") {
+            //    ssnMessage = $('#Risk_ifObjFails-message');
+            //    ssnMessage.show();
+            //    validflg = false;
+            //}
+            //else {
+            //    ssnMessage = $('#Risk_ifObjFails-message');
+            //    ssnMessage.hide();
+            //}
+            if (document.getElementById("Monitoring_Mechanism").value == "") {
+                ssnMessage = $('#Monitoring_Mechanism-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#Monitoring_Mechanism-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("Target_Date").value == "") {
+                ssnMessage = $('#Target_Date-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#Target_Date-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("Freq_of_Eval").value == "") {
+                ssnMessage = $('#Freq_of_Eval-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#Freq_of_Eval-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("unit").value == "") {
+                ssnMessage = $('#unit-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#unit-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("obj_inline").value == "") {
+                ssnMessage = $('#obj_inline-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#obj_inline-message');
+                ssnMessage.hide();
+            }
+            //if (document.getElementById("Action_Plan").value == "") {
+            //    ssnMessage = $('#Action_Plan-message');
+            //    ssnMessage.show();
+            //    validflg = false;
+            //}
+            //else {
+            //    ssnMessage = $('#Action_Plan-message');
+            //    ssnMessage.hide();
+            //}
+
+            return validflg;
+                    }
+
+
+                    function reformatDate(dateStr) {
+                        dArr = dateStr.split("-");  // ex input 2010-01-18
+                        return dArr[2] + "/" + dArr[1] + "/" + dArr[0]; //ex out: 2018/01/10
+                    }
+
+        function AddAudit() {
+
+            if (Validation() == true) {
+
+
+                var cnt = document.getElementById("itemcnt").value;
+
+                document.getElementById("itemcnt").value = cnt;
+                // Find a <table> element with id="myTable":
+                var table = document.getElementById("team-list");
+
+
+                // Create an empty <tr> element and add it to the 1st position of the table:
+                var row = table.insertRow();
+
+                // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                var cell0 = row.insertCell(0);
+                var cell1 = row.insertCell(1);
+                var cell2 = row.insertCell(2);
+                var cell3 = row.insertCell(3);
+                var cell4 = row.insertCell(4);
+                var cell5 = row.insertCell(5);
+                var cell6 = row.insertCell(6);
+                var cell7 = row.insertCell(7);
+                var cell8 = row.insertCell(8);
+                var cell9 = row.insertCell(9);
+                var cell10 = row.insertCell(10);
+                var cell11 = row.insertCell(11);
+                var cell12 = row.insertCell(12);
+                var cell13 = row.insertCell(13);
+                var cell14 = row.insertCell(14);
+
+
+                var Obj_Estld_On = reformatDate($('#Obj_Estld_On').val());
+                var Objectives_val = $('#Objectives_val').val();
+                var Obj_Target = $('#Obj_Target').val();
+                var Base_Line_Value = $('#Base_Line_Value').val();
+                var Monitoring_Mechanism = $("#Monitoring_Mechanism").val();
+                var Target_Date = reformatDate($("#Target_Date").val());
+                var Action_Plan = $('#Action_Plan').val();
+                var Accepted_Value = $('#Accepted_Value').val();
+                var Risk_ifObjFails = $('#Risk_ifObjFails').val();
+                var baseline_data = $('#baseline_data').val();
+
+                Action_PlanServerPath = UploadDocument(cnt);
+                var Freq_of_Eval = $('#Freq_of_Eval').val();
+                var Eval = document.getElementById("Freq_of_Eval");
+                var Status_Eval = Eval.options[Eval.selectedIndex].text;
+
+                //var Personal_Responsible = $('#Personal_Responsible').val();
+                //var Personal_Responsible_Text = $('#Personal_Responsible option:selected').text();
+
+                var Approved_By = $('#Approved_By').val();
+                var Approved_By_Text = $('#Approved_By option:selected').text();
+
+
+                var obj_inline = $('#obj_inline').val();
+                var obj_inline_Text = $('#obj_inline option:selected').text();
+
+                var unit = $('#unit').val();
+                var unit_Text = $('#unit option:selected').text();
+
+                //var NotificationPeriod = $('#NotificationPeriod').val();
+                //var NotificationPeriods = document.getElementById("NotificationPeriod");
+                //var NotificationPeriod_Text = NotificationPeriods.options[NotificationPeriods.selectedIndex].text;
+
+
+                cell0.innerHTML = " <img src='@Url.Content("~/images/cancel.png")' onclick='deleteRow(this)' style='cursor:pointer; padding-right: 5px;'/>";
+                cell1.innerHTML = "<input type='hidden' id='Obj_Estld_On" + cnt + "' name='Obj_Estld_On" + cnt + "' value='" + Obj_Estld_On + "'>" + Obj_Estld_On;
+                cell2.innerHTML = "<input type='hidden' id='Objectives_val" + cnt + "' name='Objectives_val" + cnt + "' value='" + Objectives_val + "'>" + Objectives_val;
+                cell3.innerHTML = "<input type='hidden' id='Base_Line_Value" + cnt + "' name='Base_Line_Value" + cnt + "' value='" + Base_Line_Value + "'>" + Base_Line_Value;
+                cell4.innerHTML = "<input type='hidden' id='baseline_data" + cnt + "' name='baseline_data" + cnt + "' value='" + baseline_data + "'>" + baseline_data;
+                cell5.innerHTML = "<input type='hidden' id='Action_Plan" + cnt + "' name='Action_Plan" + cnt + "' value='" + Action_PlanServerPath + "'>" + Action_Plan;
+                cell6.innerHTML = "<input type='hidden' id='Obj_Target" + cnt + "' name='Obj_Target" + cnt + "' value='" + Obj_Target + "'>" + Obj_Target;
+                cell7.innerHTML = "<input type='hidden' id='Accepted_Value" + cnt + "' name='Accepted_Value" + cnt + "' value='" + Accepted_Value + "'>" + Accepted_Value;
+                cell8.innerHTML = "<input type='hidden' id='unit" + cnt + "' name='unit" + cnt + "' value='" + unit + "'>" + unit_Text;
+                cell9.innerHTML = "<input type='hidden' id='Target_Date" + cnt + "' name='Target_Date" + cnt + "' value='" + Target_Date + "'>" + Target_Date;
+                cell10.innerHTML = "<input type='hidden' id='Freq_of_Eval" + cnt + "' name='Freq_of_Eval" + cnt + "' value='" + Freq_of_Eval + "'>" + Status_Eval;
+                cell11.innerHTML = "<input type='hidden' id='Monitoring_Mechanism" + cnt + "' name='Monitoring_Mechanism" + cnt + "' value='" + Monitoring_Mechanism + "'>" + Monitoring_Mechanism;
+                cell12.innerHTML = "<input type='hidden' id='obj_inline" + cnt + "' name='obj_inline" + cnt + "' value='" + obj_inline + "'>" + obj_inline_Text;
+                cell13.innerHTML = "<input type='hidden' id='Risk_ifObjFails" + cnt + "' name='Risk_ifObjFails" + cnt + "' value='" + Risk_ifObjFails + "'>" + Risk_ifObjFails;
+                cell14.innerHTML = "<input type='hidden' id='Approved_By" + cnt + "' name='Approved_By" + cnt + "' value='" + Approved_By + "'>" + Approved_By_Text;
+
+                cnt++;
+                document.getElementById("itemcnt").value = cnt;
+
+                document.getElementById("btnCreate").classList.remove(hideClass);
+                document.getElementById("btnCreate").classList.add(showClass);
+                document.getElementById("hidden card").classList.remove(hideClass);
+                document.getElementById("hidden card").classList.add(showClass);
+                ResetControl();
+            }
+        }
+
+
+        function EditItem(ObjectivesTrans_Id, Id) {
+            ResetControl();
+            Id++;
+            var table = document.getElementById("team-list");
+            document.getElementById("ObjectivesTrans_Id").value = ObjectivesTrans_Id;
+            document.getElementById("Obj_Ref").value = table.rows[Id].cells[1].innerText;
+            document.getElementById("Obj_Estld_On").value = reformatDate(table.rows[Id].cells[2].innerText);
+            document.getElementById("Objectives_val").value = table.rows[Id].cells[3].innerText;
+            document.getElementById("Base_Line_Value").value = table.rows[Id].cells[4].innerText;
+            document.getElementById("Action_Plan").value = table.rows[Id].cells[6].innerText;
+            document.getElementById("Obj_Target").value = table.rows[Id].cells[7].innerText;
+            document.getElementById("Accepted_Value").value = table.rows[Id].cells[8].innerText;
+            document.getElementById("Target_Date").value = reformatDate(table.rows[Id].cells[10].innerText);
+            document.getElementById("Monitoring_Mechanism").value = table.rows[Id].cells[12].innerText;
+            document.getElementById("obj_inline").value = table.rows[Id].cells[13].innerText;
+            document.getElementById("Risk_ifObjFails").value = table.rows[Id].cells[14].innerText;
+
+            var baseline_dataval = (table.rows[Id].cells[5].innerText).split(',');
+            $('#baseline_data').val('').trigger('change');
+            $('#baseline_data option').filter(function () {
+                return baseline_dataval.indexOf($(this).text()) > -1; //Options text exists in array
+            }).prop('selected', true).trigger('change'); //Set selected
+
+            var unitval = (table.rows[Id].cells[9].innerText).split(',');
+            $('#unit').val('').trigger('change');
+            $('#unit option').filter(function () {
+                return unitval.indexOf($(this).text()) > -1; //Options text exists in array
+            }).prop('selected', true).trigger('change'); //Set selected
+
+            var Freq_of_Evalval = (table.rows[Id].cells[11].innerText).split(',');
+            $('#Freq_of_Eval').val('').trigger('change');
+            $('#Freq_of_Eval option').filter(function () {
+                return Freq_of_Evalval.indexOf($(this).text()) > -1; //Options text exists in array
+            }).prop('selected', true).trigger('change'); //Set selected
+
+            var Approved_Byval = (table.rows[Id].cells[15].innerText).split(',');
+            $('#Approved_By').val('').trigger('change');
+            $('#Approved_By option').filter(function () {
+                return Approved_Byval.indexOf($(this).text()) > -1; //Options text exists in array
+            }).prop('selected', true).trigger('change'); //Set selected
+
+            //document.getElementById("SubmitFinding").style.display = "";
+            //document.getElementById("Save").style.display = "none";
+
+        }
+
+                    function GetDepartmentList() {
+
+                        var varBranch = $('#branch').val();
+
+                        if (varBranch != "" && varBranch != null)
+                        {
+                            var Branch = document.getElementById('branch');
+                            var values = [];
+                            for (var i = 0; i < Branch.options.length; i++) {
+                                if (Branch.options[i].selected) {
+                                    values.push(Branch.options[i].value);
+                                }
+                            }
+
+                            $('#Dept').prop('disabled', false).trigger('change');
+                            $('#Dept').prop('required', true);
+                            jQuery.ajax({
+                                url: '@Url.Action("FunGetAllDeptList", "EmployeeDetails")',
+                                type: 'POST',
+                                dataType: "json",
+                                data: { 'branch': values },
+                                success: function (result) {
+                                    //GetLocList(values)
+                                    $('#Dept').children('option').remove();
+                                    $("#Dept").trigger('change');
+                                    if (result != null && result.length > 0) {
+                                        $.each(result, function (index, item) {
+                                            $("#Dept").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                                            $("#Dept").trigger('change');
+                                        });
+                                        return;
+                                    }
+                                    //else {
+                                    //    bootbox.alert({
+                                    //        title: 'Department List',
+                                    //        message: 'Department does not exits for this Division'
+                                    //    });
+                                    //}
+                                }
+                            });
+                        }
+                        else {
+                            $("#Dept").val('').trigger('change');
+                            $('#Dept').prop('disabled', true).trigger('change');
+                            $('#Dept').prop('required', false);
+                            //$("#Location").val('').trigger('change');
+                            //$('#Location').prop('disabled', true).trigger('change');
+                            //$('#Location').prop('required', false);
+                        }
+                    }
+
+     function GetLocList(selectedValues) {
+         $('#Location').prop('disabled', false).trigger('change');
+         $('#Location').prop('required', true);
+            jQuery.ajax({
+                url: '@Url.Action("FunGetAllLocList", "EmployeeDetails")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'branch': selectedValues },
+                success: function (result) {
+                    $("#Location").children('option').remove();
+                    $("#Location").trigger('change');
+                    if (result != null && result.length > 0) {
+                        $.each(result, function (index, item) {
+                            $("#Location").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                            $("#Location").trigger('change');
+                        });
+                        return;
+                    }
+                    //else {
+                    //    bootbox.alert({
+                    //        title: 'Location List',
+                    //        message: 'No Location exists.'
+                    //    });
+                    //}
+                }
+            });
+        }
+        $('#branch').on('change', function () {
+            var level = document.getElementById("objective_level");
+            var slevel = level.options[level.selectedIndex].text;
+            var branch = $('#branch option:selected').val();
+            if (slevel == "Department") {
+                if (branch != null && branch != "") {
+                    GetDepartmentList(branch);
+                    GetLocList(branch);
+                }
+            }
+            if (slevel == "Division") {
+                if (branch != null && branch != "") {
+                    GetLocList(branch);
+                }
+            }
+        });
+
+        function SetDivision() {
+            var varBranch = $('#branch').val();
+            var level = document.getElementById("objective_level");
+            var slevel = level.options[level.selectedIndex].text;
+            if (slevel == "Division") {
+                $('#branch').prop('disabled', false).trigger('change');
+                $('#branch').prop('required', true);
+                $('#Dept').prop('disabled', true).trigger('change');
+                $('#Dept').prop('required', false);
+                $("#Dept").val('').trigger('change');
+            }
+            else if (slevel == "Department") {
+                $('#branch').prop('disabled', false).trigger('change');
+                $('#branch').prop('required', true);
+                $('#Dept').prop('disabled', false).trigger('change');
+                $('#Dept').prop('required', true);
+            }
+            else {
+                $("#branch").val('').trigger('change');
+                $('#branch').prop('disabled', true).trigger('change');
+                $('#branch').prop('required', false);
+                $("#Dept").val('').trigger('change');
+                $('#Dept').prop('disabled', true).trigger('change');
+                $('#Dept').prop('required', false);
+
+                var varBranch1 = $('#userbranch').val();
+                GetLocList(varBranch1);
+            }
+        }
+        function SetDivisionEdit() {
+            var level = document.getElementById("objective_level");
+            var slevel = level.options[level.selectedIndex].text;
+            if (slevel != "Division" && slevel != "Department") {
+                $('#branch').prop('disabled', true).trigger('change');
+                $('#Dept').prop('disabled', true).trigger('change');
+                $('#branch').prop('required', false);
+                $('#Dept').prop('required', false);
+            }
+            else if (slevel != "Department") {
+                $('#Dept').prop('disabled', true).trigger('change');
+                $('#Dept').prop('required', false);
+            }
+        }
+
+     //function SetDivision() {
+
+     //       var level = document.getElementById("objective_level");
+     //       var slevel = level.options[level.selectedIndex].text;
+     //       if (slevel == "Division") {
+     //           $('#branch').prop('disabled', false).trigger('change');
+     //           $('#branch').prop('required', true);
+     //       }
+     //       else {
+     //           $("#branch").val(' ').trigger('change');
+     //           $('#branch').prop('disabled', true).trigger('change');
+     //           //$("#Dept").val('').trigger('change');
+     //           //$('#Dept').prop('disabled', true).trigger('change');
+     //           //$("#Location").val('').trigger('change');
+     //           //$('#Location').prop('disabled', true).trigger('change');
+     //           $('#branch').prop('required', false);
+     //           //$('#Dept').prop('required', false);
+     //           //$('#Location').prop('required', false);
+     //       }
+     //    }
+
+        function UploadDocument(ind) {
+            var Action_Plan = ($("#Action_Plan")).files; //$('#testfile').file;
+
+            var formData = new FormData();
+            var totalFiles = document.getElementById("Action_Plan").files.length;
+            for (var i = 0; i < totalFiles; i++) {
+                var file = document.getElementById("Action_Plan").files[i];
+
+                formData.append("Action_Plan", file);
+            }
+            jQuery.ajax({
+                url: '@Url.Action("UploadDocument", "Objectives")',
+                type: 'POST',
+                contentType: false,
+                processData: false,
+                data: formData,
+                success: function (result) {
+                    document.getElementById("Action_Plan" + ind).value = result;
+                    Action_PlanServerPath = result;
+                    //jAlert(result);
+                    return result;
+                }
+            });
+        }
+
+        function ResetControl() {
+
+            document.getElementById("Obj_Estld_On").value = "";
+            document.getElementById("Objectives_val").value = "";
+            document.getElementById("Base_Line_Value").value = "";
+            document.getElementById("Obj_Target").value = "";
+            document.getElementById("Accepted_Value").value = "";
+            $("#Personal_Responsible").val('').trigger('change');
+            $("#Approved_By").val('').trigger('change');
+            $("#baseline_data").val('').trigger('change');
+            $("#unit").val('').trigger('change');
+            $("#obj_inline").val('').trigger('change');
+
+            $('#Action_Plan').fileinput('reset');
+            document.getElementById("Monitoring_Mechanism").value = "";
+
+            document.getElementById("Target_Date").value = "";
+
+            $("#Freq_of_Eval").val('').trigger('change');
+            document.getElementById("Risk_ifObjFails").value = "";
+
+            //document.getElementById("Freq_of_Eval").selectedIndex = "0";
+
+            //document.getElementById("NotificationPeriod").selectedIndex = "0";
+            //document.getElementById("NotificationValue").value = "";
+
+            var ssnMessage = $('#Obj_Estld_On-message');
+            ssnMessage.hide();
+            ssnMessage = $('#Objectives_val-message');
+            ssnMessage.hide();
+            ssnMessage = $('#Base_Line_Value-message');
+            ssnMessage.hide();
+            ssnMessage = $('#Obj_Target-message');
+            ssnMessage.hide();
+            ssnMessage = $('#Accepted_Value-message');
+            ssnMessage.hide();
+            ssnMessage = $('#Personal_Responsible-message');
+            ssnMessage.hide();
+            ssnMessage = $('#Approved_By-message');
+            ssnMessage.hide();
+            ssnMessage = $('#Monitoring_Mechanism-message');
+            ssnMessage.hide();
+            ssnMessage = $('#Target_Date-message');
+            ssnMessage.hide();
+            ssnMessage = $('#Action_Plan-message');
+            ssnMessage.hide();
+            ssnMessage = $('#Freq_of_Eval-message');
+            ssnMessage.hide();
+            ssnMessage = $('#Risk_ifObjFails-message');
+            ssnMessage.hide();
+        }
+
+        function deleteRow(btn) {
+            var row = btn.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+            var cnt = document.getElementById("itemcnt").value;
+            cnt--;
+
+            document.getElementById("itemcnt").value = cnt;
+            if (cnt == "0") {
+
+                document.getElementById("btnCreate").classList.add(hideClass);
+                document.getElementById("btnCreate").classList.remove(showClass);
+                document.getElementById("hidden card").classList.remove(showClass);
+                document.getElementById("hidden card").classList.add(hideClass);
+            }
+        }
+
+        function deleteRow1(btn) {
+            var row = btn.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+        }
+
+            function checkDate() {
+
+                var dt2 = document.getElementById("Obj_Estld_On").value;
+                var dt1 = document.getElementById("Target_Date").value;
+
+                if (new Date(dt2).getTime() > new Date(dt1).getTime()) {
+
+                    bootbox.alert({
+                        title: 'Established Date',
+                        message: 'Established date should not be Greater than the Target date.'
+                    });
+                    $('#Obj_Estld_On').val("");
+                }
+            }
+
+
+            function checkDate2() {
+
+                var dt2 = document.getElementById("Obj_Estld_On").value;
+                var dt1 = document.getElementById("Target_Date").value;
+
+                if (new Date(dt1).getTime() < new Date(dt2).getTime()) {
+
+                    bootbox.alert({
+                        title: 'Target Date',
+                        message: 'Target date cannot be lesser than Established date.'
+                    });
+                    $('#Target_Date').val("");
+                }
+            }
+
+
+            //function checkDate3() {
+
+
+            //    var dt2 = document.getElementById("Obj_Estld_On").value;
+            //    var dt1 = document.getElementById("Obj_Eval_On").value;
+
+            //    if (new Date(dt1).getTime() > new Date(dt2).getTime()) {
+
+            //        bootbox.alert({
+            //            title: 'Evaluation Date',
+            //            message: 'Evaluation date cannot be lesser than Established date.'
+            //        });
+            //        $('#Obj_Estld_On').val("");
+            //    }
+            //}
+
+        @*function GetObjectivesRefList() {
+            var Dept = $('#Dept').val();
+            //alert(AuditDepartment);
+            jQuery.ajax({
+                url: '@Url.Action("GetObjectiveRefList", "Objectives")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'Dept': Dept },
+                success: function (result) {
+                    document.getElementById("Obj_Ref").value = result;
+                }
+            });
+        }*@
+
+        @*function GetDeptEmployeeList() {
+            var Dept = $('#Dept').val();
+            //alert(AuditDepartment);
+            jQuery.ajax({
+                url: '@Url.Action("FunGetDeptEmpList", "Objectives")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'Dept': Dept },
+                success: function (result) {
+                    var x = document.getElementById("Personal_Responsible");
+
+                    $.each(result, function (index, item) {
+                        var option = document.createElement("option");
+                        option.text = item.Text;
+                        option.value = item.Value;
+                        x.add(option);
+                    });
+                }
+            });
+        }*@
+
+
+            function FileFormatValidation(file) {
+                var ext = file.value.split(".").pop().toLowerCase();
+                if ($.inArray(ext, ["doc", "pdf", "docx", "jpg", "jpeg", "gif", "png"]) == -1) {
+                    file.value = "";
+                    bootbox.alert({
+                        title: 'File type',
+                        message: 'Invalid file format, please upload a doc,pdf,doc,jpg,jpeg,gif,png format.'
+                    });
+                }
+        }
+
+            @*function GetDeptEmployeeList() {
+                var Dept = $('#Dept').val();
+
+                jQuery.ajax({
+                    url: '@Url.Action("FunGetDeptEmpList", "Objectives")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'DeptId': Dept },
+                    success: function (result) {
+
+                        if (result != null && result.length > 0) {
+
+                            //$('#EmpID').val(null).trigger('change');
+                            $('#Personal_Responsible').children('option').remove();
+                            $("#Personal_Responsible").trigger('change');
+
+                            $.each(result, function (index, item) {
+
+                                $("#Personal_Responsible").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                                $("#Personal_Responsible").trigger('change');
+
+                            });
+
+                            return;
+                        }
+                        else {
+                            $('#Personal_Responsible').children('option').remove();
+                            $("#Personal_Responsible").trigger('change');
+
+
+                            bootbox.alert({
+                                title: 'Department Employee List',
+                                message: 'Department Incharge does not exits for this department'
+                            });
+                        }
+                    }
+                });
+            }*@
+
+
+         function GetEstablisedDetails() {
+            var Estld_by = $('#Estld_by').val();
+            if (Estld_by != "" && Estld_by != null) {
+                jQuery.ajax({
+                    url: '@Url.Action("FunGetEmpDetails", "EmployeeDetails")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'semp_no': Estld_by },
+                    success: function (result) {
+                        if (result != null) {
+                            //document.getElementById("estdiv").style.display = 'block';
+
+                            var nempno = $('#Estld_by option:Selected').val();
+                            var nempid = result.emp_id;
+                            var nempname = result.empname;
+                            var nempdiv = result.division;
+                            var nempdept = result.department;
+                            var nempemail = result.EmailId;
+
+                            var cnt = document.getElementById("itemcnt1").value;
+
+                            document.getElementById("itemcnt1").value = cnt;
+                            // Find a <table> element with id="myTable":
+                            var table = document.getElementById("team-list1");
+
+                            // Create an empty <tr> element and add it to the 1st position of the table:
+                            var row = table.insertRow();
+
+
+                            // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                            var cell0 = row.insertCell(0);
+                            var cell1 = row.insertCell(1);
+                            var cell2 = row.insertCell(2);
+                            var cell3 = row.insertCell(3);
+                            var cell4 = row.insertCell(4);
+                            var cell5 = row.insertCell(5);
+
+                            cell0.innerHTML = "<span class='badge badge-info' onclick='deleteRow1(this)' style='cursor:pointer;'>Delete</span> <input type = 'hidden' id = 'nempno " + cnt + "' name = 'nempno " + cnt + "' value = '" + nempno + "'>";
+                            cell1.innerHTML = "<input type='hidden' id='nempid " + cnt + "' name='nempid " + cnt + "' value='" + nempid + "'>" + nempid;
+                            cell2.innerHTML = "<input type='hidden' id='nempname " + cnt + "' name='nempname " + cnt + "' value='" + nempname + "'>" + nempname;
+                            cell3.innerHTML = "<input type='hidden' id='nempdiv " + cnt + "' name='nempdiv " + cnt + "' value='" + nempdiv + "'>" + nempdiv;
+                            cell4.innerHTML = "<input type='hidden' id='nempdept " + cnt + "' name='nempdept " + cnt + "' value='" + nempdept + "'>" + nempdept;
+                            cell5.innerHTML = "<input type='hidden' id='nempemail " + cnt + "' name='nempemail " + cnt + "' value='" + nempemail + "'>" + nempemail;
+
+                            cnt++;
+                            document.getElementById("itemcnt1").value = cnt;
+
+                            $("#Estld_by").val('').trigger('change');
+                        }
+                    }
+                });
+            }
+        }
+
+
+         function GetApproverList() {
+
+            var sbranch = $.map($("#branch option:selected"), function (el, i) {
+                return $(el).val();
+            });
+            var sbvalue = (sbranch.join(","));
+
+            var sDepartment = $.map($("#Dept option:selected"), function (el, i) {
+                return $(el).val();
+            });
+            var sdvalue = (sDepartment.join(","));
+
+           var sLocation = $.map($("#Location option:selected"), function (el, i) {
+                return $(el).val();
+            });
+            var slvalue = (sLocation.join(","));
+
+            jQuery.ajax({
+                url: '@Url.Action("FunGetGRoleList", "Global")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'sDivision': sbvalue, 'sDept': sdvalue, 'sLoc': slvalue,'sRole':'Approver'},
+                success: function (result) {
+                    $("#Approved_By").children('option').remove();
+                    $("#Approved_By").trigger('change');
+                    if (result != null && result.length > 0) {
+                        $("#Approved_By").append("<option value=''> Select </option>");
+                        $.each(result, function (index, item) {
+                            $("#Approved_By").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                        });
+                        $("#Approved_By").trigger('change');
+                        return;
+                    }
+                }
+            });
+        }
+
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+
+}

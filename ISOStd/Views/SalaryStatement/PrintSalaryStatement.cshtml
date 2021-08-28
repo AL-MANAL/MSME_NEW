@@ -1,0 +1,252 @@
+﻿@using System.Data;
+
+@model IEnumerable<ISOStd.Models.SalaryStatementModels>
+@{
+    ViewBag.Title = "SalaryAdvanceList";
+    DataSet dsNCReport = new DataSet();
+
+    string Salarydate = "", SalaryFor_Month = "";
+    double totBasic = 0, totOtherAllow = 0, totGross = 0, totOtherIncome = 0, totNetSal = 0, totLeaveDedu = 0, totSalAdv = 0, totNetPay = 0;
+    if (ViewBag.Salarydate != null && ViewBag.Salarydate != null)
+    {
+        Salarydate = ViewBag.Salarydate;
+    }
+    if (ViewBag.SalaryFor_Month != null && ViewBag.SalaryFor_Month != null)
+    {
+        SalaryFor_Month = ViewBag.SalaryFor_Month;
+    }
+    Layout = "~/Views/Shared/_PrintLayout.cshtml";
+}
+<div id="divPrint" name="divPrint">
+    <div id="divHeader" style="vertical-align: middle;">
+        <table>
+            <tr>
+                <td>
+                    <div id="logo" style="padding-left: 30px;">
+                         <img src="@Url.Content("~/images/ManalLogo.png")">
+                    </div>
+                </td>
+                <td style="text-align: center; font-weight: bold; width: 80%; font-size: 16px;">
+                    <span>Advanced Recruitment Services</span>
+                    <br />
+                    <span>Salary Sheet - January 2016</span>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<br /><br />
+<div id="content" style="overflow: hidden;">
+    <table id="table1" >
+        <tr style="height:270px; background-color: #e5eafe;">
+            <td>
+                Emp Code
+            </td>
+            <td>
+                Emp Info No
+            </td>
+            <td>
+                Name
+            </td>
+            <td>
+                @Html.DisplayNameFor(model => model.First().Designation)
+            </td>
+            <td style="-webkit-transform: rotate(-90deg); white-space:nowrap; background-color: transparent; max-width: 30px; padding: 0px;">
+                @Html.DisplayNameFor(model => model.First().Basic_Salary)
+            </td>
+              <td style="-webkit-transform: rotate(-90deg); white-space:nowrap; background-color: transparent; max-width: 30px; padding: 0px;">
+                @Html.DisplayNameFor(model => model.First().Food_allow)
+            </td>
+             <td style="-webkit-transform: rotate(-90deg); white-space:nowrap; background-color: transparent; max-width: 30px; padding: 0px;">
+                Accom
+            </td>
+            <td style="-webkit-transform: rotate(-90deg); white-space:nowrap; background-color: transparent; max-width: 30px; padding: 0px;  ">
+                @Html.DisplayNameFor(model => model.First().Other_allow)
+            </td>
+           
+            <td style="-webkit-transform: rotate(-90deg); white-space:nowrap; background-color: transparent; max-width: 30px; padding: 0px;">
+                @Html.DisplayNameFor(model => model.First().Transport_allow)
+            </td>
+            <td style="-webkit-transform: rotate(-90deg); white-space:nowrap; background-color: transparent; max-width: 30px; padding: 0px;">
+                @Html.DisplayNameFor(model => model.First().Other_Earnings)
+            </td>
+                      
+            <td style="-webkit-transform: rotate(-90deg); white-space:nowrap; background-color: transparent; max-width: 30px; padding: 0px;">
+                @Html.DisplayNameFor(model => model.First().Bonus)
+            </td>
+              <td style="-webkit-transform: rotate(-90deg); white-space:nowrap; background-color: transparent; max-width: 30px; padding: 0px;">
+                  Gross Salary
+              </td>
+             <td style="-webkit-transform: rotate(-90deg); white-space:nowrap; background-color: transparent; max-width: 30px; padding: 0px;">
+                @Html.DisplayNameFor(model => model.First().Salary_Days)
+            </td>
+             <td style="-webkit-transform: rotate(-90deg); white-space:nowrap; background-color: transparent; max-width: 30px; padding: 0px;">
+                @Html.DisplayNameFor(model => model.First().Leave_Days)
+            </td>
+             <td style="-webkit-transform: rotate(-90deg); white-space:nowrap; background-color: transparent; max-width: 30px; padding: 0px;">
+                @Html.DisplayNameFor(model => model.First().Normal_OT_Hrs)
+            </td>
+            <td style="-webkit-transform: rotate(-90deg); white-space:nowrap; background-color: transparent; max-width: 30px; padding: 0px;">
+                Amt
+            </td>
+             <td style="-webkit-transform: rotate(-90deg); white-space:nowrap; background-color: transparent; max-width: 30px; padding: 0px;">
+                @Html.DisplayNameFor(model => model.First().Friday_OT_Hrs)
+            </td>
+            <td style="-webkit-transform: rotate(-90deg); white-space:nowrap; background-color: transparent; max-width: 30px; padding: 0px;">
+                Amt
+            </td>
+             <td style="-webkit-transform: rotate(-90deg); white-space:nowrap; background-color: transparent; max-width: 30px; padding: 0px;">
+                @Html.DisplayNameFor(model => model.First().Public_Holiday_OT_Hrs)
+            </td>
+             <td style="-webkit-transform: rotate(-90deg); white-space:nowrap; background-color: transparent; max-width: 30px; padding: 0px;">
+                Amt
+            </td>
+             <td style="-webkit-transform: rotate(-90deg); white-space:nowrap; background-color: transparent; max-width: 30px; padding: 0px;">
+                @Html.DisplayNameFor(model => model.First().Other_Income)
+            </td>
+              <td style="-webkit-transform: rotate(-90deg); white-space:nowrap; background-color: transparent; max-width: 30px; padding: 0px;">
+                Net Salary
+            </td>
+             <td style="-webkit-transform: rotate(-90deg); white-space:nowrap; background-color: transparent; max-width: 30px; padding: 0px;">
+               Leave Deduction
+            </td>
+              <td style="-webkit-transform: rotate(-90deg); white-space:nowrap; background-color: transparent; max-width: 30px; padding: 0px;">
+               @Html.DisplayNameFor(model => model.First().Misslliance_Deduction)
+            </td>
+             <td style="-webkit-transform: rotate(-90deg); white-space:nowrap; background-color: transparent; max-width: 30px; padding: 0px;">
+                @Html.DisplayNameFor(model => model.First().Salary_Adv)
+            </td>
+              <td style="-webkit-transform: rotate(-90deg); white-space:nowrap; background-color: transparent; max-width: 30px; padding: 0px;">
+                Net Pay
+            </td>
+        </tr>
+         @if (Model != null && Model.Count() > 0)
+        {
+            foreach (var item in Model)
+            {
+                double dGrossSalary = item.Basic_Salary + item.Food_allow + item.Acc_allow + @item.Other_allow + @item.Transport_allow + @item.Other_Earnings + @item.Bonus;
+                double dNormalOTAmt = Math.Round(item.Normal_OT_Hrs * 4.17);
+                double dFridayOTAmt = item.Friday_OT_Hrs * 5;
+                double dPublicHolidayOTAmt = @item.Public_Holiday_OT_Hrs * 5;
+                double dNetSalary =Math.Round( dGrossSalary + dNormalOTAmt + dFridayOTAmt + dPublicHolidayOTAmt + item.Other_Income);
+                double dLeaveDeduction = (dGrossSalary / 30) * item.Leave_Days;
+                double dNetPay = Math.Round(dNetSalary - dLeaveDeduction - item.Misslliance_Deduction - item.Salary_Adv, 0);
+                
+                totBasic=totBasic+item.Basic_Salary;
+                totOtherAllow=totOtherAllow+item.Other_allow;
+                totGross=totGross+dGrossSalary;
+                totOtherIncome=totOtherIncome+item.Other_Income ;
+                totNetSal=totNetSal+dNetSalary;
+                totLeaveDedu=totLeaveDedu+dLeaveDeduction;
+                totSalAdv=totSalAdv+item.Salary_Adv;
+                totNetPay=totNetPay+dNetPay;
+            <tr>
+                <td>
+                    @Html.ActionLink(item.Emp_Code, "SalaryStatementDetails", new { SalaryStmtId = item.SalaryStmtId })
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Emp_info_no)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.emp_firstname)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Designation)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Basic_Salary)
+                </td>
+                   <td>
+                    @Html.DisplayFor(modelItem => item.Food_allow)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Acc_allow)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Other_allow)
+                </td>
+             
+                <td>
+                    @Html.DisplayFor(modelItem => item.Transport_allow)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Other_Earnings)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Bonus)
+                </td>
+                 <td style=" font-weight:bold;">                    
+                    @dGrossSalary
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Salary_Days)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Leave_Days)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Normal_OT_Hrs)
+                </td>
+                <td style=" font-weight:bold;">
+                    @dNormalOTAmt
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Friday_OT_Hrs)
+                </td>
+                 <td style=" font-weight:bold;">
+                    @dFridayOTAmt
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Public_Holiday_OT_Hrs)
+                </td>
+                 <td>
+                    @dPublicHolidayOTAmt
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Other_Income)
+                </td>
+                <td style=" font-weight:bold;"> @dNetSalary</td>
+                <td style=" font-weight:bold;">@dLeaveDeduction</td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Misslliance_Deduction)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Salary_Adv)
+                </td>
+                 <td style=" font-weight:bold;">
+                    @dNetPay
+                </td>
+            </tr>
+            }
+            <tr>
+                <td colspan="4" style="font-weight:bold; font-size: 13px; text-align:center;">Total</td>
+                <td style="color:red; font-weight:bold; font-size: 13px;">@totBasic</td>
+                <td>-</td>
+                <td>-</td>
+                <td style=" color:red; font-weight:bold; font-size: 13px;">@totOtherAllow</td>
+                <td>-</td>
+                 <td>-</td>
+                <td>-</td>
+                <td style=" color:red; font-weight:bold; font-size: 13px;">@totGross</td>
+                <td>-</td>
+                 <td>-</td>
+                <td>-</td>
+                <td>-</td>
+                 <td>-</td>
+                <td>-</td>
+                <td>-</td>
+                 <td>-</td>
+                <td style="color:red; font-weight:bold; font-size: 13px;">@totOtherIncome</td>
+                <td style="color:red; font-weight:bold; font-size: 13px;">@totNetSal</td>
+                <td style="color:red; font-weight:bold; font-size: 13px;">@totLeaveDedu</td>
+                 <td>-</td>
+                <td style="color:red; font-weight:bold; font-size: 13px;">@totSalAdv</td>
+                <td style="color:red; font-weight:bold; font-size: 13px;">@totNetPay</td>
+            </tr>
+        
+        }
+       
+
+    </table>
+</div>

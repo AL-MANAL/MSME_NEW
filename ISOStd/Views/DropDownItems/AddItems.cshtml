@@ -1,0 +1,753 @@
+﻿@model ISOStd.Models.DropDownItemsModels
+@using System.Data;
+
+@{
+    ViewBag.Title = "AddItems";
+    DataSet dsItems = new DataSet();
+    if (ViewBag.dsItems != null)
+    {
+        dsItems = ViewBag.dsItems;
+    }
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+}
+
+
+@section featured {
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <span class="breadcrumb-item active"> DropDown Data</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+}
+<div class="row">
+    <div class="col-md-6">
+
+        <!-- Basic layout-->
+        <div class="card">
+            <div class="card-header header-elements-inline">
+                <h5 class="card-title">Dropdown Data</h5>
+                <div class="header-elements">
+                    <div class="list-icons">
+                        <a class="list-icons-item" data-action="collapse"></a>
+                    </div>
+                </div>
+            </div>            
+
+            <div class="card-body">
+                @using (Html.BeginForm("AddItems", "DropDownItems", FormMethod.Post, new { id = "form1", name = "form1" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary(true)
+
+                    <div class="container-fluid">
+                        <table class="table table-lg">
+
+                            <tbody>
+                                <tr>
+                                    <td colspan="2" style="background-color: #4cc4dd; color: #fff; font-weight: bold;">Drop Down Data</td>
+                                </tr>
+                                @if (Obj.GetCurrentUserSession().DropDown.Contains("3") && Obj.GetCurrentUserSession().DropDown.Contains("5"))
+                                {
+                                    <tr>
+                                        <td>Header</td>
+                                        <td>
+
+                                            <select class="form-control select-search select2-hidden-accessible" data-fouc id="header_id" name="header_id" required="required" onchange="GetItems()">
+                                                <option value="" hidden>Select</option>
+                                                @if (ViewBag.Header_id != null && ViewBag.DropDownHeader != null)
+                                                {
+                                                    foreach (var data in ViewBag.DropDownHeader)
+                                                    {
+                                                        if (data.Value == ViewBag.Header_id)
+                                                        {
+                                                            <option value='@data.Value' selected title="@data.Value">@data.Text</option>
+                                                        }
+                                                        else
+                                                        {
+                                                            <option value='@data.Value' title="@data.Value">@data.Text</option>
+                                                        }
+
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    if (ViewBag.DropDownHeader != null)
+                                                    {
+                                                        foreach (var data in ViewBag.DropDownHeader)
+                                                        {
+                                                            <option value='@data.Value' title="@data.Value">@data.Text</option>
+
+                                                        }
+                                                    }
+                                                }
+                                            </select>
+                                            @Html.ValidationMessageFor(model => model.header_id)
+
+                                        </td>
+                                    </tr>
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td>
+
+                                            Header
+
+                                        </td>
+                                        <td>
+
+                                            <select class="form-control select-search select2-hidden-accessible" data-fouc id="header_id" name="header_id" required="required" onchange="GetItemsJustDisplay()">
+                                                <option value="" hidden>Select</option>
+                                                @if (ViewBag.Header_id != null && ViewBag.DropDownHeader != null)
+                                                {
+                                                    foreach (var data in ViewBag.DropDownHeader)
+                                                    {
+                                                        if (data.Value == ViewBag.Header_id)
+                                                        {
+                                                            <option value='@data.Value' selected title="@data.Value">@data.Text</option>
+                                                        }
+                                                        else
+                                                        {
+                                                            <option value='@data.Value' title="@data.Value">@data.Text</option>
+                                                        }
+
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    if (ViewBag.DropDownHeader != null)
+                                                    {
+                                                        foreach (var data in ViewBag.DropDownHeader)
+                                                        {
+                                                            <option value='@data.Value' title="@data.Value">@data.Text</option>
+
+                                                        }
+                                                    }
+                                                }
+                                            </select>
+                                            @Html.ValidationMessageFor(model => model.header_id)
+
+                                        </td>
+                                    </tr>
+                                }
+
+                                <tr>
+                                    <td>
+
+                                        Name
+
+                                    </td>
+                                    <td>
+
+                                        <input class="form-control" type="text" id="item_desc" name="item_desc" value="@Model.item_desc" required />
+
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+
+                                        Description/Value
+
+                                    </td>
+                                    <td>
+
+                                        <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="item_fulldesc" name="item_fulldesc" required>@Model.item_fulldesc</textarea>
+
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+
+
+                    </div>
+                    if (Obj.GetCurrentUserSession().DropDown.Contains("3"))
+                    {
+                        <div class="card-footer bg-white ml-auto">
+                            <button type="submit" name="button" id="btncreate" value="Save" class="btn bg-indigo-400 float-right" onclick="ProgressIconFunction('#form1')">Submit<i class="icon-paperplane ml-2"></i></button>
+
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+
+
+    <div class="col-md-6">
+
+        <!-- Basic layout-->
+        <div class="card">
+            <div class="card-header header-elements-inline">
+                <h5 class="card-title">DropDown Data List</h5>
+                <div class="header-elements">
+                    <div class="list-icons">
+                        <a class="list-icons-item" data-action="collapse"></a>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body">
+
+
+                <div class="container-fluid">
+                    <table id="tbl_Agenda" class="table table-lg">
+                        <tbody>
+                            @if (dsItems.Tables.Count > 0 && dsItems.Tables[0].Rows.Count > 0)
+                            {
+                                <tr>
+                                    <td colspan="3" style="background-color: #4cc4dd; color: #fff; font-weight: bold;">Items List</td>
+                                </tr>
+                                <tr class="row" style="background-color: #e5eafe; color: #0099ff; font-weight: bold;">
+                                    <th class="col-xs-2"><span class='badge badge-danger' onclick='DeleteAllHeaderItems(@ViewBag.Header_id)' style='cursor:pointer;' title='Delete All Item'>Delete</span></th>
+                                    <th class="col-xs-10">If u want to delete all Dropdown Items please press Delete</th>
+                                </tr>
+                                <tr class="row" style="background-color: #e5eafe; color: #0099ff; font-weight: bold;">
+                                    <th class="col col-xs-10">Name</th>
+                                    <th class="col col-xs-10">Description</th>
+                                    @if (Obj.GetCurrentUserSession().DropDown.Contains("3") || Obj.GetCurrentUserSession().DropDown.Contains("5"))
+                                    {
+                                        <th class="col col-xs-2">Action</th>
+                                    }
+                                </tr>
+                                for (int item = 0; item < dsItems.Tables[0].Rows.Count; item++)
+                                {
+                                    <tr class="row">
+                                        <td class="col col-xs-10">
+                                            <input class="form-control" type="text" id="item_desc @dsItems.Tables[0].Rows[item]["item_id"].ToString()"
+                                                   name="item_desc @dsItems.Tables[0].Rows[item]["item_id"].ToString()" value="@dsItems.Tables[0].Rows[item]["item_desc"].ToString()" />
+                                        </td>
+                                        <td class="col col-xs-10">
+                                            <input class="form-control" type="text" id="item_fulldesc @dsItems.Tables[0].Rows[item]["item_id"].ToString()"
+                                                   name="item_fulldesc @dsItems.Tables[0].Rows[item]["item_id"].ToString()"
+                                                   value="@dsItems.Tables[0].Rows[item]["item_fulldesc"].ToString()" title="@dsItems.Tables[0].Rows[item]["item_fulldesc"].ToString()" />
+                                        </td>
+                                        <td class="col col-xs-2">
+
+
+                                            @if (Obj.GetCurrentUserSession().DropDown.Contains("3"))
+                                            {
+                                                <span class='badge badge-info' style='cursor: pointer;' title='Update Item' onclick="UpdateItems(@dsItems.Tables[0].Rows[item]["item_id"].ToString(), @dsItems.Tables[0].Rows[item]["header_id"].ToString())">Edit</span>
+                                            }
+                                            @if (Obj.GetCurrentUserSession().DropDown.Contains("5"))
+                                            {
+                                                <span class='badge badge-danger' onclick="DeleteItems(@dsItems.Tables[0].Rows[item]["item_id"].ToString(), @dsItems.Tables[0].Rows[item]["header_id"].ToString())" style='cursor:pointer;' title='Delete Item'>Delete</span>
+                                            }
+                                        </td>
+                                    </tr>
+
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+        <!-- /basic layout -->
+
+    </div>
+</div>
+
+
+    @section Scripts {
+        <script type="text/javascript">
+         $(document).ready(function () {
+
+                                        @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+         });
+
+
+         
+
+
+
+         function UpdateItems(item_id, header_id) {
+             var item_desc = document.getElementById("item_desc " + item_id).value;
+             var item_fulldesc = document.getElementById("item_fulldesc " + item_id).value;
+          
+             jQuery.ajax({
+                 url: '@Url.Action("UpdateItems", "DropDownItems")',
+                 type: 'POST',
+                 dataType: "json",
+                 data: { 'item_id': item_id, 'header_id': header_id, 'item_desc': item_desc, 'item_fulldesc' : item_fulldesc },
+                 success: function (result) {
+                     var params = {
+                         Header_id: header_id
+                     };
+                     //// Add new params to the querystring dictionary
+                     queryString = $.param(params);
+
+                     window.location.href =
+                         window.location.protocol + "//" +
+                         window.location.host +
+                         window.location.pathname +
+                         "?" +(queryString);
+                 }
+             });
+         }
+
+
+
+
+
+function DeleteItems(item_id, header_id) {
+
+                  var token = $('[name=__RequestVerificationToken]').val();
+             var headers = {};
+             headers["__RequestVerificationToken"] = token;
+     bootbox.confirm({
+                 title: 'Confirm dialog',
+                 message: 'Are you Sure you want to Delete the current Department?',
+                 buttons: {
+                     confirm: {
+                         label: 'Yes',
+                         className: 'btn-primary'
+                     },
+                     cancel: {
+                         label: 'Cancel',
+                         className: 'btn-link'
+                     }
+                 },
+                 callback: function (r) {
+                     if (r == true) {
+               
+                     jQuery.ajax({
+                         url: '@Url.Action("DeleteItems", "DropDownItems")',
+                         type: 'POST',
+                         dataType: "json",
+                         headers: headers,
+                         data: { 'item_id': item_id, 'header_id': header_id },
+                         success: function (result) {
+                             var params = {
+                                 Header_id: header_id
+                             };
+                             //// Add new params to the querystring dictionary
+                             queryString = $.param(params);
+
+                             window.location.href =
+                                 window.location.protocol + "//" +
+                                 window.location.host +
+                                 window.location.pathname +
+                                '?' + queryString;
+                         }
+                    });
+                         return true;
+                     }
+                     else if (r == false) {
+                         bootbox.hideAll();
+                         return false;
+                     }
+
+                 }
+             });
+         }
+            function GetItemsJustDisplay() {
+                GetOnlydisplay();
+            }
+
+
+         function GetItems() {
+             setItems();
+         }
+
+         function setItems() {
+
+             var value = $("#header_id option:selected").text();
+             if (value == "Audit Finding Category" || value == "KPI Frequency Evaluation" || value == "Objective Frequency Evaluation" || value == "Objective Evaluation Status" || value == "Incident Type" || value == "Training Status" || value == "Priority" || value == "Material Category" || value == "Material Sub-Category")
+             {
+                 document.getElementById("item_desc").readOnly = true;
+                 document.getElementById("item_desc").required = false;
+                 document.getElementById("item_desc").style.background = "#efefe6";
+                 document.getElementById("item_fulldesc").readOnly = true;
+                 document.getElementById("item_fulldesc").required = false;
+                 document.getElementById("item_fulldesc").style.background = "#efefe6";
+               
+
+
+             var header_id= document.getElementById("header_id").value;
+             jQuery.ajax({
+                 url: '@Url.Action("GetHeaderItems", "DropDownItems")',
+                 type: 'POST',
+                 dataType: "json",
+                 data: { 'Header_id': header_id.toString() },
+                 success: function (result) {
+                     var table = document.getElementById("tbl_Agenda");
+                     //document.getElementById("dvAgendaItems").style.display = "";
+                     //document.getElementById("divAgendasTitle").style.display = "";
+
+                     while (table.rows.length > 0) {
+                         table.deleteRow(0);
+                     }
+
+                     if (result != "") {
+
+                        var thTitleRow = table.insertRow();
+                         thTitleRow.style = "background-color: #4cc4dd; color: #fff; font-weight: bold;";
+                         var cellTitle0 = thTitleRow.insertCell(0);
+
+                         cellTitle0.innerHTML = "Items List";
+                         table.rows[0].cells[0].colSpan = 3;
+                         table.rows[0].cells[0].style = "color:#fff";
+
+                         var theaderRow = table.insertRow();
+                           theaderRow.className = "row";
+                         theaderRow.style = "background-color: #e5eafe; font-weight: bold;";
+                         var cellth0 = theaderRow.insertCell(0);
+                          cellth0.className = "col col-xs-10";
+                          var cellth1 = theaderRow.insertCell(1);
+                          cellth1.className = "col col-xs-10";
+                          var cellth2 = theaderRow.insertCell(2);
+                          cellth2.className = "col col-xs-2";
+
+                         cellth0.innerHTML = "<th>Name</th>";
+                         cellth1.innerHTML = "<th>Description</th>";
+                         cellth2.innerHTML = "<th>Action</th>";
+                         table.rows[1].cells[0].style = "color:#0099ff";
+                         table.rows[1].cells[1].style = "color:#0099ff";
+                         table.rows[1].cells[2].style = "color:#0099ff;";
+
+                         
+                         var list = result;
+                         $.each(list, function (index, item) {
+
+                             // Create an empty <tr> element and add it to the 1st position of the table:
+                             var row = table.insertRow();
+                                 row.className = "row";
+                             // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                         
+                               var cell0 = row.insertCell(0);
+                                cell0.className = "col col-xs-10";
+                                var cell1 = row.insertCell(1);
+                                cell1.className = "col col-xs-10";
+                                var cell2 = row.insertCell(2);
+                                cell2.className = "col col-xs-2";
+
+                     
+
+                             var AgendaName = item.Text;
+                             var Id = item.Value;
+
+                             var data = item.Text;
+                           
+                             var dataarray = new Array();
+
+                             dataarray = data.split("__");
+                             cell0.innerHTML = " <input class='form-control' type='text' id='item_desc " + Id + "' name='item_desc " + Id + "' value='" + dataarray[0] + "'/>";
+                             cell1.innerHTML = " <input class='form-control' type='text' id='item_fulldesc " + Id + "' name='item_fulldesc " + Id + "' value='" + dataarray[1] + "' title='" + dataarray[1] + "'/>";
+                            });
+                        }
+                        else {
+                             bootbox.alert({
+                         title: 'Dropdown Items',
+                         message: 'No Item exists, please add Items and then try again.'
+                     });
+                        }
+                 }
+             });
+
+
+             }  //if value is not equal to specified header in dropdown
+             else {
+                 document.getElementById("item_desc").readOnly = false;
+                 document.getElementById("item_desc").required = true;
+                 document.getElementById("item_desc").style.background = "#fff";
+                 document.getElementById("item_fulldesc").readOnly = false;
+                 document.getElementById("item_fulldesc").required = true;
+                 document.getElementById("item_fulldesc").style.background = "#fff";
+                 document.getElementById("btncreate").style.display = "";
+
+
+                  var header_id= document.getElementById("header_id").value;
+             jQuery.ajax({
+                 url: '@Url.Action("GetHeaderItems", "DropDownItems")',
+                 type: 'POST',
+                 dataType: "json",
+                 data: { 'Header_id': header_id.toString() },
+                 success: function (result) {
+                     var table = document.getElementById("tbl_Agenda");
+                     //document.getElementById("dvAgendaItems").style.display = "";
+                     //document.getElementById("divAgendasTitle").style.display = "";
+
+
+                     while (table.rows.length > 0) {
+                         table.deleteRow(0);
+                     }
+
+                     if (result != "") {
+
+                         var thTitleRow = table.insertRow();
+                         thTitleRow.style = "background-color: #4cc4dd; color: #fff; font-weight: bold;";
+                         var cellTitle0 = thTitleRow.insertCell(0);
+
+                         cellTitle0.innerHTML = "Items List";
+                         table.rows[0].cells[0].colSpan = 3;
+                         table.rows[0].cells[0].style = "color:#fff";
+
+                         //New row
+                         var theaderRow = table.insertRow();
+                         theaderRow.className = "row";
+                         theaderRow.style = "background-color: #e5eafe; font-weight: bold;";
+                         var cellth00 = theaderRow.insertCell(0);
+                         cellth00.className = "col-xs-1";
+                         var cellth11 = theaderRow.insertCell(1);
+                         cellth11.className = "col-xs-11";
+
+                         var sheader_id = $("#header_id").val();
+                         cellth00.innerHTML = "<span class='badge badge-danger' onclick='DeleteAllHeaderItems(" + sheader_id + ")' style='cursor:pointer;' title='Delete All Item'>Delete</span>"
+                         cellth11.innerHTML = "If u want to delete all Dropdown Items please press Delete";
+
+                         var theaderRow = table.insertRow();
+                           theaderRow.className = "row";
+                         theaderRow.style = "background-color: #e5eafe; font-weight: bold;";
+                        var cellth0 = theaderRow.insertCell(0);
+                          cellth0.className = "col col-xs-10";
+                          var cellth1 = theaderRow.insertCell(1);
+                          cellth1.className = "col col-xs-10";
+                          var cellth2 = theaderRow.insertCell(2);
+                          cellth2.className = "col col-xs-2";
+
+                         cellth0.innerHTML = "<th>Name</th>";
+                         cellth1.innerHTML = "<th>Description</th>";
+                         cellth2.innerHTML = "<th>Action</th>";
+
+                         table.rows[2].cells[0].style = "color:#0099ff";
+                         table.rows[2].cells[1].style = "color:#0099ff";
+                         table.rows[2].cells[2].style = "color:#0099ff";                        
+
+                         var list = result;
+                         $.each(list, function (index, item) {
+
+                             // Create an empty <tr> element and add it to the 1st position of the table:
+                             var row = table.insertRow();
+                                 row.className = "row";
+                             // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                         
+                               var cell0 = row.insertCell(0);
+                                cell0.className = "col col-xs-10";
+                                var cell1 = row.insertCell(1);
+                                cell1.className = "col col-xs-10";
+                                var cell2 = row.insertCell(2);
+                                cell2.className = "col col-xs-2";
+
+                             var AgendaName = item.Text;
+                             var Id = item.Value;
+
+                             var data = item.Text;
+                             var dataarray = new Array();
+
+                             dataarray = data.split("__");
+                            
+
+
+
+                             cell0.innerHTML = " <input class='form-control' type='text' id='item_desc " + Id + "' name='item_desc " + Id + "' value='" + dataarray[0] + "'/>";
+                             cell1.innerHTML = " <input class='form-control' type='text' id='item_fulldesc " + Id + "' name='item_fulldesc " + Id + "' value='" + dataarray[1] + "' title='" + dataarray[1] + "'/>";
+                             cell2.innerHTML = 
+
+                             "<span class='badge badge-info' style='cursor: pointer;' title='Update Item'  onclick='UpdateItems(" + item.Value + ", " + header_id + ")'>Edit</span>"
+                                    + " <span class='badge badge-danger' onclick='DeleteItems(" + item.Value + ", " + header_id + ")' style='cursor:pointer;' title='Delete Agenda'>Delete</span>";
+                            });
+                        }
+                        else {
+                       
+
+                            bootbox.alert({
+                         title: 'Dropdown Items',
+                         message: 'No Item exists, please add Items and then try again.'
+                     });
+                        }
+                 }
+             });
+             }
+
+         }
+
+
+            function GetOnlydisplay()
+            {
+ document.getElementById("item_desc").readOnly = true;
+                 document.getElementById("item_desc").required = false;
+                 document.getElementById("item_desc").style.background = "#efefe6";
+                 document.getElementById("item_fulldesc").readOnly = true;
+                 document.getElementById("item_fulldesc").required = false;
+                 document.getElementById("item_fulldesc").style.background = "#efefe6";
+               
+
+
+             var header_id= document.getElementById("header_id").value;
+             jQuery.ajax({
+                 url: '@Url.Action("GetHeaderItems", "DropDownItems")',
+                 type: 'POST',
+                 dataType: "json",
+                 data: { 'Header_id': header_id.toString() },
+                 success: function (result) {
+                     var table = document.getElementById("tbl_Agenda");
+                     //document.getElementById("dvAgendaItems").style.display = "";
+                     //document.getElementById("divAgendasTitle").style.display = "";
+
+                     while (table.rows.length > 0) {
+                         table.deleteRow(0);
+                     }
+
+                     if (result != "") {
+
+                        var thTitleRow = table.insertRow();
+                         thTitleRow.style = "background-color: #4cc4dd; color: #fff; font-weight: bold;";
+                         var cellTitle0 = thTitleRow.insertCell(0);
+
+                         cellTitle0.innerHTML = "Items List";
+                         table.rows[0].cells[0].colSpan = 3;
+                         table.rows[0].cells[0].style = "color:#fff";
+
+                         var theaderRow = table.insertRow();
+                           theaderRow.className = "row";
+                         theaderRow.style = "background-color: #e5eafe; font-weight: bold;";
+                        var cellth0 = theaderRow.insertCell(0);
+                          cellth0.className = "col col-xs-10";
+                          var cellth1 = theaderRow.insertCell(1);
+                          cellth1.className = "col col-xs-10";
+                          var cellth2 = theaderRow.insertCell(2);
+                          cellth2.className = "col col-xs-2";
+
+                         cellth0.innerHTML = "<th>Name</th>";
+                         cellth1.innerHTML = "<th>Description</th>";
+                         cellth2.innerHTML = "<th>Action</th>";
+
+                         table.rows[1].cells[0].style = "color:#0099ff";
+                         table.rows[1].cells[1].style = "color:#0099ff";
+                         table.rows[1].cells[2].style = "color:#0099ff;";
+
+                         var list = result;
+                         $.each(list, function (index, item) {
+
+                             // Create an empty <tr> element and add it to the 1st position of the table:
+                             var row = table.insertRow();
+                                 row.className = "row";
+                             // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                         
+                               var cell0 = row.insertCell(0);
+                                cell0.className = "col col-xs-10";
+                                var cell1 = row.insertCell(1);
+                                cell1.className = "col col-xs-10";
+                                var cell2 = row.insertCell(2);
+                                cell2.className = "col col-xs-2";
+
+                     
+
+                             var AgendaName = item.Text;
+                             var Id = item.Value;
+
+                             var data = item.Text;
+                           
+                             var dataarray = new Array();
+
+                             dataarray = data.split("__");
+                             cell0.innerHTML = " <input class='form-control' type='text' id='item_desc " + Id + "' name='item_desc " + Id + "' value='" + dataarray[0] + "'/>";
+                             cell1.innerHTML = " <input class='form-control' type='text' id='item_fulldesc " + Id + "' name='item_fulldesc " + Id + "' value='" + dataarray[1] + "' title='" + dataarray[1] + "'/>";
+                            });
+                        }
+                        else {
+                             bootbox.alert({
+                         title: 'Dropdown Items',
+                         message: 'No Item exists, please add Items and then try again.'
+                     });
+                        }
+                 }
+             });
+
+            }
+
+
+            function DeleteAllHeaderItems(sheader_id) {
+               bootbox.confirm({
+                title: 'Confirm dialog',
+                message: 'Are you Sure you want to Delete the current Record?',
+                buttons: {
+                    confirm: {
+                        label: 'Yes',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'Cancel',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (r) {
+                    if (r == true) {
+                             jQuery.ajax({
+                                 url: '@Url.Action("DropdownAllItemDelete", "DropDownItems")',
+                                 data: { header_id: sheader_id },
+                        type: 'POST',
+                        dataType: "json",
+                        success: function (result) {
+                            //// Add new params to the querystring dictionary
+                            window.location.href =
+                                window.location.protocol + "//" +
+                                window.location.host +
+                                window.location.pathname
+
+                        }
+                    });
+                    return true;
+                }
+                else if (r == false) {
+                        bootbox.hideAll();
+                        return false;
+                    }
+
+                }
+               });
+            }
+        </script>
+        @Scripts.Render("~/bundles/jqueryval")
+
+    }

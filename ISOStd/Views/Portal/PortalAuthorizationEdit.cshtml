@@ -1,0 +1,977 @@
+﻿@model ISOStd.Models.PortalModels
+
+@{
+    ViewBag.Title = "PortalAuthorizationEdit";
+
+    //if (ViewBag.objAccTypeList != null)
+    //{
+    //    objAccTypeList = ViewBag.objAccTypeList;
+    //    icnt = objAccTypeList.AccidentList.Count;
+    //}
+}
+
+@section featured {
+    <div class="page-header page-header-light">
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("PortalAuthorizationList", "Portal", new { View = ViewBag.Session })" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Access Request</span>
+                    </a>
+                    <span class="breadcrumb-item active">Update Access Request</span>
+                </div>
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+}
+
+@using (Html.BeginForm("PortalAuthorizationEdit", "Portal", FormMethod.Post,
+                     new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Update Access Request - @Model.portal_categoryName</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+                <input type="hidden" id="id_authorization" name="id_authorization" value="@Model.id_authorization" />
+                <input type="hidden" id="View" name="View" value="@ViewBag.Session" />
+                <input type="hidden" id="portal_category" name="portal_category" value="@Model.portal_category" />
+                <table class="table table-lg">
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @*@Html.LabelFor(model => model.access_no)*@ Access Authorization Number <text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @Html.DisplayFor(model=>model.access_no)
+                                @*<input class="form-control" type="text" id="access_no" name="access_no" value="@Model.access_no" readonly required />*@
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.request_date)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @if (Model.request_date != null && Model.request_date > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    <input class="form-control" type="date" id="request_date" name="request_date" value="@Model.request_date.ToString("yyyy-MM-dd")" required />
+                                }
+                                else
+                                {
+                                    <input class="form-control" type="date" id="request_date" name="request_date" required />
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.access_date)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @if (Model.access_date != null && Model.access_date > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    <input class="form-control" type="date" id="access_date" name="access_date" value="@Model.access_date.ToString("yyyy-MM-dd")" required />
+                                }
+                                else
+                                {
+                                    <input class="form-control" type="date" id="access_date" name="access_date" required />
+                                }
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.valid_date)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @if (Model.valid_date != null && Model.valid_date > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    <input class="form-control" type="date" id="valid_date" name="valid_date" value="@Model.valid_date.ToString("yyyy-MM-dd")" required />
+                                }
+                                else
+                                {
+                                    <input class="form-control" type="date" id="valid_date" name="valid_date" required />
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                    @*<tr class="row">
+        <td class="col-xs-3 col-md-2">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.portal_category)<text style="color:red;">*</text>
+            </div>
+        </td>
+        <td class="col">
+            <div class="editor-field">
+                <select class="form-control select-search select2-hidden-accessible" data-fouc id="portal_category" name="portal_category" required>
+                    <option value='' hidden>Select</option>
+                    @if (ViewBag.ProtalCategory != null)
+                    {
+                        foreach (var item in ViewBag.ProtalCategory)
+                        {
+                            if (item.Value == Model.portal_category)
+                            {
+                                <option value='@item.Value' selected>@item.Text</option>
+                            }
+                            else
+                            {
+                                <option value='@item.Value'>@item.Text</option>
+                            }
+                        }
+                    }
+                </select>
+            </div>
+        </td>
+        </tr>*@
+                    @if (ViewBag.Session == "1")
+                    {
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.subcr_no)<text style="color:red;">*</text>
+                            </td>
+                            <td class="col-xs-6 col-md-4">
+                                <div class="editor-field">
+                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="id_portal_master" name="id_portal_master" required onchange="GetMasterPortalDetails()">
+                                        <option value='' hidden>Select</option>
+
+                                        @if (ViewBag.PortalMaster != null)
+                                        {
+                                            foreach (var item in ViewBag.PortalMaster)
+                                            {
+                                                if (item.Value == Model.subcr_no)
+                                                {
+                                                    <option value='@item.Value' selected>@item.Text</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.commercial_name)
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <input class="form-control" type="text" id="commercial_name" name="commercial_name" value="@Model.commercial_name" disabled />
+                                </div>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.activities)
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="activities" name="activities" disabled>@Model.activities</textarea>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.portal_name)
+                                </div>
+                            </td>                           
+                             <td class="col">
+            <div class="editor-field">
+                <select class="form-control select-search select2-hidden-accessible" data-fouc id="portal_name" name="portal_name" onchange="GetMinistryDetails()" required>
+                    <option value='' hidden>Select</option>
+                    @if (ViewBag.ProtalName != null)
+                    {
+                        foreach (var item in ViewBag.ProtalName)
+                        {
+                            if (item.Value == Model.portal_name)
+                            {
+                                <option value='@item.Value' selected>@item.Text</option>
+                            }
+                            else
+                            {
+                                <option value='@item.Value'>@item.Text</option>
+                            }
+                        }
+                    }
+                </select>
+            </div>
+        </td>
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.ministry_name)<text style="color:red;">*</text>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    @*<select class="form-control select-search select2-hidden-accessible" data-fouc id="ministry_name" name="ministry_name">
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.MinistryName != null)
+                                        {
+                                            foreach (var item in ViewBag.MinistryName)
+                                            {
+                                                if (item.Value == Model.ministry_name)
+                                                {
+                                                    <option value='@item.Value' selected>@item.Text</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+                                                }
+
+                                            }
+                                        }
+                                    </select>*@
+                                     <input class="form-control" type="text" id="ministry_name" name="ministry_name" readonly/>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @*@Html.LabelFor(model => model.nominated_emp)*@ Nominated Employee <text style="color:red">*</text>
+                                </div>
+                            </td>
+                            <td class="col-xs-6 col-md-4">
+                                <div class="editor-field">
+                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="nominated_emp" name="nominated_emp" onchange="GetNominatedEmpDetails()" required>
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.EmpList != null)
+                                        {
+                                            foreach (var item in ViewBag.EmpList)
+                                            {
+                                                if (item.Value == Model.nominated_emp)
+                                                {
+                                                    <option value='@item.Value' selected>@item.Text</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </td>
+                            @if (ViewBag.Session == "1")
+                            {
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        Ministry Url
+                                    </div>
+                                </td>
+                                <td class="col">
+                                    <div class="editor-field">
+                                        <a id="ministry_url" href="" target="_blank"> </a>
+                                        @*<input class="form-control" type="text" id="ministry_url" name="ministry_url"  />*@
+                                    </div>
+                                </td>
+                            }
+                        </tr>
+                </table>
+                <div class="card visible" id="NominatedEmpDiv">
+                    <div class="card-body">
+                        <input type="hidden" id="itemcount" name="itemcount" value="0" />
+
+                        <div class="card card-table table-responsive shadow-0 mb-0">
+                            <table class="table" id="team-list">
+
+                                <tr class="bg-blue">
+                                    <th>Action</th>
+                                    <th>Emp Id</th>
+                                    <th>Name</th>
+                                    <th>Division</th>
+                                    <th>Location</th>
+                                    <th>Department</th>
+                                    <th>Nationality </th>
+                                    <th>Saudi National ID No./IQAMA No.</th>
+                                    <th>DOB</th>
+                                    <th>Email</th>
+                                    <th>Mobile No.</th>
+                                </tr>
+                                <tr>
+                                    <td><span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span></td>
+                                    <td>@ViewBag.emp_id</td>
+                                    <td>@ViewBag.empname</td>
+                                    <td>@ViewBag.division</td>
+                                    <td>@ViewBag.location</td>
+                                    <td>@ViewBag.department</td>
+                                    <td>@ViewBag.Nationaliity </td>
+                                    <td>@ViewBag.Eid_no</td>
+                                    <td>@ViewBag.Date_of_Birth</td>
+                                    <td>@ViewBag.EmailId</td>
+                                    <td>@ViewBag.MobileNo</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <table class="table table-lg">
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.access_purpose)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="access_purpose" name="access_purpose" required>@Model.access_purpose</textarea>
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.justification)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="justification" name="justification" required>@Model.justification</textarea>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.requested_by)<text style="color:red">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="requested_by" name="requested_by" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.EmpList != null)
+                                    {
+                                        foreach (var item in ViewBag.EmpList)
+                                        {
+                                            if (item.Value == Model.requested_by)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.recommended_by) <text style="color:red">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="recommended_by" name="recommended_by" @*onclick="GetDeptHeadEmpDetails()"*@ required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.DeptHeadList != null)
+                                    {
+                                        foreach (var item in ViewBag.DeptHeadList)
+                                        {
+                                            if (item.Value == Model.recommended_by)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+                <div class="card visible" id="RecommandEmpDiv">
+                    <div class="card-body">
+                        <input type="hidden" id="itemcnt" name="itemcnt" value="0" />
+
+                        <div class="card card-table table-responsive shadow-0 mb-0">
+                            <table class="table" id="team-list1">
+                                <tr>
+                                    <th>Action</th>
+                                    <th>Emp Id</th>
+                                    <th>Name</th>
+                                    <th>Division</th>
+                                    <th>Location</th>
+                                    <th>Department</th>
+                                    <th>Email</th>
+                                </tr>
+                                <tr>
+                                    <td><span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span></td>
+                                    <td>@ViewBag.Remp_id</td>
+                                    <td>@ViewBag.Rempname</td>
+                                    <td>@ViewBag.Rdivision</td>
+                                    <td>@ViewBag.Rlocation</td>
+                                    <td>@ViewBag.Rdepartment</td>
+                                    <td>@ViewBag.REmailId</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <table class="table table-lg">
+                    @*<tr class="row">
+                <td class="col-xs-3 col-md-2">
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.approve_vp)<text style="color:red">*</text>
+                    </div>
+                </td>
+                <td class="col">
+                    <div class="editor-field">
+                        <select class="form-control select-search select2-hidden-accessible" data-fouc id="approve_vp" name="approve_vp" required>
+                            <option value='' hidden>Select</option>
+                            @if (ViewBag.VP != null)
+                            {
+                                foreach (var item in ViewBag.VP)
+                                {
+                                    <option value='@item.Value'>@item.Text</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                </td>
+            </tr>*@
+                    <tr class="row">
+
+                        @*<td class="col-xs-3 col-md-2">
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.approve_chairman)<text style="color:red">*</text>
+                    </div>
+                </td>
+                <td class="col">
+                    <div class="editor-field">
+                        <select class="form-control select-search select2-hidden-accessible" data-fouc id="approve_chairman" name="approve_chairman" required>
+                            <option value='' hidden>Select</option>
+                            @if (ViewBag.Chairman != null)
+                            {
+                                foreach (var item in ViewBag.Chairman)
+                                {
+                                    <option value='@item.Value'>@item.Text</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                </td>*@
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.approve_ceo)<text style="color:red">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="approve_ceo" name="approve_ceo" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.CEO != null)
+                                    {
+                                        foreach (var item in ViewBag.CEO)
+                                        {
+                                            if (item.Value == Model.approve_ceo)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                      
+                  
+                        @*<td class="col-xs-3 col-md-2">
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.upload) <text style="color:red">*</text>
+                    </div>
+                </td>
+                <td class="col-xs-3 col-md-4">
+                    <div class="editor-field">
+                        @if (ViewBag.YesNo != null)
+                        {
+                            foreach (var item in ViewBag.YesNo)
+                            {
+                                <input type="radio" name="upload1" id="upload1" onchange="GetUpload()" value='@item' required />@item
+                            }
+                        }
+                    </div>
+                </td>*@
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.upload) <text style="color:red">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <input type="file" name="upload" id="upload" title="Documents" onchange="FileFormatValidation(this)"
+                                   multiple="multiple" accept=".pdf, .doc, .docx,.xls,.xlsx,.png,.jpeg,.jpg,.image/*" @*class="bootstrap-uploader" data-fouc*@ />
+                            
+                            <span class="form-text text-muted"><code>(Hold Ctrl Key in case of multiple files or drag multiple files and drop here)</code></span>
+                            <br />
+                            @if (Model.upload != null && Model.upload != "" && Model.upload.Length > 0)
+                            {
+                                <h6> <span class="bg-dark py-1 px-2 rounded">Document List</span></h6>
+
+                                <span class="form-text text-muted">
+                                    <code>
+                                        (Uncheck in case to remove a uploaded file)
+                                    </code>
+                                </span>
+                                foreach (var docs in Model.upload.Trim(',').Split(','))
+                                {
+                                    <div class="form-check">
+                                        <label class="form-check-label">
+                                            <input type="checkbox" id="QCDocsVal" name="QCDocsVal" class="form-check-input-styled QCDocsVal" value="@docs.Trim(',')" checked title="Uncheck in case to remove a uploaded file" data-fouc />
+                                            <input type="hidden" id="QCDocsValselectall" name="QCDocsValselectall" />
+                                            <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" class="text-orange">
+                                                @System.IO.Path.GetFileName(docs)
+                                            </a>
+                                        </label>
+                                    </div>
+                                }
+                            }
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.division) <text style="color:red">*</text>
+                        </td>
+                        <td class="col-xs-6 col-md-4">
+                            <select class="form-control select-fixed-multiple" multiple="multiple" data-fouc id="division" name="division" onchange="GetDeptList()" required>
+                                @if (ViewBag.Branch != null)
+                                {
+                                    foreach (var data in ViewBag.Branch)
+                                    {
+                                        if (Array.IndexOf(Model.division.ToString().Split(','), data.Value) >= 0)
+                                        {
+                                            <option value='@data.Value' selected>@data.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@data.Value'>@data.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.department)<text style="color: red;">*</text>
+                        </td>
+                        <td class="col">
+                            <select class="form-control  select-fixed-multiple" data-fouc id="department" name="department" multiple="multiple" required>
+                                @if (ViewBag.Dept != null)
+                                {
+                                    foreach (var data in ViewBag.Dept)
+                                    {
+                                        if (Array.IndexOf(Model.department.ToString().Split(','), data.Value) >= 0)
+                                        {
+                                            <option value='@data.Value' selected>@data.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@data.Value'>@data.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+            @Html.ActionLink("Back to List", "PortalAuthorizationList", new { View = ViewBag.Session }, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+
+            <button type="submit" id="btnCreate" value="Add" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Add</button>
+        </div>
+    </div>
+}
+
+
+@section Scripts {
+    <script>
+        GetMinistryDetails();
+
+        var showClass = 'is-visible';
+        var hideClass = 'invisible';
+
+                function FileFormatValidation(file) {
+                    var ext = file.value.split(".").pop().toLowerCase();
+                    if ($.inArray(ext, ["doc", "pdf", "docx", "xls", "xlsx", , "png", "jpg", "jpeg"]) == -1) {
+                        file.value = "";
+                        jAlert("Invalid file format, please upload only doc, pdf, docx, xls, xlsx, png, jpeg, jpg format");
+                    }
+                }
+
+              function GetDeptList() {
+                    var selectedValues = [];
+                  $("#division :selected").each(function () {
+                        selectedValues.push($(this).val());
+                    });
+                    if (selectedValues != "") {
+                        jQuery.ajax({
+                            url: '@Url.Action("FunGetAllDeptList", "EmployeeDetails")',
+                            type: 'POST',
+                            dataType: "json",
+                            data: { 'branch': selectedValues },
+                            success: function (result) {
+                                //GetLocList(selectedValues);
+                                $("#department").children('option').remove();
+                                $("#department").trigger('change');
+                                if (result != null && result.length > 0) {
+                                    $.each(result, function (index, item) {
+                                        $("#department").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                                        $("#department").trigger('change');
+                                    });
+                                    return;
+                                }
+                                //else {
+                                //    bootbox.alert({
+                                //        title: 'Department List',
+                                //        message: 'No Department exists.'
+                                //    });
+                                //}
+                            }
+                        });
+                    }
+                    else {
+                        $("#department").val('').trigger('change');
+                        //$("#Location").val('').trigger('change');
+                    }
+                }
+
+
+                @*function GetLocList(selectedValues) {
+                    jQuery.ajax({
+                        url: '@Url.Action("FunGetAllLocList", "EmployeeDetails")',
+                        type: 'POST',
+                        dataType: "json",
+                        data: { 'branch': selectedValues },
+                        success: function (result) {
+                            $("#Location").children('option').remove();
+                            $("#Location").trigger('change');
+                            if (result != null && result.length > 0) {
+                                $.each(result, function (index, item) {
+                                    $("#Location").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                                    $("#Location").trigger('change');
+                                });
+                                return;
+                            }
+                            else {
+                                bootbox.alert({
+                                    title: 'Location List',
+                                    message: 'No Location exists.'
+                                });
+                            }
+                        }
+                    });
+                }*@
+
+
+        function GetMasterPortalDetails() {
+            var id_portal_master = $('#id_portal_master').val();
+            if (id_portal_master != "") {
+                         jQuery.ajax({
+                             url: '@Url.Action("FunGetMasterPortalDetails", "Portal")',
+                             type: 'POST',
+                             dataType: "json",
+                             data: { id_portal_master: id_portal_master },
+                             success: function (result) {
+                                 if (result != null) {
+                                     document.getElementById("commercial_name").value = result.commercial_name;
+                                     document.getElementById("activities").value = result.activities;
+                                 }
+                             }
+                         });
+                     }
+        }
+
+
+        function GetNominatedEmpDetails() {
+            document.getElementById("NominatedEmpDiv").style.display = "none";
+            var nominated_emp = $('#nominated_emp option:selected').val();
+
+            if (nominated_emp != "" && nominated_emp != null)
+            {
+                jQuery.ajax({
+                    url: '@Url.Action("FunGetEmpDetails", "Portal")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'semp_no': nominated_emp },
+                    success: function (result) {
+                        if (result != null) {
+                            var nominated_emp = $('#nominated_emp option:selected').val();
+                            var empid = result.emp_id;
+                            var empname = result.empname;
+                            var empdivision = result.division;
+                            var empdept = result.department;
+                            var emploc = result.location;
+                            var empemail = result.EmailId;
+                            var empdob1 = result.Date_of_Birth;
+                            var empeid = result.Eid_no;
+                            var empmobile = result.MobileNo;
+                            var Nationaliity = result.Nationaliity;
+                            var empdivisionId = result.nc_division;
+
+                            var empdob = empdob1.substring(0, 10);
+                            if (empdob == "01/01/0001") {
+                                empdob = "";
+                            }
+
+                var cnt = document.getElementById("itemcount").value;
+
+                document.getElementById("itemcount").value = cnt;
+                // Find a <table> element with id="myTable":
+                //document.getElementById("team-list tr").remove();
+
+                var table = document.getElementById("team-list");
+
+                if (table.rows.length > 1) {
+                   document.getElementById("team-list").deleteRow(1);
+                }
+
+                // Create an empty <tr> element and add it to the 1st position of the table:
+                var row = table.insertRow();
+
+
+                // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                var cell0 = row.insertCell(0);
+                var cell1 = row.insertCell(1);
+                var cell2 = row.insertCell(2);
+                var cell3 = row.insertCell(3);
+                var cell4 = row.insertCell(4);
+                var cell5 = row.insertCell(5);
+                var cell6 = row.insertCell(6);
+                var cell7 = row.insertCell(7);
+                var cell8 = row.insertCell(8);
+                var cell9 = row.insertCell(9);
+                var cell10 = row.insertCell(10);
+
+                cell0.innerHTML = "<span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span> <input type='hidden' id='empno " + cnt + "' name='empno " + cnt + "' value='" + nominated_emp + "'>";
+                cell1.innerHTML = "<input type='hidden' id='empid " + cnt + "' name='empid " + cnt + "' value='" + empid + "'>" + empid;
+                cell2.innerHTML = "<input type='hidden' id='empname " + cnt + "' name='empname " + cnt + "' value='" + empname + "'>" + empname;
+                cell3.innerHTML = "<input type='hidden' id='empdivision " + cnt + "' name='empdivision " + cnt + "' value='" + empdivision + "'>" + empdivision;
+                cell4.innerHTML = "<input type='hidden' id='emploc " + cnt + "' name='emploc " + cnt + "' value='" + emploc + "'>" + emploc;
+                cell5.innerHTML = "<input type='hidden' id='empdept " + cnt + "' name='empdept " + cnt + "' value='" + empdept + "'>" + empdept;
+                cell6.innerHTML = "<input type='hidden' id='empnationality " + cnt + "' name='empnationality " + cnt + "' value='" + Nationaliity + "'>" + Nationaliity;
+                cell7.innerHTML = "<input type='hidden' id='empeid " + cnt + "' name='empeid " + cnt + "' value='" + empeid + "'>" + empeid;
+                cell8.innerHTML = "<input type='hidden' id='empdob " + cnt + "' name='empdob " + cnt + "' value='" + empdob + "'>" + empdob;
+                cell9.innerHTML = "<input type='hidden' id='empemail " + cnt + "' name='empemail " + cnt + "' value='" + empemail + "'>" + empemail;
+                cell10.innerHTML = "<input type='hidden' id='empmobile " + cnt + "' name='empmobile " + cnt + "' value='" + empmobile + "'>" + empmobile;
+
+                //cnt++;
+                document.getElementById("NominatedEmpDiv").classList.remove(hideClass);
+                document.getElementById("NominatedEmpDiv").classList.add(showClass);
+                document.getElementById("NominatedEmpDiv").style.display = "block";
+
+                //document.getElementById("itemcount").value = cnt;
+
+                //$("#nominated_emp").val('').trigger('change');
+                            //GetRecommendDetails(empdivisionId);
+                           }
+                       }
+                   });
+               }
+        }
+
+        function GetRecommendDetails(Empdivision) {
+            if (Empdivision != "") {
+                 jQuery.ajax({
+                url: '@Url.Action("FunGetDivisionHODList", "Portal")',
+                type: 'POST',
+                dataType: "json",
+               data: { 'DivisionId': Empdivision },
+                success: function (result) {
+                    $("#recommended_by").children('option').remove();
+                    $("#recommended_by").trigger('change');
+                    if (result != null && result.length > 0) {
+                        //$("#recommended_by").append("<option value=' '> Select </option>");
+                        $.each(result, function (index, item) {
+                            $("#recommended_by").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                            $("#recommended_by").trigger('change');
+                        });
+                        return;
+                    }
+                    //else {
+                    //    bootbox.alert({
+                    //        title: 'HOD List',
+                    //        message: 'No Dept head in this division exists.'
+                    //    });
+                    //}
+                }
+            });
+            }
+        }
+
+        /*   function GetDeptHeadEmpDetails()*/
+        $('#recommended_by').on('change', function() {
+            var recommended_by = $('#recommended_by').val();
+            if (recommended_by != "" && recommended_by != null) {
+                jQuery.ajax({
+                    url: '@Url.Action("FunGetEmpDetails", "Portal")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'semp_no': recommended_by },
+                    success: function (result) {
+                        if (result != null) {
+                            var recommended_by = $('#recommended_by option:selected').val();
+                            var empid = result.emp_id;
+                            var empname = result.empname;
+                            var empdivision = result.division;
+                            var empdept = result.department;
+                            var emploc = result.location;
+                            var empemail = result.EmailId;
+
+
+                            var cnt = document.getElementById("itemcnt").value;
+
+                            document.getElementById("itemcnt").value = cnt;
+                            // Find a <table> element with id="myTable":
+
+                            var table = document.getElementById("team-list1");
+                            if (table.rows.length > 1) {
+                                document.getElementById("team-list1").deleteRow(1);
+                            }
+                            // Create an empty <tr> element and add it to the 1st position of the table:
+                            var row = table.insertRow();
+
+
+                            // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                            var cell0 = row.insertCell(0);
+                            var cell1 = row.insertCell(1);
+                            var cell2 = row.insertCell(2);
+                            var cell3 = row.insertCell(3);
+                            var cell4 = row.insertCell(4);
+                            var cell5 = row.insertCell(5);
+                            var cell6 = row.insertCell(6);
+
+
+                            cell0.innerHTML = "<span class='badge badge-info' onclick='deleteRow1(this)' style='cursor:pointer;'>Delete</span> <input type='hidden' id='rempno " + cnt + "' name='rempno " + cnt + "' value='" + recommended_by + "'>";
+                            cell1.innerHTML = "<input type='hidden' id='empid " + cnt + "' name='empid " + cnt + "' value='" + empid + "'>" + empid;
+                            cell2.innerHTML = "<input type='hidden' id='empname " + cnt + "' name='empname " + cnt + "' value='" + empname + "'>" + empname;
+                            cell3.innerHTML = "<input type='hidden' id='empdivision " + cnt + "' name='empdivision " + cnt + "' value='" + empdivision + "'>" + empdivision;
+                            cell4.innerHTML = "<input type='hidden' id='emploc " + cnt + "' name='emploc " + cnt + "' value='" + emploc + "'>" + emploc;
+                            cell5.innerHTML = "<input type='hidden' id='empdept " + cnt + "' name='empdept " + cnt + "' value='" + empdept + "'>" + empdept;
+                            cell6.innerHTML = "<input type='hidden' id='empemail " + cnt + "' name='empemail " + cnt + "' value='" + empemail + "'>" + empemail;
+
+                            //cnt++;
+                            document.getElementById("RecommandEmpDiv").classList.remove(hideClass);
+                            document.getElementById("RecommandEmpDiv").classList.add(showClass);
+                            document.getElementById("RecommandEmpDiv").style.display = "block";
+
+                            //document.getElementById("itemcnt").value = cnt;
+                            // $("#recommended_by").val('').trigger('change');
+                        }
+                    }
+                });
+            }
+        });
+
+        function deleteRow(btn) {
+            var row = btn.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+            document.getElementById("NominatedEmpDiv").style.display = "none";
+        }
+
+        function deleteRow1(btn) {
+            var row = btn.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+            document.getElementById("RecommandEmpDiv").style.display = "none";
+         }
+
+        //function GetUpload() {
+        //        var radioValue = $("input[name='upload1']:checked").val();
+        //        if (radioValue == "Yes") {
+        //            $("#upload").attr("required", true);
+        //        }
+        //        else {
+        //            $("#upload").attr("required", false);
+        //        }
+        // }
+
+        $('.form-check-input-styled').uniform();
+        $("#QCDocsVal").click(function ()
+        {
+            if ($("#QCDocsVal").prop('checked'))
+            {
+                {
+                    $(this).prop('checked', true);
+                }
+            }
+            else
+            {
+                $(this).prop('checked', false);
+                document.getElementById("QCDocsValselectall").value = "DeleteQC";
+            }
+        });
+                 
+
+        function GetMinistryDetails() {
+            var portal_name = $('#portal_name').val();
+            if (portal_name != "") {
+                         jQuery.ajax({
+                             url: '@Url.Action("FunGetMinistryDetails", "Portal")',
+                             type: 'POST',
+                             dataType: "json",
+                             data: { 'portal_name': portal_name },
+                             success: function (result) {
+                                 if (result != null) {
+                                     document.getElementById("ministry_name").value = result.ministry_name;
+                                     document.getElementById("ministry_url").textContent = result.ministry_url;  
+                                     document.getElementById("ministry_url").href = result.ministry_url; 
+                                 }
+                             }
+                         });
+                     }
+        }
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

@@ -1,0 +1,286 @@
+﻿@using PagedList;
+@using PagedList.Mvc;
+
+@model IPagedList<ISOStd.Models.SalaryStatementModels>
+@{
+    ViewBag.Title = "SalaryAdvanceList";
+    string Salarydate = "", SalaryFor_Month="";
+    if (ViewBag.Salarydate != null && ViewBag.Salarydate != null)
+    {
+        Salarydate = ViewBag.Salarydate;
+    }
+    if (ViewBag.SalaryFor_Month != null && ViewBag.SalaryFor_Month != null)
+    {
+        SalaryFor_Month = ViewBag.SalaryFor_Month;
+    }
+    
+}
+
+<div class="groupedassets margin10">
+    <span class="groupedassetshead margin10 onestphdcolor">Salary Advance List </span>
+</div>
+  <div class = "ActionLink">
+      @Html.ActionLink("Generate Salary Statement", "GenerateSalaryStatement", null, new { @class = "ActionLink" })
+      
+  </div>
+<br /><br />
+@using (Html.BeginForm("SalaryStatementList", "SalaryStatement", FormMethod.Get))
+{
+    <input type="hidden" id="Salarydate" name="Salarydate" value="@SalaryFor_Month" />
+     <b>Salary Date</b> <input type="text" id="SalaryFor_Month" name="SalaryFor_Month" value="@SalaryFor_Month" style="margin-left: 5px;" required readonly/>
+    @Html.TextBox("SearchText", (string)ViewBag.SearchText, new { placeholder = "Search by Employee name", style = "width: 30%; margin-left: 20px;" }) 
+    
+    <button type="submit" class="btn btn-info" name="command" id="command" value="Search">
+      <span class="glyphicon glyphicon-search"></span> Search
+    </button>
+    
+    <div style="float: right;padding-right: 50px;"> 
+            <a href='@Url.Action("PrintPreviewSalaryStatement", "SalaryStatement", new { SearchText=(string)ViewBag.SearchText, SalaryFor_Month = @SalaryFor_Month })' target="_blank">
+                            Preview</a>   
+
+         <a href='@Url.Action("PrintSalaryStatement", "SalaryStatement", new { SearchText=(string)ViewBag.SearchText, SalaryFor_Month = @SalaryFor_Month })' target="_blank">
+                           <img src="~/Images/Download-icon.png" /></a>   
+          @*<button type="submit" class="btn btn-success btn-lg" name="command" id="command"  value="Print" 
+             style="width: 85px; height: 33px;background-color: #449d44 !important; padding: 0px;">
+            <span class="glyphicon glyphicon-print"></span>Print
+        </button> *@
+    </div>   
+}
+@Html.PagedListPager(Model, page => Url.Action("SalaryStatementList",
+    new
+    {
+        page,
+        SearchText = Request.QueryString["SearchText"],
+        SalaryFor_Month = Request.QueryString["SalaryFor_Month"]
+    }),
+    new PagedListRenderOptions() { Display = PagedListDisplayMode.IfNeeded, DisplayPageCountAndCurrentLocation = true })
+<div id="content">
+    <table id="table1">
+        <tr>
+            <th>Action</th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().Emp_Code)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().Emp_info_no)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().emp_firstname)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().Designation)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().Basic_Salary)
+            </th>
+             <th>
+                @Html.DisplayNameFor(model => model.First().Food_allow)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().Acc_allow)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().Other_allow)
+            </th>
+           
+            <th>
+                @Html.DisplayNameFor(model => model.First().Transport_allow)
+            </th>
+           <th>
+                @Html.DisplayNameFor(model => model.First().Other_Earnings)
+            </th>
+                      
+            <th>
+                @Html.DisplayNameFor(model => model.First().Bonus)
+            </th>
+             <th>Gross Salary</th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().Salary_Days)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().Leave_Days)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().Normal_OT_Hrs)
+            </th>
+            <th>
+                Amt
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().Friday_OT_Hrs)
+            </th>
+            <th>
+                Amt
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().Public_Holiday_OT_Hrs)
+            </th>
+             <th>
+                Amt
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().Other_Income)
+            </th>
+             <th>
+                Net Salary
+            </th>
+            <th>
+               Leave Deduction
+            </th>
+             <th>
+               @Html.DisplayNameFor(model => model.First().Misslliance_Deduction)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().Salary_Adv)
+            </th>
+             <th>
+                Net Pay
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().ProcessedBy)
+            </th>
+        </tr>
+        @if (Model != null && Model.Count() > 0)
+        {
+            foreach (var item in Model)
+            {
+                double dGrossSalary = @item.Basic_Salary + @item.Food_allow + @item.Acc_allow + @item.Other_allow + @item.Transport_allow + @item.Other_Earnings + @item.Bonus;
+                double dNormalOTAmt = Math.Round(@item.Normal_OT_Hrs * 4.17);
+                double dFridayOTAmt = @item.Friday_OT_Hrs * 5;
+                double dPublicHolidayOTAmt = @item.Public_Holiday_OT_Hrs * 5;
+                double dNetSalary = Math.Round(dGrossSalary + dNormalOTAmt + dFridayOTAmt + dPublicHolidayOTAmt + item.Other_Income);
+                double dLeaveDeduction = (dGrossSalary / 30) * item.Leave_Days;
+                double dNetPay = Math.Round(dNetSalary - dLeaveDeduction - item.Misslliance_Deduction - item.Salary_Adv, 0);
+            <tr>
+                <td>
+                    <a href='@Url.Action("SalaryStatementEdit", "SalaryStatement", new { SalaryStmtId = item.SalaryStmtId })' title="Salary details">
+                        <span class="glyphicon glyphicon glyphicon-edit iocnstatus-edit"></span></a>
+                </td>
+                <td>
+                    @Html.ActionLink(item.Emp_Code, "SalaryStatementDetails", new { SalaryStmtId = item.SalaryStmtId })
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Emp_info_no)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.emp_firstname)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Designation)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Basic_Salary)
+                </td>
+                   <td>
+                    @Html.DisplayFor(modelItem => item.Food_allow)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Acc_allow)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Other_allow)
+                </td>
+             
+                <td>
+                    @Html.DisplayFor(modelItem => item.Transport_allow)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Other_Earnings)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Bonus)
+                </td>
+                 <td style="color:red; font-weight:bold;">                    
+                    @dGrossSalary
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Salary_Days)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Leave_Days)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Normal_OT_Hrs)
+                </td>
+                <td style="color:red; font-weight:bold;">
+                    @dNormalOTAmt
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Friday_OT_Hrs)
+                </td>
+                 <td style="color:red; font-weight:bold;">
+                    @dFridayOTAmt
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Public_Holiday_OT_Hrs)
+                </td>
+                 <td>
+                    @dPublicHolidayOTAmt
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Other_Income)
+                </td>
+                <td style="color:red; font-weight:bold;"> @dNetSalary</td>
+                <td style="color:red; font-weight:bold;">@dLeaveDeduction</td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Misslliance_Deduction)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Salary_Adv)
+                </td>
+                 <td style="color:red; font-weight:bold;">
+                    @dNetPay
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ProcessedBy)
+                </td>
+
+            </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="8">
+                    <div style="text-align: center;">
+                        <h4 style="color: grey;">No data exists</h4>
+                    </div>
+                </td>
+            </tr>
+        }
+
+    </table>
+</div>
+
+
+@section scripts {
+
+       <script type="text/javascript">
+           $(function () {
+               $("#SalaryFor_Month").datepicker({
+                   dateFormat: 'MM yy',
+                   changeMonth: true,
+                   changeYear: true,
+                   showButtonPanel: true,
+                   buttonImageOnly: true,
+                   buttonImage: '../Images/Calender.png',
+                   showOn: 'both',
+                   onClose: function (dateText, inst) {
+                       var month = $("#ui-datepicker-div .ui-datepicker-month :selected").val();
+                       var year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
+                       $(this).val($.datepicker.formatDate('MM yy', new Date(year, month, 1)));
+                   }
+               });
+
+               $("#SalaryFor_Month").focus(function () {
+                   $(".ui-datepicker-calendar").hide();
+                   $("#ui-datepicker-div").position({
+                       my: "center top",
+                       at: "center bottom",
+                       of: $(this)
+                   });
+               });
+           });
+        </script>
+ 
+}

@@ -1,0 +1,96 @@
+﻿@using PagedList;
+@using PagedList.Mvc;
+
+@model IPagedList<ISOStd.Models.SalaryAdvanceDeductionModels>
+@{
+    ViewBag.Title = "SalaryAdvanceList";
+}
+
+<div class="groupedassets margin10">
+    <span class="groupedassetshead margin10 onestphdcolor">Salary Advance List </span>
+</div>
+  <div class = "ActionLink">
+      @Html.ActionLink("Add New", "AddSalaryAdvance", new { EmpId= ViewBag.EmpId}, new { @class = "ActionLink" })
+      @Html.ActionLink("Back to List", "EmployeeList", "EmployeeDetails", null, new { @class = "ActionLink" })
+  </div>
+<br /><br />
+@Html.PagedListPager(Model, page => Url.Action("SalaryAdvanceList",
+    new
+    {
+        page
+    }),
+    new PagedListRenderOptions() { Display = PagedListDisplayMode.IfNeeded, DisplayPageCountAndCurrentLocation = true })
+<div id="content">
+    <div style="color: #0099ff;font-weight: bold;float: left;">Employee Name: </div><p>@ViewBag.EmpName</p>
+    <table id="table1">       
+        <tr>
+             <th>
+                @Html.DisplayNameFor(model => model.First().Details)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().Adv_Amt)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().Num_Installment)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().Deduction_Amt)
+            </th>           
+            <th>
+                @Html.DisplayNameFor(model => model.First().Balance_Amt)
+            </th>
+             
+            <th>
+                @Html.DisplayNameFor(model => model.First().TransDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().ProcessedBy)
+            </th>
+            <th>Action</th>
+        </tr>
+        @if (Model != null && Model.Count() > 0)
+        {
+            foreach (var item in Model)
+            {
+            <tr>
+                 <td>
+                    @Html.ActionLink(item.Details, "SalaryAdvanceDetails", new {Advance_AmtId= item.Advance_AmtId,  EmpId = ViewBag.EmpId })
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Adv_Amt)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Num_Installment)
+                </td>
+               <td>
+                    @Html.DisplayFor(model => model.First().Deduction_Amt)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Balance_Amt)
+                </td>
+                <td>
+                    @item.TransDate.ToString("dd/MM/yyyy")
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ProcessedBy)
+                </td>
+                <td>
+                    <a href='@Url.Action("SalaryAdvanceEdit", "SalaryAdvanceDeduction", new { Advance_AmtId= item.Advance_AmtId,  EmpId = ViewBag.EmpId })' title="Edit Employee details">
+                        <span class="glyphicon glyphicon glyphicon-edit iocnstatus-edit"></span></a>
+                </td>
+            </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="8">
+                    <div style="text-align: center;">
+                        <h4 style="color: grey;">No data exists</h4>
+                    </div>
+                </td>
+            </tr>
+        }
+
+    </table>
+</div>

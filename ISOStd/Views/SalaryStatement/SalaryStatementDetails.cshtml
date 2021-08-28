@@ -1,0 +1,371 @@
+﻿@model ISOStd.Models.SalaryStatementModels
+
+@{
+    ViewBag.Title = "SalaryStatementDetails";
+    double dGrossSalary = @Model.Basic_Salary + @Model.Food_allow + @Model.Acc_allow + @Model.Other_allow + @Model.Transport_allow + @Model.Other_Earnings + @Model.Bonus;
+    double dNormalOTAmt = Math.Round(@Model.Normal_OT_Hrs * 4.17);
+    double dFridayOTAmt = @Model.Friday_OT_Hrs * 5;
+    double dPublicHolidayOTAmt = @Model.Public_Holiday_OT_Hrs * 5;
+    double dNetSalary = Math.Round(dGrossSalary + dNormalOTAmt + dFridayOTAmt + dPublicHolidayOTAmt + Model.Other_Income);
+    double dLeaveDeduction = (dGrossSalary / 30) * Model.Leave_Days;
+    double dNetPay = Math.Round(dNetSalary - dLeaveDeduction - Model.Misslliance_Deduction - Model.Salary_Adv, 0);
+}
+
+<div class="groupedassets margin10">
+    <span class="groupedassetshead margin10 onestphdcolor">Salary Statement Details </span>
+</div>
+<div class = "ActionLink">
+    @Html.ActionLink("Edit", "SalaryStatementEdit", new {  SalaryStmtId= Model.SalaryStmtId }, new { @class = "ActionLink" })
+    @Html.ActionLink("Back to List", "SalaryStatementList", new { SalaryFor_Month = @Model.SalaryFor_Month.ToString("MMMM yyyy") },  new { @class = "ActionLink" } )
+</div>
+ <div id="divmsg">
+        @if (TempData["alertdata"] != null)
+        {
+            <span class="errMsg" style="color: red;">@TempData["alertdata"]</span>
+        }
+        @if (TempData["Successdata"] != null)
+        {
+            <span class="errMsg" style="color: green;">@TempData["Successdata"]</span>
+        }
+    </div>
+<br /><br />
+
+<fieldset>
+    <legend>SalaryStatementModels</legend>
+
+    <div id="content">
+        <table id="tabcontent">
+            <tr>
+                <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.Emp_Code)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.Emp_Code)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.Emp_info_no)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.Emp_info_no)
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.emp_firstname)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.emp_firstname)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.Designation)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.Designation)
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.Basic_Salary)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.Basic_Salary)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.Acc_allow)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.Acc_allow)
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.Other_allow)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.Other_allow)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.Food_allow)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.Food_allow)
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.Transport_allow)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.Transport_allow)
+                    </div>
+                </td>
+                <td>
+
+
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.SalaryFor_Month)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                         @Model.SalaryFor_Month.ToString("MMM yyyy")
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.Other_Earnings)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.Other_Earnings)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.Bonus)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.Bonus)
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                     <div class="display-label">
+                       Gross Salary
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field" style="color:red; font-weight:bold;">
+                        @dGrossSalary
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.Salary_Days)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.Salary_Days)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.Leave_Days)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.Leave_Days)
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.Normal_OT_Hrs)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.Normal_OT_Hrs)
+                    </div>
+                </td>
+                
+                <td>
+                    <div class="display-label">
+                       Normal OT Amt
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field" style="color: red; font-weight: bold;">
+
+                        @dNormalOTAmt
+                    </div>
+                </td>
+            </tr>
+             <tr>
+                <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.Friday_OT_Hrs)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.Friday_OT_Hrs)
+                    </div>
+                </td>
+            
+                <td>
+                     <div class="display-label">
+                       Friday OT Amt
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field" style="color:red; font-weight:bold;">
+                        @dFridayOTAmt
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.Public_Holiday_OT_Hrs)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.Public_Holiday_OT_Hrs)
+                    </div>
+                </td>
+                 <td>
+                     <div class="display-label">
+                       Public Holiday OT Amt
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field" style="color:red; font-weight:bold;">
+                        @dPublicHolidayOTAmt
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="display-label">
+                        Net Salary
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field" style="color:red; font-weight:bold;">
+                       @dNetSalary
+                    </div>
+                </td>
+                  <td>
+                    <div class="display-label">
+                       Leave Deduction
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field" style="color:red; font-weight:bold;">
+                        @dLeaveDeduction
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.Other_Income)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.Other_Income)
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.Misslliance_Deduction)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.Misslliance_Deduction)
+                    </div>
+                </td>
+                <td>
+
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.Salary_Adv)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.Salary_Adv)
+                    </div>
+                </td>
+                
+            </tr>
+            <tr>
+                 <td>
+                    <div class="display-label">
+                        Net Pay
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field" style="color:red; font-weight:bold;">
+                        @dNetPay
+                    </div>
+                </td>
+                 
+                <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.ProcessedBy)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.ProcessedBy)
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+        </table>
+    </div>
+</fieldset>

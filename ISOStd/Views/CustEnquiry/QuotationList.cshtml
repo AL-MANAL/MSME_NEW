@@ -1,0 +1,340 @@
+﻿@using PagedList;
+@using PagedList.Mvc;
+
+
+@model IPagedList<ISOStd.Models.QuotationModels>
+    @{
+        ViewBag.Title = "";
+        string chked = Convert.ToString(ViewBag.chkAll);
+        //string DateToQuot = DateTime.Now.ToString("dd/MM/yyyy");
+        //string DateFromQuot = DateTime.Now.ToString("dd/MM/yyyy");
+        ISOStd.Models.clsGlobal obj = new ISOStd.Models.clsGlobal();
+
+        //if (ViewBag.ToDate != null)
+        //{
+        //    DateToQuot = ViewBag.ToDate;
+        //}
+
+        //if (ViewBag.FromDate != null)
+        //{
+        //    DateFromQuot = ViewBag.FromDate;
+        //}
+    }
+
+    <div class="groupedassets margin10">
+        <span class="groupedassetshead margin10 onestphdcolor">Quotation List</span>
+    </div>
+
+    <br />
+    <div id="divmsg">
+        @if (TempData["alertdata"] != null)
+        {
+            <span class="errMsg" style="color: red;font-weight: bold;">@TempData["alertdata"]</span>
+        }
+        @if (TempData["Successdata"] != null)
+        {
+            <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+        }
+    </div>
+    <br />
+
+    @using (Html.BeginForm("QuotationList", "CustEnquiry", FormMethod.Post, new { id = "form1", name = "form1" }))
+    {
+        <div>
+            <input type="hidden" id="chkdAll" name="chkdAll" value="@chked" />
+
+            <span id="tab" style="color: #31b0d5; padding-right: 5px; padding-left: 50px; font-weight: bold;">
+                <input type="checkbox" value="All" id="chkAll" name="chkAll" title="Select in case to see all records" />All
+            </span>
+
+            @*<span id="tab" style="color:#31b0d5;font-weight: bold; padding: 10px;">Quotation To Date</span>
+            <input type="text" id="DateToQuot" name="DateToQuot" value="@DateToQuot" style="margin-left: 5px; width: 7%;" />
+
+            <span id="tab" style="color:#31b0d5;font-weight: bold; padding: 10px;">Quotation From Date</span>
+            <input type="text" id="DateFromQuot" name="DateFromQuot" value="@DateFromQuot" style="margin-left: 5px; width: 7%;" />*@
+
+            <span style="margin-left: 20px">
+                @*@if (ViewBag.ShipmentNo1 != "")*@
+                
+                    @Html.TextBox("ToQuotation", (string)ViewBag.ToQuotationVal, new { placeholder = "Search by 'To'", style = "width:12%;" })
+               
+                @*else
+                {
+                    <input type="text" id="ShipmentNo" name="ShipmentNo" placeholder=" Search for Shipment No." />
+                }*@
+            </span>
+
+            <button type="submit" class="btn btn-info" onclick="ProgressIconFunction('#form1')" style="margin-left: 10px;">
+                <span class="glyphicon glyphicon-search"></span>Search
+            </button>
+             @Html.ActionLink("ADD NEW", "AddQuotation", null, new { @class = "ActionLink", onclick = "HyperLinkProgressIconFunction()" })
+                     
+
+        </div>
+    }
+
+
+    <br />
+    @Html.PagedListPager(Model, page => Url.Action("QuotationList",
+            new
+            {
+                page,
+                Approvestatus = Request.QueryString["Approvestatus"],
+                SearchText = Request.QueryString["SearchText"],
+
+            }),
+            new PagedListRenderOptions() { Display = PagedListDisplayMode.IfNeeded, DisplayPageCountAndCurrentLocation = true })
+
+
+
+
+
+    <div id="content">
+        <table id="table1">
+            <thead>
+                @if (Model != null && Model.Count() > 0)
+                {
+                <tr>
+                    <th style="width:40px;min-width:40px; max-width:100px;">
+                        Sl No
+                    </th>
+                    <th style="width:100px;min-width:100px; max-width:100px;">
+                        @Html.DisplayNameFor(model => model.First().date_quotation)
+                    </th>
+                    <th style="width:120px;min-width:120px; max-width:120px;">
+                        @Html.DisplayNameFor(model => model.First().to_quotation)
+                    </th>
+                    <th style="width:100px;min-width:100px; max-width:100px;">
+                        @Html.DisplayNameFor(model => model.First().ref_no)
+                    </th>
+                    <th style="width:100px;min-width:100px; max-width:100px;">
+                        @Html.DisplayNameFor(model => model.First().pro_ref)
+                    </th>
+                    <th style="width:120px;min-width:120px; max-width:120px;">
+                        @Html.DisplayNameFor(model => model.First().approved_by)
+                    </th>
+                    <th style="width:120px;min-width:120px; max-width:120px;">
+                        Logged By
+                    </th>
+                    <th style="width:200px;min-width:200px; max-width:200px;">
+                        @Html.DisplayNameFor(model => model.First().upload)
+                    </th>
+                    @*<th style="width:100px;min-width:100px; max-width:100px;">
+                        Total
+                    </th>
+                    <th style="width:100px;min-width:100px; max-width:100px;">
+                        Vat
+                    </th>
+                    <th style="width:100px;min-width:100px; max-width:100px;">
+                        Grand Total
+                    </th>*@
+                    <th style="width:60px; min-width:60px; max-width:60px;">Edit</th>
+                    <th style="width: 60px; min-width: 60px; max-width: 60px;">Delete</th>
+
+                </tr>
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="11">
+                            <div style="text-align: center;">
+                                <h4 style="color: grey;">No data exists</h4>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Count() > 0)
+                {
+                    int i = 0;
+                    foreach (var item in Model)
+                    {
+                        i = i + 1;
+                <tr>
+                    <td style="width:40px;min-width:40px; max-width:100px;">
+                        @Html.ActionLink(i.ToString(), "QuotationDetail", new { id_quotation = item.id_quotation.ToString() }, new { data_toggle = "popover", data_trigger = "hover", id = item.id_quotation, onclick = "HyperLinkProgressIconFunction()" })
+                    </td>
+                    <td style="width:100px;min-width:100px; max-width:100px;word-wrap:break-word">
+                        @if (item.date_quotation != null && item.date_quotation > Convert.ToDateTime("01/01/0001"))
+                        {
+                            @Html.Label(item.date_quotation.ToString("dd/MM/yyyy"))
+                        }
+                    </td>
+                    <td style="width:120px;min-width:120px; max-width:120px;word-wrap:break-word">
+                        @Html.DisplayFor(modelItem => item.to_quotation)
+                    </td>
+                    <td style="width:100px;min-width:100px; max-width:100px;word-wrap:break-word">
+                        @Html.DisplayFor(modelItem => item.ref_no)
+                    </td>
+                    <td style="width:100px;min-width:100px; max-width:100px;word-wrap:break-word">
+                        @Html.DisplayFor(modelItem => item.pro_ref)
+                    </td>
+                    <td style="width:120px;min-width:120px; max-width:120px;word-wrap:break-word">
+                        @Html.DisplayFor(modelItem => item.approved_by)
+                    </td>
+                    <td style="width:120px;min-width:120px; max-width:120px;word-wrap:break-word">
+                        @Html.DisplayFor(modelItem => item.logged_by)
+                    </td>
+                    <td style="width:200px;min-width:200px; max-width:200px;word-wrap:break-word">
+                        @if (item.upload != null && item.upload != "" && item.upload.Length > 0)
+                        {
+                            foreach (var docs in item.upload.Trim(',').Split(','))
+                            {
+                                <p style="margin: 0px;">
+
+                                    <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" style="color: orange;">
+                                        @*@System.IO.Path.GetFileName(docs)*@preview
+                                    </a>
+                                </p>
+                                <br />
+                            }
+                        }
+                    </td>
+                    <td style="width:60px; min-width:60px; max-width:60px;word-wrap:break-word">
+                        <a href='@Url.Action("QuotationEdit", "CustEnquiry", new { id_quotation = item.id_quotation })' title="Edit" onclick="HyperLinkProgressIconFunction()">
+                            <span class="glyphicon glyphicon glyphicon-edit iocnstatus-edit" onclick="HyperLinkProgressIconFunction()"></span>
+                        </a>
+
+                    </td>
+                    <td style="width: 60px; min-width: 60px; max-width: 60px;word-wrap:break-word">
+                        <img src="@Url.Content("~/Images/delete.png")" title="Delete Document" onclick="DeleteItems(@item.id_quotation)" style="cursor:pointer;" />
+                    </td>
+                    @*<td style="width:120px;min-width:120px; max-width:120px;word-wrap:break-word">
+                        @Html.DisplayFor(modelItem => item.sum)
+                    </td>*@
+
+                </tr>
+                    }
+                }
+
+            </tbody>
+        </table>
+    </div>
+    @Styles.Render("~/Content/popover")
+    @section scripts {
+
+        <script type="text/javascript">
+
+
+            $(document).ready(function () {
+
+            $('[data-toggle="popover"]').popover({
+
+                title: setData,
+                html: true,
+                placement: 'right',
+                container: 'body'
+            });
+
+            function setData(id) {
+                var set_data = '';
+                var element = $(this);
+                var id = element.attr("id");
+                $.ajax({
+                    url: '@Url.Action("QuotationInfo", "CustEnquiry")',
+                    methos: "post",
+                    async: false,
+                    data: { id: id },
+                    success: function (data) {
+                        set_data = data;
+                    }
+
+                });
+                return set_data;
+            }
+
+
+          $('#DateToQuot').datepicker({
+            dateFormat: "dd/mm/yy",
+            buttonImageOnly: true,
+            buttonImage: '../Images/Calender.png',
+            showOn: 'both',
+            changeMonth: true,
+            changeYear: true,
+          });
+
+          $('#DateFromQuot').datepicker({
+                    dateFormat: "dd/mm/yy",
+                    buttonImageOnly: true,
+                    buttonImage: '../Images/Calender.png',
+                    showOn: 'both',
+                    changeMonth: true,
+                    changeYear: true,
+         });
+      });
+
+            function DeleteItems(id_quotation) {
+            jConfirm('Do you want to delete?', 'Are you Sure?', function (r) {
+                if (r == true) {
+                    jQuery.ajax({
+                    url: '@Url.Action("QuotationDelete", "CustEnquiry")',
+                        type: 'POST',
+                        dataType: "json",
+                        /*change*/ data: { 'id_quotation': id_quotation },
+                        success: function (result) {
+                            var params = {
+                                View: 1
+                            };
+                            //// Add new params to the querystring dictionary
+                            queryString = $.param(params);
+
+                            window.location.href =
+                                window.location.protocol + "//" +
+                                window.location.host +
+                                window.location.pathname +
+                               '?' + queryString;
+                        }
+                    });
+                    return true;
+                }
+                else if (r == false) {
+                    return false;
+                }
+            });
+        }
+
+        function downloadInnerHtml(filename, elId) {
+            var $table = $('#table1');
+            $rows = $table.find('tr');
+
+            var csvData = "";
+
+            for (var i = 0; i < $rows.length; i++) {
+                var $cells = $($rows[i]).children('th,td'); //header or content cells
+
+                for (var y = 0; y < $cells.length; y++) {
+                    if (y > 0) {
+                        csvData += ",";
+                    }
+
+                    var txt = ($($cells[y]).text()).toString().trim();
+
+                    if (txt.indexOf(',') >= 0 || txt.indexOf('\"') >= 0 || txt.indexOf('\n') >= 0) {
+                        txt = "\"" + txt.replace(/\"/g, "\"\"") + "\"";
+                    }
+                    csvData += txt;
+                }
+                csvData += '\n';
+            }
+            var elHtml = csvData;
+            var link = document.createElement('a');
+            mimeType = 'application/csv;charset=utf-8';
+
+            link.setAttribute('download', filename);
+            link.setAttribute('href', 'data:' + mimeType + ';charset=utf-8,' + encodeURIComponent(elHtml));
+            link.click();
+        }
+            var fileName = 'Quotation.csv'; // You can use the .txt extension if you want
+        $('#downloadLink').click(function () {
+            downloadInnerHtml(fileName, 'content');
+        });
+
+        </script>
+        @Scripts.Render("~/bundles/jqueryval")
+    }
+
+
+
+
+

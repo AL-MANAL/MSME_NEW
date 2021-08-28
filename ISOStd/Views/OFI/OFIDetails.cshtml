@@ -1,0 +1,615 @@
+﻿@model ISOStd.Models.OFIModels
+@using System.Data;
+@{
+    ViewBag.Title = "OFIDetails";
+
+    ISOStd.Models.OFIModels ObjModel = new ISOStd.Models.OFIModels();
+    ISOStd.Models.clsGlobal ObjGlobal = new ISOStd.Models.clsGlobal();
+    ISOStd.Models.OFIModelsList ObjOFIActionList = new ISOStd.Models.OFIModelsList();
+    ISOStd.Models.OFIModelsList ObjOFIImpList = new ISOStd.Models.OFIModelsList();
+    ISOStd.Models.OFIModelsList ObjOFIDocList = new ISOStd.Models.OFIModelsList();
+
+    if (ViewBag.ObjOFIActionList != null)
+    {
+        ObjOFIActionList = ViewBag.ObjOFIActionList;
+    }
+
+    if (ViewBag.ObjOFIImpList != null)
+    {
+        ObjOFIImpList = ViewBag.ObjOFIImpList;
+    }
+
+    if (ViewBag.ObjOFIDocList != null)
+    {
+        ObjOFIDocList = ViewBag.ObjOFIDocList;
+    }
+
+    string user = ObjGlobal.GetCurrentUserSession().empid;
+}
+
+@section featured {
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a class="breadcrumb-item" onclick="HyperLinkProgressIconFunction();" href='@Url.Action("OFIList", "OFI", new { id_ofi = Model.id_ofi } )'>
+                        <span class="breadcrumb-item"> Improvement Opportunity</span>
+                    </a>
+                    <span class="breadcrumb-item active"> Improvement Opportunity Details</span>
+                </div>
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            <div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+                    @*@if (Obj.GetCurrentUserSession().IncidentRpt.Contains("4"))
+                        {*@
+                    @using (Html.BeginForm("OFIPDF", "OFI", FormMethod.Post, new { id = "form1", name = "form1" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <div class="breadcrumb-elements-item dropdown p-0">
+                            <input type="hidden" id="id_ofi" name="id_ofi" value="@Model.id_ofi" />
+
+                            <button type="submit" class="dropdown-item">
+                                <i class="icon-printer2"></i> Report
+                            </button>
+
+                        </div>
+                    }
+                    @*}*@
+                    @*<div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>*@
+                </div>
+            </div>
+
+        </div>
+    </div>
+}
+
+<div class="card">
+    <div class="card-header header-elements-inline bg-primary">
+        <h5 class="card-title">Improvement Opportunity (IO) Details</h5>
+        <div class="header-elements">
+            <div class="list-icons">
+                <a class="list-icons-item" data-action="collapse"></a>
+            </div>
+        </div>
+    </div>
+    <div>
+        <div class="card-header bg-white header-elements-sm-inline">
+            <div class="header-elements">
+                <div class="mt-2 mt-sm-0">                  
+                    @Html.ActionLink("Back to List", "OFIList", null, new { @class = "btn btn-outline bg-orange text-orange border-orange", onclick = "HyperLinkProgressIconFunction()" })
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <div class="container-fluid">
+            <table class="table table-dark table-bordered table-striped table-hover bg-blue-800">
+                <thead></thead>
+                <tbody>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.ofi_no)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.ofi_no)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.division)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.division)
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.department)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.department)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.location)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.location)
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                Risk Number
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.risk_no)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                Risk Description
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.risk_nodesc)
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.reported_date)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <span class="bg-dark py-1 px-2 rounded">
+                                @if (Model.reported_date != null && Model.reported_date > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    @Html.Label(Model.reported_date.ToString("dd/MM/yyyy"))
+                                }
+                            </span>
+                        </td>
+
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.reportedby)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <span class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.reportedby)
+                            </span>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.identified_in)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.identified_in)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.target_date)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <span class="bg-dark py-1 px-2 rounded">
+                                @if (Model.target_date != null && Model.target_date > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    @Html.Label(Model.target_date.ToString("dd/MM/yyyy"))
+                                }
+                            </span>
+                        </td>
+                        @*<td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.nc_upload)
+                            </p>
+                        </td>
+                        <td class="col">
+                            @if (Model.nc_upload != null && Model.nc_upload != "" && Model.nc_upload.Length > 0)
+                            {
+                                foreach (var docs in Model.nc_upload.Trim(',').Split(','))
+                                {
+                                    <p style="margin: 0px;" class="bg-dark py-1 px-2 rounded">
+                                        <span class="bg-dark py-1 px-2 rounded">
+                                            <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs})' target="_blank">Preview</a>
+                                        </span>
+                                    </p>
+                                }
+                            }
+                        </td>*@
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.opportunity)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.opportunity)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.improvement)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.improvement)
+                            </p>
+                        </td>
+                    </tr>
+
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.approvedby)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.approvedby)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.realization_approved_by)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.realization_approved_by)
+                            </p>
+                        </td>
+                    </tr>
+
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.action_proposedby)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.action_proposedby)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.updatedby)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.updatedby)
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.updated)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.updated)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.improvement_achieve)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.improvement_achieve)
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.checkedby)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.checkedby)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.ofi_status)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.ofi_status)
+                            </p>
+                        </td>
+                    </tr>
+                    @if (Model.checkedbystatus == "Approved")
+                    {
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                               Remark
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.remark)
+                            </p>
+                        </td>
+                    </tr>
+                    }
+            </table>
+        </div>
+        <br />
+        <br />
+        @if (ObjOFIActionList.OFIList != null && ObjOFIActionList.OFIList.Count > 0)
+        {
+            <div>
+                <h1>Actions to be taken to improve</h1>
+                <table class="table" id="team-list-count">
+                    <tr class="bg-blue">
+                        <th>Sl No.</th>
+                        <th>Action details</th>
+                        <th>Area to be improved</th>
+                        <th>Personnel Responsible</th>
+                        <th>Resource required</th>
+                        <th>Target Date</th>
+                    </tr>
+                    @for (int index = 0; index < ObjOFIActionList.OFIList.Count; index++)
+                    {
+                    <tr>
+                        <td>@(index + 1)</td>
+                        <td>
+                            @(ObjOFIActionList.OFIList[index].action_details)
+                        </td>
+                        <td>
+                            @ObjModel.GetOFIAreaImprovedById(ObjOFIActionList.OFIList[index].area_improved)
+                        </td>
+                        <td>
+                            @ObjGlobal.GetMultiHrEmpNameById(ObjOFIActionList.OFIList[index].resp)
+                        </td>
+                        <td>
+                            @ObjOFIActionList.OFIList[index].resource
+                        </td>
+                        <td>
+                            @ObjOFIActionList.OFIList[index].action_target_date.ToString("yyyy-MM-dd")
+                        </td>
+                    </tr>
+                    }
+                </table>
+            </div>
+        }
+        <br />
+        <br />
+        @if (ObjOFIImpList.OFIList != null && ObjOFIImpList.OFIList.Count > 0)
+        {
+            <div>
+                <h1>Achieved Improvement Details</h1>
+                <table class="table" id="team-list-count">
+                    <tr class="bg-blue">
+                        <th>Sl No.</th>
+                        <th>Improvement Details</th>
+                        <th>Improvement Achieved in</th>
+                        <th>Measurable Value</th>
+                        <th>Upload</th>
+                    </tr>
+
+                    @for (int index = 0; index < ObjOFIImpList.OFIList.Count; index++)
+                    {
+                        <tr>
+                            <td>@(index+1)</td>
+                            <td>
+                                @(ObjOFIImpList.OFIList[index].improve_details)
+                            </td>
+                            <td>
+                                @ObjModel.GetOFIAreaImprovedById(ObjOFIImpList.OFIList[index].improve_achievedin)
+                            </td>
+                            <td>
+                                @ObjOFIImpList.OFIList[index].improve_measurable
+                            </td>
+                            <td>
+                                @if (ObjOFIImpList.OFIList[index].imporve_upload != null && ObjOFIImpList.OFIList[index].imporve_upload != "" && ObjOFIImpList.OFIList[index].imporve_upload.Length > 0)
+                                {
+                                    foreach (var docs in ObjOFIImpList.OFIList[index].imporve_upload.Trim(',').Split(','))
+                                    {
+                                        <div class="form-check">
+                                            <label class="form-check-label">
+                                                <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" class="text-orange">
+                                                    @System.IO.Path.GetFileName(docs)
+                                                </a>
+                                            </label>
+                                        </div>
+                                    }
+                                }
+                            </td>
+                        </tr>
+                    }
+                </table>
+            </div>
+        }
+        <br />
+        <br />
+        @if (ObjOFIDocList.OFIList != null && ObjOFIDocList.OFIList.Count > 0)
+        {
+            <div>
+                <h1>Document Details</h1>
+                <table class="table" id="team-list-count1">
+                    <tr class="bg-blue">
+                        <th>Sl No.</th>
+                        <th>Document Type</th>
+                        <th>Document Ref.</th>
+                        <th>Document Name</th>
+                    </tr>
+                    @for (int index = 0; index < ObjOFIDocList.OFIList.Count; index++)
+                    {
+                        <tr>
+                            <td>@(index+1)</td>
+                            <td>
+                                @ObjGlobal.GetDropdownitemById(ObjOFIDocList.OFIList[index].doc_type)
+                            </td>
+                            <td>
+                                @ObjOFIDocList.OFIList[index].doc_ref
+                            </td>
+                            <td>
+                                @ObjOFIDocList.OFIList[index].doc_name
+                            </td>
+                        </tr>
+                    }
+                </table>
+            </div>
+        }
+        <br />
+        <br />
+
+      @if(Model.checkedbystatus == "0" && Model.checkedbyId != "" && Model.checkedbyId.Split(',').Contains(user) && Model.ofi_status != "Approved")
+        {
+        <div>
+           @using (Html.BeginForm("OFICheckedDetail", "OFI", FormMethod.Post, new {enctype="multipart/formdata", id = "form11", name = "form11" }))
+           {
+               @Html.AntiForgeryToken()
+               @Html.ValidationSummary(true)
+            <div>
+
+                <br />
+                <input type="hidden" id="id_ofi" name="id_ofi" value="@Model.id_ofi" />
+                <table class="table table-lg table-border-solid" style="border: 1px solid black;">
+                    <tr class="row">
+                        <td class="col"><h1>Status of IO</h1></td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.ofi_status)<text style="color:red">*</text>
+                            </p>
+                        </td>
+                        <td class="col-xs-6 col-md-4">
+                            <div class="editor-field">
+                                <select class="form-control  select-search select2-hidden-accessible" data-fouc id="ofi_status" name="ofi_status">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.OFIStatus != null)
+                                    {
+                                        foreach (var item in ViewBag.OFIStatus)
+                                        {
+                                            if (item.Value == Model.ofi_statusId)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                Approval <text style="color:red">*</text>
+                            </p>
+                        </td>
+                        <td class="col-xs-6 col-md-4">
+                            <div class="editor-field">
+                                @if (Model.checkedbystatus == "Approved")
+                                {
+                                    <label><input type="radio" id="checkedbystatus" name="checkedbystatus" value="Approved" selected />Approved</label>
+                                    <label><input type="radio" id="checkedbystatus" name="checkedbystatus" value="Rejected" />Rejected</label>
+                                }
+                                else if (Model.checkedbystatus == "Rejected")
+                                {
+                                    <label><input type="radio" id="checkedbystatus" name="checkedbystatus" value="Approved" />Approved</label>
+                                    <label><input type="radio" id="checkedbystatus" name="checkedbystatus" value="Rejected" selected />Rejected</label>
+                                }
+                                else
+                                {
+                                    <label><input type="radio" id="checkedbystatus" name="checkedbystatus" value="Approved" />Approved</label>
+                                    <label><input type="radio" id="checkedbystatus" name="checkedbystatus" value="Rejected" />Rejected</label>
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.remark)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <textarea class="form-control" id="remarks" name="remarks">@Model.remark</textarea>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="mt-2 mt-sm-0">
+                                <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form11')"><i class="icon-checkmark3 mr-2"></i> Submit</button>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+               
+            </div>
+           }
+        </div>
+        
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+
+     $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+    });
+
+    </script>
+}

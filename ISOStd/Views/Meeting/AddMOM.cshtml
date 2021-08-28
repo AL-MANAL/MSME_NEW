@@ -1,0 +1,781 @@
+﻿@model ISOStd.Models.MeetingModels
+@using System.Data;
+@{
+    ViewBag.Title = "Add MOM";
+    DataSet dsItems = ViewBag.Itemlist;
+}
+
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("MeetingList", "Meeting", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Meeting</span>
+                    </a>
+                    <span class="breadcrumb-item active">Adding Minutes of Meeting</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+}
+
+
+
+
+@using (Html.BeginForm("AddMOM", "Meeting", FormMethod.Post,
+                         new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+<div class="card">
+    <div class="card-header header-elements-inline bg-primary">
+        <h5 class="card-title">Adding Minutes of Meeting</h5>
+        <div class="header-elements">
+            <div class="list-icons">
+                <a class="list-icons-item" data-action="collapse"></a>
+
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="container-fluid">
+
+            <table class="table table-lg">
+
+                <tr class="row">
+                    <td class="col" colspan="8" style="background-color: #4cc4dd; color: #fff; font-weight: bold;">MOM Details</td>
+                </tr>
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                       
+                            @Html.LabelFor(model => model.meeting_ref)
+                     
+                    </td>
+                    <td class="col">
+                        <span class="font-size-lg bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.meeting_ref)
+                            <input type="hidden" id="meeting_ref" name="meeting_ref" value="@Model.meeting_ref" />
+                        </span>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                   
+                            @Html.LabelFor(model => model.meeting_date)
+                      
+                    </td>
+                    <td class="col">
+                        <span class="font-size-lg bg-dark py-1 px-2 rounded">
+                            @Model.meeting_date.ToString("dd/MM/yyyy")
+
+                            <input type="hidden" id="meeting_date" name="meeting_date" value="@Model.meeting_date.ToString("yyyy-MM-dd")" />
+                        </span>
+                    </td>
+                   
+                </tr>
+                <tr class="row">
+
+                    <td class="col-xs-3 col-md-2">                    
+                            MeetingType                       
+                    </td>
+                    <td class="col">
+                        <span class="font-size-lg bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.meeting_type_desc)
+                            <input type="hidden" id="meeting_type_desc" name="meeting_type_desc" value="@ViewBag.MeetingType" />
+                            <input type="hidden" id="AgendaId" name="AgendaId" />
+
+                        </span>
+                    </td>
+                    <td class="col-xs-3 col-md-2">                   
+                            @Html.DisplayNameFor(model => model.AttendeesUser)                      
+                    </td>
+                    <td class="col">
+                        <span class="font-size-lg bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.AttendeesUser)
+                        </span>
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        @Html.DisplayNameFor(model => model.ext_attendees)
+                    </td>
+                    <td class="col">
+                        <span class="font-size-lg bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.ext_attendees)
+                        </span>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        @Html.DisplayNameFor(model => model.ext_email)
+                    </td>
+                    <td class="col">
+                        <span class="font-size-lg bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.ext_email)
+                        </span>
+                    </td>
+                </tr>
+
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">                       
+                            Attendance Sheet                     
+                    </td>
+                    <td class="col">
+                        <input type="file" name="Attendees" id="Attendees" title="Upload Attendees list" onchange="FileFormatValidation(this)"
+                               accept=".pdf, .doc, .docx,image/*" class="bootstrap-uploader" data-fouc />
+
+                        @Html.ValidationMessageFor(model => model.Attendees)
+
+                    </td>
+
+
+                    <td class="col-xs-3 col-md-2">
+                       
+                            Last Meeting Ref
+                      
+                    </td>
+                    <td class="col">
+
+                        <div id="PreviousMeeting" style="display:none;">
+
+                            <input type="hidden" id="last_meeting_id" name="last_meeting_id" />
+                            <a href="#" class="text-orange" id="last_meeting_idRefLink" target="_blank"></a>
+                        </div>
+
+
+                    </td>
+                </tr>
+            </table>
+
+            <br />
+            <br />
+            <br />
+            <div id="dvAgendaItems">
+                <fieldset class="border p-2">
+                    <legend id="divAgendasTitle" class="font-weight-semibold"><i class="icon-file-text ml-2 mr-2"></i> Agendas</legend>
+                    <table class="table table-lg" id="tbl_Agenda">
+                        <tr class="row" style="background-color: #4cc4dd; color: #fff; font-weight: bold;">
+                            <th class="col col-xs-10">Name</th>
+                            <th class="col-xs-2">Action</th>
+
+                        </tr>
+                        @foreach (var item in ViewBag.AgendaList)
+                        {
+                            string simgAgenda = "imgAgenda" + @item.Value;
+                            <tr class="row">
+                                <td class="col col-xs-10">
+                                    @item.Text
+                                </td>
+                                <td class="col-xs-2">
+
+                                    <img src='@Url.Content("~/images/icon_add.png")' id='@simgAgenda' onclick='DisplayAgenda(@item.Value)'
+                                         title='@item.Text' style='cursor:pointer;' />
+                                </td>
+                            </tr>
+                        }
+                    </table>
+
+                </fieldset>
+
+                <br />
+                <br />
+                <br />
+                <div id="tbl_AgendaDetails" style="display:none;">
+                    @*<table style="margin-bottom: 20px; display:none;" id="tbl_AgendaDetails">*@
+                    <fieldset class="border p-2">
+                        <legend class="font-weight-semibold"><i class="icon-file-text ml-2 mr-2"></i> Meeting Agenda detail</legend>
+                        <table class="table table-lg">
+
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+
+                                    @Html.LabelFor(model => model.item_discussed)<text style="color:red">*</text>
+
+                                </td>
+                                <td class="col">
+
+                                    <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="item_discussed" name="item_discussed"> </textarea>
+                                    <span class="field-validation-error"><span id="discussed-message" style="display: none;">Item discussed is required.</span></span>
+                                    @Html.ValidationMessageFor(model => model.item_discussed)
+
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+
+                                    @Html.LabelFor(model => model.action_agreed)<text style="color:red">*</text>
+
+                                </td>
+                                <td class="col">
+
+                                    <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="action_agreed" name="action_agreed"></textarea>
+                                    <span class="field-validation-error"><span id="agreed-message" style="display: none;">Action agreed is required.</span></span>
+                                    @Html.ValidationMessageFor(model => model.action_agreed)
+
+                                </td>
+                            </tr>
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+
+                                    @Html.LabelFor(model => model.due_date)<text style="color:red">*</text>
+
+                                </td>
+                                <td class="col">
+
+                                    <input class="form-control" type="date" id="due_date" name="due_date" required onchange="checkDate()" />
+                                    <span class="field-validation-error"><span id="due-message" style="display: none;">Due date is required.</span></span>
+                                    @Html.ValidationMessageFor(model => model.due_date)
+
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.LabelFor(model => model.item_status)<text style="color:red">*</text>
+                                    </div>
+                                </td>
+                                <td class="col">
+
+                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="item_status" name="item_status">
+                                        @*<option value='' hidden>Select</option>*@
+                                        @if (ViewBag.item_status != null)
+                                        {
+                                            foreach (var item in ViewBag.item_status)
+                                            {
+                                                if (item.Text == "Open")
+                                                {
+                                                    <option value='@item.Value' selected> @item.Text </option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@item.Value'> @item.Text </option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                    @* @Html.ValidationMessageFor(model => model.item_status)*@
+
+                                </td>
+                            </tr>
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+
+                                    @Html.LabelFor(model => model.action_owner)<text style="color:red">*</text>
+
+                                </td>
+                                <td class="col">
+
+                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="action_owner" name="action_owner">
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.EmpLists != null)
+                                        {
+                                            foreach (var item in ViewBag.EmpLists)
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    </select>
+                                    <span class="field-validation-error"><span id="owner-message" style="display: none;">Please select the Action Owner.</span></span>
+                                    @Html.ValidationMessageFor(model => model.action_owner)
+
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+
+                                    @Html.LabelFor(model => model.remarks)
+
+                                </td>
+                                <td class="col">
+                                    <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="remarks" name="remarks"></textarea>
+
+                                </td>
+                            </tr>
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+                                    @Html.LabelFor(model => model.upload)
+                                </td>
+                                <td class="col">
+                                    <input type="file" name="upload" id="upload" title="Upload Document" onchange="FileFormatValidation(this)" accept=".pdf, .doc, .docx, .xls, .xlsx,image/*"
+                                           class="bootstrap-uploader" data-fouc />
+                                </td>                               
+                            </tr>
+                            <tr class="row">
+                                <td class="col" colspan="2">
+                                    <div style="float: right;">
+                                        <input type="button" class="btn bg-indigo-400" value="Add" onclick="AddItem()" />
+                                        @* <input type="checkbox" id="select" class="selectall"> Send Mail*@
+                                        <input type="hidden" id="selectall" name="selectall" />
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </fieldset>
+                </div>
+            </div>
+
+            <br />
+            <br />
+            <br />
+
+
+         
+            <fieldset class="border p-2">
+                <div class="mt-2 card card-table table-responsive shadow-0 mb-0" id="dvItems" style="display: none;">
+                    <input type="hidden" id="itemcnt" name="itemcnt" value="0" />
+                    <div class="editor-label">
+                        <label for="Discrepancy_Details" style="background-color: #4cc4dd; width: 100%; color: white;">Added Items</label>
+                        <input type="hidden" id="CurrentAgenda" name="CurrentAgenda" />
+                    </div>
+                    <table id="team-list" class="table table-lg">
+                        <tr>
+                            <th>Action</th>
+                            <th>Agenda</th>
+                            <th>Item discussed</th>
+                            <th>Action(s) agreed</th>
+                            <th>Due date / period for action</th>
+                            <th>Personnel Responsible</th>
+                            <th>Item Status</th>
+                            <th>Remarks</th>
+                            <th>upload</th>
+                        </tr>
+                    </table>
+                </div>
+            </fieldset>
+
+
+
+
+        </div>
+
+
+    </div>
+
+    <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+
+        @Html.ActionLink("Back to List", "MeetingList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+
+        <button type="submit" id="btnCreate" value="Save" disabled="disabled" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Save</button>
+
+        @*<td colspan="2">
+                @Html.ActionLink("Back to List", "MeetingList")
+                <input type="submit" id="btnCreate" value="Create" disabled="disabled" />
+            </td>*@
+    </div>
+</div>
+    }
+
+
+    @section Scripts {
+        <script>
+
+
+                
+                          //----zzz
+    $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+      
+
+      
+
+ 
+    });
+    //zzz----
+
+
+
+
+        var UploadServerPath = "";
+        var AgendaDiscussedList = [];
+
+        function ValidationBefore()
+        {
+            if (document.getElementById("team-list").rows.length < 2)
+            {
+               bootbox.alert({
+                title: 'Agenda',
+                message: 'Please enter atleast 1 Agenda.'
+            });
+            }
+            return false;
+        }
+
+        function DisplayAgenda(sId) {
+            var sAgenda = document.getElementById("imgAgenda" + sId).title;
+            document.getElementById("tbl_AgendaDetails").style.display = "";
+            document.getElementById("CurrentAgenda").value = sAgenda;
+            document.getElementById("item_discussed").value = "";
+            document.getElementById("AgendaId").value = sId;
+
+
+           // $('#item_status').trigger("chosen:updated");
+
+
+            //if (AgendaDiscussedList.length > 0)
+            //{
+               // var Discussed = $.parseJSON(AgendaDiscussedList);
+                for (var data in AgendaDiscussedList)
+                {
+                    if (sAgenda == data)
+                    {
+                        document.getElementById("item_discussed").value = AgendaDiscussedList[data];
+                        break;
+                    }
+                }
+            //}
+            ResetControl();
+
+        }
+
+
+     function checkDate() {
+
+
+                var dt2 = document.getElementById("meeting_date").value;
+                var dt1 = document.getElementById("due_date").value;
+
+                if (new Date(dt1).getTime() < new Date(dt2).getTime()) {
+
+                    bootbox.alert({
+                        title: 'Due Date',
+                        message: 'Due date cannot be before meeting date.'
+                    });
+                    $('#due_date').val("");
+                }
+            }
+
+        function PopulateAgenda() {
+
+            var MeetingTypeId = $('#meeting_type_desc').val();
+                //alert(AuditDepartment);
+                jQuery.ajax({
+                    url: '@Url.Action("GetAgendaList", "Meeting")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'sMeetingTypeId': MeetingTypeId },
+                    success: function (result) {
+                        var table = document.getElementById("tbl_Agenda");
+                        document.getElementById("dvAgendaItems").style.display = "";
+                        document.getElementById("divAgendasTitle").style.display = "";
+
+
+                        while (table.rows.length > 0) {
+                            table.deleteRow(0);
+                        }
+
+                        if (result != "") {
+
+                            var theaderRow = table.insertRow();
+
+                            theaderRow.style = "background-color: #4cc4dd; color: #fff; font-weight: bold;";
+                            var cellth0 = theaderRow.insertCell(0);
+                            var cellth1 = theaderRow.insertCell(1);
+
+                          cellth0.innerHTML = "<th class='col col-xs-10'>Name</th>";
+                            cellth1.innerHTML = "<th class='col col-xs-2'>Action</th>";
+
+                            var list = result;
+                            $.each(list, function (index, item) {
+
+                                // Create an empty <tr> element and add it to the 1st position of the table:
+                                var row = table.insertRow();
+
+                                // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                                var cell0 = row.insertCell(0);
+                                var cell1 = row.insertCell(1);
+                                cell0.className = "col col-xs-10";
+                               
+                                cell1.className = "col col-xs-2";
+                                var AgendaName = item.Text;
+                                var Id = item.Value;
+
+                                cell0.innerHTML = AgendaName;
+                                cell1.innerHTML = " <img src='@Url.Content("~/images/icon_add.png")' id='imgAgenda" + Id + "' onclick='DisplayAgenda(" + Id + ")' title='" + AgendaName + "' style='cursor:pointer; padding-right: 5px;'/>";
+
+
+                            });
+                        }
+                        else {
+                         bootbox.alert({
+                                title: 'Agenda',
+                                message: 'No Agenda exists, please add agenda and then try again'
+                            });
+                        }
+                    }
+                });
+
+            GetPreviousMeetingRef(MeetingTypeId);
+        }
+
+
+        function GetPreviousMeetingRef(MeetingTypeId) {
+
+            //var MeetingTypeId = $('#MeetingType').val();
+            //alert(AuditDepartment);
+            jQuery.ajax({
+                url: '@Url.Action("GetPreviousMeetingRef", "Meeting")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'sMeetingTypeId': MeetingTypeId },
+                    success: function (result) {
+                        if (result != "")
+                        {
+                            document.getElementById("PreviousMeeting").style.display = "";
+
+                            document.getElementById("last_meeting_idRefLink").href = "/Meeting/MeetingDetails?meeting_ref=" + result;
+                            document.getElementById("last_meeting_idRefLink").innerText = result;
+                            document.getElementById("last_meeting_id").value = result;
+                        }
+                    }
+            });
+        }
+
+        function Validation() {
+            var validflg = true;
+            var ssnMessage = "";
+            var item = document.getElementById("item_discussed").value.trim();
+            if (document.getElementById("item_discussed").value.trim() == "") {
+                ssnMessage = $('#discussed-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                var ssnMessage = $('#discussed-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("action_agreed").value == "") {
+                ssnMessage = $('#agreed-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                var ssnMessage = $('#agreed-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("due_date").value == "") {
+                var ssnMessage = $('#due-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else if (document.getElementById("due_date").value != "") {
+
+
+                  var dt2 = document.getElementById("meeting_date").value;
+                var dt1 = document.getElementById("due_date").value;
+              
+            if (new Date(dt1).getTime() < new Date(dt2).getTime()) {
+
+                var ssnMessage = $('#due-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+
+
+        
+            }
+            else {
+                var ssnMessage = $('#due-message');
+                ssnMessage.hide();
+            }
+
+            if (document.getElementById("action_owner").value == "") {
+                var ssnMessage = $('#owner-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                var ssnMessage = $('#owner-message');
+                ssnMessage.hide();
+            }
+
+            return validflg;
+
+        }
+
+        function AddItem() {
+
+            if (Validation()) {
+                document.getElementById("dvItems").style.display = "";
+                var cnt = document.getElementById("itemcnt").value;
+                cnt++;
+                document.getElementById("itemcnt").value = cnt;
+                // Find a <table> element with id="myTable":
+                var table = document.getElementById("team-list");
+
+                // Create an empty <tr> element and add it to the 1st position of the table:
+                var row = table.insertRow();
+
+                // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                var cell0 = row.insertCell(0);
+                var cell1 = row.insertCell(1);
+                var cell2 = row.insertCell(2);
+                var cell3 = row.insertCell(3);
+                var cell4 = row.insertCell(4);
+                var cell5 = row.insertCell(5);
+                var cell6 = row.insertCell(6);
+                var cell7 = row.insertCell(7);
+                var cell8 = row.insertCell(8);
+
+                var CurrentAgenda = $('#CurrentAgenda').val().trim();
+                var AgendaId = $('#AgendaId').val();
+                var item_discussed = $('#item_discussed').val();
+                var action_agreed = $('#action_agreed').val();
+                var due_date = reformatDate($('#due_date').val());
+                //var item_status = $('#item_status').val();
+                var remarks = $('#remarks').val();
+                var upload = $('#upload').val();            
+
+                UploadServerPath = UploadDocument(cnt);
+
+                // Add some text to the new cells:
+                cell0.innerHTML = " <img src='@Url.Content("~/images/cancel.png")' onclick='deleteRow(this)' style='cursor:pointer; padding-right: 5px;'/>";
+                cell1.innerHTML = "<input type='hidden' id='CurrentAgenda" + cnt + "' name='CurrentAgenda" + cnt + "' value='" + CurrentAgenda + "'><input type='hidden' id='CurrentAgendaId" + cnt + "' name='CurrentAgendaId" + cnt + "' value='" + AgendaId + "'>" + CurrentAgenda;
+                cell2.innerHTML = "<input type='hidden' id='item_discussed" + cnt + "' name='item_discussed" + cnt + "' value='" + item_discussed + "'>" + item_discussed;
+                cell3.innerHTML = "<input type='hidden' id='action_agreed" + cnt + "' name='action_agreed" + cnt + "' value='" + action_agreed + "'>" + action_agreed;
+                cell4.innerHTML = "<input type='hidden' id='due_date" + cnt + "' name='due_date" + cnt + "' value='" + due_date + "'>" + due_date;
+
+                // Action_taken_by = $('#Action_taken_by option:selected').text();
+                var action_ownerText = $.map($("#action_owner option:selected"), function (el, i) {
+                    return $(el).text();
+                });
+                var action_ownerVal = $("#action_owner").val();
+                cell5.innerHTML = "<input type='hidden' id='action_owner" + cnt + "' name='action_owner" + cnt + "' value='" + action_ownerVal + "'>" + action_ownerText;
+
+
+                var item_statusText = $.map($("#item_status option:selected"), function (el, i) {
+                    return $(el).text();
+                });
+                var item_statusVal = $("#item_status").val();
+                cell6.innerHTML = "<input type='hidden' id='item_status" + cnt + "' name='item_status" + cnt + "' value='" + item_statusVal + "'>" + item_statusText;
+
+               // cell6.innerHTML = "<input type='hidden' id='item_status" + cnt + "' name='item_status" + cnt + "' value='" + item_status + "'>" + item_status;
+                cell7.innerHTML = "<input type='hidden' id='remarks" + cnt + "' name='remarks" + cnt + "' value='" + remarks + "'>" + remarks;
+                cell8.innerHTML = "<input type='hidden' id='upload" + cnt + "' name='upload" + cnt + "' value='" + UploadServerPath + "'>" + upload;
+
+                AgendaDiscussedList[CurrentAgenda] = item_discussed;
+
+                document.getElementById("btnCreate").disabled = false;
+
+                ResetControl();
+            }
+
+        }
+
+
+           function ResetControl() {
+             //  $('#item_status').get(0).selectedIndex = 0;
+               $('#action_owner').get(0).selectedIndex = 0;
+              
+            $('#action_owner').trigger('change');
+               //document.getElementById("item_discussed").value = "";
+               document.getElementById("action_agreed").value = "";
+               document.getElementById("item_discussed").value = "";
+               document.getElementById("remarks").value = "";
+               $('#upload').fileinput('reset');
+          
+           }
+
+           function deleteRow(r) {
+               var i = r.parentNode.parentNode.rowIndex;
+               document.getElementById("team-list").deleteRow(i);
+           }
+
+         function FileFormatValidation(file) {
+                var ext = file.value.split(".").pop().toLowerCase();
+                if ($.inArray(ext, ["doc", "pdf", "docx", "jpg", "jpeg", "gif", "png", "xlx", "xlsx"]) == -1) {
+                   file.value = "";
+                    bootbox.alert({
+                        title: 'File type',
+                        message: 'Invalid file format, please upload only doc, pdf, docx, jpg, jpeg, gif, png, Xls,Xlsx format.'
+                    });
+                }
+            }
+
+           $("#select").click(function () {
+               if ($("#select").prop('checked')) {
+                   {
+                       $(this).prop('checked', true);
+                       document.getElementById("selectall").value = "Send mail";
+                   }
+               }
+               else {
+                   $(this).prop('checked', false);
+               }
+
+           });
+
+
+              function reformatDate(dateStr) {
+                dArr = dateStr.split("-");  // ex input 2010-01-18
+                return dArr[2] + "/" + dArr[1] + "/" + dArr[0]; //ex out: 2018/01/10
+            }
+
+            function UploadDocument(ind) {
+            var upload = ($("#upload")).files; //$('#testfile').file;
+
+            var formData = new FormData();
+            var totalFiles = document.getElementById("upload").files.length;
+            for (var i = 0; i < totalFiles; i++) {
+                var file = document.getElementById("upload").files[i];
+
+                formData.append("upload", file);
+            }
+            jQuery.ajax({
+                url: '@Url.Action("UploadDocument", "Meeting")',
+                type: 'POST',
+                contentType: false,
+                processData: false,
+                data: formData,
+                success: function (result) {
+                    document.getElementById("upload" + ind).value = result;
+                    Action_PlanServerPath = result;                  
+                    return result;
+                }
+            });
+        }
+        </script>
+
+    }

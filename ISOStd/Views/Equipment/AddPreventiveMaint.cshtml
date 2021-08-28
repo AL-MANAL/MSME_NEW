@@ -1,0 +1,240 @@
+﻿@model ISOStd.Models.EquipmentMaintanance
+
+@{
+    ViewBag.Title = "";
+}
+@section featured {
+
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("EquipmentList", "Equipment", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Equipment List</span>
+                    </a>
+                    <span class="breadcrumb-item active">Add Equipment Preventive Maintenance</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            <div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+@using (Html.BeginForm("AddPreventiveMaint", "Equipment", FormMethod.Post,
+                     new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+   <input type="hidden" id="Equipment_Id" name="Equipment_Id" value="@ViewBag.Equipment_Id" />
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Add Equipment Preventive Maintenance details</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+
+                <table class="table table-lg">
+
+                   
+                   <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Equipment_Id)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @ViewBag.Equipment_Name
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Maintenance_Date)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                  
+                                <input class="form-control" type="date" id="Maintenance_Date" name="Maintenance_Date" required />
+                                @Html.ValidationMessageFor(m => m.Maintenance_Date)
+                            </div>
+                        </td>
+                    </tr>
+
+		    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Maintenance_Details)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input type="file" name="Maintenance_Details" id="Maintenance_Details" onchange="FileFormatValidation(this)" accept=".pdf,.xlsx,.xls,.doc,.docx" required  class="bootstrap-uploader" data-fouc />
+                                <br />
+                                @*@Html.ValidationMessageFor(m => m.DocUploadPath, "Please enter student name.")*@
+                                @Html.ValidationMessage("Maintenance_Details", "This feild is required")
+
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Next_Maint_Date)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input class="form-control" type="date" id="Next_Maint_Date" name="Next_Maint_Date" onchange="checkDate();" />     
+                            </div>
+                        </td>
+                    </tr>
+		<tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.done_by)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                            @Html.EditorFor(model => model.done_by, new { htmlAttributes = new { @required = "required", @class = "form-control"  } }) 
+                                  @Html.ValidationMessageFor(m => m.done_by)
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Amt_Spent)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                   <input class="form-control" type="number" id="Amt_Spent" name="Amt_Spent" />
+                            </div>
+                        </td>
+                    </tr>
+
+
+			<tr class="row">
+                        
+                          <td class="col-xs-3 col-md-2">
+
+                            @Html.LabelFor(model => model.Remarks)
+
+                        </td>
+                        <td class="col">
+
+                            <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="Remarks" name="Remarks"></textarea>
+
+                        </td>
+ 			            <td class="col-xs-3 col-md-2">
+
+                            @Html.LabelFor(model => model.NotificationPeriod)
+
+                        </td>
+                        <td class="col">
+                            <div class="form-group form-group-float">
+                                <select class="form-control select-search select2-hidden-accessible" id="NotificationPeriod" name="NotificationPeriod" data-fouc>
+                                    @if (ViewBag.NotificationPeriod != null)
+                                    {
+                                        foreach (var item in ViewBag.NotificationPeriod)
+                                        {
+                                            <option value='@item.Key'>@item.Value</option>
+                                        }
+                                    }
+                                </select>
+
+                            </div>
+                            <div class="form-group form-group-float">
+                                <input class="form-control" type="number" id="NotificationValue" name="NotificationValue" value="0" max="3" />
+
+                                <span class="form-text text-muted"><code>(Alert on or before Target date)</code></span>
+
+
+                            </div>
+                        </td>
+                    </tr>
+                    
+                
+                    
+                    
+                </table>
+            </div>
+        </div>
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+            @Html.ActionLink("Back to List", "PMaintenanceList", new { Equipment_Id = ViewBag.Equipment_Id }, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+
+            <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Add</button>
+        </div>
+    </div>
+
+       
+        }
+
+
+@section Scripts {
+    <script>
+
+        function FileFormatValidation(file) {
+            var ext = file.value.split(".").pop().toLowerCase();
+            if ($.inArray(ext, ["doc", "pdf", "docx", "jpg", "jpeg", "gif", "png"]) == -1) {
+                file.value = "";
+                jAlert("Invalid file format, please upload only doc, pdf, docx, jpg, jpeg, gif, png format");
+            }
+        }
+
+        function checkDate() {
+
+            var dt1 = document.getElementById("Maintenance_Date").value;
+            var dt2 = document.getElementById("Next_Maint_Date").value;
+
+            if (new Date(dt1).getTime() > new Date(dt2).getTime()) {
+
+                bootbox.alert({
+                    title: 'Next Maintance date',
+                    message: 'Next Maintance date should not be less than current maintance date.'
+                });
+                $('#Next_Maint_Date').val("");
+            }
+        }
+
+
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

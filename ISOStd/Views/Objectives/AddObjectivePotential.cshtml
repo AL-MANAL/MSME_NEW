@@ -1,0 +1,606 @@
+﻿@model IEnumerable<ISOStd.Models.ObjectivesModels>
+
+@{
+    ViewBag.Title = "AddObjectivePotential";
+    //DateTime dtTodate = Convert.ToDateTime(ViewBag.Obj_Estld_On);
+    //dtTodate = dtTodate.AddDays(1);
+    //int icont = 0;
+
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+}
+
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+
+                    <a class="breadcrumb-item" onclick="HyperLinkProgressIconFunction();" href='@Url.Action("ObjectivesDetails", "Objectives", new { Objectives_Id = ViewBag.Objectives_Id,View=ViewBag.View } )'>
+                        <span class="breadcrumb-item"> Objective Details</span>
+                    </a>
+                    <span class="breadcrumb-item active"> Add Potential Causes for Failure</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+}
+
+@using (Html.BeginForm("AddObjectivePotential", "Objectives", FormMethod.Post,
+                         new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Add Potential Causes for Failure</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+                <input type="hidden" id="ObjectivesTrans_Id" name="ObjectivesTrans_Id" value="@ViewBag.ObjectivesTrans_Id" />
+                <input type="hidden" id="Objectives_Id" name="Objectives_Id" value="@ViewBag.Objectives_Id" />
+                <input type="hidden" id="view" name="view" value="@ViewBag.View" />
+
+                <h2 class="bg-dark pl-sm-2"> Objective Details</h2>
+                <br />
+                <table class="table table-lg">
+                    <thead></thead>
+                    <tbody>
+                        <tr class="row">
+                            @*<td class="col-xs-3 col-md-2">
+                        @Html.LabelFor(model => model.Obj_Ref)
+                    </td>
+                    <td class="col">
+                        <input class="form-control" type="text" id="Obj_Ref" name="Obj_Ref" value="@ViewBag.Obj_ref" disabled />
+                    </td>*@
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.First().Objectives_val)
+                            </td>
+                            <td class="col">
+                                <b><textarea class="form-control" id="Objectives_val" name="Objectives_val" readonly>@ViewBag.Objectives_val </textarea></b>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.First().Obj_Target)
+                            </td>
+                            <td class="col">
+                                <input class="form-control" type="text" id="Obj_Target" name="Obj_Target" value="@ViewBag.Obj_Target" readonly />
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.First().Base_Line_Value)
+                            </td>
+                            <td class="col">
+                                <input class="form-control" type="text" id="Base_Line_Value" name="Base_Line_Value" value="@ViewBag.Base_Line_Value" readonly />
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.First().Monitoring_Mechanism)
+                            </td>
+                            <td class="col">
+                                <input class="form-control" type="text" id="Monitoring_Mechanism" name="Monitoring_Mechanism" value="@ViewBag.Monitoring_Mechanism" readonly />
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.First().Target_Date)
+                            </td>
+                            <td class="col">
+                                <input class="form-control" type="text" id="Target_Date" name="Target_Date" value="@ViewBag.Target_Date" readonly />
+                            </td>
+                        </tr>
+                </table>
+                <br />
+                <h2 class="bg-dark pl-sm-2"> Add Potential Causes for Failure Details</h2>
+                <table class="table table-lg" id="tabcontent">
+
+                    <thead></thead>
+                    <tbody>
+
+
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.First().potential_causes)<text style="color:red;">*</text>
+                            </td>
+                            <td class="col">
+                                @*@Html.EditorFor(model => model.potential_causes, new { htmlAttributes = new { @maxlength = "2000", @placeholder = "Textarea", @style = "overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;", @rows = "4", @cols = "4", @class = "form-control elastic maxlength-badge-position" } })*@
+
+                                <textarea class="form-control"  id="potential_causes" name="potential_causes" required></textarea>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.First().impact)<text style="color:red;">*</text>
+                            </td>
+                            <td class="col">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="impact" name="impact" required="required">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.PotentialImpact != null)
+                                    {
+                                        foreach (var item in ViewBag.PotentialImpact)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                            </td>
+                        </tr>
+
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.First().mitigation_measure)<text style="color:red;">*</text>
+                            </td>
+                            <td class="col">
+                                @*@Html.EditorFor(model => model.mitigation_measure, new { htmlAttributes = new { @maxlength = "2000", @placeholder = "Textarea", @style = "overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;", @rows = "4", @cols = "4", @class = "form-control elastic maxlength-badge-position" } })*@
+                                <textarea class="form-control" id="mitigation_measure" name="mitigation_measure" required></textarea>
+                            </td>
+
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.First().targeted_on)<text style="color:red;">*</text>
+                            </td>
+                            <td class="col">
+                                <input class="form-control" type="date" id="targeted_on" name="targeted_on" required />
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.First().potential_status)<text style="color:red;">*</text>
+                            </td>
+                            <td class="col">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="potential_status" name="potential_status" required="required">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.PotentialStatus != null)
+                                    {
+                                        foreach (var item in ViewBag.PotentialStatus)
+                                        {
+                                            if (item.Value == ViewBag.potential_status)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.First().updated_on)<text style="color:red;">*</text>
+                            </td>
+                            <td class="col">
+                                <input class="form-control" type="date" id="updated_on" name="updated_on" value="@ViewBag.updated_on.ToString("yyyy-MM-dd")" required />
+                            </td>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+            @Html.ActionLink("Back to List", "ObjectivesList", new {  View = ViewBag.View }, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+            <button class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" type="submit" value="Save" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Save</button>
+        </div>
+    </div>
+}
+
+    <div class="card">
+        <div class="card-body">
+            <h2 class="bg-dark pl-sm-2"> Objective Potential Causes for Failure List</h2>
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped table-hover datatable-responsive" id="table1">
+                    <thead>
+                        <tr class="bg-blue">
+                            <th>
+                                Sl. No
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.potential_causes)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.impact)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.mitigation_measure)
+                            </th>
+                            <th>
+                                @*@Html.DisplayNameFor(model => model.targeted_on)*@
+                                Target Date
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.updated_on)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.potential_status)
+                            </th>
+                            <th class="not-export-column">Edit</th>
+                            <th class="not-export-column">Delete</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Count() > 0)
+                        {
+                            int i = 0;
+                            foreach (var item in Model)
+                            {
+                                i = i + 1;
+                                <tr>
+                                    <td>
+                                        @i
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.potential_causes)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.impact)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.mitigation_measure)
+                                    </td>
+                                    <td>
+                                        @if (item.targeted_on != null && item.targeted_on > Convert.ToDateTime("01/01/0001"))
+                                        {
+                                            @Html.Label(item.targeted_on.ToString("dd/MM/yyyy"))
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (item.updated_on != null && item.updated_on > Convert.ToDateTime("01/01/0001"))
+                                        {
+                                            @Html.Label(item.updated_on.ToString("dd/MM/yyyy"))
+                                        }
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.potential_status)
+                                    </td>
+                                    <td>
+                                        <a href='@Url.Action("ObjectivePotentialEdit", "Objectives", new { id_potential = item.id_potential , View= ViewBag.View })' title="Edit Potential causes for failure"
+                                           onclick="HyperLinkProgressIconFunction()">
+                                            <span class="badge badge-info">Edit</span>
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <span class="dropdown-item text-center" title="Delete" onclick="DeleteItems(@item.id_potential)" style="cursor:pointer;"><i class="icon-bin"></i></span>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                      
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript">
+
+         $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }      
+    });
+                //function checkDate() {
+
+                //    var dt1 = document.getElementById("begin_date").value;
+                //    var dt2 = document.getElementById("end_date").value;
+
+                //    if (new Date(dt2).getTime() < new Date(dt1).getTime()) {
+
+                //        bootbox.alert({
+                //            title: 'To Date',
+                //            message: 'End date cannot be before Begin date.'
+                //        });
+                //        $('#end_date').val("");
+                //    }
+                //}
+               
+                    var table1 = function () {
+                var ShowEdit = @(Obj.GetCurrentUserSession().Objectives.Contains("3") ? "true" : "false");
+                var ShowDownld = @(Obj.GetCurrentUserSession().Objectives.Contains("4") ? "true" : "false");
+
+                        // Basic Datatable examples
+                        var _componentDatatableBasic = function () {
+                            if (!$().DataTable) {
+                                console.warn('Warning - datatables.min.js is not loaded.');
+                                return;
+                            }
+
+                            //Setting datatable defaults
+                            $.extend($.fn.dataTable.defaults, {
+                                autoWidth: false,
+                                responsive: true,
+                                columnDefs: [{
+                                    orderable: false,
+                                    width: 100,
+                                    targets: [3,6]
+                                }, {
+                                        'targets': [3],
+                                        'visible': ShowDownld
+                                    }, {
+                                        'targets': [6],
+                                        'visible': ShowEdit
+                                    }],
+
+                                colReorder: false,
+                                dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                                //dom: 'lBfrtip',
+                                language: {
+                                    search: '<span>Filter:</span> _INPUT_',
+                                    searchPlaceholder: 'Type to filter...',
+                                    lengthMenu: '<span>Show:</span> _MENU_',
+                                    paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                                }
+                            });
+
+                var myClass = "";
+                var Delclass= @(Obj.GetCurrentUserSession().Objectives.Contains("4") ? "true" : "false");
+                if (Delclass == false) { myClass = 'hidden'  };
+                            var table = $('#table1').DataTable({
+                                lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                                colReorder: {
+                                    fixedColumnsLeft: 1
+                                },
+                                stateSave: true,
+                                stateSaveParams: function (settings, data) {
+                                    for (var i = 0, ien = data.columns.length; i < ien; i++) {
+                                        delete data.columns[i].visible;
+                                        delete data.columns[i].search;
+                                    }
+                                },
+                                scrollY: '350px',
+                                scrollCollapse: true,
+                                keys: {
+                                    className: 'focus focus-success'
+                                },
+                                buttons: {
+                                    buttons: [
+                                        {
+                                            extend: 'copyHtml5',
+                                            className: myClass,
+                                            //className: 'btn btn-light',
+                                            title: 'Objective Potential Data export',
+                                            exportOptions: {
+                                                columns: ':visible :not(.not-export-column)'
+                                            },
+                                        },
+                                        {
+                                            extend: 'excelHtml5',
+                                            className: myClass,//className: 'btn btn-light',
+                                            title: 'Objective Potential Data export',
+                                            exportOptions: {
+                                                columns: ':visible :not(.not-export-column)'
+                                            },
+
+                                        },
+                                        {
+                                            extend: 'pdfHtml5',
+                                            className: myClass,//className: 'btn btn-light',
+                                            title: 'Objective Potential Data export',
+                                            exportOptions: {
+                                                columns: ':visible :not(.not-export-column)'
+                                            },
+                                        },
+                                        {
+                                            extend: 'csvHtml5',
+                                            className: myClass,//className: 'btn btn-light',
+                                            title: 'Objective Potential Data export',
+                                            exportOptions: {
+                                                columns: ':visible :not(.not-export-column)'
+                                            },
+                                        },
+                                        {
+                                            extend: 'print',
+                                            className: myClass,//className: 'btn btn-light',
+                                            title: 'Objective Potential Data export',
+                                            exportOptions: {
+                                                columns: ':visible :not(.not-export-column)'
+                                            },
+                                        },
+                                        {
+                                            extend: 'colvis',
+                                            text: '<i class="icon-three-bars"></i>',
+                                            className: 'btn bg-blue btn-icon dropdown-toggle',
+                                            columns: ':visible:not(.not-export-column)'
+                                        }
+                                    ]
+                                }
+
+                            });
+                            // Adjust columns on window resize
+                            setTimeout(function () {
+                                $(window).on('resize', function () {
+                                    table.columns.adjust();
+                                });
+                            }, 100);
+
+
+                            //Redraw table on click toggle. -------table.columns.adjust doesn't work properly upon calling after toggle (width increase/decrease = redraw table.).
+                            $('.sidebar-control').on('click', function () {
+
+                                setTimeout(function () {
+                                    //alert("gii");
+                                    table.columns.adjust().draw();
+                                    $("#table1").resize();
+                                }, 100);
+
+                            });
+                            //}
+
+                            $('#table1').on('page.dt', function () {
+                                //table.draw();
+                                //alert("zzz1");
+                                $("#table1").resize();
+
+                            });
+
+                            $('#table1').on('column-visibility.dt', function () {
+                                //table.draw();
+                                //alert("zzz2");
+                                $("#table1").resize();
+
+                            });
+
+                            $('#table1').on('order.dt', function () {
+                                //table.draw();
+                                //alert("zzz3");
+                                $("#table1").resize();
+
+                            });
+
+
+                            $('#table1').on('responsive-display.dt', function () {
+                                //table.draw();
+                                //alert("zzz4");
+                                $("#table1").resize();
+
+                            });
+
+
+                            $('#table1').on('responsive-resize.dt', function () {
+                                //table.draw();
+                                //alert("zzz4");
+                                $("#table1").resize();
+
+                            });
+                        };
+
+                        // Select2 for length menu styling
+                        var _componentSelect2 = function () {
+                            if (!$().select2) {
+                                console.warn('Warning - select2.min.js is not loaded.');
+                                return;
+                            }
+                            // Initialize
+                            $('.dataTables_length select').select2({
+                                minimumResultsForSearch: Infinity,
+                                dropdownAutoWidth: true,
+                                width: 'auto'
+                            });
+                        };
+
+
+                        //
+                        // Return objects assigned to module
+                        //
+
+                        return {
+                            init: function () {
+                                _componentDatatableBasic();
+                                _componentSelect2();
+                            }
+                        }
+                    }();
+
+
+                    // Initialize module
+                    // ------------------------------
+
+                    document.addEventListener('DOMContentLoaded', function () {
+                        table1.init();
+        });
+
+         function DeleteItems(id_potential) {
+            bootbox.confirm({
+                title: 'Confirm dialog',
+                message: 'Are you Sure you want to Delete the current Record?',
+                buttons: {
+                    confirm: {
+                        label: 'Yes',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'Cancel',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (r) {
+                    if (r == true) {
+                        var ObjectivesTrans_Id = document.getElementById("ObjectivesTrans_Id").value;
+                        var sView = document.getElementById("view").value;
+
+                      jQuery.ajax({
+                           url: '@Url.Action("ObjectivePotentialDelete", "Objectives")',
+                           type: 'POST',
+                           dataType: "json",
+                          data: { 'id_potential': id_potential },
+                        success: function (result) {
+
+                            var params = {
+                                ObjectivesTrans_Id: ObjectivesTrans_Id,
+                                View: sView
+                            };
+                            queryString = $.param(params);
+
+
+                            window.location.href =
+                                window.location.protocol + "//" +
+                                window.location.host +
+                                window.location.pathname +
+                                '?' + queryString;
+
+                        }
+                    });
+                    return true;
+                }
+                else if (r == false) {
+                        bootbox.hideAll();
+                        return false;
+                    }
+                }
+            });
+        }
+
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
+

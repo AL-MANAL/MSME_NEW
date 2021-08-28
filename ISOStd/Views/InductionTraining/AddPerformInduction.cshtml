@@ -1,0 +1,448 @@
+﻿@model ISOStd.Models.InductionTrainingModels
+
+@{
+    ViewBag.Title = "AddPerformInduction";
+
+    ISOStd.Models.InductionTrainingModelsList objTransList = new ISOStd.Models.InductionTrainingModelsList();
+    int itemcount = 0;
+
+    if (ViewBag.objTransList != null)
+    {
+        objTransList = ViewBag.objTransList;
+        itemcount = objTransList.lstInd.Count;
+    }
+}
+
+@section featured {
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("PerformInductionList", "InductionTraining", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Perform Induction Training</span>
+                    </a>
+                    <span class="breadcrumb-item active">Perform Induction Training</span>
+                </div>
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+}
+
+
+@using (Html.BeginForm("AddPerformInduction", "InductionTraining", FormMethod.Post,
+                     new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Perform Induction Training</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+        <input type="hidden" id="id_induction" name="id_induction" value="@Model.id_induction" />
+        <input type="hidden" id="employee_id" name="employee_id" value="@ViewBag.semployee_id" />
+        <div class="card-body">
+            <div class="container-fluid">
+                <fieldset>
+                    <table class="table table-lg">
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @*@Html.DisplayNameFor(model => model.employee_id)*@
+                                    <b>  Training Employee</b>
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <b> @Html.DisplayFor(model => model.employee_Name)</b>
+                                </div>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.DisplayNameFor(model => model.training_topic)
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    @Html.DisplayFor(model => model.training_topic)
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.DisplayNameFor(model => model.division)
+                            </td>
+                            <td class="col-xs-6 col-md-4">
+                                <div class="editor-field">
+                                    @Html.DisplayFor(model => model.division)
+                                </div>
+                            </td>
+
+                            <td class="col-xs-3 col-md-2">
+                                @Html.DisplayNameFor(model => model.department)
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    @Html.DisplayFor(model => model.department)
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="row"> 
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.location)
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <div class="editor-field">
+                                        @Html.DisplayFor(model => model.location)
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <div class="card card-table table-responsive shadow-0 mb-0" id="MaterialDiv">
+                        @*<div class="card-body">*@
+                            <input type="hidden" id="matcount" name="matcount" value="@itemcount" />
+
+                            @*<div class="card card-table table-responsive shadow-0 mb-0">*@
+                                <table class="table" id="team-list-realted" style="width:120%">
+                                    <tr><th colspan="6"><h5> Materials to be reviewed or checked :</h5></th></tr>
+
+                                    <tr class="bg-blue">
+                                        <th>Material Description</th>
+                                        @*<th>Preview</th>*@
+                                        <th>Start Date</th>
+                                        <th>Comments</th>
+                                        <th>Need further explanation</th>
+                                        <th>Completed On</th>
+                                        <th>Notify to</th>
+                                    </tr>
+                                    @if (objTransList.lstInd != null && objTransList.lstInd.Count > 0)
+                                    {
+                                        for (int index = 0; index < objTransList.lstInd.Count; index++)
+                                        {
+                                    <tr>
+                                        @*<td>
+               <img src='@Url.Content("~/images/cancel.png")' onclick='deleteRow1(@objTransList.lstInd[index].id_material)' style='cursor:pointer; padding-right: 5px;' />Remove
+               <input type='hidden' id='id_material @index' name="id_nc_corrective_action @index" value='@objTransList.lstInd[index].id_material' />
+        </td>*@
+                                        <td>
+                                            <input type='hidden' id='id_material @index' name="id_material @index" value='@objTransList.lstInd[index].id_material' />
+                                            <input type='hidden' id='mat_description @index' name="mat_description @index" value='@objTransList.lstInd[index].mat_description'>@(objTransList.lstInd[index].mat_description)
+                                        </td>
+                                        @*<td>
+                                            <input type='hidden' id='upload @index' name="upload @index" value='@objTransList.lstInd[index].upload'>
+                                            @if (objTransList.lstInd[index].upload != null && objTransList.lstInd[index].upload != "" && objTransList.lstInd[index].upload.Length > 0)
+                                            {
+                                                foreach (var docs in objTransList.lstInd[index].upload.Trim(',').Split(','))
+                                                {
+                                                    <p class="bg-dark py-1 px-2 rounded">
+
+                                                        <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" style="color: orange;">
+                                                            Preview
+                                                        </a>
+                                                    </p>
+                                                }
+                                            }
+                                        </td>*@
+                                        <td>
+                                            @if (objTransList.lstInd[index].traing_start_date != null && objTransList.lstInd[index].traing_start_date > Convert.ToDateTime("01/01/0001"))
+                                            {
+                                                <input type="date" class="form-control" name="traing_start_date @index" id="traing_start_date @index" value="@objTransList.lstInd[index].traing_start_date.ToString("yyyy-MM-dd")" required />
+                                            }
+                                            else
+                                            {
+                                                <input type="date" class="form-control" name="traing_start_date @index" id="traing_start_date @index" required />
+                                            }                                            
+                                        </td>
+                                        <td class="col">
+                                            @*Please dont remove required from comments, Used in control for logic*@
+                                            <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="comments @index" name="comments @index" required>@(objTransList.lstInd[index].comments)</textarea>
+                                        </td>
+                                        <td>
+                                            <select class="form-control select-fixed-multiple" data-fouc id="explain @index" name="explain @index">
+                                                <option value='' hidden>Select</option>
+                                                @if (ViewBag.YesNo != null)
+                                                {
+                                                    foreach (var item in ViewBag.YesNo)
+                                                    {
+                                                        if (item == (objTransList.lstInd[index].explain))
+                                                        {
+                                                            <option value='@item' selected>@item</option>
+                                                        }
+                                                        else
+                                                        {
+                                                            <option value='@item'>@item</option>
+                                                        }
+                                                    }
+                                                }
+                                            </select>
+                                        </td>
+                                        <td>
+                                            @if (objTransList.lstInd[index].compled_date != null && objTransList.lstInd[index].compled_date > Convert.ToDateTime("01/01/0001"))
+                                            {
+                                                <input type="date" class="form-control" name="compled_date @index" id="compled_date @index" value="@objTransList.lstInd[index].compled_date.ToString("yyyy-MM-dd")" onchange="checkDate(@index)" required />
+                                            }
+                                            else
+                                            {
+                                                <input type="date" class="form-control" name="compled_date @index" id="compled_date @index" onchange="checkDate(@index)" required />
+                                            }
+                                        </td>
+                                        <td>
+                                            <select class="form-control select-search select2-hidden-accessible" data-fouc id="notify_to @index" name="notify_to @index">
+                                                <option value='' hidden>Select</option>
+                                                @if (ViewBag.DeptHead != null)
+                                                {
+                                                    foreach (var item in ViewBag.DeptHead)
+                                                    {
+                                                        if (item.Value == (objTransList.lstInd[index].notify_to))
+                                                        {
+                                                            <option value='@item.Value' selected>@item.Text</option>
+                                                        }
+                                                        else
+                                                        {
+                                                            <option value='@item.Value'>@item.Text</option>
+                                                        }
+                                                    }
+                                                }
+                                            </select>
+                                        </td>
+                                    </tr>
+                                        }
+                                    }
+                                </table>
+                            @*</div>*@
+                        @*</div>*@
+                    </div>
+
+                    <table class="table table-lg">
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.DisplayNameFor(model => model.final_status)
+                            </td>
+                            <td class="col-xs-6 col-md-4">
+                                <div class="editor-field">
+                                    <select class="form-control select-fixed-multiple" @*class="form-control select-fixed-multiple"*@ data-fouc id="final_status" name="final_status">
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.Status != null)
+                                        {
+                                            foreach (var item in ViewBag.Status)
+                                            {
+                                                if (item.Value == Model.final_status)
+                                                {
+                                                    <option value='@item.Value' selected>@item.Text</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+                                                }
+
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                @Html.DisplayNameFor(model => model.completion_date)<text style="color: red;">*</text>
+                            </td>
+                            <td class="col">
+                                @if (Model.completion_date != null && Model.completion_date > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    <input type="date" class="form-control" id="completion_date" name="completion_date" value="@Model.completion_date.ToString("yyyy-MM-dd")" required onchange="GetFinalDate()"/>
+                                }
+                                else
+                                {
+                                    <input type="date" class="form-control" id="completion_date" name="completion_date"  required onchange="GetFinalDate()"/>
+                                }
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.DisplayNameFor(model => model.effectness)
+                            </td>
+                            <td class="col-xs-6 col-md-4">
+                                <div class="editor-field">
+                                    <select class="form-control select-fixed-multiple" data-fouc id="effectness" name="effectness">
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.Effectness != null)
+                                        {
+                                            foreach (var item in ViewBag.Effectness)
+                                            {
+                                                if (item.Value == Model.effectness)
+                                                {
+                                                    <option value='@item.Value' selected>@item.Text</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                @Html.DisplayNameFor(model => model.further_training)
+                            </td>
+                            <td class="col-xs-6 col-md-4">
+                                <div class="editor-field">
+                                    <select class="form-control select-fixed-multiple" data-fouc id="further_training" name="further_training">
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.YesNo != null)
+                                        {
+                                            foreach (var item in ViewBag.YesNo)
+                                            {
+                                                if (item == Model.further_training)
+                                                {
+                                                    <option value='@item' selected>@item</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@item'>@item</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.DisplayNameFor(model => model.suggestion) <text style="color:red;">*</text>
+                            </td>
+                            <td class="col-xs-6 col-md-4">
+                                <textarea class="form-control" id="suggestion" name="suggestion" required>@Model.suggestion</textarea>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                @Html.DisplayNameFor(model => model.final_notifyto) <text style="color:red;">*</text>
+                            </td>
+                            <td class="col-xs-6 col-md-4">
+                                <div class="editor-field">
+                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="final_notifyto" name="final_notifyto" required>
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.DeptHead != null)
+                                        {
+                                            foreach (var item in ViewBag.DeptHead)
+                                            {
+                                                if (item.Value == Model.final_notifyto)
+                                                {
+                                                    <option value='@item.Value' selected>@item.Text</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </fieldset>
+            </div>
+        </div>
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+            @Html.ActionLink("Back to List", "PerformInductionList", null,new { id_induction = Model.id_induction }, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+            <div class="mt-2 mt-sm-0">
+                <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Save</button>
+            </div>
+        </div>
+    </div>
+}
+
+            @section Scripts {
+    <script>
+     $(document).ready(function () {
+
+                    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }         
+        });
+
+        function checkDate(i) {
+            var dt1 = document.getElementById("traing_start_date "+i).value;
+            var dt2 = document.getElementById("compled_date "+i).value;
+            if (new Date(dt2).getTime() < new Date(dt1).getTime()) {
+                bootbox.alert({
+                    title: 'Date',
+                    message: 'Completed date cannot be before Start date.'
+                });
+                document.getElementById("compled_date " + i).value = "";
+            }
+        }
+     
+       
+        function GetFinalDate() {
+            var dt1 = document.getElementById("completion_date").value;
+            var count = $("#matcount").val();
+            var final_date = document.getElementById("compled_date " + 0).value;                
+            for (var i = 0; i < count; i++) {
+                var dt2 = document.getElementById("compled_date " + i).value;                
+                if (new Date(final_date).getTime() < new Date(dt2).getTime()){
+                    final_date = dt2; 
+                }
+            }
+
+            if (new Date(dt1).getTime() < new Date(final_date).getTime()) {
+                bootbox.alert({
+                    title: 'Date',
+                    message: 'Completed date cannot be before End date.'
+                });
+                document.getElementById("completion_date").value = "";
+            }
+        }
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
+

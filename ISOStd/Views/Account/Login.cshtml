@@ -1,0 +1,314 @@
+﻿@model ISOStd.Models.LoginModel
+@{
+    Layout = null;
+}
+@*
+    <!DOCTYPE html>
+
+    <html style=" background-image: url(@Url.Content("~/Images/bg.png")); background-repeat: no-repeat; background-size: cover;">
+    <head>
+       <meta charset="utf-8" />
+        <title>Welcome to MANAL</title>
+        <link href="@Url.Content("~/favicon.ico")" rel="shortcut icon" type="image/x-icon" />
+        <meta name="viewport" content="width=device-width" />
+         <link href="@Url.Content("~/Content/css/style.css")" rel="stylesheet">
+
+        @Styles.Render("~/Content/css")
+
+
+        <!-- start: Mobile Specific -->
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- end: Mobile Specific -->
+        <!-- start: CSS -->
+        <link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
+        <link href="@Url.Content("~/Content/css/style.css")" rel="stylesheet">
+
+         <!-- start: Below lines of code is required for Autocomplete, Spinner and Custom JAlert scripts to work,  -->
+        <!-- be cautious before changing-->
+        <script src='@Url.Content("~/Content/js/jquery.js")' type="text/javascript"></script>
+        <script src='@Url.Content("~/Content/js/jquery.ui.draggable.js")' type="text/javascript"></script>
+
+        <!-- start: Core files for JAlert -->
+        <script src='@Url.Content("~/Content/js/jquery.alerts.js")' type="text/javascript"></script>
+        <link href='@Url.Content("~/Content/css/jquery.alerts.css")' rel="stylesheet" type="text/css" media="screen" />
+        <!-- JAlert ends -->
+
+        <script src='@Url.Content("~/Content/js/jquery-1.11.1.min.js")'></script>
+
+        <script src='@Url.Content("~/Scripts/jquery-3.1.1.min.js")'></script>
+        <script src='@Url.Content("~/Scripts/jquery-ui-1.12.1.min.js")'></script>
+
+        <!--Order Ends -->
+
+        <link href="@Url.Content("~/Content/site.css")" rel="stylesheet" type="text/css"/>
+        <link href="@Url.Content("~/Content/css/bootstrap.min.css")" rel="stylesheet">
+        <link type="text/css" rel="stylesheet" href="@Url.Content("~/Content/css/font-awesome.min.css")" />
+        <link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/css/bootstrap-select.css")">
+        <link rel="stylesheet" href="@Url.Content("~/Content/css/jquery.mCustomScrollbar.css")">
+        <link href="@Url.Content("~/Content/css/dropzone.css")" rel="stylesheet">
+
+    </head>
+    <body style=" background-image: url(@Url.Content("~/Images/bg.png")); background-repeat: no-repeat; background-size: cover;">
+        <div >
+               <div id="divLoading" style="margin: 0px; padding: 0px; position: fixed; right: 0px; top: 0px; width: 100%; height: 100%; background-color: #666666; z-index: 30001; opacity: .8; filter: alpha(opacity=70); display: none;">
+                    <p style="position: absolute; top: 30%; left: 45%; color: White;">
+                        <img src="@Url.Content("~/Images/Loading_icon.gif")" style="width: 50%;"/>
+                        <br />
+                        Please wait...
+                    </p>
+                </div>
+
+            @using (Html.BeginForm("Login", "Account", FormMethod.Post, new { id = "form1", name = "form1" }))
+            {
+                @Html.AntiForgeryToken()
+
+
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-6 col-md-offset-3" style="text-align: center;">
+                            <div class="panel panel-default" style="margin-top: 75px;">
+                                <div class="panel-body">
+                                    <div class="text-center">
+                                        <img style="margin-left: -22px; width:128px; height:45px;" src='@Url.Content("~/Images/ManalLogo.png")'/>
+                                    </div>
+                                    <br>
+                                    <div class="login-head text-center">
+                                        <h4 id="logintop">
+                                            <b>Welcome to MSME - Management System Made Easy</b>
+                                        </h4>
+                                    </div>
+                                    <div class="login-head text-center">
+                                        <img style="margin-left: 22px; width:250px; height:70px;" src='@Url.Content("~/Images/companylogo.png")'/>
+                                    </div>
+                                    <br>
+                                    <br>
+                                    <div id="divmsg">
+                                        @if (TempData["alertdata"] != null)
+                                        {
+                                            <span class="errMsg" style="color: red;font-weight: bold;">@TempData["alertdata"]</span>
+                                        }
+                                        @if (TempData["Successdata"] != null)
+                                        {
+                                            <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+                                        }
+                                    </div>
+
+                                    @Html.ValidationSummary(true)
+                                    <div class="col-md-8 col-md-offset-2">
+                                        <div class="form-group">
+                                            <i><span class="errMsg" style="color: red"></span>
+                                            </i>
+                                            <div class="input-group">
+                                                <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+                                                <input id="emailAddress" type="email" name="emailAddress" value="" placeholder="Enter Your Email" class="form-control input-md" required />
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="input-group">
+                                                <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+                                                <input id="Pwd" name="Pwd" type="password" placeholder="Enter Your Password" class="form-control input-md" required>
+                                            </div>
+                                            <br />
+                                            <div style="text-align: right;" class="ForgotLinknew">
+                                                <a href='@Url.Action("ForgotPassword", "Employee")' title="Forgot Password?"
+                                                   onclick="HyperLinkProgressIconFunction()">Forgot Password?</a>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <br>
+                                    <br>
+                                    <div style="width: 100%; text-align: center;">
+                                        <input type="submit" value=""  onclick="ProgressIconFunction('#form1')"
+                                            style="background-image: url(@Url.Content("~/Images/loginbtn.png")) !important;height: 65px;background-color: none; background-color: transparent !important; border: none !important; width: 150px;" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+        </div>
+
+         <footer class="footer">&copy;@DateTime.Now.Year AL MANAL MANAGEMENT SYSTEM. All rights reserved  MSME @ViewBag.VerNo</footer>
+         <script src='@Url.Content("~/Content/js/jquery.validate.min.js")'></script>
+        <script>
+            function ProgressIconFunction(formid) {
+                var $form = $(formid);
+
+                if ($form.valid()) {
+                    $("#divLoading").show();
+                }
+                else {
+                    $("#divLoading").hide();
+                }
+            }
+            function HyperLinkProgressIconFunction() {
+                $("#divLoading").show();
+            }
+        </script>
+    </body>
+
+    </html>*@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Welcome to MANAL</title>
+    <link href="@Url.Content("~/favicon.ico")" rel="shortcut icon" type="image/x-icon" />
+    <!-- Global stylesheets -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,100,500,700,900" rel="stylesheet" type="text/css">
+    <link href='@Url.Content("~/global_assets/css/icons/icomoon/styles.min.css")' rel="stylesheet" type="text/css">
+    <link href='@Url.Content("~/assets/css/bootstrap.min.css")' rel="stylesheet" type="text/css">
+    <link href='@Url.Content("~/assets/css/bootstrap_limitless.min.css")' rel="stylesheet" type="text/css">
+    <link href='@Url.Content("~/assets/css/layout.min.css")' rel="stylesheet" type="text/css">
+    <link href='@Url.Content("~/assets/css/components.min.css")' rel="stylesheet" type="text/css">
+    <link href='@Url.Content("~/assets/css/colors.min.css")' rel="stylesheet" type="text/css">
+    <link href='@Url.Content("~/assets/css/custom.css")' rel="stylesheet" type="text/css">
+
+    <!-- /global stylesheets -->
+    <!-- Core JS files -->
+    <script src='@Url.Content("~/global_assets/js/main/jquery.min.js")'></script>
+    <script src='@Url.Content("~/global_assets/js/main/bootstrap.bundle.min.js")'></script>
+    <script src='@Url.Content("~/global_assets/js/plugins/loaders/blockui.min.js")'></script>
+    <!-- /core JS files -->
+    <!-- Theme JS files -->
+    <script src='@Url.Content("~/global_assets/js/plugins/forms/validation/validate.min.js")'></script>
+    <script src='@Url.Content("~/global_assets/js/plugins/forms/styling/uniform.min.js")'></script>
+    <script src='@Url.Content("~/assets/js/app.js")'></script>
+    <script src='@Url.Content("~/global_assets/js/demo_pages/login_validation.js")'></script>
+    <!-- /theme JS files -->
+</head>
+<body>
+    <div id="divLoading" style="margin: 0px; padding: 0px; position: fixed; right: 0px; top: 0px; width: 100%; height: 100%; background-color: #666666; z-index: 30001; opacity: .8; filter: alpha(opacity=70); display: none;">
+        <p style="position: absolute; top: 30%; left: 45%; color: White;">
+            <img src="@Url.Content("~/Images/Loading_icon.gif")" style="width: 50%;" />
+            <br />
+            Please wait...
+        </p>
+    </div>
+    <!-- Main navbar -->
+    <!-- Removed -->
+    <!-- /main navbar -->
+    <!-- Page content -->
+    <div class="page-content">
+        <!-- Main content -->
+        <div class="content-wrapper">
+            <!-- Content area -->
+            <div class="content d-flex justify-content-center align-items-center">
+                <!-- Login card -->
+
+                @using (Html.BeginForm("Login", "Account", FormMethod.Post, new { id = "form1", name = "form1", @class = "login-form form-validate" }))
+                {
+                    @Html.AntiForgeryToken()
+                  
+
+                <div class="card mb-0">
+                    <div class="ribbon-container">
+                        <div class="ribbon2 bg-dark-alpha">
+                            <img src='@Url.Content("~/Images/ManalLogo.png")' width="40" height="40" />
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="text-center mb-3">
+                            <img class="icon-2x text-slate-300 border-slate-300 p-3 mb-3 mt-1 w-75" src='@Url.Content("~/Images/companylogo.png")' />
+
+                            <h5 class="mb-0">Welcome to MSME - Management System Made Easy</h5>
+                            <span class="d-block text-muted">Your credentials</span>
+                        </div>
+
+
+                        <div id="divmsg">
+                            @if (TempData["alertdata"] != null)
+                            {
+                                <div class="alert alert-danger alert-styled-left alert-dismissible">
+                                    <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
+                                    <span class="font-weight-semibold">Oh snap!</span> @TempData["alertdata"].
+                                </div>
+                            }
+                            @if (TempData["Successdata"] != null)
+                            {
+
+
+                                <div class="alert alert-success border-0 alert-dismissible">
+                                    <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
+                                    <span class="font-weight-semibold">Well done!</span> @TempData["Successdata"]
+                                </div>
+                            }
+                        </div>
+
+                        <div class="form-group form-group-feedback form-group-feedback-left">
+                            <input id="emailAddress" type="email" class="form-control" name="emailAddress" placeholder="Enter a valid email address" required>
+                            <div class="form-control-feedback">
+                                <i class="icon-user text-muted"></i>
+                            </div>
+                        </div>
+                        <div class="form-group form-group-feedback form-group-feedback-left">
+                            <input type="password" class="form-control" id="Pwd" name="Pwd" placeholder="Password" required>
+                            <div class="form-control-feedback">
+                                <i class="icon-lock2 text-muted"></i>
+                            </div>
+                        </div>
+                        <div class="form-group d-flex align-items-center">
+
+
+                            <a href="@Url.Action("ForgotPassword", "Employee")" class="ml-auto" onclick="HyperLinkProgressIconFunction()">Forgot password?</a>
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" onclick="ProgressIconFunction('#form1')" class="btn btn-primary btn-block">Sign in <i class="icon-circle-right2 ml-2"></i></button>
+                        </div>
+
+
+
+                    </div>
+                </div>
+
+                }
+                <!-- /login card -->
+            </div>
+            <!-- /content area -->
+            <!-- Footer -->
+            <div class="navbar navbar-expand-lg navbar-light">
+                <div class="text-center d-lg-none w-100">
+                    <button type="button" class="navbar-toggler dropdown-toggle" data-toggle="collapse" data-target="#navbar-footer">
+                        <i class="icon-unfold mr-2"></i>
+                        Footer
+                    </button>
+                </div>
+                <div class="navbar-collapse collapse justify-content-center" id="navbar-footer">
+                    <span class="text-center navbar-text ">
+                        &copy;@DateTime.Now.Year Al Manal Management System. All rights reserved  MSME @ViewBag.VerNo
+                    </span>
+                   
+                </div>
+            </div>
+            <!-- /footer -->
+        </div>
+        <!-- /main content -->
+    </div>
+    <!-- /page content -->
+
+    <script>
+        function ProgressIconFunction(formid) {
+            var $form = $(formid);
+
+            if ($form.valid()) {
+                $("#divLoading").show();
+            }
+            else {
+                $("#divLoading").hide();
+            }
+        }
+        function HyperLinkProgressIconFunction() {
+            $("#divLoading").show();
+        }
+    </script>
+</body>
+
+</html>
+

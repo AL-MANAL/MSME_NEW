@@ -1,0 +1,541 @@
+﻿@using PagedList;
+@using PagedList.Mvc;
+
+@model List<ISOStd.Models.GenerateInspectionChecklistModels>
+
+    @{
+        ViewBag.Title = "InspectionList";
+        string fromdate = DateTime.Now.AddMonths(-1).ToString("dd/MM/yyyy"), todate = DateTime.Now.ToString("dd/MM/yyyy");
+        string chked = Convert.ToString(ViewBag.chkAll);
+        ISOStd.Models.clsGlobal objGlobaldata = new ISOStd.Models.clsGlobal();
+        if (ViewBag.InspfromDate != null && ViewBag.InsptoDate != null)
+        {
+            fromdate = ViewBag.InspfromDate;
+            todate = ViewBag.InsptoDate;
+        }
+    }
+
+<style>
+    .hidden {
+        display: none !important;
+    }
+</style>
+
+    @section featured {
+
+        <div class="page-header page-header-light">
+
+            <div class="page-header-content header-elements-md-inline">
+                <div class="page-title d-flex">
+                    <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+                </div>
+            </div>
+
+            <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+                <div class="d-flex">
+                    <div class="breadcrumb">
+                        <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                            <span class="breadcrumb-item"> Home</span>
+                        </a>
+                        <a href="@Url.Action("InspectionList", "Inspection", null)" class="breadcrumb-item">
+                            <span class="breadcrumb-item"> Inspections</span>
+                        </a>
+                        <span class="breadcrumb-item active">Inspection Details List</span>
+                    </div>
+                    <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+                </div>
+
+                @*<div class="header-elements d-none">
+                    <div class="breadcrumb justify-content-center">
+                        <div class="breadcrumb-elements-item dropdown p-0">
+                            <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                                <i class="icon-gear mr-2"></i>
+                                Settings
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right">
+
+                                <div class="dropdown-divider"></div>
+                                <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>*@
+            </div>
+        </div>
+    }
+
+        <div class="card">
+            <div class="card-header header-elements-inline bg-primary">
+                <h5 class="card-title">Inspection List</h5>
+                <div class="header-elements">
+                    <div class="list-icons">
+                        <a class="list-icons-item" data-action="collapse"></a>
+
+                    </div>
+                </div>
+            </div>
+            @*<div class="card-body">
+                <div class="options d-flex flex-fill">
+                    @using (Html.BeginForm("InspectionChecklistList", "Inspection", FormMethod.Post, new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+                    {
+
+                        <input type="hidden" id="Cate" name="Cate" value="@ViewBag.Cate" />
+                        if (ViewBag.Branch != null)
+                        {
+                            <select class="select-fixed-single" data-fouc id="branch_name" name="branch_name" onchange="getDetails()">
+                                <option value='' hidden>Branch</option>
+                                @if (ViewBag.Branch != null)
+                                {
+                                    foreach (var item in ViewBag.Branch)
+                                    {
+                                        if (item.Value == ViewBag.Branch_name)
+                                        {
+                                            <option value='@item.Value' selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                        }
+                    }
+                </div>
+            </div>*@
+
+            <div class="card-body">
+                <input type="hidden" name="cat" id="cat" value="@ViewBag.Cate" />
+                <table class="table table-bordered table-striped table-hover datatable-responsive" id="table1">
+
+                    <thead>
+                        <tr>
+                            <th>
+                                Sl No
+                            </th>
+                            @*<th>
+            No
+        </th>*@
+                            <th>
+                                @Html.DisplayNameFor(model => model.First().Category)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.First().Inspection_date)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.First().Inspection_by)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.First().branch)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.First().Department)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.First().Location)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.First().Project)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.First().TagNo)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.First().Comment)
+                            </th>
+                            <th class="not-export-column">
+                                Edit
+                            </th>
+                            @*@if (ViewBag.DeleteFlg != null && ViewBag.DeleteFlg == true)
+        {*@
+                            <th class="not-export-column">Delete </th>
+                            @*}*@
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Count() > 0)
+                        {
+
+                            int i = 0;
+                            foreach (var item in Model)
+                            {
+
+                                i = i + 1;
+                        <tr>
+
+                            <td>
+                                @Html.ActionLink(i.ToString(), "InspectionChecklistDetails", new { id_inspection_checklist = item.id_inspection_checklist }, new { data_toggle = "popover", data_trigger = "hover", id = item.id_inspection_checklist, onclick = "HyperLinkProgressIconFunction()" })
+                            </td>
+                            @*<td>
+            @Html.ActionLink(item.id_inspection_checklist.ToString(), "InspectionChecklistDetails", new { id_inspection_checklist = item.id_inspection_checklist }, new { data_toggle = "popover", data_trigger = "hover", id = item.id_inspection_checklist, onclick = "HyperLinkProgressIconFunction()" })
+        </td>*@
+
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Category)
+                            </td>
+                            <td>
+                                @if (item.Inspection_date > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    @item.Inspection_date.ToString("dd/MM/yyyy")
+                                }
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Inspection_by)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.branch)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Department)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Location)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Project)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.TagNo)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Comment)
+                            </td>
+                            <td>
+                                <a href='@Url.Action("InspectionChecklistEdit", "Inspection", new { id_inspection_checklist = item.id_inspection_checklist })' title="Edit Calibration details">
+                                    <span class="badge badge-info">Edit</span>
+                                </a>
+
+                            </td>
+                            @*@if (ViewBag.DeleteFlg != null && ViewBag.DeleteFlg == true)
+        {*@
+                            <td>
+
+                                @*<a href='@Url.Action("CustomerEnquiryDelete", "CustomerEnquiry", new { enquiry_id = item.Enquiry_id.ToString() })' title="Delete Enquiry" >*@
+
+                                <span class="badge badge-danger" title="Delete Document" onclick="DeleteItems(@item.id_inspection_checklist)" style="cursor:pointer;">Delete</span>
+                            </td>
+                            @*}*@
+
+                        </tr>
+                            }
+                        }
+
+                    </tbody>
+                </table>
+                
+                <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+                    @Html.ActionLink("Back to List", "InspectionList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+                </div>
+            </div>
+        </div>
+
+    @section scripts {
+        @Scripts.Render("~/bundles/jqueryval")
+        <script type="text/javascript">            
+
+   $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+
+        });
+                                                         
+              function setData(id) {
+
+                var set_data = '';
+                var element = $(this);
+                var id = element.attr("id");
+                    $.ajax({
+                    url: '@Url.Action("InspectionChecklistInfo", "Inspection")',
+                    methos: "post",
+                    async: false,
+                    data: { id: id },
+                    success: function (data) {
+                        set_data = data;
+                    }
+                });
+                return set_data;
+            }
+
+            var table1 = function () {
+
+                var ShowEdit = @(objGlobaldata.GetCurrentUserSession().HseInsp.Contains("3") ? "true" : "false");
+                var ShowDownld = @(objGlobaldata.GetCurrentUserSession().HseInsp.Contains("4") ? "true" : "false");
+                var ShowDel = @(objGlobaldata.GetCurrentUserSession().HseInsp.Contains("5") ? "true" : "false");
+
+                var _componentDatatableBasic = function () {
+                    if (!$().DataTable) {
+                        console.warn('Warning - datatables.min.js is not loaded.');
+                        return;
+                    }
+
+                    //Setting datatable defaults
+                    $.extend($.fn.dataTable.defaults, {
+                        autoWidth: false,
+                        responsive: true,
+                        columnDefs: [{
+                            orderable: false,
+                            width: 100,
+                            targets: [10,11]
+                        }, {
+                                'targets': [11],
+                                'visible': ShowDel
+                            }, {
+                                'targets': [10],
+                                'visible': ShowEdit
+                            }],
+
+                        colReorder: false,
+                        dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                        //dom: 'lBfrtip',
+                        language: {
+                            search: '<span>Filter:</span> _INPUT_',
+                            searchPlaceholder: 'Type to filter...',
+                            lengthMenu: '<span>Show:</span> _MENU_',
+                            paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                        }
+                    });
+
+                       var myClass = "";
+                var Delclass= @(objGlobaldata.GetCurrentUserSession().HseInsp.Contains("4") ? "true" : "false");
+                    if (Delclass == false) { myClass = 'hidden' };
+
+                    var table = $('#table1').DataTable({
+                        drawCallback: function () {
+                            $('[data-toggle="popover"]').popover({
+                                html: true,
+                                content: setData,
+                                container: 'body'
+                                //data: setData,
+                            });
+                        },
+                        lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                        colReorder: {
+                            fixedColumnsLeft: 1
+                        },
+                        stateSave: true,
+                        stateSaveParams: function (settings, data) {
+                            for (var i = 0, ien = data.columns.length; i < ien; i++) {
+                                delete data.columns[i].visible;
+                                delete data.columns[i].search;
+                            }
+                        },
+                        scrollY: '350px',
+                        scrollCollapse: true,
+                       
+                        keys: {
+                            className: 'focus focus-success'
+                        },
+
+                        buttons: {
+                            buttons: [
+                                {
+                                    extend: 'colvis',
+                                    text: '<i class="icon-three-bars"></i>',
+                                    className: 'btn bg-blue btn-icon dropdown-toggle',
+                                    columns: ':visible:not(.not-export-column)'
+                                }
+                            ]
+                        }
+                    });
+                    // Adjust columns on window resize
+                    setTimeout(function () {
+                        $(window).on('resize', function () {
+                            table.columns.adjust();
+                        });
+                    }, 100);
+
+
+                    //Redraw table on click toggle. -------table.columns.adjust doesn't work properly upon calling after toggle (width increase/decrease = redraw table.).
+                    $('.sidebar-control').on('click', function () {
+
+                        setTimeout(function () {
+                            //alert("gii");
+
+                            table.columns.adjust().draw();
+                            $("#table1").resize();
+                        }, 100);
+
+                    });
+                    //}
+
+                    $('#table1').on('page.dt', function () {
+                        //table.draw();
+                        //alert("zzz1");
+                        $("#table1").resize();
+
+                    });
+
+                    $('#table1').on('column-visibility.dt', function () {
+                        //table.draw();
+                        //alert("zzz2");
+                        $("#table1").resize();
+
+                    });
+
+                    $('#table1').on('order.dt', function () {
+                        //table.draw();
+                        //alert("zzz3");
+                        $("#table1").resize();
+
+                    });
+
+
+                    $('#table1').on('responsive-display.dt', function () {
+                        //table.draw();
+                        //alert("zzz4");
+                        $("#table1").resize();
+
+                    });
+
+                    $('#table1').on('responsive-resize.dt', function () {
+                        //table.draw();
+                        //alert("zzz4");
+                        $("#table1").resize();
+
+                    });
+                };
+
+                // Select2 for length menu styling
+                var _componentSelect2 = function () {
+                    if (!$().select2) {
+                        console.warn('Warning - select2.min.js is not loaded.');
+                        return;
+                    }
+
+                    // Initialize
+                    $('.dataTables_length select').select2({
+                        minimumResultsForSearch: Infinity,
+                        dropdownAutoWidth: true,
+                        width: 'auto'
+                    });
+                };
+
+
+                //
+                // Return objects assigned to module
+                //
+
+                return {
+                    init: function () {
+                        _componentDatatableBasic();
+                        _componentSelect2();
+                    }
+                }
+            }();
+
+
+            // Initialize module
+            // ------------------------------
+
+            document.addEventListener('DOMContentLoaded', function () {
+                table1.init();
+            });
+
+        function DeleteItems(id_inspection_checklist) {
+
+            bootbox.confirm({
+                title: 'Confirm dialog',
+                message: 'Are you Sure you want to Delete the current Record?',
+                buttons: {
+                    confirm: {
+                        label: 'Yes',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'Cancel',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (r) {
+                   if (r == true) {
+                    jQuery.ajax({
+                          url: '@Url.Action("InspectionChecklistDocDelete", "Inspection")',
+                        type: 'POST',
+                        dataType: "json",
+                        data: { 'id_inspection_checklist': id_inspection_checklist },
+                        success: function (result) {
+
+                            //var params = {
+                            //    View: 1
+                            //};
+
+                            ////// Add new params to the querystring dictionary
+                            //queryString = $.param(params);
+
+                            //window.location.href =
+                            //    window.location.protocol + "//" +
+                            //    window.location.host +
+                            //    window.location.pathname +
+                            //   '?id_AuditChecklist=' + id_AuditChecklist;
+                            var params = {
+                                View: 1
+                            };
+
+                            //// Add new params to the querystring dictionary
+                            queryString = $.param(params);
+
+                            window.location.href =
+                                window.location.protocol + "//" +
+                                window.location.host +
+                                window.location.pathname +
+                                '?' + queryString;
+                        }
+                    });
+                    return true;
+                }
+                   else if (r == false) {
+
+                       bootbox.hideAll();
+                       return false;
+
+                }
+
+                }
+            });
+
+            }
+
+function getDetails() {
+    var branch_name = document.getElementById("branch_name").value;
+    var CategoryName = document.getElementById("cat").value;
+
+                   jQuery.ajax({
+                                url: '@Url.Action("InspectionlistListSearch", "Inspection")',
+                        type: 'POST',
+                        dataType: "json",
+                       data: { 'branch_name': branch_name, 'CategoryName': CategoryName },
+                        success: function (result) {
+                            var params = {
+                                branch_name: branch_name
+                            };
+                            queryString = $.param(params);
+
+                            window.location.href =
+                                window.location.protocol + "//" +
+                                window.location.host +
+                                window.location.pathname +
+                               '?' + queryString;
+
+                        }
+                    });  
+            }
+        </script>
+
+    }

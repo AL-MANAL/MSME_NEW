@@ -1,0 +1,117 @@
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `insert_expeditor_order_item`(
+    in POrder_UploadedId int,
+	IN Pcustomer_sale_order_id int,
+    in Pcustomer_id INT(11),
+    in Pt_customer_sale_orderscol varchar(100),
+    in Pspecial_permit_status varchar(100),
+	in Pcustomer_delivery_date DATETIME,
+    in Pcustomer_payment_terms VARCHAR(200),
+    in Pcustomer_delivery_terms VARCHAR(200),
+    in Pcustomer_nmr_requirements VARCHAR(200),
+	/*in Psupplier_order varchar(100),
+    in Psupplier_order_date DATETIME,*/
+    in Psupplier_delivery_date DATETIME,
+    in Psupplier_payment_terms VARCHAR(250),
+    in Psupplier_delivery_terms VARCHAR(250),
+    in Psupplier_nmr_requirements VARCHAR(250),
+    in Psaber_requirements varchar(250),
+    in Pbill_no varchar(100),
+    in Pbill_date DATETIME,
+    in Pbill_quantity VARCHAR(45),
+    in Peta DATETIME,
+    in Pmode_of_shipping VARCHAR(250),
+	in Pshipping_doc_rect VARCHAR(250),
+    in Pshipping_doc_to_ccl_dept VARCHAR(250),
+    in Pmaterial_recieved_status VARCHAR(250),
+    in Pprr_no varchar(100),
+    in Pprr_date DATETIME,
+    in Psrv_no varchar(100),
+    in Psrv_date DATETIME,
+    in Pasn_no varchar(100),
+    in Pasn_quantity VARCHAR(45),
+    in Pmaterial_delivery_to_customer_status varchar(100),
+    in Pdelivery_no varchar(100),
+    in Pdelivery_date DATETIME,
+    in Pkanoo_invoice_no varchar(100),
+    in Pkanoo_invoice_date DATETIME,
+    in Pfollow_upStatus VARCHAR(5000),
+    in Pdelay_reasons VARCHAR(500),
+    in Proot_cause_of_details VARCHAR(500),
+    in PFollowUpStatus VARCHAR(500),
+    in PFollowUpDateTime datetime,
+    in PNextFollowUpDateTime datetime,
+    in PShipping_Arrival_Date datetime,
+    in PCustomerReceiptofMaterialGRDate datetime,
+    in PDeliveryNoteNo varchar(100),
+    in PDeliveryNoteDate datetime,
+    in PDeliveryStatus varchar(250),
+    in PDelayType varchar(250),
+    in PActivityTargetCompletionDate datetime,
+    in PInspectionRequirments varchar(250),
+    in PItemStatus varchar(250)
+)
+BEGIN
+	if(exists(select 0 from t_expeditor_orders where Order_UploadedId = POrder_UploadedId)) then
+
+		update t_expeditor_orders set 
+		supplier_delivery_date= psupplier_delivery_date,supplier_payment_terms = psupplier_payment_terms,
+		supplier_delivery_terms= psupplier_delivery_terms,supplier_nmr_requirements = psupplier_nmr_requirements,
+		saber_requirements= psaber_requirements,bill_no = pbill_no,bill_date= pbill_date,bill_quantity = pbill_quantity,
+		eta = peta,mode_of_shipping = pmode_of_shipping,shipping_doc_rect = pshipping_doc_rect,
+		shipping_doc_to_ccl_dept = pshipping_doc_to_ccl_dept,material_recieved_status = pmaterial_recieved_status,
+		prr_no = pprr_no,prr_date = pprr_date,srv_no = psrv_no,srv_date = psrv_date,asn_no = pasn_no,
+		asn_quantity = pasn_quantity,material_delivery_to_customer_status = pmaterial_delivery_to_customer_status,
+		delivery_no = pdelivery_no,delivery_date = pdelivery_date,
+		kanoo_invoice_no = pkanoo_invoice_no,kanoo_invoice_date = pkanoo_invoice_date,follow_up_status = Pfollow_upStatus,
+		delay_reasons = pdelay_reasons,root_cause_of_details = proot_cause_of_details,Shipping_Arrival_Date = PShipping_Arrival_Date,
+		CustomerReceiptofMaterialGRDate = PCustomerReceiptofMaterialGRDate,DeliveryNoteNo= PDeliveryNoteNo,
+		DeliveryStatus = PDeliveryStatus,DelayType = PDelayType,ActivityTargetCompletionDate = PActivityTargetCompletionDate,
+		InspectionRequirments = PInspectionRequirments,ItemStatus = PItemStatus,Customer_payment_terms = PCustomer_payment_terms,
+		Customer_nmr_requirements = PCustomer_nmr_requirements,Customer_delivery_terms = PCustomer_delivery_terms,
+        SpecialPermitStatus = PSpecial_permit_status,NextFollowUpDateTime = PNextFollowUpDateTime,
+        DeliveryNoteDate = PDeliveryNoteDate
+		where Order_UploadedId = POrder_UploadedId;
+
+		/*update t_expeditor_order_uploads set 
+		AdvancePaymentDoneOn = PAdvancePaymentDoneOn,SupplierPONo = Psupplier_order,ShipmentMode =Pmode_of_shipping
+        where id = POrder_UploadedId;*/
+
+		insert into t_expeditor_order_followup (FollowUpStatus,FollowUpDateTime,expeditor_Order_Id)
+        Select PFollowUpStatus,PFollowUpDateTime,POrder_UploadedId;
+		
+    else
+		insert into t_expeditor_orders(customer_sale_order_id,Order_UploadedId)
+        select pcustomer_sale_order_id,POrder_UploadedId;
+        
+        		update t_expeditor_orders set
+		supplier_delivery_date= psupplier_delivery_date,supplier_payment_terms = psupplier_payment_terms,
+		supplier_delivery_terms= psupplier_delivery_terms,supplier_nmr_requirements = psupplier_nmr_requirements,
+		saber_requirements= psaber_requirements,bill_no = pbill_no,bill_date= pbill_date,bill_quantity = pbill_quantity,
+		eta = peta,mode_of_shipping = pmode_of_shipping,shipping_doc_rect = pshipping_doc_rect,
+		shipping_doc_to_ccl_dept = pshipping_doc_to_ccl_dept,material_recieved_status = pmaterial_recieved_status,
+		prr_no = pprr_no,prr_date = pprr_date,srv_no = psrv_no,srv_date = psrv_date,asn_no = pasn_no,
+		asn_quantity = pasn_quantity,material_delivery_to_customer_status = pmaterial_delivery_to_customer_status,
+		delivery_no = pdelivery_no,delivery_date = pdelivery_date,
+		kanoo_invoice_no = pkanoo_invoice_no,kanoo_invoice_date = pkanoo_invoice_date,follow_up_status = Pfollow_upStatus,
+		delay_reasons = pdelay_reasons,root_cause_of_details = proot_cause_of_details,Shipping_Arrival_Date = PShipping_Arrival_Date,
+		CustomerReceiptofMaterialGRDate = PCustomerReceiptofMaterialGRDate,DeliveryNoteNo= PDeliveryNoteNo,
+		DeliveryStatus = PDeliveryStatus,DelayType = PDelayType,ActivityTargetCompletionDate = PActivityTargetCompletionDate,
+		InspectionRequirments = PInspectionRequirments,ItemStatus = PItemStatus,Customer_payment_terms = PCustomer_payment_terms,
+		Customer_nmr_requirements = PCustomer_nmr_requirements,
+		Customer_delivery_terms = PCustomer_delivery_terms,SpecialPermitStatus = PSpecial_permit_status,
+        NextFollowUpDateTime = PNextFollowUpDateTime,
+        DeliveryNoteDate = PDeliveryNoteDate
+		where Order_UploadedId = POrder_UploadedId;
+        
+        /*update t_expeditor_order_uploads set 
+		AdvancePaymentDoneOn = PAdvancePaymentDoneOn,SupplierPONo = Psupplier_order,ShipmentMode =Pmode_of_shipping
+        where id = POrder_UploadedId;*/
+
+		insert into t_expeditor_order_followup (FollowUpStatus,FollowUpDateTime,expeditor_Order_Id)
+        Select PFollowUpStatus,PFollowUpDateTime,POrder_UploadedId;
+        
+	
+    End If;
+END$$
+DELIMITER ;

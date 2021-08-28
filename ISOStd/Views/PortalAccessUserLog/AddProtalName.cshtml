@@ -1,0 +1,376 @@
+﻿@model ISOStd.Models.PortalAccessUserLogModels
+@using System.Data;
+
+@{
+    ViewBag.Title = "AddItems";
+    DataSet dsItems = new DataSet();
+    if (ViewBag.dsItems != null)
+    {
+        dsItems = ViewBag.dsItems;
+    }
+    ISOStd.Models.clsGlobal ObjGlobal = new ISOStd.Models.clsGlobal();
+}
+
+
+@section featured {
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <span class="breadcrumb-item active">
+                        Portal Details
+                    </span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+}
+<div class="row">
+    <div class="col-md-6">
+
+        <!-- Basic layout-->
+        <div class="card">
+            <div class="card-header header-elements-inline">
+                <h5 class="card-title">Add Portal Name</h5>
+                <div class="header-elements">
+                    <div class="list-icons">
+                        <a class="list-icons-item" data-action="collapse"></a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body">
+                @using (Html.BeginForm("AddProtalName", "PortalAccessUserLog", FormMethod.Post, new { id = "form1", name = "form1" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary(true)
+
+                    <div class="container-fluid">
+                        <table class="table table-lg">
+
+                            <tbody>
+                                @*<tr>
+                                    <td colspan="2" style="background-color: #4cc4dd; color: #fff; font-weight: bold;">Portal Items</td>
+                                </tr>*@
+                                <tr>
+                                    <td>Portal Name</td>
+                                    <td> <input class="form-control" type="text" id="portal_name" name="portal_name" @*value="@Model.portal_name"*@ required /> </td>
+                                </tr>
+                                <tr>
+                                    <td>Ministry Name</td>
+                                    <td> <input class="form-control" type="text" id="ministry_name" name="ministry_name" @*value="@Model.ministry_name"*@ required /> </td>
+                                </tr>
+                                <tr>
+                                    <td>Ministry URL</td>
+                                    <td> <input class="form-control" type="text" id="ministry_url" name="ministry_url" @*value="@Model.ministry_name"*@ required /> </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                   <div class="card-footer bg-white ml-auto">
+                       <button type="submit" name="button" id="btncreate" value="Save" class="btn bg-indigo-400 float-right" onclick="ProgressIconFunction('#form1')">Submit<i class="icon-paperplane ml-2"></i></button>
+                   </div> 
+                }
+            </div>
+        </div>
+    </div>
+</div>
+<div>
+    <div class="col-md-12">
+        <!-- Basic layout-->
+        <div class="card">
+            <div class="card-header header-elements-inline">
+                <h5 class="card-title">Portal Details</h5>
+                <div class="header-elements">
+                    <div class="list-icons">
+                        <a class="list-icons-item" data-action="collapse"></a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <div class="container-fluid">
+                    <table id="tbl_Agenda" class="table table-lg">
+                        <tbody>
+                            @if (dsItems.Tables.Count > 0 && dsItems.Tables[0].Rows.Count > 0)
+                            {
+                                @*<tr>
+                                    <td colspan="3" style="background-color: #4cc4dd; color: #fff; font-weight: bold;">Items List</td>
+                                </tr>*@
+                                <tr class="row" style="background-color: #e5eafe; color: #0099ff; font-weight: bold;">
+                                    <th class="col col-xs-10">Portal Name</th>
+                                    <th class="col col-xs-12">Ministry Name</th>
+                                    <th class="col col-xs-10">Ministry URL</th>
+                                    <th class="col">Action</th>
+                                </tr>
+                                for (int item = 0; item < dsItems.Tables[0].Rows.Count; item++)
+                                {
+                                    <tr class="row">
+                                        <td class="col col-xs-10">
+                                            <input class="form-control" type="text" id="portal_name @dsItems.Tables[0].Rows[item]["id_portal_ministry_name"].ToString()"
+                                                   name="portal_name @dsItems.Tables[0].Rows[item]["id_portal_ministry_name"].ToString()" value="@dsItems.Tables[0].Rows[item]["portal_name"].ToString()" />
+                                        </td>
+                                        <td class="col col-xs-12">
+                                            <input class="form-control" type="text" id="ministry_name @dsItems.Tables[0].Rows[item]["id_portal_ministry_name"].ToString()"
+                                                   name="ministry_name @dsItems.Tables[0].Rows[item]["id_portal_ministry_name"].ToString()"
+                                                   value="@dsItems.Tables[0].Rows[item]["ministry_name"].ToString()" title="@dsItems.Tables[0].Rows[item]["ministry_name"].ToString()" />
+                                        </td>
+                                        <td class="col col-xs-10">
+                                            <input class="form-control" type="text" id="ministry_url @dsItems.Tables[0].Rows[item]["id_portal_ministry_name"].ToString()"
+                                                   name="ministry_url @dsItems.Tables[0].Rows[item]["id_portal_ministry_name"].ToString()"
+                                                   value="@dsItems.Tables[0].Rows[item]["ministry_url"].ToString()" title="@dsItems.Tables[0].Rows[item]["ministry_url"].ToString()" />
+                                        </td>
+                                        <td class="col">
+                                            <span class='badge badge-info' style='cursor: pointer;' title='Update Item' onclick="UpdateItems(@dsItems.Tables[0].Rows[item]["id_portal_ministry_name"].ToString())">Edit</span>
+                                            <span class='badge badge-danger' onclick="DeleteItems(@dsItems.Tables[0].Rows[item]["id_portal_ministry_name"].ToString())" style='cursor:pointer;' title='Delete Item'>Delete</span>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!-- /basic layout -->
+    </div>
+</div>
+
+
+@section Scripts {
+    <script type="text/javascript">
+         $(document).ready(function () {
+
+                                        @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+         });
+        //DisplayPortal();
+
+        function UpdateItems(id_portal_ministry_name, portal_name, ministry_name, ministry_url) {
+            var portal_name = document.getElementById("portal_name " + id_portal_ministry_name).value;
+            var ministry_name = document.getElementById("ministry_name " + id_portal_ministry_name).value;
+            var ministry_url = document.getElementById("ministry_url " + id_portal_ministry_name).value;
+
+             jQuery.ajax({
+                 url: '@Url.Action("UpdatePortalName", "PortalAccessUserLog")',
+                 type: 'POST',
+                 dataType: "json",
+                 data: { 'id_portal_ministry_name': id_portal_ministry_name, 'portal_name': portal_name, 'ministry_name': ministry_name, 'ministry_url': ministry_url },
+                 success: function (result) {
+                     //var params = {
+                     //    Header_id: header_id
+                     //};
+                     ////// Add new params to the querystring dictionary
+                     //queryString = $.param(params);
+
+                     window.location.href =
+                         window.location.protocol + "//" +
+                         window.location.host +
+                         window.location.pathname;
+                         //window.location.pathname +
+                         //"?" +(queryString);
+                 }
+             });
+         }
+                     
+
+        function DeleteItems(id_portal_ministry_name)
+        {
+             var token = $('[name=__RequestVerificationToken]').val();
+             var headers = {};
+             headers["__RequestVerificationToken"] = token;
+             bootbox.confirm({
+                 title: 'Confirm dialog',
+                 message: 'Are you Sure you want to Delete the current protal details?',
+                 buttons: {
+                     confirm: {
+                         label: 'Yes',
+                         className: 'btn-primary'
+                     },
+                     cancel: {
+                         label: 'Cancel',
+                         className: 'btn-link'
+                     }
+                 },
+                 callback: function (r) {
+                     if (r == true) {
+
+                     jQuery.ajax({
+                         url: '@Url.Action("DeletePortalName", "PortalAccessUserLog")',
+                         type: 'POST',
+                         dataType: "json",
+                         headers: headers,
+                         data: { 'id_portal_ministry_name': id_portal_ministry_name},
+                         success: function (result) {
+                             //var params = {
+                             //    Header_id: header_id
+                             //};
+                             ////// Add new params to the querystring dictionary
+                             //queryString = $.param(params);
+
+                             window.location.href =
+                                 window.location.protocol + "//" +
+                                 window.location.host +
+                                 window.location.pathname;
+                                // window.location.pathname +
+                                //'?' + queryString;
+                         }
+                    });
+                         return true;
+                     }
+                     else if (r == false) {
+                         bootbox.hideAll();
+                         return false;
+                     }
+
+                 }
+             });
+        }
+
+          
+         function DisplayPortal() {
+            
+                 //document.getElementById("item_desc").readOnly = true;
+                 //document.getElementById("item_desc").required = false;
+                 //document.getElementById("item_desc").style.background = "#efefe6";
+                 //document.getElementById("item_fulldesc").readOnly = true;
+                 //document.getElementById("item_fulldesc").required = false;
+                 //document.getElementById("item_fulldesc").style.background = "#efefe6";
+                                 
+             jQuery.ajax({
+                 url: '@Url.Action("GetPortalItems", "PortalAccessUserLog")',
+                 type: 'POST',
+                 dataType: "json",
+                 //data: { 'Header_id': header_id.toString() },
+                 success: function (result) {
+                     var table = document.getElementById("tbl_Agenda");
+                     //document.getElementById("dvAgendaItems").style.display = "";
+                     //document.getElementById("divAgendasTitle").style.display = "";
+
+                     while (table.rows.length > 0) {
+                         table.deleteRow(0);
+                     }
+
+                     if (result != "") {
+
+                        var thTitleRow = table.insertRow();
+                         thTitleRow.style = "background-color: #4cc4dd; color: #fff; font-weight: bold;";
+                         var cellTitle0 = thTitleRow.insertCell(0);
+
+                         cellTitle0.innerHTML = "Items List";
+                         table.rows[0].cells[0].colSpan = 3;
+                         table.rows[0].cells[0].style = "color:#fff";
+
+                         var theaderRow = table.insertRow();
+                         theaderRow.className = "row";
+                         theaderRow.style = "background-color: #e5eafe; font-weight: bold;";
+                         var cellth0 = theaderRow.insertCell(0);
+                         cellth0.className = "col col-xs-4";
+                         var cellth1 = theaderRow.insertCell(1);
+                         cellth1.className = "col col-xs-6";
+                         var cellth2 = theaderRow.insertCell(2);
+                         cellth2.className = "col col-xs-4";
+                         var cellth3 = theaderRow.insertCell(3);
+                         cellth3.className = "col";
+
+                         cellth0.innerHTML = "<th>Portal Name</th>";
+                         cellth1.innerHTML = "<th>Ministry Name</th>";
+                         cellth2.innerHTML = "<th>Ministry URL</th>";
+                         cellth3.innerHTML = "<th>Action</th>";
+
+                         table.rows[1].cells[0].style = "color:#0099ff";
+                         table.rows[1].cells[1].style = "color:#0099ff";
+                         table.rows[1].cells[2].style = "color:#0099ff;";
+                         table.rows[1].cells[3].style = "color:#0099ff;";
+
+                         var list = result;
+                         $.each(list, function (index, item) {
+
+                             // Create an empty <tr> element and add it to the 1st position of the table:
+                             var row = table.insertRow();
+                                 row.className = "row";
+                             // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+
+                                var cell0 = row.insertCell(0);
+                                cell0.className = "col col-xs-4";
+                                var cell1 = row.insertCell(1);
+                                cell1.className = "col col-xs-6";
+                                var cell2 = row.insertCell(2);
+                                cell2.className = "col col-xs-4";
+                                var cell3 = row.insertCell(3);
+                                cell3.className = "col";
+
+                             //var AgendaName = item.Text;
+                             var Id = item.Value;
+
+                             var data = item.Text;
+                             var dataarray = new Array();
+                             dataarray = data.split("__");
+                             dataarray1 = data.split("::");
+                             dataarray2 = dataarray[1].split("::");
+
+                             cell0.innerHTML = " <input class='form-control' type='text' id='portal_name " + Id + "' name='portal_name " + Id + "' value='" + dataarray[0] + "'/>";
+                             cell1.innerHTML = " <input class='form-control' type='text' id='ministry_name " + Id + "' name='ministry_name " + Id + "' value='" + dataarray2[0] + "' title='" + dataarray2[0] + "'/>";
+                             cell2.innerHTML = " <input class='form-control' type='text' id='ministry_url " + Id + "' name='ministry_url " + Id + "' value='" + dataarray1[1] + "' title='" + dataarray1[1] + "'/>";
+                             cell3.innerHTML =
+
+                                 "<span class='badge badge-info' style='cursor: pointer;' title='Update Item'  onclick='UpdateItems(" + item.Value + ")'>Edit</span>"
+                                 + " <span class='badge badge-danger' onclick='DeleteItems(" + item.Value + ")' style='cursor:pointer;' title='Delete Agenda'>Delete</span>";
+                         });
+                        }
+                        else {
+                             bootbox.alert({
+                         title: 'Portal Details',
+                         message: 'No Data exists, please add Details and then try again.'
+                     });
+                        }
+                 }
+                 });
+             }         
+            
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+
+}

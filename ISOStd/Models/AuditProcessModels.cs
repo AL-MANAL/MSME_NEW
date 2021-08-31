@@ -382,7 +382,7 @@ namespace ISOStd.Models
                         sql = sql + "insert into t_audit_process_approval(Audit_Id,approver) values ('" + Audit_Id + "','" + item + "');";
                     }
                     objGlobaldata.ExecuteQuery(sql);
-                    if (Audit_Id > 0)
+                    if (Audit_Id > 0 && objAuditList.Obj.Count > 0)
                     {
                         objAuditList.Obj[0].Audit_Id = Audit_Id.ToString();
                         FunAddAuditPlanList(objAuditList);

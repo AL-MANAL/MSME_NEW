@@ -25,6 +25,560 @@ namespace ISOStd.Models
         private object fileUploader;
         private object mail;
 
+
+        //-----------------------------------6/25/2021--------------------------------------------
+
+        public string GetKPIPotentialStatusById(string id)
+        {
+            try
+            {
+                DataSet dsEmp = Getdetails("select item_desc as Name from dropdownitems, dropdownheader where dropdownheader.header_id=dropdownitems.header_id "
+                      + "and header_desc='KPI Potential Status' and (item_id='" + id + "' or item_desc='" + id + "')");
+                if (dsEmp.Tables.Count > 0 && dsEmp.Tables[0].Rows.Count > 0)
+                {
+                    return (dsEmp.Tables[0].Rows[0]["Name"].ToString());
+                }
+            }
+            catch (Exception ex)
+            {
+                AddFunctionalLog("Exception in GetKPIPotentialStatusById: " + ex.ToString());
+            }
+            return "";
+        }
+        public MultiSelectList GetKPIPotentialStatusList()
+        {
+            DropdownList objReportList = new DropdownList();
+            objReportList.lstDropdown = new List<DropdownItems>();
+            try
+            {
+                string sSqlstmt = "select item_id as Id, item_desc as Name from dropdownitems, dropdownheader where dropdownheader.header_id=dropdownitems.header_id "
+                    + "and header_desc='KPI Potential Status' order by item_desc asc";
+                DataSet dsEmp = Getdetails(sSqlstmt);
+                if (dsEmp.Tables.Count > 0 && dsEmp.Tables[0].Rows.Count > 0)
+                {
+                    for (int i = 0; i < dsEmp.Tables[0].Rows.Count; i++)
+                    {
+                        DropdownItems objReport = new DropdownItems()
+                        {
+                            Id = dsEmp.Tables[0].Rows[i]["Id"].ToString(),
+                            Name = dsEmp.Tables[0].Rows[i]["Name"].ToString()
+                        };
+                        objReportList.lstDropdown.Add(objReport);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                AddFunctionalLog("Exception in GetKPIPotentialStatusList: " + ex.ToString());
+            }
+
+            return new MultiSelectList(objReportList.lstDropdown, "Id", "Name");
+        }
+
+        public string GetKPIPotentialImpactById(string id)
+        {
+            try
+            {
+                DataSet dsEmp = Getdetails("select item_desc as Name from dropdownitems, dropdownheader where dropdownheader.header_id=dropdownitems.header_id "
+                      + "and header_desc='KPI Potential Impact' and (item_id='" + id + "' or item_desc='" + id + "')");
+                if (dsEmp.Tables.Count > 0 && dsEmp.Tables[0].Rows.Count > 0)
+                {
+                    return (dsEmp.Tables[0].Rows[0]["Name"].ToString());
+                }
+            }
+            catch (Exception ex)
+            {
+                AddFunctionalLog("Exception in GetKPIPotentialImpactById: " + ex.ToString());
+            }
+            return "";
+        }
+        public MultiSelectList GetKPIPotentialImpactList()
+        {
+            DropdownList objReportList = new DropdownList();
+            objReportList.lstDropdown = new List<DropdownItems>();
+            try
+            {
+                string sSqlstmt = "select item_id as Id, item_desc as Name from dropdownitems, dropdownheader where dropdownheader.header_id=dropdownitems.header_id "
+                    + "and header_desc='KPI Potential Impact' order by item_desc asc";
+                DataSet dsEmp = Getdetails(sSqlstmt);
+                if (dsEmp.Tables.Count > 0 && dsEmp.Tables[0].Rows.Count > 0)
+                {
+                    for (int i = 0; i < dsEmp.Tables[0].Rows.Count; i++)
+                    {
+                        DropdownItems objReport = new DropdownItems()
+                        {
+                            Id = dsEmp.Tables[0].Rows[i]["Id"].ToString(),
+                            Name = dsEmp.Tables[0].Rows[i]["Name"].ToString()
+                        };
+                        objReportList.lstDropdown.Add(objReport);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                AddFunctionalLog("Exception in GetKPIPotentialImpactList: " + ex.ToString());
+            }
+            return new MultiSelectList(objReportList.lstDropdown, "Id", "Name");
+        }
+
+        public string GetKPIStatusIdByName(string item_id)
+        {
+            try
+            {
+                if (item_id != "" && item_id != null)
+                {
+                    DataSet dsEmp = Getdetails("SELEct  item_id FROM dropdownitems m,dropdownheader n where m.header_id=n.header_id"
+                    + " and header_desc='KPI Status' and item_desc = '" + item_id + "'");
+                    if (dsEmp.Tables.Count > 0 && dsEmp.Tables[0].Rows.Count > 0)
+                    {
+                        return (dsEmp.Tables[0].Rows[0]["item_id"].ToString());
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                AddFunctionalLog("Exception in GetKPIStatusNameById: " + ex.ToString());
+            }
+            return "";
+        }
+
+        public MultiSelectList GetMultiCompanyBranchNameByID(string sBranchtree)
+        {
+            CompanyBranchList Branchlist = new CompanyBranchList();
+            Branchlist.CompBranchList = new List<CompanyBranch>();
+            try
+            {
+                DataSet dsBranch = Getdetails("select id, branchname from t_company_branch where Active=1 and id in (" + sBranchtree + ")");// and CompanyId='" + sCompanyId+"'");
+
+                if (dsBranch.Tables.Count > 0 && dsBranch.Tables[0].Rows.Count > 0)
+                {
+                    for (int i = 0; i < dsBranch.Tables[0].Rows.Count; i++)
+                    {
+                        CompanyBranch Branch = new CompanyBranch()
+                        {
+                            BranchId = dsBranch.Tables[0].Rows[i]["Id"].ToString(),
+                            BranchName = dsBranch.Tables[0].Rows[i]["BranchName"].ToString().ToUpper()
+                        };
+
+                        Branchlist.CompBranchList.Add(Branch);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                AddFunctionalLog("Exception in GetMultiCompanyBranchNameByID: " + ex.ToString());
+            }
+            return new MultiSelectList(Branchlist.CompBranchList, "BranchId", "BranchName");
+        }
+
+        public MultiSelectList GetKPIFrequencyEvaluationList()
+        {
+            DropdownList objReportList = new DropdownList();
+            objReportList.lstDropdown = new List<DropdownItems>();
+            try
+            {
+                string sSsqlstmt = "select item_id as Id, item_desc as Name from dropdownitems, dropdownheader where dropdownheader.header_id=dropdownitems.header_id "
+                    + "and header_desc='KPI Frequency Evaluation' order by item_desc asc";
+
+                DataSet dsReportType = Getdetails(sSsqlstmt);
+                if (dsReportType.Tables.Count > 0 && dsReportType.Tables[0].Rows.Count > 0)
+                {
+                    for (int i = 0; i < dsReportType.Tables[0].Rows.Count; i++)
+                    {
+                        DropdownItems objReport = new DropdownItems()
+                        {
+                            Id = dsReportType.Tables[0].Rows[i]["Id"].ToString(),
+                            Name = dsReportType.Tables[0].Rows[i]["Name"].ToString()
+                        };
+                        objReportList.lstDropdown.Add(objReport);
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                AddFunctionalLog("Exception in GetKPIFrequencyEvaluationList: " + ex.ToString());
+            }
+
+            return new MultiSelectList(objReportList.lstDropdown, "Id", "Name");
+
+        }
+        public string GetKPIFrequencyEvaluationById(string item_id)
+        {
+            try
+            {
+                if (item_id != "" && item_id != null)
+                {
+                    DataSet dsEmp = Getdetails("SELEct  GROUP_CONCAT(m.item_desc) item_desc FROM dropdownitems m,dropdownheader n where m.header_id=n.header_id"
+                    + " and header_desc='KPI Frequency Evaluation' and item_id in (" + item_id + ")");
+                    if (dsEmp.Tables.Count > 0 && dsEmp.Tables[0].Rows.Count > 0)
+                    {
+                        string sDesc = dsEmp.Tables[0].Rows[0]["item_desc"].ToString();
+                        if (sDesc != "" && sDesc.Contains(','))
+                        {
+                            return sDesc.Replace(",", ", ");
+                        }
+                        return sDesc;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                AddFunctionalLog("Exception in GetKPIFrequencyEvaluationById: " + ex.ToString());
+            }
+            return "";
+        }
+
+        public MultiSelectList GetKPIPerformanceIndicatorList()
+        {
+            DropdownList objReportList = new DropdownList();
+            objReportList.lstDropdown = new List<DropdownItems>();
+            try
+            {
+                string sSsqlstmt = "select item_id as Id, item_desc as Name from dropdownitems, dropdownheader where dropdownheader.header_id=dropdownitems.header_id "
+                    + "and header_desc='KPI Performance Indicator' order by item_desc asc";
+
+                DataSet dsReportType = Getdetails(sSsqlstmt);
+                if (dsReportType.Tables.Count > 0 && dsReportType.Tables[0].Rows.Count > 0)
+                {
+                    for (int i = 0; i < dsReportType.Tables[0].Rows.Count; i++)
+                    {
+                        DropdownItems objReport = new DropdownItems()
+                        {
+                            Id = dsReportType.Tables[0].Rows[i]["Id"].ToString(),
+                            Name = dsReportType.Tables[0].Rows[i]["Name"].ToString()
+                        };
+                        objReportList.lstDropdown.Add(objReport);
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                AddFunctionalLog("Exception in GetKPIPerformanceIndicatorList: " + ex.ToString());
+            }
+
+            return new MultiSelectList(objReportList.lstDropdown, "Id", "Name");
+
+        }
+        public string GetKPIPerformanceIndicatorById(string item_id)
+        {
+            try
+            {
+                if (item_id != "" && item_id != null)
+                {
+                    DataSet dsEmp = Getdetails("SELEct  GROUP_CONCAT(m.item_desc) item_desc FROM dropdownitems m,dropdownheader n where m.header_id=n.header_id"
+                    + " and header_desc='KPI Performance Indicator' and item_id in (" + item_id + ")");
+                    if (dsEmp.Tables.Count > 0 && dsEmp.Tables[0].Rows.Count > 0)
+                    {
+                        string sDesc = dsEmp.Tables[0].Rows[0]["item_desc"].ToString();
+                        if (sDesc != "" && sDesc.Contains(','))
+                        {
+                            return sDesc.Replace(",", ", ");
+                        }
+                        return sDesc;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                AddFunctionalLog("Exception in GetKPIPerformanceIndicatorById: " + ex.ToString());
+            }
+            return "";
+        }
+
+        public MultiSelectList GetKPILevelList()
+        {
+            DropdownList objReportList = new DropdownList();
+            objReportList.lstDropdown = new List<DropdownItems>();
+            try
+            {
+                string sSsqlstmt = "select item_id as Id, item_desc as Name from dropdownitems, dropdownheader where dropdownheader.header_id=dropdownitems.header_id "
+                    + "and header_desc='KPI Level' order by item_desc asc";
+
+                DataSet dsReportType = Getdetails(sSsqlstmt);
+                if (dsReportType.Tables.Count > 0 && dsReportType.Tables[0].Rows.Count > 0)
+                {
+                    for (int i = 0; i < dsReportType.Tables[0].Rows.Count; i++)
+                    {
+                        DropdownItems objReport = new DropdownItems()
+                        {
+                            Id = dsReportType.Tables[0].Rows[i]["Id"].ToString(),
+                            Name = dsReportType.Tables[0].Rows[i]["Name"].ToString()
+                        };
+                        objReportList.lstDropdown.Add(objReport);
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                AddFunctionalLog("Exception in GetKPILevelList: " + ex.ToString());
+            }
+
+            return new MultiSelectList(objReportList.lstDropdown, "Id", "Name");
+
+        }
+        public string GetKPILevelById(string item_id)
+        {
+            try
+            {
+                if (item_id != "" && item_id != null)
+                {
+                    DataSet dsEmp = Getdetails("SELEct  GROUP_CONCAT(m.item_desc) item_desc FROM dropdownitems m,dropdownheader n where m.header_id=n.header_id"
+                    + " and header_desc='KPI Level' and item_id in (" + item_id + ")");
+                    if (dsEmp.Tables.Count > 0 && dsEmp.Tables[0].Rows.Count > 0)
+                    {
+                        string sDesc = dsEmp.Tables[0].Rows[0]["item_desc"].ToString();
+                        if (sDesc != "" && sDesc.Contains(','))
+                        {
+                            return sDesc.Replace(",", ", ");
+                        }
+                        return sDesc;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                AddFunctionalLog("Exception in GetKPILevelById: " + ex.ToString());
+            }
+            return "";
+        }
+
+        public MultiSelectList GetKPITypeList()
+        {
+            DropdownList objReportList = new DropdownList();
+            objReportList.lstDropdown = new List<DropdownItems>();
+            try
+            {
+                string sSsqlstmt = "select item_id as Id, item_desc as Name from dropdownitems, dropdownheader where dropdownheader.header_id=dropdownitems.header_id "
+                    + "and header_desc='KPI Type' order by item_desc asc";
+
+                DataSet dsReportType = Getdetails(sSsqlstmt);
+                if (dsReportType.Tables.Count > 0 && dsReportType.Tables[0].Rows.Count > 0)
+                {
+                    for (int i = 0; i < dsReportType.Tables[0].Rows.Count; i++)
+                    {
+                        DropdownItems objReport = new DropdownItems()
+                        {
+                            Id = dsReportType.Tables[0].Rows[i]["Id"].ToString(),
+                            Name = dsReportType.Tables[0].Rows[i]["Name"].ToString()
+                        };
+                        objReportList.lstDropdown.Add(objReport);
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                AddFunctionalLog("Exception in GetKPITypeList: " + ex.ToString());
+            }
+
+            return new MultiSelectList(objReportList.lstDropdown, "Id", "Name");
+
+        }
+        public string GetKPITypeById(string item_id)
+        {
+            try
+            {
+                if (item_id != "" && item_id != null)
+                {
+                    DataSet dsEmp = Getdetails("SELEct  GROUP_CONCAT(m.item_desc) item_desc FROM dropdownitems m,dropdownheader n where m.header_id=n.header_id"
+                    + " and header_desc='KPI Type' and item_id in (" + item_id + ")");
+                    if (dsEmp.Tables.Count > 0 && dsEmp.Tables[0].Rows.Count > 0)
+                    {
+                        string sDesc = dsEmp.Tables[0].Rows[0]["item_desc"].ToString();
+                        if (sDesc != "" && sDesc.Contains(','))
+                        {
+                            return sDesc.Replace(",", ", ");
+                        }
+                        return sDesc;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                AddFunctionalLog("Exception in GetKPITypeById: " + ex.ToString());
+            }
+            return "";
+        }
+
+        public MultiSelectList GetKPIMonitoringMechanismList()
+        {
+            DropdownList objReportList = new DropdownList();
+            objReportList.lstDropdown = new List<DropdownItems>();
+            try
+            {
+                string sSsqlstmt = "select item_id as Id, item_desc as Name from dropdownitems, dropdownheader where dropdownheader.header_id=dropdownitems.header_id "
+                    + "and header_desc='KPI Monitoring Mechanism' order by item_desc asc";
+
+                DataSet dsReportType = Getdetails(sSsqlstmt);
+                if (dsReportType.Tables.Count > 0 && dsReportType.Tables[0].Rows.Count > 0)
+                {
+                    for (int i = 0; i < dsReportType.Tables[0].Rows.Count; i++)
+                    {
+                        DropdownItems objReport = new DropdownItems()
+                        {
+                            Id = dsReportType.Tables[0].Rows[i]["Id"].ToString(),
+                            Name = dsReportType.Tables[0].Rows[i]["Name"].ToString()
+                        };
+                        objReportList.lstDropdown.Add(objReport);
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                AddFunctionalLog("Exception in GetKPIMonitoringMechanismList: " + ex.ToString());
+            }
+
+            return new MultiSelectList(objReportList.lstDropdown, "Id", "Name");
+
+        }
+        public string GetKPIMonitoringMechanismById(string item_id)
+        {
+            try
+            {
+                if (item_id != "" && item_id != null)
+                {
+                    DataSet dsEmp = Getdetails("SELEct  GROUP_CONCAT(m.item_desc) item_desc FROM dropdownitems m,dropdownheader n where m.header_id=n.header_id"
+                    + " and header_desc='KPI Monitoring Mechanism' and item_id in (" + item_id + ")");
+                    if (dsEmp.Tables.Count > 0 && dsEmp.Tables[0].Rows.Count > 0)
+                    {
+                        string sDesc = dsEmp.Tables[0].Rows[0]["item_desc"].ToString();
+                        if (sDesc != "" && sDesc.Contains(','))
+                        {
+                            return sDesc.Replace(",", ", ");
+                        }
+                        return sDesc;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                AddFunctionalLog("Exception in GetKPIMonitoringMechanismById: " + ex.ToString());
+            }
+            return "";
+        }
+
+        public MultiSelectList GetKPIStatusList()
+        {
+            DropdownList objReportList = new DropdownList();
+            objReportList.lstDropdown = new List<DropdownItems>();
+            try
+            {
+                string sSsqlstmt = "select item_id as Id, item_desc as Name from dropdownitems, dropdownheader where dropdownheader.header_id=dropdownitems.header_id "
+                    + "and header_desc='KPI Status' order by item_desc asc";
+
+                DataSet dsReportType = Getdetails(sSsqlstmt);
+                if (dsReportType.Tables.Count > 0 && dsReportType.Tables[0].Rows.Count > 0)
+                {
+                    for (int i = 0; i < dsReportType.Tables[0].Rows.Count; i++)
+                    {
+                        DropdownItems objReport = new DropdownItems()
+                        {
+                            Id = dsReportType.Tables[0].Rows[i]["Id"].ToString(),
+                            Name = dsReportType.Tables[0].Rows[i]["Name"].ToString()
+                        };
+                        objReportList.lstDropdown.Add(objReport);
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                AddFunctionalLog("Exception in GetKPIStatusList: " + ex.ToString());
+            }
+
+            return new MultiSelectList(objReportList.lstDropdown, "Id", "Name");
+
+        }
+        public string GetKPIStatusById(string item_id)
+        {
+            try
+            {
+                if (item_id != "" && item_id != null)
+                {
+                    DataSet dsEmp = Getdetails("SELEct  GROUP_CONCAT(m.item_desc) item_desc FROM dropdownitems m,dropdownheader n where m.header_id=n.header_id"
+                    + " and header_desc='KPI Status' and item_id in (" + item_id + ")");
+                    if (dsEmp.Tables.Count > 0 && dsEmp.Tables[0].Rows.Count > 0)
+                    {
+                        string sDesc = dsEmp.Tables[0].Rows[0]["item_desc"].ToString();
+                        if (sDesc != "" && sDesc.Contains(','))
+                        {
+                            return sDesc.Replace(",", ", ");
+                        }
+                        return sDesc;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                AddFunctionalLog("Exception in GetKPIStatusById: " + ex.ToString());
+            }
+            return "";
+        }
+
+        public MultiSelectList GetKPIEvaluationStatusList()
+        {
+            DropdownList objReportList = new DropdownList();
+            objReportList.lstDropdown = new List<DropdownItems>();
+            try
+            {
+                string sSsqlstmt = "select item_id as Id, item_desc as Name from dropdownitems, dropdownheader where dropdownheader.header_id=dropdownitems.header_id "
+                    + "and header_desc='KPI Evaluation Status' order by item_desc asc";
+
+                DataSet dsReportType = Getdetails(sSsqlstmt);
+                if (dsReportType.Tables.Count > 0 && dsReportType.Tables[0].Rows.Count > 0)
+                {
+                    for (int i = 0; i < dsReportType.Tables[0].Rows.Count; i++)
+                    {
+                        DropdownItems objReport = new DropdownItems()
+                        {
+                            Id = dsReportType.Tables[0].Rows[i]["Id"].ToString(),
+                            Name = dsReportType.Tables[0].Rows[i]["Name"].ToString()
+                        };
+                        objReportList.lstDropdown.Add(objReport);
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                AddFunctionalLog("Exception in GetKPIEvaluationStatusList: " + ex.ToString());
+            }
+
+            return new MultiSelectList(objReportList.lstDropdown, "Id", "Name");
+
+        }
+        public string GetKPIEvaluationStatusById(string item_id)
+        {
+            try
+            {
+                if (item_id != "" && item_id != null)
+                {
+                    DataSet dsEmp = Getdetails("SELEct  GROUP_CONCAT(m.item_desc) item_desc FROM dropdownitems m,dropdownheader n where m.header_id=n.header_id"
+                    + " and header_desc='KPI Evaluation Status' and item_id in (" + item_id + ")");
+                    if (dsEmp.Tables.Count > 0 && dsEmp.Tables[0].Rows.Count > 0)
+                    {
+                        string sDesc = dsEmp.Tables[0].Rows[0]["item_desc"].ToString();
+                        if (sDesc != "" && sDesc.Contains(','))
+                        {
+                            return sDesc.Replace(",", ", ");
+                        }
+                        return sDesc;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                AddFunctionalLog("Exception in GetKPIEvaluationStatusById: " + ex.ToString());
+            }
+            return "";
+        }
+
+        //------------------------------------6/21/2021--------------------------------------------
+
         //---------------------Start GG Functions-------------
 
         public MultiSelectList GetGEmpListBymulitBDL(string sDivision = "", string sDept = "", string sLoc = "")
@@ -968,129 +1522,129 @@ namespace ISOStd.Models
         //    return "";
         //}
 
-        public string GetTeamNameByID(string item_id)
-        {
-            try
-            {
-                if (item_id != "" && item_id != null)
-                {
-                    DataSet dsData = Getdetails("Select  GROUP_CONCAT(Type_Details) Name FROM t_doc_team  where Team_id in (" + item_id + ")");
-                    if (dsData.Tables.Count > 0 && dsData.Tables[0].Rows.Count > 0)
-                    {
-                        string sDesc = dsData.Tables[0].Rows[0]["Name"].ToString();
-                        if (sDesc != "" && sDesc.Contains(','))
-                        {
-                            return sDesc.Replace(",", ", ");
-                        }
-                        return sDesc;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                AddFunctionalLog("Exception in GetTeamNameByID: " + ex.ToString());
-            }
-            return "";
-        }
+        //public string GetTeamNameByID(string item_id)
+        //{
+        //    try
+        //    {
+        //        if (item_id != "" && item_id != null)
+        //        {
+        //            DataSet dsData = Getdetails("Select  GROUP_CONCAT(Type_Details) Name FROM t_doc_team  where Team_id in (" + item_id + ")");
+        //            if (dsData.Tables.Count > 0 && dsData.Tables[0].Rows.Count > 0)
+        //            {
+        //                string sDesc = dsData.Tables[0].Rows[0]["Name"].ToString();
+        //                if (sDesc != "" && sDesc.Contains(','))
+        //                {
+        //                    return sDesc.Replace(",", ", ");
+        //                }
+        //                return sDesc;
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        AddFunctionalLog("Exception in GetTeamNameByID: " + ex.ToString());
+        //    }
+        //    return "";
+        //}
 
-        public MultiSelectList GetMultiTeambyMultiGroup(string sGroupId = "")
-        {
-            EmployeeList emplist = new EmployeeList();
-            emplist.EmpList = new List<Employee>();
+        //public MultiSelectList GetMultiTeambyMultiGroup(string sGroupId = "")
+        //{
+        //    EmployeeList emplist = new EmployeeList();
+        //    emplist.EmpList = new List<Employee>();
 
-            try
-            {
-                string sSqlstmt = "";
-                if (sGroupId != "")
-                {
-                    sSqlstmt = "select Team_id,Type_Details from t_doc_team where Group_id in (" + sGroupId + ") order by Type_Details asc";
-                }
-                else
-                {
-                    sSqlstmt = "select Team_id,Type_Details from t_doc_team  order by Type_Details asc";
-                }
-                DataSet dsEmp = Getdetails(sSqlstmt);
+        //    try
+        //    {
+        //        string sSqlstmt = "";
+        //        if (sGroupId != "")
+        //        {
+        //            sSqlstmt = "select Team_id,Type_Details from t_doc_team where Group_id in (" + sGroupId + ") order by Type_Details asc";
+        //        }
+        //        else
+        //        {
+        //            sSqlstmt = "select Team_id,Type_Details from t_doc_team  order by Type_Details asc";
+        //        }
+        //        DataSet dsEmp = Getdetails(sSqlstmt);
 
-                if (dsEmp.Tables.Count > 0 && dsEmp.Tables[0].Rows.Count > 0)
-                {
-                    for (int i = 0; i < dsEmp.Tables[0].Rows.Count; i++)
-                    {
+        //        if (dsEmp.Tables.Count > 0 && dsEmp.Tables[0].Rows.Count > 0)
+        //        {
+        //            for (int i = 0; i < dsEmp.Tables[0].Rows.Count; i++)
+        //            {
 
-                        Employee emp = new Employee()
-                        {
-                            Empid = dsEmp.Tables[0].Rows[i]["Team_id"].ToString(),
-                            Empname = Regex.Replace(dsEmp.Tables[0].Rows[i]["Type_Details"].ToString(), " +", " ")
+        //                Employee emp = new Employee()
+        //                {
+        //                    Empid = dsEmp.Tables[0].Rows[i]["Team_id"].ToString(),
+        //                    Empname = Regex.Replace(dsEmp.Tables[0].Rows[i]["Type_Details"].ToString(), " +", " ")
 
-                        };
-                        emp.Empname = emp.Empname.Trim();
-                        emplist.EmpList.Add(emp);
-                    }
-                }
+        //                };
+        //                emp.Empname = emp.Empname.Trim();
+        //                emplist.EmpList.Add(emp);
+        //            }
+        //        }
 
-            }
-            catch (Exception ex)
-            {
-                AddFunctionalLog("Exception in GetMultiTeambyMultiGroup: " + ex.ToString());
-            }
-            return new MultiSelectList(emplist.EmpList, "Empid", "Empname");
-        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        AddFunctionalLog("Exception in GetMultiTeambyMultiGroup: " + ex.ToString());
+        //    }
+        //    return new MultiSelectList(emplist.EmpList, "Empid", "Empname");
+        //}
 
-        public MultiSelectList GetDocTeamListbyGroup(string sId)
-        {
-            DropdownList objReportList = new DropdownList();
-            objReportList.lstDropdown = new List<DropdownItems>();
-            try
-            {
-                DataSet dsEmp = Getdetails("select Team_id,Type_Details from t_doc_team where Group_id='" + sId + "'");
+        //public MultiSelectList GetDocTeamListbyGroup(string sId)
+        //{
+        //    DropdownList objReportList = new DropdownList();
+        //    objReportList.lstDropdown = new List<DropdownItems>();
+        //    try
+        //    {
+        //        DataSet dsEmp = Getdetails("select Team_id,Type_Details from t_doc_team where Group_id='" + sId + "'");
 
-                if (dsEmp.Tables.Count > 0 && dsEmp.Tables[0].Rows.Count > 0)
-                {
-                    for (int i = 0; i < dsEmp.Tables[0].Rows.Count; i++)
-                    {
-                        DropdownItems objReport = new DropdownItems()
-                        {
-                            Id = dsEmp.Tables[0].Rows[i]["Team_id"].ToString(),
-                            Name = dsEmp.Tables[0].Rows[i]["Type_Details"].ToString()
-                        };
-                        objReportList.lstDropdown.Add(objReport);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                AddFunctionalLog("Exception in GetDocTeamListbyGroup: " + ex.ToString());
-            }
-            return new MultiSelectList(objReportList.lstDropdown, "Id", "Name");
-        }
+        //        if (dsEmp.Tables.Count > 0 && dsEmp.Tables[0].Rows.Count > 0)
+        //        {
+        //            for (int i = 0; i < dsEmp.Tables[0].Rows.Count; i++)
+        //            {
+        //                DropdownItems objReport = new DropdownItems()
+        //                {
+        //                    Id = dsEmp.Tables[0].Rows[i]["Team_id"].ToString(),
+        //                    Name = dsEmp.Tables[0].Rows[i]["Type_Details"].ToString()
+        //                };
+        //                objReportList.lstDropdown.Add(objReport);
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        AddFunctionalLog("Exception in GetDocTeamListbyGroup: " + ex.ToString());
+        //    }
+        //    return new MultiSelectList(objReportList.lstDropdown, "Id", "Name");
+        //}
 
-        public MultiSelectList GetDocTeamList()
-        {
-            DropdownList objReportList = new DropdownList();
-            objReportList.lstDropdown = new List<DropdownItems>();
-            try
-            {
-                DataSet dsEmp = Getdetails("select Team_id,Type_Details from t_doc_team ");
+        //public MultiSelectList GetDocTeamList()
+        //{
+        //    DropdownList objReportList = new DropdownList();
+        //    objReportList.lstDropdown = new List<DropdownItems>();
+        //    try
+        //    {
+        //        DataSet dsEmp = Getdetails("select Team_id,Type_Details from t_doc_team ");
 
-                if (dsEmp.Tables.Count > 0 && dsEmp.Tables[0].Rows.Count > 0)
-                {
-                    for (int i = 0; i < dsEmp.Tables[0].Rows.Count; i++)
-                    {
-                        DropdownItems emp = new DropdownItems()
-                        {
-                            Id = dsEmp.Tables[0].Rows[i]["Team_id"].ToString(),
-                            Name = dsEmp.Tables[0].Rows[i]["Type_Details"].ToString()
-                        };
+        //        if (dsEmp.Tables.Count > 0 && dsEmp.Tables[0].Rows.Count > 0)
+        //        {
+        //            for (int i = 0; i < dsEmp.Tables[0].Rows.Count; i++)
+        //            {
+        //                DropdownItems emp = new DropdownItems()
+        //                {
+        //                    Id = dsEmp.Tables[0].Rows[i]["Team_id"].ToString(),
+        //                    Name = dsEmp.Tables[0].Rows[i]["Type_Details"].ToString()
+        //                };
 
-                        objReportList.lstDropdown.Add(emp);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                AddFunctionalLog("Exception in GetDocTeamList: " + ex.ToString());
-            }
-            return new MultiSelectList(objReportList.lstDropdown, "Id", "Name");
-        }
+        //                objReportList.lstDropdown.Add(emp);
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        AddFunctionalLog("Exception in GetDocTeamList: " + ex.ToString());
+        //    }
+        //    return new MultiSelectList(objReportList.lstDropdown, "Id", "Name");
+        //}
 
 
         public MultiSelectList GetAuidtorLevelList()
@@ -4689,7 +5243,21 @@ namespace ISOStd.Models
             //}
             return null;
         }
+        //----------KPI---
+        public DataSet getListPendingForApprovalKPI(string sempid)
+        {
+            string sSqlstmt = "select KPI_Id,logged_by,kpi_ref_no,established_date,branch,group_name,team,process_indicator,"
+                       + "kpi_level,process_monitor,pers_resp,upload,"
+                       + "approved_by,kpi_status,status_reason  from t_kpi where Active=1" +
+            " and ( kpiapprv_status= 0 and find_in_set('" + sempid + "',approved_by)) order by KPI_Id desc";
 
+            DataSet dsApprovalList = Getdetails(sSqlstmt);
+            if (dsApprovalList.Tables.Count > 0 && dsApprovalList.Tables[0].Rows.Count > 0)
+            {
+                return dsApprovalList;
+            }
+            return null;
+        }
 
         //-------------------------------End of Pending For Approval---------------------------------------------------
 
@@ -10532,6 +11100,7 @@ namespace ISOStd.Models
             
             switch(sType)
             {
+                case "KPIUnit": return new string[] { "Number", "Each", "%" };
                 case "NC-RootCause": return new string[] { "Completely", "Partially", "No" };
                 case "HazardOP": return new string[] { "Elimination","Substitution","Engineering", "Administrative", "PPE", "General" };
                 case "LeaveType": return new string[] { "Full Day", "Half Day" };

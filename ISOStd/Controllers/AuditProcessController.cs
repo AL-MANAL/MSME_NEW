@@ -3686,7 +3686,7 @@ namespace ISOStd.Controllers
             }
             catch (Exception ex)
             {
-                objGlobaldata.AddFunctionalLog("Exception in FunGetAuditeesList: " + ex.ToString());
+                objGlobaldata.AddFunctionalLog("Exception in FunGetAuditorsList: " + ex.ToString());
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
             return Json(lstEmp);

@@ -1564,9 +1564,9 @@ namespace ISOStd.Controllers
                             objRiskMgmtModels.evaluation_date = dtValue;
                         }
 
-                        //ViewBag.Approver = objGlobaldata.GetApprover();
+                        ViewBag.Approver = objGlobaldata.GetApprover();
                         ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
-                        ViewBag.Approver = objGlobaldata.GetGRoleList(dsRiskModels.Tables[0].Rows[0]["branch_id"].ToString(), dsRiskModels.Tables[0].Rows[0]["dept"].ToString(), dsRiskModels.Tables[0].Rows[0]["Location"].ToString(), "Approver");
+                        //ViewBag.Approver = objGlobaldata.GetGRoleList(dsRiskModels.Tables[0].Rows[0]["branch_id"].ToString(), dsRiskModels.Tables[0].Rows[0]["dept"].ToString(), dsRiskModels.Tables[0].Rows[0]["Location"].ToString(), "Approver");
                         //ViewBag.EmpList = objGlobaldata.GetGEmpListBymulitBDL(dsRiskModels.Tables[0].Rows[0]["branch_id"].ToString(), dsRiskModels.Tables[0].Rows[0]["dept"].ToString(), dsRiskModels.Tables[0].Rows[0]["Location"].ToString());
                     }
                     else
@@ -1655,9 +1655,9 @@ namespace ISOStd.Controllers
                             TempData["Successdata"] = "Kindly do the Risk Evaluation";
                             return RedirectToAction("RiskList");
                         }
-                        //ViewBag.Approver = objGlobaldata.GetApprover();
+                        ViewBag.Approver = objGlobaldata.GetApprover();
                         ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
-                        ViewBag.Approver = objGlobaldata.GetGRoleList(dsRiskModels.Tables[0].Rows[0]["branch_id"].ToString(), dsRiskModels.Tables[0].Rows[0]["dept"].ToString(), dsRiskModels.Tables[0].Rows[0]["Location"].ToString(), "Approver");
+                        //ViewBag.Approver = objGlobaldata.GetGRoleList(dsRiskModels.Tables[0].Rows[0]["branch_id"].ToString(), dsRiskModels.Tables[0].Rows[0]["dept"].ToString(), dsRiskModels.Tables[0].Rows[0]["Location"].ToString(), "Approver");
                         //ViewBag.EmpList = objGlobaldata.GetGEmpListBymulitBDL(dsRiskModels.Tables[0].Rows[0]["branch_id"].ToString(), dsRiskModels.Tables[0].Rows[0]["dept"].ToString(), dsRiskModels.Tables[0].Rows[0]["Location"].ToString());
 
                         RiskMgmtModelsList objRiskList = new RiskMgmtModelsList();

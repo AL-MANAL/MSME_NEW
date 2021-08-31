@@ -55,7 +55,7 @@
     <div>
         <div class="card-header bg-white header-elements-sm-inline">
             <div class="header-elements">
-                <div class="mt-2 mt-sm-0">                  
+                <div class="mt-2 mt-sm-0">
                     @Html.ActionLink("Back to List", "KPIEvaluationList", null, new { @class = "btn btn-outline bg-orange text-orange border-orange", onclick = "HyperLinkProgressIconFunction()" })
                 </div>
             </div>
@@ -67,7 +67,7 @@
             <table class="table table-dark table-bordered table-striped table-hover bg-blue-800">
                 <thead></thead>
                 <tbody>
-                   
+
                     <tr class="row">
                         <td class="col-xs-3 col-md-2">
                             <p class="bg-brown py-1 px-2 rounded">
@@ -103,7 +103,7 @@
                         </td>
                     </tr>
                     <tr class="row">
-                        @*<td class="col-xs-3 col-md-2">
+                        <td class="col-xs-3 col-md-2">
                             <p class="bg-brown py-1 px-2 rounded">
                                 @Html.DisplayNameFor(model => model.team)
                             </p>
@@ -112,7 +112,7 @@
                             <p class="bg-dark py-1 px-2 rounded">
                                 @Html.DisplayFor(model => model.team)
                             </p>
-                        </td>*@
+                        </td>
                         <td class="col-xs-3 col-md-2">
                             <p class="bg-brown py-1 px-2 rounded">
                                 @Html.DisplayNameFor(model => model.established_date)
@@ -180,37 +180,26 @@
                             </p>
                         </td>
                         <td class="col">
-                           
-                                @if (Model.upload != null && Model.upload != "" && Model.upload.Length > 0)
+
+                            @if (Model.upload != null && Model.upload != "" && Model.upload.Length > 0)
+                            {
+                                foreach (var docs in Model.upload.Trim(',').Split(','))
                                 {
-                                    foreach (var docs in Model.upload.Trim(',').Split(','))
-                                    {
                                     <p style="margin: 0px;">
 
                                         <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" style="color: orange;">
                                             Preview
                                         </a>
                                     </p>
-                                        <br />
-                                    }
+                                    <br />
                                 }
-                           
+                            }
+
                         </td>
 
-                      
-                    </tr>
-                    <tr class="row">
                         <td class="col-xs-3 col-md-2">
                             <p class="bg-brown py-1 px-2 rounded">
-                                @if (Model.kpiapprv_status == "Approved")
-                                {
-                                    @Html.DisplayNameFor(model => model.approved_by_approve)
-                                }
-                                else
-                                {
-                                    @Html.DisplayNameFor(model => model.approved_by)
-                                }
-                               
+                                @Html.DisplayNameFor(model => model.approved_by)
                             </p>
                         </td>
                         <td class="col">
@@ -218,42 +207,8 @@
                                 @Html.DisplayFor(model => model.approved_by)
                             </p>
                         </td>
-                        <td class="col-xs-3 col-md-2">
-                            <p class="bg-brown py-1 px-2 rounded">
-                                @Html.DisplayNameFor(model => model.ApproveOrRejectOn)
-                            </p>
-                        </td>
-                        <td class="col">
-                            <p class="bg-dark py-1 px-2 rounded">
-                                @if (Model.ApproveOrRejectOn != null && Model.ApproveOrRejectOn > Convert.ToDateTime("01/01/0001"))
-                                {
-                                    @Html.Label(Model.ApproveOrRejectOn.ToString("dd/MM/yyyy hh:mm:ss"))
-                                }
-                            </p>
-                        </td>
                     </tr>
-                    <tr class="row">
-                        <td class="col-xs-3 col-md-2">
-                            <p class="bg-brown py-1 px-2 rounded">
-                                @Html.DisplayNameFor(model => model.kpiapprv_status)
-                            </p>
-                        </td>
-                        <td class="col">
-                            <p class="bg-dark py-1 px-2 rounded">
-                                @Html.DisplayFor(model => model.kpiapprv_status)
-                            </p>
-                        </td>
-                        <td class="col-xs-3 col-md-2">
-                            <p class="bg-brown py-1 px-2 rounded">
-                                @Html.DisplayNameFor(model => model.approvedby_comments)
-                            </p>
-                        </td>
-                        <td class="col">
-                            <p class="bg-dark py-1 px-2 rounded">
-                               @Html.DisplayFor(model => model.approvedby_comments)
-                            </p>
-                        </td>
-                    </tr>
+
                     <tr class="row">
 
                         <td class="col-xs-3 col-md-2">
@@ -278,9 +233,9 @@
                         </td>
 
                     </tr>
-                
+
             </table>
-           
+
             @if (dsSource != null && dsSource.Tables.Count > 0 && dsSource.Tables[0].Rows.Count > 0)
             {
                 <br />
@@ -290,7 +245,7 @@
                         <thead>
                             <tr class="bg-brown">
                                 <th>Sl No</th>
-                                <th>Potential Causes for Failure</th>                   
+                                <th>Potential Causes for Failure</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -304,7 +259,7 @@
                                     <td>
                                         @dsSource.Tables[0].Rows[i]["causes_failure"].ToString()
                                     </td>
-                                   
+
                                 </tr>
                             }
                         </tbody>
@@ -314,52 +269,7 @@
 
                 </div>
             }
-            @if (dsAction != null && dsAction.Tables.Count > 0 && dsAction.Tables[0].Rows.Count > 0)
-            {
-                <br />
-                <h2 class="bg-dark pl-sm-2">Action Plan</h2>
-                <div class="table-responsive">
-                    <table class="table table-bordered table-striped table-hover datatable-responsive" id="table1">
-                        <thead>
-                            <tr class="bg-brown">
-                                <th>Sl No</th>
-                                <th>Action details</th>
-                                <th>Person Responsible</th>
-                                <th>Target Date</th>
-                                <th>Remarks</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @for (int i = 0, j = 1; i < dsAction.Tables[0].Rows.Count; i++, j++)
-                            {
-                                <tr>
-
-                                    <td>
-                                        @j
-                                    </td>
-                                    <td>
-                                        @dsAction.Tables[0].Rows[i]["Action"].ToString()
-                                    </td>
-                                    <td>
-                                        @Obj.GetEmpHrNameById(dsAction.Tables[0].Rows[i]["PersonResponsible"].ToString())
-                                    </td>
-                                    <td>
-                                        @if (dsAction.Tables[0].Rows[i]["TargetDate"].ToString() != null && Convert.ToDateTime(dsAction.Tables[0].Rows[i]["TargetDate"].ToString()) > Convert.ToDateTime("01/01/0001"))
-                                        {
-                                            @Html.Label(Convert.ToDateTime(dsAction.Tables[0].Rows[i]["TargetDate"].ToString()).ToString("dd/MM/yyyy"))
-                                        }
-                                    </td>
-                                  
-                                    <td>
-                                        @dsAction.Tables[0].Rows[i]["remarks"].ToString()
-                                    </td>
-
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            }
+           
             @if (dsMI != null && dsMI.Tables.Count > 0 && dsMI.Tables[0].Rows.Count > 0)
             {
                 <br />
@@ -369,7 +279,7 @@
                         <thead>
                             <tr class="bg-brown">
                                 <th>Sl No</th>
-                                <th>MI_No</th>
+                                <th>KPI_Ref_No</th>
                                 <th>Measurable Indicator</th>
                                 <th>Expected value to be achieved</th>
                                 <th>KPI Type</th>
@@ -378,15 +288,7 @@
                                 <th>Monitoring Mechanism</th>
                                 <th>Frequency of Evaluation</th>
                                 <th>Risk, if not achieved</th>
-                                <th>Evaluation Date</th>
-                                <th>Source_of_data to evaluate</th>
-                                <th>Upload</th>
-                                <th>Method of evaluation</th>
-                                <th>Value achieved</th>
-                                <th>KPI Status</th>
-                                <th>Remarks</th>
-                                <th>NCR Raise Need</th>
-                                <th>Raise NCR</th>
+                              
                             </tr>
                         </thead>
                         <tbody>
@@ -404,7 +306,7 @@
                                         @dsMI.Tables[0].Rows[i]["measurable_indicator"].ToString()
                                     </td>
                                     <td>
-                                        @dsMI.Tables[0].Rows[i]["expected_value"].ToString()/@dsMI.Tables[0].Rows[i]["expected_value_unit"].ToString()
+                                        @dsMI.Tables[0].Rows[i]["expected_value"].ToString()
                                     </td>
                                     <td>
                                         @Obj.GetKPITypeById(dsMI.Tables[0].Rows[i]["kpi_type"].ToString())
@@ -430,51 +332,6 @@
                                     <td>
                                         @dsMI.Tables[0].Rows[i]["risk"].ToString()
                                     </td>
-                                    <td>
-                                        @if (dsMI.Tables[0].Rows[i]["evaluation_date"].ToString() != null && dsMI.Tables[0].Rows[i]["evaluation_date"].ToString() != "" && Convert.ToDateTime(dsMI.Tables[0].Rows[i]["evaluation_date"].ToString()) > Convert.ToDateTime("01/01/0001"))
-                                        {
-                                            @Html.Label(Convert.ToDateTime(dsMI.Tables[0].Rows[i]["evaluation_date"].ToString()).ToString("dd/MM/yyyy"))
-                                        }
-                                    </td>
-                                    <td>
-                                        @dsMI.Tables[0].Rows[i]["source_evaluate"].ToString()
-                                    </td>
-                                    <td>
-                                        @if (dsMI.Tables[0].Rows[i]["upload"].ToString() != null && dsMI.Tables[0].Rows[i]["upload"].ToString() != "" && dsMI.Tables[0].Rows[i]["upload"].ToString().Length > 0)
-                                        {
-                                            foreach (var docs in dsMI.Tables[0].Rows[i]["upload"].ToString().Trim(',').Split(','))
-                                            {
-                                                <p style="margin: 0px;">
-
-                                                    <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" style="color: orange;">
-                                                        Preview
-                                                    </a>
-                                                </p>
-                                                <br />
-                                            }
-                                        }
-                                    </td>
-                                    <td>
-                                        @dsMI.Tables[0].Rows[i]["method_evaluation"].ToString()
-                                    </td>
-                                    <td>
-                                        @dsMI.Tables[0].Rows[i]["value_achieved"].ToString()
-                                    </td>
-                                    <td>
-                                        @Obj.GetKPIEvaluationStatusById(dsMI.Tables[0].Rows[i]["kpi_status"].ToString())
-                                    </td>
-                                    <td>
-                                        @dsMI.Tables[0].Rows[i]["remarks"].ToString()
-                                    </td>
-                                    <td>
-                                        @dsMI.Tables[0].Rows[i]["raise_need"].ToString()
-                                    </td>
-                                    <td>
-                                        <a href='@Url.Action("AddNC", "NC")' title="Raise NCR " target="_blank">
-                                            <span class="badge badge-info">Raise NCR</span>
-                                        </a>
-                                    </td>
-
                                 </tr>
                             }
                         </tbody>
@@ -483,6 +340,46 @@
 
 
                 </div>
+            }
+
+            @using (Html.BeginForm("KPIApprove", "KPI", FormMethod.Post,
+            new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+            {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true)
+            <input type="hidden" id="KPI_Id" name="KPI_Id" value="@Model.KPI_Id" />
+
+            <table class="table table-dark table-bordered table-striped table-hover bg-blue-800">
+
+
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            Approve <text style="color:red;">*</text>
+                        </p>
+                    </td>
+                    <td class="col">
+                        <p class="bg-dark py-1 px-2 rounded">
+                            <label><input type="radio" id="kpiapprv_status" name="kpiapprv_status" value="2" required />Approved</label>
+                            <label><input type="radio" id="kpiapprv_status" name="kpiapprv_status" value="1" required />Rejected</label>
+                        </p>
+                    </td>
+
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            Comments
+                        </p>
+                    </td>
+                    <td class="col">
+                        <div class="bg-dark py-1 px-2 rounded">
+                            <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="approvedby_comments" name="approvedby_comments"></textarea>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+                <button type="submit" id="btnCreate" value="Submit" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Submit</button>
+            </div>
             }
         </div>
 

@@ -790,7 +790,7 @@ namespace ISOStd.Controllers
                 IList<HttpPostedFileBase> disp_uploadList = (IList<HttpPostedFileBase>)disp_upload;
                 string QCDelete = Request.Form["QCDocsValselectall"];
 
-                if (disp_uploadList[0] != null)
+                if (disp_uploadList != null && disp_uploadList[0] != null)
                 {
                     objModel.disp_upload = "";
                     foreach (var file in disp_upload)
@@ -822,7 +822,7 @@ namespace ISOStd.Controllers
                 {
                     objModel.disp_upload = null;
                 }
-                else if (form["QCDocsVal"] == null && disp_uploadList[0] == null)
+                else if (form["QCDocsVal"] == null && disp_uploadList != null && disp_uploadList[0] == null)
                 {
                     objModel.disp_upload = null;
                 }

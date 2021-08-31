@@ -345,6 +345,7 @@
         ViewBag.Chairman = objGlobaldata.GetChairman();
 
         //Approve Dataset
+        System.Data.DataSet dsKPI = new System.Data.DataSet();
         System.Data.DataSet dsTraining = new System.Data.DataSet();
         System.Data.DataSet dsMgmtDocument = new System.Data.DataSet();
         System.Data.DataSet dsObjectives = new System.Data.DataSet();
@@ -378,7 +379,7 @@
         System.Data.DataSet dsAuditNCAuditor = new System.Data.DataSet();
         System.Data.DataSet dsNC1 = new System.Data.DataSet();
         System.Data.DataSet dsNCAuditor = new System.Data.DataSet();
-        
+
 
         //Review Dataset
         System.Data.DataSet dsReviewMgmtDocuments = new System.Data.DataSet();
@@ -408,6 +409,8 @@
         //Approval
 
         // dsAudit = objGlobaldata.getListPendingForApprovalAudit(objUser.empid);
+
+        dsKPI = objGlobaldata.getListPendingForApprovalKPI(objUser.empid);
 
         dsMgmtDocument = objGlobaldata.getListPendingForApprovalSystemDocuments(objUser.empid);
 
@@ -479,6 +482,12 @@
         //{
         //    cnt += dsAudit.Tables[0].Rows.Count;
         //}
+
+        if (dsKPI != null)
+        {            
+            cnt += dsKPI.Tables[0].Rows.Count;
+        }
+
         if (dsMgmtDocument != null)
         {
             cnt += dsMgmtDocument.Tables[0].Rows.Count;
@@ -608,7 +617,7 @@
         {
             cnt += dsNCAuditor.Tables[0].Rows.Count;
         }
-       
+
 
         //Review
         if (dsSuppReevalationReview != null)
@@ -745,7 +754,7 @@
                                                 }
                                                 @if (objGlobaldata.GetCurrentUserSession().Kpi.Contains("1"))
                                                 {
-                                                    <li><a href='@Url.Action("KPIEvaluationList", "KPIEvaluation", null)' class="nav-link @(ViewBag.SubMenutype == "KPI" ? "active" : "")" onclick="HyperLinkProgressIconFunction()">KPIs</a></li>
+                                                    <li><a href='@Url.Action("KPIEvaluationList", "KPI", null)' class="nav-link @(ViewBag.SubMenutype == "KPI" ? "active" : "")" onclick="HyperLinkProgressIconFunction()">KPIs</a></li>
                                                 }
                                             </ul>
                                         </li>
@@ -1389,8 +1398,38 @@
                             <span class="font-weight-semibold">Pending For Approvals</span>
 
                         </div>
-
                         <div class="dropdown-content-body dropdown-scrollable">
+
+                            @if (dsKPI != null && dsKPI.Tables.Count > 0 && dsKPI.Tables[0].Rows.Count > 0)
+                            {
+                                <hr />
+                                <p class="font-weight-bold text-center">KPI </p>
+                                <hr />
+                                <ul class="media-list">
+                                    @for (int i = 0; i < dsKPI.Tables[0].Rows.Count; i++)
+                                    {
+
+                                        <li class="media" id="@dsKPI.Tables[0].Rows[i]["KPI_Id"].ToString()">
+                                            <div class="mr-3 w-25">
+                                                @*@<img src="../../../../global_assets/images/placeholders/placeholder.jpg" width="36" height="36" class="rounded-circle" alt="">@*@
+                                                <a href='@Url.Action("KPIEvaluationApprvDetails", "KPI", new { KPI_Id = dsKPI.Tables[0].Rows[i]["KPI_Id"].ToString()})' title="Document Details" class="badge badge-flat badge-icon border-teal text-teal-600"><i class="icon-file-text2"></i></a>
+                                                <br /><span class="font-weight-semibold"> Logged By <text class="text-blue">@objGlobaldata.GetMultiHrEmpNameById(dsKPI.Tables[0].Rows[i]["logged_by"].ToString())</text></span>
+                                            </div>
+                                            <div class="media-body">
+                                                <div class="btn-group-vertical float-right">
+                                                </div>
+                                                <div class="media-title">
+
+                                                    <span class="font-weight-semibold">KPI RefNo:<text class="text-blue">   @dsKPI.Tables[0].Rows[i]["kpi_ref_no"].ToString() </text></span>
+                                                    <br />
+                                                    <span class="font-weight-semibold">KPI Level:<text class="text-blue">@objGlobaldata.GetKPILevelById(dsKPI.Tables[0].Rows[i]["kpi_level"].ToString()) </text></span>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    }
+                                </ul>
+                            }
+
                             @if (dsObjectives != null && dsObjectives.Tables.Count > 0 && dsObjectives.Tables[0].Rows.Count > 0)
                             {
                                 <hr />
@@ -2741,7 +2780,7 @@
                                     }
                                     @if (objGlobaldata.GetCurrentUserSession().Kpi.Contains("1"))
                                     {
-                                        <li class="nav-item"><a href='@Url.Action("KPIEvaluationList", "KPIEvaluation", null)' class="nav-link @(ViewBag.SubMenutype == "KPI" ? "active" : "")" onclick="HyperLinkProgressIconFunction()">KPIs</a></li>
+                                        <li class="nav-item"><a href='@Url.Action("KPIEvaluationList", "KPI", null)' class="nav-link @(ViewBag.SubMenutype == "KPI" ? "active" : "")" onclick="HyperLinkProgressIconFunction()">KPIs</a></li>
                                     }
                                 </ul>
                             </li>

@@ -395,7 +395,7 @@ namespace ISOStd.Models
                     }
                     string sql1 = "update t_external_audit set audit_no='" + audit_no + "' where id_external_audit='" + id_external_audit + "'";
                     objGlobalData.ExecuteQuery(sql1);
-                    if (id_external_audit > 0)
+                    if (id_external_audit > 0 && objAuditList1.ExternalAuditList.Count > 0) 
                     {
                         objAuditList1.ExternalAuditList[0].id_external_audit = id_external_audit.ToString();
                         FunAddAuditeeList(objAuditList1);
@@ -403,6 +403,7 @@ namespace ISOStd.Models
                         objAuditList.ExternalAuditList[0].id_external_audit = id_external_audit.ToString();
                         return FunAddAuditorList(objAuditList);                     
                     }
+                    return true;
                 }
             }
             catch (Exception ex)

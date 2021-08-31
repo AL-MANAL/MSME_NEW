@@ -1,235 +1,756 @@
 ﻿@model ISOStd.Models.KPIModels
 
 @{
-    ViewBag.Title = "AddKPIEvaluation";
-}
+    ViewBag.Title = "";
 
-<div class="groupedassets margin10">
-    <span class="groupedassetshead margin10 onestphdcolor">Add KPI</span>
+}
+<script src='@Url.Content("~/global_assets/js/demo_pages/Kpi_form_wizard.js")'></script>
+
+@section featured {
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("KPIEvaluationList", "KPI", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Key Performance/Process Indicator</span>
+                    </a>
+                    <span class="breadcrumb-item active">Add Key Performance/Process Indicator</span>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+<div class="card">
+    <div class="card-header header-elements-inline bg-primary">
+        <h5 class="card-title">Add Key Performance/Process Indicator</h5>
+        <div class="header-elements">
+            <div class="list-icons">
+                <a class="list-icons-item" data-action="collapse"></a>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="container-fluid">
+
+            <form class="wizard-form steps-validation" action="@Url.Action("AddKPIEvaluation", "KPI")" data-fouc  id="form1">
+                <input type="hidden" id="itemcnt" name="itemcnt" value="0" />
+                <input type="hidden" id="itemcnts" name="itemcnts" value="0" />
+                <h6>Key Performance/Process Indicator</h6>
+                <fieldset>
+                    <table class="table table-lg">
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.established_date)<text style="color: red;">*</text>
+                            </td>
+                            <td class="col-xs-3 col-md-4">
+                              <input type="date" class="form-control" id="established_date" name="established_date" required />
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                               Proposed By
+                            </td>
+                            <td class="col">
+                                <select class="form-control-select3" data-fouc id="branch" name="branch"  disabled>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.Branch != null)
+                                    {
+                                        foreach (var data in ViewBag.Branch)
+                                        {
+                                            if (Array.IndexOf(Model.branch.ToString().Split(','), data.Value) >= 0)
+                                            {
+                                                <option value='@data.Value' selected>@data.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@data.Value'>@data.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                            </td>
+                            <td class="col">
+                                <select class="form-control-select3" data-fouc id="group_name" name="group_name" @*onchange="GetTeamDetails()"*@ required>
+                                    @if (ViewBag.Department != null)
+                                    {
+                                        foreach (var item in ViewBag.Department)
+                                        {
+                                            if (Array.IndexOf(Model.group_name.ToString().Split(','), item.Value) >= 0)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                            </td>
+                            @*<td class="col">
+                                <select class="form-control-select3" data-fouc id="team" name="team" required>
+                                    @if (ViewBag.Team != null)
+                                    {
+                                        foreach (var item in ViewBag.Team)
+                                        {
+                                            if (Array.IndexOf(Model.team.ToString().Split(','), item.Value) >= 0)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                            </td>*@
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.DisplayNameFor(model => model.process_indicator)<text style="color: red;">*</text>
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <select class="form-control-select3" data-fouc id="process_indicator" name="process_indicator" required>
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.Perf != null)
+                                        {
+                                            foreach (var item in ViewBag.Perf)
+                                            {
+                                               <option value='@item.Value'>@item.Text</option>
+                                               
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.DisplayNameFor(model => model.kpi_level)<text style="color: red;">*</text>
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <select class="form-control-select3" data-fouc id="kpi_level" name="kpi_level" required>
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.Level != null)
+                                        {
+                                            foreach (var item in ViewBag.Level)
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.DisplayNameFor(model => model.process_monitor)<text style="color: red;">*</text>
+                            </td>
+                            <td class="col">
+                                @Html.EditorFor(m => m.process_monitor, new { htmlAttributes = new { @required = "required", @class = "form-control" } })
+                            </td>                 
+                        </tr>
+                        </table>
+                    <fieldset class="border p-2">
+                        <legend class="font-weight-semibold text-success">Measurable Indicator</legend>
+                        <table class="table table-lg">
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+                                    @Html.DisplayNameFor(model => model.measurable_indicator)<text style="color: red;">*</text>
+                                </td>
+                                <td class="col">
+                                    <input type="text" class="form-control" id="measurable_indicator" name="measurable_indicator" />
+                                    <span class="field-validation-error"><span id="measurable_indicator-message" style="display: none;">This field is required.</span></span>
+                                    @Html.ValidationMessageFor(model => model.measurable_indicator)
+                                </td>
+                            </tr>
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+                                    @Html.DisplayNameFor(model => model.expected_value)<text style="color: red;">*</text>
+                                </td>
+                                <td class="col">
+                                    <input type="text" class="form-control" id="expected_value" name="expected_value" />
+                                    <span class="field-validation-error"><span id="expected_value-message" style="display: none;">This field is required.</span></span>
+                                    @Html.ValidationMessageFor(model => model.expected_value)
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.DisplayNameFor(model => model.expected_value_unit)<text style="color: red;">*</text>
+                                    </div>
+                                </td>
+                                <td class="col">
+                                    <div class="editor-field">
+                                        <select class="form-control-select3" data-fouc id="expected_value_unit" name="expected_value_unit">
+                                            <option value='' hidden>Select</option>
+                                            @if (ViewBag.Unit != null)
+                                            {
+                                                foreach (var item in ViewBag.Unit)
+                                                {
+                                                    <option value='@item'>@item</option>
+
+                                                }
+                                            }
+                                        </select>
+                                        <span class="field-validation-error"><span id="expected_value-message" style="display: none;">This field is required.</span></span>
+                                        @Html.ValidationMessageFor(model => model.expected_value)
+                                    </div>
+                                </td>
+
+                            </tr>
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.DisplayNameFor(model => model.kpi_type)<text style="color: red;">*</text>
+                                    </div>
+                                </td>
+                                <td class="col-xs-3 col-md-4">
+                                    <div class="editor-field">
+                                        <select class="form-control-select3" data-fouc id="kpi_type" name="kpi_type">
+                                            <option value='' hidden>Select</option>
+                                            @if (ViewBag.Type != null)
+                                            {
+                                                foreach (var item in ViewBag.Type)
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+                                                }
+                                            }
+                                        </select>
+                                        <span class="field-validation-error"><span id="kpi_type-message" style="display: none;">This field is required.</span></span>
+                                        @Html.ValidationMessageFor(model => model.kpi_type)
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+                                    @Html.LabelFor(model => model.monitoring_frm_date)<text style="color: red;">*</text>
+                                </td>
+                                <td class="col">
+                                    <input type="date" class="form-control" id="monitoring_frm_date" name="monitoring_frm_date" />
+                                    <span class="field-validation-error"><span id="monitoring_frm_date-message" style="display: none;">This field is required.</span></span>
+                                    @Html.ValidationMessageFor(model => model.monitoring_frm_date)
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+                                    @Html.LabelFor(model => model.monitoring_to_date)<text style="color: red;">*</text>
+                                </td>
+                                <td class="col">
+                                    <input type="date" class="form-control" id="monitoring_to_date" name="monitoring_to_date" />
+                                    <span class="field-validation-error"><span id="monitoring_to_date-message" style="display: none;">This field is required.</span></span>
+                                    @Html.ValidationMessageFor(model => model.monitoring_to_date)
+                                </td>
+                            </tr>
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.DisplayNameFor(model => model.monitoring_mechanism)<text style="color: red;">*</text>
+                                    </div>
+                                </td>
+                                <td class="col">
+                                    <div class="editor-field">
+                                        <select class="form-control-select3" data-fouc id="monitoring_mechanism" name="monitoring_mechanism">
+                                            <option value='' hidden>Select</option>
+                                            @if (ViewBag.Monitoring != null)
+                                            {
+                                                foreach (var item in ViewBag.Monitoring)
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+
+                                                }
+                                            }
+                                        </select>
+                                        <span class="field-validation-error"><span id="monitoring_mechanism-message" style="display: none;">This field is required.</span></span>
+                                        @Html.ValidationMessageFor(model => model.monitoring_mechanism)
+                                    </div>
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.DisplayNameFor(model => model.frequency_eval)<text style="color: red;">*</text>
+                                    </div>
+                                </td>
+                                <td class="col">
+                                    <div class="editor-field">
+                                        <select class="form-control-select3" data-fouc id="frequency_eval" name="frequency_eval" >
+                                            <option value='' hidden>Select</option>
+                                            @if (ViewBag.Frequency != null)
+                                            {
+                                                foreach (var item in ViewBag.Frequency)
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+
+                                                }
+                                            }
+                                        </select>
+                                        <span class="field-validation-error"><span id="frequency_eval-message" style="display: none;">This field is required.</span></span>
+                                        @Html.ValidationMessageFor(model => model.frequency_eval)
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+                                    @Html.DisplayNameFor(model => model.risk)<text style="color: red;">*</text>
+                                </td>
+                                <td class="col">
+                                    <input type="text" class="form-control" id="risk" name="risk" />
+                                    <span class="field-validation-error"><span id="risk-message" style="display: none;">This field is required.</span></span>
+                                    @Html.ValidationMessageFor(model => model.risk)
+                                </td>
+                            </tr>
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-1">
+                                    <input type="button" value="Add" class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" onclick="Add()" />
+                                </td>
+                            </tr>
+                        </table>
+                    </fieldset>
+                    <br />
+                    <div class="card invisible" id="hidden card1" style="display:none">
+
+                        <div class="card-body scrollbar-container">
+
+
+                            <div class="card card-table table-responsive shadow-0 mb-0 scrollbar">
+                                <table class="table" id="team-list1">
+                                    <tr class="bg-blue">
+                                        <th>Delete</th>
+                                        <th>Measurable_Indicator</th>
+                                        <th>Expected_value_to_be_achieved</th>
+                                        <th>Unit</th>
+                                        <th>KPI Type</th>
+                                        <th>Monitoring Period From Date</th>
+                                        <th>To Date</th>
+                                        <th>Monitoring Mechanism</th>
+                                        <th>Frequency of Evaluation</th>
+                                        <th>Risk_if_not_achieved</th>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    @*<fieldset class="border p-2">
+                        <legend class="font-weight-semibold text-success">Potential Causes for Failure to achieve KPI</legend>
+                        <table class="table table-lg">
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+                                    @Html.LabelFor(model => model.causes_failure)
+                                </td>
+                                <td class="col-xs-3 col-md-9">
+
+                                    <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="causes_failure" name="causes_failure"></textarea>
+                                    <span class="field-validation-error"><span id="causes_failure-message" style="display: none;">This field is required.</span></span>
+                                    @Html.ValidationMessageFor(model => model.causes_failure)
+                                </td>
+                                <td class="col-xs-3 col-md-1">
+                                    <input type="button" value="Add" class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" onclick="AddData()" />
+                                </td>
+                            </tr>
+                        </table>
+                    </fieldset>
+                    <div class="card invisible" id="hidden card">
+
+                            <div class="card-body scrollbar-container">
+
+
+                                <div class="card card-table table-responsive shadow-0 mb-0 scrollbar">
+                                    <table class="table" id="team-list">
+                                        <tr class="bg-blue">
+                                            <th>Delete</th>
+                                            <th>Potential Causes for Failure</th>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>*@
+
+                        <table class="table table-lg">
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.DisplayNameFor(model => model.pers_resp)<text style="color: red;">*</text>
+                                    </div>
+                                </td>
+                                <td class="col">
+                                    <div class="editor-field">
+                                        <select class="form-control-select3" data-fouc id="pers_resp" name="pers_resp" required>
+                                            <option value='' hidden>Select</option>
+                                            @if (ViewBag.EmpList != null)
+                                            {
+                                                foreach (var item in ViewBag.EmpList)
+                                                {
+                                            <option value='@item.Value'>@item.Text</option>
+
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.LabelFor(model => model.upload) <text style="color:red">*</text>
+                                    </div>
+                                </td>
+                                <td class="col-xs-3 col-md-4">
+                                    <div class="editor-field">
+                                        <input type="file" name="upload" id="upload" onchange="FileFormatValidation(this)" multiple accept=".pdf,.xlsx,.xls,.doc,.docx,.image/*,.png,.jpeg,.jpg" @*class="bootstrap-uploader" data-fouc*@ required />
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.DisplayNameFor(model => model.approved_by)<text style="color: red;">*</text>
+                                    </div>
+                                </td>
+                                <td class="col-xs-3 col-md-4">
+                                    <div class="editor-field">
+                                        <select class="form-control-select3" data-fouc id="approved_by" name="approved_by" required>
+                                            <option value='' hidden>Select</option>
+                                            @if (ViewBag.EmpList != null)
+                                            {
+                                                foreach (var item in ViewBag.EmpList)
+                                                {
+                                            <option value='@item.Value'>@item.Text</option>
+
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+                                </td>
+
+                            </tr>
+
+                        </table>
+
+                    </fieldset>
+           
+              
+                   
+                    
+            </form>
+        </div>
+    </div>
 </div>
 
- <div id="divmsg">
-        @if (TempData["alertdata"] != null)
-        {
-            <span class="errMsg" style="color: red;font-weight: bold;">@TempData["alertdata"]</span>
-        }
-        @if (TempData["Successdata"] != null)
-        {
-            <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
-        }
-    </div>
 
-@using (Html.BeginForm()) {
-    @Html.AntiForgeryToken()
-    @Html.ValidationSummary(true)
-
-    <fieldset>
-        <legend>KPIModels</legend>
-        <table id="tabcontent">
-            <tr>
-                <td>
-                    <div class="editor-label">
-                        @Html.LabelFor(model => model.Dept)
-                    </div>
-                </td>
-                <td>
-                    <div class="editor-field">
-                        <select id="Dept" name="Dept" required="">
-                             <option value='' hidden>Select</option>
-                            @if (ViewBag.Dept != null)
-                             {
-                                foreach (var item in ViewBag.Dept)
-                                {
-                                    <option value='@item.Value'>@item.Text</option>
-                                }
-                            }
-                        </select>
-                        @Html.ValidationMessageFor(model => model.Dept)
-                    </div>
-                </td>
-                <td>
-                    <div class="editor-label">
-                        @Html.LabelFor(model => model.SubProcess_InCharge)
-                    </div>
-                </td>
-                <td>
-                    <div class="editor-field">
-                        @Html.EditorFor(model => model.SubProcess_InCharge)
-                        @Html.ValidationMessageFor(model => model.SubProcess_InCharge)
-                    </div>
-                </td>
-            </tr>
-            <tr>
-
-                <td>
-                    <div class="editor-label">
-                        @Html.LabelFor(model => model.KPI_Ref)
-                    </div>
-                </td>
-                <td>
-                    <div class="editor-field">
-                        @Html.EditorFor(model => model.KPI_Ref)
-                        @Html.ValidationMessageFor(model => model.KPI_Ref)
-                    </div>
-                </td>
-                <td>
-                    <div class="editor-label">
-                        @Html.LabelFor(model => model.Freq_of_Eval)
-                    </div>
-                </td>
-                <td>
-                    <div class="editor-field">
-                        <select id="Freq_of_Eval" name="Freq_of_Eval" required="">
-                                <option value='' hidden>Select</option>
-                                @if (ViewBag.Freq_of_Eval != null)
-                                {
-                                    foreach (var item in ViewBag.Freq_of_Eval)
-                                    {
-                                        <option value='@item'>@item</option>
-                                    }
-                                }
-                            </select>                     
-                        @Html.ValidationMessageFor(model => model.Freq_of_Eval)
-                    </div>
-                </td>
-            </tr>
-            <tr>
-
-                
-                <td>
-                    <div class="editor-label">
-                        @Html.LabelFor(model => model.KPI_Estd_On)
-                    </div>
-                </td>
-                <td>
-                    <div class="editor-field">
-                        <input type="text" id="KPI_Estd_On" name="KPI_Estd_On" required readonly/>
-                        @Html.ValidationMessageFor(model => model.KPI_Estd_On)
-                    </div>
-                </td>
-                         
-                <td>
-                    <div class="editor-label">
-                        @Html.LabelFor(model => model.Key_Perf_Indicator)
-                    </div>
-                </td>
-                <td>
-                    <div class="editor-field">
-                        @Html.EditorFor(model => model.Key_Perf_Indicator)
-                        @Html.ValidationMessageFor(model => model.Key_Perf_Indicator)
-                    </div>
-                </td>
-            </tr>
-            <tr>
-
-                <td>
-                    <div class="editor-label">
-                        @Html.LabelFor(model => model.Measurable_Value)
-                    </div>
-                </td>
-                <td>
-                    <div class="editor-field">
-                        @Html.EditorFor(model => model.Measurable_Value)
-                        @Html.ValidationMessageFor(model => model.Measurable_Value)
-                    </div>
-                </td>
-                <td>
-                    <div class="editor-label">
-                        @Html.LabelFor(model => model.KPI_Monitoring_Mechanism)
-                    </div>
-                </td>
-                <td>
-                    <div class="editor-field">
-                        @Html.EditorFor(model => model.KPI_Monitoring_Mechanism)
-                        @Html.ValidationMessageFor(model => model.KPI_Monitoring_Mechanism)
-                    </div>
-                </td>
-            </tr>
-            <tr>
-
-                <td>
-                    <div class="editor-label">
-                        @Html.LabelFor(model => model.KPI_Status_eval_on)
-                    </div>
-                </td>
-                <td>
-                    <div class="editor-field">
-                        <input type="text" id="KPI_Status_eval_on" name="KPI_Status_eval_on" required readonly/>
-                        @Html.ValidationMessageFor(model => model.KPI_Status_eval_on)
-                    </div>
-                </td>
-                <td>
-                    <div class="editor-label">
-                        @Html.LabelFor(model => model.KPI_Eval_Record)
-                    </div>
-                </td>
-                <td>
-                    <div class="editor-field">
-                        @Html.EditorFor(model => model.KPI_Eval_Record)
-                        @Html.ValidationMessageFor(model => model.KPI_Eval_Record)
-                    </div>
-                </td>
-            </tr>
-            <tr>
-
-                <td>
-                    <div class="editor-label">
-                        @Html.LabelFor(model => model.NCR_Ref)
-                    </div>
-                </td>
-                <td>
-                    <div class="editor-field">
-                        @Html.EditorFor(model => model.NCR_Ref)
-                        @Html.ValidationMessageFor(model => model.NCR_Ref)
-                    </div>
-                </td>
-            </tr>
-        </table>
-        
-    </fieldset>
-     <div style="width: 100%; text-align: center;">
-        @Html.ActionLink("Back to List", "KPIEvaluationList", new { Class="ActionLink", onclick="HyperLinkProgressIconFunction()"})
-        <input type="submit" value="Create" />
-    </div>
-}
-
-
+<script src='@Url.Content("~/global_assets/js/plugins/forms/wizards/steps2.min.js")'></script>
+<script>
+    var summary = {
+        summaryUrl: '@Url.Action("AddKPIEvaluation", "KPI")'
+    };
+    var $ = jQuery.noConflict();
+</script>
 @section Scripts {
     <script>
-        $(function () {
+        $(document).ready(function () {
 
-            $('#KPI_Status_eval_on').datepicker({
-                dateFormat: "dd/mm/yy",
-                buttonImageOnly: true,
-                buttonImage: '../Images/Calender.png',
-                showOn: 'both',
-                changeMonth: true,
-                changeYear: true,
-                minDate: 0
-            });
+            @if (TempData["alertdata"] != null)
+            {
+                     @: new Noty({
+                                     @:     text: '@TempData["alertdata"]',
+                                     @:     type: 'error'
+                                     @: }).show();
+                        }
 
-            $('#KPI_Estd_On').datepicker({
-                dateFormat: "dd/mm/yy",
-                buttonImageOnly: true,
-                buttonImage: '../Images/Calender.png',
-                showOn: 'both',
-                changeMonth: true,
-                changeYear: true,
-                minDate: 0,
-                onClose: function () {
-                    var dt1 = $('#KPI_Status_eval_on').datepicker('getDate');
-                    var dt2 = $('#KPI_Estd_On').datepicker('getDate');
-                    //check to prevent a user from entering a date below date of dt1
-                    if (dt2 < dt1) {
-                        jAlert("KPI established date cannot be before KPI status evaluated date");
-                        $('#KPI_Estd_On').val("");
-                    }
-                }
-            });
 
-            $("#KPI_Status_eval_on").datepicker("setDate", new Date());
-            $("#KPI_Estd_On").datepicker("setDate", new Date());
+            @if (@TempData["Successdata"] != null)
+            {
+
+            @:new Noty({
+                       @:text: '@TempData["Successdata"]',
+                       @: type: 'success'
+                       @:}).show();
+            }
+
         });
+        var showClass = 'is-visible';
+        var hideClass = 'invisible';
+
+        function deleteRow(btn) {
+            var row = btn.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+        }
+
+        function Validation() {
+            var validflg = true;
+            var ssnMessage = "";
+            if (document.getElementById("causes_failure").value == "") {
+                ssnMessage = $('#causes_failure-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#causes_failure-message');
+                ssnMessage.hide();
+            }
+            return validflg;
+        }
+        function AddData() {
+            if (Validation() == true) {
+                document.getElementById("hidden card1").style.display = "block";
+                var cnt = document.getElementById("itemcnt").value;
+
+                document.getElementById("itemcnt").value = cnt;
+                // Find a <table> element with id="myTable":
+                var table = document.getElementById("team-list");
+
+
+                // Create an empty <tr> element and add it to the 1st position of the table:
+                var row = table.insertRow();
+
+                // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                var cell0 = row.insertCell(0);
+                var cell1 = row.insertCell(1);
+
+
+                var causes_failure = $('#causes_failure').val();
+
+
+                cell0.innerHTML = "<span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span>";
+                cell1.innerHTML = "<textarea id='causes_failure" + cnt + "' name='causes_failure" + cnt + "' style='overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;' class='form-control elastic maxlength-badge-position' cols='4' rows='4' placeholder='Textarea' maxlength='2000'>" + causes_failure + "</textarea>";
+
+                       cnt++;
+                        document.getElementById("itemcnt").value = cnt;
+
+                        //reintialisation
+
+                        // Badge position
+                        $('.maxlength-badge-position').maxlength({
+                            alwaysShow: true,
+                            placement: 'top'
+                        });
+                        //auto resize
+                        autosize($('.elastic'));
+
+                        document.getElementById("hidden card").classList.remove(hideClass);
+                        document.getElementById("hidden card").classList.add(showClass);
+                        document.getElementById("causes_failure").value = "";
+
+                    }
+
+        }
+        function Validation1() {
+            var validflg = true;
+            var ssnMessage = "";
+            if (document.getElementById("measurable_indicator").value == "") {
+                ssnMessage = $('#measurable_indicator-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#measurable_indicator-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("expected_value").value == "") {
+                ssnMessage = $('#expected_value-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#expected_value-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("expected_value_unit").value == "") {
+                ssnMessage = $('#expected_value_unit-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#expected_value_unit-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("kpi_type").value == "") {
+                ssnMessage = $('#kpi_type-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#kpi_type-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("monitoring_frm_date").value == "") {
+                ssnMessage = $('#monitoring_frm_date-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#monitoring_frm_date-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("monitoring_to_date").value == "") {
+                ssnMessage = $('#monitoring_to_date-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#monitoring_to_date-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("monitoring_mechanism").value == "") {
+                ssnMessage = $('#monitoring_mechanism-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#monitoring_mechanism-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("frequency_eval").value == "") {
+                ssnMessage = $('#frequency_eval-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#frequency_eval-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("risk").value == "") {
+                ssnMessage = $('#risk-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#risk-message');
+                ssnMessage.hide();
+            }
+            return validflg;
+        }
+        function Add() {
+
+            if (Validation1() == true) {
+
+
+                document.getElementById("hidden card1").style.display = "block";
+
+                var cnt = document.getElementById("itemcnts").value;
+
+                document.getElementById("itemcnts").value = cnt;
+                // Find a <table> element with id="myTable":
+                var table = document.getElementById("team-list1");
+
+                // Create an empty <tr> element and add it to the 1st position of the table:
+                var row = table.insertRow();
+
+                // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                var cell0 = row.insertCell(0);
+                var cell1 = row.insertCell(1);
+                var cell2 = row.insertCell(2);
+                var cell3 = row.insertCell(3);
+                var cell4 = row.insertCell(4);
+                var cell5 = row.insertCell(5);
+                var cell6 = row.insertCell(6);
+                var cell7 = row.insertCell(7);
+                var cell8 = row.insertCell(8);
+                var cell9 = row.insertCell(9);
+
+                var measurable_indicator = $('#measurable_indicator').val();
+                var expected_value = $('#expected_value').val();
+                var expected_value_unit = $('#expected_value_unit').val();
+                var monitoring_frm_date = $('#monitoring_frm_date').val();
+                var monitoring_to_date = $('#monitoring_to_date').val();
+                var risk = $('#risk').val();
+                var expected_value_unit = $('#expected_value_unit').val();
+
+                var kpi_type = $.map($("#kpi_type option:selected"), function (el, i) {
+                    return $(el).text();
+                });
+                var kpi_typeVal = $("#kpi_type").val();
+
+                var monitoring_mechanism = $.map($("#monitoring_mechanism option:selected"), function (el, i) {
+                    return $(el).text();
+                });
+                var monitoring_mechanismVal = $("#monitoring_mechanism").val();
+
+                var frequency_eval = $.map($("#frequency_eval option:selected"), function (el, i) {
+                    return $(el).text();
+                });
+                var frequency_evalVal = $("#frequency_eval").val();
+
+
+                cell0.innerHTML = "<span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span>";
+
+                cell1.innerHTML = "<textarea id='measurable_indicator " + cnt + "' name='measurable_indicator " + cnt + "' style='overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;' class='form-control elastic maxlength-badge-position' cols='10' rows='4' placeholder='Textarea' maxlength='2000'>" + measurable_indicator + "</textarea>";
+                cell2.innerHTML = "<textarea id='expected_value " + cnt + "' name='expected_value " + cnt + "' style='overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;' class='form-control elastic maxlength-badge-position' cols='10' rows='4' placeholder='Textarea' maxlength='2000'>" + expected_value + "</textarea>";
+                cell3.innerHTML = "<select class='select-fixed-single' id='expected_value_unit " + cnt + "' name='expected_value_unit " + cnt + "'><option value='" + expected_value_unit + "' selected>" + expected_value_unit + "</option>@if (ViewBag.Unit != null)
+                {
+                    foreach (var item in ViewBag.Unit)
+                    { <option value='@item'>@item</option> }
+                    }</select>";
+
+                cell4.innerHTML = "<select class='select-fixed-single' id='kpi_type " + cnt + "' name='kpi_type " + cnt + "'><option value='" + kpi_typeVal + "' selected>" + kpi_type + "</option>@if (ViewBag.Type != null)
+                {
+                    foreach (var item in ViewBag.Type)
+                    { <option value='@item.Value'>@item.Text</option> }
+                    }</select>";
+
+                cell5.innerHTML = "<input class='form-control' type='date' id='monitoring_frm_date " + cnt + "' name='monitoring_frm_date " + cnt + "' value='" + monitoring_frm_date + "' />";
+                cell6.innerHTML = "<input class='form-control' type='date' id='monitoring_to_date " + cnt + "' name='monitoring_to_date " + cnt + "' value='" + monitoring_to_date + "' />";
+                cell7.innerHTML = "<select class='select-fixed-single' id='monitoring_mechanism " + cnt + "' name='monitoring_mechanism " + cnt + "'><option value='" + monitoring_mechanismVal + "' selected>" + monitoring_mechanism + "</option>@if (ViewBag.Monitoring != null)
+                {
+                    foreach (var item in ViewBag.Monitoring)
+                    { <option value='@item.Value'>@item.Text</option> }
+                    }</select>";
+                cell8.innerHTML = "<select class='select-fixed-single' id='frequency_eval " + cnt + "' name='frequency_eval " + cnt + "'><option value='" + frequency_evalVal + "' selected>" + frequency_eval + "</option>@if (ViewBag.Frequency != null)
+                {
+                    foreach (var item in ViewBag.Frequency)
+                    { <option value='@item.Value'>@item.Text</option> }
+                    }</select>";
+
+                cell9.innerHTML = "<textarea id='risk " + cnt + "' name='risk " + cnt + "' style='overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;' class='form-control elastic maxlength-badge-position' cols='4' rows='4' placeholder='Textarea' maxlength='2000'>" + risk + "</textarea>";
+
+                cnt++;
+                document.getElementById("itemcnts").value = cnt;
+
+                //reintialisation
+
+                // Badge position
+                $('.maxlength-badge-position').maxlength({
+                    alwaysShow: true,
+                    placement: 'top'
+                });
+                //auto resize
+                autosize($('.elastic'));
+                $('.select-fixed-single').select2({
+                    minimumResultsForSearch: Infinity,
+                    width: 150
+                });
+                document.getElementById("hidden card1").classList.remove(hideClass);
+                document.getElementById("hidden card1").classList.add(showClass);
+
+                document.getElementById("measurable_indicator").value = "";
+                document.getElementById("expected_value").value = "";          
+                $("#expected_value_unit").val('').trigger('change');
+                $("#kpi_type").val('').trigger('change');
+                document.getElementById("monitoring_frm_date").value = "";
+                document.getElementById("monitoring_to_date").value = "";
+                $("#monitoring_mechanism").val('').trigger('change');
+                $("#frequency_eval").val('').trigger('change');
+                document.getElementById("risk").value = "";
+            }
+        }
+       
+     
+        function FileFormatValidation(file) {
+            var ext = file.value.split(".").pop().toLowerCase();
+            if ($.inArray(ext, ["doc", "pdf", "docx", "xls", "xlsx", , "png", "jpg", "jpeg"]) == -1) {
+                file.value = "";
+                jAlert("Invalid file format, please upload only doc, pdf, docx, xls, xlsx, png, jpeg, jpg format");
+            }
+        }
     </script>
     @Scripts.Render("~/bundles/jqueryval")
 }

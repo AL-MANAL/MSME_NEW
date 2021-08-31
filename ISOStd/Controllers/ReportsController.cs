@@ -206,106 +206,106 @@ namespace ISOStd.Controllers
         //}
 
          
-        public FileContentResult GenerateAndDisplayKPIReport(string format)
-        {
+        //public FileContentResult GenerateAndDisplayKPIReport(string format)
+        //{
 
-            Microsoft.Reporting.WebForms.LocalReport lr =
-            new Microsoft.Reporting.WebForms.LocalReport();
+        //    Microsoft.Reporting.WebForms.LocalReport lr =
+        //    new Microsoft.Reporting.WebForms.LocalReport();
 
-            //LocalReport localReport = new LocalReport();
-            lr.ReportPath = Server.MapPath("~/RPT-RDLC/KPIReport.rdlc");
+        //    //LocalReport localReport = new LocalReport();
+        //    lr.ReportPath = Server.MapPath("~/RPT-RDLC/KPIReport.rdlc");
 
-            KPIModelsList objKPI = new KPIModelsList();
-            objKPI.KPIMList = new List<KPIModels>();
-
-
-            try
-            {
-                string sSqlstmt = "select * from kpiview";
-                DataSet dsKPIModelsList = objGlobaldata.Getdetails(sSqlstmt);
-
-                if (dsKPIModelsList.Tables.Count > 0 && dsKPIModelsList.Tables[0].Rows.Count > 0)
-                {
-
-                    for (int i = 0; i < dsKPIModelsList.Tables[0].Rows.Count; i++)
-                    {
-                        try
-                        {
-                            KPIModels objKPIModels = new KPIModels
-                            {
-                                KPI_Ref = dsKPIModelsList.Tables[0].Rows[i]["KPI_Ref"].ToString(),
-                                Key_Perf_Indicator = dsKPIModelsList.Tables[0].Rows[i]["Key_Perf_Indicator"].ToString(),
-                                Measurable_Value = dsKPIModelsList.Tables[0].Rows[i]["Measurable_Value"].ToString(),
-                                KPI_Monitoring_Mechanism = dsKPIModelsList.Tables[0].Rows[i]["KPI_Monitoring_Mechanism"].ToString(),
-                                DeptName = dsKPIModelsList.Tables[0].Rows[i]["DeptName"].ToString(),
-                                Person_Responsible = dsKPIModelsList.Tables[0].Rows[i]["Person_Responsible"].ToString(),
-                                Freq_of_Eval = dsKPIModelsList.Tables[0].Rows[i]["Freq_of_Eval"].ToString(),
-                            };
-                            DateTime dtEstDate = new DateTime();
-                            if (DateTime.TryParse(dsKPIModelsList.Tables[0].Rows[0]["KPI_Estd_On"].ToString(), out dtEstDate))
-                            {
-                                objKPIModels.KPI_Estd_On = dtEstDate;
-                            }
-                            objKPI.KPIMList.Add(objKPIModels);
-                        }
-                        catch (Exception ex)
-                        {
-                        }
-                    }
-                }
-
-            }
-            catch (Exception ex)
-            {
-                objGlobaldata.AddFunctionalLog("Exception in GenerateAndDisplayKPIReport: " + ex.ToString());
-                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-
-            }
+        //    KPIModelsList objKPI = new KPIModelsList();
+        //    objKPI.KPIMList = new List<KPIModels>();
 
 
+        //    try
+        //    {
+        //        string sSqlstmt = "select * from kpiview";
+        //        DataSet dsKPIModelsList = objGlobaldata.Getdetails(sSqlstmt);
+
+        //        if (dsKPIModelsList.Tables.Count > 0 && dsKPIModelsList.Tables[0].Rows.Count > 0)
+        //        {
+
+        //            for (int i = 0; i < dsKPIModelsList.Tables[0].Rows.Count; i++)
+        //            {
+        //                try
+        //                {
+        //                    KPIModels objKPIModels = new KPIModels
+        //                    {
+        //                        KPI_Ref = dsKPIModelsList.Tables[0].Rows[i]["KPI_Ref"].ToString(),
+        //                        Key_Perf_Indicator = dsKPIModelsList.Tables[0].Rows[i]["Key_Perf_Indicator"].ToString(),
+        //                        Measurable_Value = dsKPIModelsList.Tables[0].Rows[i]["Measurable_Value"].ToString(),
+        //                        KPI_Monitoring_Mechanism = dsKPIModelsList.Tables[0].Rows[i]["KPI_Monitoring_Mechanism"].ToString(),
+        //                        DeptName = dsKPIModelsList.Tables[0].Rows[i]["DeptName"].ToString(),
+        //                        Person_Responsible = dsKPIModelsList.Tables[0].Rows[i]["Person_Responsible"].ToString(),
+        //                        Freq_of_Eval = dsKPIModelsList.Tables[0].Rows[i]["Freq_of_Eval"].ToString(),
+        //                    };
+        //                    DateTime dtEstDate = new DateTime();
+        //                    if (DateTime.TryParse(dsKPIModelsList.Tables[0].Rows[0]["KPI_Estd_On"].ToString(), out dtEstDate))
+        //                    {
+        //                        objKPIModels.KPI_Estd_On = dtEstDate;
+        //                    }
+        //                    objKPI.KPIMList.Add(objKPIModels);
+        //                }
+        //                catch (Exception ex)
+        //                {
+        //                }
+        //            }
+        //        }
+
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        objGlobaldata.AddFunctionalLog("Exception in GenerateAndDisplayKPIReport: " + ex.ToString());
+        //        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+
+        //    }
 
 
-            ReportDataSource reportDataSource = new ReportDataSource();
-            reportDataSource.Name = "KPIDataset";
 
-            reportDataSource.Value = objKPI.KPIMList;
 
-            lr.DataSources.Add(reportDataSource);
-            string reportType = "Image";
-            string mimeType;
-            string encoding;
-            string fileNameExtension;
-            //The DeviceInfo settings should be changed based on the reportType            
-            //http://msdn2.microsoft.com/en-us/library/ms155397.aspx            
-            string deviceInfo = "<DeviceInfo>" +
-                "  <OutputFormat>JPEG</OutputFormat>" +
-                "  <PageWidth>8.5in</PageWidth>" +
-                "  <PageHeight>11in</PageHeight>" +
-                "  <MarginTop>0.5in</MarginTop>" +
-                "  <MarginLeft>1in</MarginLeft>" +
-                "  <MarginRight>1in</MarginRight>" +
-                "  <MarginBottom>0.5in</MarginBottom>" +
-                "</DeviceInfo>";
-            Warning[] warnings;
-            string[] streams;
-            byte[] renderedBytes;
-            //Render the report            
-            renderedBytes = lr.Render(reportType, deviceInfo, out mimeType, out encoding, out fileNameExtension, out streams, out warnings);
-            //Response.AddHeader("content-disposition", "attachment; filename=NorthWindCustomers." + fileNameExtension); 
-            if (format == null)
-            {
-                return File(renderedBytes, "image/jpeg");
-            }
-            else if (format == "PDF")
-            {
-                return File(renderedBytes, "pdf");
-            }
-            else
-            {
-                return File(renderedBytes, "image/jpeg");
-            }
-        }
-        //
+        //    ReportDataSource reportDataSource = new ReportDataSource();
+        //    reportDataSource.Name = "KPIDataset";
+
+        //    reportDataSource.Value = objKPI.KPIMList;
+
+        //    lr.DataSources.Add(reportDataSource);
+        //    string reportType = "Image";
+        //    string mimeType;
+        //    string encoding;
+        //    string fileNameExtension;
+        //    //The DeviceInfo settings should be changed based on the reportType            
+        //    //http://msdn2.microsoft.com/en-us/library/ms155397.aspx            
+        //    string deviceInfo = "<DeviceInfo>" +
+        //        "  <OutputFormat>JPEG</OutputFormat>" +
+        //        "  <PageWidth>8.5in</PageWidth>" +
+        //        "  <PageHeight>11in</PageHeight>" +
+        //        "  <MarginTop>0.5in</MarginTop>" +
+        //        "  <MarginLeft>1in</MarginLeft>" +
+        //        "  <MarginRight>1in</MarginRight>" +
+        //        "  <MarginBottom>0.5in</MarginBottom>" +
+        //        "</DeviceInfo>";
+        //    Warning[] warnings;
+        //    string[] streams;
+        //    byte[] renderedBytes;
+        //    //Render the report            
+        //    renderedBytes = lr.Render(reportType, deviceInfo, out mimeType, out encoding, out fileNameExtension, out streams, out warnings);
+        //    //Response.AddHeader("content-disposition", "attachment; filename=NorthWindCustomers." + fileNameExtension); 
+        //    if (format == null)
+        //    {
+        //        return File(renderedBytes, "image/jpeg");
+        //    }
+        //    else if (format == "PDF")
+        //    {
+        //        return File(renderedBytes, "pdf");
+        //    }
+        //    else
+        //    {
+        //        return File(renderedBytes, "image/jpeg");
+        //    }
+        //}
+        ////
         //GET: /Reports/InternalAuditNCReport
          
         [AllowAnonymous]

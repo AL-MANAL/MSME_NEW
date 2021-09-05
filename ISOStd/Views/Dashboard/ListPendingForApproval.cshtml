@@ -28,15 +28,15 @@
     DataSet dsSupplier = new DataSet();
     DataSet dsRisk = new DataSet();
     DataSet dsHRRRisk = new DataSet();
-    DataSet dsAudit = new DataSet();
+    //DataSet dsAudit = new DataSet();
     DataSet dsAnnexure = new DataSet();
     DataSet dsWorkPermit = new DataSet();
     DataSet dsSViolation = new DataSet();
     DataSet dsJD = new DataSet();
     DataSet dsSuppReevalation = new DataSet();
     DataSet dsPortalAuthorization = new DataSet();
-    DataSet dsAuditProcessdepthead = new DataSet();
-    DataSet dsAuditProcess = new DataSet();
+    //DataSet dsAuditProcessdepthead = new DataSet();
+    //DataSet dsAuditProcess = new DataSet();
     DataSet dsOFI = new DataSet();
     DataSet dsOFIChekedby = new DataSet();
     DataSet dsNC = new DataSet();
@@ -55,10 +55,10 @@
     {
         dsOFIChekedby = ViewBag.dsOFIChekedby;
     }
-    if (ViewBag.dsAudit != null)
-    {
-        dsAudit = ViewBag.dsAudit;
-    }
+    //if (ViewBag.dsAudit != null)
+    //{
+    //    dsAudit = ViewBag.dsAudit;
+    //}
     if (ViewBag.dsMgmtDocument != null)
     {
         dsMgmtDocument = ViewBag.dsMgmtDocument;
@@ -138,15 +138,15 @@
         dsPortalAuthorization = ViewBag.dsPortalAuthorization;
     }
 
-    if (ViewBag.dsAuditProcessdepthead != null)
-    {
-        dsAuditProcessdepthead = ViewBag.dsAuditProcessdepthead;
-    }
+    //if (ViewBag.dsAuditProcessdepthead != null)
+    //{
+    //    dsAuditProcessdepthead = ViewBag.dsAuditProcessdepthead;
+    //}
 
-    if (ViewBag.dsAuditProcess != null)
-    {
-        dsAuditProcess = ViewBag.dsAuditProcess;
-    }
+    //if (ViewBag.dsAuditProcess != null)
+    //{
+    //    dsAuditProcess = ViewBag.dsAuditProcess;
+    //}
 
     if (ViewBag.dsDCRequest != null)
     {
@@ -533,203 +533,200 @@
 }
 
 
-@if (dsAudit != null && dsAudit.Tables.Count > 0 && dsAudit.Tables[0].Rows.Count > 0)
-{
-    <h1 class="bg-dark pl-sm-2">Internal Audit List</h1>
-    <div class="table-responsive">
-        <table class="table table-bordered table-striped table-hover datatable-responsive" id="">
-            <thead>
-                <tr class="bg-brown">
+@*@if (dsAudit != null && dsAudit.Tables.Count > 0 && dsAudit.Tables[0].Rows.Count > 0)
+    {
+        <h1 class="bg-dark pl-sm-2">Internal Audit List</h1>
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped table-hover datatable-responsive" id="">
+                <thead>
+                    <tr class="bg-brown">
 
-                    <th>Audit No</th>
-                    <th>Audit Date</th>
-                    <th>Audit Criteria</th>
-                    <th>Audit Location</th>
-                    <th>Prepared By</th>
-                    <th>Approved By</th>
-                    <th>Document</th>
-                    <th>Status</th>
+                        <th>Audit No</th>
+                        <th>Audit Date</th>
+                        <th>Audit Criteria</th>
+                        <th>Audit Location</th>
+                        <th>Prepared By</th>
+                        <th>Approved By</th>
+                        <th>Document</th>
+                        <th>Status</th>
 
-                </tr>
-            </thead>
-            <tbody>
-                @for (int i = 0; i < dsAudit.Tables[0].Rows.Count; i++)
-                {
-
-                    <tr>
-                        <td>
-                            <a href="#" data-toggle="Auditpopover" data-trigger="hover" id="@dsAudit.Tables[0].Rows[i]["AuditID"].ToString()">@(dsAudit.Tables[0].Rows[i]["AuditNum"].ToString())</a>
-                        </td>
-                        <td>
-                            @if (dsAudit.Tables[0].Rows[i]["AuditDate"].ToString() != "" && dsAudit.Tables[0].Rows[i]["AuditDate"].ToString() != null)
-                            {
-                                @Convert.ToDateTime(dsAudit.Tables[0].Rows[i]["AuditDate"].ToString()).ToString("dd/MM/yyyy")
-                            }
-                        </td>
-                        <td>
-                            @obj.GetIsoStdDescriptionById(dsAudit.Tables[0].Rows[i]["AuditCriteria"].ToString())
-                        </td>
-                        <td>
-                            @obj.GetCompanyBranchNameById(dsAudit.Tables[0].Rows[i]["AuditLocation"].ToString())
-                        </td>
-                        <td>
-                            @obj.GetEmpHrNameById(dsAudit.Tables[0].Rows[i]["Audit_Prepared_by"].ToString())
-                        </td>
-                        <td>
-                            @obj.GetEmpHrNameById(dsAudit.Tables[0].Rows[i]["ApprovedBy"].ToString())
-                        </td>
-                        <td>
-                            @if (dsAudit.Tables[0].Rows[i]["upload"].ToString() != "")
-                            {
-                                <a href='@Url.Action("DisplayDocument", "Reports", new { Document = dsAudit.Tables[0].Rows[i]["upload"].ToString() })' target="_blank">Preview</a>
-                            }
-                        </td>
-                        <td>
-                            <a href='@Url.Action("AuditApproveReject", "Audit", new { AuditID = dsAudit.Tables[0].Rows[i]["AuditID"].ToString(), iStatus = 1, PendingFlg = "true" })' title="Approve" style="color:green;">
-                                <span class="badge badge-info">Approve</span>
-                            </a>
-                            <a href='@Url.Action("AuditApproveReject", "Audit", new { AuditID = dsAudit.Tables[0].Rows[i]["AuditID"].ToString(), iStatus = 2, PendingFlg = "true" })' title="Reschedule" style="color:red;">
-                                <span class="badge badge-info">Reschedule</span>
-                            </a>
-                        </td>
                     </tr>
-                }
-            </tbody>
-        </table>
-    </div>
-}
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < dsAudit.Tables[0].Rows.Count; i++)
+                    {
+
+                        <tr>
+                            <td>
+                                <a href="#" data-toggle="Auditpopover" data-trigger="hover" id="@dsAudit.Tables[0].Rows[i]["AuditID"].ToString()">@(dsAudit.Tables[0].Rows[i]["AuditNum"].ToString())</a>
+                            </td>
+                            <td>
+                                @if (dsAudit.Tables[0].Rows[i]["AuditDate"].ToString() != "" && dsAudit.Tables[0].Rows[i]["AuditDate"].ToString() != null)
+                                {
+                                    @Convert.ToDateTime(dsAudit.Tables[0].Rows[i]["AuditDate"].ToString()).ToString("dd/MM/yyyy")
+                                }
+                            </td>
+                            <td>
+                                @obj.GetIsoStdDescriptionById(dsAudit.Tables[0].Rows[i]["AuditCriteria"].ToString())
+                            </td>
+                            <td>
+                                @obj.GetCompanyBranchNameById(dsAudit.Tables[0].Rows[i]["AuditLocation"].ToString())
+                            </td>
+                            <td>
+                                @obj.GetEmpHrNameById(dsAudit.Tables[0].Rows[i]["Audit_Prepared_by"].ToString())
+                            </td>
+                            <td>
+                                @obj.GetEmpHrNameById(dsAudit.Tables[0].Rows[i]["ApprovedBy"].ToString())
+                            </td>
+                            <td>
+                                @if (dsAudit.Tables[0].Rows[i]["upload"].ToString() != "")
+                                {
+                                    <a href='@Url.Action("DisplayDocument", "Reports", new { Document = dsAudit.Tables[0].Rows[i]["upload"].ToString() })' target="_blank">Preview</a>
+                                }
+                            </td>
+                            <td>
+                                <a href='@Url.Action("AuditApproveReject", "Audit", new { AuditID = dsAudit.Tables[0].Rows[i]["AuditID"].ToString(), iStatus = 1, PendingFlg = "true" })' title="Approve" style="color:green;">
+                                    <span class="badge badge-info">Approve</span>
+                                </a>
+                                <a href='@Url.Action("AuditApproveReject", "Audit", new { AuditID = dsAudit.Tables[0].Rows[i]["AuditID"].ToString(), iStatus = 2, PendingFlg = "true" })' title="Reschedule" style="color:red;">
+                                    <span class="badge badge-info">Reschedule</span>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }*@
 
 @*--------------- Audit Process(Internal Audit Plan) Dept Head-----------------*@
-@if (dsAuditProcessdepthead != null && dsAuditProcessdepthead.Tables.Count > 0 && dsAuditProcessdepthead.Tables[0].Rows.Count > 0)
-{
-    <h1 class="bg-dark pl-sm-2">Internal Audit Plan List (Dept Head)</h1>
-    <div class="table-responsive">
-        <table class="table table-bordered table-striped table-hover datatable-responsive">
-            <thead>
-                <tr class="bg-brown">
-                    <th>Audit No</th>
-                    <th>Audit Date</th>
-                    <th>Division</th>
-                    <th>Department</th>
-                    <th>Location</th>
-                    <th>CheckList</th>
-                    <th>Planned By</th>
-                    <th>Notified To</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                @for (int i = 0; i < dsAuditProcessdepthead.Tables[0].Rows.Count; i++)
-                {
-                    <tr>
-                        <td>
-                            @*<a href="#" data-toggle="Auditprocesspopover" data-trigger="hover" id="@dsAuditProcessdepthead.Tables[0].Rows[i]["Audit_Id"].ToString()">@(dsAuditProcessdepthead.Tables[0].Rows[i]["Audit_no"].ToString())</a>*@
-                            @(dsAuditProcessdepthead.Tables[0].Rows[i]["Audit_no"].ToString())
-                        </td>
-                        <td>
-                            @if (dsAuditProcessdepthead.Tables[0].Rows[i]["AuditDate"].ToString() != "" && dsAuditProcessdepthead.Tables[0].Rows[i]["AuditDate"].ToString() != null)
-                            {
-                                @Convert.ToDateTime(dsAuditProcessdepthead.Tables[0].Rows[i]["AuditDate"].ToString()).ToString("dd/MM/yyyy")
-                            }
-                        </td>
-                        <td>
-                            @obj.GetMultiCompanyBranchNameById(dsAuditProcessdepthead.Tables[0].Rows[i]["division"].ToString())
-                        </td>
-                        <td>
-                            @obj.GetMultiDeptNameById(dsAuditProcessdepthead.Tables[0].Rows[i]["dept"].ToString())
-                        </td>
-                        <td>
-                            @obj.GetDivisionLocationById(dsAuditProcessdepthead.Tables[0].Rows[i]["location"].ToString())
-                        </td>
-                        <td>
-                            @obj.GetChecklistBychecklistId(dsAuditProcessdepthead.Tables[0].Rows[i]["checklist"].ToString())
-                        </td>
-                        <td>
-                            @obj.GetMultiHrEmpNameById(dsAuditProcessdepthead.Tables[0].Rows[i]["PlannedBy"].ToString())
-                        </td>
-                        <td>
-                            @obj.GetMultiHrEmpNameById(dsAuditProcessdepthead.Tables[0].Rows[i]["Notified_To"].ToString())
-                        </td>
-                        <td>
-                            <a href='@Url.Action("AuditProcessApproveDeptHead", "AuditProcess", new { Audit_Id = dsAuditProcessdepthead.Tables[0].Rows[i]["Audit_Id"].ToString(), iStatus = 1, PendingFlg = "true" })' title="Approve" style="color:green;">
-                                <span class="badge badge-info">Approve</span>
-                            </a>
-                            <a href='@Url.Action("AuditProcessApproveDeptHead", "AuditProcess", new { Audit_Id = dsAuditProcessdepthead.Tables[0].Rows[i]["Audit_Id"].ToString(), iStatus = 2, PendingFlg = "true" })' title="Reject" style="color:red;">
-                                <span class="badge badge-danger">Reject</span>
-                            </a>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
-}
-
+@*@if (dsAuditProcessdepthead != null && dsAuditProcessdepthead.Tables.Count > 0 && dsAuditProcessdepthead.Tables[0].Rows.Count > 0)
+        {
+            <h1 class="bg-dark pl-sm-2">Internal Audit Plan List (Dept Head)</h1>
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped table-hover datatable-responsive">
+                    <thead>
+                        <tr class="bg-brown">
+                            <th>Audit No</th>
+                            <th>Audit Date</th>
+                            <th>Division</th>
+                            <th>Department</th>
+                            <th>Location</th>
+                            <th>CheckList</th>
+                            <th>Planned By</th>
+                            <th>Notified To</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < dsAuditProcessdepthead.Tables[0].Rows.Count; i++)
+                        {
+                            <tr>
+                                <td>
+                                 @(dsAuditProcessdepthead.Tables[0].Rows[i]["Audit_no"].ToString())
+                            </td>
+                            <td>
+                                @if (dsAuditProcessdepthead.Tables[0].Rows[i]["AuditDate"].ToString() != "" && dsAuditProcessdepthead.Tables[0].Rows[i]["AuditDate"].ToString() != null)
+                                {
+                                    @Convert.ToDateTime(dsAuditProcessdepthead.Tables[0].Rows[i]["AuditDate"].ToString()).ToString("dd/MM/yyyy")
+                                }
+                            </td>
+                            <td>
+                                @obj.GetMultiCompanyBranchNameById(dsAuditProcessdepthead.Tables[0].Rows[i]["division"].ToString())
+                            </td>
+                            <td>
+                                @obj.GetMultiDeptNameById(dsAuditProcessdepthead.Tables[0].Rows[i]["dept"].ToString())
+                            </td>
+                            <td>
+                                @obj.GetDivisionLocationById(dsAuditProcessdepthead.Tables[0].Rows[i]["location"].ToString())
+                            </td>
+                            <td>
+                                @obj.GetChecklistBychecklistId(dsAuditProcessdepthead.Tables[0].Rows[i]["checklist"].ToString())
+                            </td>
+                            <td>
+                                @obj.GetMultiHrEmpNameById(dsAuditProcessdepthead.Tables[0].Rows[i]["PlannedBy"].ToString())
+                            </td>
+                            <td>
+                                @obj.GetMultiHrEmpNameById(dsAuditProcessdepthead.Tables[0].Rows[i]["Notified_To"].ToString())
+                            </td>
+                            <td>
+                                <a href='@Url.Action("AuditProcessApproveDeptHead", "AuditProcess", new { Audit_Id = dsAuditProcessdepthead.Tables[0].Rows[i]["Audit_Id"].ToString(), iStatus = 1, PendingFlg = "true" })' title="Approve" style="color:green;">
+                                    <span class="badge badge-info">Approve</span>
+                                </a>
+                                <a href='@Url.Action("AuditProcessApproveDeptHead", "AuditProcess", new { Audit_Id = dsAuditProcessdepthead.Tables[0].Rows[i]["Audit_Id"].ToString(), iStatus = 2, PendingFlg = "true" })' title="Reject" style="color:red;">
+                                    <span class="badge badge-danger">Reject</span>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }*@
 @*--------------- Audit Process(Internal Audit Plan)-----------------*@
-@if (dsAuditProcess != null && dsAuditProcess.Tables.Count > 0 && dsAuditProcess.Tables[0].Rows.Count > 0)
-{
-    <h1 class="bg-dark pl-sm-2">Internal Audit Plan List</h1>
-    <div class="table-responsive">
-        <table class="table table-bordered table-striped table-hover datatable-responsive">
-            <thead>
-                <tr class="bg-brown">
-                    <th>Audit No</th>
-                    <th>Audit Date</th>
-                    <th>Division</th>
-                    <th>Department</th>
-                    <th>Location</th>
-                    <th>CheckList</th>
-                    <th>Planned By</th>
-                    <th>Notified To</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                @for (int i = 0; i < dsAuditProcess.Tables[0].Rows.Count; i++)
-                {
-                    <tr>
-                        <td>
-                            @*<a href="#" data-toggle="Auditprocesspopover" data-trigger="hover" id="@dsAuditProcessdepthead.Tables[0].Rows[i]["Audit_Id"].ToString()">@(dsAuditProcessdepthead.Tables[0].Rows[i]["Audit_no"].ToString())</a>*@
-                            @(dsAuditProcess.Tables[0].Rows[i]["Audit_no"].ToString())
-                        </td>
-                        <td>
-                            @if (dsAuditProcess.Tables[0].Rows[i]["AuditDate"].ToString() != "" && dsAuditProcess.Tables[0].Rows[i]["AuditDate"].ToString() != null)
-                            {
-                                @Convert.ToDateTime(dsAuditProcess.Tables[0].Rows[i]["AuditDate"].ToString()).ToString("dd/MM/yyyy")
-                            }
-                        </td>
-                        <td>
-                            @obj.GetMultiCompanyBranchNameById(dsAuditProcess.Tables[0].Rows[i]["division"].ToString())
-                        </td>
-                        <td>
-                            @obj.GetMultiDeptNameById(dsAuditProcess.Tables[0].Rows[i]["dept"].ToString())
-                        </td>
-                        <td>
-                            @obj.GetDivisionLocationById(dsAuditProcess.Tables[0].Rows[i]["location"].ToString())
-                        </td>
-                        <td>
-                            @obj.GetChecklistBychecklistId(dsAuditProcess.Tables[0].Rows[i]["checklist"].ToString())
-                        </td>
-                        <td>
-                            @obj.GetMultiHrEmpNameById(dsAuditProcess.Tables[0].Rows[i]["PlannedBy"].ToString())
-                        </td>
-                        <td>
-                            @obj.GetMultiHrEmpNameById(dsAuditProcess.Tables[0].Rows[i]["Notified_To"].ToString())
-                        </td>
-                        <td>
-                            <a href='@Url.Action("AuditProcessApprove", "AuditProcess", new { Audit_Id = dsAuditProcess.Tables[0].Rows[i]["Audit_Id"].ToString(), iStatus = 1, PendingFlg = "true" })' title="Approve" style="color:green;">
-                                <span class="badge badge-info">Approve</span>
-                            </a>
-                            <a href='@Url.Action("AuditProcessApprove", "AuditProcess", new { Audit_Id = dsAuditProcess.Tables[0].Rows[i]["Audit_Id"].ToString(), iStatus = 2, PendingFlg = "true" })' title="Reject" style="color:red;">
-                                <span class="badge badge-danger">Reject</span>
-                            </a>
-                        </td>
+@* @if (dsAuditProcess != null && dsAuditProcess.Tables.Count > 0 && dsAuditProcess.Tables[0].Rows.Count > 0)
+    {
+        <h1 class="bg-dark pl-sm-2">Internal Audit Plan List</h1>
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped table-hover datatable-responsive">
+                <thead>
+                    <tr class="bg-brown">
+                        <th>Audit No</th>
+                        <th>Audit Date</th>
+                        <th>Division</th>
+                        <th>Department</th>
+                        <th>Location</th>
+                        <th>CheckList</th>
+                        <th>Planned By</th>
+                        <th>Notified To</th>
+                        <th>Status</th>
                     </tr>
-                }
-            </tbody>
-        </table>
-    </div>
-}
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < dsAuditProcess.Tables[0].Rows.Count; i++)
+                    {
+                        <tr>
+                            <td>
+                                @(dsAuditProcess.Tables[0].Rows[i]["Audit_no"].ToString())
+                            </td>
+                            <td>
+                                @if (dsAuditProcess.Tables[0].Rows[i]["AuditDate"].ToString() != "" && dsAuditProcess.Tables[0].Rows[i]["AuditDate"].ToString() != null)
+                                {
+                                    @Convert.ToDateTime(dsAuditProcess.Tables[0].Rows[i]["AuditDate"].ToString()).ToString("dd/MM/yyyy")
+                                }
+                            </td>
+                            <td>
+                                @obj.GetMultiCompanyBranchNameById(dsAuditProcess.Tables[0].Rows[i]["division"].ToString())
+                            </td>
+                            <td>
+                                @obj.GetMultiDeptNameById(dsAuditProcess.Tables[0].Rows[i]["dept"].ToString())
+                            </td>
+                            <td>
+                                @obj.GetDivisionLocationById(dsAuditProcess.Tables[0].Rows[i]["location"].ToString())
+                            </td>
+                            <td>
+                                @obj.GetChecklistBychecklistId(dsAuditProcess.Tables[0].Rows[i]["checklist"].ToString())
+                            </td>
+                            <td>
+                                @obj.GetMultiHrEmpNameById(dsAuditProcess.Tables[0].Rows[i]["PlannedBy"].ToString())
+                            </td>
+                            <td>
+                                @obj.GetMultiHrEmpNameById(dsAuditProcess.Tables[0].Rows[i]["Notified_To"].ToString())
+                            </td>
+                            <td>
+                                <a href='@Url.Action("AuditProcessApprove", "AuditProcess", new { Audit_Id = dsAuditProcess.Tables[0].Rows[i]["Audit_Id"].ToString(), iStatus = 1, PendingFlg = "true" })' title="Approve" style="color:green;">
+                                    <span class="badge badge-info">Approve</span>
+                                </a>
+                                <a href='@Url.Action("AuditProcessApprove", "AuditProcess", new { Audit_Id = dsAuditProcess.Tables[0].Rows[i]["Audit_Id"].ToString(), iStatus = 2, PendingFlg = "true" })' title="Reject" style="color:red;">
+                                    <span class="badge badge-danger">Reject</span>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }*@
 
 @if (dsMgmtDocument != null && dsMgmtDocument.Tables.Count > 0 && dsMgmtDocument.Tables[0].Rows.Count > 0)
 {

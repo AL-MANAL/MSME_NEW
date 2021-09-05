@@ -76,6 +76,38 @@
                                 @Html.DisplayFor(model => model.ComplaintNo)
                             </div>
                         </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Document)
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <div class="editor-field">
+                                @if (Model.Document != null && Model.Document != "" && Model.Document.Length > 0)
+                                {
+                                    foreach (var docs in Model.Document.Trim(',').Split(','))
+                                    {
+                                        <p style="margin: 0px;">
+                                            <span class="bg-dark py-1 px-2 rounded">
+                                                <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank">Preview</a>
+                                            </span>
+                                        </p>
+                                    }
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.initial_observation)
+                            </div>
+                        </td>
+                        <td class="col" colspan="3">
+                            <div class="editor-field">
+                                @Html.DisplayFor(model => model.initial_observation)
+                            </div>
+                        </td>
                     </tr>
                     <tr class="row">
                         <td class="col-xs-3 col-md-2">
@@ -157,10 +189,57 @@
                         </td>
                         <td class="col-xs-3 col-md-2">
                             <div class="editor-label">
+                                @Html.LabelFor(model => model.complaint_review_status)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="complaint_review_status" name="complaint_review_status" onchange="GetComplainResponse()"  required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.ComplaintReviewStatus != null)
+                                    {
+                                        foreach (var item in ViewBag.ComplaintReviewStatus)
+                                        {
+                                            if (item.Value == Model.complaint_review_status)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.complain_review_sdate)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @if (Model.complain_review_sdate != null && Model.complain_review_sdate > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    <input class="form-control" type="date" id="complain_review_sdate" name="complain_review_sdate" value="@Model.complain_review_sdate.ToString("yyyy-MM-dd")" onchange="GetChkReviewDate()" required />
+                                }
+                                else
+                                {
+                                    <input class="form-control" type="date" id="complain_review_sdate" name="complain_review_sdate" onchange="GetChkReviewDate()" required />
+                                }
+                                @Html.ValidationMessageFor(m => m.complain_review_sdate)
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
                                 @Html.LabelFor(model => model.complain_review_date)<text style="color:red;">*</text>
                             </div>
                         </td>
-                        <td class="col-xs-3 col-md-4">
+                        <td class="col">
                             <div class="editor-field">
                                 @if (Model.complain_review_date != null && Model.complain_review_date > Convert.ToDateTime("01/01/0001"))
                                 {
@@ -222,12 +301,12 @@
                         <tr class="row">
                             <td class="col-xs-3 col-md-2">
                                 <div class="editor-label">
-                                    Division:<text style="color:red;">*</text>
+                                    Department :<text style="color:red;">*</text>
                                 </div>
                             </td>
                             <td class="col">
                                 <div class="editor-field">
-                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="DeptId" name="DeptId" required onchange="GetDeptEmployeeList()">
+                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="DeptId" name="DeptId" multiple required onchange="GetDeptEmployeeList()">
                                         <option value='' hidden>Select</option>
                                         @if (ViewBag.DeptList != null)
                                         {
@@ -323,27 +402,47 @@
                     message: 'Target date has to be more than or equal to Reivew Date'
                 });
                 $("#TargetDate").val('');
-            }    
+            }  
+        }
 
+        function GetChkReviewDate() {
+            var scomplain_review_date = $('#complain_review_date').val();
+            var scomplain_review_sdate = $('#complain_review_sdate').val();
+
+            if (scomplain_review_date > complain_review_sdate) {
+                bootbox.alert({
+                    title: 'Date',
+                    message: 'Start date has to be less than or equal to Reivew Date'
+                });
+                $("#complain_review_sdate").val('');
+            }
         }
 
         function GetComplainResponse() {
             var complaint_valid = $("#complaint_valid").val();
-
-            if (complaint_valid == "Yes") {
-                document.getElementById("divyes").style.display = "block";
-                document.getElementById("divno").style.display = "none";
-                $("#rej_reason").attr('required', false);
-                $("#rej_upload").attr('required', false);
-            }
+            var complaint_review_status = $("#complaint_review_status option:selected").text();
+            if (complaint_valid != null && complaint_valid != "")
+            {
+                if (complaint_valid == "Yes")
+                {
+                    document.getElementById("divno").style.display = "none";
+                    $("#rej_reason").attr('required', false);
+                    $("#rej_upload").attr('required', false);
+                    if (complaint_review_status.toLowerCase() == "completed") {
+                        document.getElementById("divyes").style.display = "block";                        
+                    }
+                    else {
+                        document.getElementById("divyes").style.display = "none";                       
+                    }
+                }
                 else if (complaint_valid == "No")
                 {
                 document.getElementById("divyes").style.display = "none";
                 document.getElementById("divno").style.display = "block";
                 $("#rej_reason").attr('required', true);
                 $("#rej_upload").attr('required', true);
+                }
             }
-
         }
 
         function FileFormatValidation(file) {

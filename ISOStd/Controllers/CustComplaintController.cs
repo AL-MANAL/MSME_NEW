@@ -52,6 +52,8 @@ namespace ISOStd.Controllers
                 ViewBag.Mode = objGlobaldata.GetModeOfComplaint();
                 ViewBag.DeptList = objGlobaldata.GetCompanyBranchListbox();
                 ViewBag.Customer = objGlobaldata.GetCustomerListbox();
+                ViewBag.ComplaintRelatedTo = objGlobaldata.GetComplaintRealtedToList();
+                ViewBag.Employee = objGlobaldata.GetHrEmployeeListbox();//Email CC person
 
                 UserCredentials objUser = new UserCredentials();
                 objUser = objGlobaldata.GetCurrentUserSession();
@@ -128,6 +130,7 @@ namespace ISOStd.Controllers
                 objCustomerCompliant.divisionId = form["DeptId"];
                 objCustomerCompliant.ForwardTo = form["ForwardTo"];
                 objCustomerCompliant.ComplaintStatus = objGlobaldata.GetComplaintStausIdByName("Open");
+                objCustomerCompliant.complaint_copiedto = form["complaint_copiedto"];
 
                 DateTime dateValue;
 
@@ -210,7 +213,7 @@ namespace ISOStd.Controllers
 
                 //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS  
                 string sSqlstmt = "select id_complaint,ComplaintNo,LoggedDate,LoggedBy,CustomerName,ProjectName,ReceivedDate,ReportedBy,ModeOfComplaint,"
-                    + "Details,ForwardTo,ComplaintStatus,Document,ForwarderAssign,CustomerRef,b.branch,reportedby_email,reportedby_desig,reportedby_no,registered_on from t_custcomplaint a,t_customer_info b where" +
+                    + "Details,ForwardTo,ComplaintStatus,Document,ForwarderAssign,CustomerRef,a.branch,registered_on from t_custcomplaint a,t_customer_info b where" +
                     " a.Active=1 and a.CustomerName=b.CustID";
 
                 string sSearchtext = "";
@@ -228,12 +231,12 @@ namespace ISOStd.Controllers
                 //}
                 if (branch_name != null && branch_name != "")
                 {
-                    sSearchtext = sSearchtext + " and branch='" + branch_name + "' ";
+                    sSearchtext = sSearchtext + " and find_in_set('" + branch_name + "', a.branch)";
                     ViewBag.Branch_name = branch_name;
                 }
                 else
                 {
-                    sSearchtext = sSearchtext + " and branch='" + sBranch_name + "' ";
+                    sSearchtext = sSearchtext + " and find_in_set('" + sBranch_name + "', a.branch)";
                 }
                 //if (ChangeIn != null && ChangeIn != "Select")
                 //{
@@ -277,7 +280,7 @@ namespace ISOStd.Controllers
                                 LoggedBy = /*objGlobaldata.GetEmpHrNameById*/(dsComplaintModelsList.Tables[0].Rows[i]["LoggedBy"].ToString()),
                                 CustomerName = objGlobaldata.GetCustomerNameById(dsComplaintModelsList.Tables[0].Rows[i]["CustomerName"].ToString()),
                                 ProjectName = dsComplaintModelsList.Tables[0].Rows[i]["ProjectName"].ToString(),
-                                ReportedBy =(dsComplaintModelsList.Tables[0].Rows[i]["ReportedBy"].ToString()),
+                                ReportedBy = objGlobaldata.GetCustomerContactPersonByCustId(dsComplaintModelsList.Tables[0].Rows[i]["ReportedBy"].ToString()),
                                 ModeOfComplaint = objGlobaldata.GetModeOfComplaintById(dsComplaintModelsList.Tables[0].Rows[i]["ModeOfComplaint"].ToString()),
                                 Details = dsComplaintModelsList.Tables[0].Rows[i]["Details"].ToString(),
                                 ForwardTo = objGlobaldata.GetMultiHrEmpNameById(dsComplaintModelsList.Tables[0].Rows[i]["ForwardTo"].ToString()),
@@ -286,9 +289,9 @@ namespace ISOStd.Controllers
                                 Document = dsComplaintModelsList.Tables[0].Rows[i]["Document"].ToString(),
                                 ForwarderAssign = dsComplaintModelsList.Tables[0].Rows[i]["ForwarderAssign"].ToString(),
                                 CustomerRef = dsComplaintModelsList.Tables[0].Rows[i]["CustomerRef"].ToString(),
-                                reportedby_email = dsComplaintModelsList.Tables[0].Rows[i]["reportedby_email"].ToString(),
-                                reportedby_desig = dsComplaintModelsList.Tables[0].Rows[i]["reportedby_desig"].ToString(),
-                                reportedby_no = dsComplaintModelsList.Tables[0].Rows[i]["reportedby_no"].ToString(),
+                            //    reportedby_email = dsComplaintModelsList.Tables[0].Rows[i]["reportedby_email"].ToString(),
+                            //    reportedby_desig = dsComplaintModelsList.Tables[0].Rows[i]["reportedby_desig"].ToString(),
+                            //    reportedby_no = dsComplaintModelsList.Tables[0].Rows[i]["reportedby_no"].ToString(),
                             };                          
 
                             DateTime dtDocDate = new DateTime();
@@ -407,8 +410,9 @@ namespace ISOStd.Controllers
                 ViewBag.Complaint_Status =objGlobaldata.GetDropdownList("Complaint Status");
                 ViewBag.Mode = objGlobaldata.GetModeOfComplaint();
                 ViewBag.DeptList = objGlobaldata.GetCompanyBranchListbox();
-                //ViewBag.EmpLists = objGlobaldata.GetHrEmployeeListbox();
+                ViewBag.Employee = objGlobaldata.GetHrEmployeeListbox();
                 ViewBag.Customer = objGlobaldata.GetCustomerListbox();
+                ViewBag.ComplaintRelatedTo = objGlobaldata.GetComplaintRealtedToList();
                 UserCredentials objUser = new UserCredentials();
 
                 objUser = objGlobaldata.GetCurrentUserSession();
@@ -422,7 +426,7 @@ namespace ISOStd.Controllers
                     string sid_complaint = Request.QueryString["id_complaint"];
 
                     string sSqlstmt = "select id_complaint,ComplaintNo,LoggedDate,LoggedBy,CustomerName,ProjectName,ReceivedDate,ReportedBy,ModeOfComplaint,"
-                    + "Details,divisionId,ForwardTo,ComplaintStatus,Document,CustomerRef,reportedby_email,reportedby_desig,reportedby_no,registered_on from t_custcomplaint where id_complaint='" + sid_complaint + "'";
+                    + "Details,divisionId,ForwardTo,ComplaintStatus,Document,CustomerRef,registered_on,initial_observation,complaint_relatedto,complaint_copiedto from t_custcomplaint where id_complaint='" + sid_complaint + "'";
 
                     DataSet dsComplaintList = objGlobaldata.Getdetails(sSqlstmt);
 
@@ -447,11 +451,12 @@ namespace ISOStd.Controllers
                                 ComplaintStatus = objGlobaldata.GetDropdownitemById(dsComplaintList.Tables[0].Rows[0]["ComplaintStatus"].ToString()),
                                 Document = dsComplaintList.Tables[0].Rows[0]["Document"].ToString(),
                                 CustomerRef = dsComplaintList.Tables[0].Rows[0]["CustomerRef"].ToString(),
-                                reportedby_email = dsComplaintList.Tables[0].Rows[0]["reportedby_email"].ToString(),
-                                reportedby_desig = dsComplaintList.Tables[0].Rows[0]["reportedby_desig"].ToString(),
-                                reportedby_no = dsComplaintList.Tables[0].Rows[0]["reportedby_no"].ToString(),
+                                initial_observation = dsComplaintList.Tables[0].Rows[0]["initial_observation"].ToString(),
+                                complaint_relatedto = dsComplaintList.Tables[0].Rows[0]["complaint_relatedto"].ToString(),
+                                complaint_copiedto = dsComplaintList.Tables[0].Rows[0]["complaint_copiedto"].ToString(),
 
                             };
+                            ViewBag.CustEmpList = objGlobaldata.GetAllCustomerContactPersonList(dsComplaintList.Tables[0].Rows[0]["CustomerName"].ToString());
                             ViewBag.EmpLists = objGlobaldata.GetHrEmpListByDivision(dsComplaintList.Tables[0].Rows[0]["divisionId"].ToString());
                             DateTime dtDocDate = new DateTime();
                             if (dsComplaintList.Tables[0].Rows[0]["LoggedDate"].ToString() != ""
@@ -475,6 +480,18 @@ namespace ISOStd.Controllers
                             if (dsComplaintList.Tables[0].Rows[0]["ForwardTo"].ToString() != "")
                             {
                                 ViewBag.NotifiedtoArray = (dsComplaintList.Tables[0].Rows[0]["ForwardTo"].ToString()).Split(',');
+                            }
+
+                            if (dsComplaintList.Tables[0].Rows[0]["ReportedBy"].ToString() != null && dsComplaintList.Tables[0].Rows[0]["ReportedBy"].ToString() != "")
+                            {
+                                string sSqlstmt11 = "select EmailId,MobileNumber,designation from t_customer_info_contacts where ContactsId = '" + dsComplaintList.Tables[0].Rows[0]["ReportedBy"].ToString() + "'";
+                                DataSet dsList = objGlobaldata.Getdetails(sSqlstmt11);
+                                if (dsList.Tables.Count > 0 && dsList.Tables[0].Rows.Count > 0)
+                                {
+                                    objComplaintModels.reportedby_email = (dsList.Tables[0].Rows[0]["EmailId"].ToString());
+                                    objComplaintModels.reportedby_no = (dsList.Tables[0].Rows[0]["MobileNumber"].ToString());
+                                    objComplaintModels.reportedby_desig = (dsList.Tables[0].Rows[0]["designation"].ToString());
+                                };
                             }
                         }
                         else
@@ -532,6 +549,7 @@ namespace ISOStd.Controllers
                 objCustomerCompliant.Details = form["Details"];
                 objCustomerCompliant.divisionId = form["DeptId"];
                 objCustomerCompliant.ForwardTo = form["ForwardTo"];
+                objCustomerCompliant.complaint_copiedto = form["complaint_copiedto"];
 
                 HttpPostedFileBase files = Request.Files[0];
                 string QCDelete = Request.Form["QCDocsValselectall"];
@@ -645,7 +663,7 @@ namespace ISOStd.Controllers
                             LoggedBy = objGlobaldata.GetEmpHrNameById(dsComplaintModelsList.Tables[0].Rows[0]["LoggedBy"].ToString()),
                             CustomerName = objGlobaldata.GetCustomerNameById(dsComplaintModelsList.Tables[0].Rows[0]["CustomerName"].ToString()),
                             ProjectName = dsComplaintModelsList.Tables[0].Rows[0]["ProjectName"].ToString(),
-                            ReportedBy = dsComplaintModelsList.Tables[0].Rows[0]["ReportedBy"].ToString(),
+                            ReportedBy = objGlobaldata.GetCustomerContactPersonByCustId(dsComplaintModelsList.Tables[0].Rows[0]["ReportedBy"].ToString()),
                             ModeOfComplaint = objGlobaldata.GetModeOfComplaintById(dsComplaintModelsList.Tables[0].Rows[0]["ModeOfComplaint"].ToString()),
                             Details = dsComplaintModelsList.Tables[0].Rows[0]["Details"].ToString(),
                             ForwardTo = objGlobaldata.GetMultiHrEmpNameById(dsComplaintModelsList.Tables[0].Rows[0]["ForwardTo"].ToString()),
@@ -653,9 +671,9 @@ namespace ISOStd.Controllers
                             Document = dsComplaintModelsList.Tables[0].Rows[0]["Document"].ToString(),
                             ForwarderAssign = dsComplaintModelsList.Tables[0].Rows[0]["ForwarderAssign"].ToString(),
                             CustomerRef = dsComplaintModelsList.Tables[0].Rows[0]["CustomerRef"].ToString(),
-                            reportedby_email = dsComplaintModelsList.Tables[0].Rows[0]["reportedby_email"].ToString(),
-                            reportedby_desig = dsComplaintModelsList.Tables[0].Rows[0]["reportedby_desig"].ToString(),
-                            reportedby_no = dsComplaintModelsList.Tables[0].Rows[0]["reportedby_no"].ToString(),
+                            initial_observation = dsComplaintModelsList.Tables[0].Rows[0]["initial_observation"].ToString(),
+                            complaint_relatedto = objGlobaldata.GetDropdownitemById(dsComplaintModelsList.Tables[0].Rows[0]["complaint_relatedto"].ToString()),
+                            complaint_copiedto = objGlobaldata.GetMultiHrEmpNameById(dsComplaintModelsList.Tables[0].Rows[0]["complaint_copiedto"].ToString()),
 
                             c_response = objGlobaldata.GetDropdownitemById(dsComplaintModelsList.Tables[0].Rows[0]["c_response"].ToString()),
                             c_response_details = dsComplaintModelsList.Tables[0].Rows[0]["c_response_details"].ToString(),
@@ -666,6 +684,7 @@ namespace ISOStd.Controllers
                             complaint_remark = dsComplaintModelsList.Tables[0].Rows[0]["complaint_remark"].ToString(),
                             rej_reason = dsComplaintModelsList.Tables[0].Rows[0]["rej_reason"].ToString(),
                             rej_upload = dsComplaintModelsList.Tables[0].Rows[0]["rej_upload"].ToString(),
+                            complaint_review_status = objGlobaldata.GetDropdownitemById(dsComplaintModelsList.Tables[0].Rows[0]["complaint_review_status"].ToString()),
                         };
 
                         DateTime dtDocDate = new DateTime();
@@ -691,6 +710,12 @@ namespace ISOStd.Controllers
                    && DateTime.TryParse(dsComplaintModelsList.Tables[0].Rows[0]["c_response_date"].ToString(), out dtDocDate))
                         {
                             objComplaintModels.c_response_date = dtDocDate;
+                        }
+
+                        if (dsComplaintModelsList.Tables[0].Rows[0]["complain_review_sdate"].ToString() != ""
+                  && DateTime.TryParse(dsComplaintModelsList.Tables[0].Rows[0]["complain_review_sdate"].ToString(), out dtDocDate))
+                        {
+                            objComplaintModels.complain_review_sdate = dtDocDate;
                         }
 
                         if (dsComplaintModelsList.Tables[0].Rows[0]["complain_review_date"].ToString() != ""
@@ -1008,7 +1033,7 @@ namespace ISOStd.Controllers
                         LoggedBy = objGlobaldata.GetEmpHrNameById(dsComplaintModelsList.Tables[0].Rows[0]["LoggedBy"].ToString()),
                         CustomerName = objGlobaldata.GetCustomerNameById(dsComplaintModelsList.Tables[0].Rows[0]["CustomerName"].ToString()),
                         ProjectName = dsComplaintModelsList.Tables[0].Rows[0]["ProjectName"].ToString(),
-                        ReportedBy = dsComplaintModelsList.Tables[0].Rows[0]["ReportedBy"].ToString(),
+                        ReportedBy = objGlobaldata.GetCustomerContactPersonByCustId(dsComplaintModelsList.Tables[0].Rows[0]["ReportedBy"].ToString()),
                         ModeOfComplaint = objGlobaldata.GetModeOfComplaintById(dsComplaintModelsList.Tables[0].Rows[0]["ModeOfComplaint"].ToString()),
                         Details = dsComplaintModelsList.Tables[0].Rows[0]["Details"].ToString(),
                         ForwardTo = objGlobaldata.GetMultiHrEmpNameById(dsComplaintModelsList.Tables[0].Rows[0]["ForwardTo"].ToString()),
@@ -1016,9 +1041,9 @@ namespace ISOStd.Controllers
                         Document = dsComplaintModelsList.Tables[0].Rows[0]["Document"].ToString(),
                         ForwarderAssign = dsComplaintModelsList.Tables[0].Rows[0]["ForwarderAssign"].ToString(),
                         CustomerRef = dsComplaintModelsList.Tables[0].Rows[0]["CustomerRef"].ToString(),
-                        reportedby_email = dsComplaintModelsList.Tables[0].Rows[0]["reportedby_email"].ToString(),
-                        reportedby_desig = dsComplaintModelsList.Tables[0].Rows[0]["reportedby_desig"].ToString(),
-                        reportedby_no = dsComplaintModelsList.Tables[0].Rows[0]["reportedby_no"].ToString(),
+                        initial_observation = dsComplaintModelsList.Tables[0].Rows[0]["initial_observation"].ToString(),
+                        complaint_relatedto = objGlobaldata.GetDropdownitemById(dsComplaintModelsList.Tables[0].Rows[0]["complaint_relatedto"].ToString()),
+                        complaint_copiedto =objGlobaldata.GetMultiHrEmpNameById(dsComplaintModelsList.Tables[0].Rows[0]["complaint_copiedto"].ToString()),
                     };
 
                     DateTime dtDocDate = new DateTime();
@@ -1038,7 +1063,19 @@ namespace ISOStd.Controllers
                   && DateTime.TryParse(dsComplaintModelsList.Tables[0].Rows[0]["ReceivedDate"].ToString(), out dtDocDate))
                     {
                         objComplaintModels.ReceivedDate = dtDocDate;
-                    }             
+                    }
+                    if (dsComplaintModelsList.Tables[0].Rows[0]["ReportedBy"].ToString() != null && dsComplaintModelsList.Tables[0].Rows[0]["ReportedBy"].ToString() != "")
+                    {
+                        string sSqlstmt11 = "select EmailId,MobileNumber,designation from t_customer_info_contacts where ContactsId = '" + dsComplaintModelsList.Tables[0].Rows[0]["ReportedBy"].ToString() + "'";
+                        DataSet dsList = objGlobaldata.Getdetails(sSqlstmt11);
+                        if (dsList.Tables.Count > 0 && dsList.Tables[0].Rows.Count > 0)
+                        {
+                            objComplaintModels.reportedby_email = (dsList.Tables[0].Rows[0]["EmailId"].ToString());
+                            objComplaintModels.reportedby_no = (dsList.Tables[0].Rows[0]["MobileNumber"].ToString());
+                            objComplaintModels.reportedby_desig = (dsList.Tables[0].Rows[0]["designation"].ToString());
+                        };
+                    }
+
                 }
                 else
                 {
@@ -1092,7 +1129,7 @@ namespace ISOStd.Controllers
                             LoggedBy = objGlobaldata.GetEmpHrNameById(dsComplaintModelsList.Tables[0].Rows[0]["LoggedBy"].ToString()),
                             CustomerName = objGlobaldata.GetCustomerNameById(dsComplaintModelsList.Tables[0].Rows[0]["CustomerName"].ToString()),
                             ProjectName = dsComplaintModelsList.Tables[0].Rows[0]["ProjectName"].ToString(),
-                            ReportedBy = dsComplaintModelsList.Tables[0].Rows[0]["ReportedBy"].ToString(),
+                            ReportedBy = objGlobaldata.GetCustomerContactPersonByCustId(dsComplaintModelsList.Tables[0].Rows[0]["ReportedBy"].ToString()),
                             ModeOfComplaint = objGlobaldata.GetModeOfComplaintById(dsComplaintModelsList.Tables[0].Rows[0]["ModeOfComplaint"].ToString()),
                             Details = dsComplaintModelsList.Tables[0].Rows[0]["Details"].ToString(),
                             ForwardTo = objGlobaldata.GetMultiHrEmpNameById(dsComplaintModelsList.Tables[0].Rows[0]["ForwardTo"].ToString()),
@@ -1100,9 +1137,9 @@ namespace ISOStd.Controllers
                             Document = dsComplaintModelsList.Tables[0].Rows[0]["Document"].ToString(),
                             ForwarderAssign = dsComplaintModelsList.Tables[0].Rows[0]["ForwarderAssign"].ToString(),
                             CustomerRef = dsComplaintModelsList.Tables[0].Rows[0]["CustomerRef"].ToString(),
-                            reportedby_email = dsComplaintModelsList.Tables[0].Rows[0]["reportedby_email"].ToString(),
-                            reportedby_desig = dsComplaintModelsList.Tables[0].Rows[0]["reportedby_desig"].ToString(),
-                            reportedby_no = dsComplaintModelsList.Tables[0].Rows[0]["reportedby_no"].ToString(),
+                            initial_observation = dsComplaintModelsList.Tables[0].Rows[0]["initial_observation"].ToString(),
+                            complaint_relatedto = objGlobaldata.GetDropdownitemById(dsComplaintModelsList.Tables[0].Rows[0]["complaint_relatedto"].ToString()),
+                            complaint_copiedto = objGlobaldata.GetMultiHrEmpNameById(dsComplaintModelsList.Tables[0].Rows[0]["complaint_copiedto"].ToString()),
 
                             c_response = objGlobaldata.GetDropdownitemById(dsComplaintModelsList.Tables[0].Rows[0]["c_response"].ToString()),
                             c_response_details = dsComplaintModelsList.Tables[0].Rows[0]["c_response_details"].ToString(),
@@ -1111,6 +1148,7 @@ namespace ISOStd.Controllers
                             complaint_valid = dsComplaintModelsList.Tables[0].Rows[0]["complaint_valid"].ToString(),
                             complaint_deviation = dsComplaintModelsList.Tables[0].Rows[0]["complaint_deviation"].ToString(),
                             complaint_remark = dsComplaintModelsList.Tables[0].Rows[0]["complaint_remark"].ToString(),
+                            complaint_review_status = objGlobaldata.GetDropdownitemById(dsComplaintModelsList.Tables[0].Rows[0]["complaint_review_status"].ToString()),
                             rej_reason = dsComplaintModelsList.Tables[0].Rows[0]["rej_reason"].ToString(),
                             rej_upload = dsComplaintModelsList.Tables[0].Rows[0]["rej_upload"].ToString(),
                         };
@@ -1140,6 +1178,12 @@ namespace ISOStd.Controllers
                             objComplaintModels.c_response_date = dtDocDate;
                         }
 
+                        if (dsComplaintModelsList.Tables[0].Rows[0]["complain_review_sdate"].ToString() != ""
+                   && DateTime.TryParse(dsComplaintModelsList.Tables[0].Rows[0]["complain_review_sdate"].ToString(), out dtDocDate))
+                        {
+                            objComplaintModels.complain_review_sdate = dtDocDate;
+                        }
+
                         if (dsComplaintModelsList.Tables[0].Rows[0]["complain_review_date"].ToString() != ""
                     && DateTime.TryParse(dsComplaintModelsList.Tables[0].Rows[0]["complain_review_date"].ToString(), out dtDocDate))
                         {
@@ -1156,6 +1200,18 @@ namespace ISOStd.Controllers
                    && DateTime.TryParse(dsComplaintModelsList.Tables[0].Rows[0]["AssignDate"].ToString(), out dtDocDate))
                         {
                             objComplaintModels.AssignDate = dtDocDate;
+                        }
+
+                        if (dsComplaintModelsList.Tables[0].Rows[0]["ReportedBy"].ToString() != null && dsComplaintModelsList.Tables[0].Rows[0]["ReportedBy"].ToString() != "")
+                        {
+                            string sSqlstmt11 = "select EmailId,MobileNumber,designation from t_customer_info_contacts where ContactsId = '" + dsComplaintModelsList.Tables[0].Rows[0]["ReportedBy"].ToString() + "'";
+                            DataSet dsList = objGlobaldata.Getdetails(sSqlstmt11);
+                            if (dsList.Tables.Count > 0 && dsList.Tables[0].Rows.Count > 0)
+                            {
+                                objComplaintModels.reportedby_email = (dsList.Tables[0].Rows[0]["EmailId"].ToString());
+                                objComplaintModels.reportedby_no = (dsList.Tables[0].Rows[0]["MobileNumber"].ToString());
+                                objComplaintModels.reportedby_desig = (dsList.Tables[0].Rows[0]["designation"].ToString());
+                            };
                         }
 
                         string sql = "Select branch,Department,Location from t_customer_info where CustID = '" + dsComplaintModelsList.Tables[0].Rows[0]["CustomerName"].ToString() + "'";
@@ -1472,123 +1528,6 @@ namespace ISOStd.Controllers
             };
         }
 
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public ActionResult CustomerComplaintReport(FormCollection form)
-        //{
-        //    string sid_complaint = form["id_complaint"];
-        //    CustComplaintModels objComplaintModels = new CustComplaintModels();
-        //    try
-        //    {
-        //        if (sid_complaint != "")
-        //        {
-
-        //            string sSqlstmt = "select * from t_custcomplaint where id_complaint='" + sid_complaint + "'";
-
-        //            DataSet dsComplaintList = objGlobaldata.Getdetails(sSqlstmt);
-
-        //            if (dsComplaintList.Tables.Count > 0 && dsComplaintList.Tables[0].Rows.Count > 0)
-        //            {
-        //                objComplaintModels = new CustComplaintModels
-        //                {
-        //                    id_complaint = Convert.ToInt16(dsComplaintList.Tables[0].Rows[0]["id_complaint"].ToString()),
-        //                    ComplaintNo = dsComplaintList.Tables[0].Rows[0]["ComplaintNo"].ToString(),
-        //                    LoggedBy = objGlobaldata.GetEmpHrNameById(dsComplaintList.Tables[0].Rows[0]["LoggedBy"].ToString()),
-        //                    CustomerName = objGlobaldata.GetCustomerNameById(dsComplaintList.Tables[0].Rows[0]["CustomerName"].ToString()),
-        //                    ProjectName = dsComplaintList.Tables[0].Rows[0]["ProjectName"].ToString(),
-        //                    ReportedBy = dsComplaintList.Tables[0].Rows[0]["ReportedBy"].ToString(),
-        //                    ModeOfComplaint = objGlobaldata.GetModeOfComplaintById(dsComplaintList.Tables[0].Rows[0]["ModeOfComplaint"].ToString()),
-        //                    Details = dsComplaintList.Tables[0].Rows[0]["Details"].ToString(),
-        //                    ForwardTo = objGlobaldata.GetMultiHrEmpNameById(dsComplaintList.Tables[0].Rows[0]["ForwardTo"].ToString()),
-        //                    ComplaintStatus = objComplaintModels.GetComplaintStatusNameById(dsComplaintList.Tables[0].Rows[0]["ComplaintStatus"].ToString()),
-        //                    Document = dsComplaintList.Tables[0].Rows[0]["Document"].ToString(),
-        //                    ForwarderAssign = dsComplaintList.Tables[0].Rows[0]["ForwarderAssign"].ToString(),
-        //                    CustomerRef = dsComplaintList.Tables[0].Rows[0]["CustomerRef"].ToString(),
-        //                    reportedby_email = dsComplaintList.Tables[0].Rows[0]["reportedby_email"].ToString(),
-        //                    reportedby_desig = dsComplaintList.Tables[0].Rows[0]["reportedby_desig"].ToString(),
-        //                    reportedby_no = dsComplaintList.Tables[0].Rows[0]["reportedby_no"].ToString(),
-        //                };
-
-        //                DateTime dtDocDate = new DateTime();
-        //                if (dsComplaintList.Tables[0].Rows[0]["LoggedDate"].ToString() != ""
-        //                    && DateTime.TryParse(dsComplaintList.Tables[0].Rows[0]["LoggedDate"].ToString(), out dtDocDate))
-        //                {
-        //                    objComplaintModels.LoggedDate = dtDocDate;
-        //                }
-
-        //                if (dsComplaintList.Tables[0].Rows[0]["registered_on"].ToString() != ""
-        //            && DateTime.TryParse(dsComplaintList.Tables[0].Rows[0]["registered_on"].ToString(), out dtDocDate))
-        //                {
-        //                    objComplaintModels.registered_on = dtDocDate;
-        //                }
-
-        //                if (dsComplaintList.Tables[0].Rows[0]["ReceivedDate"].ToString() != ""
-        //              && DateTime.TryParse(dsComplaintList.Tables[0].Rows[0]["ReceivedDate"].ToString(), out dtDocDate))
-        //                {
-        //                    objComplaintModels.ReceivedDate = dtDocDate;
-        //                }
-
-        //                CompanyModels objCompany = new CompanyModels();
-        //                dsComplaintList = objCompany.GetCompanyDetailsForReport(dsComplaintList);
-
-        //                dsComplaintList = objGlobaldata.GetReportDetails(dsComplaintList, objComplaintModels.ComplaintNo, dsComplaintList.Tables[0].Rows[0]["LoggedBy"].ToString(), "CUSTOMER COMPLAINT REPORT");
-        //                ViewBag.CompanyInfo = dsComplaintList;
-
-        //                string sql = "Select branch,Department,Location from t_customer_info where CustID = '" + dsComplaintList.Tables[0].Rows[0]["CustomerName"].ToString() + "'";
-        //                DataSet CustList = objGlobaldata.Getdetails(sql);
-        //                if (CustList.Tables.Count > 0 && CustList.Tables[0].Rows.Count > 0)
-        //                {
-        //                    objComplaintModels.branch = objGlobaldata.GetMultiCompanyBranchNameById(CustList.Tables[0].Rows[0]["branch"].ToString());
-        //                    objComplaintModels.Department = objGlobaldata.GetMultiDeptNameById(CustList.Tables[0].Rows[0]["Department"].ToString());
-        //                    objComplaintModels.Location = objGlobaldata.GetDivisionLocationById(CustList.Tables[0].Rows[0]["Location"].ToString());
-        //                }
-
-        //                ViewBag.ComplaintDetail = objComplaintModels;
-
-        //                //sSqlstmt = "select AssignedBy,ActionedBy,AssignDate,TargetDate,ReasonForProblem,ImmediateAction,"
-        //                //            + "ImmediateAction_TargetDate,CorrectiveAction,CorrectiveAction_TargetDate from t_custcomplaint_assign,t_custcomplaint_action"
-        //                //            + " where t_custcomplaint_assign.id_complaint_assign=t_custcomplaint_action.id_complaint_assign"
-        //                //            + " and t_custcomplaint_assign.id_complaint='" + sid_complaint + "'";
-        //                //DataSet dsItems = new DataSet();
-        //                //dsItems = objGlobaldata.Getdetails(sSqlstmt);
-        //                //ViewBag.ComplaintActionDetails = dsItems;
-
-        //            }
-        //            else
-        //            {
-        //                TempData["alertdata"] = "No data exists";
-
-        //            }
-        //        }
-        //        else
-        //        {
-        //            TempData["alertdata"] = "Id cannot be null";
-
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        objGlobaldata.AddFunctionalLog("Exception in CustomerComplaintReport: " + ex.ToString());
-        //        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-        //    }
-
-        //    Dictionary<string, string> cookieCollection = new Dictionary<string, string>();
-
-        //    foreach (var key in Request.Cookies.AllKeys)
-        //    {
-        //        cookieCollection.Add(key, Request.Cookies.Get(key).Value);
-        //    }
-        //    string footer = "--footer-right \"Date: [date] [time]\" " + "--footer-center \"Page: [page] of [toPage]\" --footer-line --footer-font-size \"9\" --footer-spacing 5 --footer-font-name \"calibri light\"";
-
-        //    return new ViewAsPdf("CustomerComplaintToPDF")
-        //    {
-        //        FileName = "CustomerComplaint.pdf",
-        //        Cookies = cookieCollection,
-        //        CustomSwitches = footer
-        //    };
-
-        //}
-
         [AllowAnonymous]
         public JsonResult CustComplaintDocDelete(FormCollection form)
         {
@@ -1641,11 +1580,11 @@ namespace ISOStd.Controllers
                 ViewBag.DeptList = objGlobaldata.GetCompanyBranchListbox();               
                 ViewBag.YesNo = objGlobaldata.GetConstantValue("YesNo");
                 ViewBag.Deviation = objGlobaldata.GetDropdownList("Customer Complaint Deviation");
+                ViewBag.ComplaintReviewStatus = objGlobaldata.GetDropdownList("Customer Complaint Review Status");
 
                 UserCredentials objUser = new UserCredentials();
 
                 objUser = objGlobaldata.GetCurrentUserSession();
-
 
 
                 if (Request.QueryString["id_complaint"] != null && Request.QueryString["id_complaint"] != "")
@@ -1654,7 +1593,8 @@ namespace ISOStd.Controllers
 
                     string sSqlstmt = "select id_complaint,ComplaintNo,LoggedDate,LoggedBy,CustomerName,ProjectName,ReceivedDate,ReportedBy,ModeOfComplaint,"
                     + "Details,ForwardTo,ComplaintStatus,Document,ForwarderAssign,divisionId," +
-                    "TargetDate,complain_review_date,complaint_valid,complaint_deviation,complaint_remark,rej_reason,rej_upload from t_custcomplaint where id_complaint='" + sid_complaint + "'";
+                    "TargetDate,complain_review_date,complaint_valid,complaint_deviation,complaint_remark,rej_reason," +
+                    "rej_upload,initial_observation,complain_review_sdate,complaint_review_status from t_custcomplaint where id_complaint='" + sid_complaint + "'";
 
                     DataSet dsComplaintList = objGlobaldata.Getdetails(sSqlstmt);
 
@@ -1671,12 +1611,14 @@ namespace ISOStd.Controllers
                                 LoggedBy = objGlobaldata.GetEmpHrNameById(dsComplaintList.Tables[0].Rows[0]["LoggedBy"].ToString()),
                                 CustomerName = objGlobaldata.GetCustomerNameById(dsComplaintList.Tables[0].Rows[0]["CustomerName"].ToString()),
                                 ProjectName = dsComplaintList.Tables[0].Rows[0]["ProjectName"].ToString(),
-                                ReportedBy = dsComplaintList.Tables[0].Rows[0]["ReportedBy"].ToString(),
+                                ReportedBy = objGlobaldata.GetCustomerContactPersonByCustId(dsComplaintList.Tables[0].Rows[0]["ReportedBy"].ToString()),
                                 ModeOfComplaint = objGlobaldata.GetModeOfComplaintById(dsComplaintList.Tables[0].Rows[0]["ModeOfComplaint"].ToString()),
                                 Details = dsComplaintList.Tables[0].Rows[0]["Details"].ToString(),
                                 ForwardTo = objGlobaldata.GetMultiHrEmpNameById(dsComplaintList.Tables[0].Rows[0]["ForwardTo"].ToString()),
                                 ComplaintStatus = dsComplaintList.Tables[0].Rows[0]["ComplaintStatus"].ToString(),
                                 Document = dsComplaintList.Tables[0].Rows[0]["Document"].ToString(),
+                                initial_observation= dsComplaintList.Tables[0].Rows[0]["initial_observation"].ToString(),
+                                complaint_review_status = dsComplaintList.Tables[0].Rows[0]["complaint_review_status"].ToString(),
 
                                 complaint_valid = dsComplaintList.Tables[0].Rows[0]["complaint_valid"].ToString(),
                                 complaint_deviation =(dsComplaintList.Tables[0].Rows[0]["complaint_deviation"].ToString()),
@@ -1707,6 +1649,13 @@ namespace ISOStd.Controllers
                            && DateTime.TryParse(dsComplaintList.Tables[0].Rows[0]["complain_review_date"].ToString(), out dtDocDate))
                             {
                                 objComplaintModels.complain_review_date = dtDocDate;
+                            }
+
+
+                            if (dsComplaintList.Tables[0].Rows[0]["complain_review_sdate"].ToString() != ""
+                           && DateTime.TryParse(dsComplaintList.Tables[0].Rows[0]["complain_review_sdate"].ToString(), out dtDocDate))
+                            {
+                                objComplaintModels.complain_review_sdate = dtDocDate;
                             }
 
                             ViewBag.EmpList = objGlobaldata.GetHrEmpListByDivision(dsComplaintList.Tables[0].Rows[0]["divisionId"].ToString());
@@ -1862,10 +1811,10 @@ namespace ISOStd.Controllers
                             CustomerName = objGlobaldata.GetCustomerNameById(dsCustComplaintModels.Tables[0].Rows[0]["CustomerName"].ToString()),
                             ProjectName = (dsCustComplaintModels.Tables[0].Rows[0]["ProjectName"].ToString()),
                             ModeOfComplaint = objGlobaldata.GetModeOfComplaintById(dsCustComplaintModels.Tables[0].Rows[0]["ModeOfComplaint"].ToString()),
-                            ReportedBy = (dsCustComplaintModels.Tables[0].Rows[0]["ReportedBy"].ToString()),
-                            reportedby_email = (dsCustComplaintModels.Tables[0].Rows[0]["reportedby_email"].ToString()),
-                            reportedby_no = (dsCustComplaintModels.Tables[0].Rows[0]["reportedby_no"].ToString()),
-                            reportedby_desig = (dsCustComplaintModels.Tables[0].Rows[0]["reportedby_desig"].ToString()),
+                            ReportedBy = objGlobaldata.GetCustomerContactPersonByCustId(dsCustComplaintModels.Tables[0].Rows[0]["ReportedBy"].ToString()),
+                            //reportedby_email = (dsCustComplaintModels.Tables[0].Rows[0]["reportedby_email"].ToString()),
+                            //reportedby_no = (dsCustComplaintModels.Tables[0].Rows[0]["reportedby_no"].ToString()),
+                            //reportedby_desig = (dsCustComplaintModels.Tables[0].Rows[0]["reportedby_desig"].ToString()),
 
                             c_response = (dsCustComplaintModels.Tables[0].Rows[0]["c_response"].ToString()),
                             c_response_details = (dsCustComplaintModels.Tables[0].Rows[0]["c_response_details"].ToString()),
@@ -1884,6 +1833,18 @@ namespace ISOStd.Controllers
                         if (DateTime.TryParse(dsCustComplaintModels.Tables[0].Rows[0]["c_response_date"].ToString(), out dtValue))
                         {
                             objModel.c_response_date = dtValue;
+                        }
+
+                        if (dsCustComplaintModels.Tables[0].Rows[0]["ReportedBy"].ToString() != null && dsCustComplaintModels.Tables[0].Rows[0]["ReportedBy"].ToString() != "")
+                        {
+                            string sSqlstmt11 = "select EmailId,MobileNumber,designation from t_customer_info_contacts where ContactsId = '" + dsCustComplaintModels.Tables[0].Rows[0]["ReportedBy"].ToString() + "'";
+                            DataSet dsList = objGlobaldata.Getdetails(sSqlstmt11);
+                            if (dsList.Tables.Count > 0 && dsList.Tables[0].Rows.Count > 0)
+                            {
+                                objModel.reportedby_email = (dsList.Tables[0].Rows[0]["EmailId"].ToString());
+                                objModel.reportedby_no = (dsList.Tables[0].Rows[0]["MobileNumber"].ToString());
+                                objModel.reportedby_desig = (dsList.Tables[0].Rows[0]["designation"].ToString());
+                            };
                         }
 
                         return View(objModel);
@@ -2104,17 +2065,17 @@ namespace ISOStd.Controllers
                             LoggedBy = objGlobaldata.GetEmpHrNameById(dsComplaintModelsList.Tables[0].Rows[0]["LoggedBy"].ToString()),
                             CustomerName = objGlobaldata.GetCustomerNameById(dsComplaintModelsList.Tables[0].Rows[0]["CustomerName"].ToString()),
                             ProjectName = dsComplaintModelsList.Tables[0].Rows[0]["ProjectName"].ToString(),
-                            ReportedBy = dsComplaintModelsList.Tables[0].Rows[0]["ReportedBy"].ToString(),
+                            ReportedBy = objGlobaldata.GetCustomerContactPersonByCustId(dsComplaintModelsList.Tables[0].Rows[0]["ReportedBy"].ToString()),
                             ModeOfComplaint = objGlobaldata.GetModeOfComplaintById(dsComplaintModelsList.Tables[0].Rows[0]["ModeOfComplaint"].ToString()),
                             Details = dsComplaintModelsList.Tables[0].Rows[0]["Details"].ToString(),
                             ForwardTo = objGlobaldata.GetMultiHrEmpNameById(dsComplaintModelsList.Tables[0].Rows[0]["ForwardTo"].ToString()),
-                            ComplaintStatus = objGlobaldata.GetDropdownitemById(dsComplaintModelsList.Tables[0].Rows[0]["ComplaintStatus"].ToString()),
+                        //    ComplaintStatus = objGlobaldata.GetDropdownitemById(dsComplaintModelsList.Tables[0].Rows[0]["ComplaintStatus"].ToString()),
                             Document = dsComplaintModelsList.Tables[0].Rows[0]["Document"].ToString(),
                             ForwarderAssign = dsComplaintModelsList.Tables[0].Rows[0]["ForwarderAssign"].ToString(),
                             CustomerRef = dsComplaintModelsList.Tables[0].Rows[0]["CustomerRef"].ToString(),
-                            reportedby_email = dsComplaintModelsList.Tables[0].Rows[0]["reportedby_email"].ToString(),
-                            reportedby_desig = dsComplaintModelsList.Tables[0].Rows[0]["reportedby_desig"].ToString(),
-                            reportedby_no = dsComplaintModelsList.Tables[0].Rows[0]["reportedby_no"].ToString(),
+                        //    reportedby_email = dsComplaintModelsList.Tables[0].Rows[0]["reportedby_email"].ToString(),
+                        //    reportedby_desig = dsComplaintModelsList.Tables[0].Rows[0]["reportedby_desig"].ToString(),
+                        //    reportedby_no = dsComplaintModelsList.Tables[0].Rows[0]["reportedby_no"].ToString(),
                         };
 
                         DateTime dtDocDate = new DateTime();
@@ -2144,6 +2105,46 @@ namespace ISOStd.Controllers
                             objComplaintModels.Department = objGlobaldata.GetMultiDeptNameById(CustList.Tables[0].Rows[0]["Department"].ToString());
                             objComplaintModels.Location = objGlobaldata.GetDivisionLocationById(CustList.Tables[0].Rows[0]["Location"].ToString());
                         }
+
+                        if (dsComplaintModelsList.Tables[0].Rows[0]["ReportedBy"].ToString() != null && dsComplaintModelsList.Tables[0].Rows[0]["ReportedBy"].ToString() != "")
+                        {
+                            string sSqlstmt11 = "select EmailId,MobileNumber,designation from t_customer_info_contacts where ContactsId = '" + dsComplaintModelsList.Tables[0].Rows[0]["ReportedBy"].ToString() + "'";
+                            DataSet dsList = objGlobaldata.Getdetails(sSqlstmt11);
+                            if (dsList.Tables.Count > 0 && dsList.Tables[0].Rows.Count > 0)
+                            {
+                                objComplaintModels.reportedby_email = (dsList.Tables[0].Rows[0]["EmailId"].ToString());
+                                objComplaintModels.reportedby_no = (dsList.Tables[0].Rows[0]["MobileNumber"].ToString());
+                                objComplaintModels.reportedby_desig = (dsList.Tables[0].Rows[0]["designation"].ToString());
+                            };
+                        }
+
+                        // --------------------objComplaintModels Status-------
+                        string sSqlstmt1 = "select v_status from t_custcomplaint a,t_custcomplaint_nc b where nc_active=1" +
+                      " and a.id_complaint=b.id_complaint and a.id_complaint = '" + sid_complaint + "'";
+                        DataSet dsData1 = objGlobaldata.Getdetails(sSqlstmt1);
+                        if (dsData1.Tables.Count > 0 && dsData1.Tables[0].Rows.Count > 0)
+                        {
+                            for (int j = 0; j < dsData1.Tables[0].Rows.Count; j++)
+                            {
+                                if (dsData1.Tables[0].Rows[j]["v_status"].ToString() != "")
+                                {
+                                    if (objGlobaldata.GetDropdownitemById(dsData1.Tables[0].Rows[j]["v_status"].ToString()) == "Open")
+                                    {
+                                        objComplaintModels.ComplaintStatus = "Open";
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        objComplaintModels.ComplaintStatus = "Closed";
+                                    }
+                                }
+                                else
+                                {
+                                    objComplaintModels.ComplaintStatus = "Open";
+                                }
+                            }
+                        }
+
                     }
                     else
                     {
@@ -2181,8 +2182,8 @@ namespace ISOStd.Controllers
                     ViewBag.DispositonAction = objGlobaldata.GetDropdownList("NC Disposition Action");
                     ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
 
-                    string sSqlstmt = "select id_custcomplaint_nc,a.id_complaint,b.ForwarderAssign,a.TargetDate,ComplaintNo,CustomerName,CustomerRef,ProjectName,ReceivedDate,ModeOfComplaint,ReportedBy,reportedby_email,reportedby_no,reportedby_desig,registered_on," +
-                        "nc_no,disp_action_taken,disp_explain,disp_notifiedto,disp_notifeddate,disp_upload from t_custcomplaint a, t_custcomplaint_nc b where id_custcomplaint_nc='" + sid_custcomplaint_nc + "' and a.id_complaint= b.id_complaint and a.id_complaint='"+ sid_complaint + "'";
+                    string sSqlstmt = "select id_custcomplaint_nc,a.id_complaint,b.ForwarderAssign,a.TargetDate,ComplaintNo,CustomerName,CustomerRef,ProjectName,ReceivedDate,ModeOfComplaint,ReportedBy,registered_on," +
+                        "nc_no,disp_action_taken,disp_explain,disp_notifiedto,disp_notifeddate,disp_upload,disp_remiderdate from t_custcomplaint a, t_custcomplaint_nc b where id_custcomplaint_nc='" + sid_custcomplaint_nc + "' and a.id_complaint= b.id_complaint and a.id_complaint='"+ sid_complaint + "'";
                     DataSet dsCustComplaintModels = objGlobaldata.Getdetails(sSqlstmt);
 
                     if (dsCustComplaintModels.Tables.Count > 0 && dsCustComplaintModels.Tables[0].Rows.Count > 0)
@@ -2191,15 +2192,13 @@ namespace ISOStd.Controllers
                         {
                             id_custcomplaint_nc = (dsCustComplaintModels.Tables[0].Rows[0]["id_custcomplaint_nc"].ToString()),
                             id_complaint = Convert.ToInt32(dsCustComplaintModels.Tables[0].Rows[0]["id_complaint"].ToString()),
-                            ComplaintNo =(dsCustComplaintModels.Tables[0].Rows[0]["ComplaintNo"].ToString()),
+                            ComplaintNo = (dsCustComplaintModels.Tables[0].Rows[0]["ComplaintNo"].ToString()),
                             CustomerRef = (dsCustComplaintModels.Tables[0].Rows[0]["CustomerRef"].ToString()),
                             CustomerName = objGlobaldata.GetCustomerNameById(dsCustComplaintModels.Tables[0].Rows[0]["CustomerName"].ToString()),
                             ProjectName = (dsCustComplaintModels.Tables[0].Rows[0]["ProjectName"].ToString()),
                             ModeOfComplaint = objGlobaldata.GetModeOfComplaintById(dsCustComplaintModels.Tables[0].Rows[0]["ModeOfComplaint"].ToString()),
-                            ReportedBy= (dsCustComplaintModels.Tables[0].Rows[0]["ReportedBy"].ToString()),
-                            reportedby_email = (dsCustComplaintModels.Tables[0].Rows[0]["reportedby_email"].ToString()),
-                            reportedby_no = (dsCustComplaintModels.Tables[0].Rows[0]["reportedby_no"].ToString()),
-                            reportedby_desig = (dsCustComplaintModels.Tables[0].Rows[0]["reportedby_desig"].ToString()),
+                            ReportedBy = objGlobaldata.GetCustomerContactPersonByCustId(dsCustComplaintModels.Tables[0].Rows[0]["ReportedBy"].ToString()),
+                            ForwarderAssign = (dsCustComplaintModels.Tables[0].Rows[0]["ForwarderAssign"].ToString()),
                             nc_no = dsCustComplaintModels.Tables[0].Rows[0]["nc_no"].ToString(),
 
                             disp_action_taken = (dsCustComplaintModels.Tables[0].Rows[0]["disp_action_taken"].ToString()),
@@ -2224,8 +2223,23 @@ namespace ISOStd.Controllers
                         {
                             objModel.disp_notifeddate = dtValue;
                         }
+                        if (DateTime.TryParse(dsCustComplaintModels.Tables[0].Rows[0]["disp_remiderdate"].ToString(), out dtValue))
+                        {
+                            objModel.disp_remiderdate = dtValue;
+                        }
 
-
+                        if (dsCustComplaintModels.Tables[0].Rows[0]["ReportedBy"].ToString() != null && dsCustComplaintModels.Tables[0].Rows[0]["ReportedBy"].ToString() != "") 
+                        { 
+                        string sSqlstmt11 = "select EmailId,MobileNumber,designation from t_customer_info_contacts where ContactsId = '" + dsCustComplaintModels.Tables[0].Rows[0]["ReportedBy"].ToString() + "'";
+                        DataSet dsList = objGlobaldata.Getdetails(sSqlstmt11);
+                        if (dsList.Tables.Count > 0 && dsList.Tables[0].Rows.Count > 0)
+                        {
+                                objModel.reportedby_email = (dsList.Tables[0].Rows[0]["EmailId"].ToString());
+                                objModel.reportedby_no = (dsList.Tables[0].Rows[0]["MobileNumber"].ToString());
+                                objModel.reportedby_desig = (dsList.Tables[0].Rows[0]["designation"].ToString());
+                        };
+                        }
+                    }
                         CustComplaintModelsList NcDispList = new CustComplaintModelsList();
                         NcDispList.CustComplaintList = new List<CustComplaintModels>();
 
@@ -2245,6 +2259,7 @@ namespace ISOStd.Controllers
                                         disp_resp_person = (dsDispModels.Tables[0].Rows[i]["disp_resp_person"].ToString()),
                                     };
 
+                                DateTime dtValue;
                                     if (DateTime.TryParse(dsDispModels.Tables[0].Rows[i]["disp_complete_date"].ToString(), out dtValue))
                                     {
                                         objDispModel.disp_complete_date = dtValue;
@@ -2267,7 +2282,7 @@ namespace ISOStd.Controllers
                         TempData["alertdata"] = "No Data exists";
                         return RedirectToAction("CustomerComplaintList");
                     }
-                }
+                
             }
             catch (Exception ex)
             {
@@ -2412,7 +2427,7 @@ namespace ISOStd.Controllers
                             CustomerRef = (dsCustComplaintModels.Tables[0].Rows[0]["CustomerRef"].ToString()),
                             ProjectName = (dsCustComplaintModels.Tables[0].Rows[0]["ProjectName"].ToString()),
                             ModeOfComplaint = objGlobaldata.GetModeOfComplaintById(dsCustComplaintModels.Tables[0].Rows[0]["ModeOfComplaint"].ToString()),
-                            ReportedBy = (dsCustComplaintModels.Tables[0].Rows[0]["ReportedBy"].ToString()),
+                            ReportedBy = objGlobaldata.GetMultiHrEmpNameById(dsCustComplaintModels.Tables[0].Rows[0]["ReportedBy"].ToString()),
                             reportedby_email = (dsCustComplaintModels.Tables[0].Rows[0]["reportedby_email"].ToString()),
                             reportedby_desig = (dsCustComplaintModels.Tables[0].Rows[0]["reportedby_desig"].ToString()),
                             reportedby_no = (dsCustComplaintModels.Tables[0].Rows[0]["reportedby_no"].ToString()),
@@ -2530,10 +2545,10 @@ namespace ISOStd.Controllers
                             CustomerRef = (dsCustComplaintModels.Tables[0].Rows[0]["CustomerRef"].ToString()),
                             ProjectName = (dsCustComplaintModels.Tables[0].Rows[0]["ProjectName"].ToString()),
                             ModeOfComplaint = objGlobaldata.GetModeOfComplaintById(dsCustComplaintModels.Tables[0].Rows[0]["ModeOfComplaint"].ToString()),
-                            ReportedBy = (dsCustComplaintModels.Tables[0].Rows[0]["ReportedBy"].ToString()),
-                            reportedby_email = (dsCustComplaintModels.Tables[0].Rows[0]["reportedby_email"].ToString()),
-                            reportedby_no = (dsCustComplaintModels.Tables[0].Rows[0]["reportedby_no"].ToString()),
-                            reportedby_desig = (dsCustComplaintModels.Tables[0].Rows[0]["reportedby_desig"].ToString()),
+                            ReportedBy = objGlobaldata.GetCustomerContactPersonByCustId(dsCustComplaintModels.Tables[0].Rows[0]["ReportedBy"].ToString()),
+                            //reportedby_email = (dsCustComplaintModels.Tables[0].Rows[0]["reportedby_email"].ToString()),
+                            //reportedby_no = (dsCustComplaintModels.Tables[0].Rows[0]["reportedby_no"].ToString()),
+                            //reportedby_desig = (dsCustComplaintModels.Tables[0].Rows[0]["reportedby_desig"].ToString()),
                             nc_no = dsCustComplaintModels.Tables[0].Rows[0]["nc_no"].ToString(),
 
                             rca_technique = (dsCustComplaintModels.Tables[0].Rows[0]["rca_technique"].ToString()),
@@ -2575,6 +2590,18 @@ namespace ISOStd.Controllers
                         if (DateTime.TryParse(dsCustComplaintModels.Tables[0].Rows[0]["rca_reporteddate"].ToString(), out dtValue))
                         {
                             objModel.rca_reporteddate = dtValue;
+                        }
+                       
+                        if (dsCustComplaintModels.Tables[0].Rows[0]["ReportedBy"].ToString() != null && dsCustComplaintModels.Tables[0].Rows[0]["ReportedBy"].ToString() != "")
+                        {
+                            string sSqlstmt11 = "select EmailId,MobileNumber,designation from t_customer_info_contacts where ContactsId = '" + dsCustComplaintModels.Tables[0].Rows[0]["ReportedBy"].ToString() + "'";
+                            DataSet dsList = objGlobaldata.Getdetails(sSqlstmt11);
+                            if (dsList.Tables.Count > 0 && dsList.Tables[0].Rows.Count > 0)
+                            {
+                                objModel.reportedby_email = (dsList.Tables[0].Rows[0]["EmailId"].ToString());
+                                objModel.reportedby_no = (dsList.Tables[0].Rows[0]["MobileNumber"].ToString());
+                                objModel.reportedby_desig = (dsList.Tables[0].Rows[0]["designation"].ToString());
+                            };
                         }
 
                         return View(objModel);
@@ -2724,10 +2751,10 @@ namespace ISOStd.Controllers
                             CustomerRef = (dsCustComplaintModels.Tables[0].Rows[0]["CustomerRef"].ToString()),
                             ProjectName = (dsCustComplaintModels.Tables[0].Rows[0]["ProjectName"].ToString()),
                             ModeOfComplaint = objGlobaldata.GetModeOfComplaintById(dsCustComplaintModels.Tables[0].Rows[0]["ModeOfComplaint"].ToString()),
-                            ReportedBy = (dsCustComplaintModels.Tables[0].Rows[0]["ReportedBy"].ToString()),
-                            reportedby_email = (dsCustComplaintModels.Tables[0].Rows[0]["reportedby_email"].ToString()),
-                            reportedby_no = (dsCustComplaintModels.Tables[0].Rows[0]["reportedby_no"].ToString()),
-                            reportedby_desig = (dsCustComplaintModels.Tables[0].Rows[0]["reportedby_desig"].ToString()),
+                            ReportedBy =objGlobaldata.GetCustomerContactPersonByCustId(dsCustComplaintModels.Tables[0].Rows[0]["ReportedBy"].ToString()),
+                            //reportedby_email = (dsCustComplaintModels.Tables[0].Rows[0]["reportedby_email"].ToString()),
+                            //reportedby_no = (dsCustComplaintModels.Tables[0].Rows[0]["reportedby_no"].ToString()),
+                            //reportedby_desig = (dsCustComplaintModels.Tables[0].Rows[0]["reportedby_desig"].ToString()),
                             nc_no = dsCustComplaintModels.Tables[0].Rows[0]["nc_no"].ToString(),
                             rca_details = (dsCustComplaintModels.Tables[0].Rows[0]["rca_details"].ToString()),
 
@@ -2761,6 +2788,17 @@ namespace ISOStd.Controllers
                             objModel.ca_notifed_date = dtValue;
                         }
 
+                        if (dsCustComplaintModels.Tables[0].Rows[0]["ReportedBy"].ToString() != null && dsCustComplaintModels.Tables[0].Rows[0]["ReportedBy"].ToString() != "")
+                        {
+                            string sSqlstmt11 = "select EmailId,MobileNumber,designation from t_customer_info_contacts where ContactsId = '" + dsCustComplaintModels.Tables[0].Rows[0]["ReportedBy"].ToString() + "'";
+                            DataSet dsList = objGlobaldata.Getdetails(sSqlstmt11);
+                            if (dsList.Tables.Count > 0 && dsList.Tables[0].Rows.Count > 0)
+                            {
+                                objModel.reportedby_email = (dsList.Tables[0].Rows[0]["EmailId"].ToString());
+                                objModel.reportedby_no = (dsList.Tables[0].Rows[0]["MobileNumber"].ToString());
+                                objModel.reportedby_desig = (dsList.Tables[0].Rows[0]["designation"].ToString());
+                            };
+                        }
 
                         CustComplaintModelsList CAList = new CustComplaintModelsList();
                         CAList.CustComplaintList = new List<CustComplaintModels>();
@@ -2932,10 +2970,10 @@ namespace ISOStd.Controllers
                             CustomerRef = (dsCustComplaintModels.Tables[0].Rows[0]["CustomerRef"].ToString()),
                             ProjectName = (dsCustComplaintModels.Tables[0].Rows[0]["ProjectName"].ToString()),
                             ModeOfComplaint = objGlobaldata.GetModeOfComplaintById(dsCustComplaintModels.Tables[0].Rows[0]["ModeOfComplaint"].ToString()),
-                            ReportedBy = (dsCustComplaintModels.Tables[0].Rows[0]["ReportedBy"].ToString()),
-                            reportedby_email = (dsCustComplaintModels.Tables[0].Rows[0]["reportedby_email"].ToString()),
-                            reportedby_no = (dsCustComplaintModels.Tables[0].Rows[0]["reportedby_no"].ToString()),
-                            reportedby_desig = (dsCustComplaintModels.Tables[0].Rows[0]["reportedby_desig"].ToString()),
+                            ReportedBy = objGlobaldata.GetCustomerContactPersonByCustId(dsCustComplaintModels.Tables[0].Rows[0]["ReportedBy"].ToString()),
+                            //reportedby_email = (dsCustComplaintModels.Tables[0].Rows[0]["reportedby_email"].ToString()),
+                            //reportedby_no = (dsCustComplaintModels.Tables[0].Rows[0]["reportedby_no"].ToString()),
+                            //reportedby_desig = (dsCustComplaintModels.Tables[0].Rows[0]["reportedby_desig"].ToString()),
                             nc_no = dsCustComplaintModels.Tables[0].Rows[0]["nc_no"].ToString(),
                             rca_details = dsCustComplaintModels.Tables[0].Rows[0]["rca_details"].ToString(),
 
@@ -2981,6 +3019,18 @@ namespace ISOStd.Controllers
                         if (DateTime.TryParse(dsCustComplaintModels.Tables[0].Rows[0]["v_closed_date"].ToString(), out dtValue))
                         {
                             objModel.v_closed_date = dtValue;
+                        }
+
+                        if (dsCustComplaintModels.Tables[0].Rows[0]["ReportedBy"].ToString() != null && dsCustComplaintModels.Tables[0].Rows[0]["ReportedBy"].ToString() != "")
+                        {
+                            string sSqlstmt11 = "select EmailId,MobileNumber,designation from t_customer_info_contacts where ContactsId = '" + dsCustComplaintModels.Tables[0].Rows[0]["ReportedBy"].ToString() + "'";
+                            DataSet dsList = objGlobaldata.Getdetails(sSqlstmt11);
+                            if (dsList.Tables.Count > 0 && dsList.Tables[0].Rows.Count > 0)
+                            {
+                                objModel.reportedby_email = (dsList.Tables[0].Rows[0]["EmailId"].ToString());
+                                objModel.reportedby_no = (dsList.Tables[0].Rows[0]["MobileNumber"].ToString());
+                                objModel.reportedby_desig = (dsList.Tables[0].Rows[0]["designation"].ToString());
+                            };
                         }
 
                         CustComplaintModelsList objVeriList = new CustComplaintModelsList();
@@ -3197,10 +3247,10 @@ namespace ISOStd.Controllers
                                 CustomerName = objGlobaldata.GetCustomerNameById(dsCustComplaintModels.Tables[0].Rows[0]["CustomerName"].ToString()),
                                 ProjectName = (dsCustComplaintModels.Tables[0].Rows[0]["ProjectName"].ToString()),
                                 ModeOfComplaint = objGlobaldata.GetModeOfComplaintById(dsCustComplaintModels.Tables[0].Rows[0]["ModeOfComplaint"].ToString()),
-                                ReportedBy = (dsCustComplaintModels.Tables[0].Rows[0]["ReportedBy"].ToString()),
-                                reportedby_email = (dsCustComplaintModels.Tables[0].Rows[0]["reportedby_email"].ToString()),
-                                reportedby_desig = (dsCustComplaintModels.Tables[0].Rows[0]["reportedby_desig"].ToString()),
-                                reportedby_no = (dsCustComplaintModels.Tables[0].Rows[0]["reportedby_no"].ToString()),
+                                ReportedBy = objGlobaldata.GetCustomerContactPersonByCustId(dsCustComplaintModels.Tables[0].Rows[0]["ReportedBy"].ToString()),
+                                //reportedby_email = (dsCustComplaintModels.Tables[0].Rows[0]["reportedby_email"].ToString()),
+                                //reportedby_desig = (dsCustComplaintModels.Tables[0].Rows[0]["reportedby_desig"].ToString()),
+                                //reportedby_no = (dsCustComplaintModels.Tables[0].Rows[0]["reportedby_no"].ToString()),
                                 Details = dsCustComplaintModels.Tables[0].Rows[0]["Details"].ToString(),
 
                                 ForwardTo = objGlobaldata.GetMultiHrEmpNameById(dsCustComplaintModels.Tables[0].Rows[0]["ForwardTo"].ToString()),
@@ -3219,6 +3269,18 @@ namespace ISOStd.Controllers
                             if (DateTime.TryParse(dsCustComplaintModels.Tables[0].Rows[0]["registered_on"].ToString(), out dtValue))
                             {
                                 objModel.registered_on = dtValue;
+                            }
+
+                            if (dsCustComplaintModels.Tables[0].Rows[0]["ReportedBy"].ToString() != null && dsCustComplaintModels.Tables[0].Rows[0]["ReportedBy"].ToString() != "")
+                            {
+                                string sSqlstmt10 = "select EmailId,MobileNumber,designation from t_customer_info_contacts where ContactsId = '" + dsCustComplaintModels.Tables[0].Rows[0]["ReportedBy"].ToString() + "'";
+                                DataSet dsList = objGlobaldata.Getdetails(sSqlstmt10);
+                                if (dsList.Tables.Count > 0 && dsList.Tables[0].Rows.Count > 0)
+                                {
+                                    objModel.reportedby_email = (dsList.Tables[0].Rows[0]["EmailId"].ToString());
+                                    objModel.reportedby_no = (dsList.Tables[0].Rows[0]["MobileNumber"].ToString());
+                                    objModel.reportedby_desig = (dsList.Tables[0].Rows[0]["designation"].ToString());
+                                };
                             }
 
                             // --------------------objComplaintModels Status-------
@@ -3241,8 +3303,13 @@ namespace ISOStd.Controllers
                                             objModel.ComplaintStatus = "Closed";
                                         }
                                     }
+                                    else
+                                    {
+                                        objModel.ComplaintStatus = "Open";
+                                    }
                                 }
                             }
+                            
 
                             //--------------------End Complaint Status----------------
 
@@ -3351,10 +3418,10 @@ namespace ISOStd.Controllers
                                 CustomerName = objGlobaldata.GetCustomerNameById(dsCustComplaintModels.Tables[0].Rows[0]["CustomerName"].ToString()),
                                 ProjectName = (dsCustComplaintModels.Tables[0].Rows[0]["ProjectName"].ToString()),
                                 ModeOfComplaint = objGlobaldata.GetModeOfComplaintById(dsCustComplaintModels.Tables[0].Rows[0]["ModeOfComplaint"].ToString()),
-                                ReportedBy = (dsCustComplaintModels.Tables[0].Rows[0]["ReportedBy"].ToString()),
-                                reportedby_email = (dsCustComplaintModels.Tables[0].Rows[0]["reportedby_email"].ToString()),
-                                reportedby_desig = (dsCustComplaintModels.Tables[0].Rows[0]["reportedby_desig"].ToString()),
-                                reportedby_no = (dsCustComplaintModels.Tables[0].Rows[0]["reportedby_no"].ToString()),
+                                ReportedBy =objGlobaldata.GetCustomerContactPersonByCustId(dsCustComplaintModels.Tables[0].Rows[0]["ReportedBy"].ToString()),
+                                //reportedby_email = (dsCustComplaintModels.Tables[0].Rows[0]["reportedby_email"].ToString()),
+                                //reportedby_desig = (dsCustComplaintModels.Tables[0].Rows[0]["reportedby_desig"].ToString()),
+                                //reportedby_no = (dsCustComplaintModels.Tables[0].Rows[0]["reportedby_no"].ToString()),
                                 Details = dsCustComplaintModels.Tables[0].Rows[0]["Details"].ToString(),
 
                                 ForwardTo = objGlobaldata.GetMultiHrEmpNameById(dsCustComplaintModels.Tables[0].Rows[0]["ForwardTo"].ToString()),
@@ -3374,7 +3441,18 @@ namespace ISOStd.Controllers
                             {
                                 objModel.registered_on = dtValue;
                             }
-
+                           
+                            if (dsCustComplaintModels.Tables[0].Rows[0]["ReportedBy"].ToString() != null && dsCustComplaintModels.Tables[0].Rows[0]["ReportedBy"].ToString() != "")
+                            {
+                                string ssSqlstmt = "select EmailId,MobileNumber,designation from t_customer_info_contacts where ContactsId = '" + dsCustComplaintModels.Tables[0].Rows[0]["ReportedBy"].ToString() + "'";
+                                DataSet dsList = objGlobaldata.Getdetails(ssSqlstmt);
+                                if (dsList.Tables.Count > 0 && dsList.Tables[0].Rows.Count > 0)
+                                {
+                                    objModel.reportedby_email = (dsList.Tables[0].Rows[0]["EmailId"].ToString());
+                                    objModel.reportedby_no = (dsList.Tables[0].Rows[0]["MobileNumber"].ToString());
+                                    objModel.reportedby_desig = (dsList.Tables[0].Rows[0]["designation"].ToString());
+                                };
+                            }
                             // --------------------objComplaintModels Status-------
                             string sSqlstmt1 = "select v_status from t_custcomplaint a,t_custcomplaint_nc b where nc_active=1" +
                           " and a.id_complaint=b.id_complaint and a.id_complaint = '" + sid_complaint + "'";
@@ -3394,6 +3472,10 @@ namespace ISOStd.Controllers
                                         {
                                             objModel.ComplaintStatus = "Closed";
                                         }
+                                    }
+                                    else
+                                    {
+                                        objModel.ComplaintStatus = "Open";
                                     }
                                 }
                             }
@@ -3419,7 +3501,7 @@ namespace ISOStd.Controllers
 
                     CompanyModels objCompany = new CompanyModels();
                     dsCustComplaintModels = objCompany.GetCompanyDetailsForReport(dsCustComplaintModels);
-                    dsCustComplaintModels = objGlobaldata.GetReportDetails(dsCustComplaintModels, objModel.ComplaintNo, dsCustComplaintModels.Tables[0].Rows[0]["LoggedBy"].ToString(), "NON CONFORMANCE REPORT");
+                    dsCustComplaintModels = objGlobaldata.GetReportDetails(dsCustComplaintModels, objModel.ComplaintNo, dsCustComplaintModels.Tables[0].Rows[0]["LoggedBy"].ToString(), "CUSTOMER COMPLAINT REPORT");
 
                     ViewBag.CompanyInfo = dsCustComplaintModels;
 
@@ -3569,5 +3651,50 @@ namespace ISOStd.Controllers
             return Json("Failed");
         }
 
+        public JsonResult FunGetAllContactPersonList(string CustId)
+        {
+            try
+            {
+                if (CustId != null && CustId != "")
+                {
+                    MultiSelectList EmpList = objGlobaldata.GetAllCustomerContactPersonList(CustId);
+                    return Json(EmpList);
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in FunGetAllContactPersonList: " + ex.ToString());
+                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+            } 
+          return Json ("");
+        }
+
+        public JsonResult FunGetCustEmpDetails(string CustId)
+        {
+
+            CustomerModels objModels = new CustomerModels();
+            try
+            {
+                string sSqlstmt = "select PhoneNumber,EmailId,MobileNumber,designation from t_customer_info_contacts where ContactsId = '" + CustId + "'";
+                DataSet dsList = objGlobaldata.Getdetails(sSqlstmt);
+                if (dsList.Tables.Count > 0 && dsList.Tables[0].Rows.Count > 0)
+                {
+                    objModels = new CustomerModels
+                    {
+                        PhoneNumber = (dsList.Tables[0].Rows[0]["PhoneNumber"].ToString()),
+                        EmailId = (dsList.Tables[0].Rows[0]["EmailId"].ToString()),
+                        MobileNumber = (dsList.Tables[0].Rows[0]["MobileNumber"].ToString()),
+                        designation = (dsList.Tables[0].Rows[0]["designation"].ToString())
+                    };
+                }
+                return Json(objModels);
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in FunGetCustEmpDetails: " + ex.ToString());
+                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+            }
+            return Json("");
+        }
     }
 }

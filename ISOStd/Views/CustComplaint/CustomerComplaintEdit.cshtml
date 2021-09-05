@@ -117,7 +117,7 @@
                                 }
                                 else
                                 {
-                                    <input class="form-control" type="date" id="registered_on" name="registered_on"  value="@DateTime.Now.ToString("yyyy-MM-dd")" readonly/>
+                                    <input class="form-control" type="date" id="registered_on" name="registered_on" value="@DateTime.Now.ToString("yyyy-MM-dd")" readonly />
                                 }
                                 @Html.ValidationMessageFor(m => m.registered_on)
                             </div>
@@ -235,7 +235,24 @@
                         </td>
                         <td class="col">
                             <div class="editor-field">
-                                @Html.EditorFor(model => model.ReportedBy, new { htmlAttributes = new { @required = "required", @class = "form-control" } })
+                                @*@Html.EditorFor(model => model.ReportedBy, new { htmlAttributes = new { @required = "required", @class = "form-control" } })*@
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="ReportedBy" name="ReportedBy" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.CustEmpList != null)
+                                    {
+                                        foreach (var item in ViewBag.CustEmpList)
+                                        {
+                                            if (item.Value == Model.ReportedBy)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
                                 @Html.ValidationMessageFor(m => m.ReportedBy)
                             </div>
                         </td>
@@ -246,7 +263,7 @@
                         </td>
                         <td class="col">
                             <div class="editor-field">
-                                @Html.EditorFor(model => model.reportedby_email, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.EditorFor(model => model.reportedby_email, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
                             </div>
                         </td>
                     </tr>
@@ -258,7 +275,7 @@
                         </td>
                         <td class="col">
                             <div class="editor-field">
-                                @Html.EditorFor(model => model.reportedby_desig, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.EditorFor(model => model.reportedby_desig, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
                             </div>
                         </td>
                         <td class="col-xs-3 col-md-2">
@@ -268,7 +285,7 @@
                         </td>
                         <td class="col">
                             <div class="editor-field">
-                                @Html.EditorFor(model => model.reportedby_no, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.EditorFor(model => model.reportedby_no, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
                             </div>
                         </td>
                     </tr>
@@ -335,7 +352,7 @@
                         </td>
                         <td class="col-xs-3 col-md-4">
                             <div class="editor-field">
-                                <input type="file" name="file" id="file" onchange="FileFormatValidation(this)" multiple accept=".pdf,.xlsx,.xls,.doc,.docx" class="bootstrap-uploader" data-fouc />
+                                <input type="file" name="file" id="file" onchange="FileFormatValidation(this)" multiple accept=".pdf,.xlsx,.xls,.doc,.docx,.jpg,.jpeg,.png" class="bootstrap-uploader" data-fouc />
                                 @if (Model.Document != null && Model.Document != "" && Model.Document.Length > 0)
                                 {
                                     <div class="editor-label">
@@ -382,9 +399,77 @@
                                 @Html.ValidationMessageFor(m => m.ComplaintStatus)
                             </div>
                         </td>
-
                     </tr>
 
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.initial_observation)
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <div class="editor-field">
+                                <textarea class="form-control" id="initial_observation" name="initial_observation"> @Model.initial_observation</textarea>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.complaint_relatedto)
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="complaint_relatedto" name="complaint_relatedto" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.ComplaintRelatedTo != null)
+                                    {
+                                        foreach (var item in ViewBag.ComplaintRelatedTo)
+                                        {
+                                            if (item.Value == Model.complaint_relatedto)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                                @Html.ValidationMessageFor(m => m.complaint_relatedto)
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.complaint_copiedto)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="complaint_copiedto" name="complaint_copiedto" multiple required>
+                                    @*<option value='' hidden>Select</option>*@
+                                    @if (ViewBag.Employee != null)
+                                    {
+                                        foreach (var item in ViewBag.Employee)
+                                        {
+                                            if (Array.IndexOf(Model.complaint_copiedto.ToString().Split(','), item.Value) >= 0)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                                @Html.ValidationMessageFor(m => m.complaint_copiedto)
+                            </div>
+                        </td>
+                    </tr>
                     <tr class="row">
                         <td class="col-xs-3 col-md-2">
                             <div class="editor-label">
@@ -426,10 +511,10 @@
                                         foreach (var data in ViewBag.EmpLists)
                                         {
                                             if (Array.IndexOf(Model.ForwardTo.ToString().Split(','), data.Value) >= 0)
-                {
-                    <option value='@data.Value' selected>@data.Text</option>
-                }
-                else
+                                            {
+                                                <option value='@data.Value' selected>@data.Text</option>
+                                            }
+                                            else
                                             {
                                                 <option value='@data.Value'>@data.Text</option>
                                             }
@@ -507,7 +592,7 @@
     <script>
 
         $(function () {
-            GetDetails();
+            GetEditDetails();
 
             $("#QCDocsVal").click(function () {
                 if ($("#QCDocsVal").prop('checked')) {
@@ -526,9 +611,9 @@
 
         function FileFormatValidation(file) {
             var ext = file.value.split(".").pop().toLowerCase();
-            if ($.inArray(ext, ["pdf","xlsx","xls","doc","docx"]) == -1) {
+            if ($.inArray(ext, ["pdf","xlsx","xls","doc","docx","jpg","jpeg","png"]) == -1) {
                 file.value = "";
-                jAlert("Invalid file format, please upload only pdf,xlsx,xls,doc,docx format");
+                jAlert("Invalid file format, please upload only pdf,xlsx,xls,doc,docx,jpg,jpeg,png format");
             }
         }
 
@@ -541,7 +626,7 @@
             //  var selectedValues = [];
             //$("#DeptId :selected").each(function () {
             //    selectedValues.push($(this).val());
-            //});  
+            //});
             //alert("selectedValues="+selectedValues);
             var dept = $("#DeptId option:selected").toArray().map(item => item.value);
              if (dept != null && dept != "") {
@@ -574,9 +659,32 @@
                 table.deleteRow(1);
             }
             document.getElementById("itemcnts").value = 0;
-        }     
+        }
 
-         function GetDetails() {
+           function GetEditDetails() {
+            var CustId = $("#CustomerName").val();
+               $.ajax({
+                   url: '@Url.Action("GetCustomerDetails","CustComplaint")',
+                   type: 'POST',
+                   dataType: 'json',
+                   data: { 'CustId': CustId },
+                   success: function (result) {
+                       if (result != null && result != "") {
+                           document.getElementById('branch').value = result.branch;
+                           document.getElementById('Location').value = result.Location;
+                           document.getElementById('Department').value = result.Department;
+
+                       }
+                       else {
+                           document.getElementById('branch').value = "";
+                           document.getElementById('Location').value = "";
+                           document.getElementById('Department').value = "";
+                       }
+                   }
+               });
+        }
+
+          function GetDetails() {
             var CustId = $("#CustomerName").val();
             $.ajax({
                 url: '@Url.Action("GetCustomerDetails","CustComplaint")',
@@ -588,19 +696,71 @@
                         document.getElementById('branch').value = result.branch;
                         document.getElementById('Location').value = result.Location;
                         document.getElementById('Department').value = result.Department;
+                        document.getElementById("reportedby_email").value = "";
+                        document.getElementById("reportedby_desig").value = "";
+                        document.getElementById("reportedby_no").value = "";
+
                     }
                     else {
                         document.getElementById('branch').value = "";
                         document.getElementById('Location').value = "";
                         document.getElementById('Department').value = "";
+                        document.getElementById("reportedby_email").value = "";
+                        document.getElementById("reportedby_desig").value = "";
+                        document.getElementById("reportedby_no").value = "";
                     }
 
+                    jQuery.ajax({
+                    url: '@Url.Action("FunGetAllContactPersonList", "CustComplaint")',
+                    type: 'POST',
+                    dataType: "json",
+                        data: { 'CustId': CustId },
+                    success: function (result) {
+                        $("#ReportedBy").children('option').remove();
+                        $("#ReportedBy").trigger('change');
+                        if (result != null && result.length > 0) {
+                            $("#ReportedBy").append("<option value=''> Select </option>");
+                            $.each(result, function (index, item) {
+                                $("#ReportedBy").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                            });
+                            $("#ReportedBy").trigger('change');
+                            return;
+                        }
+                    }
+                });
                 }
             })
         }
 
+
+        $('#ReportedBy').change(function () {
+            var ReportedBy = $('#ReportedBy option:selected').val();
+            if (ReportedBy != null && ReportedBy != "") {
+
+                jQuery.ajax({
+                    url: '@Url.Action("FunGetCustEmpDetails", "CustComplaint")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'CustId': ReportedBy },
+                    success: function (result) {
+                        if (result != null && result != "") {
+                            document.getElementById("reportedby_email").value = result.EmailId;
+                            document.getElementById("reportedby_desig").value = result.designation;
+                            document.getElementById("reportedby_no").value = result.MobileNumber;
+                        }
+                        else {
+                            document.getElementById("reportedby_email").value = "";
+                            document.getElementById("reportedby_desig").value = "";
+                            document.getElementById("reportedby_no").value = "";
+                        }
+                    }
+                });
+            }
+        });
+
+
  $('#ForwardTo').change(function () {
-           
+
             var team_notifiedto = $('#ForwardTo').val();
             if (team_notifiedto != "" && team_notifiedto != null) {
                 jQuery.ajax({
@@ -628,12 +788,12 @@
                                 var table = document.getElementById("team-lists");
 
 
-                                if (cnt == 1) {                                                                     
+                                if (cnt == 1) {
                                     table.deleteRow(1);
                                     cnt = 0;
                                 }
-                                //document.getElementById("itemcnts").value = cnt;  
-                                
+                                //document.getElementById("itemcnts").value = cnt;
+
 
                                 // Create an empty <tr> element and add it to the 1st position of the table:
                                 var row = table.insertRow();
@@ -669,7 +829,7 @@
                     }
                 });
             }
-        });
+ });
 
         function GetChkDate() {
             var sReceivedDate = $('#ReceivedDate').val();

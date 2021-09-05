@@ -513,8 +513,31 @@
                         if(document.getElementById("removeid") != null){
                             document.getElementById("removeid").remove();
                         }
-                        var upload = '<a href="@Url.Action("DisplayDocument", "Reports")?Document=' + result.upload + '" target="_blank" class="text-orange-800">Preview </a>';
+                       
+                        
+                        var upload="";
+                        
+                        if (result.upload != null && result.upload != "" && result.upload.length > 0)
+                            {
+                            if (result.upload.indexOf(',') >= 0) {
+                               /* var sUpload = JSON.stringify(result.upload);*/
+                                var ssupload = new Array();
+                                ssupload = result.upload.split(",");
+                                 
+                                  for (var i = 0; i < ssupload.length; i++) {
+                                   
+                                    /* ssupload[0] = ssupload[0].substring(2);           */                          
+                                     upload = upload + "," + '<a href="@Url.Action("DisplayDocument", "Reports")?Document='+ ssupload[i]+'" target="_blank" class="text-orange-800">Preview </a>';
+                                  }
 
+                                upload = upload.substring(1);
+                             }
+                             else {
+                                upload = '<a href="@Url.Action("DisplayDocument", "Reports")?Document=' + result.upload+'" target="_blank" class="text-orange-800">Preview </a>';
+                             }
+
+                        }                     
+                        
                         var tr_str = '<tr class="row" id="removeid">' +
                               '<td align="center"> Uploaded Document </td>' +
                               '<td align="center"> ' + upload+' </td>' +
@@ -540,9 +563,9 @@
             GetDCRList(svalue, "");
             updateEmployeeList(svalue, "", "", "PreparedBy");
             updateDeptnlocation(svalue, "Location", "location");
-            updateDeptnlocation(svalue, "Department", "department");           
+            updateDeptnlocation(svalue, "Department", "department");
         }
-                
+
         function GetApproverList() {
 
             var sbranch = $.map($("#branch option:selected"), function (el, i) {
@@ -566,7 +589,7 @@
             updateRoleList(sbvalue, sdvalue, slvalue, "ApprovedBy", "Approver");
         }
 
-           
+
     </script>
      @Scripts.Render("~/bundles/jqueryval")
 }

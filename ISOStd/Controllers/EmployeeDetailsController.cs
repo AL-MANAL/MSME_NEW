@@ -3107,22 +3107,18 @@ namespace ISOStd.Controllers
                         level = Convert.ToInt32(dsList.Tables[0].Rows[i]["parent_level"].ToString());
 
                       return  objBranchModelList=printSeries(Convert.ToInt32(dsList.Tables[0].Rows[i]["id"].ToString()), level, dsList, objBranchModelList, objModels);
-                    }
-                    
-                }
-              
-                    count++;
-                
+                    }                    
+                }              
+                    count++;               
             }
 
             if (level - 1 >= 0)
             {
                 objBranchModelList=printSeries(Convert.ToInt32(dsList.Tables[0].Rows[level - 1]["id"].ToString()), Convert.ToInt32(dsList.Tables[0].Rows[level - 1]["parent_level"].ToString()), dsList, objBranchModelList, objModels);
-            }
-            
-                return objBranchModelList;
-            
+            }            
+                return objBranchModelList;            
         }
+
         public ActionResult FunGetBranchList()
         {
            

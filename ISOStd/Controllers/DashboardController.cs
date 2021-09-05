@@ -263,41 +263,41 @@ namespace ISOStd.Controllers
                     ViewBag.dsRiskHRRActivity = dsApprovalList;
                 }
 
-                //==========================AUDIT======================================
+                ////==========================AUDIT======================================
 
-                sSqlstmt = "select AuditID,AuditNum,AuditDate,AuditCriteria,AuditLocation,upload,Audit_Prepared_by,ApprovedBy from t_internal_audit where Active=1 and ApprvStatus=0 and ApprovedBy='" + sempid + "'";
+                //sSqlstmt = "select AuditID,AuditNum,AuditDate,AuditCriteria,AuditLocation,upload,Audit_Prepared_by,ApprovedBy from t_internal_audit where Active=1 and ApprvStatus=0 and ApprovedBy='" + sempid + "'";
 
-                dsApprovalList = objGlobaldata.Getdetails(sSqlstmt);
-                count = count + dsApprovalList.Tables[0].Rows.Count;
-                if (dsApprovalList.Tables.Count > 0 && dsApprovalList.Tables[0].Rows.Count > 0)
-                {
-                    ViewBag.dsAudit = dsApprovalList;
-                }
+                //dsApprovalList = objGlobaldata.Getdetails(sSqlstmt);
+                //count = count + dsApprovalList.Tables[0].Rows.Count;
+                //if (dsApprovalList.Tables.Count > 0 && dsApprovalList.Tables[0].Rows.Count > 0)
+                //{
+                //    ViewBag.dsAudit = dsApprovalList;
+                //}
 
-                //==========================AUDIT PROCESS(Internal Audit Plan) DEPT HEAD======================================
+                ////==========================AUDIT PROCESS(Internal Audit Plan) DEPT HEAD======================================
 
-                sSqlstmt = "select Audit_Id,Audit_no,AuditDate,Audit_criteria,checklist,dept,location,division,PlannedBy,Notified_To from t_audit_process where active=1 and" +
-                 " ((Audit_Status='Pending' or Audit_Status='Rescheduled') and ( find_in_set('" + sempid + "',dept_head)) and dept_head_status=0)";
+                //sSqlstmt = "select Audit_Id,Audit_no,AuditDate,Audit_criteria,checklist,dept,location,division,PlannedBy,Notified_To from t_audit_process where active=1 and" +
+                // " ((Audit_Status='Pending' or Audit_Status='Rescheduled') and ( find_in_set('" + sempid + "',dept_head)) and dept_head_status=0)";
 
-                dsApprovalList = objGlobaldata.Getdetails(sSqlstmt);
-                count = count + dsApprovalList.Tables[0].Rows.Count;
-                if (dsApprovalList.Tables.Count > 0 && dsApprovalList.Tables[0].Rows.Count > 0)
-                {
-                    ViewBag.dsAuditProcessdepthead = dsApprovalList;
-                }
+                //dsApprovalList = objGlobaldata.Getdetails(sSqlstmt);
+                //count = count + dsApprovalList.Tables[0].Rows.Count;
+                //if (dsApprovalList.Tables.Count > 0 && dsApprovalList.Tables[0].Rows.Count > 0)
+                //{
+                //    ViewBag.dsAuditProcessdepthead = dsApprovalList;
+                //}
 
-                //==========================AUDIT PROCESS(Internal Audit Plan)======================================
+                ////==========================AUDIT PROCESS(Internal Audit Plan)======================================
 
-                sSqlstmt = "select Audit_Id,Audit_no,AuditDate,Audit_criteria,checklist,dept,location,division,PlannedBy,Notified_To from t_audit_process where active=1 and" +
-                                  " (((Audit_Status='Pending' or Audit_Status='Rescheduled') and ( find_in_set('" + sempid + "',internal_audit_team)) and audit_team_status=0 ) or" +
-                            " (dept_head_status=1 and audit_team_status=1 and (Audit_Status='Pending' or Audit_Status='Rescheduled') and ( find_in_set('" + sempid + "',Notified_To))))";
+                //sSqlstmt = "select Audit_Id,Audit_no,AuditDate,Audit_criteria,checklist,dept,location,division,PlannedBy,Notified_To from t_audit_process where active=1 and" +
+                //                  " (((Audit_Status='Pending' or Audit_Status='Rescheduled') and ( find_in_set('" + sempid + "',internal_audit_team)) and audit_team_status=0 ) or" +
+                //            " (dept_head_status=1 and audit_team_status=1 and (Audit_Status='Pending' or Audit_Status='Rescheduled') and ( find_in_set('" + sempid + "',Notified_To))))";
 
-                dsApprovalList = objGlobaldata.Getdetails(sSqlstmt);
-                count = count + dsApprovalList.Tables[0].Rows.Count;
-                if (dsApprovalList.Tables.Count > 0 && dsApprovalList.Tables[0].Rows.Count > 0)
-                {
-                    ViewBag.dsAuditProcess = dsApprovalList;
-                }
+                //dsApprovalList = objGlobaldata.Getdetails(sSqlstmt);
+                //count = count + dsApprovalList.Tables[0].Rows.Count;
+                //if (dsApprovalList.Tables.Count > 0 && dsApprovalList.Tables[0].Rows.Count > 0)
+                //{
+                //    ViewBag.dsAuditProcess = dsApprovalList;
+                //}
 
 
                 //==========================OFI Approval======================================

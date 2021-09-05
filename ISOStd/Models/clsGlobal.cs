@@ -25,8 +25,86 @@ namespace ISOStd.Models
         private object fileUploader;
         private object mail;
 
+        public MultiSelectList GetComplaintRealtedToList()
+        {
+            DropdownList objProductList = new DropdownList();
+            objProductList.lstDropdown = new List<DropdownItems>();
 
-        //-----------------------------------6/25/2021--------------------------------------------
+            try
+            {
+                string sSsqlstmt = "select item_id as Id, item_desc as Name from dropdownitems, dropdownheader where dropdownheader.header_id=dropdownitems.header_id "
+                    + "and header_desc='Complaint Related To' order by item_desc asc";
+
+                DataSet dsBranch = Getdetails(sSsqlstmt);
+
+                if (dsBranch.Tables.Count > 0 && dsBranch.Tables[0].Rows.Count > 0)
+                {
+                    for (int i = 0; i < dsBranch.Tables[0].Rows.Count; i++)
+                    {
+                        DropdownItems objProduct = new DropdownItems()
+                        {
+                            Id = dsBranch.Tables[0].Rows[i]["Id"].ToString(),
+                            Name = dsBranch.Tables[0].Rows[i]["Name"].ToString()
+                        };
+
+                        objProductList.lstDropdown.Add(objProduct);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                AddFunctionalLog("Exception in GetComplaintRealtedToList: " + ex.ToString());
+            }
+
+            return new MultiSelectList(objProductList.lstDropdown, "Id", "Name");
+        }
+
+        public string GetCustomerContactPersonByCustId(string CustId)
+        {
+            try
+            {
+                string sql = "Select ContactPerson from t_customer_info_contacts where ContactsId = '"+ CustId +"'";
+                DataSet dsEmp = Getdetails(sql);
+                if (dsEmp.Tables.Count > 0 && dsEmp.Tables[0].Rows.Count > 0)
+                {
+                    return (dsEmp.Tables[0].Rows[0]["ContactPerson"].ToString());
+                }
+            }
+            catch (Exception ex)
+            {
+                AddFunctionalLog("Exception in GetCustomerContactPersonByCustId: " + ex.ToString());
+            }
+            return "";
+        }
+        public MultiSelectList GetAllCustomerContactPersonList( string CustID)
+        {
+            DropdownList objReportList = new DropdownList();
+            objReportList.lstDropdown = new List<DropdownItems>();
+            try
+            {
+                string sSqlstmt = "select ContactsId,a.ContactPerson from t_customer_info_contacts a," +
+                    "t_customer_info b where a.CustID = b.CustID and a.active = 1 and a.CustID ='"+ CustID + "'";
+                DataSet dsEmp = Getdetails(sSqlstmt);
+                if (dsEmp.Tables.Count > 0 && dsEmp.Tables[0].Rows.Count > 0)
+                {
+                    for (int i = 0; i < dsEmp.Tables[0].Rows.Count; i++)
+                    {
+                        DropdownItems objReport = new DropdownItems()
+                        {
+                            Id = dsEmp.Tables[0].Rows[i]["ContactsId"].ToString(),
+                            Name = dsEmp.Tables[0].Rows[i]["ContactPerson"].ToString()
+                        };
+                        objReportList.lstDropdown.Add(objReport);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                AddFunctionalLog("Exception in GetAllCustomerContactPersonList: " + ex.ToString());
+            }
+
+            return new MultiSelectList(objReportList.lstDropdown, "Id", "Name");
+        }
 
         public string GetKPIPotentialStatusById(string id)
         {
@@ -2404,7 +2482,7 @@ namespace ISOStd.Models
             try
             {
                 DataSet dsEmp = Getdetails("select emp_no as Empid,concat(emp_firstname, ' ', ifnull(emp_middlename, ' '), ' ', ifnull(emp_lastname, ' ')) as Empname"
-               + " from t_hr_employee h, roles r where  h.emp_status = 1 and FIND_IN_SET(id, Role) and RoleName Like '%IMS % Rep%'");
+               + " from t_hr_employee h, roles r where  h.emp_status = 1 and FIND_IN_SET(id, Role) and RoleName Like '%IMS %Rep%'");
 
                 if (dsEmp.Tables.Count > 0 && dsEmp.Tables[0].Rows.Count > 0)
                 {

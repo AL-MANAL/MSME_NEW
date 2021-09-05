@@ -169,6 +169,14 @@ namespace ISOStd.Models
         [Display(Name = "Complaint registered date")]
         public DateTime registered_on { get; set; }
 
+        [Display(Name = "Initial Observation Details")]
+        public string initial_observation { get; set; }
+
+        [Display(Name = "Complaint Related to")]
+        public string complaint_relatedto { get; set; }
+
+        [Display(Name = "Complaint Copied to")]
+        public string complaint_copiedto { get; set; }
         public List<CustComplaintModels> CustList { get; set; }
         //-------------t_custcomplaint_nc------------------
 
@@ -206,6 +214,9 @@ namespace ISOStd.Models
 
         [Display(Name = "Action completed on / Target date to complete")]
         public DateTime disp_complete_date { get; set; }
+
+        [Display(Name ="Feedback reminder date")]
+        public DateTime disp_remiderdate { get; set; }
 
         //Team
         [Display(Name = "Team")]
@@ -325,7 +336,10 @@ namespace ISOStd.Models
         public string nc_active { get; set; }
 
         //Assing Customer complaint
-        [Display(Name = "Date of review")]
+        [Display(Name = "Review Start Date")]
+        public DateTime complain_review_sdate { get; set; }
+
+        [Display(Name = "Review End Date")]
         public DateTime complain_review_date { get; set; }
 
         [Display(Name = "Is it valid complaint?")]
@@ -342,7 +356,11 @@ namespace ISOStd.Models
 
         [Display(Name = "Upload")]
         public string rej_upload { get; set; }
-
+      
+        [Display(Name = "Complaint Status")]
+        public string complaint_review_status { get; set; }
+       
+   
         // Customer Response Details
         [Display(Name = "Customer Complaint Response")]
         public string c_response { get; set; }
@@ -381,19 +399,27 @@ namespace ISOStd.Models
                 int count = name.Length;
                 string user = "";
                 user = objGlobalData.GetCurrentUserSession().empid;
-                string sBranch = objGlobalData.GetCurrentUserSession().division;
+
+               
+                string sBranch = objGlobalData.GetCurrentUserSession().division;                
+
+                if (objCustomerCompliantModels.divisionId != "" && objCustomerCompliantModels.divisionId != sBranch)
+                {
+                    sBranch = sBranch + "," + objCustomerCompliantModels.divisionId;
+                }                
 
                 string sReceivedDate = objCustomerCompliantModels.ReceivedDate.ToString("yyyy-MM-dd HH':'mm':'ss");
                 string sregistered_on = objCustomerCompliantModels.registered_on.ToString("yyyy-MM-dd HH':'mm':'ss");
                 string sLoggedDate = DateTime.Today.ToString("yyyy-MM-dd HH':'mm':'ss");
 
                 string sSqlstmt = "insert into t_custcomplaint(ComplaintNo,LoggedDate,LoggedBy,CustomerName,ProjectName,ReceivedDate,ReportedBy,ModeOfComplaint,"
-                + "Details,divisionId,ForwardTo,ComplaintStatus,Document,ForwarderCount,CustomerRef,reportedby_email,reportedby_desig,reportedby_no,registered_on)"
+                + "Details,divisionId,ForwardTo,ComplaintStatus,Document,ForwarderCount,CustomerRef,registered_on,branch,initial_observation,complaint_relatedto,complaint_copiedto)"
                 + " values('" + objCustomerCompliantModels.ComplaintNo + "','" + sLoggedDate + "','" + user
                 + "','" + objCustomerCompliantModels.CustomerName + "','" + objCustomerCompliantModels.ProjectName + "','" + sReceivedDate
                 + "','" + objCustomerCompliantModels.ReportedBy + "','" + objCustomerCompliantModels.ModeOfComplaint + "','" + objCustomerCompliantModels.Details
                 + "','" + objCustomerCompliantModels.divisionId + "','" + objCustomerCompliantModels.ForwardTo + "','" + objCustomerCompliantModels.ComplaintStatus + "','" + objCustomerCompliantModels.Document
-                + "','" + count + "','" + objCustomerCompliantModels.CustomerRef + "','" + objCustomerCompliantModels.reportedby_email + "','" + objCustomerCompliantModels.reportedby_desig + "','" + objCustomerCompliantModels.reportedby_no +"','"+ sregistered_on + "')";
+                + "','" + count + "','" + objCustomerCompliantModels.CustomerRef /*+ "','" + objCustomerCompliantModels.reportedby_email + "','" + objCustomerCompliantModels.reportedby_desig + "','" + objCustomerCompliantModels.reportedby_no */
+                +"','"+ sregistered_on + "','" + sBranch + "','" + objCustomerCompliantModels.initial_observation + "','" + objCustomerCompliantModels.complaint_relatedto + "','" + objCustomerCompliantModels.complaint_copiedto + "')";
 
                 int Id = 0;
                 if (int.TryParse(objGlobalData.ExecuteQueryReturnId(sSqlstmt).ToString(), out Id))
@@ -436,7 +462,8 @@ namespace ISOStd.Models
                     + "', ReportedBy='" + objCustomerCompliantModels.ReportedBy + "', ModeOfComplaint='" + objCustomerCompliantModels.ModeOfComplaint + "', Details='"
                     + objCustomerCompliantModels.Details + "', divisionId='" + objCustomerCompliantModels.divisionId + "', ForwardTo='" + objCustomerCompliantModels.ForwardTo + "', ComplaintStatus='"
                     + objCustomerCompliantModels.ComplaintStatus + "',ForwarderCount='" + count + "', CustomerRef='" + objCustomerCompliantModels.CustomerRef 
-                    + "', reportedby_email='" + objCustomerCompliantModels.reportedby_email + "', reportedby_desig='" + objCustomerCompliantModels.reportedby_desig + "', reportedby_no='" + objCustomerCompliantModels.reportedby_no + "', registered_on='" + sRegisterdDate + "'";
+                   /* + "', reportedby_email='" + objCustomerCompliantModels.reportedby_email + "', reportedby_desig='" + objCustomerCompliantModels.reportedby_desig + "', reportedby_no='" + objCustomerCompliantModels.reportedby_no */
+                   + "', registered_on='" + sRegisterdDate + "', initial_observation='" + objCustomerCompliantModels.initial_observation + "', complaint_relatedto='" + objCustomerCompliantModels.complaint_relatedto + "', complaint_copiedto='" + objCustomerCompliantModels.complaint_copiedto + "'";
 
                 if (objCustomerCompliantModels.Document != null)
                 {
@@ -466,7 +493,7 @@ namespace ISOStd.Models
 
 
                 string sSqlstmt = "select id_complaint,ComplaintNo,LoggedDate,LoggedBy,CustomerName,ProjectName,ReceivedDate,ReportedBy,ModeOfComplaint,"
-                    + "Details,ForwardTo,ComplaintStatus,Document from t_custcomplaint where ComplaintNo='" + ComplaintNo + "'";
+                    + "Details,ForwardTo,Document,initial_observation,complaint_relatedto,complaint_copiedto from t_custcomplaint where ComplaintNo='" + ComplaintNo + "'";
 
                 DataSet dsComplaintList = objGlobalData.Getdetails(sSqlstmt);
                 CustComplaintModels objType = new CustComplaintModels();
@@ -495,6 +522,13 @@ namespace ISOStd.Models
                     string sName = "All";
                     string sToEmailIds = objGlobalData.GetMultiHrEmpEmailIdById(dsComplaintList.Tables[0].Rows[0]["ForwardTo"].ToString());
                     string sCCEmailIds = objGlobalData.GetHrEmpEmailIdById(dsComplaintList.Tables[0].Rows[0]["LoggedBy"].ToString());
+                    if(dsComplaintList.Tables[0].Rows[0]["complaint_copiedto"].ToString() != "")
+                    {
+                        sCCEmailIds = sCCEmailIds + "," + objGlobalData.GetHrEmpEmailIdById(dsComplaintList.Tables[0].Rows[0]["complaint_copiedto"].ToString());
+                    }
+
+                    sToEmailIds = sToEmailIds.Trim(',');
+                    sCCEmailIds = sCCEmailIds.Trim(',');
 
                     //aAttachment = HttpContext.Current.Server.MapPath(dsComplaintList.Tables[0].Rows[0]["Document"].ToString());
 
@@ -521,8 +555,9 @@ namespace ISOStd.Models
                          + "<tr><td colspan=3><b>Project Name:<b></td> <td colspan=3>" + dsComplaintList.Tables[0].Rows[0]["ProjectName"].ToString() + "</td></tr>"
                           + "<tr><td colspan=3><b>Reported By:<b></td> <td colspan=3>" + dsComplaintList.Tables[0].Rows[0]["ReportedBy"].ToString() + "</td></tr>"
                           + "<tr><td colspan=3><b>ModeOfComplaint:<b></td> <td colspan=3>" + objGlobalData.GetModeOfComplaintById(dsComplaintList.Tables[0].Rows[0]["ModeOfComplaint"].ToString()) + "</td></tr>"
-                       //+ "<tr><td colspan=3><b>Status:<b></td> <td colspan=3>" + GetComplaintStatusNameById(dsComplaintList.Tables[0].Rows[0]["ComplaintStatus"].ToString()) + "</td></tr>"
-                       + "<tr><td colspan=3><b>Details:<b></td> <td colspan=3>" + dsComplaintList.Tables[0].Rows[0]["Details"].ToString() + "</td></tr>";
+                       + "<tr><td colspan=3><b>Details:<b></td> <td colspan=3>" + dsComplaintList.Tables[0].Rows[0]["Details"].ToString() + "</td></tr>"
+                       + "<tr><td colspan=3><b>Initial Observation:<b></td> <td colspan=3>" + dsComplaintList.Tables[0].Rows[0]["initial_observation"].ToString() + "</td></tr>"
+                       + "<tr><td colspan=3><b>Complaint Related to:<b></td> <td colspan=3>" + dsComplaintList.Tables[0].Rows[0]["complaint_relatedto"].ToString() + "</td></tr>";
 
                     if (File.Exists(aAttachment))
                     {
@@ -536,7 +571,7 @@ namespace ISOStd.Models
                     sContent = sContent.Replace("{message}", "");
                     sContent = sContent.Replace("{extramessage}", "");
 
-                    sToEmailIds = sToEmailIds.Trim(',');
+                   
 
                     objGlobalData.Sendmail(sToEmailIds, sSubject + sMessage, sContent, aAttachment, sCCEmailIds, "");
 
@@ -557,12 +592,12 @@ namespace ISOStd.Models
                 string sAssignDate = DateTime.Today.ToString("yyyy-MM-dd HH':'mm':'ss");
                 string sTargetDate = objCustomerCompliantModels.TargetDate.ToString("yyyy-MM-dd HH':'mm':'ss");
                 string sComplaintReview = objCustomerCompliantModels.complain_review_date.ToString("yyyy-MM-dd HH':'mm':'ss");
-                              
+                string sComplaintStartReview = objCustomerCompliantModels.complain_review_sdate.ToString("yyyy-MM-dd HH':'mm':'ss");
 
                 string sSqlstmt = "update t_custcomplaint set ForwarderAssign= '" + objCustomerCompliantModels.AssignedTo + "', complain_review_date='" + sComplaintReview
                     + "', divisionId='" + objCustomerCompliantModels.divisionId + "', complaint_valid='" + objCustomerCompliantModels.complaint_valid + "', complaint_deviation='" + objCustomerCompliantModels.complaint_deviation
                     + "', complaint_remark='" + objCustomerCompliantModels.complaint_remark + "', rej_reason='" + objCustomerCompliantModels.rej_reason + "', rej_upload='" + objCustomerCompliantModels.rej_upload + "' , TargetDate='" + sTargetDate
-                    + "', AssignDate='" + sAssignDate +"' where id_complaint='" + objCustomerCompliantModels.id_complaint + "';";
+                    + "', AssignDate='" + sAssignDate + "', complain_review_sdate='" + sComplaintStartReview + "', complaint_review_status='" + objCustomerCompliantModels.complaint_review_status + "' where id_complaint='" + objCustomerCompliantModels.id_complaint +"';";
 
                 if(objGlobalData.ExecuteQuery(sSqlstmt))
                 {
@@ -827,6 +862,10 @@ namespace ISOStd.Models
                 if (objModels.disp_notifeddate != null && objModels.disp_notifeddate > Convert.ToDateTime("01/01/0001"))
                 {
                     sSqlstmt = sSqlstmt + ", disp_notifeddate ='" + objModels.disp_notifeddate.ToString("yyyy/MM/dd") + "'";
+                }
+                if (objModels.disp_remiderdate != null && objModels.disp_remiderdate > Convert.ToDateTime("01/01/0001"))
+                {
+                    sSqlstmt = sSqlstmt + ", disp_remiderdate ='" + objModels.disp_remiderdate.ToString("yyyy/MM/dd") + "'";
                 }
                 sSqlstmt = sSqlstmt + " where id_custcomplaint_nc='" + objModels.id_custcomplaint_nc + "'";
                 if (objGlobalData.ExecuteQuery(sSqlstmt))

@@ -24,7 +24,7 @@ namespace ISOStd.Models
         public string CompanyName { get; set; }
 
         [Required]
-        [Display(Name = "Sales Person")]
+        [Display(Name = "Contact Person Name")]
         public string ContactPerson { get; set; }
 
         //[Required]
@@ -93,7 +93,7 @@ namespace ISOStd.Models
         [Display(Name = "Upload")]
         public string upload { get; set; }
 
-        [Display(Name = "VAT No")]
+        [Display(Name = "GST No")]
         public string VatNo { get; set; }
 
         [Display(Name = "Licence Expiry")]
@@ -107,6 +107,9 @@ namespace ISOStd.Models
 
         [Display(Name = "Location")]
         public string Location { get; set; }
+
+        [Display(Name = "Designation")]
+        public string designation { get; set; }
 
         internal bool FunRegisterCustomer(CustomerModels objCustomerModel, CustomerContactsModelsList objCustomerContactsList)
         {
@@ -390,6 +393,9 @@ namespace ISOStd.Models
         [Display(Name = "Phone No.")]
         public string PhoneNumber { get; set; }
 
+        [Display(Name = "Designation")]
+        public string designation { get; set; }
+
         [Display(Name = "MobileNumber")]
         public string MobileNumber { get; set; }
 
@@ -403,11 +409,12 @@ namespace ISOStd.Models
                 {
                     for (int i = 0; i < objCustomerContactsList.lstCustomerContacts.Count; i++)
                     {
-                        sSqlstmt = sSqlstmt + "insert into t_customer_info_contacts (CustID, ContactPerson, PhoneNumber, EmailId, MobileNumber";
+                        sSqlstmt = sSqlstmt + "insert into t_customer_info_contacts (CustID, ContactPerson, PhoneNumber, EmailId, MobileNumber,designation";
 
                         sSqlstmt = sSqlstmt + ") values('" + objCustomerContactsList.lstCustomerContacts[0].CustID
                             + "','" + objCustomerContactsList.lstCustomerContacts[i].ContactPerson + "','" + objCustomerContactsList.lstCustomerContacts[i].PhoneNumber
-                                + "','" + objCustomerContactsList.lstCustomerContacts[i].EmailId + "','" + objCustomerContactsList.lstCustomerContacts[i].MobileNumber + "'); ";
+                                + "','" + objCustomerContactsList.lstCustomerContacts[i].EmailId + "','" + objCustomerContactsList.lstCustomerContacts[i].MobileNumber
+                                + "','" + objCustomerContactsList.lstCustomerContacts[i].designation + "'); ";
                     }
                     return objGlobalData.ExecuteQuery(sSqlstmt);
                 }
@@ -424,7 +431,8 @@ namespace ISOStd.Models
             try
             {
                 string sSqlstmt = "update t_customer_info_contacts set ContactPerson='" + objCustomerContacts.ContactPerson + "', PhoneNumber='" + objCustomerContacts.PhoneNumber
-                        + "', EmailId='" + objCustomerContacts.EmailId + "', MobileNumber='" + objCustomerContacts.MobileNumber + "' where ContactsId='" + objCustomerContacts.ContactsId + "'";
+                        + "', EmailId='" + objCustomerContacts.EmailId + "', MobileNumber='" + objCustomerContacts.MobileNumber
+                        + "', designation='" + objCustomerContacts.designation + "' where ContactsId='" + objCustomerContacts.ContactsId + "'";
 
                 return objGlobalData.ExecuteQuery(sSqlstmt);
             }

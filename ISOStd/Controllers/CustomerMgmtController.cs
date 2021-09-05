@@ -132,6 +132,7 @@ namespace ISOStd.Controllers
                             CustomerContactsModels objCustomerContacts = new CustomerContactsModels
                             {
                                 ContactPerson = form["ContactPerson " + i],
+                                designation = form["designation " + i],
                                 EmailId = form["EmailId " + i],
                                 PhoneNumber = form["PhoneNumber " + i],
                                 MobileNumber = form["MobileNumber " + i]
@@ -172,60 +173,60 @@ namespace ISOStd.Controllers
             {
                 IEnumerable<SurveyModel> Surveys = null;
 
-                SurveySetupModel ObjSurveySetupModel = new SurveySetupModel();
+                //SurveySetupModel ObjSurveySetupModel = new SurveySetupModel();
 
-                string sSqlstmt2 = "SELECT * from t_survey_setup_cloud";
+                //string sSqlstmt2 = "SELECT * from t_survey_setup_cloud";
 
-                DataSet Step1 = objGlobaldata.Getdetails(sSqlstmt2);
+                //DataSet Step1 = objGlobaldata.Getdetails(sSqlstmt2);
 
-                sSqlstmt2 = "SELECT * from t_survey_setup_user_credentials";
+                //sSqlstmt2 = "SELECT * from t_survey_setup_user_credentials";
 
-                DataSet Step2 = objGlobaldata.Getdetails(sSqlstmt2);
+                //DataSet Step2 = objGlobaldata.Getdetails(sSqlstmt2);
 
-                if (Step1.Tables[0].Rows.Count > 0 && Step1.Tables[0].Rows.Count < 2)
-                {
-                    ObjSurveySetupModel.Cloud = Step1.Tables[0].Rows[0]["remote_url"].ToString();
+                //if (Step1.Tables[0].Rows.Count > 0 && Step1.Tables[0].Rows.Count < 2)
+                //{
+                //    ObjSurveySetupModel.Cloud = Step1.Tables[0].Rows[0]["remote_url"].ToString();
 
-                }
+                //}
 
-                if (Step2.Tables[0].Rows.Count > 0 && Step2.Tables[0].Rows.Count < 2)
-                {
-                    ObjSurveySetupModel.Email = Step2.Tables[0].Rows[0]["user_email"].ToString();
-                    ObjSurveySetupModel.Password = Step2.Tables[0].Rows[0]["user_password"].ToString();
-                }
+                //if (Step2.Tables[0].Rows.Count > 0 && Step2.Tables[0].Rows.Count < 2)
+                //{
+                //    ObjSurveySetupModel.Email = Step2.Tables[0].Rows[0]["user_email"].ToString();
+                //    ObjSurveySetupModel.Password = Step2.Tables[0].Rows[0]["user_password"].ToString();
+                //}
 
-                if ((ObjSurveySetupModel.Cloud != "" && ObjSurveySetupModel.Cloud != null) && (ObjSurveySetupModel.Email != "" && ObjSurveySetupModel.Email != null) && (ObjSurveySetupModel.Password != "" && ObjSurveySetupModel.Password != null))
-                {
-                    using (var client = new HttpClient())
-                    {
-                        client.BaseAddress = new Uri(ObjSurveySetupModel.Cloud);
-                        //HTTP GET
-                        var responseTask = client.GetAsync("/Survey/Surveys/GetSurveys?Email="+ ObjSurveySetupModel.Email);
-                        responseTask.Wait();
+                //if ((ObjSurveySetupModel.Cloud != "" && ObjSurveySetupModel.Cloud != null) && (ObjSurveySetupModel.Email != "" && ObjSurveySetupModel.Email != null) && (ObjSurveySetupModel.Password != "" && ObjSurveySetupModel.Password != null))
+                //{
+                //    using (var client = new HttpClient())
+                //    {
+                //        client.BaseAddress = new Uri(ObjSurveySetupModel.Cloud);
+                //        //HTTP GET
+                //        var responseTask = client.GetAsync("/Survey/Surveys/GetSurveys?Email="+ ObjSurveySetupModel.Email);
+                //        responseTask.Wait();
 
-                        var result = responseTask.Result;
-                        if (result.IsSuccessStatusCode)
-                        {
-                            var readTask = result.Content.ReadAsAsync<IList<SurveyModel>>();
-                            readTask.Wait();
+                //        var result = responseTask.Result;
+                //        if (result.IsSuccessStatusCode)
+                //        {
+                //            var readTask = result.Content.ReadAsAsync<IList<SurveyModel>>();
+                //            readTask.Wait();
 
-                            Surveys = readTask.Result;
-                        }
-                        else //web api sent error response 
-                        {
-                            //log response status here..
+                //            Surveys = readTask.Result;
+                //        }
+                //        else //web api sent error response 
+                //        {
+                //            //log response status here..
 
-                            Surveys = Enumerable.Empty<SurveyModel>();
-                            TempData["SurveyError"] = "Error Connecting to Surveys";
+                //            Surveys = Enumerable.Empty<SurveyModel>();
+                //            TempData["SurveyError"] = "Error Connecting to Surveys";
 
-                        }
-                    }
-                }
-                else
-                {
-                    TempData["InfoData"] = "Survey Setup Not Complete";
+                //        }
+                //    }
+                //}
+                //else
+                //{
+                //    TempData["InfoData"] = "Survey Setup Not Complete";
 
-                }
+                //}
                 ViewBag.Surveys = Surveys;
 
                 string sBranch_name = objGlobaldata.GetCurrentUserSession().division;
@@ -309,154 +310,154 @@ namespace ISOStd.Controllers
 
         }
 
-        [AllowAnonymous]
-        public JsonResult CustomerListSearch(string SearchText, int? page, string branch_name)
-        {
-            //string sCustSuppID = Request.QueryString["CustID"];
+        //[AllowAnonymous]
+        //public JsonResult CustomerListSearch(string SearchText, int? page, string branch_name)
+        //{
+        //    //string sCustSuppID = Request.QueryString["CustID"];
 
-            //objGlobaldata.CreateUserSession();
-            CustomerModelsList objCustomerModelsList = new CustomerModelsList();
-            objCustomerModelsList.CustomerMList = new List<CustomerModels>();
-            CustomerModels objCust = new CustomerModels();
+        //    //objGlobaldata.CreateUserSession();
+        //    CustomerModelsList objCustomerModelsList = new CustomerModelsList();
+        //    objCustomerModelsList.CustomerMList = new List<CustomerModels>();
+        //    CustomerModels objCust = new CustomerModels();
 
-            try
-            {
-                IEnumerable<SurveyModel> Surveys = null;
+        //    try
+        //    {
+        //        IEnumerable<SurveyModel> Surveys = null;
 
-                SurveySetupModel ObjSurveySetupModel = new SurveySetupModel();
+        //        SurveySetupModel ObjSurveySetupModel = new SurveySetupModel();
 
-                string sSqlstmt2 = "SELECT * from t_survey_setup_cloud";
+        //        string sSqlstmt2 = "SELECT * from t_survey_setup_cloud";
 
-                DataSet Step1 = objGlobaldata.Getdetails(sSqlstmt2);
+        //        DataSet Step1 = objGlobaldata.Getdetails(sSqlstmt2);
 
-                sSqlstmt2 = "SELECT * from t_survey_setup_user_credentials";
+        //        sSqlstmt2 = "SELECT * from t_survey_setup_user_credentials";
 
-                DataSet Step2 = objGlobaldata.Getdetails(sSqlstmt2);
+        //        DataSet Step2 = objGlobaldata.Getdetails(sSqlstmt2);
 
-                if (Step1.Tables[0].Rows.Count > 0 && Step1.Tables[0].Rows.Count < 2)
-                {
-                    ObjSurveySetupModel.Cloud = Step1.Tables[0].Rows[0]["remote_url"].ToString();
+        //        if (Step1.Tables[0].Rows.Count > 0 && Step1.Tables[0].Rows.Count < 2)
+        //        {
+        //            ObjSurveySetupModel.Cloud = Step1.Tables[0].Rows[0]["remote_url"].ToString();
 
-                }
+        //        }
 
-                if (Step2.Tables[0].Rows.Count > 0 && Step2.Tables[0].Rows.Count < 2)
-                {
-                    ObjSurveySetupModel.Email = Step2.Tables[0].Rows[0]["user_email"].ToString();
-                    ObjSurveySetupModel.Password = Step2.Tables[0].Rows[0]["user_password"].ToString();
-                }
+        //        if (Step2.Tables[0].Rows.Count > 0 && Step2.Tables[0].Rows.Count < 2)
+        //        {
+        //            ObjSurveySetupModel.Email = Step2.Tables[0].Rows[0]["user_email"].ToString();
+        //            ObjSurveySetupModel.Password = Step2.Tables[0].Rows[0]["user_password"].ToString();
+        //        }
 
-                if ((ObjSurveySetupModel.Cloud != "" && ObjSurveySetupModel.Cloud != null) && (ObjSurveySetupModel.Email != "" && ObjSurveySetupModel.Email != null) && (ObjSurveySetupModel.Password != "" && ObjSurveySetupModel.Password != null))
-                {
-                    using (var client = new HttpClient())
-                    {
-                        client.BaseAddress = new Uri(ObjSurveySetupModel.Cloud);
-                        //HTTP GET
-                        var responseTask = client.GetAsync("/Survey/Surveys/GetSurveys?Email=" + ObjSurveySetupModel.Email);
-                        responseTask.Wait();
+        //        if ((ObjSurveySetupModel.Cloud != "" && ObjSurveySetupModel.Cloud != null) && (ObjSurveySetupModel.Email != "" && ObjSurveySetupModel.Email != null) && (ObjSurveySetupModel.Password != "" && ObjSurveySetupModel.Password != null))
+        //        {
+        //            using (var client = new HttpClient())
+        //            {
+        //                client.BaseAddress = new Uri(ObjSurveySetupModel.Cloud);
+        //                //HTTP GET
+        //                var responseTask = client.GetAsync("/Survey/Surveys/GetSurveys?Email=" + ObjSurveySetupModel.Email);
+        //                responseTask.Wait();
 
-                        var result = responseTask.Result;
-                        if (result.IsSuccessStatusCode)
-                        {
-                            var readTask = result.Content.ReadAsAsync<IList<SurveyModel>>();
-                            readTask.Wait();
+        //                var result = responseTask.Result;
+        //                if (result.IsSuccessStatusCode)
+        //                {
+        //                    var readTask = result.Content.ReadAsAsync<IList<SurveyModel>>();
+        //                    readTask.Wait();
 
-                            Surveys = readTask.Result;
-                        }
-                        else //web api sent error response 
-                        {
-                            //log response status here..
+        //                    Surveys = readTask.Result;
+        //                }
+        //                else //web api sent error response 
+        //                {
+        //                    //log response status here..
 
-                            Surveys = Enumerable.Empty<SurveyModel>();
-                            TempData["SurveyError"] = "Error Connecting to Surveys";
+        //                    Surveys = Enumerable.Empty<SurveyModel>();
+        //                    TempData["SurveyError"] = "Error Connecting to Surveys";
 
-                        }
-                    }
-                }
-                else
-                {
-                    TempData["InfoData"] = "Survey Setup Not Complete";
+        //                }
+        //            }
+        //        }
+        //        else
+        //        {
+        //            TempData["InfoData"] = "Survey Setup Not Complete";
 
-                }
-                ViewBag.Surveys = Surveys;
+        //        }
+        //        ViewBag.Surveys = Surveys;
 
-                string sBranch_name = objGlobaldata.GetCurrentUserSession().division;
-                string sBranchtree = objGlobaldata.GetCurrentUserSession().BranchTree;
-                ViewBag.Branch = objGlobaldata.GetMultiBranchListByID(sBranchtree);
+        //        string sBranch_name = objGlobaldata.GetCurrentUserSession().division;
+        //        string sBranchtree = objGlobaldata.GetCurrentUserSession().BranchTree;
+        //        ViewBag.Branch = objGlobaldata.GetMultiBranchListByID(sBranchtree);
 
-                string sSqlstmt = "select CustID, CompanyName, Address, City, State, PostalCode, Country, ContactPerson, PhoneNumber, FaxNumber, "
-                            + " logo, Email_Id, CustType,Cust_Code,upload,VatNo,LicenceExpiry,branch,Location,Department from t_customer_info where compstatus=1";
-                string sSearchtext = "";
-                if (SearchText != null && SearchText != "")
-                {
-                    ViewBag.SearchText = SearchText;
-                    sSearchtext = sSearchtext + " and (CompanyName ='" + SearchText + "' or CompanyName like '" + SearchText + "%')";
-                }
-                if (branch_name != null && branch_name != "")
-                {
-                    sSearchtext = sSearchtext + " and find_in_set('" + branch_name + "', branch)";
-                    ViewBag.Branch_name = branch_name;
-                }
-                else
-                {
-                    sSearchtext = sSearchtext + " and find_in_set('" + sBranch_name + "', branch)";
-                }
-                sSqlstmt = sSqlstmt + sSearchtext + " order by CompanyName asc";
-                DataSet dsCustomer = objGlobaldata.Getdetails(sSqlstmt);
+        //        string sSqlstmt = "select CustID, CompanyName, Address, City, State, PostalCode, Country, ContactPerson, PhoneNumber, FaxNumber, "
+        //                    + " logo, Email_Id, CustType,Cust_Code,upload,VatNo,LicenceExpiry,branch,Location,Department from t_customer_info where compstatus=1";
+        //        string sSearchtext = "";
+        //        if (SearchText != null && SearchText != "")
+        //        {
+        //            ViewBag.SearchText = SearchText;
+        //            sSearchtext = sSearchtext + " and (CompanyName ='" + SearchText + "' or CompanyName like '" + SearchText + "%')";
+        //        }
+        //        if (branch_name != null && branch_name != "")
+        //        {
+        //            sSearchtext = sSearchtext + " and find_in_set('" + branch_name + "', branch)";
+        //            ViewBag.Branch_name = branch_name;
+        //        }
+        //        else
+        //        {
+        //            sSearchtext = sSearchtext + " and find_in_set('" + sBranch_name + "', branch)";
+        //        }
+        //        sSqlstmt = sSqlstmt + sSearchtext + " order by CompanyName asc";
+        //        DataSet dsCustomer = objGlobaldata.Getdetails(sSqlstmt);
 
-                for (int i = 0; dsCustomer.Tables.Count > 0 && i < dsCustomer.Tables[0].Rows.Count; i++)
-                {
-                    try
-                    {
-                        CustomerModels objCustomer = new CustomerModels
-                        {
-                            CustID = dsCustomer.Tables[0].Rows[i]["CustID"].ToString(),
-                            CompanyName = dsCustomer.Tables[0].Rows[i]["CompanyName"].ToString().ToUpper(),
-                            Cust_Code = dsCustomer.Tables[0].Rows[i]["Cust_Code"].ToString().ToUpper(),
-                            Address = dsCustomer.Tables[0].Rows[i]["Address"].ToString(),
-                            City = dsCustomer.Tables[0].Rows[i]["City"].ToString(),
-                            State = dsCustomer.Tables[0].Rows[i]["State"].ToString(),
-                            PostalCode = dsCustomer.Tables[0].Rows[i]["PostalCode"].ToString(),
-                            Country = dsCustomer.Tables[0].Rows[i]["Country"].ToString(),
-                            ContactPerson = dsCustomer.Tables[0].Rows[i]["ContactPerson"].ToString(),
-                            PhoneNumber = dsCustomer.Tables[0].Rows[i]["PhoneNumber"].ToString(),
-                            //Audit_location = dsCustomer.Tables[0].Rows[0]["Audit_location"].ToString(),
-                            FaxNumber = dsCustomer.Tables[0].Rows[i]["FaxNumber"].ToString(),
-                            //Audit_Criteria = objGlobaldata.GetMultiIsoStdNameById(dsCustomer.Tables[0].Rows[0]["Audit_Criteria"].ToString()),
-                            logo = dsCustomer.Tables[0].Rows[i]["logo"].ToString(),
-                            Email_Id = dsCustomer.Tables[0].Rows[i]["Email_Id"].ToString(),
-                            // BranchAddress = dsCustomer.Tables[0].Rows[0]["BranchAddress"].ToString(),
-                            CustType = objGlobaldata.GetDropdownitemById(dsCustomer.Tables[0].Rows[i]["CustType"].ToString()),
-                            upload = dsCustomer.Tables[0].Rows[i]["upload"].ToString(),
-                            VatNo = dsCustomer.Tables[0].Rows[i]["VatNo"].ToString(),
-                            branch = objGlobaldata.GetMultiCompanyBranchNameById(dsCustomer.Tables[0].Rows[i]["branch"].ToString()),
-                            Department = objGlobaldata.GetMultiDeptNameById(dsCustomer.Tables[0].Rows[i]["Department"].ToString()),
-                            Location = objGlobaldata.GetDivisionLocationById(dsCustomer.Tables[0].Rows[i]["Location"].ToString()),
-                        };
+        //        for (int i = 0; dsCustomer.Tables.Count > 0 && i < dsCustomer.Tables[0].Rows.Count; i++)
+        //        {
+        //            try
+        //            {
+        //                CustomerModels objCustomer = new CustomerModels
+        //                {
+        //                    CustID = dsCustomer.Tables[0].Rows[i]["CustID"].ToString(),
+        //                    CompanyName = dsCustomer.Tables[0].Rows[i]["CompanyName"].ToString().ToUpper(),
+        //                    Cust_Code = dsCustomer.Tables[0].Rows[i]["Cust_Code"].ToString().ToUpper(),
+        //                    Address = dsCustomer.Tables[0].Rows[i]["Address"].ToString(),
+        //                    City = dsCustomer.Tables[0].Rows[i]["City"].ToString(),
+        //                    State = dsCustomer.Tables[0].Rows[i]["State"].ToString(),
+        //                    PostalCode = dsCustomer.Tables[0].Rows[i]["PostalCode"].ToString(),
+        //                    Country = dsCustomer.Tables[0].Rows[i]["Country"].ToString(),
+        //                    ContactPerson = dsCustomer.Tables[0].Rows[i]["ContactPerson"].ToString(),
+        //                    PhoneNumber = dsCustomer.Tables[0].Rows[i]["PhoneNumber"].ToString(),
+        //                    //Audit_location = dsCustomer.Tables[0].Rows[0]["Audit_location"].ToString(),
+        //                    FaxNumber = dsCustomer.Tables[0].Rows[i]["FaxNumber"].ToString(),
+        //                    //Audit_Criteria = objGlobaldata.GetMultiIsoStdNameById(dsCustomer.Tables[0].Rows[0]["Audit_Criteria"].ToString()),
+        //                    logo = dsCustomer.Tables[0].Rows[i]["logo"].ToString(),
+        //                    Email_Id = dsCustomer.Tables[0].Rows[i]["Email_Id"].ToString(),
+        //                    // BranchAddress = dsCustomer.Tables[0].Rows[0]["BranchAddress"].ToString(),
+        //                    CustType = objGlobaldata.GetDropdownitemById(dsCustomer.Tables[0].Rows[i]["CustType"].ToString()),
+        //                    upload = dsCustomer.Tables[0].Rows[i]["upload"].ToString(),
+        //                    VatNo = dsCustomer.Tables[0].Rows[i]["VatNo"].ToString(),
+        //                    branch = objGlobaldata.GetMultiCompanyBranchNameById(dsCustomer.Tables[0].Rows[i]["branch"].ToString()),
+        //                    Department = objGlobaldata.GetMultiDeptNameById(dsCustomer.Tables[0].Rows[i]["Department"].ToString()),
+        //                    Location = objGlobaldata.GetDivisionLocationById(dsCustomer.Tables[0].Rows[i]["Location"].ToString()),
+        //                };
 
-                        DateTime dateValue;
-                        if (DateTime.TryParse(dsCustomer.Tables[0].Rows[i]["LicenceExpiry"].ToString(), out dateValue))
-                        {
-                            objCustomer.LicenceExpiry = dateValue;
-                        }
+        //                DateTime dateValue;
+        //                if (DateTime.TryParse(dsCustomer.Tables[0].Rows[i]["LicenceExpiry"].ToString(), out dateValue))
+        //                {
+        //                    objCustomer.LicenceExpiry = dateValue;
+        //                }
 
-                        //sSqlstmt = "select * from t_Company_Branch where CompId=" + objCustomer.CustID;
-                        //ViewBag.Branches = objGlobaldata.GetCompanyBranch(objCustomer.CustID);
-                        objCustomerModelsList.CustomerMList.Add(objCustomer);
-                    }
-                    catch (Exception ex)
-                    {
-                        objGlobaldata.AddFunctionalLog("Exception in CustomerListSearch: " + ex.ToString());
-                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                objGlobaldata.AddFunctionalLog("Exception in CustomerListSearch: " + ex.ToString());
-                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-            }
-            return Json("Success");
-        }
+        //                //sSqlstmt = "select * from t_Company_Branch where CompId=" + objCustomer.CustID;
+        //                //ViewBag.Branches = objGlobaldata.GetCompanyBranch(objCustomer.CustID);
+        //                objCustomerModelsList.CustomerMList.Add(objCustomer);
+        //            }
+        //            catch (Exception ex)
+        //            {
+        //                objGlobaldata.AddFunctionalLog("Exception in CustomerListSearch: " + ex.ToString());
+        //                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        objGlobaldata.AddFunctionalLog("Exception in CustomerListSearch: " + ex.ToString());
+        //        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+        //    }
+        //    return Json("Success");
+        //}
 
 
         //[AllowAnonymous]
@@ -564,7 +565,7 @@ namespace ISOStd.Controllers
 
                         try
                         {
-                            sSqlstmt = "select ContactsId, tci.CustID, CompanyName, tcic.PhoneNumber, tcic.EmailId, tcic.ContactPerson, tcic.MobileNumber from t_customer_info_contacts as tcic,"
+                            sSqlstmt = "select ContactsId, tci.CustID, CompanyName, tcic.PhoneNumber, tcic.EmailId, tcic.ContactPerson, tcic.MobileNumber, tcic.designation from t_customer_info_contacts as tcic,"
                                     + " t_customer_info as tci where tcic.CustID=tci.CustID and tci.CustID='" + sCustSuppID + "'  and tcic.active=1 ";
 
 
@@ -587,6 +588,7 @@ namespace ISOStd.Controllers
                                             MobileNumber = dsCustomerContacts.Tables[0].Rows[i]["MobileNumber"].ToString(),
                                             ContactPerson = dsCustomerContacts.Tables[0].Rows[i]["ContactPerson"].ToString(),
                                             EmailId = dsCustomerContacts.Tables[0].Rows[i]["EmailId"].ToString(),
+                                            designation = dsCustomerContacts.Tables[0].Rows[i]["designation"].ToString(),
                                         };
                                         objCustomerContactsList.lstCustomerContacts.Add(objCustomerContacts);
                                     }
@@ -675,7 +677,7 @@ namespace ISOStd.Controllers
 
                     try
                     {
-                        sSqlstmt = "select ContactsId, tci.CustID, CompanyName, tcic.PhoneNumber, tcic.EmailId, tcic.ContactPerson, tcic.MobileNumber from t_customer_info_contacts as tcic,"
+                        sSqlstmt = "select ContactsId, tci.CustID, CompanyName, tcic.PhoneNumber, tcic.EmailId, tcic.ContactPerson, tcic.MobileNumber,tcic.designation from t_customer_info_contacts as tcic,"
                                 + " t_customer_info as tci where tcic.CustID=tci.CustID and tci.CustID='" + id + "'  and tcic.active=1 ";
                         sSqlstmt = sSqlstmt + " order by tcic.ContactPerson asc";
                         DataSet dsCustomerContacts = objGlobaldata.Getdetails(sSqlstmt);
@@ -694,6 +696,7 @@ namespace ISOStd.Controllers
                                         MobileNumber = dsCustomerContacts.Tables[0].Rows[i]["MobileNumber"].ToString(),
                                         ContactPerson = dsCustomerContacts.Tables[0].Rows[i]["ContactPerson"].ToString(),
                                         EmailId = dsCustomerContacts.Tables[0].Rows[i]["EmailId"].ToString(),
+                                        designation = dsCustomerContacts.Tables[0].Rows[i]["designation"].ToString(),
                                     };
                                     objCustomerContactsList.lstCustomerContacts.Add(objCustomerContacts);
                                 }
@@ -788,7 +791,7 @@ namespace ISOStd.Controllers
 
                         try
                         {
-                            sSqlstmt = "select ContactsId, tci.CustID, CompanyName, tcic.PhoneNumber, tcic.EmailId, tcic.ContactPerson, tcic.MobileNumber from t_customer_info_contacts as tcic,"
+                            sSqlstmt = "select ContactsId, tci.CustID, CompanyName, tcic.PhoneNumber, tcic.EmailId, tcic.ContactPerson, tcic.MobileNumber,tcic.designation from t_customer_info_contacts as tcic,"
                                     + " t_customer_info as tci where tcic.CustID=tci.CustID and tci.CustID='" + sCustSuppID + "'  and tcic.active=1 ";
 
 
@@ -813,6 +816,7 @@ namespace ISOStd.Controllers
                                             MobileNumber = dsCustomerContacts.Tables[0].Rows[i]["MobileNumber"].ToString(),
                                             ContactPerson = dsCustomerContacts.Tables[0].Rows[i]["ContactPerson"].ToString(),
                                             EmailId = dsCustomerContacts.Tables[0].Rows[i]["EmailId"].ToString(),
+                                            designation= dsCustomerContacts.Tables[0].Rows[i]["designation"].ToString(),
                                         };
                                         objCustomerContactsList.lstCustomerContacts.Add(objCustomerContacts);
                                     }

@@ -29,7 +29,7 @@
                     <a href="@Url.Action("CustomerList", "CustomerMgmt", null)" class="breadcrumb-item">
                         <span class="breadcrumb-item">Customer List</span>
                     </a>
-                    <span class="breadcrumb-item active">Edit Customer Details</span>
+                    <span class="breadcrumb-item active">Update Customer Details</span>
                 </div>
                 <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
             </div>
@@ -64,7 +64,7 @@
  <input type="hidden" name="CustID" id="CustID" value="@Model.CustID"/>
     <div class="card">
         <div class="card-header header-elements-inline bg-primary">
-            <h5 class="card-title">Edit Customer Details</h5>
+            <h5 class="card-title">Update Customer Details</h5>
             <div class="header-elements">
                 <div class="list-icons">
                     <a class="list-icons-item" data-action="collapse"></a>
@@ -146,11 +146,6 @@
                             </select>
                             <br />
                             @Html.ValidationMessageFor(m => m.Location)
-                        </td>
-                    </tr>
-                    <tr class="row">
-                        <td class="col-xs-3 col-md-2">
-                            <img src="@Url.Content("~/Images/contact-new.png")" title="Add Contact" onclick="DisplayContacts()" style="cursor:pointer;" />
                         </td>
                     </tr>
                     <tr class="row">
@@ -336,6 +331,14 @@
                             }
                         </td>
                     </tr>
+                    <tr class="row">
+                        <td>
+                            To Add the Customer Contact Details
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <img src="@Url.Content("~/Images/contact-new.png")" title="Add Contact" onclick="DisplayContacts()" style="cursor:pointer;" />
+                        </td>
+                    </tr>
                 </table>
             </div>
         </div>
@@ -352,36 +355,20 @@
  {
       <div class="card">
         <div class="card-header header-elements-inline bg-primary">
-            <h5 class="card-title">Sales Person Contact Details</h5>
+            <h5 class="card-title">Customer Contact Person Details</h5>
         </div>
            <div class="card-body">
             <div class="card card-table table-responsive shadow-0 mb-0">
                 <table class="table">
-                       <tr>
-                       <th>
-                           
-                               Name
-                                                
-                        </th>
- 			  <th>
-                            
-                               Phone Number
-                                       
-                        </th>
-			  <th>
-                          
-                               Mobile Number
-                                               
-                        </th>
-			  <th>
-                          
-                               Email Id
-                                             
-                        </th>
-			  <th>
-                           Action
-                        </th>
-		    </tr>
+                    <tr>
+                        <th> Contact Person Name</th>
+                        @*<th> ContactPerson</th>*@
+                        <th> Designation </th>
+                        <th> Email </th>
+                        <th> Phone Number </th>
+                        <th> Mobile Number </th>
+                        <th>Action </th>
+                    </tr>
  @for (int index = 0; index < objCustomerContactsList.lstCustomerContacts.Count; index++)
  {
      string ContactsId = objCustomerContactsList.lstCustomerContacts[index].ContactsId;
@@ -389,40 +376,21 @@
      string EmailId = objCustomerContactsList.lstCustomerContacts[index].EmailId;
      string PhoneNumber = objCustomerContactsList.lstCustomerContacts[index].PhoneNumber;
      string MobileNumber = objCustomerContactsList.lstCustomerContacts[index].MobileNumber;
-               
-                    <tr>
-                      <td>
-                        
-                            
-                                @ContactPerson
-                           
-                        </td>
- 			<td>
-                         
-                          
-                                @PhoneNumber
-                            
-                        </td>
-			<td>
-                          
-                          
-                                @MobileNumber
-                           
-                        </td>
-			<td>
-                          
-                           
-                                @EmailId
-                            
-                        </td>
-			<td>
-               
-                            <span class="badge badge-info" 
-                                onclick="EditContacts('@ContactsId', '@ContactPerson', '@EmailId', '@PhoneNumber', '@MobileNumber')" style="cursor:pointer;" >Edit</span>
-                               @* <img src="@Url.Content("~/Images/delete.png")" title="Delete User" onclick="DeleteItems(@ContactsId)" style="cursor:pointer;"/>*@
-                 <span class='badge badge-danger' title='Update' onclick='DeleteItems(@ContactsId)' style='cursor:pointer;'>Delete</span>      
-                  </td>
-		    </tr>
+     string designation = objCustomerContactsList.lstCustomerContacts[index].designation;
+
+                <tr>
+                    <td> @ContactPerson</td>
+                    <td> @designation</td>
+                    <td> @EmailId</td>
+                    <td> @PhoneNumber </td>
+                    <td> @MobileNumber</td>
+                    <td>
+                        <span class="badge badge-info"
+                              onclick="EditContacts('@ContactsId', '@ContactPerson', '@designation', '@EmailId', '@PhoneNumber', '@MobileNumber')" style="cursor:pointer;">Edit</span>
+                        @* <img src="@Url.Content("~/Images/delete.png")" title="Delete User" onclick="DeleteItems(@ContactsId)" style="cursor:pointer;"/>*@
+                        <span class='badge badge-danger' title='Update' onclick='DeleteItems(@ContactsId)' style='cursor:pointer;'>Delete</span>
+                    </td>
+                </tr>
  }
 </table>
                 </div>
@@ -444,7 +412,7 @@
      <div id="editcontact" style="display:none">
          <div class="card" id="hidden card">
         <div class="card-header header-elements-inline">
-            <h5 class="card-title">Update Customer Contact</h5>
+            <h5 class="card-title">Update Customer Contact Person Details</h5>
           @*  <div class="header-elements">
                 <div class="list-icons">
                     <a class="list-icons-item" data-action="collapse"></a>
@@ -456,66 +424,77 @@
 
         <div class="card-body">
                <div class="container-fluid">
-                <table class="table table-lg">
-                    <tr class="row">
-  			<td class="col-xs-3 col-md-2">
-                            <div class="editor-label">
-                                @Html.LabelFor(model => model.CompanyName)
-                            </div>
-                        </td>
-                        <td class="col">
-                            <div class="editor-field">
-                               @Html.DisplayFor(model => model.CompanyName)                           
-                               
-                            </div>
-                        </td>
-			<td class="col-xs-3 col-md-2">
-                            <div class="editor-label">
-                                @Html.LabelFor(model => model.ContactPerson)
-                            </div>
-                        </td>
-                        <td class="col">
-                            <div class="editor-field">
-                              <input class="form-control" type="text" id="ContactPerson" name="ContactPerson" required />
-                            </div>
-                        </td>
-			</tr>
-			<tr class="row">
-  			<td class="col-xs-3 col-md-2">
-                            <div class="editor-label">
-                                @Html.LabelFor(model => model.EmailId)
-                            </div>
-                        </td>
-                        <td class="col">
-                            <div class="editor-field">
-                              <input class="form-control" type="text" id="EmailId" name="EmailId"  />
-                            </div>
-                        </td>
-			<td class="col-xs-3 col-md-2">
-                            <div class="editor-label">
-                                @Html.LabelFor(model => model.PhoneNumber)
-                            </div>
-                        </td>
-                        <td class="col">
-                            <div class="editor-field">
-                              <input class="form-control" type="text" id="PhoneNumber" name="PhoneNumber"  />
-                            </div>
-                        </td>
-			</tr>
-			<tr class="row">
-  			<td class="col-xs-3 col-md-2">
-                            <div class="editor-label">
-                                @Html.LabelFor(model => model.MobileNumber)
-                            </div>
-                        </td>
-                        <td class="col-xs-3 col-md-4">
-                            <div class="editor-field">
-                              <input class="form-control" type="text" id="MobileNumber" name="MobileNumber"  />
-                            </div>
-                        </td>
-			
-			</tr>
-                </table>
+                   <table class="table table-lg">
+                       <tr class="row">
+                           <td class="col-xs-3 col-md-2">
+                               <div class="editor-label">
+                                   @Html.LabelFor(model => model.CompanyName)
+                               </div>
+                           </td>
+                           <td class="col">
+                               <div class="editor-field">
+                                   @Html.DisplayFor(model => model.CompanyName)
+
+                               </div>
+                           </td>
+                           <td class="col-xs-3 col-md-2">
+                               <div class="editor-label">
+                                   @Html.LabelFor(model => model.ContactPerson)
+                               </div>
+                           </td>
+                           <td class="col">
+                               <div class="editor-field">
+                                   <input class="form-control" type="text" id="ContactPerson" name="ContactPerson" required />
+                               </div>
+                           </td>
+                       </tr>
+                       <tr class="row">
+                           <td class="col-xs-3 col-md-2">
+                               <div class="editor-label">
+                                   @Html.LabelFor(model => model.designation)
+                               </div>
+                           </td>
+                           <td class="col">
+                               <div class="editor-field">
+                                   <input class="form-control" type="text" id="designation" name="designation" />
+                               </div>
+                           </td>
+                           <td class="col-xs-3 col-md-2">
+                               <div class="editor-label">
+                                   @Html.LabelFor(model => model.EmailId)
+                               </div>
+                           </td>
+                           <td class="col">
+                               <div class="editor-field">
+                                   <input class="form-control" type="text" id="EmailId" name="EmailId" />
+                               </div>
+                           </td>
+                       </tr>
+                       <tr class="row">
+                           <td class="col-xs-3 col-md-2">
+                               <div class="editor-label">
+                                   @Html.LabelFor(model => model.PhoneNumber)
+                               </div>
+                           </td>
+                           <td class="col">
+                               <div class="editor-field">
+                                   <input class="form-control" type="text" id="PhoneNumber" name="PhoneNumber" />
+                               </div>
+                           </td>
+
+                           <td class="col-xs-3 col-md-2">
+                               <div class="editor-label">
+                                   @Html.LabelFor(model => model.MobileNumber)
+                               </div>
+                           </td>
+                           <td class="col-xs-3 col-md-4">
+                               <div class="editor-field">
+                                   <input class="form-control" type="text" id="MobileNumber" name="MobileNumber" />
+                               </div>
+                           </td>
+
+                       </tr>
+                   </table>
 
             </div>
         </div>
@@ -537,7 +516,7 @@
     <div id="addcontact" style="display:none">
         <div class="card" id="hidden card1">
         <div class="card-header header-elements-inline">
-            <h5 class="card-title">Add Customer Contact</h5>
+            <h5 class="card-title">Add Customer Contact Person Details</h5>
            @* <div class="header-elements">
                 <div class="list-icons">
                     <a class="list-icons-item" data-action="collapse"></a>
@@ -586,6 +565,18 @@
                            </td>
                            <td class="col-xs-3 col-md-2">
                                <div class="editor-label">
+                                   @Html.LabelFor(model => model.designation)
+                               </div>
+                           </td>
+                           <td class="col">
+                               <div class="editor-field">
+                                   <input class="form-control" type="text" id="designation" name="designation" />
+                               </div>
+                           </td>
+                       </tr>
+                       <tr class="row">
+                           <td class="col-xs-3 col-md-2">
+                               <div class="editor-label">
                                    @Html.LabelFor(model => model.PhoneNumber)
                                </div>
                            </td>
@@ -594,8 +585,7 @@
                                    <input class="form-control" type="text" id="PhoneNumber" name="PhoneNumber" />
                                </div>
                            </td>
-                       </tr>
-                       <tr class="row">
+
                            <td class="col-xs-3 col-md-2">
                                <div class="editor-label">
                                    @Html.LabelFor(model => model.MobileNumber)
@@ -606,8 +596,8 @@
                                    <input class="form-control" type="text" id="MobileNumber" name="MobileNumber" />
                                </div>
                            </td>
-                         </tr>
-                      
+                       </tr>
+
                    </table>
 
             </div>
@@ -649,7 +639,7 @@
         var showClass = 'is-visible';
         var hideClass = 'invisible';
 
-        function EditContacts(ContactsId, ContactPerson, EmailId, PhoneNumber, MobileNumber) {
+        function EditContacts(ContactsId, ContactPerson,designation, EmailId, PhoneNumber, MobileNumber) {
             ResetControls();
 
             //document.getElementById("hidden card").classList.remove(hideClass);
@@ -666,7 +656,9 @@
             document.getElementById("MobileNumber").value = MobileNumber;
             document.getElementById("EmailId").value = EmailId;
             document.getElementById("PhoneNumber").value = PhoneNumber;
+            document.getElementById("designation").value = designation;
         }
+
         function DisplayContacts(){
             ResetControls();
             //document.getElementById("hidden card").classList.remove(showClass);
@@ -680,12 +672,16 @@
         
             document.getElementById("ContactsId").value = "";
         }
+
         function ResetControls() {
             document.getElementById("ContactPerson").value = "";
             document.getElementById("EmailId").value = "";
             document.getElementById("PhoneNumber").value = "";
             document.getElementById("MobileNumber").value = "";
+            document.getElementById("designation").value = "";
         }
+
+
         function DeleteItems(ContactsId) {
             var vCustID = $('#CustID').val();
 

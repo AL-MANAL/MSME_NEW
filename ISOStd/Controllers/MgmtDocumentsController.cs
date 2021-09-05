@@ -894,9 +894,24 @@ namespace ISOStd.Controllers
             try
             {
                 MgmtDocumentsModels objMgmtDocuments = new MgmtDocumentsModels();
-                string filename = Path.GetFileName(Document);
-                FileStream fsSource = new FileStream(Server.MapPath(Document), FileMode.Open, FileAccess.Read);
+                //string filename = Path.GetFileName(Document);
+                //FileStream fsSource = new FileStream(Server.MapPath(Document), FileMode.Open, FileAccess.Read);
+                string filename = "";
+                System.IO.FileStream fsSource = null;
 
+                if (Document != null && Document != "")
+                {
+                    if (Document.Contains(","))
+                    {
+                        string[] filearray = Document.Split(',');
+                        fsSource = new FileStream(Server.MapPath(filearray[0]), FileMode.Open, FileAccess.Read, FileShare.Read);
+                    }
+                    else
+                    {
+                        filename = Path.GetFileName(Document);
+                        fsSource = new FileStream(Server.MapPath(Document), FileMode.Open, FileAccess.Read);
+                    }
+                }
                 string sStatus = "";
                 if (iStatus == 0)
                 {
@@ -956,9 +971,24 @@ namespace ISOStd.Controllers
             try
             {
                 MgmtDocumentsModels objMgmtDocuments = new MgmtDocumentsModels();
-                string filename = Path.GetFileName(Document);
-                FileStream fsSource = new FileStream(Server.MapPath(Document), FileMode.Open, FileAccess.Read);
+                //string filename = Path.GetFileName(Document);
+                //FileStream fsSource = new FileStream(Server.MapPath(Document), FileMode.Open, FileAccess.Read);
+                string filename = "";
+                System.IO.FileStream fsSource = null;
 
+                if (Document != null && Document != "")
+                {
+                    if (Document.Contains(","))
+                    {
+                        string[] filearray = Document.Split(',');                        
+                        fsSource = new FileStream(Server.MapPath(filearray[0]), FileMode.Open, FileAccess.Read, FileShare.Read);
+                    }
+                    else
+                    {
+                        filename = Path.GetFileName(Document);
+                        fsSource = new FileStream(Server.MapPath(Document), FileMode.Open, FileAccess.Read);
+                    }
+                }
                 string sStatus = "";
 
                 if (iStatus == 0)
@@ -2041,8 +2071,31 @@ namespace ISOStd.Controllers
             try
             {
                 MgmtDocumentsModels objMgmtDocuments = new MgmtDocumentsModels();
-                string filename = Path.GetFileName(Document);
-                FileStream fsSource = new FileStream(Server.MapPath(Document), FileMode.Open, FileAccess.Read);
+                //string filename = Path.GetFileName(Document);
+                //FileStream fsSource = new FileStream(Server.MapPath(Document), FileMode.Open, FileAccess.Read);
+                string filename = "";
+                System.IO.FileStream fsSource = null;
+
+                if (Document != null && Document != "")
+                {
+                    if (Document.Contains(","))
+                    {
+                        string[] filearray = Document.Split(',');
+
+
+                        //string fullfile = "";
+                        //for (int ii=0; ii< filearray.Length; ii++)
+                        //{
+                        //     filename = Path.GetFileName(filearray[ii]);                                                       
+                        //}
+                        fsSource = new FileStream(Server.MapPath(filearray[0]), FileMode.Open, FileAccess.Read);
+                    }
+                    else
+                    {
+                        filename = Path.GetFileName(Document);
+                        fsSource = new FileStream(Server.MapPath(Document), FileMode.Open, FileAccess.Read);
+                    }
+                }
 
                 if (objMgmtDocuments.FunUpdateAnnexureReview(idAnnexure, fsSource, filename))
                 {
@@ -2077,9 +2130,31 @@ namespace ISOStd.Controllers
             try
             {
                 MgmtDocumentsModels objMgmtDocuments = new MgmtDocumentsModels();
-                string filename = Path.GetFileName(Document);
-                FileStream fsSource = new FileStream(Server.MapPath(Document), FileMode.Open, FileAccess.Read);
-                              
+                //string filename = Path.GetFileName(Document);
+                //FileStream fsSource = new FileStream(Server.MapPath(Document), FileMode.Open, FileAccess.Read);
+                string filename = "";
+                System.IO.FileStream fsSource = null;
+
+                if (Document != null && Document != "")
+                {
+                    if (Document.Contains(","))
+                    {
+                        string[] filearray = Document.Split(',');
+
+                        //string fullfile = "";
+                        //for (int ii=0; ii< filearray.Length; ii++)
+                        //{
+                        //     filename = Path.GetFileName(filearray[ii]);                                                       
+                        //}
+                        fsSource = new FileStream(Server.MapPath(filearray[0]), FileMode.Open, FileAccess.Read);
+                    }
+                    else
+                    {
+                        filename = Path.GetFileName(Document);
+                        fsSource = new FileStream(Server.MapPath(Document), FileMode.Open, FileAccess.Read);
+                    }
+                }
+
 
                 if (objMgmtDocuments.FunMgmtDocumentApproveOrReject(idMgmt, iStatus, fsSource, filename, DocName, DocRef))
                 {
@@ -2117,8 +2192,32 @@ namespace ISOStd.Controllers
             try
             {
                 MgmtDocumentsModels objMgmtDocuments = new MgmtDocumentsModels();
-                string filename = Path.GetFileName(Document);
-                FileStream fsSource = new FileStream(Server.MapPath(Document), FileMode.Open, FileAccess.Read);
+                //string filename = Path.GetFileName(Document);
+                //FileStream fsSource = new FileStream(Server.MapPath(Document), FileMode.Open, FileAccess.Read);
+
+                string filename = "";
+                System.IO.FileStream fsSource = null;
+
+                if (Document != null && Document != "")
+                {
+                    if (Document.Contains(","))
+                    {
+                        string[] filearray = Document.Split(',');
+
+
+                        //string fullfile = "";
+                        //for (int ii=0; ii< filearray.Length; ii++)
+                        //{
+                        //     filename = Path.GetFileName(filearray[ii]);                                                       
+                        //}
+                        fsSource = new FileStream(Server.MapPath(filearray[0]), FileMode.Open, FileAccess.Read);
+                    }
+                    else
+                    {
+                        filename = Path.GetFileName(Document);
+                        fsSource = new FileStream(Server.MapPath(Document), FileMode.Open, FileAccess.Read);
+                    }
+                }
 
                 if (objMgmtDocuments.FunUpdateAnnexureReview(idAnnexure, fsSource, filename))
                 {
@@ -2152,11 +2251,30 @@ namespace ISOStd.Controllers
             try
             {
                 MgmtDocumentsModels objMgmtDocuments = new MgmtDocumentsModels();
-                string filename = Path.GetFileName(Document);
-                FileStream fsSource = new FileStream(Server.MapPath(Document), FileMode.Open, FileAccess.Read);
-                //if (objGlobaldata.GetRoleName(objGlobaldata.GetCurrentUserSession().role) == "Reviewer")
-                //{FunMgmtDocumentsReviewApproveOrReject(idMgmt, iStatus, fsSource, filename, DocName, DocRef))
-                //if (objMgmtDocuments.FunUpdateMgmtDocumentsReview(idMgmt, fsSource, filename, iStatus))
+                string filename = "";
+                System.IO.FileStream fsSource = null;
+
+                if (Document != null && Document != "")
+                {
+                    if (Document.Contains(","))
+                    {
+                        string[] filearray = Document.Split(',');
+                       
+                        
+                        //string fullfile = "";
+                        //for (int ii=0; ii< filearray.Length; ii++)
+                        //{
+                        //     filename = Path.GetFileName(filearray[ii]);                                                       
+                        //}
+                         fsSource = new FileStream(Server.MapPath(filearray[0]), FileMode.Open, FileAccess.Read);
+                    }
+                    else
+                    {
+                         filename = Path.GetFileName(Document);
+                         fsSource = new FileStream(Server.MapPath(Document), FileMode.Open, FileAccess.Read);
+                    }
+                }
+               
                 if (objMgmtDocuments.FunMgmtDocumentsReviewApproveOrReject(idMgmt, iStatus, fsSource, filename, DocName, DocRef))
                 {
                     return Json("Success"+ iStatus);
@@ -2165,12 +2283,6 @@ namespace ISOStd.Controllers
                 {
                     return Json("Failed");
                 }
-                //}
-                //else
-                //{
-                //    TempData["alertdata"] = "Access Denied";
-                //}
-
             }
             catch (Exception ex)
             {

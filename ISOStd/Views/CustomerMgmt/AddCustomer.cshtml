@@ -242,7 +242,15 @@
                                     {
                                         foreach (var item in ViewBag.CustType)
                                         {
-                                            <option value='@item.Value'>@item.Text</option>
+                                            if (item.Text == "External")
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+
                                         }
                                     }
                                 </select>
@@ -302,51 +310,58 @@
     </div>
         
 <fieldset class="border p-2">
-                    <legend class="font-weight-semibold"><i class="icon-file-text mr-2"></i>Contact Person Details</legend>
+                    <legend class="font-weight-semibold"><i class="icon-file-text mr-2"></i>Customer Contact Person Details</legend>
 		      
 <table class="table table-lg">
 
- <tr class="row">
- 			
-                       <td class="col-xs-3 col-md-2">
-                            <div class="editor-label">
-                               Sales Person Name
-                            </div>
-                            <div class="editor-field">
-                                <input class="form-control" type="text" id="ContactPerson" name="ContactPerson"/>
-                                 <span class="field-validation-error"><label id="ContactPerson-message" class="validation-invalid-label" style="display:none" for="basic">This field is required.</label> </span>
-                            </div>
-                        </td>
-                        <td class="col-xs-3 col-md-2">
-                            <div class="editor-label">
-                               Office Number
-                            </div>
-                            <div class="editor-field">
-                                 <input class="form-control" type="text" id="PhoneNumber" name="PhoneNumber"/>
-                            </div>
-                        </td>
- 			<td class="col-xs-3 col-md-2">
-                            <div class="editor-label">
-                               Mobile Number
-                            </div>
-                            <div class="editor-field">
-                                <input class="form-control" type="text" id="MobileNumber" name="MobileNumber"/>
-                            </div>
-                        </td>
-                        <td class="col-xs-3 col-md-2">
-                             <div class="editor-label">
-                               EmailId
-                            </div>
-                            <div class="editor-field">
-                                 <input class="form-control" type="text" id="EmailId" name="EmailId"/>
-                            </div>
-                        </td>
-			                <td class="col-xs-3 col-md-2">
-                      <input type="button" value="Add" class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" onclick="AddLTI()" />
+    <tr class="row">
 
-       
-                        </td>
- </tr>
+        <td class="col-xs-3 col-md-2">
+            <div class="editor-label">
+                Contact Person Name
+            </div>
+            <div class="editor-field">
+                <input class="form-control" type="text" id="ContactPerson" name="ContactPerson" />
+                <span class="field-validation-error"><label id="ContactPerson-message" class="validation-invalid-label" style="display:none" for="basic">This field is required.</label> </span>
+            </div>
+        </td>
+        <td class="col-xs-3 col-md-2">
+            <div class="editor-label">
+                Designation
+            </div>
+            <div class="editor-field">
+                <input class="form-control" type="text" id="designation" name="designation" />
+            </div>
+        </td>
+        <td class="col-xs-3 col-md-2">
+            <div class="editor-label">
+                Email Id
+            </div>
+            <div class="editor-field">
+                <input class="form-control" type="text" id="EmailId" name="EmailId" />
+            </div>
+        </td>
+        <td class="col-xs-3 col-md-2">
+            <div class="editor-label">
+                Office Number
+            </div>
+            <div class="editor-field">
+                <input class="form-control" type="text" id="PhoneNumber" name="PhoneNumber" />
+            </div>
+        </td>
+        <td class="col-xs-3 col-md-2">
+            <div class="editor-label">
+                Mobile Number
+            </div>
+            <div class="editor-field">
+                <input class="form-control" type="text" id="MobileNumber" name="MobileNumber" />
+            </div>
+        </td>
+        <td class="col-xs-3 col-md-2">
+            <input type="button" value="Add" class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" onclick="AddLTI()" />
+
+        </td>
+    </tr>
 
 </table>
 </fieldset>
@@ -355,7 +370,7 @@
 
     <div class="card invisible" id="hidden card">
         <div class="card-header header-elements-inline">
-            <h5 class="card-title">Contact Details</h5>
+            <h5 class="card-title">Customer Contact Person Details</h5>
             <div class="header-elements">
                 <div class="list-icons">
                     <a class="list-icons-item" data-action="collapse"></a>
@@ -372,11 +387,12 @@
             <div class="card card-table table-responsive shadow-0 mb-0">
                 <table class="table" id="team-list">
                     <tr class="bg-blue">
-                    <th>Action</th>
-                    <th>Sales Person</th>
-                    <th>EmailId</th>
-                    <th>Office Number</th>
-                    <th>Mobile Number</th>
+                        <th>Action</th>
+                        <th>Contact Person Name</th>
+                        <th>Designation</th>
+                        <th>Email Id</th>
+                        <th>Office Number</th>
+                        <th>Mobile Number</th>
                     </tr>
                 </table>
 
@@ -460,19 +476,21 @@
                 var cell2 = row.insertCell(2);
                 var cell3 = row.insertCell(3);
                 var cell4 = row.insertCell(4);
-                //var cell5 = row.insertCell(5);
+                var cell5 = row.insertCell(5);
 
                
                 var ContactPerson = $('#ContactPerson').val();
+                var designation = $('#designation').val();
                 var EmailId = $('#EmailId').val();
                 var PhoneNumber = $('#PhoneNumber').val();
                 var MobileNumber = $('#MobileNumber').val();
 
                 cell0.innerHTML = " <img src='@Url.Content("~/images/cancel.png")' onclick='deleteRow(this)' style='cursor:pointer; padding-right: 5px;'/>Remove";
                 cell1.innerHTML = "<input type='hidden' id='ContactPerson " + cnt + "' name='ContactPerson " + cnt + "' value='" + ContactPerson + "'/>" + ContactPerson;
-                cell2.innerHTML = "<input type='hidden' id='EmailId " + cnt + "' name='EmailId " + cnt + "' value='" + EmailId + "' style = 'width:300px' />" + EmailId;
-                cell3.innerHTML = "<input type='hidden' id='PhoneNumber " + cnt + "' name='PhoneNumber " + cnt + "' value='" + PhoneNumber + "'/>" + PhoneNumber;
-                cell4.innerHTML = "<input type='hidden' id='MobileNumber " + cnt + "' name='MobileNumber " + cnt + "' value='" + MobileNumber + "'/>" + MobileNumber;
+                cell2.innerHTML = "<input type='hidden' id='designation " + cnt + "' name='designation " + cnt + "' value='" + designation + "'/>" + EmailId;
+                cell3.innerHTML = "<input type='hidden' id='EmailId " + cnt + "' name='EmailId " + cnt + "' value='" + EmailId + "'/>" + EmailId;
+                cell4.innerHTML = "<input type='hidden' id='PhoneNumber " + cnt + "' name='PhoneNumber " + cnt + "' value='" + PhoneNumber + "'/>" + PhoneNumber;
+                cell5.innerHTML = "<input type='hidden' id='MobileNumber " + cnt + "' name='MobileNumber " + cnt + "' value='" + MobileNumber + "'/>" + MobileNumber;
 
                 cnt++;
                 document.getElementById("itemcnt").value = cnt;
@@ -481,6 +499,7 @@
                 document.getElementById("hidden card").classList.add(showClass);
 
                 document.getElementById("ContactPerson").value = "";
+                document.getElementById("designation").value = "";
                 document.getElementById("EmailId").value = "";
                 document.getElementById("PhoneNumber").value = "";
                 document.getElementById("MobileNumber").value = "";
@@ -516,17 +535,11 @@
                         $("#Department").trigger('change');
                         if (result != null && result.length > 0) {
                             $.each(result, function (index, item) {
-                                $("#Department").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
-                                $("#Department").trigger('change');
+                                $("#Department").append("<option value='" + item.Value + "'>" + item.Text + "</option>");                              
                             });
+                            $("#Department").trigger('change');
                             return;
-                        }
-                        //else {
-                        //    bootbox.alert({
-                        //        title: 'Department List',
-                        //        message: 'No Department exists.'
-                        //    });
-                        //}
+                        }                        
                     }
                 });          
         }
@@ -547,13 +560,7 @@
                             $("#Location").trigger('change');
                         });
                         return;
-                    }
-                    //else {
-                    //    bootbox.alert({
-                    //        title: 'Location List',
-                    //        message: 'No Location exists.'
-                    //    });
-                    //}
+                    }                  
                 }
             });       
         }

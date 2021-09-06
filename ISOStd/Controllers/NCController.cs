@@ -249,7 +249,7 @@ namespace ISOStd.Controllers
                                 nc_impact = (dsNCModels.Tables[0].Rows[i]["nc_impact"].ToString()),
                                 nc_risk = (dsNCModels.Tables[0].Rows[i]["nc_risk"].ToString()),
                                 risklevel = (dsNCModels.Tables[0].Rows[i]["risklevel"].ToString()),
-                                nc_reportedby = objGlobaldata.GetMultiHrEmpNameById(dsNCModels.Tables[0].Rows[i]["nc_reportedby"].ToString()),
+                                nc_reportedby = /*objGlobaldata.GetMultiHrEmpNameById*/(dsNCModels.Tables[0].Rows[i]["nc_reportedby"].ToString()),
                                 location = objGlobaldata.GetDivisionLocationById(dsNCModels.Tables[0].Rows[i]["location"].ToString()),
                                 nc_notifiedto = objGlobaldata.GetMultiHrEmpNameById(dsNCModels.Tables[0].Rows[i]["nc_notifiedto"].ToString()),
                                 department = objGlobaldata.GetMultiDeptNameById(dsNCModels.Tables[0].Rows[i]["department"].ToString()),
@@ -260,7 +260,8 @@ namespace ISOStd.Controllers
                                 nc_raise_dueto = objGlobaldata.GetDropdownitemById(dsNCModels.Tables[0].Rows[i]["nc_raise_dueto"].ToString()),
                                 nc_issuedto_status = dsNCModels.Tables[0].Rows[i]["nc_issuedto_status"].ToString(),
                                 nc_issuedto_statusId = dsNCModels.Tables[0].Rows[i]["nc_issuedto_statusId"].ToString(),
-                                nc_initial_statusId = dsNCModels.Tables[0].Rows[i]["nc_initial_statusId"].ToString()
+                                nc_initial_statusId = dsNCModels.Tables[0].Rows[i]["nc_initial_statusId"].ToString(),
+                              
                             };
 
                             DateTime dtValue;

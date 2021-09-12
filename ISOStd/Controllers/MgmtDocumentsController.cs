@@ -507,12 +507,13 @@ namespace ISOStd.Controllers
                     objMgmtDocuments.Doctype = "";
                 }
 
-                //if (!(objGlobaldata.GetMultiRolesNameById(objUser.role).Contains("Admin")))
-                //{
-                //    sSearchtext = sSearchtext + " and (find_in_set('" + objUser.DeptID + "', view_by) or find_in_set('0', view_by))";                    
-                //}
-              
-                sSqlstmt = sSqlstmt + sSearchtext + " order by Doctype";
+                if (!(objGlobaldata.GetMultiRolesNameById(objUser.role).Contains("Admin")))
+                {
+                    sSearchtext = sSearchtext + " and (find_in_set('" + objUser.DeptID + "', view_by) or find_in_set('0', view_by))";
+                }
+
+                //sSqlstmt = sSqlstmt + sSearchtext + " order by Doctype";
+                sSqlstmt = sSqlstmt + sSearchtext + " order by idMgmt desc";
 
                 DataSet dsMgmtDocumentsList = objGlobaldata.Getdetails(sSqlstmt);
                 if (dsMgmtDocumentsList.Tables.Count > 0 && dsMgmtDocumentsList.Tables[0].Rows.Count > 0)
@@ -554,7 +555,8 @@ namespace ISOStd.Controllers
                                 Location = objGlobaldata.GetDivisionLocationById(dsMgmtDocumentsList.Tables[0].Rows[i]["Location"].ToString()),
                                 Reviewers = dsMgmtDocumentsList.Tables[0].Rows[i]["Reviewers"].ToString(),
                                 Approvers = dsMgmtDocumentsList.Tables[0].Rows[i]["Approvers"].ToString(),
-
+                                Approved_StatusId = dsMgmtDocumentsList.Tables[0].Rows[i]["Approved_Status"].ToString(),
+                                Reviewed_StatusId = dsMgmtDocumentsList.Tables[0].Rows[i]["Reviewed_Status"].ToString(),
                             };
                             if(objMgmtDocumentsModels.Reviewers != "0")
                             {
@@ -593,298 +595,298 @@ namespace ISOStd.Controllers
             return View(objMgmtDocumentsList.MgmtDocumentsMList.ToList());
         }
 
-        [AllowAnonymous]
-        public JsonResult MgmtDocumentsListSearchs(FormCollection form, string SearchText, string Approvestatus, int? page, string branch_name, string View)
-        {
-            ViewBag.SubMenutype = "MgmtDocuments";
+        //[AllowAnonymous]
+        //public JsonResult MgmtDocumentsListSearchs(FormCollection form, string SearchText, string Approvestatus, int? page, string branch_name, string View)
+        //{
+        //    ViewBag.SubMenutype = "MgmtDocuments";
 
-            MgmtDocumentsModelsList objMgmtDocumentsList = new MgmtDocumentsModelsList();
-            objMgmtDocumentsList.MgmtDocumentsMList = new List<MgmtDocumentsModels>();
+        //    MgmtDocumentsModelsList objMgmtDocumentsList = new MgmtDocumentsModelsList();
+        //    objMgmtDocumentsList.MgmtDocumentsMList = new List<MgmtDocumentsModels>();
 
-            MgmtDocumentsModels objMgmtDocuments = new MgmtDocumentsModels();
-            try
-            {
+        //    MgmtDocumentsModels objMgmtDocuments = new MgmtDocumentsModels();
+        //    try
+        //    {
 
-                //ViewBag.View = Request.QueryString["View"];
+        //        //ViewBag.View = Request.QueryString["View"];
 
-                //String DocumentType = objMgmtDocuments.GetDocumentTypeIdbyName("Policy");
-                //String DocumentType1 = objMgmtDocuments.GetDocumentTypeIdbyName("Manual");
-                //String DocumentType2 = objMgmtDocuments.GetDocumentTypeIdbyName("Procedure");
-                //String DocumentType3 = objMgmtDocuments.GetDocumentTypeIdbyName("Forms");
-                //String DocumentType4 = objMgmtDocuments.GetDocumentTypeIdbyName("Work Instructions");
+        //        //String DocumentType = objMgmtDocuments.GetDocumentTypeIdbyName("Policy");
+        //        //String DocumentType1 = objMgmtDocuments.GetDocumentTypeIdbyName("Manual");
+        //        //String DocumentType2 = objMgmtDocuments.GetDocumentTypeIdbyName("Procedure");
+        //        //String DocumentType3 = objMgmtDocuments.GetDocumentTypeIdbyName("Forms");
+        //        //String DocumentType4 = objMgmtDocuments.GetDocumentTypeIdbyName("Work Instructions");
 
 
-                string sSqlstmt = "select idMgmt,Department, DocLevels, Doctype, ISOStds, AppClauses, DocRef, DocName, IssueNo, RevNo, PreparedBy, ReviewedBy, DocDate,"
-                    + " DocUploadPath, ApprovedBy, (case when Approved_Status='1' then 'Approved' when Approved_Status='2' then 'Approval Rejected' else 'Not Approved' end) as Approved_Status," +
-                    "(case when Reviewed_Status='1' then 'Reviewed' when Reviewed_Status='2' then 'Review Rejected' else 'Not Reviewed' end) as Reviewed_Status, ApprovedDate, UploadedBy,branch,Location "
-                    + " from t_mgmt_documents where status=1";
+        //        string sSqlstmt = "select idMgmt,Department, DocLevels, Doctype, ISOStds, AppClauses, DocRef, DocName, IssueNo, RevNo, PreparedBy, ReviewedBy, DocDate,"
+        //            + " DocUploadPath, ApprovedBy, (case when Approved_Status='1' then 'Approved' when Approved_Status='2' then 'Approval Rejected' else 'Not Approved' end) as Approved_Status," +
+        //            "(case when Reviewed_Status='1' then 'Reviewed' when Reviewed_Status='2' then 'Review Rejected' else 'Not Reviewed' end) as Reviewed_Status, ApprovedDate, UploadedBy,branch,Location "
+        //            + " from t_mgmt_documents where status=1";
 
-                string sSearchtext = "";
+        //        string sSearchtext = "";
 
-                string sBranch_name = objGlobaldata.GetCurrentUserSession().division;
-                string sBranchtree = objGlobaldata.GetCurrentUserSession().BranchTree;
-                ViewBag.Branch = objGlobaldata.GetMultiBranchListByID(sBranchtree);
+        //        string sBranch_name = objGlobaldata.GetCurrentUserSession().division;
+        //        string sBranchtree = objGlobaldata.GetCurrentUserSession().BranchTree;
+        //        ViewBag.Branch = objGlobaldata.GetMultiBranchListByID(sBranchtree);
 
-                if (branch_name != null && branch_name != "")
-                {
-                    sSearchtext = sSearchtext + " and find_in_set('" + branch_name + "', branch)";
-                    ViewBag.Branch_name = branch_name;
-                }
-                else
-                {
-                    sSearchtext = sSearchtext + " and find_in_set('" + sBranch_name + "', branch)";
-                }
+        //        if (branch_name != null && branch_name != "")
+        //        {
+        //            sSearchtext = sSearchtext + " and find_in_set('" + branch_name + "', branch)";
+        //            ViewBag.Branch_name = branch_name;
+        //        }
+        //        else
+        //        {
+        //            sSearchtext = sSearchtext + " and find_in_set('" + sBranch_name + "', branch)";
+        //        }
 
-                UserCredentials objUser = new UserCredentials();
-                objUser = objGlobaldata.GetCurrentUserSession();
+        //        UserCredentials objUser = new UserCredentials();
+        //        objUser = objGlobaldata.GetCurrentUserSession();
 
-                string sDepartment = objGlobaldata.GetDeptNameById(objUser.DeptID);//retrieving employee deptid who logged in
+        //        string sDepartment = objGlobaldata.GetDeptNameById(objUser.DeptID);//retrieving employee deptid who logged in
 
-                ViewBag.user = objGlobaldata.GetEmpHrNameById(objUser.empid);
+        //        ViewBag.user = objGlobaldata.GetEmpHrNameById(objUser.empid);
 
-                ViewBag.CurrentEmpName = objUser.firstname;
-                ViewBag.Approvestatus = objGlobaldata.GetConstantValueKeyValuePair("DocStatus");
+        //        ViewBag.CurrentEmpName = objUser.firstname;
+        //        ViewBag.Approvestatus = objGlobaldata.GetConstantValueKeyValuePair("DocStatus");
 
-                ViewBag.Department = objGlobaldata.GetDepartmentWithIdListbox();
+        //        ViewBag.Department = objGlobaldata.GetDepartmentWithIdListbox();
                
-                //searching the company name
-                objMgmtDocuments.Department = form["Department"];//retrieving dept id
-                string sSDepartment = objGlobaldata.GetMultiDeptNameById(form["Department"]);//retrieving name by id
+        //        //searching the company name
+        //        objMgmtDocuments.Department = form["Department"];//retrieving dept id
+        //        string sSDepartment = objGlobaldata.GetMultiDeptNameById(form["Department"]);//retrieving name by id
 
-                objMgmtDocuments.Doctype = form["Doctype"];
-                string sSDocumentType = objGlobaldata.GetDocumentTypebyId(form["Doctype"]);
+        //        objMgmtDocuments.Doctype = form["Doctype"];
+        //        string sSDocumentType = objGlobaldata.GetDocumentTypebyId(form["Doctype"]);
 
-                //fetching deptid of Department="ALL"
-                //string AllDeptId = objGlobaldata.GetDeptIDByName(DepartName.ToLower());
+        //        //fetching deptid of Department="ALL"
+        //        //string AllDeptId = objGlobaldata.GetDeptIDByName(DepartName.ToLower());
 
-                if (objMgmtDocuments.Department == null)
-                {
-                    objMgmtDocuments.Department = "";
-                }
+        //        if (objMgmtDocuments.Department == null)
+        //        {
+        //            objMgmtDocuments.Department = "";
+        //        }
 
-                if (Approvestatus == null)
-                {
-                    Approvestatus = "";
-                }
+        //        if (Approvestatus == null)
+        //        {
+        //            Approvestatus = "";
+        //        }
 
-                if (objMgmtDocuments.Doctype == null)
-                {
-                    objMgmtDocuments.Doctype = "";
-                }
+        //        if (objMgmtDocuments.Doctype == null)
+        //        {
+        //            objMgmtDocuments.Doctype = "";
+        //        }
 
-                if (!(objGlobaldata.GetMultiRolesNameById(objUser.role).Contains("Admin")))
-                {
-                    sSearchtext = sSearchtext + " and (find_in_set('" + objUser.DeptID + "', view_by) or find_in_set('0', view_by))";
-                    //sSearchtext = sSearchtext + " and (FIND_IN_SET(Department ,'" + objGlobaldata.GetCurrentUserSession().DeptID + "'))";
-                }
+        //        if (!(objGlobaldata.GetMultiRolesNameById(objUser.role).Contains("Admin")))
+        //        {
+        //            sSearchtext = sSearchtext + " and (find_in_set('" + objUser.DeptID + "', view_by) or find_in_set('0', view_by))";
+        //            //sSearchtext = sSearchtext + " and (FIND_IN_SET(Department ,'" + objGlobaldata.GetCurrentUserSession().DeptID + "'))";
+        //        }
 
-               sSqlstmt = sSqlstmt + sSearchtext + " order by Doctype";
+        //       sSqlstmt = sSqlstmt + sSearchtext + " order by Doctype";
 
-                DataSet dsMgmtDocumentsList = objGlobaldata.Getdetails(sSqlstmt);
-                if (dsMgmtDocumentsList.Tables.Count > 0 && dsMgmtDocumentsList.Tables[0].Rows.Count > 0)
-                {
-                    for (int i = 0; i < dsMgmtDocumentsList.Tables[0].Rows.Count; i++)
-                    {
-                        DateTime dtDocDate = Convert.ToDateTime(dsMgmtDocumentsList.Tables[0].Rows[i]["DocDate"].ToString());
-                        //string sDept = "";
-                        //if (dsMgmtDocumentsList.Tables[0].Rows[i]["Dept"].ToString() != "")
-                        //{
-                        //    sDept = objGlobaldata.GetDeptNameById(dsMgmtDocumentsList.Tables[0].Rows[i]["Dept"].ToString());
-                        //}
-                        try
-                        {
-                            MgmtDocumentsModels objMgmtDocumentsModels = new MgmtDocumentsModels
-                            {
-                                idMgmt = Convert.ToInt16(dsMgmtDocumentsList.Tables[0].Rows[i]["idMgmt"].ToString()),
+        //        DataSet dsMgmtDocumentsList = objGlobaldata.Getdetails(sSqlstmt);
+        //        if (dsMgmtDocumentsList.Tables.Count > 0 && dsMgmtDocumentsList.Tables[0].Rows.Count > 0)
+        //        {
+        //            for (int i = 0; i < dsMgmtDocumentsList.Tables[0].Rows.Count; i++)
+        //            {
+        //                DateTime dtDocDate = Convert.ToDateTime(dsMgmtDocumentsList.Tables[0].Rows[i]["DocDate"].ToString());
+        //                //string sDept = "";
+        //                //if (dsMgmtDocumentsList.Tables[0].Rows[i]["Dept"].ToString() != "")
+        //                //{
+        //                //    sDept = objGlobaldata.GetDeptNameById(dsMgmtDocumentsList.Tables[0].Rows[i]["Dept"].ToString());
+        //                //}
+        //                try
+        //                {
+        //                    MgmtDocumentsModels objMgmtDocumentsModels = new MgmtDocumentsModels
+        //                    {
+        //                        idMgmt = Convert.ToInt16(dsMgmtDocumentsList.Tables[0].Rows[i]["idMgmt"].ToString()),
 
-                                Department = objGlobaldata.GetMultiDeptNameById(dsMgmtDocumentsList.Tables[0].Rows[i]["Department"].ToString()),
-                                DocLevels = objGlobaldata.GetDocumentLevelbyId(dsMgmtDocumentsList.Tables[0].Rows[i]["DocLevels"].ToString()),
-                                Doctype = objGlobaldata.GetDocumentTypebyId(dsMgmtDocumentsList.Tables[0].Rows[i]["Doctype"].ToString()),
-                                ISOStds = objGlobaldata.GetIsoStdNamebyId(dsMgmtDocumentsList.Tables[0].Rows[i]["ISOStds"].ToString()),
-                                AppClauses = objMgmtDocuments.GetMultiISOClauseNameById(dsMgmtDocumentsList.Tables[0].Rows[i]["AppClauses"].ToString()),
-                                DocRef = dsMgmtDocumentsList.Tables[0].Rows[i]["DocRef"].ToString(),
-                                DocName = dsMgmtDocumentsList.Tables[0].Rows[i]["DocName"].ToString(),
-                                IssueNo = dsMgmtDocumentsList.Tables[0].Rows[i]["IssueNo"].ToString(),
-                                RevNo = dsMgmtDocumentsList.Tables[0].Rows[i]["RevNo"].ToString(),
-                                DocDate = dtDocDate,
-                                PreparedBy = objGlobaldata.GetMultiHrEmpNameById(dsMgmtDocumentsList.Tables[0].Rows[i]["PreparedBy"].ToString()),
-                                ReviewedBy = objGlobaldata.GetMultiHrEmpNameById(dsMgmtDocumentsList.Tables[0].Rows[i]["ReviewedBy"].ToString()),
-                                DocUploadPath = dsMgmtDocumentsList.Tables[0].Rows[i]["DocUploadPath"].ToString(),
-                                ApprovedBy = objGlobaldata.GetMultiHrEmpNameById(dsMgmtDocumentsList.Tables[0].Rows[i]["ApprovedBy"].ToString()),
-                                Approved_Status = dsMgmtDocumentsList.Tables[0].Rows[i]["Approved_Status"].ToString(),
-                                Reviewed_Status = dsMgmtDocumentsList.Tables[0].Rows[i]["Reviewed_Status"].ToString(),
-                                UploadedBy = objGlobaldata.GetMultiHrEmpNameById(dsMgmtDocumentsList.Tables[0].Rows[i]["UploadedBy"].ToString()),
-                                DocRetention = objGlobaldata.GetDropdownitemById(dsMgmtDocumentsList.Tables[0].Rows[i]["Doctype"].ToString()),
-                                branch = objGlobaldata.GetMultiCompanyBranchNameById(dsMgmtDocumentsList.Tables[0].Rows[i]["branch"].ToString()),
-                                Location = objGlobaldata.GetDivisionLocationById(dsMgmtDocumentsList.Tables[0].Rows[i]["Location"].ToString()),
-                            };
+        //                        Department = objGlobaldata.GetMultiDeptNameById(dsMgmtDocumentsList.Tables[0].Rows[i]["Department"].ToString()),
+        //                        DocLevels = objGlobaldata.GetDocumentLevelbyId(dsMgmtDocumentsList.Tables[0].Rows[i]["DocLevels"].ToString()),
+        //                        Doctype = objGlobaldata.GetDocumentTypebyId(dsMgmtDocumentsList.Tables[0].Rows[i]["Doctype"].ToString()),
+        //                        ISOStds = objGlobaldata.GetIsoStdNamebyId(dsMgmtDocumentsList.Tables[0].Rows[i]["ISOStds"].ToString()),
+        //                        AppClauses = objMgmtDocuments.GetMultiISOClauseNameById(dsMgmtDocumentsList.Tables[0].Rows[i]["AppClauses"].ToString()),
+        //                        DocRef = dsMgmtDocumentsList.Tables[0].Rows[i]["DocRef"].ToString(),
+        //                        DocName = dsMgmtDocumentsList.Tables[0].Rows[i]["DocName"].ToString(),
+        //                        IssueNo = dsMgmtDocumentsList.Tables[0].Rows[i]["IssueNo"].ToString(),
+        //                        RevNo = dsMgmtDocumentsList.Tables[0].Rows[i]["RevNo"].ToString(),
+        //                        DocDate = dtDocDate,
+        //                        PreparedBy = objGlobaldata.GetMultiHrEmpNameById(dsMgmtDocumentsList.Tables[0].Rows[i]["PreparedBy"].ToString()),
+        //                        ReviewedBy = objGlobaldata.GetMultiHrEmpNameById(dsMgmtDocumentsList.Tables[0].Rows[i]["ReviewedBy"].ToString()),
+        //                        DocUploadPath = dsMgmtDocumentsList.Tables[0].Rows[i]["DocUploadPath"].ToString(),
+        //                        ApprovedBy = objGlobaldata.GetMultiHrEmpNameById(dsMgmtDocumentsList.Tables[0].Rows[i]["ApprovedBy"].ToString()),
+        //                        Approved_Status = dsMgmtDocumentsList.Tables[0].Rows[i]["Approved_Status"].ToString(),
+        //                        Reviewed_Status = dsMgmtDocumentsList.Tables[0].Rows[i]["Reviewed_Status"].ToString(),
+        //                        UploadedBy = objGlobaldata.GetMultiHrEmpNameById(dsMgmtDocumentsList.Tables[0].Rows[i]["UploadedBy"].ToString()),
+        //                        DocRetention = objGlobaldata.GetDropdownitemById(dsMgmtDocumentsList.Tables[0].Rows[i]["Doctype"].ToString()),
+        //                        branch = objGlobaldata.GetMultiCompanyBranchNameById(dsMgmtDocumentsList.Tables[0].Rows[i]["branch"].ToString()),
+        //                        Location = objGlobaldata.GetDivisionLocationById(dsMgmtDocumentsList.Tables[0].Rows[i]["Location"].ToString()),
+        //                    };
 
-                            if (dsMgmtDocumentsList.Tables[0].Rows[i]["ApprovedDate"].ToString() != ""
-                                && DateTime.TryParse(dsMgmtDocumentsList.Tables[0].Rows[i]["ApprovedDate"].ToString(), out dtDocDate))
-                            {
-                                objMgmtDocumentsModels.ApprovedDate = dtDocDate;
-                            }
+        //                    if (dsMgmtDocumentsList.Tables[0].Rows[i]["ApprovedDate"].ToString() != ""
+        //                        && DateTime.TryParse(dsMgmtDocumentsList.Tables[0].Rows[i]["ApprovedDate"].ToString(), out dtDocDate))
+        //                    {
+        //                        objMgmtDocumentsModels.ApprovedDate = dtDocDate;
+        //                    }
 
-                            objMgmtDocumentsList.MgmtDocumentsMList.Add(objMgmtDocumentsModels);
-                        }
-                        catch (Exception ex)
-                        {
-                            objGlobaldata.AddFunctionalLog("Exception in MgmtDocumentsList: " + ex.ToString());
-                            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                        }
-                    }
+        //                    objMgmtDocumentsList.MgmtDocumentsMList.Add(objMgmtDocumentsModels);
+        //                }
+        //                catch (Exception ex)
+        //                {
+        //                    objGlobaldata.AddFunctionalLog("Exception in MgmtDocumentsList: " + ex.ToString());
+        //                    TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+        //                }
+        //            }
 
-                }
-            }
-            catch (Exception ex)
-            {
-                objGlobaldata.AddFunctionalLog("Exception in MgmtDocumentsList: " + ex.ToString());
-                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-            }
-            return Json("Success");
-        }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        objGlobaldata.AddFunctionalLog("Exception in MgmtDocumentsList: " + ex.ToString());
+        //        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+        //    }
+        //    return Json("Success");
+        //}
 
 
-        [AllowAnonymous]
-        public ActionResult MgmtDocumentsListSearch(FormCollection form, string SearchText, string Approvestatus, int? page)
-        {
-            ViewBag.SubMenutype = "MgmtDocuments";
+        //[AllowAnonymous]
+        //public ActionResult MgmtDocumentsListSearch(FormCollection form, string SearchText, string Approvestatus, int? page)
+        //{
+        //    ViewBag.SubMenutype = "MgmtDocuments";
 
-            MgmtDocumentsModelsList objMgmtDocumentsList = new MgmtDocumentsModelsList();
-            objMgmtDocumentsList.MgmtDocumentsMList = new List<MgmtDocumentsModels>();
+        //    MgmtDocumentsModelsList objMgmtDocumentsList = new MgmtDocumentsModelsList();
+        //    objMgmtDocumentsList.MgmtDocumentsMList = new List<MgmtDocumentsModels>();
 
-            MgmtDocumentsModels objMgmtDocuments = new MgmtDocumentsModels();
+        //    MgmtDocumentsModels objMgmtDocuments = new MgmtDocumentsModels();
 
-            //ViewBag.View = Request.QueryString["View"];
+        //    //ViewBag.View = Request.QueryString["View"];
 
-            //String DocumentType = objMgmtDocuments.GetDocumentTypeIdbyName("Policy");
-            //String DocumentType1 = objMgmtDocuments.GetDocumentTypeIdbyName("Manual");
-            //String DocumentType2 = objMgmtDocuments.GetDocumentTypeIdbyName("Procedure");
-            //String DocumentType3 = objMgmtDocuments.GetDocumentTypeIdbyName("Forms");
-            //String DocumentType4 = objMgmtDocuments.GetDocumentTypeIdbyName("Work Instructions");
+        //    //String DocumentType = objMgmtDocuments.GetDocumentTypeIdbyName("Policy");
+        //    //String DocumentType1 = objMgmtDocuments.GetDocumentTypeIdbyName("Manual");
+        //    //String DocumentType2 = objMgmtDocuments.GetDocumentTypeIdbyName("Procedure");
+        //    //String DocumentType3 = objMgmtDocuments.GetDocumentTypeIdbyName("Forms");
+        //    //String DocumentType4 = objMgmtDocuments.GetDocumentTypeIdbyName("Work Instructions");
 
-            try
-            {
-                string sSqlstmt = "select idMgmt,Department, DocLevels, Doctype, ISOStds, AppClauses, DocRef, DocName, IssueNo, RevNo, PreparedBy, ReviewedBy, DocDate,"
-                    + " DocUploadPath, ApprovedBy, (case when Approved_Status='1' then 'Approved' when Approved_Status='2' then 'Approved Rejected' else 'Not Approved' end) as Approved_Status," +
-                    "(case when Reviewed_Status='1' then 'Reviewed' when Reviewed_Status='2' then 'Review Rejected' else 'Not Reviewed' end) as Reviewed_Status, ApprovedDate, UploadedBy,view_by,Location"
-                    + " from t_mgmt_documents where status=1";
+        //    try
+        //    {
+        //        string sSqlstmt = "select idMgmt,Department, DocLevels, Doctype, ISOStds, AppClauses, DocRef, DocName, IssueNo, RevNo, PreparedBy, ReviewedBy, DocDate,"
+        //            + " DocUploadPath, ApprovedBy, (case when Approved_Status='1' then 'Approved' when Approved_Status='2' then 'Approved Rejected' else 'Not Approved' end) as Approved_Status," +
+        //            "(case when Reviewed_Status='1' then 'Reviewed' when Reviewed_Status='2' then 'Review Rejected' else 'Not Reviewed' end) as Reviewed_Status, ApprovedDate, UploadedBy,view_by,Location"
+        //            + " from t_mgmt_documents where status=1";
 
-                string sSearchtext = "", sApproveStatus = "", DepartName = "ALL";
+        //        string sSearchtext = "", sApproveStatus = "", DepartName = "ALL";
 
-                UserCredentials objUser = new UserCredentials();
-                objUser = objGlobaldata.GetCurrentUserSession();
+        //        UserCredentials objUser = new UserCredentials();
+        //        objUser = objGlobaldata.GetCurrentUserSession();
 
-                string sDepartment = objGlobaldata.GetDeptNameById(objUser.DeptID);//retrieving employee deptid who logged in
+        //        string sDepartment = objGlobaldata.GetDeptNameById(objUser.DeptID);//retrieving employee deptid who logged in
 
-                ViewBag.user = objGlobaldata.GetEmpHrNameById(objUser.empid);
+        //        ViewBag.user = objGlobaldata.GetEmpHrNameById(objUser.empid);
 
-                ViewBag.CurrentEmpName = objUser.firstname;
-                ViewBag.Approvestatus = objGlobaldata.GetConstantValueKeyValuePair("DocStatus");
+        //        ViewBag.CurrentEmpName = objUser.firstname;
+        //        ViewBag.Approvestatus = objGlobaldata.GetConstantValueKeyValuePair("DocStatus");
 
-                ViewBag.Department = objGlobaldata.GetDepartmentWithIdListbox();
+        //        ViewBag.Department = objGlobaldata.GetDepartmentWithIdListbox();
               
-                //searching the company name
-                objMgmtDocuments.Department = form["Department"];//retrieving dept id
-                string sSDepartment = objGlobaldata.GetMultiDeptNameById(form["Department"]);//retrieving name by id
+        //        //searching the company name
+        //        objMgmtDocuments.Department = form["Department"];//retrieving dept id
+        //        string sSDepartment = objGlobaldata.GetMultiDeptNameById(form["Department"]);//retrieving name by id
 
-                objMgmtDocuments.Doctype = form["Doctype"];
-                string sSDocumentType = objGlobaldata.GetDocumentTypebyId(form["Doctype"]);
+        //        objMgmtDocuments.Doctype = form["Doctype"];
+        //        string sSDocumentType = objGlobaldata.GetDocumentTypebyId(form["Doctype"]);
 
-                //fetching deptid of Department="ALL"
-                string AllDeptId = objGlobaldata.GetDeptIDByName(DepartName.ToLower());
+        //        //fetching deptid of Department="ALL"
+        //        string AllDeptId = objGlobaldata.GetDeptIDByName(DepartName.ToLower());
 
-                if (objMgmtDocuments.Department == null)
-                {
-                    objMgmtDocuments.Department = "";
-                }
+        //        if (objMgmtDocuments.Department == null)
+        //        {
+        //            objMgmtDocuments.Department = "";
+        //        }
 
-                if (Approvestatus == null)
-                {
-                    Approvestatus = "";
-                }
+        //        if (Approvestatus == null)
+        //        {
+        //            Approvestatus = "";
+        //        }
 
-                if (objMgmtDocuments.Doctype == null)
-                {
-                    objMgmtDocuments.Doctype = "";
-                }
+        //        if (objMgmtDocuments.Doctype == null)
+        //        {
+        //            objMgmtDocuments.Doctype = "";
+        //        }
 
-                if (!(objGlobaldata.GetMultiRolesNameById(objUser.role).Contains("Admin")))
-                {
-                    sSearchtext = sSearchtext + " and (Department='" + objUser.DeptID + "' or Department='" + AllDeptId + "')";
-                    //sSearchtext = sSearchtext + " and (FIND_IN_SET(Department ,'" + objGlobaldata.GetCurrentUserSession().DeptID + "'))";
-                }
+        //        if (!(objGlobaldata.GetMultiRolesNameById(objUser.role).Contains("Admin")))
+        //        {
+        //            sSearchtext = sSearchtext + " and (Department='" + objUser.DeptID + "' or Department='" + AllDeptId + "')";
+        //            //sSearchtext = sSearchtext + " and (FIND_IN_SET(Department ,'" + objGlobaldata.GetCurrentUserSession().DeptID + "'))";
+        //        }
 
-                //if (objMgmtDocuments.Department != null && sSDepartment != "ALL")
-
-
-                sSqlstmt = sSqlstmt + sSearchtext + " order by DocLevels asc, DocRef asc";
-
-                DataSet dsMgmtDocumentsList = objGlobaldata.Getdetails(sSqlstmt);
-                if (dsMgmtDocumentsList.Tables.Count > 0 && dsMgmtDocumentsList.Tables[0].Rows.Count > 0)
-                {
+        //        //if (objMgmtDocuments.Department != null && sSDepartment != "ALL")
 
 
+        //        sSqlstmt = sSqlstmt + sSearchtext + " order by DocLevels asc, DocRef asc";
 
-                    for (int i = 0; i < dsMgmtDocumentsList.Tables[0].Rows.Count; i++)
-                    {
-                        DateTime dtDocDate = Convert.ToDateTime(dsMgmtDocumentsList.Tables[0].Rows[i]["DocDate"].ToString());
-                        //string sDept = "";
-                        //if (dsMgmtDocumentsList.Tables[0].Rows[i]["Dept"].ToString() != "")
-                        //{
-                        //    sDept = objGlobaldata.GetDeptNameById(dsMgmtDocumentsList.Tables[0].Rows[i]["Dept"].ToString());
-                        //}
-                        try
-                        {
-                            MgmtDocumentsModels objMgmtDocumentsModels = new MgmtDocumentsModels
-                            {
-                                idMgmt = Convert.ToInt16(dsMgmtDocumentsList.Tables[0].Rows[i]["idMgmt"].ToString()),
+        //        DataSet dsMgmtDocumentsList = objGlobaldata.Getdetails(sSqlstmt);
+        //        if (dsMgmtDocumentsList.Tables.Count > 0 && dsMgmtDocumentsList.Tables[0].Rows.Count > 0)
+        //        {
 
-                                Department = objGlobaldata.GetMultiDeptNameById(dsMgmtDocumentsList.Tables[0].Rows[i]["Department"].ToString()),
-                                DocLevels = objGlobaldata.GetDocumentLevelbyId(dsMgmtDocumentsList.Tables[0].Rows[i]["DocLevels"].ToString()),
-                                Doctype = objGlobaldata.GetDocumentTypebyId(dsMgmtDocumentsList.Tables[0].Rows[i]["Doctype"].ToString()),
-                                ISOStds = objGlobaldata.GetIsoStdNamebyId(dsMgmtDocumentsList.Tables[0].Rows[i]["ISOStds"].ToString()),
-                                AppClauses = objMgmtDocuments.GetMultiISOClauseNameById(dsMgmtDocumentsList.Tables[0].Rows[i]["AppClauses"].ToString()),
-                                DocRef = dsMgmtDocumentsList.Tables[0].Rows[i]["DocRef"].ToString(),
-                                DocName = dsMgmtDocumentsList.Tables[0].Rows[i]["DocName"].ToString(),
-                                IssueNo = dsMgmtDocumentsList.Tables[0].Rows[i]["IssueNo"].ToString(),
-                                RevNo = dsMgmtDocumentsList.Tables[0].Rows[i]["RevNo"].ToString(),
-                                DocDate = dtDocDate,
-                                PreparedBy = objGlobaldata.GetMultiHrEmpNameById(dsMgmtDocumentsList.Tables[0].Rows[i]["PreparedBy"].ToString()),
-                                ReviewedBy = objGlobaldata.GetMultiHrEmpNameById(dsMgmtDocumentsList.Tables[0].Rows[i]["ReviewedBy"].ToString()),
-                                DocUploadPath = dsMgmtDocumentsList.Tables[0].Rows[i]["DocUploadPath"].ToString(),
-                                ApprovedBy = objGlobaldata.GetMultiHrEmpNameById(dsMgmtDocumentsList.Tables[0].Rows[i]["ApprovedBy"].ToString()),
-                                Approved_Status = dsMgmtDocumentsList.Tables[0].Rows[i]["Approved_Status"].ToString(),
-                                Reviewed_Status = dsMgmtDocumentsList.Tables[0].Rows[i]["Reviewed_Status"].ToString(),
-                                UploadedBy = objGlobaldata.GetMultiHrEmpNameById(dsMgmtDocumentsList.Tables[0].Rows[i]["UploadedBy"].ToString()),
-                                view_by = objGlobaldata.GetViewDeptNameById(dsMgmtDocumentsList.Tables[0].Rows[i]["view_by"].ToString()),
-                                Location = objGlobaldata.GetDivisionLocationById(dsMgmtDocumentsList.Tables[0].Rows[i]["Location"].ToString()),
-                            };
 
-                            if (dsMgmtDocumentsList.Tables[0].Rows[i]["ApprovedDate"].ToString() != ""
-                                && DateTime.TryParse(dsMgmtDocumentsList.Tables[0].Rows[i]["ApprovedDate"].ToString(), out dtDocDate))
-                            {
-                                objMgmtDocumentsModels.ApprovedDate = dtDocDate;
-                            }
 
-                            objMgmtDocumentsList.MgmtDocumentsMList.Add(objMgmtDocumentsModels);
-                        }
-                        catch (Exception ex)
-                        {
-                            objGlobaldata.AddFunctionalLog("Exception in MgmtDocumentsListSearch: " + ex.ToString());
-                            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                        }
-                    }
+        //            for (int i = 0; i < dsMgmtDocumentsList.Tables[0].Rows.Count; i++)
+        //            {
+        //                DateTime dtDocDate = Convert.ToDateTime(dsMgmtDocumentsList.Tables[0].Rows[i]["DocDate"].ToString());
+        //                //string sDept = "";
+        //                //if (dsMgmtDocumentsList.Tables[0].Rows[i]["Dept"].ToString() != "")
+        //                //{
+        //                //    sDept = objGlobaldata.GetDeptNameById(dsMgmtDocumentsList.Tables[0].Rows[i]["Dept"].ToString());
+        //                //}
+        //                try
+        //                {
+        //                    MgmtDocumentsModels objMgmtDocumentsModels = new MgmtDocumentsModels
+        //                    {
+        //                        idMgmt = Convert.ToInt16(dsMgmtDocumentsList.Tables[0].Rows[i]["idMgmt"].ToString()),
 
-                }
-            }
-            catch (Exception ex)
-            {
-                objGlobaldata.AddFunctionalLog("Exception in MgmtDocumentsListSearch: " + ex.ToString());
-                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-            }
-            return View(objMgmtDocumentsList.MgmtDocumentsMList.ToList().ToPagedList(page ?? 1, 1000));
-        }
+        //                        Department = objGlobaldata.GetMultiDeptNameById(dsMgmtDocumentsList.Tables[0].Rows[i]["Department"].ToString()),
+        //                        DocLevels = objGlobaldata.GetDocumentLevelbyId(dsMgmtDocumentsList.Tables[0].Rows[i]["DocLevels"].ToString()),
+        //                        Doctype = objGlobaldata.GetDocumentTypebyId(dsMgmtDocumentsList.Tables[0].Rows[i]["Doctype"].ToString()),
+        //                        ISOStds = objGlobaldata.GetIsoStdNamebyId(dsMgmtDocumentsList.Tables[0].Rows[i]["ISOStds"].ToString()),
+        //                        AppClauses = objMgmtDocuments.GetMultiISOClauseNameById(dsMgmtDocumentsList.Tables[0].Rows[i]["AppClauses"].ToString()),
+        //                        DocRef = dsMgmtDocumentsList.Tables[0].Rows[i]["DocRef"].ToString(),
+        //                        DocName = dsMgmtDocumentsList.Tables[0].Rows[i]["DocName"].ToString(),
+        //                        IssueNo = dsMgmtDocumentsList.Tables[0].Rows[i]["IssueNo"].ToString(),
+        //                        RevNo = dsMgmtDocumentsList.Tables[0].Rows[i]["RevNo"].ToString(),
+        //                        DocDate = dtDocDate,
+        //                        PreparedBy = objGlobaldata.GetMultiHrEmpNameById(dsMgmtDocumentsList.Tables[0].Rows[i]["PreparedBy"].ToString()),
+        //                        ReviewedBy = objGlobaldata.GetMultiHrEmpNameById(dsMgmtDocumentsList.Tables[0].Rows[i]["ReviewedBy"].ToString()),
+        //                        DocUploadPath = dsMgmtDocumentsList.Tables[0].Rows[i]["DocUploadPath"].ToString(),
+        //                        ApprovedBy = objGlobaldata.GetMultiHrEmpNameById(dsMgmtDocumentsList.Tables[0].Rows[i]["ApprovedBy"].ToString()),
+        //                        Approved_Status = dsMgmtDocumentsList.Tables[0].Rows[i]["Approved_Status"].ToString(),
+        //                        Reviewed_Status = dsMgmtDocumentsList.Tables[0].Rows[i]["Reviewed_Status"].ToString(),
+        //                        UploadedBy = objGlobaldata.GetMultiHrEmpNameById(dsMgmtDocumentsList.Tables[0].Rows[i]["UploadedBy"].ToString()),
+        //                        view_by = objGlobaldata.GetViewDeptNameById(dsMgmtDocumentsList.Tables[0].Rows[i]["view_by"].ToString()),
+        //                        Location = objGlobaldata.GetDivisionLocationById(dsMgmtDocumentsList.Tables[0].Rows[i]["Location"].ToString()),
+        //                    };
+
+        //                    if (dsMgmtDocumentsList.Tables[0].Rows[i]["ApprovedDate"].ToString() != ""
+        //                        && DateTime.TryParse(dsMgmtDocumentsList.Tables[0].Rows[i]["ApprovedDate"].ToString(), out dtDocDate))
+        //                    {
+        //                        objMgmtDocumentsModels.ApprovedDate = dtDocDate;
+        //                    }
+
+        //                    objMgmtDocumentsList.MgmtDocumentsMList.Add(objMgmtDocumentsModels);
+        //                }
+        //                catch (Exception ex)
+        //                {
+        //                    objGlobaldata.AddFunctionalLog("Exception in MgmtDocumentsListSearch: " + ex.ToString());
+        //                    TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+        //                }
+        //            }
+
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        objGlobaldata.AddFunctionalLog("Exception in MgmtDocumentsListSearch: " + ex.ToString());
+        //        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+        //    }
+        //    return View(objMgmtDocumentsList.MgmtDocumentsMList.ToList().ToPagedList(page ?? 1, 1000));
+        //}
 
        
 
@@ -1169,7 +1171,7 @@ namespace ISOStd.Controllers
                     string sSqlstmt = "select idMgmt, DocLevels,Department, Doctype, ISOStds, AppClauses, DocRef, DocName, IssueNo, RevNo, PreparedBy, ReviewedBy, DocDate,"
                         + " DocUploadPath, ApprovedBy, (case when Approved_Status='1' then 'Approved' when Approved_Status='2' then 'Rejected' else 'Not Approved' end) as Approved_Status,"
                         +"(case when Reviewed_Status = '1' then 'Reviewed' when Reviewed_Status = '2' then 'Review Rejected' else 'Not Reviewed' end) as Reviewed_Status, ApprovedDate,ReviewedDate, "
-                        + "UploadedBy,branch,Location,Reviewers,Approvers,Reviewed_Status as Reviewed_StatusId,Approved_Status as Approved_StatusId,dcr_no from t_mgmt_documents where idmgmt='" + idMgmt + "'";
+                        + "UploadedBy,branch,Location,Reviewers,Approvers,Reviewed_Status as Reviewed_StatusId,Approved_Status as Approved_StatusId,dcr_no,view_by from t_mgmt_documents where idmgmt='" + idMgmt + "'";
 
                     DataSet dsMgmtDocumentsList = objGlobaldata.Getdetails(sSqlstmt);
 
@@ -1212,6 +1214,8 @@ namespace ISOStd.Controllers
                             Reviewed_StatusId = dsMgmtDocumentsList.Tables[0].Rows[0]["Reviewed_StatusId"].ToString(),
                             Approved_StatusId = dsMgmtDocumentsList.Tables[0].Rows[0]["Approved_StatusId"].ToString(),
                             dcr_no = objGlobaldata.GetDCRNOById(dsMgmtDocumentsList.Tables[0].Rows[0]["dcr_no"].ToString()),
+                            view_by = objGlobaldata.GetViewDeptNameById(dsMgmtDocumentsList.Tables[0].Rows[0]["view_by"].ToString()),
+
                         };
                         if (objMgmtDocumentsModels.Reviewers != "0")
                         {
@@ -1253,7 +1257,7 @@ namespace ISOStd.Controllers
                     TempData["alertdata"] = "Document Id cannot be Null or empty";
                     return RedirectToAction("MgmtDocumentsList");
                 }
-            }
+            }       
             catch (Exception ex)
             {
                 objGlobaldata.AddFunctionalLog("Exception in MgmtDocumentsDetails: " + ex.ToString());

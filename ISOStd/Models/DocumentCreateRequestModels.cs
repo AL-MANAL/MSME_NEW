@@ -41,7 +41,7 @@ namespace ISOStd.Models
         [Display(Name = "Upload")]
         public string upload { get; set; }
 
-        [Display(Name = "To be checked by (IMS Group Rep.)")]
+        [Display(Name = "To be checked by (Department Head.)")]
         public string checkedby { get; set; }      
 
         [Display(Name = "Agreed")]
@@ -50,7 +50,7 @@ namespace ISOStd.Models
         [Display(Name = "Comments")]
         public string comments { get; set; }
 
-        [Display(Name = "Document Control")]
+        [Display(Name = "Assistant Manager QHSE")]
         public string doc_control { get; set; }
         public string doc_controlName { get; set;}
 
@@ -70,10 +70,10 @@ namespace ISOStd.Models
         public string doc_status { get; set; }
         public string doc_statusId { get; set; }
 
-        [Display(Name = "IMS Rep. Approve date")]
+        [Display(Name = "Department Head Approve date")]
         public DateTime checkedby_approve_date { get; set; }
 
-        [Display(Name = "Document Controller Approve Date")]
+        [Display(Name = "Assistant manager QHSE Approve Date")]
         public DateTime controller_approve_date { get; set; }
 
         [Display (Name = "Check List" )]
@@ -105,7 +105,8 @@ namespace ISOStd.Models
                 {
                     if (iid_doc_request > 0)
                     {
-                        string sName = objGlobalData.GetBranchShortNameByID(division)+"-"+ objGlobalData.GetDeptNameById(department);
+                        // string sName = objGlobalData.GetBranchShortNameByID(division)+"-"+ objGlobalData.GetDeptNameById(department);
+                        string sName = objGlobalData.GetBranchShortNameByID(division);
                         DataSet dsData = objGlobalData.GetReportNo("DocCreateRequest", "", sName);
                         if (dsData != null && dsData.Tables.Count > 0)
                         {
@@ -154,7 +155,7 @@ namespace ISOStd.Models
         {
             try
             {
-                string sApprovedDate = DateTime.Now.ToString("yyyy-MM-dd");
+                string sApprovedDate = DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss");
 
                 string sSqlstmt = "update t_document_create_request set checklist_id='" + objPortal.checklist_id 
                     + "',agreed='" + objPortal.agreed + "',comments='" + objPortal.comments 
@@ -254,7 +255,7 @@ namespace ISOStd.Models
         {
             try
             {
-                string sApprovedDate = DateTime.Now.ToString("yyyy-MM-dd");
+                string sApprovedDate = DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss");
 
                 string sSqlstmt = "update t_document_create_request set division ='" + objPortal.division + "', `department`='" + objPortal.department
                    /* + "', `location`='" + objPortal.location+ "', doc_level='" + objPortal.doc_level + "',doc_title='" + objPortal.doc_title*/

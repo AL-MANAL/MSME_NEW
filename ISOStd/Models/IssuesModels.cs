@@ -68,6 +68,11 @@ namespace ISOStd.Models
         [Display(Name = "Notified To")]
         public string notified_to { get; set; }
 
+
+        [Display(Name = "Impact in detail")]
+        public string Impact_detail { get; set; }
+        
+
         internal bool CheckForIssueRefNoExists(string sIssue_refno)
         {
             try
@@ -126,7 +131,7 @@ namespace ISOStd.Models
                 string sFiledValue = "";
 
                 string sSqlstmt = "insert into t_issues (Issue,IssueType, Impact,Isostd, Evidence,ImpactDesc," +
-                    "Effect,Issue_refno,Deptid,Issue_Category,branch,Location,reporting_to,notified_to,loggedby";
+                    "Effect,Issue_refno,Deptid,Issue_Category,branch,Location,reporting_to,notified_to,loggedby,Impact_detail";
                     
                     if(objissue.issue_date != null && objissue.issue_date > Convert.ToDateTime("01/01/0001"))
                     {
@@ -136,7 +141,8 @@ namespace ISOStd.Models
 
                 sSqlstmt = sSqlstmt + sFiled + " ) values('" + objissue.Issue + "','" + objissue.IssueType + "','" + objissue.Impact + "'"
                     + ",'" + objissue.Isostd + "','" + objissue.Evidence + "','" + objissue.ImpactDesc + "','" + objissue.Effect + "','" + objissue.Issue_refno + "','" + objissue.Deptid + "','"
-                    + objissue.Issue_Category + "','" + objissue.branch + "','" + objissue.Location + "','" + objissue.reporting_to + "','" + objissue.notified_to + "','" + objGlobalData.GetCurrentUserSession().empid +"'";
+                    + objissue.Issue_Category + "','" + objissue.branch + "','" + objissue.Location + "','" + objissue.reporting_to + "','" + objissue.notified_to 
+                    + "','" + objGlobalData.GetCurrentUserSession().empid + "','" + objissue.Impact_detail + "'";
                     
                 sSqlstmt = sSqlstmt + sFiledValue + ")";
                 int iid_issue = 0;
@@ -272,7 +278,8 @@ namespace ISOStd.Models
             {
                 string sSqlstmt = "update t_issues set Issue ='" + objIssue.Issue + "', IssueType='" + objIssue.IssueType + "', "
                     + "Impact='" + objIssue.Impact + "',Isostd='" + objIssue.Isostd + "',ImpactDesc='" + objIssue.ImpactDesc + "',Effect='" + objIssue.Effect
-                /*+ ",Deptid='" + objIssue.Deptid*/ + "',Issue_Category='" + objIssue.Issue_Category + "',reporting_to='" + objIssue.reporting_to + "',notified_to='" + objIssue.notified_to + "'";
+                /*+ ",Deptid='" + objIssue.Deptid*/ + "',Issue_Category='" + objIssue.Issue_Category + "',reporting_to='" + objIssue.reporting_to 
+                + "',notified_to='" + objIssue.notified_to + "',Impact_detail='" + objIssue.Impact_detail + "'";
 
                 if (objIssue.Evidence != null)
                 {

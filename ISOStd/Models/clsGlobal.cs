@@ -25,6 +25,41 @@ namespace ISOStd.Models
         private object fileUploader;
         private object mail;
 
+        public MultiSelectList GetHrEmployeeListbyDesignation(string Designation)
+        {
+            EmployeeList emplist = new EmployeeList();
+            emplist.EmpList = new List<Employee>();
+
+            try
+            {
+                string sSqlstmt = "select concat(emp_firstname,' ',ifnull(emp_middlename,' '),' ',ifnull(emp_lastname,' ')) as Empname, emp_no as Empid from t_hr_employee" +
+                    " where emp_status=1 and Designation like '" + Designation + "' order by emp_firstname asc";
+                DataSet dsEmp = Getdetails(sSqlstmt);
+
+                if (dsEmp.Tables.Count > 0 && dsEmp.Tables[0].Rows.Count > 0)
+                {
+                    for (int i = 0; i < dsEmp.Tables[0].Rows.Count; i++)
+                    {
+
+                        Employee emp = new Employee()
+                        {
+                            Empid = dsEmp.Tables[0].Rows[i]["Empid"].ToString(),
+                            Empname = Regex.Replace(dsEmp.Tables[0].Rows[i]["Empname"].ToString(), " +", " ")
+
+                        };
+                        emp.Empname = emp.Empname.Trim();
+                        emplist.EmpList.Add(emp);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                AddFunctionalLog("Exception in GetHrEmployeeListbyDesignation: " + ex.ToString());
+            }
+
+            return new MultiSelectList(emplist.EmpList, "Empid", "Empname");
+        }
+
         public MultiSelectList GetComplaintRealtedToList()
         {
             DropdownList objProductList = new DropdownList();
@@ -2971,7 +3006,7 @@ namespace ISOStd.Models
             try
             {
                 string sqlstmt = "SELECT id_location as Id ,location_name as BranchName FROM t_location a,t_division_mapping b " +
-                    "where a.id_country = b.id_country and b.id_branch = '" + Division + "'";
+                    "where a.id_country = b.id_country and b.id_branch = '" + Division + "' and active=1";
                 DataSet dsBranch = Getdetails(sqlstmt);
 
                 if (dsBranch.Tables.Count > 0 && dsBranch.Tables[0].Rows.Count > 0)
@@ -4911,7 +4946,7 @@ namespace ISOStd.Models
             return null;
         }
         
-        //==========================DOCUMENT CHANGE REQUEST======================================
+        //==========================Document Revise Request======================================
         public DataSet getListPendingForApprovalDocChangeRequest(string sempid)
         {
             string sSqlstmt = "select * from t_documentchangerequest where ApproveStatus=0 and ( find_in_set('" + sempid + "',ApprovedBy) and not find_in_set('" + sempid + "',Approvers))"
@@ -5321,7 +5356,7 @@ namespace ISOStd.Models
             //}
             return null;
         }
-        //----------KPI---
+        //-----------------------------------KPI----------------------------------------------------
         public DataSet getListPendingForApprovalKPI(string sempid)
         {
             string sSqlstmt = "select KPI_Id,logged_by,kpi_ref_no,established_date,branch,group_name,team,process_indicator,"
@@ -5337,6 +5372,20 @@ namespace ISOStd.Models
             return null;
         }
 
+        //==========================Document Review Frequency======================================
+        public DataSet getListPendingForDocReviewFrequency(string sempid)
+        {
+            string sSqlstmt = "select id_doc_review,review_date,doc_level,doc_type,frequency,criteria,approvedby,division,loggedby"
+                    + " from t_document_review where active=1 and approve_status=0 and ( find_in_set('" + sempid + "',approvedby))";
+
+            sSqlstmt = sSqlstmt + " order by id_doc_review desc";
+            DataSet dsApprovalList = Getdetails(sSqlstmt);
+            if (dsApprovalList.Tables.Count > 0 && dsApprovalList.Tables[0].Rows.Count > 0)
+            {
+                return dsApprovalList;
+            }
+            return null;
+        }
         //-------------------------------End of Pending For Approval---------------------------------------------------
 
         public DataSet GetPermitNo(string smod, string sPermitType, string sLocation)

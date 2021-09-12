@@ -213,7 +213,7 @@ namespace Role.Controllers
             {
                 //string sSqlstmt = "select role_id,branch_id,concat(RoleName,' - ',BranchCode) as Role,RoleName,appl_branch from t_access t,t_company_branch b,roles r"
                 //+ " where t.role_id=r.Id and t.branch_id=b.id order by role_id , branch_id asc";
-                string sSqlstmt = " select role_id,branch_id,RoleName,appl_branch from t_access t,roles r  where t.role_id = r.Id order by role_id asc";
+                string sSqlstmt = " select role_id,branch_id,RoleName,appl_branch from t_access t,roles r  where t.role_id = r.Id and r.active=1 order by role_id asc";
 
                 DataSet dsList = objGlobaldata.Getdetails(sSqlstmt);
 

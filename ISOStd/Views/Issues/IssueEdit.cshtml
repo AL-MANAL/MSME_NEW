@@ -2,6 +2,14 @@
 
 @{
     ViewBag.Title = "IssueEdit";
+    int itemcnt1 = 0;
+    string[] notified_Array = new string[0];
+    if (ViewBag.notified_Array != null)
+    {
+        notified_Array = ViewBag.notified_Array;
+        itemcnt1 = notified_Array.Length;
+    }
+    ISOStd.Models.clsGlobal objGlobaldata = new ISOStd.Models.clsGlobal();
 }
 
 @section featured {
@@ -77,7 +85,7 @@
                             @Html.DisplayFor(model => model.Issue_refno)
                         </div>
                     </td>
-                   
+
                 </tr>
                 <tr class="row">
                     <td class="col-xs-3 col-md-2">
@@ -91,7 +99,7 @@
                     </td>
                     <td class="col">
                         @Html.DisplayFor(model => model.Location)
-                    </td>                   
+                    </td>
                 </tr>
                 <tr class="row">
 
@@ -143,7 +151,25 @@
                     </td>
                     <td class="col">
                         <div class="editor-field">
-                            <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="Effect" name="Effect">@Model.Effect</textarea>
+                            @*<textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="Effect" name="Effect">@Model.Effect</textarea>*@
+                            <select class="form-control select-search select2-hidden-accessible" data-fouc id="Effect" name="Effect" multiple required>
+                                @*<option value='' hidden>Select</option>*@
+                                @if (ViewBag.IssueEffect != null)
+                                {
+                                    foreach (var item in ViewBag.IssueEffect)
+                                    {
+                                        if (Array.IndexOf(Model.Effect.ToString().Split(','), item.Value) >= 0)
+
+                                        {
+                                            <option value='@item.Value' selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
                         </div>
                     </td>
                 </tr>
@@ -162,11 +188,11 @@
                                     foreach (var item in ViewBag.IssueCategory)
                                     {
                                         if (item.Text == Model.Issue_Category)
-                                        {                                            
+                                        {
                                             <option value='@item.Value' selected>@item.Text</option>
                                         }
                                         else
-                                        {                                            
+                                        {
                                             <option value='@item.Value'>@item.Text</option>
                                         }
                                     }
@@ -210,7 +236,7 @@
                     </td>
                     <td class="col">
                         <div class="editor-field">
-                            <select class="form-control select-search select2-hidden-accessible" data-fouc id="Impact" name="Impact" required>
+                            <select class="form-control select-search select2-hidden-accessible" data-fouc id="Impact" name="Impact" onchange="GetImpactType()" required>
                                 <option value='' hidden>Select</option>
                                 @if (ViewBag.Impact != null)
                                 {
@@ -231,6 +257,34 @@
                     </td>
                     <td class="col-xs-3 col-md-2">
                         <div class="editor-label">
+                            @Html.LabelFor(model => model.Impact_detail)
+                        </div>
+                    </td>
+                    <td class="col">
+                        <div class="editor-field">
+                            <select class="form-control select-fixed-multiple" data-fouc id="Impact_detail" name="Impact_detail" multiple="multiple" required>
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.ImpactDetails != null)
+                                {
+                                    foreach (var item in ViewBag.ImpactDetails)
+                                    {
+                                        if (Array.IndexOf(Model.Impact_detail.ToString().Split(','), item.Value) >= 0)
+                                        {
+                                            <option value='@item.Value' selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <div class="editor-label">
                             @Html.LabelFor(model => model.Evidence)
                         </div>
                     </td>
@@ -243,8 +297,7 @@
                             }
                         </div>
                     </td>
-                </tr>
-                <tr class="row">
+
                     <td class="col-xs-3 col-md-2">
                         <div class="editor-label">
                             @Html.LabelFor(model => model.reporting_to)
@@ -271,6 +324,8 @@
                             </select>
                         </div>
                     </td>
+                </tr>
+                <tr class="row">
                     <td class="col-xs-3 col-md-2">
                         <div class="editor-label">
                             @Html.LabelFor(model => model.notified_to)
@@ -278,8 +333,8 @@
                     </td>
                     <td class="col">
                         <div class="editor-field">
-                            <select class="form-control select-fixed-multiple" data-fouc id="notified_to" name="notified_to" multiple="multiple" required>
-                                <option value='' hidden>Select</option>
+                            <select class="form-control select-fixed-multiple" data-fouc id="notified_to" name="notified_to" multiple="multiple" onchange="GetNotifiedDetails()">
+                                @*<option value='' hidden>Select</option>*@
                                 @if (ViewBag.EmpList != null)
                                 {
                                     foreach (var item in ViewBag.EmpList)
@@ -299,6 +354,51 @@
                     </td>
                 </tr>
             </table>
+            <div id="estdiv" @*style="display:none"*@>
+                <div class="card-body">
+                    <input type="hidden" id="itemcnt1" name="itemcnt1" value="@itemcnt1" />
+
+                    <div class="card card-table table-responsive shadow-0 mb-0">
+                        <table class="table" id="team-list1">
+                            <tr class="bg-blue">
+                                <th>Action</th>
+                                <th>Id</th>
+                                <th>Name</th>
+                                <th>Division</th>
+                                <th>Department</th>
+                                <th>Email</th>
+                            </tr>
+                            @if (ViewBag.notified_Array != null && notified_Array != null && notified_Array.Length > 0)
+                            {
+                                for (int index = 0; index < notified_Array.Length; index++)
+                                {
+                                    <tr>
+                                        <td>
+                                            <span class='badge badge-info' onclick='deleteRow1(this)' style='cursor:pointer;'>Delete</span>
+                                            <input type='hidden' id='nempno @index' name="nempno @index" value='@notified_Array[index]' />
+                                        </td>
+                                        <td>
+                                            <input type='hidden' id='nempid @index' name="nempid @index" readonly>@objGlobaldata.GetEmpIDByEmpNo(notified_Array[index])
+                                        </td>
+                                        <td>
+                                            <input type='hidden' id='nempname @index' name="nempname @index" readonly>@objGlobaldata.GetEmpHrNameById(notified_Array[index])
+                                        </td>
+                                        <td>
+                                            <input type='hidden' id='nempdiv @index' name="nempdiv @index" readonly>@objGlobaldata.GetCompanyBranchNameById(objGlobaldata.GetDivisionIdByHrEmpId(notified_Array[index]))
+                                        </td>
+                                        <td>
+                                            <input type='hidden' id='nempdept @index' name="nempdept @index" readonly>@objGlobaldata.GetDeptNameById(objGlobaldata.GetDeptIdByHrEmpId(notified_Array[index]))
+                                        </td>
+                                        <td>
+                                            <input type='hidden' id='nempemail @index' name="nempemail @index" readonly>@objGlobaldata.GetHrEmpEmailIdById(notified_Array[index])
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -313,7 +413,7 @@
 
     @section Scripts {
         <script>
-           
+
             function FileFormatValidation(file) {
                 var ext = file.value.split(".").pop().toLowerCase();
                 if ($.inArray(ext, ["pdf", "xlsx"]) == -1) {
@@ -329,7 +429,7 @@
             var selectedValues = [];
             $("#branch :selected").each(function () {
                 selectedValues.push($(this).val());
-            });  
+            });
                 jQuery.ajax({
                     url: '@Url.Action("FunGetAllDeptList", "EmployeeDetails")',
                     type: 'POST',
@@ -353,11 +453,11 @@
                         //    });
                         //}
                     }
-                });            
+                });
         }
 
 
-        function GetLocList(selectedValues) {                   
+        function GetLocList(selectedValues) {
             jQuery.ajax({
                 url: '@Url.Action("FunGetAllLocList", "EmployeeDetails")',
                 type: 'POST',
@@ -380,9 +480,90 @@
                     //    });
                     //}
                 }
-            });       
-        }               
+            });
+            }
 
+             function GetNotifiedDetails() {
+            var notified_to = $('#notified_to').val();
+            if (notified_to != "" && notified_to != null) {
+                jQuery.ajax({
+                    url: '@Url.Action("FunGetEmpDetails", "EmployeeDetails")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'semp_no': notified_to },
+                    success: function (result) {
+                        if (result != null) {
+
+                            var nempno = $('#notified_to option:Selected').val();
+                            var nempid = result.emp_id;
+                            var nempname = result.empname;
+                            var nempdiv = result.division;
+                            var nempdept = result.department;
+                            var nempemail = result.EmailId;
+
+                            var cnt = document.getElementById("itemcnt1").value;
+
+                            document.getElementById("itemcnt1").value = cnt;
+                            // Find a <table> element with id="myTable":
+                            var table = document.getElementById("team-list1");
+
+                            // Create an empty <tr> element and add it to the 1st position of the table:
+                            var row = table.insertRow();
+
+
+                            // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                            var cell0 = row.insertCell(0);
+                            var cell1 = row.insertCell(1);
+                            var cell2 = row.insertCell(2);
+                            var cell3 = row.insertCell(3);
+                            var cell4 = row.insertCell(4);
+                            var cell5 = row.insertCell(5);
+
+                            cell0.innerHTML = "<span class='badge badge-info' onclick='deleteRow1(this)' style='cursor:pointer;'>Delete</span> <input type = 'hidden' id = 'nempno " + cnt + "' name = 'nempno " + cnt + "' value = '" + nempno + "'>";
+                            cell1.innerHTML = "<input type='hidden' id='nempid " + cnt + "' name='nempid " + cnt + "' value='" + nempid + "'>" + nempid;
+                            cell2.innerHTML = "<input type='hidden' id='nempname " + cnt + "' name='nempname " + cnt + "' value='" + nempname + "'>" + nempname;
+                            cell3.innerHTML = "<input type='hidden' id='nempdiv " + cnt + "' name='nempdiv " + cnt + "' value='" + nempdiv + "'>" + nempdiv;
+                            cell4.innerHTML = "<input type='hidden' id='nempdept " + cnt + "' name='nempdept " + cnt + "' value='" + nempdept + "'>" + nempdept;
+                            cell5.innerHTML = "<input type='hidden' id='nempemail " + cnt + "' name='nempemail " + cnt + "' value='" + nempemail + "'>" + nempemail;
+
+                            cnt++;
+                            document.getElementById("itemcnt1").value = cnt;
+
+                            $("#notified_to").val('').trigger('change');
+                        }
+                    }
+                });
+            }
+        }
+
+        function deleteRow1(btn) {
+            var row = btn.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+        }
+
+
+        function GetImpactType() {
+            var Impact = $('#Impact option:selected').text();
+            if (Impact != null && Impact != "") {
+                jQuery.ajax({
+                    url: '@Url.Action("FunGetIssueImpactTypeList", "Issues")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'Impact_type': Impact },
+                    success: function (result) {
+                        $("#Impact_detail").children('option').remove();
+                        $("#Impact_detail").trigger('change');
+                        if (result != null && result.length > 0) {
+                            $.each(result, function (index, item) {
+                                $("#Impact_detail").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                            });
+                            $("#Impact_detail").trigger('change');
+                            return;
+                        }
+                    }
+                });
+            }
+        }
         </script>
         @Scripts.Render("~/bundles/jqueryval")
     }

@@ -57,7 +57,7 @@ namespace ISOStd.Controllers
                 ViewBag.Perf = objGlobaldata.GetKPIPerformanceIndicatorList();
                 ViewBag.Level = objGlobaldata.GetKPILevelList();
                 ViewBag.Type = objGlobaldata.GetKPITypeList();
-                ViewBag.Monitoring = objGlobaldata.GetKPIMonitoringMechanismList();
+              //  ViewBag.Monitoring = objGlobaldata.GetKPIMonitoringMechanismList();
                 ViewBag.Frequency = objGlobaldata.GetKPIFrequencyEvaluationList();
                 ViewBag.Status = objGlobaldata.GetKPIStatusList();
                 ViewBag.Unit = objGlobaldata.GetConstantValue("KPIUnit");
@@ -906,7 +906,7 @@ namespace ISOStd.Controllers
                                     expected_value = (dsKPIModelsList.Tables[0].Rows[i]["expected_value"].ToString()),
                                     expected_value_unit = (dsKPIModelsList.Tables[0].Rows[i]["expected_value_unit"].ToString()),
                                     kpi_type =objGlobaldata.GetKPITypeById(dsKPIModelsList.Tables[0].Rows[i]["kpi_type"].ToString()),
-                                    monitoring_mechanism =objGlobaldata.GetKPIMonitoringMechanismById(dsKPIModelsList.Tables[0].Rows[i]["monitoring_mechanism"].ToString()),
+                                    monitoring_mechanism =/*objGlobaldata.GetKPIMonitoringMechanismById*/(dsKPIModelsList.Tables[0].Rows[i]["monitoring_mechanism"].ToString()),
                                     frequency_eval =objGlobaldata.GetKPIFrequencyEvaluationById(dsKPIModelsList.Tables[0].Rows[i]["frequency_eval"].ToString()),
                                     risk = (dsKPIModelsList.Tables[0].Rows[i]["risk"].ToString()),
                                 };

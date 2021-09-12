@@ -3,6 +3,8 @@
 @{
     ViewBag.Title = "DocumentReviewDetails";
     ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+
+    var login_user = Obj.GetCurrentUserSession().empid;
 }
 
 @section featured {
@@ -96,7 +98,7 @@
                                 @Html.DisplayFor(model => model.division)
                             </p>
                         </td>
-                       
+
                         <td class="col-xs-3 col-md-3">
                             <p class="bg-brown py-1 px-2 rounded">
                                 @Html.DisplayNameFor(model => model.review_date)
@@ -109,7 +111,7 @@
                                     @Model.review_date.ToString("dd/MM/yyyy")
                                 </p>
                             }
-                        </td>                       
+                        </td>
                     </tr>
                     <tr class="row">
                         <td class="col-xs-3 col-md-3">
@@ -156,7 +158,7 @@
                             </p>
                         </td>
                     </tr>
-                    <tr class="row">                      
+                    <tr class="row">
                         <td class="col-xs-3 col-md-3">
                             <p class="bg-brown py-1 px-2 rounded">
                                 @Html.DisplayNameFor(model => model.approvedby)
@@ -167,10 +169,37 @@
                                 @Html.DisplayFor(model => model.approvedby)
                             </p>
                         </td>
+
+                        <td class="col-xs-3 col-md-3">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.approve_status)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.approve_status)
+                            </p>
+                        </td>                      
                     </tr>
                 </tbody>
             </table>
         </div>
+
+        <hr />
+        @if (Model.approve_statusId == "0" && Model.approvedbyId.Contains(login_user))
+        {
+            <div id="Text" style="text-align:center">
+                <h1>Document Review Frequency</h1>
+                <div>
+                    <a href='@Url.Action("DocReviewFreqApproveOrReject", "DocumentReview", new { id_doc_review = Model.id_doc_review, iStatus = 1, PendingFlg = "true"})' title="Approve Document Review Frequency" style="color:green;">
+                        <span class="badge badge-info">Approve</span>
+                    </a>
+                    <a href='@Url.Action("DocReviewFreqApproveOrReject", "DocumentReview", new { id_doc_review = Model.id_doc_review, iStatus = 2, PendingFlg = "true"})' title="Reject Document Review Frequency" style="color:red;">
+                        <span class="badge badge-danger">Reject</span>
+                    </a>
+                </div>
+            </div>
+        }
     </div>
 </div>
 

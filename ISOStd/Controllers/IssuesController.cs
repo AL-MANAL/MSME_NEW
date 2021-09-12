@@ -47,6 +47,7 @@ namespace ISOStd.Controllers
                 ViewBag.ISOStds = objGlobaldata.GetAllIsoStdListbox();
                // ViewBag.Department = objGlobaldata.GetDepartmentListbox();
                 ViewBag.IssueCategory = objGlobaldata.GetDropdownList("Issue Category Type");
+                ViewBag.IssueEffect = objGlobaldata.GetDropdownList("Issue Effect Type");
                 ViewBag.Branch = objGlobaldata.GetCompanyBranchListbox();
                 ViewBag.Department = objGlobaldata.GetDepartmentListbox(objIssues.branch);
                 ViewBag.Location = objGlobaldata.GetDivisionLocationList(objIssues.branch);
@@ -77,11 +78,26 @@ namespace ISOStd.Controllers
                 objIssues.Location = form["Location"];
                 objIssues.reporting_to = form["reporting_to"];
                 objIssues.notified_to = form["notified_to"];
+                objIssues.Effect = form["Effect"];
+                objIssues.Impact_detail = form["Impact_detail"];
 
                 DateTime dateValue;
                 if (DateTime.TryParse(form["issue_date"], out dateValue) == true)
                 {
                     objIssues.issue_date = dateValue;
+                }
+
+                //notified_to
+                for (int i = 0; i < Convert.ToInt16(form["itemcnt1"]); i++)
+                {
+                    if (form["nempno " + i] != "" && form["nempno " + i] != null)
+                    {
+                        objIssues.notified_to = form["nempno " + i] + "," + objIssues.notified_to;
+                    }
+                }
+                if (objIssues.notified_to != null)
+                {
+                    objIssues.notified_to = objIssues.notified_to.Trim(',');
                 }
 
                 if (file != null && file.ContentLength > 0)
@@ -205,79 +221,79 @@ namespace ISOStd.Controllers
             return View(objIssueList.IssueList.ToList());
         }
 
-        [AllowAnonymous]
-        public JsonResult IssuesListSearch(FormCollection form, int? page, string branch_name)
-        {
-            ViewBag.SubMenutype = "Issues";
+        //[AllowAnonymous]
+        //public JsonResult IssuesListSearch(FormCollection form, int? page, string branch_name)
+        //{
+        //    ViewBag.SubMenutype = "Issues";
 
-            IssuesModelsList objIssueList = new IssuesModelsList();
-            objIssueList.IssueList = new List<IssuesModels>();
+        //    IssuesModelsList objIssueList = new IssuesModelsList();
+        //    objIssueList.IssueList = new List<IssuesModels>();
 
-            try
-            {
-                string sBranch_name = objGlobaldata.GetCurrentUserSession().division;
-                string sBranchtree = objGlobaldata.GetCurrentUserSession().BranchTree;
-                ViewBag.Branch = objGlobaldata.GetMultiBranchListByID(sBranchtree);
-                string sSearchtext = "";
-                ViewBag.IssueCategory = objGlobaldata.GetDropdownList("Issue Category Type");
-                string sSqlstmt = "select Issue_refno,id_issue,Issue,IssueType,Impact,Isostd,Evidence,ImpactDesc," +
-                    "Effect,Deptid,Issue_Category,branch,Location,issue_date,reporting_to,notified_to  from t_issues where Active=1";
+        //    try
+        //    {
+        //        string sBranch_name = objGlobaldata.GetCurrentUserSession().division;
+        //        string sBranchtree = objGlobaldata.GetCurrentUserSession().BranchTree;
+        //        ViewBag.Branch = objGlobaldata.GetMultiBranchListByID(sBranchtree);
+        //        string sSearchtext = "";
+        //        ViewBag.IssueCategory = objGlobaldata.GetDropdownList("Issue Category Type");
+        //        string sSqlstmt = "select Issue_refno,id_issue,Issue,IssueType,Impact,Isostd,Evidence,ImpactDesc," +
+        //            "Effect,Deptid,Issue_Category,branch,Location,issue_date,reporting_to,notified_to  from t_issues where Active=1";
 
-                if (branch_name != null && branch_name != "")
-                {
-                    sSearchtext = sSearchtext + " and find_in_set('" + branch_name + "', branch)";
-                    ViewBag.Branch_name = branch_name;
-                }
-                else
-                {
-                    sSearchtext = sSearchtext + " and find_in_set('" + sBranch_name + "', branch)";
-                }
+        //        if (branch_name != null && branch_name != "")
+        //        {
+        //            sSearchtext = sSearchtext + " and find_in_set('" + branch_name + "', branch)";
+        //            ViewBag.Branch_name = branch_name;
+        //        }
+        //        else
+        //        {
+        //            sSearchtext = sSearchtext + " and find_in_set('" + sBranch_name + "', branch)";
+        //        }
 
-                sSqlstmt = sSqlstmt + sSearchtext + " order by id_issue desc";
-                DataSet dsIssueList = objGlobaldata.Getdetails(sSqlstmt);
+        //        sSqlstmt = sSqlstmt + sSearchtext + " order by id_issue desc";
+        //        DataSet dsIssueList = objGlobaldata.Getdetails(sSqlstmt);
 
-                if (dsIssueList.Tables.Count > 0 && dsIssueList.Tables[0].Rows.Count > 0)
-                {                  
-                    for (int i = 0; i < dsIssueList.Tables[0].Rows.Count; i++)
-                    {
-                        try
-                        {
-                            IssuesModels objIssueModels = new IssuesModels
-                            {
-                                id_issue = Convert.ToInt16(dsIssueList.Tables[0].Rows[i]["id_issue"].ToString()),
-                                Issue_refno = dsIssueList.Tables[0].Rows[i]["Issue_refno"].ToString(),
-                                Issue = dsIssueList.Tables[0].Rows[i]["Issue"].ToString(),
-                                IssueType = dsIssueList.Tables[0].Rows[i]["IssueType"].ToString(),
-                                Impact = dsIssueList.Tables[0].Rows[i]["Impact"].ToString(),
-                                Isostd = objGlobaldata.GetIsoStdDescriptionById(dsIssueList.Tables[0].Rows[i]["Isostd"].ToString()),
-                                Evidence = dsIssueList.Tables[0].Rows[i]["Evidence"].ToString(),
-                                ImpactDesc = dsIssueList.Tables[0].Rows[i]["ImpactDesc"].ToString(),
-                                Effect = dsIssueList.Tables[0].Rows[i]["Effect"].ToString(),
-                                Deptid = objGlobaldata.GetMultiDeptNameById(dsIssueList.Tables[0].Rows[i]["Deptid"].ToString()),
-                                Issue_Category = objGlobaldata.GetDropdownitemById(dsIssueList.Tables[0].Rows[i]["Issue_Category"].ToString()),
-                                branch = objGlobaldata.GetMultiCompanyBranchNameById(dsIssueList.Tables[0].Rows[i]["branch"].ToString()),
-                                Location = objGlobaldata.GetDivisionLocationById(dsIssueList.Tables[0].Rows[i]["Location"].ToString()),
-                                reporting_to = objGlobaldata.GetMultiHrEmpNameById(dsIssueList.Tables[0].Rows[i]["reporting_to"].ToString()),
-                                notified_to = objGlobaldata.GetMultiHrEmpNameById(dsIssueList.Tables[0].Rows[i]["notified_to"].ToString()),
-                            };
+        //        if (dsIssueList.Tables.Count > 0 && dsIssueList.Tables[0].Rows.Count > 0)
+        //        {                  
+        //            for (int i = 0; i < dsIssueList.Tables[0].Rows.Count; i++)
+        //            {
+        //                try
+        //                {
+        //                    IssuesModels objIssueModels = new IssuesModels
+        //                    {
+        //                        id_issue = Convert.ToInt16(dsIssueList.Tables[0].Rows[i]["id_issue"].ToString()),
+        //                        Issue_refno = dsIssueList.Tables[0].Rows[i]["Issue_refno"].ToString(),
+        //                        Issue = dsIssueList.Tables[0].Rows[i]["Issue"].ToString(),
+        //                        IssueType = dsIssueList.Tables[0].Rows[i]["IssueType"].ToString(),
+        //                        Impact = dsIssueList.Tables[0].Rows[i]["Impact"].ToString(),
+        //                        Isostd = objGlobaldata.GetIsoStdDescriptionById(dsIssueList.Tables[0].Rows[i]["Isostd"].ToString()),
+        //                        Evidence = dsIssueList.Tables[0].Rows[i]["Evidence"].ToString(),
+        //                        ImpactDesc = dsIssueList.Tables[0].Rows[i]["ImpactDesc"].ToString(),
+        //                        Effect = dsIssueList.Tables[0].Rows[i]["Effect"].ToString(),
+        //                        Deptid = objGlobaldata.GetMultiDeptNameById(dsIssueList.Tables[0].Rows[i]["Deptid"].ToString()),
+        //                        Issue_Category = objGlobaldata.GetDropdownitemById(dsIssueList.Tables[0].Rows[i]["Issue_Category"].ToString()),
+        //                        branch = objGlobaldata.GetMultiCompanyBranchNameById(dsIssueList.Tables[0].Rows[i]["branch"].ToString()),
+        //                        Location = objGlobaldata.GetDivisionLocationById(dsIssueList.Tables[0].Rows[i]["Location"].ToString()),
+        //                        reporting_to = objGlobaldata.GetMultiHrEmpNameById(dsIssueList.Tables[0].Rows[i]["reporting_to"].ToString()),
+        //                        notified_to = objGlobaldata.GetMultiHrEmpNameById(dsIssueList.Tables[0].Rows[i]["notified_to"].ToString()),
+        //                    };
 
-                            objIssueList.IssueList.Add(objIssueModels);
-                        }
-                        catch (Exception ex)
-                        {
-                            objGlobaldata.AddFunctionalLog("Exception in IssuesListSearch: " + ex.ToString());
-                            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                objGlobaldata.AddFunctionalLog("Exception in IssuesListSearch: " + ex.ToString());
-                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-            }
-            return Json("Success");
-        }
+        //                    objIssueList.IssueList.Add(objIssueModels);
+        //                }
+        //                catch (Exception ex)
+        //                {
+        //                    objGlobaldata.AddFunctionalLog("Exception in IssuesListSearch: " + ex.ToString());
+        //                    TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+        //                }
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        objGlobaldata.AddFunctionalLog("Exception in IssuesListSearch: " + ex.ToString());
+        //        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+        //    }
+        //    return Json("Success");
+        //}
                
         [AllowAnonymous]
         public ActionResult IssuesInfo(int id)
@@ -290,7 +306,7 @@ namespace ISOStd.Controllers
             try
             {
                 string sSqlstmt = "select Issue_refno,id_issue,Issue,IssueType,Impact,Isostd,Evidence," +
-                    "ImpactDesc,Effect,Deptid,Issue_Category,branch,Location,issue_date,reporting_to,notified_to  from t_issues where Active=1"
+                    "ImpactDesc,Effect,Deptid,Issue_Category,branch,Location,issue_date,reporting_to,notified_to,Impact_detail  from t_issues where Active=1"
                 + " and id_issue='"+id+"' order by id_issue desc";
                 DataSet dsIssueList = objGlobaldata.Getdetails(sSqlstmt);
 
@@ -306,7 +322,7 @@ namespace ISOStd.Controllers
                                 Isostd = objGlobaldata.GetIsoStdDescriptionById(dsIssueList.Tables[0].Rows[0]["Isostd"].ToString()),
                                 Evidence = dsIssueList.Tables[0].Rows[0]["Evidence"].ToString(),
                                 ImpactDesc = dsIssueList.Tables[0].Rows[0]["ImpactDesc"].ToString(),
-                                Effect = dsIssueList.Tables[0].Rows[0]["Effect"].ToString(),
+                                Effect = objGlobaldata.GetDropdownitemById(dsIssueList.Tables[0].Rows[0]["Effect"].ToString()),
                                 Issue_refno = dsIssueList.Tables[0].Rows[0]["Issue_refno"].ToString(),
                                 Deptid = objGlobaldata.GetMultiDeptNameById(dsIssueList.Tables[0].Rows[0]["Deptid"].ToString()),
                                 Issue_Category = objGlobaldata.GetDropdownitemById(dsIssueList.Tables[0].Rows[0]["Issue_Category"].ToString()),
@@ -314,6 +330,7 @@ namespace ISOStd.Controllers
                                 Location = objGlobaldata.GetDivisionLocationById(dsIssueList.Tables[0].Rows[0]["Location"].ToString()),
                                 reporting_to = objGlobaldata.GetMultiHrEmpNameById(dsIssueList.Tables[0].Rows[0]["reporting_to"].ToString()),
                                 notified_to = objGlobaldata.GetMultiHrEmpNameById(dsIssueList.Tables[0].Rows[0]["notified_to"].ToString()),
+                                Impact_detail= objGlobaldata.GetDropdownitemById(dsIssueList.Tables[0].Rows[0]["Impact_detail"].ToString())
                             };
                         DateTime dtValue;
                         if (DateTime.TryParse(dsIssueList.Tables[0].Rows[0]["issue_date"].ToString(), out dtValue))
@@ -367,8 +384,7 @@ namespace ISOStd.Controllers
                         {
                             TempData["alertdata"] = "Issue Id cannot be Null or empty";
                             return Json("Failed");
-                        }
-                   
+                        }                  
                    
                 
             }
@@ -393,6 +409,7 @@ namespace ISOStd.Controllers
                 ViewBag.Impact = objGlobaldata.GetConstantValue("Impact");
                 ViewBag.ISOStds = objGlobaldata.GetAllIsoStdListbox();
                 ViewBag.IssueCategory = objGlobaldata.GetDropdownList("Issue Category Type");
+                ViewBag.IssueEffect = objGlobaldata.GetDropdownList("Issue Effect Type");
                 ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
                 if (Request.QueryString["id_issue"] != null && Request.QueryString["id_issue"] != "")
                 {
@@ -401,7 +418,7 @@ namespace ISOStd.Controllers
                     ViewBag.id_issue = id_issue;
 
                     string sSqlstmt = "select Issue_refno,id_issue,Issue,IssueType,Impact,Isostd,Evidence,ImpactDesc," +
-                        "Effect,Deptid,Issue_Category,branch,Location,issue_date,reporting_to,notified_to from t_issues where id_issue='" + id_issue + "'";
+                        "Effect,Deptid,Issue_Category,branch,Location,issue_date,reporting_to,notified_to,Impact_detail from t_issues where id_issue='" + id_issue + "'";
 
                     DataSet dsIssueList = objGlobaldata.Getdetails(sSqlstmt);
                     if (dsIssueList.Tables.Count > 0 && dsIssueList.Tables[0].Rows.Count > 0)
@@ -424,17 +441,31 @@ namespace ISOStd.Controllers
                             Location = objGlobaldata.GetDivisionLocationById(dsIssueList.Tables[0].Rows[0]["Location"].ToString()),
                             reporting_to = (dsIssueList.Tables[0].Rows[0]["reporting_to"].ToString()),
                             notified_to = (dsIssueList.Tables[0].Rows[0]["notified_to"].ToString()),
-
-                           };
+                            Impact_detail= (dsIssueList.Tables[0].Rows[0]["Impact_detail"].ToString()),
+                        };
                         DateTime dtValue;
                         if (DateTime.TryParse(dsIssueList.Tables[0].Rows[0]["issue_date"].ToString(), out dtValue))
                         {
                             objIssueModels.issue_date = dtValue;
                         }
+                        if (dsIssueList.Tables[0].Rows[0]["Impact"].ToString().ToLower() == "positive")
+                        {
+                            ViewBag.ImpactDetails = objGlobaldata.GetDropdownList("Issue Impact Positive");
+                        }
+                        else if (dsIssueList.Tables[0].Rows[0]["Impact"].ToString().ToLower() == "negative")
+                        {
+                            ViewBag.ImpactDetails = objGlobaldata.GetDropdownList("Issue Impact Negative");
+                        }
 
-                    //    ViewBag.Location = objGlobaldata.GetLocationbyMultiDivision(dsIssueList.Tables[0].Rows[0]["branch"].ToString());
-                    //    ViewBag.Department = objGlobaldata.GetDepartmentList1(dsIssueList.Tables[0].Rows[0]["branch"].ToString());
-                    //    ViewBag.Branch = objGlobaldata.GetCompanyBranchListbox();
+
+
+                        if (dsIssueList.Tables[0].Rows[0]["notified_to"].ToString() != "")
+                        {
+                            ViewBag.notified_Array = (dsIssueList.Tables[0].Rows[0]["notified_to"].ToString()).Split(',');
+                        }
+                        //    ViewBag.Location = objGlobaldata.GetLocationbyMultiDivision(dsIssueList.Tables[0].Rows[0]["branch"].ToString());
+                        //    ViewBag.Department = objGlobaldata.GetDepartmentList1(dsIssueList.Tables[0].Rows[0]["branch"].ToString());
+                        //    ViewBag.Branch = objGlobaldata.GetCompanyBranchListbox();
                     }
                     else
                     {
@@ -471,6 +502,8 @@ namespace ISOStd.Controllers
                 objIssues.Issue_Category = form["Issue_Category"];
                 objIssues.reporting_to = form["reporting_to"];
                 objIssues.notified_to = form["notified_to"];
+                objIssues.Effect = form["Effect"];
+                objIssues.Impact_detail = form["Impact_detail"];
                 //  objIssues.branch = form["branch"];
                 //   objIssues.Deptid = form["Deptid"];
                 // objIssues.Location = form["Location"];
@@ -480,6 +513,19 @@ namespace ISOStd.Controllers
                 if (DateTime.TryParse(form["issue_date"], out dateValue) == true)
                 {
                     objIssues.issue_date = dateValue;
+                }
+
+                //notified_to
+                for (int i = 0; i < Convert.ToInt16(form["itemcnt1"]); i++)
+                {
+                    if (form["nempno " + i] != "" && form["nempno " + i] != null)
+                    {
+                        objIssues.notified_to = form["nempno " + i] + "," + objIssues.notified_to;
+                    }
+                }
+                if (objIssues.notified_to != null)
+                {
+                    objIssues.notified_to = objIssues.notified_to.Trim(',');
                 }
 
                 if (file != null && file.ContentLength > 0)
@@ -530,6 +576,25 @@ namespace ISOStd.Controllers
             var user = objIssueDocuments.CheckForIssueRefNoExists(Issue_refno);
 
             return Json(user);
+        }
+
+        public JsonResult FunGetIssueImpactTypeList(string Impact_type)
+        {           
+            if (Impact_type != null && Impact_type != "")
+            {
+                if(Impact_type.ToLower() == "positive")
+                {
+                    MultiSelectList ImpactList = objGlobaldata.GetDropdownList("Issue Impact Positive");
+                    return Json(ImpactList);
+                }
+                else
+                {
+                    MultiSelectList ImpactList = objGlobaldata.GetDropdownList("Issue Impact Negative");
+                    return Json(ImpactList);
+                }              
+            }
+            return Json ("");
+           
         }
               
     }

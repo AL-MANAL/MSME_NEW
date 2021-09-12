@@ -139,7 +139,7 @@ namespace ISOStd.Controllers
                 string sSearchtext = "";
 
                 string sSqlstmt = "select id_doc_request,dcr_no,date_request,division,`department`,location,reason,upload,checkedby,doc_status as doc_statusId," +
-                       "case when doc_status = '0' then 'Pending' when doc_status = '1' then 'Checked by IMS Rep' when doc_status = '2' then 'Approved' when doc_status = '3' then 'Rejected' end" +
+                       "case when doc_status = '0' then 'Pending' when doc_status = '1' then 'Checked by Department Head' when doc_status = '2' then 'Approved' when doc_status = '3' then 'Rejected' end" +
                        " as doc_status from t_document_create_request where Active=1";
 
                 if (branch_name != null && branch_name != "")
@@ -215,7 +215,7 @@ namespace ISOStd.Controllers
                 if (sid_doc_request != null && sid_doc_request != "")
                 {
                     string sSqlstmt = "select id_doc_request,dcr_no,date_request,division,`department`,location,reason,upload,checkedby,doc_status as doc_statusId," +
-                           "case when doc_status = '0' then 'Pending' when doc_status = '1' then 'Checked by IMS Rep' when doc_status = '2' then 'Approved' when doc_status = '3' then 'Rejected' end" +
+                           "case when doc_status = '0' then 'Pending' when doc_status = '1' then 'Checked by Department Head' when doc_status = '2' then 'Approved' when doc_status = '3' then 'Rejected' end" +
                            " as doc_status from t_document_create_request where Active=1 and id_doc_request= '" + sid_doc_request + "'";
 
                     DataSet dsCreateList = objGlobaldata.Getdetails(sSqlstmt);
@@ -369,7 +369,7 @@ namespace ISOStd.Controllers
                 if (sid_doc_request != null && sid_doc_request != "")
                 {
                     string sSqlstmt = "select id_doc_request,dcr_no,date_request,division,`department`,location,reason,upload,checkedby,doc_status as doc_statusId," +
-                           "case when doc_status = '0' then 'Pending' when doc_status = '1' then 'Checked by IMS Rep' when doc_status = '2' then 'Approved' when doc_status = '3' then 'Rejected' end" +
+                           "case when doc_status = '0' then 'Pending' when doc_status = '1' then 'Checked by Department Head' when doc_status = '2' then 'Approved' when doc_status = '3' then 'Rejected' end" +
                            " as doc_status,checklist_id,agreed,comments,doc_control,doc_level,doc_title,serial_no,new_doc_ref," +
                            "checkedby_approve_date,controller_approve_date from t_document_create_request where Active=1 " +
                            "and id_doc_request= '" + sid_doc_request + "'";
@@ -449,11 +449,12 @@ namespace ISOStd.Controllers
               {
                    // ViewBag.CheckList = objGlobaldata.GetDCRChecklist();
                     ViewBag.Branch = objGlobaldata.GetCompanyBranchListbox();
-                   // ViewBag.DocLevel = objGlobaldata.GetDocLevel();
-                   
+                    // ViewBag.DocLevel = objGlobaldata.GetDocLevel();
+                    ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbyDesignation("%As%manager%HSE%");
+                    //ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbyDesignation("Assistant manager HSE");
 
                     string sSqlstmt = "select id_doc_request,dcr_no,date_request,division,`department`,location,reason,upload,checkedby,doc_status as doc_statusId," +
-                       "case when doc_status = '0' then 'Pending' when doc_status = '1' then 'Checked by IMS Rep' when doc_status = '2' then 'Approved' when doc_status = '3' then 'Rejected' end" +
+                       "case when doc_status = '0' then 'Pending' when doc_status = '1' then 'Checked by Department Head' when doc_status = '2' then 'Approved' when doc_status = '3' then 'Rejected' end" +
                        " as doc_status,checklist_id,agreed,comments,doc_control from t_document_create_request where Active=1 and id_doc_request= '" + id_doc_request + "'order by id_doc_request desc";
 
                 DataSet dsCreateList = objGlobaldata.Getdetails(sSqlstmt);
@@ -490,7 +491,7 @@ namespace ISOStd.Controllers
                         }
                            ViewBag.Department = objGlobaldata.GetDepartmentList1(dsCreateList.Tables[0].Rows[0]["division"].ToString());
                            ViewBag.Location = objGlobaldata.GetDivisionLocationList(dsCreateList.Tables[0].Rows[0]["location"].ToString());
-                            ViewBag.EmpList = objGlobaldata.GetGEmpListBymulitBDL(dsCreateList.Tables[0].Rows[0]["division"].ToString(), dsCreateList.Tables[0].Rows[0]["department"].ToString(), dsCreateList.Tables[0].Rows[0]["location"].ToString());
+                           //ViewBag.EmpList = objGlobaldata.GetGEmpListBymulitBDL(dsCreateList.Tables[0].Rows[0]["division"].ToString(), dsCreateList.Tables[0].Rows[0]["department"].ToString(), dsCreateList.Tables[0].Rows[0]["location"].ToString());
                         }
                     catch (Exception ex)
                     {

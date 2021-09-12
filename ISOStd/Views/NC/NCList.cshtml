@@ -6,11 +6,12 @@
 @{
     ViewBag.Title = "NCList";
     ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+    var CurrentUser = Obj.GetCurrentUserSession().empid;
 }
-@*@{
-    var ShowEdit = Obj.GetCurrentUserSession().Risk.Contains("3") ? true : false;
-    var ShowDel = Obj.GetCurrentUserSession().Risk.Contains("5") ? true : false;
-}*@
+@{
+    var ShowEdit = Obj.GetCurrentUserSession().NC.Contains("3") ? true : false;
+    var ShowDel = Obj.GetCurrentUserSession().NC.Contains("5") ? true : false;
+}
 @section featured {
 
     <div class="page-header page-header-light">
@@ -67,8 +68,8 @@
             </div>
         </div>
     </div>
-    @*@if (Obj.GetCurrentUserSession().Risk.Contains("3"))
-    {*@
+    @if (Obj.GetCurrentUserSession().NC.Contains("3"))
+    {
         <div>
             <div class="card-header bg-white header-elements-sm-inline">
                 <div class="header-elements">
@@ -79,7 +80,7 @@
                 </div>
             </div>
         </div>
-    @*}*@
+    }
     <div class="card-body">
         <div class="options d-flex flex-fill">
             @using (Html.BeginForm("NCList", "NC", FormMethod.Post, new { id = "form1", name = "form1", style = "width:25%" }))
@@ -120,16 +121,19 @@
                         @Html.DisplayNameFor(model => model.First().nc_no)
                     </th>
                     @*<th>
-                        @Html.DisplayNameFor(model => model.First().division)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.First().department)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.First().location)
-                    </th>*@
+            @Html.DisplayNameFor(model => model.First().division)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.First().department)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.First().location)
+        </th>*@
                     <th>
                         @Html.DisplayNameFor(model => model.First().nc_reported_date)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().nc_reportedby)
                     </th>
                     <th>
                         @Html.DisplayNameFor(model => model.First().nc_issuedto_status)
@@ -150,8 +154,8 @@
                 <tr>
 
                     <td>
-                        @Html.ActionLink(i.ToString(), "NCDetails", new { id_nc = item.id_nc.ToString() }, new { onclick = "HyperLinkProgressIconFunction()" })
-                    </td>
+                        @Html.ActionLink(i.ToString(), "NCDetails", new { id_nc = item.id_nc.ToString() }, new { data_toggle = "popover", data_trigger = "hover", id = item.id_nc, onclick = "HyperLinkProgressIconFunction()" })
+                   </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.nc_no)
                     </td>
@@ -169,6 +173,9 @@
                         {
                             @Html.Label(item.nc_reported_date.ToString("dd/MM/yyyy"))
                         }
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.nc_reportedby)
                     </td>
                     <td>
                         @if (item.nc_issuedto_statusId == "1" || item.nc_issuedto_statusId == "2")
@@ -198,6 +205,7 @@
                                 <div class="dropdown-menu dropdown-menu-right">
                                     @if (item.nc_initial_statusId == "1")
                                     {
+                                        if (item.nc_reportedbyId != CurrentUser) {
                                         <a class="dropdown-item" href='@Url.Action("AddDisposition", "NC", new { id_nc = item.id_nc.ToString() })' title="Immediate Actions(Disposition)" onclick="HyperLinkProgressIconFunction()">
                                             <i class="icon-history"></i>Immediate Actions
                                         </a>
@@ -210,40 +218,34 @@
                                         <a class="dropdown-item" href='@Url.Action("AddCA", "NC", new { id_nc = item.id_nc.ToString() })' title="Corrective Action" onclick="HyperLinkProgressIconFunction()">
                                             <i class="icon-history"></i>Corrective Action
                                         </a>
-                                        if (item.ca_verfiry_duedate.ToString() != "" && item.ca_verfiry_duedate > Convert.ToDateTime("01/01/0001"))
-                                        {
+                                            if (item.ca_verfiry_duedate.ToString() != "" && item.ca_verfiry_duedate > Convert.ToDateTime("01/01/0001"))
+                                            {
                                             <a class="dropdown-item" href='@Url.Action("AddVerification", "NC", new { id_nc = item.id_nc.ToString() })' title="Verification" onclick="HyperLinkProgressIconFunction()">
                                                 <i class="icon-history"></i>Verification
                                             </a>
+                                            }
                                         }
-
-                                        @*using (Html.BeginForm("NCPDF", "NC", FormMethod.Post, new { id = "form12", name = "form12" }))
-            {
-                    @Html.AntiForgeryToken()
-                        <input type="hidden" id="id_nc" name="id_nc" value="@item.id_nc" />
-
-                        <button class="dropdown-item">
-                            <i class="icon-printer2"></i> Report
-                        </button>
-                }*@
                                         <a class="dropdown-item" href='@Url.Action("NCPDF", "NC", new { id_nc = item.id_nc.ToString() })' title="PDF Report">
                                             <i class="icon-history"></i>Generate Report
                                         </a>
 
                                     }
 
-                                    @*@if (ShowEdit) {*@
+                                    @**@
                                     @if (item.nc_initial_statusId != "1")
                                     {
-                                        <a class="dropdown-item" href='@Url.Action("NCEdit", "NC", new { id_nc = item.id_nc })' title="Edit NC details" onclick="HyperLinkProgressIconFunction()">
-                                            <i class="icon-pencil7"></i>Edit
-                                        </a>
-
-                                        <div class="dropdown-divider"></div>
-                                        @*@if (ShowDel)
-            {*@
+                                        if (ShowEdit)
+                                        {
+                                            <a class="dropdown-item" href='@Url.Action("NCEdit", "NC", new { id_nc = item.id_nc })' title="Edit NC details" onclick="HyperLinkProgressIconFunction()">
+                                                <i class="icon-pencil7"></i>Edit
+                                            </a>
+                                        }
+                                    @*<div class="dropdown-divider"></div>*@
+                                    if (ShowDel)
+                                    {
                                         <span class="dropdown-item text-center" title="Delete Document" onclick="DeleteItems(@item.id_nc)" style="cursor:pointer;"><i class="icon-bin"></i>Delete</span>
-                                    } @*}*@
+                                    }
+                                }
 
                                 </div>
                             </div>
@@ -282,29 +284,29 @@
     });
     //zzz----
 
- @*function setData(id) {
+ function setData(id) {
 
                 var set_data = '';
                 var element = $(this);
                 var id = element.attr("id");
                 $.ajax({
-                    url: '@Url.Action("RiskMgmtInfo", "RiskMgmt")',
+                    url: '@Url.Action("NCInfo", "NC")',
                     methos: "post",
                     async: false,
-                    data: { id: id },
+                    data: { id_nc: id },
                     success: function (data) {
                         set_data = data;
 
                     }
                 });
      return set_data;
- }*@
+ }
 
 
 
         var nonconfirmance = function () {
-                       @*var ShowEdit = @(Obj.GetCurrentUserSession().Risk.Contains("3") ? "true" : "false");
-                var ShowDel = @(Obj.GetCurrentUserSession().Risk.Contains("5") ? "true" : "false");*@
+                       var ShowEdit = @(Obj.GetCurrentUserSession().NC.Contains("3") ? "true" : "false");
+                       var ShowDel = @(Obj.GetCurrentUserSession().NC.Contains("5") ? "true" : "false");
 
                         // Basic Datatable examples
                         var _componentDatatableBasic = function () {
@@ -335,16 +337,16 @@
                                 }
                             });
 
-                             @*var myClass = "";
+                var myClass = "";
                 var Delclass= @(Obj.GetCurrentUserSession().Risk.Contains("4") ? "true" : "false");
-                            if (Delclass == false) { myClass = 'hidden' };*@
+                if (Delclass == false) { myClass = 'hidden' };
 
                             var table = $('#nonconfirmance').DataTable({
                                 drawCallback: function () {
                                     $('[data-toggle="popover"]').popover({
 
                                         html: true,
-                                        //content: setData,
+                                        content: setData,
                                         container: 'body'                                        
                                     });
                                     var dropdownMenu;
@@ -398,8 +400,8 @@
                                     buttons: [
                                         {
                                             extend: 'copyHtml5',
-                                           // className: myClass,
-                                            className: 'btn btn-light',
+                                            className: myClass,
+                                            //className: 'btn btn-light',
                                             title: 'NC Data export',
                                             exportOptions: {
                                                 columns: ':visible :not(.not-export-column)'
@@ -407,8 +409,8 @@
                                         },
                                         {
                                             extend: 'excelHtml5',
-                                           // className: myClass,
-                                            className: 'btn btn-light',
+                                            className: myClass,
+                                          //  className: 'btn btn-light',
                                             title: 'NC Data export',
                                             exportOptions: {
                                                 columns: ':visible :not(.not-export-column)'
@@ -417,8 +419,8 @@
                                         },
                                         {
                                             extend: 'pdfHtml5',
-                                            //className: myClass,
-                                            className: 'btn btn-light',
+                                            className: myClass,
+                                            //className: 'btn btn-light',
                                             title: 'NC Data export',
                                             exportOptions: {
                                                 columns: ':visible :not(.not-export-column)'
@@ -426,8 +428,8 @@
                                         },
                                         {
                                             extend: 'csvHtml5',
-                                           // className: myClass,
-                                            className: 'btn btn-light',
+                                            className: myClass,
+                                           // className: 'btn btn-light',
                                             title: 'NC Data export',
                                             exportOptions: {
                                                 columns: ':visible :not(.not-export-column)'
@@ -435,8 +437,8 @@
                                         },
                                         {
                                             extend: 'print',
-                                          // className: myClass,
-                                            className: 'btn btn-light',
+                                            className: myClass,
+                                            //className: 'btn btn-light',
                                             title: 'Risk Data export',
                                             exportOptions: {
                                                 columns: ':visible :not(.not-export-column)'

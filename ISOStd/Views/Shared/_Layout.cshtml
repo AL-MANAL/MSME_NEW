@@ -345,6 +345,7 @@
         ViewBag.Chairman = objGlobaldata.GetChairman();
 
         //Approve Dataset
+        System.Data.DataSet dsDocReviewFreq = new System.Data.DataSet();
         System.Data.DataSet dsKPI = new System.Data.DataSet();
         System.Data.DataSet dsTraining = new System.Data.DataSet();
         System.Data.DataSet dsMgmtDocument = new System.Data.DataSet();
@@ -457,6 +458,9 @@
         dsOFICheckedby = objGlobaldata.getListPendingForApprovalOFIChecked(objUser.empid);
 
         dsNC = objGlobaldata.getListPendingForApprovalNC(objUser.empid);
+
+        dsDocReviewFreq = objGlobaldata.getListPendingForDocReviewFrequency(objUser.empid);
+
         //
 
         //For Audit
@@ -484,7 +488,7 @@
         //}
 
         if (dsKPI != null)
-        {            
+        {
             cnt += dsKPI.Tables[0].Rows.Count;
         }
 
@@ -579,6 +583,10 @@
         if (dsNC != null)
         {
             cnt += dsNC.Tables[0].Rows.Count;
+        }
+        if (dsDocReviewFreq != null)
+        {
+            cnt += dsDocReviewFreq.Tables[0].Rows.Count;
         }
 
 
@@ -725,12 +733,12 @@
                                                 }
                                                 @if (objGlobaldata.GetCurrentUserSession().DocChangeReq.Contains("1"))
                                                 {
-                                                    <li><a href='@Url.Action("DocumentChangeRequestList", "DocumentChangeRequest", null)' class="nav-link @(ViewBag.SubMenutype == "DocumentChangeRequest" ? "active" : "")" onclick="HyperLinkProgressIconFunction()">Document Change Request </a></li>
+                                                    <li><a href='@Url.Action("DocumentChangeRequestList", "DocumentChangeRequest", null)' class="nav-link @(ViewBag.SubMenutype == "DocumentChangeRequest" ? "active" : "")" onclick="HyperLinkProgressIconFunction()">Document Revise Request </a></li>
                                                 }
-                                                @if (objGlobaldata.GetCurrentUserSession().DocTrack.Contains("1"))
+                                                @*@if (objGlobaldata.GetCurrentUserSession().DocTrack.Contains("1"))
                                                 {
                                                     <li><a href='@Url.Action("DocTrackingList", "DocumentTracking")' class="nav-link @(ViewBag.SubMenutype == "DocumentTracking" ? "active" : "")" onclick="HyperLinkProgressIconFunction()">Internal Document Status Tracking</a></li>
-                                                }
+                                                }*@
                                             </ul>
                                         </li>
                                     </ul>
@@ -791,10 +799,10 @@
                                             <ul>
                                                 <li class="dropdown-header">Context of Organization</li>
 
-                                                @if (objGlobaldata.GetCurrentUserSession().Parties.Contains("1"))
+                                               @* @if (objGlobaldata.GetCurrentUserSession().Parties.Contains("1"))
                                                 {
                                                     <li><a href='@Url.Action("PartiesList", "Parties", null)' class="nav-link @(ViewBag.SubMenutype == "Parties" ? "active" : "")" onclick="HyperLinkProgressIconFunction()">Interested Parties Needs & Expectations</a></li>
-                                                }
+                                                }*@
                                                 @if (objGlobaldata.GetCurrentUserSession().Issues.Contains("1"))
                                                 {
                                                     <li><a href='@Url.Action("IssuesList", "Issues", null)' class="nav-link @(ViewBag.SubMenutype == "Issues" ? "active" : "")" onclick="HyperLinkProgressIconFunction()">Internal and External Issues</a></li>
@@ -899,10 +907,10 @@
 
                                                     <li class="nav-item"><a href='@Url.Action("AddEnvRisk", "EnvRisk",new { View = "1"})' class="nav-link @(ViewBag.SubMenutype == "Env" ? "active" : "")" onclick="HyperLinkProgressIconFunction()">Environmental Risk Assessment</a></li>
                                                 }
-                                                @if (objGlobaldata.GetCurrentUserSession().TRA.Contains("1"))
+                                              @*  @if (objGlobaldata.GetCurrentUserSession().TRA.Contains("1"))
                                                 {
                                                     <li class="nav-item"><a href='@Url.Action("TRAList", "TRA", null)' class="nav-link @(ViewBag.SubMenutype == "TRA" ? "active" : "")" onclick="HyperLinkProgressIconFunction()">Job Safety Analysis (JSA)</a></li>
-                                                }
+                                                }*@
 
                                                 <li class="nav-item"><a href='@Url.Action("NCList", "NC", null)' class="nav-link @(ViewBag.SubMenutype == "NC" ? "active" : "")" onclick="HyperLinkProgressIconFunction()">Nonconformance & Corrective Action</a></li>
 
@@ -1400,6 +1408,35 @@
                         </div>
                         <div class="dropdown-content-body dropdown-scrollable">
 
+                            @if (dsDocReviewFreq != null && dsDocReviewFreq.Tables.Count > 0 && dsDocReviewFreq.Tables[0].Rows.Count > 0)
+                            {
+                                <hr />
+                                <p class="font-weight-bold text-center">Document Review Frequency </p>
+                                <hr />
+                                <ul class="media-list">
+                                    @for (int i = 0; i < dsDocReviewFreq.Tables[0].Rows.Count; i++)
+                                    {
+
+                                        <li class="media" id="@dsDocReviewFreq.Tables[0].Rows[i]["id_doc_review"].ToString()">
+                                            <div class="mr-3 w-25">
+                                                <a href='@Url.Action("DocumentReviewDetails", "DocumentReview", new { id_doc_review = dsDocReviewFreq.Tables[0].Rows[i]["id_doc_review"].ToString()})' title="Document review frequency details" class="badge badge-flat badge-icon border-teal text-teal-600"><i class="icon-file-text2"></i></a>
+                                                <br /><span class="font-weight-semibold"> Logged By <text class="text-blue">@objGlobaldata.GetMultiHrEmpNameById(dsDocReviewFreq.Tables[0].Rows[i]["loggedby"].ToString())</text></span>
+                                            </div>
+                                            <div class="media-body">
+                                                <div class="btn-group-vertical float-right">
+                                                </div>
+                                                <div class="media-title">
+
+                                                    <span class="font-weight-semibold">Document Level:<text class="text-blue">@objGlobaldata.GetDocumentLevelbyId(dsDocReviewFreq.Tables[0].Rows[i]["doc_level"].ToString()) </text></span>
+                                                    <br />
+                                                    <span class="font-weight-semibold">Document Type:<text class="text-blue">@objGlobaldata.GetDocumentTypebyId(dsDocReviewFreq.Tables[0].Rows[i]["doc_type"].ToString()) </text></span>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    }
+                                </ul>
+                            }
+
                             @if (dsKPI != null && dsKPI.Tables.Count > 0 && dsKPI.Tables[0].Rows.Count > 0)
                             {
                                 <hr />
@@ -1847,7 +1884,7 @@
                             @if (dsDocChanges != null && dsDocChanges.Tables.Count > 0 && dsDocChanges.Tables[0].Rows.Count > 0)
                             {
                                 <hr />
-                                <p class="font-weight-bold text-center">Document Change Request</p>
+                                <p class="font-weight-bold text-center">Document Revise Request</p>
                                 <hr />
                                 <ul class="media-list">
                                     @for (int i = 0; i < dsDocChanges.Tables[0].Rows.Count; i++)
@@ -2580,7 +2617,7 @@
                                     }
                                 </ul>
                             }
-                            
+
                         </div>
 
                         @*<div class="dropdown-content-footer justify-content-center p-0">
@@ -2754,12 +2791,12 @@
                                     }
                                     @if (objGlobaldata.GetCurrentUserSession().DocChangeReq.Contains("1"))
                                     {
-                                        <li class="nav-item"><a href='@Url.Action("DocumentChangeRequestList", "DocumentChangeRequest", null)' class="nav-link @(ViewBag.SubMenutype == "DocumentChangeRequest" ? "active" : "")" onclick="HyperLinkProgressIconFunction()">Document Change Request </a></li>
+                                        <li class="nav-item"><a href='@Url.Action("DocumentChangeRequestList", "DocumentChangeRequest", null)' class="nav-link @(ViewBag.SubMenutype == "DocumentChangeRequest" ? "active" : "")" onclick="HyperLinkProgressIconFunction()">Document Revise Request </a></li>
                                     }
-                                    @if (objGlobaldata.GetCurrentUserSession().DocTrack.Contains("1"))
+                                    @*@if (objGlobaldata.GetCurrentUserSession().DocTrack.Contains("1"))
                                     {
                                         <li class="nav-item"><a href='@Url.Action("DocTrackingList", "DocumentTracking")' class="nav-link @(ViewBag.SubMenutype == "DocumentTracking" ? "active" : "")" onclick="HyperLinkProgressIconFunction()">Internal Document Status Tracking</a></li>
-                                    }
+                                    }*@
                                     <li class="nav-item"><a href='@Url.Action("DocumentReviewList", "DocumentReview")' class="nav-link @(ViewBag.SubMenutype == "DocumentReview" ? "active" : "")" onclick="HyperLinkProgressIconFunction()">Document Review Frequency</a></li>
                                     <li class="nav-item"><a href='@Url.Action("DocumentLogList", "DocumentReview")' class="nav-link @(ViewBag.SubMenutype == "DocumentReviewLog" ? "active" : "")" onclick="HyperLinkProgressIconFunction()">Document Review Status Log</a></li>
                                 </ul>
@@ -2810,10 +2847,10 @@
                             <li class="nav-item nav-item-submenu @(ViewBag.Menutype == "PartiesIssues" ? "nav-item-expanded nav-item-open" : "")">
                                 <a href="#" class="nav-link"><i class="icon-stats-bars2"></i> <span>Context of Organization</span></a>
                                 <ul class="nav nav-group-sub" data-submenu-title="ObjKPI">
-                                    @if (objGlobaldata.GetCurrentUserSession().Parties.Contains("1"))
+                                   @* @if (objGlobaldata.GetCurrentUserSession().Parties.Contains("1"))
                                     {
                                         <li class="nav-item"><a href='@Url.Action("PartiesList", "Parties", null)' class="nav-link @(ViewBag.SubMenutype == "Parties" ? "active" : "")" onclick="HyperLinkProgressIconFunction()">Needs & Expectations - Interested Parties</a></li>
-                                    }
+                                    }*@
                                     @if (objGlobaldata.GetCurrentUserSession().Issues.Contains("1"))
                                     {
                                         <li class="nav-item"><a href='@Url.Action("IssuesList", "Issues", null)' class="nav-link @(ViewBag.SubMenutype == "Issues" ? "active" : "")" onclick="HyperLinkProgressIconFunction()">Internal & External Issues</a></li>
@@ -2842,10 +2879,10 @@
                                         @*<li class="nav-item"><a href='@Url.Action("RiskRegisterActivityList", "RiskRegisterActivity",new { View = "1"})' class="nav-link @(ViewBag.SubMenutype == "RiskRegisterActivity" ? "active" : "")" onclick="HyperLinkProgressIconFunction()">Risk Assesment</a></li>*@
                                         <li class="nav-item"><a href='@Url.Action("EnvList", "EnvRisk",new { View = "1"})' class="nav-link @(ViewBag.SubMenutype == "Env" ? "active" : "")" onclick="HyperLinkProgressIconFunction()">Environmental Risk Assessment</a></li>
                                     }
-                                    @if (objGlobaldata.GetCurrentUserSession().TRA.Contains("1"))
+                                  @*  @if (objGlobaldata.GetCurrentUserSession().TRA.Contains("1"))
                                     {
                                         <li class="nav-item"><a href='@Url.Action("TRAList", "TRA", null)' class="nav-link @(ViewBag.SubMenutype == "TRA" ? "active" : "")" onclick="HyperLinkProgressIconFunction()">Job Safety Analysis (JSA)</a></li>
-                                    }
+                                    }*@
                                     <li class="nav-item"><a href='@Url.Action("OFIList", "OFI", null)' class="nav-link @(ViewBag.SubMenutype == "OFI" ? "active" : "")" onclick="HyperLinkProgressIconFunction()">Improvement Opportunity (IO)</a></li>
                                 </ul>
                             </li>

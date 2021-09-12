@@ -149,6 +149,9 @@
                                 <th>
                                     Initial Risk Rating
                                 </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.First().reeval_due_date)
+                                </th>
                                 @*<th>
             ReEvaluation Risk Rating
         </th>*@
@@ -197,7 +200,12 @@
 
                                             @Html.DisplayFor(modelItem => item.RiskRating)
                                         </td>                                        
-                                       
+                                        <td>
+                            @if (item.reeval_due_date != null && item.reeval_due_date > Convert.ToDateTime("01/01/0001"))
+                            {
+                                @item.reeval_due_date.ToString("dd/MM/yyyy")
+                            }
+                        </td>
                                             @*@if (item.reeval_due_date.ToString() != null && Convert.ToDateTime(item.reeval_due_date.ToString()) > Convert.ToDateTime("01/01/0001") && DateTime.Now >= Convert.ToDateTime(item.reeval_due_date.ToString()))
                                             {
                                               <td style="background-color:@item.color_code;font-weight: bold;">
@@ -646,27 +654,21 @@
 
                     function getDetails() {
                 var branch_name = document.getElementById("branch_name").value;
+                        var params = {
+                            branch_name: branch_name
+                        };
+                        queryString = $.param(params);
 
-                   jQuery.ajax({
-                                url: '@Url.Action("RiskListSearch", "RiskMgmt")',
-                        type: 'POST',
-                        dataType: "json",
-                        data: { 'branch_name': branch_name },
-                        success: function (result) {
-                            var params = {
-                                branch_name: branch_name
-                            };
-                            queryString = $.param(params);
-
-                            window.location.href =
-                                window.location.protocol + "//" +
-                                window.location.host +
-                                window.location.pathname +
-                               '?' + queryString;
-
-                        }
-                    });  
+                        window.location.href =
+                            window.location.protocol + "//" +
+                            window.location.host +
+                            window.location.pathname +
+                            '?' + queryString;
+                  
             }
+
+
+                    
 
                 </script>
 

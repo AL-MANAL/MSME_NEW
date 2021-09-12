@@ -153,7 +153,7 @@ namespace ISOStd.Controllers
                 }
 
 
-                //==========================DOCUMENT CHANGE REQUEST======================================
+                //==========================Document Revise Request======================================
 
                 sSqlstmt = "select * from t_documentchangerequest where ApproveStatus=0 and ( find_in_set('" + sempid + "',ApprovedBy) and not find_in_set('" + sempid + "',Approvers))"
                  + " and ( find_in_set('" + sempid + "',ApprovedBy) and not find_in_set('" + sempid + "',Rejector))";
@@ -351,7 +351,7 @@ namespace ISOStd.Controllers
                 //==========================Document Create Request======================================
 
                  sSqlstmt = "select id_doc_request,dcr_no,date_request,division,`department`,reason,upload,checkedby,doc_status as doc_statusId,logged_by," +
-                      "case when doc_status = '0' then 'Pending for IMS Rep.' when doc_status = '1' then 'Pending for document controller' when doc_status = '2' then 'Approved' when doc_status = '3' then 'Rejected' end  as doc_status " +
+                      "case when doc_status = '0' then 'Pending for Department Head' when doc_status = '1' then 'Pending for Assistant manager QHSE' when doc_status = '2' then 'Approved' when doc_status = '3' then 'Rejected' end  as doc_status " +
                        " from t_document_create_request where Active=1 and (doc_status = 0 and find_in_set('" + sempid + "',checkedby)) or (doc_status = 1 and find_in_set('" + sempid + "',doc_control))";
 
 

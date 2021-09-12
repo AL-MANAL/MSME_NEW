@@ -263,7 +263,7 @@
                                 </td>
                                 <td class="col">
                                     <div class="editor-field">
-                                        <select class="form-control-select3" data-fouc id="monitoring_mechanism" name="monitoring_mechanism">
+                                        @*<select class="form-control-select3" data-fouc id="monitoring_mechanism" name="monitoring_mechanism">
                                             <option value='' hidden>Select</option>
                                             @if (ViewBag.Monitoring != null)
                                             {
@@ -273,7 +273,8 @@
 
                                                 }
                                             }
-                                        </select>
+                                        </select>*@
+                                                <input type="text" class="form-control" id="monitoring_mechanism" name="monitoring_mechanism" />                                
                                         <span class="field-validation-error"><span id="monitoring_mechanism-message" style="display: none;">This field is required.</span></span>
                                         @Html.ValidationMessageFor(model => model.monitoring_mechanism)
                                     </div>
@@ -670,10 +671,11 @@
                 });
                 var kpi_typeVal = $("#kpi_type").val();
 
-                var monitoring_mechanism = $.map($("#monitoring_mechanism option:selected"), function (el, i) {
-                    return $(el).text();
-                });
-                var monitoring_mechanismVal = $("#monitoring_mechanism").val();
+                //var monitoring_mechanism = $.map($("#monitoring_mechanism option:selected"), function (el, i) {
+                //    return $(el).text();
+                //});
+                //var monitoring_mechanismVal = $("#monitoring_mechanism").val();
+                var monitoring_mechanism = $("#monitoring_mechanism").val();
 
                 var frequency_eval = $.map($("#frequency_eval option:selected"), function (el, i) {
                     return $(el).text();
@@ -699,11 +701,13 @@
 
                 cell5.innerHTML = "<input class='form-control' type='date' id='monitoring_frm_date " + cnt + "' name='monitoring_frm_date " + cnt + "' value='" + monitoring_frm_date + "' />";
                 cell6.innerHTML = "<input class='form-control' type='date' id='monitoring_to_date " + cnt + "' name='monitoring_to_date " + cnt + "' value='" + monitoring_to_date + "' />";
-                cell7.innerHTML = "<select class='select-fixed-single' id='monitoring_mechanism " + cnt + "' name='monitoring_mechanism " + cnt + "'><option value='" + monitoring_mechanismVal + "' selected>" + monitoring_mechanism + "</option>@if (ViewBag.Monitoring != null)
+                @*cell7.innerHTML = "<select class='select-fixed-single' id='monitoring_mechanism " + cnt + "' name='monitoring_mechanism " + cnt + "'><option value='" + monitoring_mechanismVal + "' selected>" + monitoring_mechanism + "</option>@if (ViewBag.Monitoring != null)
                 {
                     foreach (var item in ViewBag.Monitoring)
                     { <option value='@item.Value'>@item.Text</option> }
-                    }</select>";
+                    }</select>";*@
+                cell7.innerHTML = "<input class='form-control' type='text' id='monitoring_mechanism " + cnt + "' name='monitoring_mechanism " + cnt + "' value='" + monitoring_mechanism + "' />";
+
                 cell8.innerHTML = "<select class='select-fixed-single' id='frequency_eval " + cnt + "' name='frequency_eval " + cnt + "'><option value='" + frequency_evalVal + "' selected>" + frequency_eval + "</option>@if (ViewBag.Frequency != null)
                 {
                     foreach (var item in ViewBag.Frequency)
@@ -737,7 +741,8 @@
                 $("#kpi_type").val('').trigger('change');
                 document.getElementById("monitoring_frm_date").value = "";
                 document.getElementById("monitoring_to_date").value = "";
-                $("#monitoring_mechanism").val('').trigger('change');
+               // $("#monitoring_mechanism").val('').trigger('change');
+                document.getElementById("monitoring_mechanism").value = "";
                 $("#frequency_eval").val('').trigger('change');
                 document.getElementById("risk").value = "";
             }

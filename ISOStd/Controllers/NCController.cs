@@ -250,6 +250,7 @@ namespace ISOStd.Controllers
                                 nc_risk = (dsNCModels.Tables[0].Rows[i]["nc_risk"].ToString()),
                                 risklevel = (dsNCModels.Tables[0].Rows[i]["risklevel"].ToString()),
                                 nc_reportedby = objGlobaldata.GetMultiHrEmpNameById(dsNCModels.Tables[0].Rows[i]["nc_reportedby"].ToString()),
+                                nc_reportedbyId = (dsNCModels.Tables[0].Rows[i]["nc_reportedby"].ToString()),
                                 location = objGlobaldata.GetDivisionLocationById(dsNCModels.Tables[0].Rows[i]["location"].ToString()),
                                 nc_notifiedto = objGlobaldata.GetMultiHrEmpNameById(dsNCModels.Tables[0].Rows[i]["nc_notifiedto"].ToString()),
                                 department = objGlobaldata.GetMultiDeptNameById(dsNCModels.Tables[0].Rows[i]["department"].ToString()),
@@ -260,7 +261,8 @@ namespace ISOStd.Controllers
                                 nc_raise_dueto = objGlobaldata.GetDropdownitemById(dsNCModels.Tables[0].Rows[i]["nc_raise_dueto"].ToString()),
                                 nc_issuedto_status = dsNCModels.Tables[0].Rows[i]["nc_issuedto_status"].ToString(),
                                 nc_issuedto_statusId = dsNCModels.Tables[0].Rows[i]["nc_issuedto_statusId"].ToString(),
-                                nc_initial_statusId = dsNCModels.Tables[0].Rows[i]["nc_initial_statusId"].ToString()
+                                nc_initial_statusId = dsNCModels.Tables[0].Rows[i]["nc_initial_statusId"].ToString(),
+                              
                             };
 
                             DateTime dtValue;
@@ -1704,6 +1706,173 @@ namespace ISOStd.Controllers
             return Json(true);
         }
 
+
+        //NC Details
+        [AllowAnonymous]
+        public ActionResult NCInfo(int id_nc)
+        {
+            NCModels objModel = new NCModels();
+
+            NCModelsList NcList = new NCModelsList();
+            NcList.lstNC = new List<NCModels>();
+            try
+            {
+                if (id_nc > 0)
+                {                   
+
+                    string sSqlstmt = "select id_nc, nc_no, nc_reported_date, nc_detected_date, nc_category, nc_description, nc_activity, nc_performed, nc_pnc, nc_upload,"
+                   + "nc_impact, nc_risk, risklevel, nc_reportedby,  nc_notifiedto, nc_division, division, department, location,nc_audit,audit_no,nc_raise_dueto,nc_issueto," +
+                   "(case when nc_issuedto_status=1 then 'Accepted' end) as nc_issuedto_status,nc_issuedto_status as nc_issuedto_statusId,nc_initial_status as nc_initial_statusId,nc_issuer_rejector,nc_issuers from t_nc where id_nc ='" + id_nc + "'";
+                    DataSet dsNCModels = objGlobaldata.Getdetails(sSqlstmt);
+
+                    if (dsNCModels.Tables.Count > 0 && dsNCModels.Tables[0].Rows.Count > 0)
+                    {
+                        try
+                        {
+                            objModel = new NCModels
+                            {
+                                id_nc = (dsNCModels.Tables[0].Rows[0]["id_nc"].ToString()),
+                                nc_no = (dsNCModels.Tables[0].Rows[0]["nc_no"].ToString()),
+                                nc_category = objGlobaldata.GetDropdownitemById(dsNCModels.Tables[0].Rows[0]["nc_category"].ToString()),
+                                nc_description = (dsNCModels.Tables[0].Rows[0]["nc_description"].ToString()),
+                                nc_activity = (dsNCModels.Tables[0].Rows[0]["nc_activity"].ToString()),
+                                nc_performed = (dsNCModels.Tables[0].Rows[0]["nc_performed"].ToString()),
+                                nc_pnc = (dsNCModels.Tables[0].Rows[0]["nc_pnc"].ToString()),
+                                nc_upload = (dsNCModels.Tables[0].Rows[0]["nc_upload"].ToString()),
+                                nc_impact = (dsNCModels.Tables[0].Rows[0]["nc_impact"].ToString()),
+                                nc_risk = (dsNCModels.Tables[0].Rows[0]["nc_risk"].ToString()),
+                                risklevel = objGlobaldata.GetDropdownitemById(dsNCModels.Tables[0].Rows[0]["risklevel"].ToString()),
+                                nc_reportedby = objGlobaldata.GetMultiHrEmpNameById(dsNCModels.Tables[0].Rows[0]["nc_reportedby"].ToString()),
+                                emp_id = (dsNCModels.Tables[0].Rows[0]["nc_reportedby"].ToString()),
+                                location = objGlobaldata.GetDivisionLocationById(dsNCModels.Tables[0].Rows[0]["location"].ToString()),
+                                nc_notifiedto = objGlobaldata.GetMultiHrEmpNameById(dsNCModels.Tables[0].Rows[0]["nc_notifiedto"].ToString()),
+                                nc_notifiedtoId = (dsNCModels.Tables[0].Rows[0]["nc_notifiedto"].ToString()),
+                                department = objGlobaldata.GetMultiDeptNameById(dsNCModels.Tables[0].Rows[0]["department"].ToString()),
+                                division = objGlobaldata.GetMultiCompanyBranchNameById(dsNCModels.Tables[0].Rows[0]["division"].ToString()),
+                                nc_issueto = objGlobaldata.GetMultiHrEmpNameById(dsNCModels.Tables[0].Rows[0]["nc_issueto"].ToString()),
+                                nc_issuetoId = (dsNCModels.Tables[0].Rows[0]["nc_issueto"].ToString()),
+                                nc_division = objGlobaldata.GetMultiCompanyBranchNameById(dsNCModels.Tables[0].Rows[0]["nc_division"].ToString()),
+                                nc_audit = (dsNCModels.Tables[0].Rows[0]["nc_audit"].ToString()),
+                                audit_no = objGlobaldata.GetAuditNoFromAuditProcessById(dsNCModels.Tables[0].Rows[0]["audit_no"].ToString()),
+                                nc_raise_dueto = objGlobaldata.GetDropdownitemById(dsNCModels.Tables[0].Rows[0]["nc_raise_dueto"].ToString()),
+                                nc_issuedto_status = dsNCModels.Tables[0].Rows[0]["nc_issuedto_status"].ToString(),
+                                nc_issuedto_statusId = dsNCModels.Tables[0].Rows[0]["nc_issuedto_statusId"].ToString(),
+                                nc_issuer_rejector = dsNCModels.Tables[0].Rows[0]["nc_issuer_rejector"].ToString(),
+                                nc_issuers = dsNCModels.Tables[0].Rows[0]["nc_issuers"].ToString(),
+                                nc_initial_statusId = dsNCModels.Tables[0].Rows[0]["nc_initial_statusId"].ToString(),
+                            };
+
+                            DateTime dtValue;
+                            if (DateTime.TryParse(dsNCModels.Tables[0].Rows[0]["nc_reported_date"].ToString(), out dtValue))
+                            {
+                                objModel.nc_reported_date = dtValue;
+                            }
+                            if (DateTime.TryParse(dsNCModels.Tables[0].Rows[0]["nc_detected_date"].ToString(), out dtValue))
+                            {
+                                objModel.nc_detected_date = dtValue;
+                            }
+                            string sSqlstmt1 = "select nc_issuedto,nc_stauts,nc_approve_reject_date from t_nc_status where id_nc = '" + dsNCModels.Tables[0].Rows[0]["id_nc"].ToString() + "' order by id_nc_status desc";
+                            DataSet dsNCStatusModels = objGlobaldata.Getdetails(sSqlstmt1);
+                            if (dsNCStatusModels.Tables.Count > 0 && dsNCStatusModels.Tables[0].Rows.Count > 0)
+                            {
+                                for (int j = 0; j < dsNCStatusModels.Tables[0].Rows.Count; j++)
+                                {
+                                    if (DateTime.TryParse(dsNCStatusModels.Tables[0].Rows[j]["nc_approve_reject_date"].ToString(), out dtValue))
+                                    {
+                                        objModel.nc_approve_reject_date = dtValue;
+                                    }
+                                    if (dsNCStatusModels.Tables[0].Rows[j]["nc_stauts"].ToString() == "1")
+                                    {
+                                        objModel.nc_initial_status = objModel.nc_initial_status + "," + "Approved - " + objGlobaldata.GetMultiHrEmpNameById(dsNCStatusModels.Tables[0].Rows[j]["nc_issuedto"].ToString()) + " - " + objModel.nc_approve_reject_date;
+                                    }
+                                    if (dsNCStatusModels.Tables[0].Rows[j]["nc_stauts"].ToString() == "0")
+                                    {
+                                        objModel.nc_initial_status = objModel.nc_initial_status + "," + "Pending - " + objGlobaldata.GetMultiHrEmpNameById(dsNCStatusModels.Tables[0].Rows[j]["nc_issuedto"].ToString()) + " - " + objModel.nc_approve_reject_date;
+                                    }
+                                    if (dsNCStatusModels.Tables[0].Rows[j]["nc_stauts"].ToString() == "2")
+                                    {
+                                        objModel.nc_initial_status = objModel.nc_initial_status + "," + "Rejected - " + objGlobaldata.GetMultiHrEmpNameById(dsNCStatusModels.Tables[0].Rows[j]["nc_issuedto"].ToString()) + " - " + objModel.nc_approve_reject_date;
+                                    }
+                                }
+
+                                if (objModel.nc_initial_status != null)
+                                {
+                                    objModel.nc_initial_status = objModel.nc_initial_status.Trim(',');
+                                }
+                            }
+                            NcList.lstNC.Add(objModel);
+                        }
+                        catch (Exception ex)
+                        {
+                            objGlobaldata.AddFunctionalLog("Exception in NCInfo: " + ex.ToString());
+                            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                        }
+                    }
+
+                    //string SSqlstmt11 = "Select nc_issuedto,(case when nc_stauts= 0 then 'Pending' when nc_stauts = 1 then 'Approved' when nc_stauts = 2 then 'Rejected' end) as nc_stauts,nc_approve_reject_date,nc_reject_comment,nc_reject_upload from t_nc_status where id_nc = '" + sid_nc + "'";
+                    //DataSet dsNcStatusList = objGlobaldata.Getdetails(SSqlstmt11);
+                    //ViewBag.NcStatus = dsNcStatusList;
+
+                    //string SSqlstmt2 = "Select id_nc_related,nc_related_aspect,nc_related_explain,nc_related_doc from t_nc_related where id_nc = '" + sid_nc + "'";
+                    //DataSet dsNcRelatedLsit = objGlobaldata.Getdetails(SSqlstmt2);
+                    //ViewBag.NcRelated = dsNcRelatedLsit;
+
+                    ////Disposition
+                    //string sSqlstmt11 = "select id_nc,nc_no,nc_reported_date,nc_description,division,department,location," +
+                    //   "disp_action_taken,disp_explain,disp_notifiedto,disp_notifeddate,disp_upload from t_nc where id_nc='" + sid_nc + "'";
+                    //DataSet dsDispModel = objGlobaldata.Getdetails(sSqlstmt11);
+                    //ViewBag.Disposition = dsDispModel;
+
+                    //string sSqlstmt12 = "select id_nc_disp_action,disp_action,disp_resp_person,disp_complete_date from t_nc_disp_action where id_nc='" + sid_nc + "'";
+                    //DataSet dsDispModels = objGlobaldata.Getdetails(sSqlstmt12);
+                    //ViewBag.DispAction = dsDispModels;
+
+                    ////Team
+                    //string sSqlstmt13 = "select nc_team,team_approvedby,team_notifiedto,team_targetdate from t_nc where id_nc='" + sid_nc + "'";
+                    //DataSet dsTeamModel = objGlobaldata.Getdetails(sSqlstmt13);
+                    //ViewBag.Team = dsTeamModel;
+
+                    ////RCA
+                    //string sSqlstmt14 = "select rca_technique,rca_details,rca_upload,rca_action,rca_justify,rca_reportedby,rca_notifiedto,rca_reporteddate,rca_startedon from t_nc where id_nc='" + sid_nc + "'";
+                    //DataSet dsRCAModels = objGlobaldata.Getdetails(sSqlstmt14);
+                    //ViewBag.RCA = dsRCAModels;
+
+                    ////CA
+                    //string sSqlstmt15 = "select ca_verfiry_duedate,ca_proposed_by,ca_notifiedto,ca_notifed_date from t_nc where id_nc='" + sid_nc + "'";
+                    //DataSet dsCAModels = objGlobaldata.Getdetails(sSqlstmt15);
+                    //ViewBag.CA = dsCAModels;
+
+                    //string sSqlstmt16 = "select id_nc_corrective_action,ca_div,ca_loc,ca_dept,ca_rootcause,ca_ca,ca_resource," +
+                    //    "ca_target_date,ca_resp_person from t_nc_corrective_action where id_nc = '" + sid_nc + "' and ca_active=1";
+                    //DataSet dsCAList = objGlobaldata.Getdetails(sSqlstmt16);
+                    //ViewBag.CAList = dsCAList;
+
+                    ////Verification
+                    //string sSqlstmt17 = "select v_implement,v_implement_explain,v_rca,v_rca_explain,v_discrepancies,v_discrep_explain,v_upload," +
+                    //    "v_status,v_closed_date,v_verifiedto,v_verified_date,v_notifiedto from t_nc where id_nc='" + sid_nc + "'";
+                    //DataSet dsVerifyModels = objGlobaldata.Getdetails(sSqlstmt17);
+                    //ViewBag.Verification = dsVerifyModels;
+
+                    //string sSqlstmt18 = "Select id_nc_corrective_action,ca_div,ca_loc,ca_dept,ca_rootcause,ca_ca,ca_resource," +
+                    //"ca_target_date,ca_resp_person,implement_status,ca_effective,reason from t_nc_corrective_action where id_nc = '" + sid_nc + "' and ca_active=1";
+                    //DataSet dsVerifyModel = objGlobaldata.Getdetails(sSqlstmt18);
+                    //ViewBag.VerificationList = dsVerifyModel;
+
+                }
+                else
+                {
+                    TempData["alertdata"] = "NC Id cannot be null";
+                    return RedirectToAction("NCList");
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in NCInfo: " + ex.ToString());
+                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+            }
+            return View(objModel);
+        }
+
         //NC Details
         [AllowAnonymous]
         public ActionResult NCDetails()
@@ -1871,7 +2040,7 @@ namespace ISOStd.Controllers
             return View(objModel);
         }
 
-        //NC Details       
+        //NC PDF       
         public ActionResult NCPDF()
         {
             NCModels objModel = new NCModels();

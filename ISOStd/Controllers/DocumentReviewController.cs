@@ -276,7 +276,8 @@ namespace ISOStd.Controllers
                 if (sid_doc_review != null && sid_doc_review != "")
                 {
                     string sSqlstmt = "select id_doc_review,review_date, doc_level, doc_type, frequency, " +
-                        "criteria, approvedby, division from t_document_review where id_doc_review='" + sid_doc_review + "'";
+                        "criteria, approvedby, division, (case when approve_status='1' then 'Approved' else 'Not Approved' end) as approve_status," +
+                        " approve_status as approve_statusId from t_document_review where id_doc_review='" + sid_doc_review + "'";
 
                     DataSet dsReviewList = objGlobaldata.Getdetails(sSqlstmt);
                     if (dsReviewList.Tables.Count > 0 && dsReviewList.Tables[0].Rows.Count > 0)
@@ -291,7 +292,10 @@ namespace ISOStd.Controllers
                                 frequency = objReview.GetDocReviewFrequencyById(dsReviewList.Tables[0].Rows[0]["frequency"].ToString()),
                                 criteria = objReview.GetDocReviewCriteriaById(dsReviewList.Tables[0].Rows[0]["criteria"].ToString()),
                                 approvedby = objGlobaldata.GetMultiHrEmpNameById(dsReviewList.Tables[0].Rows[0]["approvedby"].ToString()),
+                                approvedbyId = (dsReviewList.Tables[0].Rows[0]["approvedby"].ToString()),
                                 division = objGlobaldata.GetMultiCompanyBranchNameById(dsReviewList.Tables[0].Rows[0]["division"].ToString()),
+                                approve_status = dsReviewList.Tables[0].Rows[0]["approve_status"].ToString(),
+                                approve_statusId = dsReviewList.Tables[0].Rows[0]["approve_statusId"].ToString(),
                             };
 
                             DateTime dateValue;
@@ -423,6 +427,65 @@ namespace ISOStd.Controllers
             }
             return View(objRList.ReviewList.ToList());
         }
+
+        [AllowAnonymous]
+        public ActionResult DocReviewFreqApproveOrReject(string id_doc_review, int iStatus, string PendingFlg)
+        {
+            try
+            {
+                DocumentReviewModels objReview = new DocumentReviewModels();              
+                string sStatus = "";
+
+                if (iStatus == 0)
+                {
+                    sStatus = "Pending";
+                }
+                else if (iStatus == 1)
+                {
+                    sStatus = "Approved";
+
+                }
+                else if (iStatus == 2)
+                {
+                    sStatus = "Rejected";
+
+                }
+                if (objReview.FunDocReviewFreApproveOrReject(id_doc_review, iStatus))
+                {
+                    TempData["Successdata"] = "Document Review Frequency" + sStatus + " successfully";
+                }
+                else
+                {
+                    TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                }
+
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in DocReviewFreqApproveOrReject: " + ex.ToString());
+                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+            }
+
+            if (PendingFlg != null && PendingFlg == "true")
+            {
+                string path = Request.CurrentExecutionFilePath;
+                string[] url = path.Split('/');
+                //var controller = url[1];
+                if (url[1] == "DocumentReview" || url[2] == "DocumentReview")
+                {
+                    return RedirectToAction("DocumentReviewList", "DocumentReview");
+                }
+                else
+                {
+                    return RedirectToAction("ListPendingForReview", "Dashboard");
+                }
+            }
+            else
+            {
+                return RedirectToAction("MgmtDocumentsList");
+            }
+        }
+
 
         public JsonResult FunGetExistDoc(string DocLevels,string DocType)
         {

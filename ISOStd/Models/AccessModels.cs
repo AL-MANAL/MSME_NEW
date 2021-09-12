@@ -36,7 +36,7 @@ namespace ISOStd.Models
         [Display(Name = "Records Mgmt")]
         public string Record { get; set; }
 
-        [Display(Name = "Document Change Request")]
+        [Display(Name = "Document Revise Request")]
         public string DocChangeReq { get; set; }
 
         [Display(Name = "Objectives & KPI's")]

@@ -32,9 +32,10 @@ namespace ISOStd.Models
         [Display(Name = "Criteria to define the frequency")]
         public string criteria { get; set; }
 
-        [Display(Name = "Approved by")]
+        [Display(Name = "Approver")]
         public string approvedby { get; set; }
-        
+        public string approvedbyId { get; set; }
+
         [Display(Name = "Division")]
         public string division { get; set; }
 
@@ -55,7 +56,10 @@ namespace ISOStd.Models
 
         public DateTime next_review_date { get; set; }
 
-
+        [Display(Name = "Staus")]
+        public string approve_status { get; set; }
+        public string approve_statusId { get; set; }
+        public DateTime approve_date { get; set; }
 
         public MultiSelectList GetDocReviewFrequencyList()
         {
@@ -297,6 +301,60 @@ namespace ISOStd.Models
             }
             return false;
         }
+
+
+        internal bool FunDocReviewFreApproveOrReject(string sid_doc_review, int sStatus)
+        {
+            try
+            {
+                string sApproveDate = DateTime.Now.ToString("yyyy-MM-dd HH':'mm':'ss");
+                string user = "";
+
+                user = objGlobaldata.GetCurrentUserSession().empid;
+                
+                string Sql1 = "update t_document_review set approve_status='"+ sStatus + "', approve_date='" + sApproveDate + "' where id_doc_review='" + sid_doc_review + "'";
+                objGlobaldata.ExecuteQuery(Sql1);
+
+                //SendMgmtDocReviewApprovalmail(sid_doc_review);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in FunDocReviewFreApproveOrReject: " + ex.ToString());
+            }
+            return false;
+        }
+
+
+        //internal bool SendMgmtReviewApprovalmail(string sidMgmt, System.IO.FileStream fsSource, string filename, string sMessage = "")
+        //{
+        //    try
+        //    {
+        //        DataSet dsDocument = objGlobalData.Getdetails("select DocName, PreparedBy, ReviewedBy, ApprovedBy, UploadedBy from t_mgmt_documents where idMgmt='" + sidMgmt + "'");
+        //        if (dsDocument.Tables.Count > 0 && dsDocument.Tables[0].Rows.Count > 0)
+        //        {
+        //            string sEmailid = objGlobalData.GetMultiHrEmpEmailIdById(dsDocument.Tables[0].Rows[0]["ApprovedBy"].ToString());
+        //            sEmailid = Regex.Replace(sEmailid, ",+", ",");
+        //            sEmailid = sEmailid.Trim();
+        //            sEmailid = sEmailid.TrimEnd(',');
+        //            sEmailid = sEmailid.TrimStart(',');
+        //            string sExtraMsg = "Internal Document has been Reviewed, Document Name: " + dsDocument.Tables[0].Rows[0]["DocName"].ToString();
+
+        //            string sEmailCCList = objGlobalData.GetMultiHrEmpEmailIdById(dsDocument.Tables[0].Rows[0]["ApprovedBy"].ToString()) + "," + objGlobalData.GetMultiHrEmpEmailIdById(dsDocument.Tables[0].Rows[0]["ReviewedBy"].ToString()) + ","
+        //                + objGlobalData.GetMultiHrEmpEmailIdById(dsDocument.Tables[0].Rows[0]["UploadedBy"].ToString());
+        //            Dictionary<string, string> dicEmailContent = objGlobalData.FormEmailBody(
+        //            objGlobalData.GetMultiHrEmpNameById(dsDocument.Tables[0].Rows[0]["PreparedBy"].ToString()), "mgmtdoc5", sExtraMsg);
+
+        //            return objGlobalData.SendmailReview(sEmailid, fsSource, filename, dicEmailContent["subject"], dicEmailContent["body"], "", sEmailCCList);
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        objGlobalData.AddFunctionalLog("Exception in SendDocChangeApprovalmail: " + ex.ToString());
+        //    }
+        //    return false;
+        //}
+
 
     }
 

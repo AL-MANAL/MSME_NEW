@@ -87,6 +87,7 @@ namespace ISOStd.Models
 
         [Display(Name = "Reviewed By")]
         public string JrMgr { get; set; }
+        public string JrMgrId { get; set; }
 
         [Display(Name = "Reviewed By Comment")]
         public string Comment_JrMgr { get; set; }
@@ -96,6 +97,7 @@ namespace ISOStd.Models
 
         [Display(Name = "Approved By")]
         public string SrMgr { get; set; }
+        public string SrMgrId { get; set; }
 
         [Display(Name = "Approved By Comment")]
         public string Comment_SrMgr { get; set; }

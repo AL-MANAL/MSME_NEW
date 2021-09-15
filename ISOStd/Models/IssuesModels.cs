@@ -24,7 +24,7 @@ namespace ISOStd.Models
         public string Issue_refno { get; set; }
         
         [Required]
-        [Display(Name = "Issue")]
+        [Display(Name = "New Issue")]
         public string Issue { get; set; }
 
         [Required]
@@ -62,7 +62,7 @@ namespace ISOStd.Models
         [Display(Name = "Issue Reporting Date")]
         public DateTime issue_date { get; set; }
 
-        [Display(Name = "Reporting To")]
+        [Display(Name = "Issue Reported To")]
         public string reporting_to { get; set; }
 
         [Display(Name = "Notified To")]
@@ -71,7 +71,10 @@ namespace ISOStd.Models
 
         [Display(Name = "Impact in detail")]
         public string Impact_detail { get; set; }
-        
+
+        [Display(Name = "Repetitive Issue")]
+        public string Repet_Issue { get; set; }
+        public string Repet_Issue_detail { get; set; }
 
         internal bool CheckForIssueRefNoExists(string sIssue_refno)
         {
@@ -131,7 +134,7 @@ namespace ISOStd.Models
                 string sFiledValue = "";
 
                 string sSqlstmt = "insert into t_issues (Issue,IssueType, Impact,Isostd, Evidence,ImpactDesc," +
-                    "Effect,Issue_refno,Deptid,Issue_Category,branch,Location,reporting_to,notified_to,loggedby,Impact_detail";
+                    "Effect,Issue_refno,Deptid,Issue_Category,branch,Location,reporting_to,notified_to,loggedby,Impact_detail,Repet_Issue";
                     
                     if(objissue.issue_date != null && objissue.issue_date > Convert.ToDateTime("01/01/0001"))
                     {
@@ -142,7 +145,7 @@ namespace ISOStd.Models
                 sSqlstmt = sSqlstmt + sFiled + " ) values('" + objissue.Issue + "','" + objissue.IssueType + "','" + objissue.Impact + "'"
                     + ",'" + objissue.Isostd + "','" + objissue.Evidence + "','" + objissue.ImpactDesc + "','" + objissue.Effect + "','" + objissue.Issue_refno + "','" + objissue.Deptid + "','"
                     + objissue.Issue_Category + "','" + objissue.branch + "','" + objissue.Location + "','" + objissue.reporting_to + "','" + objissue.notified_to 
-                    + "','" + objGlobalData.GetCurrentUserSession().empid + "','" + objissue.Impact_detail + "'";
+                    + "','" + objGlobalData.GetCurrentUserSession().empid + "','" + objissue.Impact_detail + "','" + objissue.Repet_Issue + "'";
                     
                 sSqlstmt = sSqlstmt + sFiledValue + ")";
                 int iid_issue = 0;
@@ -279,7 +282,7 @@ namespace ISOStd.Models
                 string sSqlstmt = "update t_issues set Issue ='" + objIssue.Issue + "', IssueType='" + objIssue.IssueType + "', "
                     + "Impact='" + objIssue.Impact + "',Isostd='" + objIssue.Isostd + "',ImpactDesc='" + objIssue.ImpactDesc + "',Effect='" + objIssue.Effect
                 /*+ ",Deptid='" + objIssue.Deptid*/ + "',Issue_Category='" + objIssue.Issue_Category + "',reporting_to='" + objIssue.reporting_to 
-                + "',notified_to='" + objIssue.notified_to + "',Impact_detail='" + objIssue.Impact_detail + "'";
+                + "',notified_to='" + objIssue.notified_to + "',Impact_detail='" + objIssue.Impact_detail + "',Repet_Issue='" + objIssue.Repet_Issue + "'";
 
                 if (objIssue.Evidence != null)
                 {

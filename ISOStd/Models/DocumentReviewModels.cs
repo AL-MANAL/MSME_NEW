@@ -56,7 +56,7 @@ namespace ISOStd.Models
 
         public DateTime next_review_date { get; set; }
 
-        [Display(Name = "Staus")]
+        [Display(Name = "Status")]
         public string approve_status { get; set; }
         public string approve_statusId { get; set; }
         public DateTime approve_date { get; set; }

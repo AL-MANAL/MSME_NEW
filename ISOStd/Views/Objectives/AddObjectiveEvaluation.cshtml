@@ -13,6 +13,8 @@
     {
         visi=ViewBag.Visible;
     }
+    var currentmonth = DateTime.Now.Month;
+    var currentyear = DateTime.Now.Year;
 }
 
 @section featured {
@@ -65,6 +67,7 @@
             <table class="table table-bordered table-striped table-hover datatable-responsive" id="table1">
                 <thead>
                     <tr>
+                        <th>Sl No.</th>
                         <th>
                             Evaluation Period
                         </th>
@@ -94,10 +97,12 @@
                 </thead>
                 <tbody>
                     @if (Model != null && Model.Count() > 0)
-                    {
+                    { int i = 0;
                         foreach (var item in Model)
                         {
+                            i++;
                             <tr>
+                                <td> @i.ToString()</td>
                                 <td>
                                     @item.FromPeriod.ToString("dd/MM/yyyy")
                                     -
@@ -106,40 +111,20 @@
                                 <td>
                                     @if (item.Obj_Eval_On > Convert.ToDateTime("01/01/0001"))
                                     {
-                                        @item.Obj_Eval_On.ToString("dd/MM/yyyy")
-                                    }  
+                                @item.Obj_Eval_On.ToString("dd/MM/yyyy")
+                                    }
                                 </td>
                                 <td>
                                     @Html.DisplayFor(modelItem => item.Obj_Achieved_Val)
                                 </td>
                                 <td>
                                     @Html.DisplayFor(modelItem => item.Status_Obj_Eval)
-                                </td>
-                                @*<td>
-                                        @Html.DisplayFor(modelItem => item.Trend)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.NCR_Ref)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.Status_Obj_Eval)
-                                    </td>
-                                    <td>
-                                        @if (item.Evidence != "")
-                                        {
-                                            <a href='@Url.Action("DisplayDocument", "Reports", new { Document = item.Evidence })' target="_blank">Preview</a>
-                                        }
-                                        else
-                                        {
-                                            <span class="badge badge-danger">No File was Uploaded</span>
-                                        }
-                                    </td>*@
-                                <td>
-                                    <div id="divspan" onclick="GetEditDetails(@item.ObjectivesEval_Id,@item.ObjectivesTrans_Id,@ViewBag.View)"><span class="badge badge-info" title="Edit Objective Evaluation details">Edit</span></div>
-                                    @*<a href='@Url.Action("ObjectiveEvaluationEdit", "Objectives", new { ObjectivesEval_Id = item.ObjectivesEval_Id, View=ViewBag.View })' title="Edit Objective Evaluation details"
-                                           onclick="HyperLinkProgressIconFunction()">
-                                            <span class="badge badge-info">Edit</span>
-                                        </a>*@
+                                </td>                               
+                                <td>                                  
+                                    @if ((item.FromPeriod.Month <= currentmonth) && (item.ToPeriod.Month >= currentmonth) && (currentyear == item.FromPeriod.Year || currentyear == item.ToPeriod.Year))
+                                    {
+                                        <div id="divspan" onclick="GetEditDetails(@item.ObjectivesEval_Id,@item.ObjectivesTrans_Id,@ViewBag.View)"><span class="badge badge-info" title="Edit Objective Evaluation details">Edit</span></div>
+                                    }
                                 </td>
                             </tr>
                         }
@@ -155,7 +140,7 @@
 @using (Html.BeginForm("AddObjectiveEvaluation", "Objectives", FormMethod.Post,
                          new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
 {
-    @Html.AntiForgeryToken()
+                                        @Html.AntiForgeryToken()
     @Html.ValidationSummary(true)
     <div class="card" id="div2" style="display:none">
         <div class="card-header header-elements-inline bg-primary">
@@ -567,9 +552,9 @@
                                 $("#table1").resize();
                             });
 
-                            $('#table1').on('order.dt', function () {
-                                $("#table1").resize();
-                            });
+                            //$('#table1').on('order.dt', function () {
+                            //    $("#table1").resize();
+                            //});
 
 
                             $('#table1').on('responsive-display.dt', function () {

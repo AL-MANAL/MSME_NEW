@@ -52,6 +52,7 @@ namespace ISOStd.Models
 
         [Display(Name = "Approvers")]
         public string Approvers { get; set; }
+        public string ApprovedById { get; set; }
 
         [Display(Name = "Rejectors")]
         public string Rejector { get; set; }
@@ -70,6 +71,7 @@ namespace ISOStd.Models
 
         public string ReivewRejector { get; set; }
         public string ApproveRejector { get; set; }
+        public string ChangeStatusId { get; set; }
 
         internal bool FunDeleteChangeMgmtDoc(string sId)
         {

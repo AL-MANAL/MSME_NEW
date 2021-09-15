@@ -42,7 +42,8 @@ namespace ISOStd.Models
        
         [Display(Name = "To be approved by")]
         public string Approved_By { get; set; }
-        
+        public string Approved_ById { get; set; }
+
         [Display(Name = "Objective Description")]
         [DataType(DataType.MultilineText)]
         public string Objectives_val { get; set; }
@@ -203,6 +204,15 @@ namespace ISOStd.Models
         [Display(Name = "Status Updated On")]
         public DateTime updated_on { get; set; }
 
+        [Display(Name = "Upload Document")]
+        public string obj_reject_upload { get; set; }
+
+        [Display(Name = "Reason for not accepting Objective")]
+        public string obj_reject_comment { get; set; }
+
+        [Display(Name ="Notified to person")]
+        public string Pcff_Notify { get; set; }
+
         internal bool FunAddActionPlanTrans(ObjectivesModels objObjectivesModels)
         {
             try
@@ -346,7 +356,7 @@ namespace ISOStd.Models
                     {
                         string sObj_Estld_OnDate = objObjectivesModelsList.ObjectivesMList[i].Obj_Estld_On.ToString("yyyy-MM-dd HH':'mm':'ss");
                         string sTarget_Date = objObjectivesModelsList.ObjectivesMList[i].Target_Date.ToString("yyyy-MM-dd HH':'mm':'ss");
-                        DataSet dsData = objGlobalData.GetReportNo("OBJ", objGlobalData.GetDeptNameById(sDept), objGlobalData.GetCompanyBranchNameById(sBranch));
+                        DataSet dsData = objGlobalData.GetReportNo("OBJ", "", objGlobalData.GetCompanyBranchNameById(sBranch));
                         if (dsData != null && dsData.Tables.Count > 0)
                         {
                             Obj_Ref = dsData.Tables[0].Rows[0]["ReportNO"].ToString();
@@ -409,52 +419,7 @@ namespace ISOStd.Models
             }
             return false;
         }
-
-        //internal bool FunUpdateObjTrans(int sObjectives_Id)
-        //{
-        //    try
-        //    {
-        //        string sSqlstmt = "delete from t_objectives_trans where Objectives_Id='" + sObjectives_Id + "'; ";
-        //        return objGlobalData.ExecuteQuery(sSqlstmt);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        objGlobalData.AddFunctionalLog("Exception in FunUpdateObjTrans: " + ex.ToString());
-        //    }
-        //    return false;
-        //}
-
-        //internal bool FunEditObjectivesTrans(ObjectivesModelsList objObjectivesModelsList)
-        //{
-        //    try
-        //    {
-        //        string sSqlstmt = "";
-        //        for (int i = 0; i < objObjectivesModelsList.ObjectivesMList.Count; i++)
-        //        {
-        //            if (objObjectivesModelsList.ObjectivesMList[i].Objectives_val != null)
-        //            {
-        //                string sObj_Estld_OnDate = objObjectivesModelsList.ObjectivesMList[i].Obj_Estld_On.ToString("yyyy-MM-dd HH':'mm':'ss");
-        //                string sTarget_Date = objObjectivesModelsList.ObjectivesMList[i].Target_Date.ToString("yyyy-MM-dd HH':'mm':'ss");
-
-        //                sSqlstmt = sSqlstmt + "insert into t_objectives_trans (Objectives_Id, Obj_Estld_On, Objectives_val, Obj_Target, Base_Line_Value, Monitoring_Mechanism, Target_Date, "
-        //                    + " Action_Plan, Personal_Responsible,Approved_By,Accepted_Value,Risk_ifObjFails"
-        //                    + ") values('" + Objectives_Id + "','" + sObj_Estld_OnDate + "','" + objObjectivesModelsList.ObjectivesMList[i].Objectives_val
-        //                 + "','" + objObjectivesModelsList.ObjectivesMList[i].Obj_Target + "','" + objObjectivesModelsList.ObjectivesMList[i].Base_Line_Value + "','"
-        //                 + objObjectivesModelsList.ObjectivesMList[i].Monitoring_Mechanism + "','" + sTarget_Date + "','" + objObjectivesModelsList.ObjectivesMList[i].Action_Plan
-        //                + "','" + objObjectivesModelsList.ObjectivesMList[i].Personal_Responsible
-        //                  + "','" + objObjectivesModelsList.ObjectivesMList[i].Approved_By + "','" + objObjectivesModelsList.ObjectivesMList[i].Accepted_Value + "','" + objObjectivesModelsList.ObjectivesMList[i].Risk_ifObjFails + "'); ";
-        //            }
-        //        }
-
-        //         return objGlobalData.ExecuteQuery(sSqlstmt);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        objGlobalData.AddFunctionalLog("Exception in FunEditObjectivesTrans: " + ex.ToString());
-        //    }
-        //    return false;
-        //}
-
+            
         internal bool FunAddObjectivesEvaluation(ObjectivesModels objObjectivesModels)
         {
             try
@@ -542,7 +507,7 @@ namespace ISOStd.Models
                 sSqlstmt = sSqlstmt + "update t_objectives_trans set  Objectives_val='" + objObjectivesModels.Objectives_val + "', "
                     + "Obj_Target='" + objObjectivesModels.Obj_Target + "', Base_Line_Value='" + objObjectivesModels.Base_Line_Value
                     + "', Monitoring_Mechanism='" + objObjectivesModels.Monitoring_Mechanism + "', Target_Date='" + sTarget_Date
-                    + "', Approved_By='" + objObjectivesModels.Approved_By + "', Accepted_Value='" + objObjectivesModels.Accepted_Value + "', Risk_ifObjFails='" + objObjectivesModels.Risk_ifObjFails
+                    + "', Approved_By='" + objObjectivesModels.Approved_By + "', Approved_Status=0 ,ApprovedDate = '0001/01/01', Accepted_Value='" + objObjectivesModels.Accepted_Value + "', Risk_ifObjFails='" + objObjectivesModels.Risk_ifObjFails
                     + "', baseline_data='" + objObjectivesModels.baseline_data + "', unit='" + objObjectivesModels.unit + "', obj_inline='" + objObjectivesModels.obj_inline + "'";
 
                 if (objObjectivesModels.Action_Plan != null && objObjectivesModels.Action_Plan != "")
@@ -625,9 +590,9 @@ namespace ISOStd.Models
                 string stargeted_on = objObjectivesModels.targeted_on.ToString("yyyy-MM-dd");
                 string supdated_on = objObjectivesModels.updated_on.ToString("yyyy-MM-dd");
 
-                string sSqlstmt = "insert into t_objectives_potential (ObjectivesTrans_Id, potential_causes, impact, mitigation_measure, targeted_on, updated_on,potential_status,logged_by) values('"
+                string sSqlstmt = "insert into t_objectives_potential (ObjectivesTrans_Id, potential_causes, impact, mitigation_measure, targeted_on, updated_on,potential_status,logged_by,Pcff_Notify) values('"
                     + objObjectivesModels.ObjectivesTrans_Id + "','" + objObjectivesModels.potential_causes + "','" + objObjectivesModels.impact + "','" + objObjectivesModels.mitigation_measure
-                    + "','" + stargeted_on + "','" + supdated_on + "','" + objObjectivesModels.potential_status + "','" + objGlobalData.GetCurrentUserSession().empid + "')";
+                    + "','" + stargeted_on + "','" + supdated_on + "','" + objObjectivesModels.potential_status + "','" + objGlobalData.GetCurrentUserSession().empid + "','" + objObjectivesModels.Pcff_Notify + "')";
 
                 return objGlobalData.ExecuteQuery(sSqlstmt);
 
@@ -644,7 +609,8 @@ namespace ISOStd.Models
             try
             {
                 string sSqlstmt = "update t_objectives_potential set potential_causes='" + ObjectivesModels.potential_causes +
-                 "',impact='" + ObjectivesModels.impact + "',mitigation_measure='" + ObjectivesModels.mitigation_measure + "',potential_status='" + ObjectivesModels.potential_status + "'";
+                 "',impact='" + ObjectivesModels.impact + "',mitigation_measure='" + ObjectivesModels.mitigation_measure
+                 + "',potential_status='" + ObjectivesModels.potential_status + "',Pcff_Notify='" + ObjectivesModels.Pcff_Notify + "'";
 
                 if (ObjectivesModels.targeted_on != null && ObjectivesModels.targeted_on > Convert.ToDateTime("01/01/0001"))
                 {
@@ -762,7 +728,71 @@ namespace ISOStd.Models
 
             return false;
         }
-        
+
+
+        internal bool FunObjectivesApprovalbyDetail(ObjectivesModels objmodel)
+        {
+            try
+            {
+                string sEMpid = objGlobalData.GetCurrentUserSession().empid;
+                string sApprovedDate = DateTime.Now.ToString("yyyy-MM-dd HH':'mm':'ss");
+                int Status = Convert.ToInt32(objmodel.Approved_Status);
+                string ObjectivesTrans_Id = Convert.ToString(objmodel.ObjectivesTrans_Id);
+
+                string sSqlstmt = "update t_objectives_trans set Approved_Status ='" + Status + "', ApprovedDate='" + sApprovedDate
+                    + "', obj_reject_comment='" + objmodel.obj_reject_comment + "', obj_reject_upload='" + objmodel.obj_reject_upload + "' where ObjectivesTrans_Id='" + objmodel.ObjectivesTrans_Id + "'";
+                if (objGlobalData.ExecuteQuery(sSqlstmt))
+                {
+                    if (Status == 2)//Rejected
+                    {
+                        string sEmailid = "", sCCList = "", sExtraMsg = "";
+
+                        //DataSet dsDocument = objGlobalData.Getdetails("select Obj_Ref, Estld_by, Personal_Responsible, Approved_By from t_objectives where Objectives_Id='" + Objectives_Id + "'");
+                        DataSet dsDocument = objGlobalData.Getdetails("select ObjectivesTrans_Id,Obj_Ref, a.Estld_by, b.Personal_Responsible, b.Approved_By,b.Objectives_val,obj_reject_comment from t_objectives a,t_objectives_trans b" +
+                            " where a.Objectives_Id=b.Objectives_Id and ObjectivesTrans_Id='" + ObjectivesTrans_Id + "'");
+
+                        if (dsDocument.Tables.Count > 0 && dsDocument.Tables[0].Rows.Count > 0)
+                        {
+
+                            sCCList = objGlobalData.GetMultiHrEmpEmailIdById(dsDocument.Tables[0].Rows[0]["Approved_By"].ToString());
+
+                            if (dsDocument.Tables[0].Rows[0]["Estld_by"].ToString() != "")
+                            {
+                                sEmailid = objGlobalData.GetHrEmpEmailIdById(dsDocument.Tables[0].Rows[0]["Estld_by"].ToString());
+                            }
+
+                            sEmailid = Regex.Replace(sEmailid, ",+", ",");
+                            sEmailid = sEmailid.Trim();
+                            sEmailid = sEmailid.TrimEnd(',');
+                            sEmailid = sEmailid.TrimStart(',');
+                            sExtraMsg = "Objective has been Rejected, Objective Reference: " + dsDocument.Tables[0].Rows[0]["Obj_Ref"].ToString()
+                                + " and Objective Value: " + dsDocument.Tables[0].Rows[0]["Objectives_val"].ToString()
+                                + " and Comments on Rejection: " + dsDocument.Tables[0].Rows[0]["obj_reject_comment"].ToString();
+
+
+                            Dictionary<string, string> dicEmailContent = objGlobalData.FormEmailBody(
+                                objGlobalData.GetMultiHrEmpNameById(dsDocument.Tables[0].Rows[0]["Estld_by"].ToString()), "objective1", sExtraMsg);
+
+                            objGlobalData.Sendmail(sEmailid, dicEmailContent["subject"], dicEmailContent["body"], "", sCCList, "");
+                            return true;
+
+                        }
+                    }
+                    else
+                    {
+                        SendObjectiveApprvRejectEmail(sEMpid, ObjectivesTrans_Id, Status);
+                        return true;
+                    }                   
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobalData.AddFunctionalLog("Exception in FunObjectivesApprovalbyDetail: " + ex.ToString());
+            }
+
+            return false;
+        }
+
         internal bool SendObjectiveApprvRejectEmail(string sEMpid, string ObjectivesTrans_Id, int iStatus)
         {
             try
@@ -857,6 +887,25 @@ namespace ISOStd.Models
             }
             return "";
         }
+
+        public string GetObjectiveStatusIdByName(string sFreq)
+        {
+            try
+            {
+                DataSet dsEmp = objGlobalData.Getdetails("select item_id as Id, item_desc as Name from dropdownitems, dropdownheader where dropdownheader.header_id=dropdownitems.header_id "
+                      + "and header_desc='Objective Evaluation Status' and  item_desc='" + sFreq + "'");
+                if (dsEmp.Tables.Count > 0 && dsEmp.Tables[0].Rows.Count > 0)
+                {
+                    return (dsEmp.Tables[0].Rows[0]["Id"].ToString());
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobalData.AddFunctionalLog("Exception in GetObjectiveStatusIdByName: " + ex.ToString());
+            }
+            return "";
+        }
+
 
         public MultiSelectList GetMultiObjectiveStatusList()
         {

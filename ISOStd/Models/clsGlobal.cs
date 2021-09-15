@@ -25,6 +25,77 @@ namespace ISOStd.Models
         private object fileUploader;
         private object mail;
 
+        public MultiSelectList GetAllIssueList()
+        {
+            DropdownList objProductList = new DropdownList();
+            objProductList.lstDropdown = new List<DropdownItems>();
+
+            try
+            {
+                string sSsqlstmt = "select id_issue as Id,Issue_refno as Name from t_issues where Active=1 order by id_issue asc";
+
+                DataSet dsBranch = Getdetails(sSsqlstmt);
+
+                if (dsBranch.Tables.Count > 0 && dsBranch.Tables[0].Rows.Count > 0)
+                {
+                    for (int i = 0; i < dsBranch.Tables[0].Rows.Count; i++)
+                    {
+                        DropdownItems objProduct = new DropdownItems()
+                        {
+                            Id = dsBranch.Tables[0].Rows[i]["Id"].ToString(),
+                            Name = dsBranch.Tables[0].Rows[i]["Name"].ToString()
+                        };
+
+                        objProductList.lstDropdown.Add(objProduct);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                AddFunctionalLog("Exception in GetAllIssueList: " + ex.ToString());
+            }
+
+            return new MultiSelectList(objProductList.lstDropdown, "Id", "Name");
+        }
+
+        public string GetIssueRefnobyId(string Id)
+        {
+            try
+            {
+                string sql = "Select Issue_refno from t_issues where id_issue = '" + Id + "'";
+                DataSet dsEmp = Getdetails(sql);
+                if (dsEmp.Tables.Count > 0 && dsEmp.Tables[0].Rows.Count > 0)
+                {
+                    return (dsEmp.Tables[0].Rows[0]["Issue_refno"].ToString());
+                }
+            }
+            catch (Exception ex)
+            {
+                AddFunctionalLog("Exception in GetIssueRefnobyId: " + ex.ToString());
+            }
+            return "";
+        }
+
+        public string GetIssueDetailbyId(string Id)
+        {
+            try
+            {
+                string sql = "Select Issue from t_issues where id_issue = '" + Id + "'";
+                DataSet dsEmp = Getdetails(sql);
+                if (dsEmp.Tables.Count > 0 && dsEmp.Tables[0].Rows.Count > 0)
+                {
+                    return (dsEmp.Tables[0].Rows[0]["Issue"].ToString());
+                }
+            }
+            catch (Exception ex)
+            {
+                AddFunctionalLog("Exception in GetIssueDetailbyId: " + ex.ToString());
+            }
+            return "";
+        }
+
+
+
         public MultiSelectList GetHrEmployeeListbyDesignation(string Designation)
         {
             EmployeeList emplist = new EmployeeList();
@@ -5167,7 +5238,7 @@ namespace ISOStd.Models
         public DataSet getListPendingForApprovalDocCreateRequest(string sempid)
         {
             string sSqlstmt = "select id_doc_request,dcr_no,date_request,division,`department`,reason,upload,checkedby,doc_status as doc_statusId,logged_by," +
-                      "case when doc_status = '0' then 'Pending for IMS Rep.' when doc_status = '1' then 'Pending for document controller' when doc_status = '2' then 'Approved' when doc_status = '3' then 'Rejected' end  as doc_status " +
+                      "case when doc_status = '0' then 'Pending for Department Head.' when doc_status = '1' then 'Pending for Assistant Manager QHSE' when doc_status = '2' then 'Approved' when doc_status = '3' then 'Rejected' end  as doc_status " +
                        " from t_document_create_request where Active=1 and (doc_status = 0 and find_in_set('" + sempid + "',checkedby)) or (doc_status = 1 and find_in_set('" + sempid + "',doc_control))";
 
             DataSet dsApprovalList = Getdetails(sSqlstmt);
@@ -11227,6 +11298,7 @@ namespace ISOStd.Models
             
             switch(sType)
             {
+                case "IssueImpact": return new string[] { "Low", "Moderate", "High","Extreme" };
                 case "KPIUnit": return new string[] { "Number", "Each", "%" };
                 case "NC-RootCause": return new string[] { "Completely", "Partially", "No" };
                 case "HazardOP": return new string[] { "Elimination","Substitution","Engineering", "Administrative", "PPE", "General" };

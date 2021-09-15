@@ -385,7 +385,6 @@ namespace ISOStd.Controllers
                      else if (iStatus == 2)
                      {
                          sStatus = "Rejected";
-
                      }
                      if (objDocModels.FunDocumentChangesRequestApproveOrReject(DocID, iStatus, Doccomments))
                      {
@@ -395,10 +394,7 @@ namespace ISOStd.Controllers
                      else
                      {
                          TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                     }
-                 
-                
-
+                     }  
              }
              catch (Exception ex)
              {
@@ -663,7 +659,7 @@ namespace ISOStd.Controllers
 
 
                      string sSqlstmt = "select Id,DocRef,DocName,Changes,RequestedBy,ApprovedBy,ChangeRequestDate,(case when ApproveStatus='1' then 'Approved' when ApproveStatus='2' then 'Rejected' when ApproveStatus='0' then 'Not Approved' end) as ApproveStatus,ApprovedDate,"
-                     + "(case when ChangeStatus='1' then 'Completed' else 'Pending' end) as ChangeStatus,Approvers,Rejector,upload,IssueNo,RevNo,DocDate from t_documentchangerequest where Id='" + Id + "'";
+                     + "(case when ChangeStatus='1' then 'Completed' else 'Pending' end) as ChangeStatus,Approvers,Rejector,upload,IssueNo,RevNo,DocDate,ChangeStatus as ChangeStatusId from t_documentchangerequest where Id='" + Id + "'";
 
                   DataSet dsDocumentsList = objGlobaldata.Getdetails(sSqlstmt);
                   if (dsDocumentsList.Tables.Count > 0 && dsDocumentsList.Tables[0].Rows.Count > 0)
@@ -685,7 +681,8 @@ namespace ISOStd.Controllers
                               upload = dsDocumentsList.Tables[0].Rows[i]["upload"].ToString(),
                               IssueNo = (dsDocumentsList.Tables[0].Rows[i]["IssueNo"].ToString()),
                               RevNo = (dsDocumentsList.Tables[0].Rows[i]["RevNo"].ToString()),
-
+                              ChangeStatusId= dsDocumentsList.Tables[0].Rows[i]["ChangeStatusId"].ToString(),
+                              ApprovedById= dsDocumentsList.Tables[0].Rows[i]["ApprovedBy"].ToString()
                           };
                           DateTime dtDocDate;
                           if (dsDocumentsList.Tables[0].Rows[i]["ChangeRequestDate"].ToString() != ""
@@ -791,12 +788,54 @@ namespace ISOStd.Controllers
              }
              catch (Exception ex)
              {
-                 objGlobaldata.AddFunctionalLog("Exception in DocumentChangeRequestDetails: " + ex.ToString());
+                 objGlobaldata.AddFunctionalLog("Exception in DocumentChangeRequestInfo: " + ex.ToString());
                  TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
              }
              return View(objDocumentsModels);
 
          }
+
+        [AllowAnonymous]
+        public ActionResult DocumentChangesApproveRejectFromDetail(FormCollection form)
+        {
+            try
+            {
+                DocumentChangeRequestModels objDocModels = new DocumentChangeRequestModels();
+                string DocID = form["DocID"];
+                int iStatus = Convert.ToInt32(form["status"]);
+                string Doccomments = form["Doccomments"];
+                string sStatus = "";
+                if (iStatus == 0)
+                {
+                    sStatus = "Pending";
+                }
+                else if (iStatus == 1)
+                {
+                    sStatus = "Approved";
+
+                }
+                else if (iStatus == 2)
+                {
+                    sStatus = "Rejected";
+                }
+                if (objDocModels.FunDocumentChangesRequestApproveOrReject(DocID, iStatus, Doccomments))
+                {
+                    TempData["Successdata"] = "Document Change request" + sStatus;
+                }
+                else
+                {
+                    TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in DocumentChangesApproveRejectFromDetail: " + ex.ToString());
+                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+            }
+            
+         return RedirectToAction("DocumentChangeRequestList");
+        }
+
 
         public JsonResult DocumentChangesApproveRejectNoty(string DocID, int iStatus, string PendingFlg, string Doccomments)
          {

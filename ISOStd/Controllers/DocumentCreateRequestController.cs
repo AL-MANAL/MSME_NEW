@@ -1139,7 +1139,7 @@ namespace ISOStd.Controllers
         //     return Json("");
         // }
 
-       public JsonResult FunGetDocRefNo(string Direct,string Grp)
+       public JsonResult FunGetDocRefNo(string Direct)
         {
             try
             {
@@ -1150,11 +1150,11 @@ namespace ISOStd.Controllers
                 {
                     sCompany = DsCompany.Tables[0].Rows[0]["CompanyName"].ToString();
                 }
-                if (Direct !="" && Grp != "")
+                if (Direct !="")
                 {
                     string dir = objGlobaldata.GetBranchShortNameByID(Direct);
-                    string grp = objGlobaldata.GetDeptNameById(Grp);
-                    DocRef = sCompany + "/" + dir + "/" + grp ;
+                   // string grp = objGlobaldata.GetDeptNameById(Grp);
+                    DocRef = sCompany + "/" + dir /*+ "/" + grp*/ ;
                 }
                 return Json(DocRef);
             }

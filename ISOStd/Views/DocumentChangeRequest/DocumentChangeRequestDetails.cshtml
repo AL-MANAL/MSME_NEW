@@ -5,8 +5,16 @@
     ViewBag.Title = "DocumentChangeRequestDetails";
     DataSet dsCommentDetails = ViewBag.CommentDetails;
     ISOStd.Models.clsGlobal obj = new ISOStd.Models.clsGlobal();
-}
 
+    string login_user = obj.GetCurrentUserSession().empid;
+}
+<style>
+    #TextDiv {
+        font-size: 2em;
+        text-align: center;
+        margin: 0 auto;
+    }
+</style>
 @section featured {
 
     <div class="page-header page-header-light">
@@ -26,32 +34,32 @@
                         <span class="breadcrumb-item"> Home</span>
                     </a>
                     <a href="@Url.Action("DocumentChangeRequestList", "DocumentChangeRequest", null)" class="breadcrumb-item">
-                        <span class="breadcrumb-item"> Document Change Request</span>
+                        <span class="breadcrumb-item"> Document Revise Request</span>
                     </a>
-                    <span class="breadcrumb-item active"> Document Change Request Details</span>
+                    <span class="breadcrumb-item active"> Document Revise Request Details</span>
                 </div>
 
                 <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
             </div>
 
             @*<div class="header-elements d-none">
-                <div class="breadcrumb justify-content-center">
+                    <div class="breadcrumb justify-content-center">
 
 
-                    <div class="breadcrumb-elements-item dropdown p-0">
-                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
-                            <i class="icon-gear mr-2"></i>
-                            Settings
-                        </a>
+                        <div class="breadcrumb-elements-item dropdown p-0">
+                            <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                                <i class="icon-gear mr-2"></i>
+                                Settings
+                            </a>
 
-                        <div class="dropdown-menu dropdown-menu-right">
+                            <div class="dropdown-menu dropdown-menu-right">
 
-                            <div class="dropdown-divider"></div>
-                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                                <div class="dropdown-divider"></div>
+                                <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>*@
+                </div>*@
         </div>
     </div>
 
@@ -64,7 +72,7 @@
 
 <div class="card">
     <div class="card-header header-elements-inline bg-primary">
-        <h5 class="card-title">Document Change Request Details</h5>
+        <h5 class="card-title">Document Revise Request Details</h5>
         <div class="header-elements">
             <div class="list-icons">
                 <a class="list-icons-item" data-action="collapse"></a>
@@ -217,7 +225,7 @@
                             @if (Model.ApprovedDate != null && Model.ApprovedDate > Convert.ToDateTime("01/01/0001"))
                             {
                                 <span class="bg-dark py-1 px-2 rounded">
-                                    @Html.Label(Model.ApprovedDate.ToString("dd/MM/yyyy"))
+                                    @Html.Label(Model.ApprovedDate.ToString())
                                 </span>
                             }
                             else
@@ -314,7 +322,7 @@
                                 {
                                     <td>
                                         <span class="bg-dark py-1 px-2 rounded text-nowrap">
-                                            @Convert.ToDateTime(dsCommentDetails.Tables[0].Rows[i]["ApprvDate"].ToString()).ToString("dd/MM/yyyy")
+                                            @dsCommentDetails.Tables[0].Rows[i]["ApprvDate"].ToString()
                                         </span>
                                     </td>
                                 }
@@ -346,7 +354,7 @@
 <br />
 
 
-<!-- editor -->
+
 <div class="card">
     <div class="card-header header-elements-inline bg-primary">
         <h5 class="card-title">Changes to be done</h5>
@@ -361,6 +369,44 @@
         @Html.Raw(HttpUtility.HtmlDecode(Model.Changes))
     </div>
 </div>
+
+
+<hr />
+@if (Model.ChangeStatusId == "0" && !Model.Approvers.Contains(login_user) && !Model.Rejector.Contains(login_user) && Model.ApprovedById.Contains(login_user))
+{
+    using (Html.BeginForm("DocumentChangesApproveRejectFromDetail", "DocumentChangeRequest", FormMethod.Post, new { enctype = "multipart/form-data", id = "formstatus", name = "formstatus" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true)
+        <input type="hidden" id="DocID" name="DocID" value="@Model.Id" />
+        <div class="card-body">
+            <div class="container-fluid">
+                <div id="TextDiv">
+                    <h1>NC Status</h1>
+                    <label><input type="radio" id="status" name="status" value="1">Accept</label> &nbsp;&nbsp;&nbsp;
+                    <label><input type="radio" id="status" name="status" value="2"/>Reject</label>
+                </div>
+                <div class="card card-table">
+                    <table class="table table-bordered">
+                        <thead></thead>
+                        <tbody>
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2"> Comments</td>
+                                <td class="col"> <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="Doccomments" name="Doccomments"></textarea></td>
+                            </tr>                          
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+            <button type="submit" id="btnCreate" value="Save" style="display: block; margin: 0 auto;text-align:center" class="btn bg-indigo-400" onclick="ProgressIconFunction('#formstatus')"><i class="icon-checkmark3 mr-2"></i> Save</button>
+        </div>
+    }
+}
+
+
 
 
 

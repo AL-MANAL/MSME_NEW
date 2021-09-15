@@ -26,8 +26,15 @@
         EvalList = ViewBag.EvalList;
     }
 
+    string login_user = ObjGlobal.GetCurrentUserSession().empid;
 }
-
+<style>
+    #TextDiv {
+        font-size: 2em;
+        text-align: center;
+        margin: 0 auto;
+    }
+</style>
 
 @section featured {
     <div class="page-header page-header-light">
@@ -194,15 +201,15 @@
                     </tr>
                     <tr class="row">
                         @*<td class="col-xs-3 col-md-2">
-                        <p class="bg-brown py-1 px-2 rounded">
-                            @Html.DisplayNameFor(model => model.Obj_Ref)
-                        </p>
-                    </td>
-                    <td class="col">
-                        <span class="bg-dark py-1 px-2 rounded">
-                            @Html.DisplayFor(model => model.Obj_Ref)
-                        </span>
-                    </td>*@
+                <p class="bg-brown py-1 px-2 rounded">
+                    @Html.DisplayNameFor(model => model.Obj_Ref)
+                </p>
+            </td>
+            <td class="col">
+                <span class="bg-dark py-1 px-2 rounded">
+                    @Html.DisplayFor(model => model.Obj_Ref)
+                </span>
+            </td>*@
                         <td class="col-xs-3 col-md-2">
                             <p class="bg-brown py-1 px-2 rounded">
                                 @Html.DisplayNameFor(model => model.Dept)
@@ -417,20 +424,127 @@
                                 <p class="bg-dark py-1 px-2 rounded">
                                     @if (Model.ApprovedDate != null && Model.ApprovedDate > Convert.ToDateTime("01/01/0001"))
                                     {
-                                        @Model.ApprovedDate.ToShortDateString()
+                                        @Model.ApprovedDate.ToString()
                                     }
                                 </p>
                             </td>
                         }
                     </tr>
-            </table>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.Approved_Status)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.Approved_Status)
+                            </p>
+                        </td>
+                    </tr>
+                    @if (Model.Approved_Status_id == "2")
+                    {
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            Rejected Date
+                        </p>
+                    </td>
+                    <td class="col">
+                        <p class="bg-dark py-1 px-2 rounded">
+                            @if (Model.ApprovedDate != null && Model.ApprovedDate > Convert.ToDateTime("01/01/0001"))
+                            {
+                                @Model.ApprovedDate.ToString()
+                            }
+                        </p>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            Rejected Document
+                        </p>
+                    </td>
+                    <td class="col">
+                            @if (Model.obj_reject_upload != null && Model.obj_reject_upload != "" && Model.obj_reject_upload.Length > 0)
+                            {
+                                foreach (var docs in Model.obj_reject_upload.Trim(',').Split(','))
+                                {
+                                <p style="margin: 0px;">
+                                    <span class="bg-dark py-1 px-2 rounded">
+                                        <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs})' target="_blank">Preview</a>
+                                    </span>
+                                </p>
+                            }
+                        }
+                           
+                        </td>
+                </tr>
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            Reason for not accepting Objective
+                        </p>
+                    </td>
+                    <td class="col">
+                        <p class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.obj_reject_comment)
+                        </p>
+                    </td>
+                </tr>
+                    }
+
+</table>
 
             <br />
+
+            @*Approval Details*@
+            @if (Model.Approved_Status_id == "0" && Model.Approved_ById.Contains(login_user))
+            {
+                using (Html.BeginForm("ObjectivesApprovebyDetails", "Objectives", FormMethod.Post, new { enctype = "multipart/form-data", id = "formstatus", name = "formstatus" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary(true)
+                    <input type="hidden" id="Objectives_Id" name="Objectives_Id" value="@Model.Objectives_Id" />
+                    <input type="hidden" id="ObjectivesTrans_Id" name="ObjectivesTrans_Id" value="@Model.ObjectivesTrans_Id" />
+                    <input type="hidden" id="view" name="view" value="@ViewBag.View" />
+                    <div class="card-body">
+
+                        <div class="container-fluid">
+                            <div id="TextDiv">
+                                <h1>Objective Status</h1>
+                                <label><input type="radio" id="obj_status" name="obj_status" value="1" required onchange="CheckedbyRequired()" />Accept</label> &nbsp;&nbsp;&nbsp;
+                                <label><input type="radio" id="obj_status" name="obj_status" value="2" required onchange="CheckedbyRequired()" />Reject</label>
+                            </div>
+                            <div class="card card-table">
+                                <table class="table table-bordered" id="commentstatus" style="display:none">
+                                    <thead></thead>
+                                    <tbody>
+                                        <tr class="row">
+                                            <td class="col-xs-3 col-md-2">   Reason for not accepting Objective</td>
+                                            <td class="col"> <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="obj_reject_comment" name="obj_reject_comment"></textarea></td>
+                                        </tr>
+                                        <tr class="row">
+                                            <td class="col-xs-3 col-md-2">  Upload Document</td>
+                                            <td class="col">
+                                                <input type="file" name="obj_reject_upload" id="obj_reject_upload" title="Plan Report documents" onchange="FileFormatValidation(this)"
+                                                       accept=".pdf, .doc, .docx, .jpg, .jpeg, .xls, .xlsx, image/*" class="bootstrap-uploader" data-fouc required />
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+                        <button type="submit" id="btnCreate" value="Save" style="display: block; margin: 0 auto; text-align: center" class="btn bg-indigo-400" onclick="ProgressIconFunction('#formstatus')"><i class="icon-checkmark3 mr-2"></i> Save</button>
+                    </div>
+                }
+            }
 
             @*PCFF*@
             @if (ViewBag.ObjectPCFF != null && ObjectPCFF.ObjectivesMList != null && ObjectPCFF.ObjectivesMList.Count > 0)
             {
-            <h2 class="bg-dark pl-sm-2"> Objective Potential Causes for Failure Details</h2>
+                <h2 class="bg-dark pl-sm-2"> Objective Potential Causes for Failure Details</h2>
                 <div class="table-responsive">
                     <table class="table table-bordered table-striped table-hover datatable-responsive" id="table11">
                         <thead>
@@ -455,6 +569,9 @@
                                 </th>
                                 <th>
                                     Status
+                                </th>
+                                <th>
+                                    Notified To
                                 </th>
                             </tr>
                         </thead>
@@ -488,6 +605,9 @@
                                 </td>
                                 <td>
                                     @(ObjectPCFF.ObjectivesMList[i].potential_status)
+                                </td>
+                                <td>
+                                    @(ObjectPCFF.ObjectivesMList[i].Pcff_Notify)
                                 </td>
                             </tr>
                             }
@@ -562,7 +682,6 @@
                                     <td>
                                         @*ObjGlobal.GetMultiHrEmpNameById*@ @(ObjectPlan.ObjectivesMList[i].resp_person)
                                     </td>
-
 
                                     <td>
                                         @if (ObjectPlan.ObjectivesMList[i].upload != "")
@@ -1443,6 +1562,30 @@
             table2.init();
         });
 
+
+        function CheckedbyRequired() {
+            var status = $("input[type='radio'][id='obj_status']:checked").val();
+            if (status == "2") {
+                $("#obj_reject_comment").attr('required', true);
+                document.getElementById("commentstatus").style.display = "table";
+            }
+            else {
+                $("#obj_reject_comment").attr('required', false);
+                document.getElementById("commentstatus").style.display = "none";
+            }
+        }
+
+        function FileFormatValidation(file) {
+            var ext = file.value.split(".").pop().toLowerCase();
+            if ($.inArray(ext, ["doc", "pdf", "docx", "jpg", "jpeg", "gif", "png", "xlx", "xlsx"]) == -1) {
+                file.value = "";
+
+                bootbox.alert({
+                    title: 'File Format',
+                    message: 'Invalid file format, please upload only doc, pdf, docx, jpg, jpeg, gif, png, xls,xlsx format.'
+                });
+            }
+        }
     </script>
 }
 

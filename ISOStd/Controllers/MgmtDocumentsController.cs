@@ -451,8 +451,8 @@ namespace ISOStd.Controllers
 
                 string sSqlstmt = "select idMgmt,Department, DocLevels, Doctype, ISOStds, AppClauses, DocRef, DocName, IssueNo, RevNo, PreparedBy, ReviewedBy, DocDate,"
                     + " DocUploadPath, ApprovedBy, (case when Approved_Status='1' then 'Approved' when Approved_Status='2' then 'Approve Rejected' else 'Not Approved' end) as Approved_Status," +
-                    "(case when Reviewed_Status='1' then 'Reviewed' when Reviewed_Status='2' then 'Review Rejected' else 'Not Reviewed' end) as Reviewed_Status, ApprovedDate, UploadedBy,view_by,branch,Location,Reviewers,Approvers"
-                    + " from t_mgmt_documents where status=1";
+                    "(case when Reviewed_Status='1' then 'Reviewed' when Reviewed_Status='2' then 'Review Rejected' else 'Not Reviewed' end) as Reviewed_Status, ApprovedDate, UploadedBy,view_by,branch,Location,Reviewers,Approvers,"
+                    + "Reviewed_Status as Reviewed_StatusId,Approved_Status as Approved_StatusId from t_mgmt_documents where status=1";
 
                 string sSearchtext = "";/*, sApproveStatus = "", DepartName = "ALL";*/
 
@@ -555,8 +555,8 @@ namespace ISOStd.Controllers
                                 Location = objGlobaldata.GetDivisionLocationById(dsMgmtDocumentsList.Tables[0].Rows[i]["Location"].ToString()),
                                 Reviewers = dsMgmtDocumentsList.Tables[0].Rows[i]["Reviewers"].ToString(),
                                 Approvers = dsMgmtDocumentsList.Tables[0].Rows[i]["Approvers"].ToString(),
-                                Approved_StatusId = dsMgmtDocumentsList.Tables[0].Rows[i]["Approved_Status"].ToString(),
-                                Reviewed_StatusId = dsMgmtDocumentsList.Tables[0].Rows[i]["Reviewed_Status"].ToString(),
+                                Approved_StatusId = dsMgmtDocumentsList.Tables[0].Rows[i]["Approved_StatusId"].ToString(),
+                                Reviewed_StatusId = dsMgmtDocumentsList.Tables[0].Rows[i]["Reviewed_StatusId"].ToString(),
                             };
                             if(objMgmtDocumentsModels.Reviewers != "0")
                             {

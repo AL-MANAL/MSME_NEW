@@ -412,8 +412,10 @@ namespace ISOStd.Controllers
                             LoggedBy = objGlobaldata.GetEmpHrNameById(dsPerformance.Tables[0].Rows[0]["LoggedBy"].ToString()),
                             DocUploadPath = dsPerformance.Tables[0].Rows[0]["DocUploadPath"].ToString(),
                             JrMgr = objGlobaldata.GetEmpHrNameById(dsPerformance.Tables[0].Rows[0]["JrMgr"].ToString()),
+                            JrMgrId = (dsPerformance.Tables[0].Rows[0]["JrMgr"].ToString()),
                             Comment_JrMgr = dsPerformance.Tables[0].Rows[0]["Comment_JrMgr"].ToString(),
                             SrMgr = objGlobaldata.GetEmpHrNameById(dsPerformance.Tables[0].Rows[0]["SrMgr"].ToString()),
+                            SrMgrId =(dsPerformance.Tables[0].Rows[0]["SrMgr"].ToString()),
                             Comment_SrMgr = dsPerformance.Tables[0].Rows[0]["Comment_SrMgr"].ToString(),
                             sstatus = dsPerformance.Tables[0].Rows[0]["sstatus"].ToString(),
 

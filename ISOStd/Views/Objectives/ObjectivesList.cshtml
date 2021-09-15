@@ -176,6 +176,7 @@
                 <th>Objective In line with</th>
                 <th>Risk, if not achieved</th>
                 <th>Approved by</th>
+                <th>Approval Status</th>
                 <th data-priority="2" class="text-center not-export-column">Actions</th>
             </tr>
         </thead>
@@ -186,94 +187,101 @@
                 foreach (var item in Model)
                 {
                     i = i + 1;
-                    <tr>
-                        <td>
-                            @Html.ActionLink(i.ToString(), "ObjectivesDetails", new { Objectives_Id = item.Objectives_Id.ToString(), ObjectivesTrans_Id= item.ObjectivesTrans_Id.ToString(), View = Session["state"].ToString() }, new { data_toggle = "popover", data_trigger = "hover", id = item.ObjectivesTrans_Id, onclick = "HyperLinkProgressIconFunction()" })
-                        </td>
-                        <td> @Html.DisplayFor(modelItem => item.Obj_Ref)</td>
-                        <td>
-                            @if (item.Obj_Estld_On > Convert.ToDateTime("01/01/0001"))
-                            {
-                                @item.Obj_Estld_On.ToString("dd/MM/yyyy")
-                            }
-                        </td>
-                        <td> @Html.DisplayFor(modelItem => item.Objectives_val)</td>
-                        <td> @Html.DisplayFor(modelItem => item.Base_Line_Value)</td>
-                        <td> @Html.DisplayFor(modelItem => item.baseline_data)</td>
-                        <td>
-                            @if (item.Action_Plan != "")
-                            {
-                                <a class="text-orange" href='@Url.Action("DisplayDocument", "Reports", new { Document = item.Action_Plan.ToString() })' target="_blank">Preview</a>
-                            }
-                            else
-                            {
-                                <span class="badge badge-info">No File attached</span>
-                            }
-                        </td>
-                        <td> @Html.DisplayFor(modelItem => item.Obj_Target)</td>
-                        <td> @Html.DisplayFor(modelItem => item.Accepted_Value)</td>
-                        <td> @Html.DisplayFor(modelItem => item.unit)</td>
-                        <td>
-                            @if (item.Target_Date > Convert.ToDateTime("01/01/0001"))
-                            {
-                                @item.Target_Date.ToString("dd/MM/yyyy")
-                            }
-                        </td>
-                        <td> @Html.DisplayFor(modelItem => item.Freq_of_Eval)</td>
-                        <td> @Html.DisplayFor(modelItem => item.Monitoring_Mechanism)</td>
-                        <td> @Html.DisplayFor(modelItem => item.obj_inline)</td>
-                        <td> @Html.DisplayFor(modelItem => item.Risk_ifObjFails)</td>
-                        <td> @Html.DisplayFor(modelItem => item.Approved_By)</td>
-                        <td class="text-center">
-                            <div class="list-icons">
-                                <div class="list-icons-item dropdown">
-                                    <a href="#" class="list-icons-item caret-0 dropdown-toggle" data-toggle="dropdown">
-                                        <i class="icon-gear mr-2"></i>
+            <tr>
+                <td>
+                    @Html.ActionLink(i.ToString(), "ObjectivesDetails", new { Objectives_Id = item.Objectives_Id.ToString(), ObjectivesTrans_Id = item.ObjectivesTrans_Id.ToString(), View = Session["state"].ToString() }, new { data_toggle = "popover", data_trigger = "hover", id = item.ObjectivesTrans_Id, onclick = "HyperLinkProgressIconFunction()" })
+                </td>
+                <td> @Html.DisplayFor(modelItem => item.Obj_Ref)</td>
+                <td>
+                    @if (item.Obj_Estld_On > Convert.ToDateTime("01/01/0001"))
+                    {
+                        @item.Obj_Estld_On.ToString("dd/MM/yyyy")
+                    }
+                </td>
+                <td> @Html.DisplayFor(modelItem => item.Objectives_val)</td>
+                <td> @Html.DisplayFor(modelItem => item.Base_Line_Value)</td>
+                <td> @Html.DisplayFor(modelItem => item.baseline_data)</td>
+                <td>
+                    @if (item.Action_Plan != "")
+                    {
+                        <a class="text-orange" href='@Url.Action("DisplayDocument", "Reports", new { Document = item.Action_Plan.ToString() })' target="_blank">Preview</a>
+                    }
+                    else
+                    {
+                        <span class="badge badge-info">No File attached</span>
+                    }
+                </td>
+                <td> @Html.DisplayFor(modelItem => item.Obj_Target)</td>
+                <td> @Html.DisplayFor(modelItem => item.Accepted_Value)</td>
+                <td> @Html.DisplayFor(modelItem => item.unit)</td>
+                <td>
+                    @if (item.Target_Date > Convert.ToDateTime("01/01/0001"))
+                    {
+                        @item.Target_Date.ToString("dd/MM/yyyy")
+                    }
+                </td>
+                <td> @Html.DisplayFor(modelItem => item.Freq_of_Eval)</td>
+                <td> @Html.DisplayFor(modelItem => item.Monitoring_Mechanism)</td>
+                <td> @Html.DisplayFor(modelItem => item.obj_inline)</td>
+                <td> @Html.DisplayFor(modelItem => item.Risk_ifObjFails)</td>
+                <td> @Html.DisplayFor(modelItem => item.Approved_By)</td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Approved_Status)
+                    @if (item.ApprovedDate > Convert.ToDateTime("01/01/0001"))
+                    {
+                       <br /><text> Date:</text>@item.ApprovedDate.ToString()
+                    }
+                </td>
+                <td class="text-center">
+                    <div class="list-icons">
+                        <div class="list-icons-item dropdown">
+                            <a href="#" class="list-icons-item caret-0 dropdown-toggle" data-toggle="dropdown">
+                                <i class="icon-gear mr-2"></i>
+                            </a>
+
+                            <div class="dropdown-menu dropdown-menu-right">
+                                @if (ShowEdit)
+                                {
+                                    if (item.Approved_Status_id.Contains("0") || item.Approved_Status_id.Contains("2"))
+                                    {
+                                        <a class="dropdown-item" href='@Url.Action("ObjectivesEdit", "Objectives",new { Objectives_Id = item.Objectives_Id,ObjectivesTrans_Id = item.ObjectivesTrans_Id,View =Session["state"].ToString()})' title="Update Objective details" onclick="HyperLinkProgressIconFunction()">
+                                            <i class="icon-pencil7"></i>Edit
+                                        </a>
+                                    }
+                                    <a class="dropdown-item" href='@Url.Action("AddObjectivePotential", "Objectives",new { ObjectivesTrans_Id = item.ObjectivesTrans_Id ,View =Session["state"].ToString()})' title="Add Potential Causes for failure" onclick="HyperLinkProgressIconFunction()">
+                                        <i class="icon-pencil7"></i>PCFF
                                     </a>
-
-                                    <div class="dropdown-menu dropdown-menu-right">
-                                        @if (ShowEdit)
+                                    if (item.Approved_Status_id.Contains("1"))
+                                    {
+                                        <a class="dropdown-item" href='@Url.Action("AddObjectiveActionPlan", "Objectives",new { ObjectivesTrans_Id = item.ObjectivesTrans_Id ,View =Session["state"].ToString()})' title="Add Objective ActionPlan" onclick="HyperLinkProgressIconFunction()">
+                                            <i class="icon-pencil7"></i>Action Plan
+                                        </a>
+                                        <a class="dropdown-item" href='@Url.Action("AddObjectiveEvaluation", "Objectives",new { ObjectivesTrans_Id = item.ObjectivesTrans_Id ,View =Session["state"].ToString()})' title="Add Evaluation" onclick="HyperLinkProgressIconFunction()">
+                                            <i class="icon-pencil7"></i>Evaluation
+                                        </a>
+                                        using (Html.BeginForm("ObjectivesPDF", "Objectives", FormMethod.Post, new { id = "form1", name = "form1" }))
                                         {
-                                            if (item.Approved_Status_id.Contains("0") /*|| objGlobaldata.GetMultiRolesNameById(objGlobaldata.GetCurrentUserSession().role).Contains("Admin")*/)
-                                            {
-                                                <a class="dropdown-item" href='@Url.Action("ObjectivesEdit", "Objectives",new { Objectives_Id = item.Objectives_Id,ObjectivesTrans_Id = item.ObjectivesTrans_Id,View =Session["state"].ToString()})' title="Update Objective details" onclick="HyperLinkProgressIconFunction()">
-                                                    <i class="icon-pencil7"></i>Edit
-                                                </a>
-                                            }
-                                            if (item.Approved_Status_id.Contains("1"))
-                                            {
-                                                <a class="dropdown-item" href='@Url.Action("AddObjectivePotential", "Objectives",new { ObjectivesTrans_Id = item.ObjectivesTrans_Id ,View =Session["state"].ToString()})' title="Add Potential Causes for failure" onclick="HyperLinkProgressIconFunction()">
-                                                    <i class="icon-pencil7"></i>PCFF
-                                                </a>
-                                                <a class="dropdown-item" href='@Url.Action("AddObjectiveActionPlan", "Objectives",new { ObjectivesTrans_Id = item.ObjectivesTrans_Id ,View =Session["state"].ToString()})' title="Add Objective ActionPlan" onclick="HyperLinkProgressIconFunction()">
-                                                    <i class="icon-pencil7"></i>Action Plan
-                                                </a>
-                                                <a class="dropdown-item" href='@Url.Action("AddObjectiveEvaluation", "Objectives",new { ObjectivesTrans_Id = item.ObjectivesTrans_Id ,View =Session["state"].ToString()})' title="Add Evaluation" onclick="HyperLinkProgressIconFunction()">
-                                                    <i class="icon-pencil7"></i>Evaluation
-                                                </a>
-                                                using (Html.BeginForm("ObjectivesPDF", "Objectives", FormMethod.Post, new { id = "form1", name = "form1" }))
-                                                {
-                                                    @Html.AntiForgeryToken()                                                   
-                                                        <input type="hidden" id="Objectives_Id" name="Objectives_Id" value="@item.Objectives_Id" />
-                                                        <input type="hidden" id="ObjectivesTrans_Id" name="ObjectivesTrans_Id" value="@item.ObjectivesTrans_Id" />
-                                                        <button class="dropdown-item">
-                                                            <i class="icon-printer2"></i> Report
-                                                        </button>                                                    
-                                                }
-                                            }
-
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" id="Objectives_Id" name="Objectives_Id" value="@item.Objectives_Id" />
+                                            <input type="hidden" id="ObjectivesTrans_Id" name="ObjectivesTrans_Id" value="@item.ObjectivesTrans_Id" />
+                                            <button class="dropdown-item">
+                                                <i class="icon-printer2"></i> Report
+                                            </button>
                                         }
+                                    }
 
-                                        @*<div class="dropdown-divider"></div>*@
-                                        @if (ShowDel)
-                                        {
-                                            <span class="dropdown-item text-center" title="Delete" onclick="DeleteItems(@item.ObjectivesTrans_Id)" style="cursor:pointer;"><i class="icon-bin"></i>Delete</span>
-                                        }
-                                    </div>
-                                </div>
+                                }
+
+                                @*<div class="dropdown-divider"></div>*@
+                                @if (ShowDel)
+                                {
+                                    <span class="dropdown-item text-center" title="Delete" onclick="DeleteItems(@item.ObjectivesTrans_Id)" style="cursor:pointer;"><i class="icon-bin"></i>Delete</span>
+                                }
                             </div>
-                        </td>
-                    </tr>
+                        </div>
+                    </div>
+                </td>
+            </tr>
                 }
             }          
 

@@ -277,7 +277,7 @@ namespace ISOStd.Controllers
                 {
                     string sSqlstmt = "select id_doc_review,review_date, doc_level, doc_type, frequency, " +
                         "criteria, approvedby, division, (case when approve_status='1' then 'Approved' else 'Not Approved' end) as approve_status," +
-                        " approve_status as approve_statusId from t_document_review where id_doc_review='" + sid_doc_review + "'";
+                        " approve_status as approve_statusId,approve_date from t_document_review where id_doc_review='" + sid_doc_review + "'";
 
                     DataSet dsReviewList = objGlobaldata.Getdetails(sSqlstmt);
                     if (dsReviewList.Tables.Count > 0 && dsReviewList.Tables[0].Rows.Count > 0)
@@ -302,6 +302,11 @@ namespace ISOStd.Controllers
                             if (DateTime.TryParse(dsReviewList.Tables[0].Rows[0]["review_date"].ToString(), out dateValue))
                             {
                                 objReview.review_date = dateValue;
+                            }
+
+                            if (DateTime.TryParse(dsReviewList.Tables[0].Rows[0]["approve_date"].ToString(), out dateValue))
+                            {
+                                objReview.approve_date = dateValue;
                             }
                         }
                         catch (Exception ex)

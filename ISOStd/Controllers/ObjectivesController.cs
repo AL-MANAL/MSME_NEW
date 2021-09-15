@@ -221,7 +221,9 @@ namespace ISOStd.Controllers
 
                 string sSqlstmt = "select a.Objectives_Id,ObjectivesTrans_Id, Obj_Ref, Dept, Audit_Criteria, Estld_by,"
                 + "CreatedBy,DocUploadPath,objective_level,branch,Location,Obj_Estld_On,Objectives_val,Obj_Target,Base_Line_Value," +
-                "Monitoring_Mechanism,Target_Date,Action_Plan,Freq_of_Eval,Accepted_Value,Risk_ifObjFails,baseline_data,unit,obj_inline,Approved_By,Approved_Status from t_objectives a, t_objectives_trans b"
+                "Monitoring_Mechanism,Target_Date,Action_Plan,Freq_of_Eval,Accepted_Value,Risk_ifObjFails,baseline_data,unit,obj_inline," +
+                "Approved_By,ApprovedDate,Approved_Status as Approved_StatusId, (case when Approved_Status=1 " +
+                "then 'Approved' when Approved_Status=2 then 'Rejected' else 'Pending for Approval' end) as Approved_Status from t_objectives a, t_objectives_trans b"
                 + " where Active=1 and a.Objectives_Id=b.Objectives_Id and trans_active=1";
 
                 ViewBag.Approvestatus = objGlobaldata.GetConstantValueKeyValuePair("DocStatus");
@@ -300,8 +302,8 @@ namespace ISOStd.Controllers
                                 unit = objObjective.GetObjectiveUnitById(dsObjectivesModelsList.Tables[0].Rows[i]["unit"].ToString()),
                                 obj_inline = objObjective.GetObjectiveInlineById(dsObjectivesModelsList.Tables[0].Rows[i]["obj_inline"].ToString()),
                                 Approved_By = objGlobaldata.GetEmpHrNameById(dsObjectivesModelsList.Tables[0].Rows[i]["Approved_By"].ToString()),
-                                //Approved_Status = dsObjectivesModelsList.Tables[0].Rows[i]["Approved_Status"].ToString(),
-                                Approved_Status_id = dsObjectivesModelsList.Tables[0].Rows[i]["Approved_Status"].ToString(),
+                                Approved_Status = dsObjectivesModelsList.Tables[0].Rows[i]["Approved_Status"].ToString(),
+                                Approved_Status_id = dsObjectivesModelsList.Tables[0].Rows[i]["Approved_StatusId"].ToString(),
                             };
 
                             DateTime dtDocDate = new DateTime();
@@ -313,6 +315,10 @@ namespace ISOStd.Controllers
                             if (DateTime.TryParse(dsObjectivesModelsList.Tables[0].Rows[i]["Target_Date"].ToString(), out dtDocDate))
                             {
                                 objObjective.Target_Date = dtDocDate;
+                            }
+                            if (DateTime.TryParse(dsObjectivesModelsList.Tables[0].Rows[i]["ApprovedDate"].ToString(), out dtDocDate))
+                            {
+                                objObjective.ApprovedDate = dtDocDate;
                             }
 
 
@@ -463,7 +469,9 @@ namespace ISOStd.Controllers
 
                     string sSqlstmt = "select a.Objectives_Id,ObjectivesTrans_Id, Obj_Ref, Dept, Audit_Criteria, Estld_by,"
                     + "CreatedBy,DocUploadPath,objective_level,branch,Location,Obj_Estld_On,Objectives_val,Obj_Target,Base_Line_Value," +
-                    "Monitoring_Mechanism,Target_Date,Action_Plan,Freq_of_Eval,Accepted_Value,Risk_ifObjFails,baseline_data,unit,obj_inline,Approved_By,Approved_Status,ApprovedDate from t_objectives a, t_objectives_trans b"
+                    "Monitoring_Mechanism,Target_Date,Action_Plan,Freq_of_Eval,Accepted_Value,Risk_ifObjFails,baseline_data,unit,obj_inline,Approved_By," +
+                    "ApprovedDate,Approved_Status as Approved_StatusId, (case when Approved_Status=1 " +
+                    "then 'Approved' when Approved_Status=2 then 'Rejected' else 'Pending for Approval' end) as Approved_Status,obj_reject_comment,obj_reject_upload from t_objectives a, t_objectives_trans b"
                     + " where Active=1 and trans_active=1 and a.Objectives_Id=b.Objectives_Id and b.ObjectivesTrans_Id='" + sObjectivesTrans_Id + "'";
 
                     DataSet dsObjectivesModelsList = objGlobaldata.Getdetails(sSqlstmt);
@@ -496,8 +504,12 @@ namespace ISOStd.Controllers
                                 unit = objObjectivesModels.GetObjectiveUnitById(dsObjectivesModelsList.Tables[0].Rows[0]["unit"].ToString()),
                                 obj_inline = objObjectivesModels.GetObjectiveInlineById(dsObjectivesModelsList.Tables[0].Rows[0]["obj_inline"].ToString()),
                                 Approved_By = objGlobaldata.GetEmpHrNameById(dsObjectivesModelsList.Tables[0].Rows[0]["Approved_By"].ToString()),
-                                //Approved_Status = dsObjectivesModelsList.Tables[0].Rows[i]["Approved_Status"].ToString(),
-                                Approved_Status_id = dsObjectivesModelsList.Tables[0].Rows[0]["Approved_Status"].ToString(),
+                                Approved_ById = (dsObjectivesModelsList.Tables[0].Rows[0]["Approved_By"].ToString()),
+                                Approved_Status = dsObjectivesModelsList.Tables[0].Rows[0]["Approved_Status"].ToString(),
+                                Approved_Status_id = dsObjectivesModelsList.Tables[0].Rows[0]["Approved_StatusId"].ToString(),
+                                obj_reject_comment = dsObjectivesModelsList.Tables[0].Rows[0]["obj_reject_comment"].ToString(),
+                                obj_reject_upload = dsObjectivesModelsList.Tables[0].Rows[0]["obj_reject_upload"].ToString(),
+
                             };
 
                             DateTime dtDocDate = new DateTime();
@@ -522,7 +534,7 @@ namespace ISOStd.Controllers
                         ObjectivesModelsList objPCFFList = new ObjectivesModelsList();
                         objPCFFList.ObjectivesMList = new List<ObjectivesModels>();
 
-                        string sSqlstmtPCFF = "select id_potential, ObjectivesTrans_Id,potential_causes,impact,mitigation_measure,targeted_on,updated_on,potential_status,logged_by " +
+                        string sSqlstmtPCFF = "select id_potential, ObjectivesTrans_Id,potential_causes,impact,mitigation_measure,targeted_on,updated_on,potential_status,logged_by,Pcff_Notify " +
                             "from t_objectives_potential where ObjectivesTrans_Id  = '" + sObjectivesTrans_Id + "' and pot_active=1";
                        
                         DataSet dsPCFFList = objGlobaldata.Getdetails(sSqlstmtPCFF);
@@ -539,7 +551,8 @@ namespace ISOStd.Controllers
                                         potential_causes = dsPCFFList.Tables[0].Rows[i]["potential_causes"].ToString(),
                                         impact = objObjectivesModels.GetObjectivePotentialImpactById(dsPCFFList.Tables[0].Rows[i]["impact"].ToString()),
                                         mitigation_measure = dsPCFFList.Tables[0].Rows[i]["mitigation_measure"].ToString(),
-                                        potential_status = objObjectivesModels.GetObjectivePotentialStatusById(dsPCFFList.Tables[0].Rows[i]["potential_status"].ToString())                                        
+                                        potential_status = objObjectivesModels.GetObjectivePotentialStatusById(dsPCFFList.Tables[0].Rows[i]["potential_status"].ToString()),
+                                        Pcff_Notify = objGlobaldata.GetMultiHrEmpNameById(dsPCFFList.Tables[0].Rows[i]["Pcff_Notify"].ToString())
                                     };
                                     DateTime dtDocDate;
                                     if (dsPCFFList.Tables[0].Rows[i]["targeted_on"].ToString() != ""
@@ -869,7 +882,7 @@ namespace ISOStd.Controllers
                         ObjectivesModelsList objPCFFList = new ObjectivesModelsList();
                         objPCFFList.ObjectivesMList = new List<ObjectivesModels>();
 
-                        string sSqlstmtPCFF = "select id_potential, ObjectivesTrans_Id,potential_causes,impact,mitigation_measure,targeted_on,updated_on,potential_status,logged_by " +
+                        string sSqlstmtPCFF = "select id_potential, ObjectivesTrans_Id,potential_causes,impact,mitigation_measure,targeted_on,updated_on,potential_status,logged_by,Pcff_Notify " +
                             "from t_objectives_potential where ObjectivesTrans_Id  = '" + sObjectivesTrans_Id + "' and pot_active=1";
                         DataSet dsPCFFList = objGlobaldata.Getdetails(sSqlstmtPCFF);
                         if (dsPCFFList.Tables.Count > 0 && dsPCFFList.Tables[0].Rows.Count > 0)
@@ -885,7 +898,8 @@ namespace ISOStd.Controllers
                                         potential_causes = dsPCFFList.Tables[0].Rows[i]["potential_causes"].ToString(),
                                         impact = objObjectivesModels.GetObjectivePotentialImpactById(dsPCFFList.Tables[0].Rows[i]["impact"].ToString()),
                                         mitigation_measure = dsPCFFList.Tables[0].Rows[i]["mitigation_measure"].ToString(),
-                                        potential_status = objObjectivesModels.GetObjectivePotentialStatusById(dsPCFFList.Tables[0].Rows[i]["potential_status"].ToString())
+                                        potential_status = objObjectivesModels.GetObjectivePotentialStatusById(dsPCFFList.Tables[0].Rows[i]["potential_status"].ToString()),
+                                        Pcff_Notify = objGlobaldata.GetMultiHrEmpNameById(dsPCFFList.Tables[0].Rows[i]["Pcff_Notify"].ToString())
                                     };
                                     DateTime dtDocDate;
                                     if (dsPCFFList.Tables[0].Rows[i]["targeted_on"].ToString() != ""
@@ -1347,7 +1361,8 @@ namespace ISOStd.Controllers
             //    " Obj_Target,Base_Line_Value,Monitoring_Mechanism,Target_Date,Objectives_val,Source_data,Method_eval,Remark,Notified_to from t_objectives_evaluation a, t_objectives_trans b,t_objectives c where a.ObjectivesTrans_Id = b.ObjectivesTrans_Id " +
             //    "and b.ObjectivesTrans_Id  = '" + sObjectivesTrans_Id + "' and c.Objectives_Id=b.Objectives_Id ";
              string sSqlstmt = "select ObjectivesEval_Id, ObjectivesTrans_Id, Obj_Eval_On, FromPeriod, ToPeriod, Obj_Achieved_Val, Trend, NCR_Ref, Evidence,Status_Obj_Eval," +
-                                " Source_data,Method_eval,Remark,Notified_to from t_objectives_evaluation where ObjectivesTrans_Id = '" + sObjectivesTrans_Id + "'";
+                                " Source_data,Method_eval,Remark,Notified_to from t_objectives_evaluation where ObjectivesTrans_Id = '" + sObjectivesTrans_Id + "'" +
+                                " order by FromPeriod asc";
 
             ViewBag.ObjectivesTrans_Id = sObjectivesTrans_Id;
 
@@ -1379,7 +1394,7 @@ namespace ISOStd.Controllers
                             Remark = dsObjectivesModelsList.Tables[0].Rows[i]["Remark"].ToString(),
                             Notified_to = dsObjectivesModelsList.Tables[0].Rows[i]["Notified_to"].ToString(),
                         };
-
+                                
                                 if (dsObjectivesModelsList.Tables[0].Rows[i]["Obj_Eval_On"].ToString() != "")
                                 {
                                     objObjectivesModels.Obj_Eval_On = Convert.ToDateTime(dsObjectivesModelsList.Tables[0].Rows[i]["Obj_Eval_On"].ToString());
@@ -1438,6 +1453,10 @@ namespace ISOStd.Controllers
                             if (dsEvalList.Tables[0].Rows[0]["Obj_Eval_On"].ToString() != "")
                             {
                                 ViewBag.Obj_Eval_On = Convert.ToDateTime(dsEvalList.Tables[0].Rows[0]["Obj_Eval_On"].ToString());
+                            }
+                            if (ViewBag.Status_Obj_Eval == "")
+                            {
+                                ViewBag.Status_Obj_Eval = objObjectivesModels.GetObjectiveStatusIdByName("In Progress");
                             }
 
                             ViewBag.Visible = "Visible";
@@ -2167,6 +2186,7 @@ public ActionResult ObjectiveActionPlanEdit(FormCollection form, ObjectivesModel
 
                 ViewBag.PotentialStatus = objModels.GetObjectivePotentialStatusList();
                 ViewBag.PotentialImpact = objModels.GetObjectivePotentialImpactList();
+                ViewBag.DeptHead = objGlobaldata.GetDeptHeadList();
                 ViewBag.View = Request.QueryString["View"];
 
 
@@ -2188,7 +2208,7 @@ public ActionResult ObjectiveActionPlanEdit(FormCollection form, ObjectivesModel
                         ViewBag.Objectives_val = dsObjectives_Id.Tables[0].Rows[0]["Objectives_val"].ToString();
                     }
 
-                    string sSqlstmt = "select id_potential, ObjectivesTrans_Id,potential_causes,impact,mitigation_measure,targeted_on,updated_on,potential_status from t_objectives_potential " +
+                    string sSqlstmt = "select id_potential, ObjectivesTrans_Id,potential_causes,impact,mitigation_measure,targeted_on,updated_on,potential_status,Pcff_Notify from t_objectives_potential " +
                         "where pot_active = 1 and ObjectivesTrans_Id = '" + sObjectivesTrans_Id + "'";
 
                     ViewBag.ObjectivesTrans_Id = sObjectivesTrans_Id;
@@ -2211,6 +2231,7 @@ public ActionResult ObjectiveActionPlanEdit(FormCollection form, ObjectivesModel
                                     impact = objModels.GetObjectivePotentialImpactById(dsObjectivesModelsList.Tables[0].Rows[i]["impact"].ToString()),
                                     mitigation_measure = dsObjectivesModelsList.Tables[0].Rows[i]["mitigation_measure"].ToString(),
                                     potential_status = objModels.GetObjectivePotentialStatusById(dsObjectivesModelsList.Tables[0].Rows[i]["potential_status"].ToString()),
+                                    Pcff_Notify = objGlobaldata.GetMultiHrEmpNameById(dsObjectivesModelsList.Tables[0].Rows[i]["Pcff_Notify"].ToString()),
                                 };
                                 DateTime dtDocDate;
                                 if (dsObjectivesModelsList.Tables[0].Rows[i]["targeted_on"].ToString() != ""
@@ -2222,6 +2243,11 @@ public ActionResult ObjectiveActionPlanEdit(FormCollection form, ObjectivesModel
                                   && DateTime.TryParse(dsObjectivesModelsList.Tables[0].Rows[i]["updated_on"].ToString(), out dtDocDate))
                                 {
                                     objObjectivesModels.updated_on = dtDocDate;
+                                }
+
+                                if (dsObjectivesModelsList.Tables[0].Rows[0]["Pcff_Notify"].ToString() != "")
+                                {
+                                    ViewBag.NotifyToArray = (dsObjectivesModelsList.Tables[0].Rows[0]["Pcff_Notify"].ToString()).Split(',');
                                 }
                                 objObjectivesModelsList.ObjectivesMList.Add(objObjectivesModels);
                             }
@@ -2271,6 +2297,18 @@ public ActionResult ObjectiveActionPlanEdit(FormCollection form, ObjectivesModel
                 objObjectivesModels.Objectives_Id = Convert.ToInt16(form["Objectives_Id"]);
                 objObjectivesModels.ObjectivesTrans_Id = Convert.ToInt16(form["ObjectivesTrans_Id"]);
 
+                // Nofify
+                for (int i = 0; i < Convert.ToInt16(form["itemcount"]); i++)
+                {
+                    if (form["nempno " + i] != "" && form["nempno " + i] != null)
+                    {
+                        objObjectivesModels.Pcff_Notify = form["nempno " + i] + "," + objObjectivesModels.Pcff_Notify;
+                    }
+                }
+                if (objObjectivesModels.Pcff_Notify != null)
+                {
+                    objObjectivesModels.Pcff_Notify = objObjectivesModels.Pcff_Notify.Trim(',');
+                }
 
                 if (objObjectivesModels.FunAddObjectivePotential(objObjectivesModels))
                 {
@@ -2298,6 +2336,7 @@ public ActionResult ObjectiveActionPlanEdit(FormCollection form, ObjectivesModel
 
             ViewBag.PotentialStatus = objObjectivesModels.GetObjectivePotentialStatusList();
             ViewBag.PotentialImpact = objObjectivesModels.GetObjectivePotentialImpactList();
+            ViewBag.DeptHead = objGlobaldata.GetDeptHeadList();
 
             string sObjectivesTrans_Id = "";
             try
@@ -2307,7 +2346,7 @@ public ActionResult ObjectiveActionPlanEdit(FormCollection form, ObjectivesModel
                 {
                     string id_potential = Request.QueryString["id_potential"];
 
-                    string sSqlstmt = "select id_potential, ObjectivesTrans_Id,potential_causes,impact,mitigation_measure,targeted_on,updated_on,potential_status,logged_by " +
+                    string sSqlstmt = "select id_potential, ObjectivesTrans_Id,potential_causes,impact,mitigation_measure,targeted_on,updated_on,potential_status,logged_by,Pcff_Notify " +
                              "from t_objectives_potential where id_potential  = '" + id_potential + "'";
 
                     DataSet dsObjectivesModelsList = objGlobaldata.Getdetails(sSqlstmt);
@@ -2331,6 +2370,7 @@ public ActionResult ObjectiveActionPlanEdit(FormCollection form, ObjectivesModel
                                 impact = dsObjectivesModelsList.Tables[0].Rows[0]["impact"].ToString(),
                                 mitigation_measure = dsObjectivesModelsList.Tables[0].Rows[0]["mitigation_measure"].ToString(),
                                 potential_status = (dsObjectivesModelsList.Tables[0].Rows[0]["potential_status"].ToString()),
+                                Pcff_Notify= (dsObjectivesModelsList.Tables[0].Rows[0]["Pcff_Notify"].ToString())
                             };
                             DateTime dtDocDate;
                             if (dsObjectivesModelsList.Tables[0].Rows[0]["targeted_on"].ToString() != ""
@@ -2342,6 +2382,11 @@ public ActionResult ObjectiveActionPlanEdit(FormCollection form, ObjectivesModel
                               && DateTime.TryParse(dsObjectivesModelsList.Tables[0].Rows[0]["updated_on"].ToString(), out dtDocDate))
                             {
                                 objObjectivesModels.updated_on = dtDocDate;
+                            }
+
+                            if (dsObjectivesModelsList.Tables[0].Rows[0]["Pcff_Notify"].ToString() != "")
+                            {
+                                ViewBag.NotifiedtoArray = (dsObjectivesModelsList.Tables[0].Rows[0]["Pcff_Notify"].ToString()).Split(',');
                             }
 
                             ViewBag.ObjectivesTrans_Id = objObjectivesModels.ObjectivesTrans_Id;
@@ -2401,6 +2446,19 @@ public ActionResult ObjectiveActionPlanEdit(FormCollection form, ObjectivesModel
                 if (DateTime.TryParse(form["updated_on"], out dateValue) == true)
                 {
                     objModels.updated_on = dateValue;
+                }
+
+                // Nofify
+                for (int i = 0; i < Convert.ToInt16(form["itemcount"]); i++)
+                {
+                    if (form["nempno " + i] != "" && form["nempno " + i] != null)
+                    {
+                        objModels.Pcff_Notify = form["nempno " + i] + "," + objModels.Pcff_Notify;
+                    }
+                }
+                if (objModels.Pcff_Notify != null)
+                {
+                    objModels.Pcff_Notify = objModels.Pcff_Notify.Trim(',');
                 }
 
                 if (objModels.FunUpdateObjectivePotential(objModels))
@@ -2513,7 +2571,74 @@ public ActionResult ObjectiveActionPlanEdit(FormCollection form, ObjectivesModel
                 return RedirectToAction("ListPendingForApproval", "Dashboard");
             }
         }
-       
+
+        [AllowAnonymous]
+        public ActionResult ObjectivesApprovebyDetails(FormCollection form, HttpPostedFileBase obj_reject_upload)
+        {
+            string sView = form["view"];
+            try
+            {
+                ObjectivesModels objObjectives = new ObjectivesModels();
+                objObjectives.ObjectivesTrans_Id = Convert.ToInt32(form["ObjectivesTrans_Id"]);
+                objObjectives.Approved_Status = form["obj_status"];
+                objObjectives.obj_reject_comment = form["obj_reject_comment"];  
+
+                if (obj_reject_upload != null && obj_reject_upload.ContentLength > 0)
+                {
+                    try
+                    {
+                        string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/Objectives"), Path.GetFileName(obj_reject_upload.FileName));
+                        string sFilename = "OBJ" + "_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath);
+                        string sFilepath = Path.GetDirectoryName(spath);
+
+                        obj_reject_upload.SaveAs(sFilepath + "/" + sFilename);
+                        objObjectives.obj_reject_upload = "~/DataUpload/MgmtDocs/Objectives/" + sFilename;
+                        ViewBag.Message = "File uploaded successfully";
+                    }
+                    catch (Exception ex)
+                    {
+                        objGlobaldata.AddFunctionalLog("Exception in ObjectivesApprovebyDetails: " + ex.ToString());
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                    }
+                }
+                else
+                {
+                    ViewBag.Message = "You have not specified a file.";
+                }
+
+                string sStatus = "";
+                if (objObjectives.Approved_Status == "0")
+                {
+                    sStatus = "Pending";
+                }
+                else if (objObjectives.Approved_Status == "1")
+                {
+                    sStatus = "Approved";
+
+                }
+                else if (objObjectives.Approved_Status == "2")
+                {
+                    sStatus = "Rejected";
+                }
+
+                if (objObjectives.FunObjectivesApprovalbyDetail(objObjectives))
+                {
+                    TempData["Successdata"] = "Objectives is " + sStatus;
+                }
+                else
+                {
+                    TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                }              
+
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in ObjectivesApprovebyDetails: " + ex.ToString());
+                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+            }
+            return RedirectToAction("ObjectivesList", new { View = sView });
+        }
+
         public JsonResult ObjectivesApproveNoty(string Objectives_Id, int iStatus, string PendingFlg)
         {
             try

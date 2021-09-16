@@ -39,9 +39,9 @@ namespace ISOStd.Controllers
 
         private ActionResult InitilizeAddObjectives()
         {
+            ObjectivesModels objObjectives = new ObjectivesModels();
             try
-            {
-                ObjectivesModels objObjectives = new ObjectivesModels();
+            {               
                 ViewBag.View = Request.QueryString["View"];
                 if (ViewBag.View == "1")
                 {
@@ -71,6 +71,7 @@ namespace ISOStd.Controllers
                 ViewBag.Unit = objObjectives.GetObjectiveUnitList();
                 ViewBag.userbranch = objGlobaldata.GetCurrentUserSession().division;
                 ViewBag.Location = objGlobaldata.GetLocationbyMultiDivision(ViewBag.userbranch);
+                objObjectives.Location = objGlobaldata.GetCurrentUserSession().Work_Location;
             }
             catch (Exception ex)
             {
@@ -78,7 +79,7 @@ namespace ISOStd.Controllers
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
 
-            return View();
+            return View(objObjectives);
         }
         
         [HttpPost]
@@ -827,7 +828,7 @@ namespace ISOStd.Controllers
 
                     string sSqlstmt = "select a.Objectives_Id,ObjectivesTrans_Id, Obj_Ref, Dept, Audit_Criteria, Estld_by,"
                     + "CreatedBy,DocUploadPath,objective_level,branch,Location,Obj_Estld_On,Objectives_val,Obj_Target,Base_Line_Value," +
-                    "Monitoring_Mechanism,Target_Date,Action_Plan,Freq_of_Eval,Accepted_Value,Risk_ifObjFails,baseline_data,unit,obj_inline,Approved_By,Approved_Status from t_objectives a, t_objectives_trans b"
+                    "Monitoring_Mechanism,Target_Date,Action_Plan,Freq_of_Eval,Accepted_Value,Risk_ifObjFails,baseline_data,unit,obj_inline,Approved_By,Approved_Status,ApprovedDate from t_objectives a, t_objectives_trans b"
                     + " where Active=1 and trans_active=1 and a.Objectives_Id=b.Objectives_Id and b.ObjectivesTrans_Id='" + sObjectivesTrans_Id + "'";
 
                     DataSet dsObjectivesModelsList = objGlobaldata.Getdetails(sSqlstmt);
@@ -873,6 +874,10 @@ namespace ISOStd.Controllers
                             if (DateTime.TryParse(dsObjectivesModelsList.Tables[0].Rows[0]["Target_Date"].ToString(), out dtDocDate))
                             {
                                 objObjectivesModels.Target_Date = dtDocDate;
+                            }
+                            if (DateTime.TryParse(dsObjectivesModelsList.Tables[0].Rows[0]["ApprovedDate"].ToString(), out dtDocDate))
+                            {
+                                objObjectivesModels.ApprovedDate = dtDocDate;
                             }
                         }
 
@@ -1458,6 +1463,10 @@ namespace ISOStd.Controllers
                             {
                                 ViewBag.Status_Obj_Eval = objObjectivesModels.GetObjectiveStatusIdByName("In Progress");
                             }
+                            if (dsEvalList.Tables[0].Rows[0]["Notified_to"].ToString() != "")
+                            {
+                                ViewBag.NotifiedtoArray = (dsEvalList.Tables[0].Rows[0]["Notified_to"].ToString()).Split(',');
+                            }
 
                             ViewBag.Visible = "Visible";
                         }
@@ -1503,7 +1512,20 @@ public ActionResult AddObjectiveEvaluation(ObjectivesModels objObjectivesModels,
         //}
         objObjectivesModels.ObjectivesTrans_Id = Convert.ToInt16(form["ObjectivesTrans_Id"]);
 
-        if (Evidence != null && Evidence.ContentLength > 0)
+
+                //Notified To
+                for (int i = 0; i < Convert.ToInt16(form["itemcnt1"]); i++)
+                {
+                    if (form["nempno " + i] != "" && form["nempno " + i] != null)
+                    {
+                        objObjectivesModels.Notified_to = form["nempno " + i] + "," + objObjectivesModels.Notified_to;
+                    }
+                }
+                if (objObjectivesModels.Notified_to != null)
+                {
+                    objObjectivesModels.Notified_to = objObjectivesModels.Notified_to.Trim(',');
+                }
+                if (Evidence != null && Evidence.ContentLength > 0)
         {
             try
             {

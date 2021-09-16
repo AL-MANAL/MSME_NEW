@@ -211,16 +211,37 @@ namespace ISOStd.Controllers
                 string sBranchtree = objGlobaldata.GetCurrentUserSession().BranchTree;
                 ViewBag.Branch = objGlobaldata.GetMultiBranchListByID(sBranchtree);
 
-                DataSet dsCustomer;
+                string sSqlstmt = "select  Performance_EvalId,emp_id,Designation,Dept_id,Evaluation_DoneOn,Evaluated_From,Evaluated_To,Eval_DoneBy," +
+                    "Eval_DoneBy_Desig,Eval_DoneBy_DeptId,Weakness,Strengths,Training_Reqd,Actions_Taken,LoggedBy,JrMgr,Comment_JrMgr,JrMgr_Comment_Date,SrMgr," +
+                    "Comment_SrMgr,SrMgr_Comment_Date,Eval_ReviewedBy,DocUploadPath,(case when(Comment_JrMgr is null || Comment_JrMgr = '')then 'Pending Reviewer' when(Comment_SrMgr is null || Comment_SrMgr = '')" +
+                    " then 'Pending Approval' else 'Evaluation Completed' end) as sstatus from t_emp_performance_eval " +
+                    " where active = 1 ";
+                string sSearchtext = "";
+
+
                 if (branch_name != null && branch_name != "")
                 {
-                    dsCustomer = objGlobaldata.GetDecendants(empid, branch_name);
+                    sSearchtext = sSearchtext + " and find_in_set('" + branch_name + "', branch)";
+                    ViewBag.Branch_name = branch_name;
                 }
                 else
                 {
-                    dsCustomer = objGlobaldata.GetDecendants(empid, sBranch_name);
+                    sSearchtext = sSearchtext + " and find_in_set('" + sBranch_name + "', branch)";
                 }
-                       
+
+                sSqlstmt = sSqlstmt + sSearchtext + " order by Performance_EvalId desc";
+                DataSet dsCustomer = objGlobaldata.Getdetails(sSqlstmt);
+                
+                //DataSet dsCustomer;
+                //if (branch_name != null && branch_name != "")
+                //{
+                //    dsCustomer = objGlobaldata.GetDecendants(empid, branch_name);
+                //}
+                //else
+                //{
+                //    dsCustomer = objGlobaldata.GetDecendants(empid, sBranch_name);
+                //}
+
 
                 for (int i = 0; dsCustomer.Tables.Count > 0 && i < dsCustomer.Tables[0].Rows.Count; i++)
                 {                  
@@ -285,90 +306,90 @@ namespace ISOStd.Controllers
             return View(objEmpPerformanceEvalList.lstEmpPerformanceEvalModels.ToList());
         }
 
-        [AllowAnonymous]
-        public JsonResult EmployeePerformanceEvalListSearch(string SearchText, string PlanfromDate, string PlanToDate, string chkAll, int? page, string branch_name)
-        {
-            EmpPerformanceEvalModelsList objEmpPerformanceEvalList = new EmpPerformanceEvalModelsList();
-            objEmpPerformanceEvalList.lstEmpPerformanceEvalModels = new List<EmpPerformanceEvalModels>();
+        //[AllowAnonymous]
+        //public JsonResult EmployeePerformanceEvalListSearch(string SearchText, string PlanfromDate, string PlanToDate, string chkAll, int? page, string branch_name)
+        //{
+        //    EmpPerformanceEvalModelsList objEmpPerformanceEvalList = new EmpPerformanceEvalModelsList();
+        //    objEmpPerformanceEvalList.lstEmpPerformanceEvalModels = new List<EmpPerformanceEvalModels>();
 
-            try
-            {
-                string empid = (objGlobaldata.GetCurrentUserSession().empid);
-                string sBranch_name = objGlobaldata.GetCurrentUserSession().division;
-                string sBranchtree = objGlobaldata.GetCurrentUserSession().BranchTree;
-                ViewBag.Branch = objGlobaldata.GetMultiBranchListByID(sBranchtree);
-                DataSet dsCustomer;
-                if (branch_name != null && branch_name != "")
-                {
-                    dsCustomer = objGlobaldata.GetDecendants(empid, branch_name);
-                }
-                else
-                {
-                    dsCustomer = objGlobaldata.GetDecendants(empid, sBranch_name);
-                }
+        //    try
+        //    {
+        //        string empid = (objGlobaldata.GetCurrentUserSession().empid);
+        //        string sBranch_name = objGlobaldata.GetCurrentUserSession().division;
+        //        string sBranchtree = objGlobaldata.GetCurrentUserSession().BranchTree;
+        //        ViewBag.Branch = objGlobaldata.GetMultiBranchListByID(sBranchtree);
+        //        DataSet dsCustomer;
+        //        if (branch_name != null && branch_name != "")
+        //        {
+        //            dsCustomer = objGlobaldata.GetDecendants(empid, branch_name);
+        //        }
+        //        else
+        //        {
+        //            dsCustomer = objGlobaldata.GetDecendants(empid, sBranch_name);
+        //        }
 
-                for (int i = 0; dsCustomer.Tables.Count > 0 && i < dsCustomer.Tables[0].Rows.Count; i++)
-                {
+        //        for (int i = 0; dsCustomer.Tables.Count > 0 && i < dsCustomer.Tables[0].Rows.Count; i++)
+        //        {
                    
 
-                    try
-                    {
-                        EmpPerformanceEvalModels objCustomer = new EmpPerformanceEvalModels
-                        {
-                            Performance_EvalId = dsCustomer.Tables[0].Rows[i]["Performance_EvalId"].ToString(),
-                            emp_id = objGlobaldata.GetEmpHrNameById(dsCustomer.Tables[0].Rows[i]["emp_id"].ToString()),
-                            Designation = dsCustomer.Tables[0].Rows[i]["Designation"].ToString(),
-                            Dept_id = objGlobaldata.GetDeptNameById(dsCustomer.Tables[0].Rows[i]["Dept_id"].ToString()),
-                            Eval_DoneBy = objGlobaldata.GetEmpHrNameById(dsCustomer.Tables[0].Rows[i]["Eval_DoneBy"].ToString()),
-                            Eval_DoneBy_Desig = dsCustomer.Tables[0].Rows[i]["Eval_DoneBy_Desig"].ToString(),
-                            Eval_DoneBy_DeptId = objGlobaldata.GetDeptNameById(dsCustomer.Tables[0].Rows[i]["Eval_DoneBy_DeptId"].ToString()),
-                            Weakness = dsCustomer.Tables[0].Rows[i]["Weakness"].ToString(),
-                            Strengths = (dsCustomer.Tables[0].Rows[i]["Strengths"].ToString()),
-                            Training_Reqd = dsCustomer.Tables[0].Rows[i]["Training_Reqd"].ToString(),
-                            Actions_Taken = dsCustomer.Tables[0].Rows[i]["Actions_Taken"].ToString(),
-                            Eval_ReviewedBy = objGlobaldata.GetEmpHrNameById(dsCustomer.Tables[0].Rows[i]["Eval_ReviewedBy"].ToString()),
-                            LoggedBy = objGlobaldata.GetEmpHrNameById(dsCustomer.Tables[0].Rows[i]["LoggedBy"].ToString()),
-                            DocUploadPath = dsCustomer.Tables[0].Rows[i]["DocUploadPath"].ToString(),
-                            JrMgr = dsCustomer.Tables[0].Rows[i]["JrMgr"].ToString(),
-                            Comment_JrMgr = dsCustomer.Tables[0].Rows[i]["Comment_JrMgr"].ToString(),
-                            SrMgr = dsCustomer.Tables[0].Rows[i]["SrMgr"].ToString(),
-                            Comment_SrMgr = dsCustomer.Tables[0].Rows[i]["Comment_SrMgr"].ToString(),
-                            sstatus = dsCustomer.Tables[0].Rows[i]["sstatus"].ToString(),
-                        };
+        //            try
+        //            {
+        //                EmpPerformanceEvalModels objCustomer = new EmpPerformanceEvalModels
+        //                {
+        //                    Performance_EvalId = dsCustomer.Tables[0].Rows[i]["Performance_EvalId"].ToString(),
+        //                    emp_id = objGlobaldata.GetEmpHrNameById(dsCustomer.Tables[0].Rows[i]["emp_id"].ToString()),
+        //                    Designation = dsCustomer.Tables[0].Rows[i]["Designation"].ToString(),
+        //                    Dept_id = objGlobaldata.GetDeptNameById(dsCustomer.Tables[0].Rows[i]["Dept_id"].ToString()),
+        //                    Eval_DoneBy = objGlobaldata.GetEmpHrNameById(dsCustomer.Tables[0].Rows[i]["Eval_DoneBy"].ToString()),
+        //                    Eval_DoneBy_Desig = dsCustomer.Tables[0].Rows[i]["Eval_DoneBy_Desig"].ToString(),
+        //                    Eval_DoneBy_DeptId = objGlobaldata.GetDeptNameById(dsCustomer.Tables[0].Rows[i]["Eval_DoneBy_DeptId"].ToString()),
+        //                    Weakness = dsCustomer.Tables[0].Rows[i]["Weakness"].ToString(),
+        //                    Strengths = (dsCustomer.Tables[0].Rows[i]["Strengths"].ToString()),
+        //                    Training_Reqd = dsCustomer.Tables[0].Rows[i]["Training_Reqd"].ToString(),
+        //                    Actions_Taken = dsCustomer.Tables[0].Rows[i]["Actions_Taken"].ToString(),
+        //                    Eval_ReviewedBy = objGlobaldata.GetEmpHrNameById(dsCustomer.Tables[0].Rows[i]["Eval_ReviewedBy"].ToString()),
+        //                    LoggedBy = objGlobaldata.GetEmpHrNameById(dsCustomer.Tables[0].Rows[i]["LoggedBy"].ToString()),
+        //                    DocUploadPath = dsCustomer.Tables[0].Rows[i]["DocUploadPath"].ToString(),
+        //                    JrMgr = dsCustomer.Tables[0].Rows[i]["JrMgr"].ToString(),
+        //                    Comment_JrMgr = dsCustomer.Tables[0].Rows[i]["Comment_JrMgr"].ToString(),
+        //                    SrMgr = dsCustomer.Tables[0].Rows[i]["SrMgr"].ToString(),
+        //                    Comment_SrMgr = dsCustomer.Tables[0].Rows[i]["Comment_SrMgr"].ToString(),
+        //                    sstatus = dsCustomer.Tables[0].Rows[i]["sstatus"].ToString(),
+        //                };
 
-                        DateTime dtValue;
-                        if (DateTime.TryParse(dsCustomer.Tables[0].Rows[i]["Evaluation_DoneOn"].ToString(), out dtValue))
-                        {
-                            objCustomer.Evaluation_DoneOn = dtValue;
-                        }
-                        if (DateTime.TryParse(dsCustomer.Tables[0].Rows[i]["Evaluated_From"].ToString(), out dtValue))
-                        {
-                            objCustomer.Evaluated_From = dtValue;
-                        }
-                        if (DateTime.TryParse(dsCustomer.Tables[0].Rows[i]["Evaluated_To"].ToString(), out dtValue))
-                        {
-                            objCustomer.Evaluated_To = dtValue;
-                        }
-                        objEmpPerformanceEvalList.lstEmpPerformanceEvalModels.Add(objCustomer);
-                    }
-                    catch (Exception ex)
-                    {
-                        objGlobaldata.AddFunctionalLog("Exception in EmployeePerformanceEvalListSearch: " + ex.ToString());
-                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                    }
-                }
-               // EmpPerformanceElementsModels objSurvey = new EmpPerformanceElementsModels();
+        //                DateTime dtValue;
+        //                if (DateTime.TryParse(dsCustomer.Tables[0].Rows[i]["Evaluation_DoneOn"].ToString(), out dtValue))
+        //                {
+        //                    objCustomer.Evaluation_DoneOn = dtValue;
+        //                }
+        //                if (DateTime.TryParse(dsCustomer.Tables[0].Rows[i]["Evaluated_From"].ToString(), out dtValue))
+        //                {
+        //                    objCustomer.Evaluated_From = dtValue;
+        //                }
+        //                if (DateTime.TryParse(dsCustomer.Tables[0].Rows[i]["Evaluated_To"].ToString(), out dtValue))
+        //                {
+        //                    objCustomer.Evaluated_To = dtValue;
+        //                }
+        //                objEmpPerformanceEvalList.lstEmpPerformanceEvalModels.Add(objCustomer);
+        //            }
+        //            catch (Exception ex)
+        //            {
+        //                objGlobaldata.AddFunctionalLog("Exception in EmployeePerformanceEvalListSearch: " + ex.ToString());
+        //                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+        //            }
+        //        }
+        //       // EmpPerformanceElementsModels objSurvey = new EmpPerformanceElementsModels();
 
-            //    ViewBag.Survey_TypeId = objSurvey.getSurveyIDByName("Employee Performance");
-            }
-            catch (Exception ex)
-            {
-                objGlobaldata.AddFunctionalLog("Exception in EmployeePerformanceEvalListSearch: " + ex.ToString());
-                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-            }
+        //    //    ViewBag.Survey_TypeId = objSurvey.getSurveyIDByName("Employee Performance");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        objGlobaldata.AddFunctionalLog("Exception in EmployeePerformanceEvalListSearch: " + ex.ToString());
+        //        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+        //    }
 
-            return Json("Success");
-        }
+        //    return Json("Success");
+        //}
 
         
         [AllowAnonymous]

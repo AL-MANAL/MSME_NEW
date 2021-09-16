@@ -594,7 +594,10 @@ namespace ISOStd.Models
                     + objObjectivesModels.ObjectivesTrans_Id + "','" + objObjectivesModels.potential_causes + "','" + objObjectivesModels.impact + "','" + objObjectivesModels.mitigation_measure
                     + "','" + stargeted_on + "','" + supdated_on + "','" + objObjectivesModels.potential_status + "','" + objGlobalData.GetCurrentUserSession().empid + "','" + objObjectivesModels.Pcff_Notify + "')";
 
-                return objGlobalData.ExecuteQuery(sSqlstmt);
+                if (objGlobalData.ExecuteQuery(sSqlstmt))
+                    {
+                    return objGlobalData.ExecuteQuery("update t_objectives_trans set Approved_Status=0 where ObjectivesTrans_Id ='" + objObjectivesModels.ObjectivesTrans_Id + "'");
+                   }
 
             }
             catch (Exception ex)

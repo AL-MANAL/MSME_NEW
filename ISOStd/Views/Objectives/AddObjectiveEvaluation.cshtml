@@ -15,6 +15,14 @@
     }
     var currentmonth = DateTime.Now.Month;
     var currentyear = DateTime.Now.Year;
+
+    int itemcnt1 = 0;
+    string[] NotifiedtoArray = new string[0];
+    if (ViewBag.NotifiedtoArray != null)
+    {
+        NotifiedtoArray = ViewBag.NotifiedtoArray;
+        itemcnt1 = NotifiedtoArray.Length;
+    }
 }
 
 @section featured {
@@ -199,7 +207,7 @@
                             <td class="col">
                                 @if (ViewBag.ToPeriod > Convert.ToDateTime("01/01/0001"))
                                 {
-                                    <input class="form-control" type="date" id="ToPeriod" name="ToPeriod" value="@ViewBag.ToPeriod.ToString("yyyy-MM-dd")" required disabled/>
+                                    <input class="form-control" type="date" id="ToPeriod" name="ToPeriod" value="@ViewBag.ToPeriod.ToString("yyyy-MM-dd")" required disabled />
                                 }
                                 else
                                 {
@@ -233,7 +241,7 @@
                                 Measured Value<text style="color:red;">*</text>
                             </td>
                             <td class="col">
-                                <input class="form-control" type="text" id="Obj_Achieved_Val" name="Obj_Achieved_Val"  Value="@ViewBag.Obj_Achieved_Val" required />
+                                <input class="form-control" type="text" id="Obj_Achieved_Val" name="Obj_Achieved_Val" Value="@ViewBag.Obj_Achieved_Val" required />
                             </td>
                         </tr>
                         <tr class="row">
@@ -293,23 +301,9 @@
                                 Notified To<text style="color:red;">*</text>
                             </td>
                             <td class="col">
-                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="Notified_to" name="Notified_to" multiple required="required">
-                                    <option value='' hidden>Select</option>
-                                    @if (ViewBag.EmpList != null && ViewBag.Notified_to != null)
-                                    {
-                                        foreach (var item in ViewBag.EmpList)
-                                        {
-                                            if (Array.IndexOf(ViewBag.Notified_to.ToString().Split(','), item.Value) >= 0)
-                                            {
-                                                <option value='@item.Value' selected>@item.Text</option>
-                                            }
-                                            else
-                                            {
-                                                <option value='@item.Value'>@item.Text</option>
-                                            }
-                                        }
-                                    }
-                                    else if (ViewBag.EmpList != null)
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="Notified_to" name="Notified_to" multiple onchange="GetNotifiedByDetails()">
+                                    @*<option value='' hidden>Select</option>*@
+                                   @if (ViewBag.EmpList != null)
                                     {
                                         foreach (var item in ViewBag.EmpList)
                                         {
@@ -319,14 +313,67 @@
                                 </select>
                             </td>
                         </tr>
-                        <tr class="row">
-                            <td>
-                                <a href='@Url.Action("AddNC", "NC", new { objective_Id = @ViewBag.Objectives_Id})' title="Raise NCR " target="_blank">
-                                    <span class="badge badge-info">Raise NCR</span>
-                                </a>
-                            </td>
-                        </tr>
                     </tbody>
+                </table>
+                <div class="card is-visible" id="hidden card1">
+                    <div class="card-body">
+                        <input type="hidden" id="itemcnt1" name="itemcnt1" value="@itemcnt1" />
+
+                        <div class="card card-table table-responsive shadow-0 mb-0">
+                            <table class="table" id="team-list1">
+                                <tr class="bg-blue">
+                                    <th>Action</th>
+                                    <th>Id</th>
+                                    <th>Name</th>
+                                    <th>Division</th>
+                                    <th>Location</th>
+                                    <th>Department</th>
+                                    <th>Email</th>
+                                </tr>
+                                @if (ViewBag.NotifiedtoArray != null && NotifiedtoArray != null && NotifiedtoArray.Length > 0)
+                                {
+                                    for (int index = 0; index < NotifiedtoArray.Length; index++)
+                                    {
+                                        //string[] sEmp = @objIncidentLTIList.lstIncidentLTIModels[index].Emp_Id.Split(';');
+                                        <tr>
+                                            <td>
+                                                <span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span>
+                                                @*<img src='@Url.Content("~/images/cancel.png")' onclick='deleteRow1(this)' style='cursor:pointer; padding-right: 5px;' />Remove*@
+                                                <input type='hidden' id='nempno @index' name="nempno @index" value='@NotifiedtoArray[index]' />
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='nempid @index' name="nempid @index" readonly>@Obj.GetEmpIDByEmpNo(NotifiedtoArray[index])
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='nempname @index' name="nempname @index" readonly>@Obj.GetEmpHrNameById(NotifiedtoArray[index])
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='nempdiv @index' name="nempdiv @index" readonly>@Obj.GetCompanyBranchNameById(Obj.GetDivisionIdByHrEmpId(NotifiedtoArray[index]))
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='nemploc @index' name="nemploc @index" readonly>@Obj.GetDivisionLocationById(Obj.GetWorkLocationIdByHrEmpId(NotifiedtoArray[index]))
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='nempdept @index' name="nempdept @index" readonly>@Obj.GetDeptNameById(Obj.GetDeptIdByHrEmpId(NotifiedtoArray[index]))
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='nempemail @index' name="nempemail @index" readonly>@Obj.GetHrEmpEmailIdById(NotifiedtoArray[index])
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <table  class="table table-lg">
+                    <tr class="row">
+                        <td>
+                            <a href='@Url.Action("AddNC", "NC", new { objective_Id = @ViewBag.Objectives_Id})' title="Raise NCR " target="_blank">
+                                <span class="badge badge-info">Raise NCR</span>
+                            </a>
+                        </td>
+                    </tr>                   
                 </table>
             </div>
         </div>
@@ -340,7 +387,7 @@
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
-    <script type="text/javascript">
+<script type="text/javascript">
         $(document).ready(function () {
             var vDisplay = @(visi.Contains("Visible") ? "true" : "false");
             if (vDisplay) {
@@ -358,7 +405,7 @@
                         $('#ToPeriod').val("");
                     }
                 }
-            
+
                 function checkNCR() {
                         var Eval_Status = $('#Status_Obj_Eval :selected').text();
 
@@ -612,5 +659,80 @@
                 window.location.pathname +
                 '?' + queryString;
         }
-    </script>
+
+
+             function GetNotifiedByDetails() {
+                 var Notified_to = $('#Notified_to option:selected').val();
+                 if (Notified_to != "" && Notified_to != null) {
+                jQuery.ajax({
+                    url: '@Url.Action("FunGetEmpDetails", "NC")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'semp_no': Notified_to },
+                    success: function (result) {
+                        if (result != null) {
+                            //document.getElementById("notifiedtodiv").classList.remove(hideClass);
+                            //document.getElementById("notifiedtodiv").classList.add(showClass);
+
+                            //   document.getElementById("notifiedtodiv").style.display = 'block';
+                            var nempno = $('#Notified_to option:Selected').val();
+                            var nempid = result.emp_id;
+                            var nempname = result.empname;
+                            var nempdiv = result.division;
+                            var nempdept = result.department;
+                            var nemploc = result.location;
+                            var nempemail = result.EmailId;
+
+                            if (nempid != null) {
+                                var cnt = document.getElementById("itemcnt1").value;
+
+                                document.getElementById("itemcnt1").value = cnt;
+                                // Find a <table> element with id="myTable":
+                                var table = document.getElementById("team-list1");
+
+                                // Create an empty <tr> element and add it to the 1st position of the table:
+                                var row = table.insertRow();
+
+
+                                // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                                var cell0 = row.insertCell(0);
+                                var cell1 = row.insertCell(1);
+                                var cell2 = row.insertCell(2);
+                                var cell3 = row.insertCell(3);
+                                var cell4 = row.insertCell(4);
+                                var cell5 = row.insertCell(5);
+                                var cell6 = row.insertCell(6);
+
+
+                                cell0.innerHTML = "<span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span> <input type = 'hidden' id = 'nempno " + cnt + "' name = 'nempno " + cnt + "' value = '" + nempno + "'>";
+                                cell1.innerHTML = "<input type='hidden' id='nempid " + cnt + "' name='nempid " + cnt + "' value='" + nempid + "'>" + nempid;
+                                cell2.innerHTML = "<input type='hidden' id='nempname " + cnt + "' name='nempname " + cnt + "' value='" + nempname + "'>" + nempname;
+                                cell3.innerHTML = "<input type='hidden' id='nempdiv " + cnt + "' name='nempdiv " + cnt + "' value='" + nempdiv + "'>" + nempdiv;
+                                cell4.innerHTML = "<input type='hidden' id='nemploc " + cnt + "' name='nemploc " + cnt + "' value='" + nemploc + "'>" + nemploc;
+                                cell5.innerHTML = "<input type='hidden' id='nempdept " + cnt + "' name='nempdept " + cnt + "' value='" + nempdept + "'>" + nempdept;
+                                cell6.innerHTML = "<input type='hidden' id='nempemail " + cnt + "' name='nempemail " + cnt + "' value='" + nempemail + "'>" + nempemail;
+
+                                cnt++;
+                                document.getElementById("itemcnt1").value = cnt;
+
+                                //document.getElementById("hidden card1").classList.remove(hideClass);
+                                //document.getElementById("hidden card1").classList.add(showClass);
+                                //document.getElementById("hidden card1").style.display = "block";
+
+                                $("#Notified_to").val('').trigger('change');
+                           }
+                        }
+                    }
+                });
+            }
+    }
+
+
+    function deleteRow(btn) {
+        var row = btn.parentNode.parentNode;
+        row.parentNode.removeChild(row);
+    }
+
+
+</script>
 }

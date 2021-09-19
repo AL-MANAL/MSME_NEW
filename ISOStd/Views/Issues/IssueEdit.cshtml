@@ -103,13 +103,6 @@
                     </td>
                 </tr>
                 <tr class="row">
-
-                    <td class="col-xs-3 col-md-2">
-                        @Html.LabelFor(model => model.Location)
-                    </td>
-                    <td class="col">
-                        @Html.DisplayFor(model => model.Location)
-                    </td>
                     <td class="col-xs-3 col-md-2">
                         <div class="editor-label">
                             @Html.LabelFor(model => model.Deptid)
@@ -119,6 +112,12 @@
                         <div class="editor-field">
                             @Html.DisplayFor(model => model.Deptid)
                         </div>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        @Html.LabelFor(model => model.Location)
+                    </td>
+                    <td class="col">
+                        @Html.DisplayFor(model => model.Location)
                     </td>
                 </tr>
                 <tr class="row">
@@ -149,11 +148,11 @@
                     <td class="col">
                         <div class="editor-field">
                             <select class="form-control select-fixed-multiple" data-fouc id="reporting_to" name="reporting_to" multiple="multiple" onchange="GetReportedByDetails()">
-                              @if (ViewBag.EmpList != null)
+                                @if (ViewBag.EmpList != null)
                                 {
                                     foreach (var item in ViewBag.EmpList)
                                     {
-                                       <option value='@item.Value'>@item.Text</option>
+                                        <option value='@item.Value'>@item.Text</option>
                                     }
                                 }
                             </select>
@@ -216,6 +215,35 @@
                 <tr class="row">
                     <td class="col-xs-3 col-md-2">
                         <div class="editor-label">
+                            Type of issue
+                        </div>
+                    </td>
+                    <td class="col" style="font-size:12px;">
+                        <div class="editor-field">
+                            @if (Model.Issue != null && Model.Issue != "")
+                            {
+                                <label><input type="radio" id="issue_type" name="issue_type" value="new" checked onchange="GetIssueType()" />New</label>
+                                <label><input type="radio" id="issue_type" name="issue_type" value="old" onchange="GetIssueType()" />Old</label>
+                            }
+                            else if (Model.Repet_Issue != null && Model.Repet_Issue != "")
+                            {
+                                <label><input type="radio" id="issue_type" name="issue_type" value="new" onchange="GetIssueType()" />New</label>
+                                <label><input type="radio" id="issue_type" name="issue_type" value="old" checked onchange="GetIssueType()" />Old</label>
+                            }
+                           else
+                            {
+                                <label><input type="radio" id="issue_type" name="issue_type" value="new" onchange="GetIssueType()" />New</label>
+                                <label><input type="radio" id="issue_type" name="issue_type" value="old" onchange="GetIssueType()" />Old</label>
+                            }
+                        </div>
+                    </td>
+                </tr>
+
+            </table>
+            <table class="table" id="Divnewissue" style="display:none">
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <div class="editor-label">
                             @Html.LabelFor(model => model.Issue)<text style="color: red;">*</text>
                         </div>
                     </td>
@@ -254,6 +282,8 @@
                         </div>
                     </td>
                 </tr>
+            </table>
+            <table class="table" id="Divoldissue" style="display:none">
                 <tr class="row">
                     <td class="col-xs-3 col-md-2">
                         <div class="editor-label">
@@ -288,6 +318,8 @@
                         </div>
                     </td>
                 </tr>
+            </table>
+            <table class="table">
                 <tr class="row">
                     <td class="col-xs-3 col-md-2">
                         <div class="editor-label">
@@ -498,6 +530,7 @@
         <script>
             $(document).ready(function () {
                 GetRepeatissueDetail();
+                GetIssueTypeEdit();
             });
             function FileFormatValidation(file) {
                 var ext = file.value.split(".").pop().toLowerCase();
@@ -734,6 +767,36 @@
             }
         }
 
+
+            function GetIssueType() {
+                var issue_type = $("input[name='issue_type']:checked").val();
+
+                if (issue_type == "new") {
+                    $("#Divnewissue").show();
+                    $("#Divoldissue").hide();
+                    $("#Repet_Issue").val('').trigger("chosen:updated");                   
+                }
+                else {
+                    $("#Divnewissue").hide();
+                    $("#Divoldissue").show();
+                    document.getElementById("Issue").value = "";
+                    $("#Effect").val('').trigger("chosen:updated");                  
+                }
+            }
+
+            function GetIssueTypeEdit() {
+                var Issue = $("#Issue").val();
+                var Repet_Issue = $("#Repet_Issue").val();
+
+                if (Issue != null && Issue != "") {
+                    $("#Divnewissue").show();
+                    $("#Divoldissue").hide();                   
+                }
+                else if (Repet_Issue != null && Repet_Issue != "") {
+                    $("#Divnewissue").hide();
+                    $("#Divoldissue").show();                   
+                }
+            }
         </script>
         @Scripts.Render("~/bundles/jqueryval")
     }

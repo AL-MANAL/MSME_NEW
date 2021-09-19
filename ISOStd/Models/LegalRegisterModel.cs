@@ -195,7 +195,7 @@ namespace ISOStd.Models
         [Display(Name = "URL")]
         public string url { get; set; }
 
-        [Display(Name = "Evaluation Date")]
+        [Display(Name = "Issue Date")]
         public DateTime Eve_Date { get; set; }
 
         [Display(Name = "Revision Date")]
@@ -219,6 +219,21 @@ namespace ISOStd.Models
         [Display(Name = "Location")]
         public string Location { get; set; }
 
+        [Display(Name = "Law Issued Authority ")]
+        public string law_issue_authority { get; set; }
+
+        [Display(Name = "Law Issued By ")]
+        public string law_issued_by { get; set; }
+
+        [Display(Name = "Law Relevant to")]
+        public string law_relevant_to { get; set; }
+
+        [Display(Name = "Frequency Of Evaluation")]
+        public string frequency_eval { get; set; }
+
+        [Display(Name = "Notified To")]
+        public string notified_to { get; set; }
+
         internal bool FunDeleteComplianceDoc(string sid_law)
         {
             try
@@ -237,7 +252,8 @@ namespace ISOStd.Models
         {
             try
             {
-                string sSqlstmt = "insert into t_compliance_obligation (lawNo,Isostd,lawTitle,deptid,compliance,upload,url,Revision_No,requirement,description,branch,Location";
+                string sSqlstmt = "insert into t_compliance_obligation (lawNo,Isostd,lawTitle,deptid,compliance,upload,url,Revision_No,requirement," +
+                    "description,branch,Location,law_issue_authority,law_issued_by,law_relevant_to,frequency_eval,notified_to";
                // string sBranch = objGlobalData.GetCurrentUserSession().division;
                 string sFields = "", sFieldValue = "";
                 if (objComp.Eve_Date != null && objComp.Eve_Date > Convert.ToDateTime("01/01/0001 00:00:00"))
@@ -259,7 +275,8 @@ namespace ISOStd.Models
                 sSqlstmt = sSqlstmt + sFields;
                 sSqlstmt = sSqlstmt + ")values('" + objComp.lawNo + "','" + objComp.Isostd + "','" + objComp.lawTitle + "'"
                     + ",'" + objComp.deptid + "','" + objComp.compliance + "','" + objComp.upload + "','" + objComp.url + "','"
-                    + objComp.Revision_No + "','" + objComp.requirement + "','" + objComp.description + "','" + objComp.branch + "','" + objComp.Location + "'";
+                    + objComp.Revision_No + "','" + objComp.requirement + "','" + objComp.description + "','" + objComp.branch 
+                    + "','" + objComp.Location + "','" + objComp.law_issue_authority + "','" + objComp.law_issued_by + "','" + objComp.law_relevant_to + "','" + objComp.frequency_eval + "','" + objComp.notified_to + "'";
                 sSqlstmt = sSqlstmt + sFieldValue + ")";
 
                 if (objGlobalData.ExecuteQuery(sSqlstmt))
@@ -280,7 +297,8 @@ namespace ISOStd.Models
             {
                 string sSqlstmt = "update t_compliance_obligation set lawNo ='" + objComp.lawNo + "', Isostd='" + objComp.Isostd + "', "
                     + "lawTitle='" + objComp.lawTitle + "',deptid='" + objComp.deptid + "',compliance='" + objComp.compliance + "',upload='" + objComp.upload + "',url='" + objComp.url + "',Revision_No='" + objComp.Revision_No + "'"
-                    + ",requirement='" + objComp.requirement + "',description='" + objComp.description + "',branch='" + objComp.branch + "',Location='" + objComp.Location + "'";
+                    + ",requirement='" + objComp.requirement + "',description='" + objComp.description + "',branch='" + objComp.branch + "',Location='" + objComp.Location + "'"
+                    + ",law_issue_authority='" + objComp.law_issue_authority + "',law_issued_by='" + objComp.law_issued_by + "',law_relevant_to='" + objComp.law_relevant_to + "',frequency_eval='" + objComp.frequency_eval + "',notified_to='" + objComp.notified_to + "'";
 
                 if (objComp.Eve_Date != null && objComp.Eve_Date > Convert.ToDateTime("01/01/0001 00:00:00"))
                 {

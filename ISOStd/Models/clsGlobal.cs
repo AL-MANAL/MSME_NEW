@@ -11298,6 +11298,7 @@ namespace ISOStd.Models
             
             switch(sType)
             {
+                case "Issue Frequency Evaluation": return new string[] { "Quarterly", "Semi Annually", "Yearly" };
                 case "IssueImpact": return new string[] { "Low", "Moderate", "High","Extreme" };
                 case "KPIUnit": return new string[] { "Number", "Each", "%" };
                 case "NC-RootCause": return new string[] { "Completely", "Partially", "No" };

@@ -30,19 +30,19 @@
             </div>
 
             @*<div class="header-elements d-none">
-                <div class="breadcrumb justify-content-center">
-                    <div class="breadcrumb-elements-item dropdown p-0">
-                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
-                            <i class="icon-gear mr-2"></i>
-                            Settings
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right">
-                            <div class="dropdown-divider"></div>
-                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                    <div class="breadcrumb justify-content-center">
+                        <div class="breadcrumb-elements-item dropdown p-0">
+                            <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                                <i class="icon-gear mr-2"></i>
+                                Settings
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <div class="dropdown-divider"></div>
+                                <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>*@
+                </div>*@
         </div>
     </div>
 }
@@ -120,7 +120,7 @@
                                         {
                                             foreach (var item in ViewBag.Location)
                                             {
-                                                if (Array.IndexOf(Model.location.ToString().Split(','), item.Value) >= 0)
+                                                if (item.Value == Model.location)
                                                 {
                                                     <option value='@item.Value' selected>@item.Text</option>
                                                 }
@@ -136,11 +136,11 @@
                         </tr>
                         <tr class="row">
                             <td class="col-xs-3 col-md-2">
-                                @Html.DisplayNameFor(model => model.risk_no)<text style="color: red;">*</text>
+                                @Html.DisplayNameFor(model => model.risk_no)
                             </td>
                             <td class="col">
                                 <div class="editor-field">
-                                    <select class="form-control-select3" data-fouc id="risk_no" name="risk_no" onchange="GetRiskDetails()" required>
+                                    <select class="form-control-select3" data-fouc id="risk_no" name="risk_no" onchange="GetRiskDetails()">
                                         <option value='' hidden>Select</option>
                                         @if (ViewBag.RiskNo != null)
                                         {
@@ -161,7 +161,7 @@
                             </td>
                             <td class="col-xs-3 col-md-2">
                                 <div class="editor-label">
-                                   Risk Description
+                                    Risk Description
                                 </div>
                             </td>
                             <td class="col" colspan="3">
@@ -206,7 +206,7 @@
                                 </div>
                             </td>
                         </tr>
-                    </table>                    
+                    </table>
                     <div id="reportedbydiv" style="display:none">
                         <div class="card-body">
                             <input type="hidden" id="itemcnt" name="itemcnt" value="0" />
@@ -233,33 +233,28 @@
                                     @Html.DisplayNameFor(model => model.identified_in)<text style="color: red;">*</text>
                                 </div>
                             </td>
-                            <td class="col">
+                            <td class="font-size-lg">
                                 <div class="editor-field">
                                     <select class="form-control-select3" data-fouc id="identified_in" name="identified_in">
                                         <option value='' hidden>Select</option>
                                         @if (ViewBag.Identified != null)
                                         {
-                                            foreach (var item in ViewBag.Identified)
-                                            {
-                                                //if (item.Value == Model.identified_in)
-                                                //{
-                                                    <option value='@item.Value'>@item.Text</option>
-                                                //}
-                                                //else
-                                                //{
-                                                //    <option value='@item.Value'>@item.Text</option>
-                                                //}
-                                            }
+                                        foreach (var item in ViewBag.Identified)
+                                        {
+                                        //if (item.Value == Model.identified_in)
+                                        //{
+                                        <option value='@item.Value'>@item.Text</option>
+                                        //}
+                                        //else
+                                        //{
+                                        //    <option value='@item.Value'>@item.Text</option>
+                                        //}
+                                        }
                                         }
                                     </select>
                                 </div>
                             </td>
-                            <td class="col-xs-3 col-md-2">
-                                @Html.DisplayNameFor(model => model.target_date)<text style="color: red;">*</text>
-                            </td>
-                            <td class="col">
-                                <input type="date" class="form-control" name="target_date" id="target_date" required />
-                            </td>
+                           
                         </tr>
                         <tr class="row">
                             <td class="col-xs-3 col-md-2">
@@ -274,7 +269,7 @@
                             </td>
                             <td class="col-xs-3 col-md-2">
                                 <div class="editor-label">
-                                   @Html.DisplayNameFor(model => model.improvement)
+                                    @Html.DisplayNameFor(model => model.improvement)
                                 </div>
                             </td>
                             <td class="col" colspan="3">
@@ -284,6 +279,13 @@
                             </td>
                         </tr>
                         <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.DisplayNameFor(model => model.target_date)<text style="color: red;">*</text>
+                            </td>
+                            <td class="col">
+                                <input type="date" class="form-control" name="target_date" id="target_date" required />
+                            </td>
+                            
                             <td class="col-xs-3 col-md-2">
                                 @Html.DisplayNameFor(model => model.approvedby)
                             </td>
@@ -302,7 +304,26 @@
                                 </div>
                             </td>
                         </tr>
-                    </table>                    
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.DisplayNameFor(model => model.pers_resp)<text style="color: red;">*</text>
+                            </td>
+                            <td class="col-xs-6 col-md-4">
+                                <div class="editor-field">
+                                    <select class="form-control-select3" data-fouc id="pers_resp" name="pers_resp" required>
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.EmpList != null)
+                                        {
+                                            foreach (var item in ViewBag.EmpList)
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
                     <div id="notifiedtodiv" style="display:none">
                         <div class="card-body">
                             <input type="hidden" id="itemcnt1" name="itemcnt1" value="0" />
@@ -361,12 +382,12 @@
     }
          GetReportedByDetails();
          GetRiskDetails();
-         
+
         });
 
         var showClass = 'is-visible';
         var hideClass = 'invisible';
-    
+
         //$('.form-check-input-styled').uniform();
         function FileFormatValidation(file) {
             var ext = file.value.split(".").pop().toLowerCase();
@@ -377,7 +398,7 @@
                     message: 'Invalid file format, please upload only doc, pdf, docx, xls, xls,jpg, jpeg, gif, png format'
                 });
             }
-        }       
+        }
 
         function GetReportedByDetails() {
             var reportedby = $('#reportedby').val();
@@ -437,7 +458,7 @@
                 });
             }
         }
-        
+
 
         function GetApprovedByDetails() {
             var approvedby = $('#approvedby').val();
@@ -508,7 +529,7 @@
             updateDeptnlocation(svalue, "location", "location");
             updateDeptnlocation(svalue, "department", "department");
         }
-     
+
         //function GetEmployeeList() {
         //    var sbranch = $.map($("#division option:selected"), function (el, i) {
         //        return $(el).val();
@@ -533,7 +554,7 @@
             var row = btn.parentNode.parentNode;
             row.parentNode.removeChild(row);
         }
-        
+
         function GetRiskDetails() {
             var risk_id = $("#risk_no").val();
               jQuery.ajax({
@@ -542,7 +563,7 @@
                 dataType: "json",
                   data: { 'srisk_id': risk_id },
                 success: function (result) {
-                    document.getElementById("risk").value = result;          
+                    document.getElementById("risk").value = result;
                 }
             });
         }

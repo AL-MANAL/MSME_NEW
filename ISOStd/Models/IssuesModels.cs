@@ -24,7 +24,7 @@ namespace ISOStd.Models
         public string Issue_refno { get; set; }
         
         [Required]
-        [Display(Name = "New Issue")]
+        [Display(Name = "Issue")]
         public string Issue { get; set; }
 
         [Required]
@@ -75,6 +75,19 @@ namespace ISOStd.Models
         [Display(Name = "Repetitive Issue")]
         public string Repet_Issue { get; set; }
         public string Repet_Issue_detail { get; set; }
+
+        [Display(Name = "Status")]
+        public string issue_status { get; set; }
+
+        [Display(Name = "Status updated on")]
+        public DateTime status_date { get; set; }
+
+        [Display(Name = "Action taken")]
+        public string action_taken { get; set; }
+
+        [Display(Name = "Notified To")]
+        public string status_notifiedto { get; set; }
+
 
         internal bool CheckForIssueRefNoExists(string sIssue_refno)
         {
@@ -303,6 +316,27 @@ namespace ISOStd.Models
             catch (Exception ex)
             {
                 objGlobalData.AddFunctionalLog("Exception in FunUpdateIssues: " + ex.ToString());
+            }
+            return false;
+        }
+
+        //status update
+        internal bool FunUpdateStatus(IssuesModels objIssue)
+        {
+            try
+            {
+
+                string sSqlstmt = "update t_issues set issue_status='" + issue_status + "',action_taken='" + action_taken + "',status_notifiedto='" + status_notifiedto + "'";
+                if (objIssue.status_date != null && objIssue.status_date > Convert.ToDateTime("01/01/0001 00:00:00"))
+                {
+                    sSqlstmt = sSqlstmt + ",status_date='" + objIssue.status_date.ToString("yyyy/MM/dd") + "'";
+                }
+                sSqlstmt = sSqlstmt + " where id_issue='" + objIssue.id_issue + "'";
+                return objGlobalData.ExecuteQuery(sSqlstmt);
+            }
+            catch (Exception ex)
+            {
+                objGlobalData.AddFunctionalLog("Exception in FunUpdateStatus: " + ex.ToString());
             }
             return false;
         }

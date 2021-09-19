@@ -34,18 +34,28 @@ namespace ISOStd.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public ActionResult AddRisk()
+        public ActionResult AddRisk(string id_issue)
         {
-            return InitilizeAddRisk();
+            return InitilizeAddRisk(id_issue);
         }
        
        
          
-        private ActionResult InitilizeAddRisk()
+        private ActionResult InitilizeAddRisk(string id_issue)
         {
             RiskMgmtModels objRisk = new RiskMgmtModels();
             try
             {
+                if (id_issue != "" && id_issue != null)
+                {
+                    ViewBag.Issue = objRisk.GetIsssuesNo(id_issue);
+                    objRisk.Issue = id_issue;
+                }
+                else
+                {
+                    ViewBag.Issue = objRisk.GetIsssuesNo();
+                }
+
                 objRisk.branch_id = objGlobaldata.GetCurrentUserSession().division;
                 objRisk.dept = objGlobaldata.GetCurrentUserSession().DeptID;
                 objRisk.Location = objGlobaldata.GetCurrentUserSession().Work_Location;
@@ -62,7 +72,7 @@ namespace ISOStd.Controllers
                 ViewBag.impact_id = objGlobaldata.GetDropdownList("Risk-Severity");
                 ViewBag.like_id = objGlobaldata.GetDropdownList("Risk-likelihood");                
                 ViewBag.Risk_Type = objGlobaldata.GetConstantValue("Impact");
-                ViewBag.Issue = objRisk.GetIsssuesNo();
+                //ViewBag.Issue = objRisk.GetIsssuesNo();
                 ViewBag.Department = objGlobaldata.GetDepartmentListbox(objRisk.branch_id);
                 ViewBag.Location = objGlobaldata.GetDivisionLocationList(objRisk.branch_id);
 

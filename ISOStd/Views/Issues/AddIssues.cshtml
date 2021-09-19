@@ -97,29 +97,6 @@
                         </td>
 
                         <td class="col-xs-1 col-md-1">
-                            Location<text style="color:red;">*</text>
-                        </td>
-                        <td class="col">
-                            <select class="form-control select-fixed-multiple" data-fouc id="Location" name="Location" @*multiple="multiple"*@ required>
-                                @if (ViewBag.Location != null)
-                                {
-                                    foreach (var item in ViewBag.Location)
-                                    {
-                                        if (Array.IndexOf(Model.Location.ToString().Split(','), item.Value) >= 0)
-                                        {
-                                            <option value='@item.Value' selected>@item.Text</option>
-                                        }
-                                        else
-                                        {
-                                            <option value='@item.Value'>@item.Text</option>
-                                        }
-                                    }
-                                }
-                            </select>
-                            <br />
-                            @Html.ValidationMessageFor(m => m.Location)
-                        </td>
-                        <td class="col-xs-1 col-md-1">
                             Department<text style="color:red;">*</text>
                         </td>
                         <td class="col">
@@ -143,6 +120,32 @@
                                 </select>
                             </div>
                         </td>
+
+                        <td class="col-xs-1 col-md-1">
+                            Location<text style="color:red;">*</text>
+                        </td>
+                        <td class="col">
+                            <select class="form-control select-fixed-multiple" data-fouc id="Location" name="Location" @*multiple="multiple"*@ required>
+                                @if (ViewBag.Location != null)
+                                {
+                                    foreach (var item in ViewBag.Location)
+                                    {
+                                        if (Array.IndexOf(Model.Location.ToString().Split(','), item.Value) >= 0)
+                                        {
+                                            <option value='@item.Value' selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                            <br />
+                            @Html.ValidationMessageFor(m => m.Location)
+                        </td>
+
+
                     </tr>
                     <tr class="row">
                         <td class="col-xs-3 col-md-2">
@@ -152,7 +155,7 @@
                         </td>
                         <td class="col">
                             <div class="editor-field">
-                                <input type="date" class="form-control" id="issue_date" name="issue_date" required />
+                                <input type="date" class="form-control" id="issue_date" name="issue_date" value="@DateTime.Now.ToString("yyyy-MM-dd")" required />
                             </div>
                         </td>
                         <td class="col-xs-3 col-md-2">
@@ -189,12 +192,28 @@
                                     <th>Location</th>
                                     <th>Department</th>
                                     <th>Email</th>
-                                </tr>                              
+                                </tr>
                             </table>
                         </div>
                     </div>
                 </div>
                 <table class="table table-lg">
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                Type of issue
+                            </div>
+                        </td>
+                        <td class="col" style="font-size:12px;">
+                            <div class="editor-field">
+                                <input type="radio" id="issue_type" name="issue_type" value="new" onchange="GetIssueType()" />New
+                                <input type="radio" id="issue_type" name="issue_type" value="old" onchange="GetIssueType()" />Old
+                            </div>
+                        </td>
+                    </tr>
+
+                </table>
+                <table class="table" id="Divnewissue" style="display:none">
                     <tr class="row">
                         <td class="col-xs-3 col-md-2">
                             <div class="editor-label">
@@ -228,6 +247,8 @@
                             </div>
                         </td>
                     </tr>
+                </table>
+                <table class="table" id="Divoldissue" style="display:none">
                     <tr class="row">
                         <td class="col-xs-3 col-md-2">
                             <div class="editor-label">
@@ -254,6 +275,8 @@
                             </div>
                         </td>
                     </tr>
+                </table>
+                <table class="table">
                     <tr class="row">
                         <td class="col-xs-3 col-md-2">
                             <div class="editor-label">
@@ -630,7 +653,22 @@
             }
         }
 
-        
+        function GetIssueType() {
+            var issue_type = $("input[name='issue_type']:checked").val();
+           
+            if (issue_type == "new") {
+                $("#Divnewissue").show();
+                $("#Divoldissue").hide();
+                $("#Repet_Issue").val('').trigger("chosen:updated");
+            }
+            else {
+                $("#Divnewissue").hide();
+                $("#Divoldissue").show();
+                document.getElementById("Issue").value = "";
+                $("#Effect").val('').trigger("chosen:updated");
+               
+            }
+        }
 
     </script>
     @Scripts.Render("~/bundles/jqueryval")

@@ -132,13 +132,13 @@
                                 @Html.DisplayNameFor(model => model.First().lawTitle)
                             </th>
                             <th>
-                                @Html.DisplayNameFor(model => model.First().compliance)
+                                @Html.DisplayNameFor(model => model.First().law_issue_authority)
                             </th>
                             <th>
                                 @Html.DisplayNameFor(model => model.First().Eve_Date)
                             </th>
                             <th>
-                                @Html.DisplayNameFor(model => model.First().Revision_Date)
+                                Due date for evaluation
                             </th>
                             <th>
                                 @Html.DisplayNameFor(model => model.First().Revision_No)
@@ -146,17 +146,16 @@
                             <th>
                                 @Html.DisplayNameFor(model => model.First().url)
                             </th>
-                            <th>
-                                @Html.DisplayNameFor(model => model.First().branch)
-                            </th>
-                            <th>
-                                @Html.DisplayNameFor(model => model.First().deptid)
-                            </th>
-                            <th>
-                                @Html.DisplayNameFor(model => model.First().Location)
-                            </th>
-                            @*<th class="not-export-column">Edit</th>
-                            <th class="not-export-column">Delete</th>*@
+                            @*<th>
+            @Html.DisplayNameFor(model => model.First().branch)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.First().deptid)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.First().Location)
+        </th>*@
+
                             <th data-priority="2" class="text-center not-export-column">Actions</th>
 
 
@@ -180,7 +179,7 @@
                                 @Html.DisplayFor(modelItem => item.lawTitle)
                             </td>
                             <td>
-                                @Html.DisplayFor(modelItem => item.compliance)
+                                @Html.DisplayFor(modelItem => item.law_issue_authority)
                             </td>
                             <td>
                                 @if (item.Eve_Date != null && item.Eve_Date > Convert.ToDateTime("01/01/0001"))
@@ -204,7 +203,7 @@
                                     @Html.DisplayFor(modelItem => item.url)
                                 </a>
                             </td>
-                            <td>
+                            @*<td>
                                 @Html.DisplayFor(modelItem => item.branch)
                             </td>
                             <td>
@@ -212,7 +211,7 @@
                             </td>
                             <td>
                                 @Html.DisplayFor(modelItem => item.Location)
-                            </td>
+                            </td>*@
                             <td class="text-center">
                                 <div class="list-icons">
                                     <div class="list-icons-item dropdown">
@@ -634,26 +633,17 @@
 
           function getDetails() {
                 var branch_name = document.getElementById("branch_name").value;
+              var params = {
+                  branch_name: branch_name
+              };
+              queryString = $.param(params);
 
-                   jQuery.ajax({
-                                url: '@Url.Action("ComplianceListSearch", "LegalRegister")',
-                        type: 'POST',
-                        dataType: "json",
-                        data: { 'branch_name': branch_name },
-                        success: function (result) {
-                            var params = {
-                                branch_name: branch_name
-                            };
-                            queryString = $.param(params);
-
-                            window.location.href =
-                                window.location.protocol + "//" +
-                                window.location.host +
-                                window.location.pathname +
-                               '?' + queryString;
-
-                        }
-                    });  
+              window.location.href =
+                  window.location.protocol + "//" +
+                  window.location.host +
+                  window.location.pathname +
+                  '?' + queryString;
+                   
             }
                 </script>
 

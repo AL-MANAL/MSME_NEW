@@ -50,6 +50,11 @@ namespace ISOStd.Controllers
                 ViewBag.Branch = objGlobaldata.GetCompanyBranchListbox();
                 ViewBag.Department = objGlobaldata.GetDepartmentListbox(ObjMdl.branch);
                 ViewBag.Location = objGlobaldata.GetDivisionLocationList(ObjMdl.branch);
+                ViewBag.LawRelevantTo= objGlobaldata.GetDropdownList("Law Relevant To");
+                ViewBag.LawIssuedBy = objGlobaldata.GetDropdownList("Law Issued By");
+                ViewBag.LawIssueAuthority = objGlobaldata.GetDropdownList("Law Issue Authority");
+                ViewBag.FrequencyEval = objGlobaldata.GetConstantValue("Issue Frequency Evaluation");
+                ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
             }
             catch (Exception ex)
             {
@@ -83,6 +88,20 @@ namespace ISOStd.Controllers
                 {
                     objComp.nexteval_date = dateValue;
                 }
+
+                //notified_to
+                for (int i = 0; i < Convert.ToInt16(form["itemcnt1"]); i++)
+                {
+                    if (form["nempno " + i] != "" && form["nempno " + i] != null)
+                    {
+                        objComp.notified_to = form["nempno " + i] + "," + objComp.notified_to;
+                    }
+                }
+                if (objComp.notified_to != null)
+                {
+                    objComp.notified_to = objComp.notified_to.Trim(',');
+                }
+
                 HttpPostedFileBase files = Request.Files[0];
                 if (upload != null && files.ContentLength > 0)
                 {
@@ -143,7 +162,7 @@ namespace ISOStd.Controllers
                 string sSearchtext = "";
 
                 string sSqlstmt = "select id_law,lawNo,Isostd,lawTitle,deptid,compliance,upload,url," +
-                    "Eve_date,Revision_Date,Revision_No,branch,Location from t_compliance_obligation where Active=1";
+                    "Eve_date,Revision_Date,Revision_No,branch,Location,law_issue_authority,law_issued_by,law_relevant_to,frequency_eval,notified_to from t_compliance_obligation where Active=1";
             
                 if (branch_name != null && branch_name != "")
                 {
@@ -177,6 +196,11 @@ namespace ISOStd.Controllers
                                 Revision_No = dsComplList.Tables[0].Rows[i]["Revision_No"].ToString(),
                                 branch = objGlobaldata.GetMultiCompanyBranchNameById(dsComplList.Tables[0].Rows[i]["branch"].ToString()),
                                 Location = objGlobaldata.GetDivisionLocationById(dsComplList.Tables[0].Rows[i]["Location"].ToString()),
+                                law_issue_authority = objGlobaldata.GetDropdownitemById(dsComplList.Tables[0].Rows[i]["law_issue_authority"].ToString()),
+                                law_issued_by = objGlobaldata.GetDropdownitemById(dsComplList.Tables[0].Rows[i]["law_issued_by"].ToString()),
+                                law_relevant_to = objGlobaldata.GetDropdownitemById(dsComplList.Tables[0].Rows[i]["law_relevant_to"].ToString()),
+                                frequency_eval = dsComplList.Tables[0].Rows[i]["frequency_eval"].ToString(),
+                                notified_to = objGlobaldata.GetMultiHrEmpNameById(dsComplList.Tables[0].Rows[i]["notified_to"].ToString()),
                             };
 
                             DateTime dtDocDate;
@@ -186,12 +210,24 @@ namespace ISOStd.Controllers
                                 objLegalModels.Eve_Date = dtDocDate;
                             }
 
-                            if (dsComplList.Tables[0].Rows[i]["Revision_Date"].ToString() != ""
-                               && DateTime.TryParse(dsComplList.Tables[0].Rows[i]["Revision_Date"].ToString(), out dtDocDate))
-                            {
-                                objLegalModels.Revision_Date = dtDocDate;
-                            }
+                            //if (dsComplList.Tables[0].Rows[i]["Revision_Date"].ToString() != ""
+                            //   && DateTime.TryParse(dsComplList.Tables[0].Rows[i]["Revision_Date"].ToString(), out dtDocDate))
+                            //{
+                            //    objLegalModels.Revision_Date = dtDocDate;
+                            //}
 
+                            if(objLegalModels.frequency_eval == "Quarterly")
+                            {
+                                objLegalModels.Revision_Date = objLegalModels.Eve_Date.AddMonths(3);
+                            }
+                            else if(objLegalModels.frequency_eval == "Semi Annually")
+                            {
+                                objLegalModels.Revision_Date = objLegalModels.Eve_Date.AddMonths(6);
+                            }
+                            if (objLegalModels.frequency_eval == "Yearly")
+                            {
+                                objLegalModels.Revision_Date = objLegalModels.Eve_Date.AddMonths(12);
+                            }
                             objCom.LegalRegisterMList.Add(objLegalModels);
                         }
                         catch (Exception ex)
@@ -210,87 +246,7 @@ namespace ISOStd.Controllers
             return View(objCom.LegalRegisterMList.ToList());
         }
 
-        [AllowAnonymous]
-        public JsonResult ComplianceListSearch(FormCollection form, int? page, string branch_name)
-        {
-            ViewBag.SubMenutype = "Compliance";
-
-            LegalRegisterModelsList objCom = new LegalRegisterModelsList();
-            objCom.LegalRegisterMList = new List<LegalRegisterModel>();
-
-            try
-            {
-                string sBranch_name = objGlobaldata.GetCurrentUserSession().division;
-                string sBranchtree = objGlobaldata.GetCurrentUserSession().BranchTree;
-                ViewBag.Branch = objGlobaldata.GetMultiBranchListByID(sBranchtree);
-                string sSearchtext = "";
-
-                string sSqlstmt = "select id_law,lawNo,Isostd,lawTitle,deptid,compliance,upload,url,Eve_date,Revision_Date,Revision_No,branch,Location from t_compliance_obligation where Active=1 ";
-                
-                if (branch_name != null && branch_name != "")
-                {
-                    sSearchtext = sSearchtext + " and find_in_set('" + branch_name + "', branch)";
-                    ViewBag.Branch_name = branch_name;
-                }
-                else
-                {
-                    sSearchtext = sSearchtext + " and find_in_set('" + sBranch_name + "', branch)";
-                }
-
-                sSqlstmt = sSqlstmt + sSearchtext + " order by lawNo";
-                DataSet dsComplList = objGlobaldata.Getdetails(sSqlstmt);
-
-                if (dsComplList.Tables.Count > 0 && dsComplList.Tables[0].Rows.Count > 0)
-                {
-                    for (int i = 0; i < dsComplList.Tables[0].Rows.Count; i++)
-                    {
-                        try
-                        {
-                            LegalRegisterModel objLegalModels = new LegalRegisterModel
-                            {
-                                id_law = (dsComplList.Tables[0].Rows[i]["id_law"].ToString()),
-                                lawNo = dsComplList.Tables[0].Rows[i]["lawNo"].ToString(),
-                                Isostd = objGlobaldata.GetIsoStdDescriptionById(dsComplList.Tables[0].Rows[i]["Isostd"].ToString()),
-                                lawTitle = dsComplList.Tables[0].Rows[i]["lawTitle"].ToString(),
-                                deptid = objGlobaldata.GetMultiDeptNameById(dsComplList.Tables[0].Rows[i]["deptid"].ToString()),
-                                compliance = objGlobaldata.GetDropdownitemById(dsComplList.Tables[0].Rows[i]["compliance"].ToString()),
-                                url = dsComplList.Tables[0].Rows[i]["url"].ToString(),
-                                Revision_No = dsComplList.Tables[0].Rows[i]["Revision_No"].ToString(),
-                                branch = objGlobaldata.GetMultiCompanyBranchNameById(dsComplList.Tables[0].Rows[i]["branch"].ToString()),
-                                Location = objGlobaldata.GetDivisionLocationById(dsComplList.Tables[0].Rows[i]["Location"].ToString()),
-                            };
-
-                            DateTime dtDocDate;
-                            if (dsComplList.Tables[0].Rows[i]["Eve_Date"].ToString() != ""
-                               && DateTime.TryParse(dsComplList.Tables[0].Rows[i]["Eve_Date"].ToString(), out dtDocDate))
-                            {
-                                objLegalModels.Eve_Date = dtDocDate;
-                            }
-
-                            if (dsComplList.Tables[0].Rows[i]["Revision_Date"].ToString() != ""
-                               && DateTime.TryParse(dsComplList.Tables[0].Rows[i]["Revision_Date"].ToString(), out dtDocDate))
-                            {
-                                objLegalModels.Revision_Date = dtDocDate;
-                            }
-
-                            objCom.LegalRegisterMList.Add(objLegalModels);
-                        }
-                        catch (Exception ex)
-                        {
-                            objGlobaldata.AddFunctionalLog("Exception in ComplianceListSearch: " + ex.ToString());
-                            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                objGlobaldata.AddFunctionalLog("Exception in ComplianceListSearch: " + ex.ToString());
-                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-            }
-            return Json("Success");
-        }
-        
+       
         [AllowAnonymous]
         public ActionResult ComplianceEdit()
         {
@@ -310,7 +266,8 @@ namespace ISOStd.Controllers
                 {
                     string sid_law = Request.QueryString["id_law"];
                     string sSqlstmt = "select id_law,lawNo,Isostd,lawTitle,deptid,compliance,upload," +
-                        "url,Eve_Date,Revision_date,Revision_No,requirement,description,nexteval_date,branch,Location from t_compliance_obligation"
+                        "url,Eve_Date,Revision_date,Revision_No,requirement,description,nexteval_date,branch," +
+                        "Location,law_issue_authority,law_issued_by,law_relevant_to,frequency_eval,notified_to from t_compliance_obligation"
                     + " where id_law='" + sid_law + "'";
 
                     DataSet dsComplList = objGlobaldata.Getdetails(sSqlstmt);
@@ -332,12 +289,23 @@ namespace ISOStd.Controllers
                             description = dsComplList.Tables[0].Rows[0]["description"].ToString(),
                             branch = /*objGlobaldata.GetMultiCompanyBranchNameById*/(dsComplList.Tables[0].Rows[0]["branch"].ToString()),
                             Location =/* objGlobaldata.GetDivisionLocationById*/(dsComplList.Tables[0].Rows[0]["Location"].ToString()),
+                            law_issue_authority =/* objGlobaldata.GetDropdownitemById*/(dsComplList.Tables[0].Rows[0]["law_issue_authority"].ToString()),
+                            law_issued_by = /*objGlobaldata.GetDropdownitemById*/(dsComplList.Tables[0].Rows[0]["law_issued_by"].ToString()),
+                            law_relevant_to = /*objGlobaldata.GetDropdownitemById*/(dsComplList.Tables[0].Rows[0]["law_relevant_to"].ToString()),
+                            frequency_eval = dsComplList.Tables[0].Rows[0]["frequency_eval"].ToString(),
+                            notified_to = /*objGlobaldata.GetMultiHrEmpNameById*/(dsComplList.Tables[0].Rows[0]["notified_to"].ToString()),
+
                         };
                         ViewBag.Location = objGlobaldata.GetLocationbyMultiDivision(dsComplList.Tables[0].Rows[0]["branch"].ToString());
                         ViewBag.Department = objGlobaldata.GetDepartmentList1(dsComplList.Tables[0].Rows[0]["branch"].ToString());
                         ViewBag.Compliance = objGlobaldata.GetDropdownList("Compliance");
                         ViewBag.ISOStds = objGlobaldata.GetAllIsoStdListbox();                       
                         ViewBag.Branch = objGlobaldata.GetCompanyBranchListbox();
+                        ViewBag.LawRelevantTo = objGlobaldata.GetDropdownList("Law Relevant To");
+                        ViewBag.LawIssuedBy = objGlobaldata.GetDropdownList("Law Issued By");
+                        ViewBag.LawIssueAuthority = objGlobaldata.GetDropdownList("Law Issue Authority");
+                        ViewBag.FrequencyEval = objGlobaldata.GetConstantValue("Issue Frequency Evaluation");
+                        ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
 
                         DateTime dtDocDate;
                         if (dsComplList.Tables[0].Rows[0]["Eve_Date"].ToString() != ""
@@ -354,6 +322,11 @@ namespace ISOStd.Controllers
                           && DateTime.TryParse(dsComplList.Tables[0].Rows[0]["Revision_Date"].ToString(), out dtDocDate))
                         {
                             objComp.Revision_Date = dtDocDate;
+                        }
+
+                        if (dsComplList.Tables[0].Rows[0]["notified_to"].ToString() != "")
+                        {
+                            ViewBag.notified_Array = (dsComplList.Tables[0].Rows[0]["notified_to"].ToString()).Split(',');
                         }
 
                     }
@@ -402,6 +375,19 @@ namespace ISOStd.Controllers
                 if (DateTime.TryParse(form["Revision_Date"], out dateValue) == true)
                 {
                     objComp.Revision_Date = dateValue;
+                }
+
+                //notified_to
+                for (int i = 0; i < Convert.ToInt16(form["itemcnt1"]); i++)
+                {
+                    if (form["nempno " + i] != "" && form["nempno " + i] != null)
+                    {
+                        objComp.notified_to = form["nempno " + i] + "," + objComp.notified_to;
+                    }
+                }
+                if (objComp.notified_to != null)
+                {
+                    objComp.notified_to = objComp.notified_to.Trim(',');
                 }
 
                 HttpPostedFileBase files = Request.Files[0];
@@ -476,7 +462,8 @@ namespace ISOStd.Controllers
                 {
                     string sid_law = Request.QueryString["id_law"];
                     string sSqlstmt = "select id_law,lawNo,Isostd,lawTitle,deptid,compliance,upload,url,Eve_Date," +
-                        "Revision_Date,Revision_No,requirement,description,nexteval_date,branch,Location from t_compliance_obligation"
+                        "Revision_Date,Revision_No,requirement,description,nexteval_date,branch," +
+                        "Location,law_issue_authority,law_issued_by,law_relevant_to,frequency_eval,notified_to from t_compliance_obligation"
                     + " where id_law='" + sid_law + "'";
 
                     DataSet dsComplList = objGlobaldata.Getdetails(sSqlstmt);
@@ -500,6 +487,12 @@ namespace ISOStd.Controllers
                             description = dsComplList.Tables[0].Rows[0]["description"].ToString(),
                             branch = objGlobaldata.GetMultiCompanyBranchNameById(dsComplList.Tables[0].Rows[0]["branch"].ToString()),
                             Location =objGlobaldata.GetDivisionLocationById(dsComplList.Tables[0].Rows[0]["Location"].ToString()),
+                            law_issue_authority = objGlobaldata.GetDropdownitemById(dsComplList.Tables[0].Rows[0]["law_issue_authority"].ToString()),
+                            law_issued_by = objGlobaldata.GetDropdownitemById(dsComplList.Tables[0].Rows[0]["law_issued_by"].ToString()),
+                            law_relevant_to = objGlobaldata.GetDropdownitemById(dsComplList.Tables[0].Rows[0]["law_relevant_to"].ToString()),
+                            frequency_eval = dsComplList.Tables[0].Rows[0]["frequency_eval"].ToString(),
+                            notified_to = objGlobaldata.GetMultiHrEmpNameById(dsComplList.Tables[0].Rows[0]["notified_to"].ToString()),
+
                         };
 
                         DateTime dtDocDate;
@@ -550,7 +543,7 @@ namespace ISOStd.Controllers
             try
             {
                 string sSqlstmt = "select id_law,lawNo,Isostd,lawTitle,deptid,compliance,upload,url,Eve_Date," +
-                    "Revision_Date,Revision_No,branch,Location from t_compliance_obligation"
+                    "Revision_Date,Revision_No,branch,Location,law_issue_authority,law_issued_by,law_relevant_to,frequency_eval,notified_to from t_compliance_obligation"
                 + " where id_law='" + id + "'";
 
                 DataSet dsComplList = objGlobaldata.Getdetails(sSqlstmt);
@@ -571,6 +564,12 @@ namespace ISOStd.Controllers
                         Revision_No = dsComplList.Tables[0].Rows[0]["Revision_No"].ToString(),
                         branch = objGlobaldata.GetMultiCompanyBranchNameById(dsComplList.Tables[0].Rows[0]["branch"].ToString()),
                         Location = objGlobaldata.GetDivisionLocationById(dsComplList.Tables[0].Rows[0]["Location"].ToString()),
+                        law_issue_authority = objGlobaldata.GetDropdownitemById(dsComplList.Tables[0].Rows[0]["law_issue_authority"].ToString()),
+                        law_issued_by = objGlobaldata.GetDropdownitemById(dsComplList.Tables[0].Rows[0]["law_issued_by"].ToString()),
+                        law_relevant_to = objGlobaldata.GetDropdownitemById(dsComplList.Tables[0].Rows[0]["law_relevant_to"].ToString()),
+                        frequency_eval = dsComplList.Tables[0].Rows[0]["frequency_eval"].ToString(),
+                        notified_to = objGlobaldata.GetMultiHrEmpNameById(dsComplList.Tables[0].Rows[0]["notified_to"].ToString()),
+
                     };
                     DateTime dtDocDate;
                     if (dsComplList.Tables[0].Rows[0]["Eve_Date"].ToString() != ""

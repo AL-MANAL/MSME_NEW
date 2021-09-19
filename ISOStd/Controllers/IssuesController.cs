@@ -677,5 +677,104 @@ namespace ISOStd.Controllers
             return Json("");
         }
 
+        // Status    
+        [AllowAnonymous]
+        public ActionResult StatusUpdate()
+        {
+            IssuesModels objModel = new IssuesModels();
+
+            try
+            {
+
+                if (Request.QueryString["id_issue"] != null && Request.QueryString["id_issue"] != "")
+                {
+                    string id_issue = Request.QueryString["id_issue"];
+
+                    string sSqlstmt = "select id_issue,Issue,IssueType,Effect,Issue_refno,issue_status,action_taken,status_date,status_notifiedto from t_issues where id_issue='" + id_issue + "'";
+
+                    DataSet dsModelsList = objGlobaldata.Getdetails(sSqlstmt);
+
+                    if (dsModelsList.Tables.Count > 0 && dsModelsList.Tables[0].Rows.Count > 0)
+                    {
+
+                        objModel = new IssuesModels
+                        {
+                            id_issue = Convert.ToInt32(dsModelsList.Tables[0].Rows[0]["id_issue"].ToString()),
+                            Issue = dsModelsList.Tables[0].Rows[0]["Issue"].ToString(),
+                            IssueType = dsModelsList.Tables[0].Rows[0]["IssueType"].ToString(),
+                            Effect = objGlobaldata.GetDropdownitemById(dsModelsList.Tables[0].Rows[0]["Effect"].ToString()),
+                            Issue_refno = dsModelsList.Tables[0].Rows[0]["Issue_refno"].ToString(),
+                            issue_status = dsModelsList.Tables[0].Rows[0]["issue_status"].ToString(),
+                            action_taken = dsModelsList.Tables[0].Rows[0]["action_taken"].ToString(),
+                            status_notifiedto = dsModelsList.Tables[0].Rows[0]["status_notifiedto"].ToString(),
+                        };
+                        DateTime dtValue;
+                        if (DateTime.TryParse(dsModelsList.Tables[0].Rows[0]["status_date"].ToString(), out dtValue))
+                        {
+                            objModel.status_date = dtValue;
+                        }
+
+                        if (dsModelsList.Tables[0].Rows[0]["status_notifiedto"].ToString() != "")
+                        {
+                            ViewBag.notified_Array = (dsModelsList.Tables[0].Rows[0]["status_notifiedto"].ToString()).Split(',');
+                        }
+                    }
+                    ViewBag.Status = objGlobaldata.GetDropdownList("Issue Status");
+                    ViewBag.Emplist = objGlobaldata.GetHrEmployeeListbox();
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in StatusUpdate: " + ex.ToString());
+                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+            }
+            return View(objModel);
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public ActionResult StatusUpdate(FormCollection form, IssuesModels obj)
+        {
+            try
+            {
+                DateTime dateValue;
+                obj.issue_status = form["issue_status"];
+                obj.action_taken = form["action_taken"];
+                
+                if (DateTime.TryParse(form["status_date"], out dateValue) == true)
+                {
+                    obj.status_date = dateValue;
+                }
+
+
+                //notified_to
+                for (int i = 0; i < Convert.ToInt16(form["itemcnt1"]); i++)
+                {
+                    if (form["nempno " + i] != "" && form["nempno " + i] != null)
+                    {
+                        obj.status_notifiedto = form["nempno " + i] + "," + obj.status_notifiedto;
+                    }
+                }
+                if (obj.status_notifiedto != null)
+                {
+                    obj.status_notifiedto = obj.status_notifiedto.Trim(',');
+                }
+
+                if (obj.FunUpdateStatus(obj))
+                {
+                    TempData["Successdata"] = "Status updated successfully";
+                }
+                else
+                {
+                    TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in StatusUpdate: " + ex.ToString());
+                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+            }
+            return RedirectToAction("IssuesList");
+        }
     }
 }

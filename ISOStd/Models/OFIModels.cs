@@ -162,6 +162,10 @@ namespace ISOStd.Models
         [Display(Name = "Document(s)")]
         public string realization_upload { get; set; }
 
+        //[Required(ErrorMessage = "Please enter action detail")]
+        [Range(1, 25, ErrorMessage = "Please enter action detail")]
+        public int cntaction { get; set; }
+
         public MultiSelectList GetOFIExpectedImporvementList()
         {
             DropdownNCList NcdropList = new DropdownNCList();
@@ -368,6 +372,7 @@ namespace ISOStd.Models
             return "";
         }
 
+        
         //OFI
         internal bool FunAddReportOFI(OFIModels objModels)//checked
         {
@@ -377,6 +382,11 @@ namespace ISOStd.Models
 
                 string sSqlstmt = "insert into t_ofi ( ofi_no, risk_no, reportedby, division, department, location,identified_in,opportunity,improvement,approvedby,ofi_status,loggedby,pers_resp";
 
+                if (objModels.approvedby == null || objModels.approvedby == "")
+                {
+                    sFields = sFields + ", approved_status";
+                    sFieldValue = sFieldValue + ", 'Approved'";
+                }
                 if (objModels.reported_date != null && objModels.reported_date > Convert.ToDateTime("01/01/0001"))
                 {
                     sFields = sFields + ", reported_date";
@@ -550,6 +560,10 @@ namespace ISOStd.Models
                 string sSqlstmt = "update t_ofi set  action_proposedby='" + objModels.action_proposedby + "', "
                     + "realization_approved_by='" + objModels.realization_approved_by + "'";
 
+                if (objModels.realization_approved_by == null || objModels.realization_approved_by == "")
+                {
+                    sSqlstmt = sSqlstmt + ", realization_approved_status ='Approved'";
+                }
                 //if (objModels.disp_notifeddate != null && objModels.disp_notifeddate > Convert.ToDateTime("01/01/0001"))
                 //{
                 //    sSqlstmt = sSqlstmt + ", disp_notifeddate ='" + objModels.disp_notifeddate.ToString("yyyy/MM/dd") + "'";

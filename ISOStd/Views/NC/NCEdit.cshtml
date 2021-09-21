@@ -99,6 +99,8 @@
         <div class="container-fluid">
             <form class="wizard-form steps-validation-edit" enctype="multipart/form-data" @*action="@Url.Action("AddNC", "NC")"*@ data-fouc id="form1">
                 <input type="hidden" id="id_nc" name="id_nc" value="@Model.id_nc" />
+                <input type="hidden" id="division" name="division" value="@Model.division" />
+                
                 <h6>NC Reporting</h6>
                 <fieldset>
 
@@ -178,33 +180,33 @@
                     </div>
 
                     @* <table class="table table-lg">
-                     <tr class="row">
-                         <td class="col-xs-3 col-md-2">
-                             @Html.DisplayNameFor(model => model.nc_issueto)
-                         </td>
-                          <td class="col-xs-6 col-md-4">
-                    <div class="editor-field">
-                        <select class="form-control-select3" data-fouc id="nc_issueto" name="nc_issueto" onchange="GetIssuedToDetails()">
-                            <option value='' hidden>Select</option>
-                            @if (ViewBag.EmpList != null)
-                            {
-                                foreach (var item in ViewBag.EmpList)
+                         <tr class="row">
+                             <td class="col-xs-3 col-md-2">
+                                 @Html.DisplayNameFor(model => model.nc_issueto)
+                             </td>
+                              <td class="col-xs-6 col-md-4">
+                        <div class="editor-field">
+                            <select class="form-control-select3" data-fouc id="nc_issueto" name="nc_issueto" onchange="GetIssuedToDetails()">
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.EmpList != null)
                                 {
-                                    if (item.Value == Model.nc_issueto)
+                                    foreach (var item in ViewBag.EmpList)
                                     {
-                                        <option value='@item.Value' selected>@item.Text</option>
-                                    }
-                                    else
-                                    {
-                                        <option value='@item.Value'>@item.Text</option>
+                                        if (item.Value == Model.nc_issueto)
+                                        {
+                                            <option value='@item.Value' selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
                                     }
                                 }
-                            }
-                        </select>
-                    </div>
-                </td>
-            </tr>
-        </table>
+                            </select>
+                        </div>
+                    </td>
+                </tr>
+            </table>
                     *@
 
                     <div class="card is-visible" id="issuedtodiv1">
@@ -228,10 +230,10 @@
                                         {
                                             <tr>
                                                 @*<td>
-                                        <span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span>
+                                            <span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span>
 
-                                        <input type='hidden' id='iempno @index' name="iempno @index" value='@IssuedToArray[index]' />
-                                    </td>*@
+                                            <input type='hidden' id='iempno @index' name="iempno @index" value='@IssuedToArray[index]' />
+                                        </td>*@
                                                 <td>
                                                     <input type='hidden' id='iempid @index' name="iempid @index" readonly>@objGlobaldata.GetEmpIDByEmpNo(IssuedToArray[index])
                                                 </td>
@@ -262,76 +264,76 @@
 
                     <table class="table table-lg">
                         @*<tr class="row">
-                <td class="col-xs-3 col-md-2">
-                    @Html.DisplayNameFor(model => model.nc_division)<text style="color: red;">*</text>
-                </td>
-                <td class="col">
-                    <select class="form-control-select3" data-fouc id="nc_division" name="nc_division" onchange="GetDeptList()" required>
-                        @if (ViewBag.Branch != null)
-                        {
-                            foreach (var data in ViewBag.Branch)
+                    <td class="col-xs-3 col-md-2">
+                        @Html.DisplayNameFor(model => model.nc_division)<text style="color: red;">*</text>
+                    </td>
+                    <td class="col">
+                        <select class="form-control-select3" data-fouc id="nc_division" name="nc_division" onchange="GetDeptList()" required>
+                            @if (ViewBag.Branch != null)
                             {
-                                //if (Array.IndexOf(Model.nc_division.ToString().Split(','), data.Value) >= 0)
-                                if (data.Value == Model.nc_division)
+                                foreach (var data in ViewBag.Branch)
                                 {
-                                    <option value='@data.Value' selected>@data.Text</option>
-                                }
-                                else
-                                {
-                                    <option value='@data.Value'>@data.Text</option>
+                                    //if (Array.IndexOf(Model.nc_division.ToString().Split(','), data.Value) >= 0)
+                                    if (data.Value == Model.nc_division)
+                                    {
+                                        <option value='@data.Value' selected>@data.Text</option>
+                                    }
+                                    else
+                                    {
+                                        <option value='@data.Value'>@data.Text</option>
+                                    }
                                 }
                             }
-                        }
-                    </select>
-                </td>
-                <td class="col-xs-3 col-md-2">
-                    @Html.DisplayNameFor(model => model.department)<text style="color: red;">*</text>
-                </td>
-                <td class="col">
-                    <select class="form-control-select3" data-fouc id="department" name="department" multiple="multiple" required>
-                        @if (ViewBag.Department != null)
-                        {
-                            foreach (var data in ViewBag.Department)
+                        </select>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        @Html.DisplayNameFor(model => model.department)<text style="color: red;">*</text>
+                    </td>
+                    <td class="col">
+                        <select class="form-control-select3" data-fouc id="department" name="department" multiple="multiple" required>
+                            @if (ViewBag.Department != null)
                             {
-                                if (Array.IndexOf(Model.department.ToString().Split(','), data.Value) >= 0)
+                                foreach (var data in ViewBag.Department)
                                 {
-                                    <option value='@data.Value' selected>@data.Text</option>
-                                }
-                                else
-                                {
-                                    <option value='@data.Value'>@data.Text</option>
+                                    if (Array.IndexOf(Model.department.ToString().Split(','), data.Value) >= 0)
+                                    {
+                                        <option value='@data.Value' selected>@data.Text</option>
+                                    }
+                                    else
+                                    {
+                                        <option value='@data.Value'>@data.Text</option>
+                                    }
                                 }
                             }
-                        }
-                    </select>
-                </td>
-            </tr>*@
+                        </select>
+                    </td>
+                </tr>*@
                         <tr class="row">
                             @*<td class="col-xs-3 col-md-2">
-            <div class="editor-label">
-                @Html.LabelFor(model => model.location)<text style="color:red;">*</text>
-            </div>
-        </td>
-        <td class="col">
-            <div class="editor-field">
-                <select class="form-control-select3" data-fouc id="location" name="location" multiple="multiple" required>
-                    @if (ViewBag.Location != null)
-                    {
-                        foreach (var item in ViewBag.Location)
-                        {
-                            if (Array.IndexOf(Model.location.ToString().Split(','), item.Value) >= 0)
-                            {
-                                <option value='@item.Value' selected>@item.Text</option>
-                            }
-                            else
-                            {
-                                <option value='@item.Value'>@item.Text</option>
-                            }
-                        }
-                    }
-                </select>
-            </div>
-        </td>*@
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.location)<text style="color:red;">*</text>
+                        </div>
+                    </td>
+                    <td class="col">
+                        <div class="editor-field">
+                            <select class="form-control-select3" data-fouc id="location" name="location" multiple="multiple" required>
+                                @if (ViewBag.Location != null)
+                                {
+                                    foreach (var item in ViewBag.Location)
+                                    {
+                                        if (Array.IndexOf(Model.location.ToString().Split(','), item.Value) >= 0)
+                                        {
+                                            <option value='@item.Value' selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </td>*@
                             <td class="col-xs-3 col-md-2">
                                 @Html.DisplayNameFor(model => model.nc_detected_date)<text style="color: red;">*</text>
                             </td>
@@ -361,7 +363,7 @@
 
                         </tr>
                         <tr class="row">
-                       
+
                             <td class="col-xs-3 col-md-2">
                                 <div class="editor-label">
                                     @Html.DisplayNameFor(model => model.nc_raise_dueto)<text style="color: red;">*</text>
@@ -387,7 +389,7 @@
                                         }
                                     </select>
                                 </div>
-                            </td>                       
+                            </td>
                             <td class="col-xs-3 col-md-2">
                                 <div class="editor-label">
                                     @Html.DisplayNameFor(model => model.nc_description)
@@ -446,7 +448,7 @@
                             <td class="col">
                                 <input type="text" class="form-control" name="nc_related_doc" id="nc_related_doc" />
                                 @*@Html.ValidationMessageFor(model => model.nc_related_doc)
-                                <span class="field-validation-error"><span id="nc_related_doc-message" style="display: none;">Please write Document reference.</span></span>*@
+                        <span class="field-validation-error"><span id="nc_related_doc-message" style="display: none;">Please write Document reference.</span></span>*@
                             </td>
                             <td>
                                 <input type="button" value="Add" class="btn btn-success" onclick="AddNCRelatedDetails()" /> @*<span class="text-primary font-italic">(Please click ADD button to add multiple entries)</span>*@

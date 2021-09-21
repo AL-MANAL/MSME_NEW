@@ -206,7 +206,9 @@
                                     <span class="form-text text-muted"><code>(Hold Ctrl Key in case of multiple files or drag multiple files and drop here)</code></span>
                                     <span class="field-validation-error"><label id="imporve_upload-message" class="validation-invalid-label" style="display:none" for="basic">Upload field is required.</label> </span>
                                 </td>
-                                <td class="col-xs-1 col-md-1">
+                                <td class="col">
+                                    <input type="hidden" id="cntaction" name="cntaction" value="@itemcount" min="1" ErrorMessage="Enter value in specified range" />
+
                                     <img src='@Url.Content("~/images/icon_add.png")' onclick='AddActionInfo()' style='cursor:pointer; padding-right: 5px;' />Add
                                 </td>
                             </tr>
@@ -345,6 +347,8 @@
                                         <span class="field-validation-error"><span id="doc_name-message" style="display: none;" for="basic">Please add Document Name.</span></span>
                                     </td>
                                     <td class="col">
+                                        <input type="hidden" id="cntdoc" name="cntdoc" value="@itemcount1" min="1" ErrorMessage="Enter value in specified range" />
+
                                         <img src='@Url.Content("~/images/icon_add.png")' onclick='AddDocumentInfo()' style='cursor:pointer; padding-right: 5px;' />Add
                                     </td>
                                 </tr>
@@ -378,7 +382,7 @@
                                             {
                                                 <tr>
                                                     <td>
-                                                        <img src='@Url.Content("~/images/cancel.png")' onclick='deleteRow(this)' style='cursor:pointer; padding-right: 5px;' />Remove
+                                                        <img src='@Url.Content("~/images/cancel.png")' onclick='deleteDocRow(this)' style='cursor:pointer; padding-right: 5px;' />Remove
                                                         <input type='hidden' id='id_ofi @index' name="id_ofi @index" value='@ObjOFIDocList.OFIList[index].id_ofi' />
                                                     </td>
                                                     <td>
@@ -769,8 +773,15 @@
         function deleteRow(btn) {
             var row = btn.parentNode.parentNode;
             row.parentNode.removeChild(row);
+            var cnt = document.getElementById("itemcount").value;
+            document.getElementById("cntaction").value = cnt-1;
         }
-
+        function deleteDocRow(btn) {
+            var row = btn.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+            var cnt = document.getElementById("itemcount1").value;
+            document.getElementById("cntdoc").value = cnt-1;
+        }
         function ValidationAction() {
             var validflg = true;
             var ssnMessage = "";
@@ -889,6 +900,7 @@
 
                 cnt++;
                 document.getElementById("itemcount").value = cnt;
+                document.getElementById("cntaction").value = cnt;
                 document.getElementById("improvementdiv").style.display = "block";
                 ResetControl1();
         }
@@ -961,14 +973,14 @@
             var doc_ref = $('#doc_ref').val();
             var doc_name = $('#doc_name').val();
 
-            cell0.innerHTML = " <img src='@Url.Content("~/images/cancel.png")' onclick='deleteRow(this)' style='cursor:pointer; padding-right: 5px;'/>Remove";
+            cell0.innerHTML = " <img src='@Url.Content("~/images/cancel.png")' onclick='deleteDocRow(this)' style='cursor:pointer; padding-right: 5px;'/>Remove";
             cell1.innerHTML = "<input type='hidden' id='doc_type " + cnt + "' name='doc_type " + cnt + "' value='" + doc_type + "'>" + doc_typeText;
             cell2.innerHTML = "<input type='hidden' id='doc_ref " + cnt + "' name='doc_ref " + cnt + "' value='" + doc_ref + "'>" + doc_ref;
             cell3.innerHTML = "<input type='hidden' id='doc_name " + cnt + "' name='doc_name " + cnt + "' value='" + doc_name + "'>" + doc_name;
 
             cnt++;
             document.getElementById("itemcount1").value = cnt;
-
+            document.getElementById("cntdoc").value = cnt;
             document.getElementById("actiondiv").style.display = "block";
             ResetControl();
             }

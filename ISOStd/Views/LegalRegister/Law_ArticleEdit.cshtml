@@ -1,0 +1,601 @@
+﻿@model ISOStd.Models.LegalRegisterModel
+
+@{
+    ViewBag.Title = "Law_ArticleEdit";
+    string[] NotifiedtoArray = new string[0];
+
+    int itemcnts = 0;
+
+    if (ViewBag.notified_Array != null)
+    {
+        NotifiedtoArray = ViewBag.notified_Array;
+        itemcnts = NotifiedtoArray.Length;
+    }
+
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+    ISOStd.Models.LegalRegisterModelsList LRList = new ISOStd.Models.LegalRegisterModelsList();
+    int itemcount = 0;
+
+    if (ViewBag.Law_article != null)
+    {
+        LRList = ViewBag.Law_article;
+        itemcount = LRList.LegalRegisterMList.Count;
+    }
+}
+
+@section featured {
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("ComplianceList", "LegalRegister", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Legal Register</span>
+                    </a>
+                    <span class="breadcrumb-item active">Update Law_Article</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                    <div class="breadcrumb justify-content-center">
+                        <div class="breadcrumb-elements-item dropdown p-0">
+                            <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                                <i class="icon-gear mr-2"></i>
+                                Settings
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <div class="dropdown-divider"></div>
+                                <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>*@
+        </div>
+    </div>
+}
+
+@using (Html.BeginForm("Law_ArticleEdit", "LegalRegister", FormMethod.Post,
+                     new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <input type="hidden" id="id_law" name="id_law" value="@Model.id_law" />
+
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Law Article</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+                <table class="table table-lg">
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.branch)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @Html.DisplayFor(model => model.branch)
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.deptid)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @Html.DisplayFor(model => model.deptid)
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.Eve_date)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @if (Model.Eve_date != null && Model.Eve_date > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    @Html.DisplayFor(model => model.Eve_date)
+                                }
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.Location)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @Html.DisplayFor(model => model.Location)
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-4 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.lawNo)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @Html.DisplayFor(model => model.lawNo)
+                            </div>
+                        </td>
+                        <td class="col-xs-4 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.lawTitle)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @Html.DisplayFor(model => model.lawTitle)
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+                <hr />
+                <div> <b>Law Article Details:</b> </div>
+                <br />
+                <table class="table table-lg" id="table1">
+                    <tbody>
+                        <tr class="row">
+                            <th class="col-xs-6 col-md-3">Article Date</th>
+                            <th class="col">Article Number</th>
+                            <th class="col">Article Details</th>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-6 col-md-3">
+                                <input class="form-control" type='date' id='article_date' name="article_date" />
+                                @Html.ValidationMessageFor(model => model.article_date)
+                                <span class="field-validation-error"><span id="article_date-message" style="display: none;" for="basic">Please select Article Date.</span></span>
+                            </td>
+                            <td class="col">
+                                <input class="form-control" type='text' id='article_no' name="article_no" />
+                                @Html.ValidationMessageFor(model => model.article_no)
+                                <span class="field-validation-error"><span id="article_no-message" style="display: none;" for="basic">Please write Article Number required.</span></span>
+                            </td>
+                            <td class="col">
+                                <input class="form-control" type='text' id='article_detail' name="article_detail" @*onchange="GetVerficationDate1()"*@ />
+                                @Html.ValidationMessageFor(model => model.article_detail)
+
+                                <span class="field-validation-error"><span id="article_detail-message" style="display: none;" for="basic">Please write Article Details.</span></span>
+                            </td>
+                            <td class="col-xs-1 col-md-1">
+                                <img src='@Url.Content("~/images/icon_add.png")' onclick='AddLLInfo()' style='cursor:pointer; padding-right: 5px;' />Add
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <span class="form-text text-muted"><code>Please click Add or Plus button to add N number of Law-Article Details</code></span>
+                <div class="card is-visible" id="hidden_card_count">
+                    <div class="card-header header-elements-inline">
+                        <h5 class="card-title">Law-Article Details</h5>
+                        <div class="header-elements">
+                            <div class="list-icons">
+                                <a class="list-icons-item" data-action="collapse"></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+                        <input type="hidden" id="itemcount" name="itemcount" value="@itemcount" />
+                        <div class="card card-table table-responsive shadow-0 mb-0">
+                            <table class="table" id="team-list-count">
+                                <tr class="bg-blue">
+                                    <th>Action</th>
+                                    <th>Article Date</th>
+                                    <th>Article Number</th>
+                                    <th>Article Details</th>
+                                </tr>
+                                @if (LRList.LegalRegisterMList != null && LRList.LegalRegisterMList.Count > 0)
+                                {
+                                    for (int index = 0; index < LRList.LegalRegisterMList.Count; index++)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <img src='@Url.Content("~/images/cancel.png")' onclick='deleteRow1(@LRList.LegalRegisterMList[index].id_article)' style='cursor:pointer; padding-right: 5px;' />Remove
+                                                <input type='hidden' id='id_article @index' name="id_article @index" value='@LRList.LegalRegisterMList[index].id_article' />
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='article_date @index' name="article_date @index" value='@LRList.LegalRegisterMList[index].article_date.ToString("yyyy-MM-dd")'>@LRList.LegalRegisterMList[index].article_date.ToString("yyyy-MM-dd")
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='article_no @index' name="article_no @index" value='@LRList.LegalRegisterMList[index].article_no'>@LRList.LegalRegisterMList[index].article_no
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='article_detail @index' name="article_detail @index" value='@LRList.LegalRegisterMList[index].article_detail'>@LRList.LegalRegisterMList[index].article_detail
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                @*NotifiedTo*@
+                <table class="table table-lg">
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.article_notified_to)
+                        </td>
+                        <td class="col">
+                            <select class="form-control select-search select2-hidden-accessible" data-fouc id="article_notified_to" name="article_notified_to" onchange="GetNotifiedToDetails()">
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.EmpList != null)
+                                {
+                                    foreach (var item in ViewBag.EmpList)
+                                    {
+                                        <option value='@item.Value'>@item.Text</option>
+                                    }
+                                }
+                            </select>
+                        </td>
+                    </tr>
+                </table>
+
+                <div id="hidden_cards">
+                    <div class="card-body">
+                        <input type="hidden" id="itemcnts" name="itemcnts" value="@itemcnts" />
+
+                        <div class="card card-table table-responsive shadow-0 mb-0">
+                            <table class="table" id="team-lists">
+                                <tr class="bg-blue">
+                                    <th>Action</th>
+                                    <th>Id</th>
+                                    <th>Name</th>
+                                    <th>Division</th>
+                                    <th>Location</th>
+                                    <th>Department</th>
+                                    <th>Email</th>
+                                </tr>
+                                @if (ViewBag.notified_Array != null && NotifiedtoArray != null && NotifiedtoArray.Length > 0)
+                                {
+                                    for (int index = 0; index < NotifiedtoArray.Length; index++)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span>
+                                                <input type='hidden' id='nempno @index' name="nempno @index" value='@NotifiedtoArray[index]' />
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='nempid @index' name="nempid @index" readonly>@Obj.GetEmpIDByEmpNo(NotifiedtoArray[index])
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='nempname @index' name="nempname @index" readonly>@Obj.GetEmpHrNameById(NotifiedtoArray[index])
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='nempdiv @index' name="nempdiv @index" readonly>@Obj.GetCompanyBranchNameById(Obj.GetDivisionIdByHrEmpId(NotifiedtoArray[index]))
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='nemploc @index' name="nemploc @index" readonly>@Obj.GetDivisionLocationById(Obj.GetWorkLocationIdByHrEmpId(NotifiedtoArray[index]))
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='nempdept @index' name="nempdept @index" readonly>@Obj.GetDeptNameById(Obj.GetDeptIdByHrEmpId(NotifiedtoArray[index]))
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='nempemail @index' name="nempemail @index" readonly>@Obj.GetHrEmpEmailIdById(NotifiedtoArray[index])
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+            @Html.ActionLink("Back to List", "ComplianceList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+            <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400" style="display:none" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Add</button>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script>
+
+    $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+
+    });
+
+    var showClass = 'is-visible';
+    var hideClass = 'invisible';
+
+        function FileFormatValidation(file) {
+            var ext = file.value.split(".").pop().toLowerCase();
+            if ($.inArray(ext, ["pdf", "xlsx", "xls", "doc", "docx"]) == -1) {
+                file.value = "";
+                bootbox.alert({
+                    title: 'File type',
+                    message: 'Invalid file format, please upload only doc, pdf, docx, jpg, jpeg, gif, png format'
+                });
+            }
+        }
+
+        function checkDate() {
+
+            var dt1 = document.getElementById("evaluation_date").value;
+            if (new Date(dt1).getTime() > new Date().getTime()) {
+                bootbox.alert({
+                    title: 'Evaluation Date',
+                    message: 'Evaluation cannot be greater then today.'
+                });
+                $('#evaluation_date').val("");
+            }
+        }
+
+
+         //function reformatDate(dateStr) {
+         //    dArr = dateStr.split("-");  // ex input 2010-01-18
+         //    return dArr[2] + "/" + dArr[1] + "/" + dArr[0]; //ex out: 2018/01/10
+         //}
+
+
+    function GetNotifiedToDetails() {
+        var article_notified_to = $('#article_notified_to').val();
+        if (article_notified_to != "" && article_notified_to != null) {
+                jQuery.ajax({
+                    url: '@Url.Action("FunGetEmpDetails", "NC")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'semp_no': article_notified_to },
+                    success: function (result) {
+                        if (result != null) {
+                           
+                            var nempno = $('#article_notified_to option:selected').val();
+                            var nempid = result.emp_id;
+                            var nempname = result.empname;
+                            var nempdiv = result.division;
+                            var nempdept = result.department;
+                            var nemploc = result.location;
+                            var nempemail = result.EmailId;
+
+                            if (nempid != null) {
+                                var cnt = document.getElementById("itemcnts").value;
+
+                                document.getElementById("itemcnts").value = cnt;
+                                // Find a <table> element with id="myTable":
+                                var table = document.getElementById("team-lists");
+
+                                // Create an empty <tr> element and add it to the 1st position of the table:
+                                var row = table.insertRow();
+
+
+                                // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                                var cell0 = row.insertCell(0);
+                                var cell1 = row.insertCell(1);
+                                var cell2 = row.insertCell(2);
+                                var cell3 = row.insertCell(3);
+                                var cell4 = row.insertCell(4);
+                                var cell5 = row.insertCell(5);
+                                var cell6 = row.insertCell(6);
+
+                                cell0.innerHTML = "<span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span> <input type = 'hidden' id = 'nempno " + cnt + "' name = 'nempno " + cnt + "' value = '" + nempno + "'>";
+                                cell1.innerHTML = "<input type='hidden' id='nempid " + cnt + "' name='nempid " + cnt + "' value='" + nempid + "'>" + nempid;
+                                cell2.innerHTML = "<input type='hidden' id='nempname " + cnt + "' name='nempname " + cnt + "' value='" + nempname + "'>" + nempname;
+                                cell3.innerHTML = "<input type='hidden' id='nempdiv " + cnt + "' name='nempdiv " + cnt + "' value='" + nempdiv + "'>" + nempdiv;
+                                cell4.innerHTML = "<input type='hidden' id='nemploc " + cnt + "' name='nemploc " + cnt + "' value='" + nemploc + "'>" + nemploc;
+                                cell5.innerHTML = "<input type='hidden' id='nempdept " + cnt + "' name='nempdept " + cnt + "' value='" + nempdept + "'>" + nempdept;
+                                cell6.innerHTML = "<input type='hidden' id='nempemail " + cnt + "' name='nempemail " + cnt + "' value='" + nempemail + "'>" + nempemail;
+
+                                cnt++;
+                                document.getElementById("itemcnts").value = cnt;
+                              
+                                $("#article_notified_to").val('').trigger('change');
+                            }
+                        }
+                    }
+                });
+            }
+    }
+
+
+  function AddLLInfo() {
+
+        if (Validation() == true) {
+
+            var cnt = document.getElementById("itemcount").value;
+
+            document.getElementById("itemcount").value = cnt;
+            // Find a <table> element with id="myTable":
+            var table = document.getElementById("team-list-count");
+
+            // Create an empty <tr> element and add it to the 1st position of the table:
+            var row = table.insertRow();
+
+            // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+            var cell0 = row.insertCell(0);
+            var cell1 = row.insertCell(1);
+            var cell2 = row.insertCell(2);
+            var cell3 = row.insertCell(3);
+            
+           
+            
+       
+            var article_no = $('#article_no').val();
+            var article_detail = $('#article_detail').val();
+            var article_date = /*reformatDate*/($("#article_date").val());
+            //var ca_resp_person = $('#ca_resp_person').val();
+            //var ca_resp_personText = $("#ca_resp_person option:selected").text();
+
+            cell0.innerHTML = " <img src='@Url.Content("~/images/cancel.png")' onclick='deleteRow1(this)' style='cursor:pointer; padding-right: 5px;'/>Remove";
+            cell1.innerHTML = "<input type='hidden' id='article_date " + cnt + "' name='article_date " + cnt + "' value='" + article_date + "'>" + article_date;
+            cell2.innerHTML = "<input type='hidden' id='article_no " + cnt + "' name='article_no " + cnt + "' value='" + article_no + "'>" + article_no;
+            cell3.innerHTML = "<input type='hidden' id='article_detail " + cnt + "' name='article_detail " + cnt + "' value='" + article_detail + "'>" + article_detail;
+           // cell4.innerHTML = "<input type='hidden' id='ca_resp_person " + cnt + "' name='ca_resp_person " + cnt + "' value='" + ca_resp_person + "'>" + ca_resp_personText;
+
+            cnt++;
+            document.getElementById("itemcount").value = cnt;
+
+            document.getElementById("btnCreate").style.display = "block";
+
+            document.getElementById("hidden_card_count").classList.remove(hideClass);
+            document.getElementById("hidden_card_count").classList.add(showClass);
+            ResetControl();
+            }
+
+        }
+
+        function Validation() {
+            var validflg = true;
+            var ssnMessage = "";
+
+
+            if (document.getElementById("article_date").value == "") {
+                ssnMessage = $('#article_date-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#article_date-message');
+                ssnMessage.hide();
+            }
+
+            if (document.getElementById("article_no").value == "") {
+                ssnMessage = $('#article_no-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#article_no-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("article_detail").value == "") {
+                ssnMessage = $('#article_detail-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#article_detail-message');
+                ssnMessage.hide();
+            }
+            return validflg;
+        }
+
+        function ResetControl() {
+            document.getElementById("article_date").value = "";
+            document.getElementById("article_no").value = "";
+            document.getElementById("article_detail").value = "";
+         /*   $("#ca_resp_person").val('').trigger('change');*/
+        }
+
+        function deleteRow(btn) {
+            var row = btn.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+        }
+
+        function deleteRow1(id_article) {
+            bootbox.confirm({
+                title: 'Confirm dialog',
+                message: 'Are you Sure you want to Delete the current Record?',
+                buttons: {
+                    confirm: {
+                        label: 'Yes',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'Cancel',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (r) {
+                    if (r == true) {
+                    jQuery.ajax({
+                        url: '@Url.Action("ComplianceArticleDelete", "LegalRegister")',
+                        data: { id_article: id_article },
+                        type: 'POST',
+                        dataType: "json",
+                        success: function (result) {
+
+                            var id_law = $("#id_law").val();
+                            var params = {
+                                id_law: id_law
+                            };
+                            queryString = $.param(params);
+                            //// Add new params to the querystring dictionary
+                            window.location.href =
+                                window.location.protocol + "//" +
+                                window.location.host +                              
+                                window.location.pathname +
+                                '?' + queryString;
+                        }
+                    });
+                    return true;
+                }
+                else if (r == false) {
+                        bootbox.hideAll();
+                        return false;
+                    }
+                }
+               });
+        }
+
+
+
+
+        //function GetVerficationDate1() {
+        //    var ca_verfiry_duedate = $("#ca_verfiry_duedate").val();
+        //    var ca_target_date = $("#ca_target_date").val();
+        //    if (ca_verfiry_duedate != null && ca_verfiry_duedate > ("01/01/0001"))
+        //    {
+        //        if (ca_target_date > ca_verfiry_duedate) {
+        //            bootbox.alert({
+        //                title: 'Date',
+        //                message: 'Target date has to be less than Verfication Due date'
+        //            });
+        //            $("#ca_target_date").val('');
+        //        }
+        //    }
+        //}
+
+
+
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
+
+

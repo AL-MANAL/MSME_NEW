@@ -101,6 +101,38 @@
                         <td class="col-xs-3 col-md-4">
                             <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="action_taken" name="action_taken">@Model.action_taken</textarea>
                         </td>
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.status_upload)
+                        </td>
+                        <td class="col">
+                            <input type="file" name="status_upload" id="status_upload" title="Documents" onchange="FileFormatValidation(this)"
+                                   multiple="multiple" accept=".pdf, .doc, .docx,image/*" class="bootstrap-uploader" data-fouc />
+
+                            <span class="form-text text-muted"><code>(Hold Ctrl Key in case of multiple files or drag multiple files and drop here)</code></span>
+                            <br />
+                            @if (Model.status_upload != null && Model.status_upload != "" && Model.status_upload.Length > 0)
+                            {
+                                <h6> <span class="bg-dark py-1 px-2 rounded">Document List</span></h6>
+
+                                <span class="form-text text-muted">
+                                    <code>
+                                        (Uncheck in case to remove a uploaded file)
+                                    </code>
+                                </span>
+                                foreach (var docs in Model.status_upload.Trim(',').Split(','))
+                                {
+                                    <div class="form-check">
+                                        <label class="form-check-label">
+                                            <input type="checkbox" id="QCDocsVal" name="QCDocsVal" class="form-check-input-styled QCDocsVal" value="@docs.Trim(',')" checked title="Uncheck in case to remove a uploaded file" data-fouc />
+                                            <input type="hidden" id="QCDocsValselectall" name="QCDocsValselectall" />
+                                            <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" class="text-orange">
+                                                @System.IO.Path.GetFileName(docs)
+                                            </a>
+                                        </label>
+                                    </div>
+                                }
+                            }
+                        </td>
                     </tr>
                     <tr class="row">
                         <td class="col-xs-3 col-md-2">
@@ -164,6 +196,7 @@
                                 }
                             </select>
                         </td>
+                       
                     </tr>
                 </table>
                 <div id="estdiv" @*style="display:none"*@>
@@ -247,7 +280,31 @@
 
                             }
         });
+        $('.form-check-input-styled').uniform();
 
+        function FileFormatValidation(file) {
+            var ext = file.value.split(".").pop().toLowerCase();
+            if ($.inArray(ext, ["pdf", "xlsx", "xls", "doc", "docx"]) == -1) {
+                file.value = "";
+                bootbox.alert({
+                    title: 'File type',
+                    message: 'Invalid file format, please upload only doc, pdf, docx, jpg, jpeg, gif, png format'
+                });
+            }
+        }
+        $("#QCDocsVal").click(function () {
+            if ($("#QCDocsVal").prop('checked')) {
+                {
+                    $(this).prop('checked', true);
+                }
+            }
+            else {
+
+                $(this).prop('checked', false);
+                document.getElementById("QCDocsValselectall").value = "DeleteQC";
+            }
+
+        });
 
         function GetNotifiedPerson() {
             var status_notifiedto = $('#status_notifiedto').val();

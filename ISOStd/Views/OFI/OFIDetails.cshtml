@@ -271,7 +271,7 @@
                                 @Html.DisplayNameFor(model => model.pers_resp)
                             </p>
                         </td>
-                        <td class="font-size-lg">
+                        <td class="col-xs-3 col-md-4">
                             <p class="bg-dark py-1 px-2 rounded">
                                 @Html.DisplayFor(model => model.pers_resp)
                             </p>
@@ -286,14 +286,16 @@
                                     @Html.DisplayNameFor(model => model.approvedby)
                                 </p>
                             </td>
-                            <td class="font-size-lg">
+                            <td class="col-xs-3 col-md-4">
                                 <p class="bg-dark py-1 px-2 rounded">
-                                   @ObjGlobal.GetMultiHrEmpNameById(Model.approvedby)
+                                   @ObjGlobal.GetHrEmponlyNameById(Model.approvedby)
                                 </p>
                             </td>
+
+
                         </tr>
                     }
-                    else
+                    else if (Model.approved_status == "Approved" && Model.approvedby != "")
                     {
                         <tr class="row">
                             <td class="col-md-12">Approver Details</td>
@@ -306,7 +308,7 @@
                             </td>
                             <td class="col">
                                 <p class="bg-dark py-1 px-2 rounded">
-                                    @ObjGlobal.GetMultiHrEmpNameById(Model.approvedby)
+                                    @ObjGlobal.GetHrEmponlyNameById(Model.approvedby)
                                 </p>
                             </td>
                             <td class="col-xs-3 col-md-2">
@@ -354,7 +356,7 @@
                                     @Html.DisplayNameFor(model => model.approver_upload)
                                 </p>
                             </td>
-                            <td class="font-size-lg">
+                            <td class="col-xs-3 col-md-4">
                                 @if (Model.approver_upload != null && Model.approver_upload != "" && Model.approver_upload.Length > 0)
                                 {
                                     foreach (var docs in Model.approver_upload.Trim(',').Split(','))
@@ -372,6 +374,23 @@
 
                         </tr>
                     }
+                    else if (Model.approved_status == "Approved" && Model.approvedby == "")
+                    {
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    Approved By
+                                </p>
+                            </td>
+                            <td class="col-xs-3 col-md-4">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @Model.reportedby
+                                </p>
+                            </td>
+
+
+                        </tr>
+                    }
                     <tr class="row">
                         <td class="col-md-12">Realization of IO</td>
                     </tr>
@@ -383,9 +402,9 @@
                                     @Html.DisplayNameFor(model => model.realization_approved_by)
                                 </p>
                             </td>
-                            <td class="font-size-lg">
+                            <td class="col-xs-3 col-md-4">
                                 <p class="bg-dark py-1 px-2 rounded">
-                                    @ObjGlobal.GetMultiHrEmpNameById(Model.realization_approved_by)
+                                    @ObjGlobal.GetHrEmponlyNameById(Model.realization_approved_by)
                                 </p>
                             </td>
                             <td class="col-xs-3 col-md-2">
@@ -401,7 +420,7 @@
 
                         </tr>
                     }
-                    else
+                    else if (Model.realization_approved_status == "Approved" && Model.realization_approved_by != "")
                     {
                         <tr class="row">
                           
@@ -410,7 +429,7 @@
                                     @Html.DisplayNameFor(model => model.action_proposedby)
                                 </p>
                             </td>
-                            <td class="font-size-lg">
+                            <td class="col-xs-3 col-md-4">
                                 <p class="bg-dark py-1 px-2 rounded">
                                     @Html.DisplayFor(model => model.action_proposedby)
                                 </p>
@@ -425,7 +444,7 @@
                             </td>
                             <td class="col">
                                 <p class="bg-dark py-1 px-2 rounded">
-                                    @ObjGlobal.GetMultiHrEmpNameById(Model.realization_approved_by)
+                                    @ObjGlobal.GetHrEmponlyNameById(Model.realization_approved_by)
                                 </p>
                             </td>
                             <td class="col-xs-3 col-md-2">
@@ -473,7 +492,7 @@
                                     @Html.DisplayNameFor(model => model.realization_upload)
                                 </p>
                             </td>
-                            <td class="font-size-lg">
+                            <td class="col-xs-3 col-md-4">
                                 @if (Model.realization_upload != null && Model.realization_upload != "" && Model.realization_upload.Length > 0)
                                 {
                                     foreach (var docs in Model.realization_upload.Trim(',').Split(','))
@@ -491,6 +510,32 @@
 
                         </tr>
                     }
+                    else if (Model.realization_approved_status == "Approved" && Model.realization_approved_by == "")
+                    {
+                        <tr class="row">
+
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.action_proposedby)
+                                </p>
+                            </td>
+                            <td class="col-xs-3 col-md-4">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @Html.DisplayFor(model => model.action_proposedby)
+                                </p>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    Realization approved By
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @Html.DisplayFor(model => model.action_proposedby)
+                                </p>
+                            </td>
+                        </tr>
+                    }
                     <tr class="row">
                         <td class="col-md-12">Improvement Achieved</td>
                     </tr>
@@ -501,9 +546,9 @@
                                 @Html.DisplayNameFor(model => model.updatedby)
                             </p>
                         </td>
-                        <td class="font-size-lg">
+                        <td class="col-xs-3 col-md-4">
                             <p class="bg-dark py-1 px-2 rounded">
-                                @Html.DisplayFor(model => model.updatedby)
+                              @ObjGlobal.GetHrEmponlyNameById(Model.updatedby)
                             </p>
                         </td>
                     </tr>
@@ -530,6 +575,35 @@
                         </td>
                     </tr>
                     <tr class="row">
+                       @if (Model.checkedbyId != "" && Model.ofi_status == "Pending")
+                       
+                           {
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.checkedby)
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @Html.DisplayFor(model => model.checkedby)
+                                </p>
+                            </td>
+                       }
+                       else if (Model.checkedbyId != "" && Model.ofi_status != "Pending")
+                       {
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                IO Status checked by
+                            </p>
+                        </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @Html.DisplayFor(model => model.checkedby)
+                                </p>
+                            </td>
+                       }
+                       else if (Model.checkedbyId == "" && Model.updatedby != "" && Model.ofi_status == "Pending")
+                       {
                         <td class="col-xs-3 col-md-2">
                             <p class="bg-brown py-1 px-2 rounded">
                                 @Html.DisplayNameFor(model => model.checkedby)
@@ -537,9 +611,23 @@
                         </td>
                         <td class="col">
                             <p class="bg-dark py-1 px-2 rounded">
-                                @Html.DisplayFor(model => model.checkedby)
+                                @ObjGlobal.GetHrEmponlyNameById(Model.updatedby)
                             </p>
                         </td>
+                       }
+                       else if (Model.checkedbyId == "" && Model.updatedby != "" && Model.ofi_status != "Pending")
+                       {
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                IO Status checked by
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @ObjGlobal.GetHrEmponlyNameById(Model.updatedby)
+                            </p>
+                        </td>
+                       }
                         <td class="col-xs-3 col-md-2">
                             <p class="bg-brown py-1 px-2 rounded">
                                 @Html.DisplayNameFor(model => model.ofi_status)
@@ -690,6 +778,97 @@
         <br />
 
         @if (Model.checkedbystatus == "0" && Model.checkedbyId != "" && Model.checkedbyId.Split(',').Contains(user) && Model.ofi_status != "Approved")
+        {
+            <div>
+                @using (Html.BeginForm("OFICheckedDetail", "OFI", FormMethod.Post, new { enctype = "multipart/formdata", id = "form11", name = "form11" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary(true)
+                    <div>
+
+                        <br />
+                        <input type="hidden" id="id_ofi" name="id_ofi" value="@Model.id_ofi" />
+                        <table class="table table-lg table-border-solid" style="border: 1px solid black;">
+                            <tr class="row">
+                                <td class="col"><h1>Status of IO</h1></td>
+                            </tr>
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+                                    <p class="bg-dark py-1 px-2 rounded">
+                                        @Html.DisplayNameFor(model => model.ofi_status)<text style="color:red">*</text>
+                                    </p>
+                                </td>
+                                <td class="col-xs-6 col-md-4">
+                                    <div class="editor-field">
+                                        <select class="form-control  select-search select2-hidden-accessible" data-fouc id="ofi_status" name="ofi_status">
+                                            <option value='' hidden>Select</option>
+                                            @if (ViewBag.OFIStatus != null)
+                                            {
+                                                foreach (var item in ViewBag.OFIStatus)
+                                                {
+                                                    if (item.Value == Model.ofi_statusId)
+                                                    {
+                                                        <option value='@item.Value' selected>@item.Text</option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value='@item.Value'>@item.Text</option>
+                                                    }
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+                                    <p class="bg-dark py-1 px-2 rounded">
+                                        Approval <text style="color:red">*</text>
+                                    </p>
+                                </td>
+                                <td class="col-xs-6 col-md-4">
+                                    <div class="editor-field">
+                                        @if (Model.checkedbystatus == "Approved")
+                                        {
+                                            <label><input type="radio" id="checkedbystatus" name="checkedbystatus" value="Approved" selected />Approved</label>
+                                            <label><input type="radio" id="checkedbystatus" name="checkedbystatus" value="Rejected" />Rejected</label>
+                                        }
+                                        else if (Model.checkedbystatus == "Rejected")
+                                        {
+                                            <label><input type="radio" id="checkedbystatus" name="checkedbystatus" value="Approved" />Approved</label>
+                                            <label><input type="radio" id="checkedbystatus" name="checkedbystatus" value="Rejected" selected />Rejected</label>
+                                        }
+                                        else
+                                        {
+                                            <label><input type="radio" id="checkedbystatus" name="checkedbystatus" value="Approved" />Approved</label>
+                                            <label><input type="radio" id="checkedbystatus" name="checkedbystatus" value="Rejected" />Rejected</label>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+                                    <p class="bg-dark py-1 px-2 rounded">
+                                        @Html.DisplayNameFor(model => model.remark)
+                                    </p>
+                                </td>
+                                <td class="col">
+                                    <textarea class="form-control" id="remarks" name="remarks">@Model.remark</textarea>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="mt-2 mt-sm-0">
+                                        <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form11')"><i class="icon-checkmark3 mr-2"></i> Submit</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+
+                    </div>
+                }
+            </div>
+
+        }
+        @if (Model.checkedbyId == "" && Model.updatedby != "" && Model.updatedby.Split(',').Contains(user) && Model.ofi_status != "Approved")
         {
             <div>
                 @using (Html.BeginForm("OFICheckedDetail", "OFI", FormMethod.Post, new { enctype = "multipart/formdata", id = "form11", name = "form11" }))

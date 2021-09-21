@@ -24,7 +24,27 @@ namespace ISOStd.Models
     {
         private object fileUploader;
         private object mail;
-
+        public string GetComplianceStausIdByName(string item_desc)
+        {
+            try
+            {
+                if (item_desc != "")
+                {
+                    string sSsqlstmt = "select item_id as Id from dropdownitems, dropdownheader where dropdownheader.header_id=dropdownitems.header_id "
+                       + "and header_desc='Legal Register Compliance Status' and (item_desc='" + item_desc + "')";
+                    DataSet dsData = Getdetails(sSsqlstmt);
+                    if (dsData.Tables.Count > 0 && dsData.Tables[0].Rows.Count > 0)
+                    {
+                        return (dsData.Tables[0].Rows[0]["Id"].ToString());
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                AddFunctionalLog("Exception in GetComplianceStausIdByName: " + ex.ToString());
+            }
+            return "";
+        }
         public MultiSelectList GetAllIssueList()
         {
             DropdownList objProductList = new DropdownList();
@@ -11410,6 +11430,11 @@ namespace ISOStd.Models
 
             switch (sType)
             {
+                case "OFI":
+
+                    dicKeyValue.Add("Approved", "Approved");
+                    dicKeyValue.Add("Rejected", "Rejected");
+                    return dicKeyValue;
                 case "AuditNC":
 
                     dicKeyValue.Add("2", "Accept");

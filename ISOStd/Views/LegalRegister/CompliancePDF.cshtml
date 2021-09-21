@@ -1,0 +1,291 @@
+﻿@model ISOStd.Models.LegalRegisterModel
+@using System.Data;
+
+@{
+    ViewBag.Title = "CompliancePDF";
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+    ISOStd.Models.LegalRegisterModelsList ObjList = new ISOStd.Models.LegalRegisterModelsList();
+    ISOStd.Models.LegalRegisterModel obj = new ISOStd.Models.LegalRegisterModel();
+
+    if (ViewBag.ObjMainList != null)
+    {
+        obj = ViewBag.ObjMainList;
+    }
+
+    if (ViewBag.Law_article != null)
+    {
+        ObjList = ViewBag.Law_article;
+    }
+
+    DataSet dsCompany = new DataSet();
+    if (ViewBag.CompanyInfo != null)
+    {
+        dsCompany = ViewBag.CompanyInfo;
+    }
+    Layout = "~/Views/Shared/_PrintLayout.cshtml";
+}
+
+<STYLE TYPE="text/css">
+    .breakhere {
+        page-break-after: always;
+    }
+</STYLE>
+
+@Html.Partial("_RHeader", dsCompany)
+
+<div class="style=" background-color:white"">
+    <div>
+
+        <table class="table table-bordered">
+            <thead></thead>
+            @*<tr class="row">
+                <td colspan="4">
+                    <h3>Legal Register Details</h3>
+                </td>
+            </tr>*@
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+                    Division
+                </td>
+                <td class="font-size-lg">
+                    @obj.branch
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+                    Department
+                </td>
+                <td class="font-size-lg">
+                    @obj.deptid
+                </td>
+                <td class="font-size-lg font-weight-bold">
+                    Location
+                </td>
+                <td class="font-size-lg">
+                    @obj.Location
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+                    Law Number
+                </td>
+                <td class="font-size-lg">
+                    @obj.lawNo
+                </td>
+                <td class="font-size-lg font-weight-bold">
+                    Law Title
+                </td>
+                <td class="font-size-lg">
+                    @obj.lawTitle
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+                    Law Issued Authority
+                </td>
+                <td class="font-size-lg">
+                    @obj.law_issue_authority
+                </td>
+                <td class="font-size-lg font-weight-bold">
+                    Law Issued By
+                </td>
+                <td class="font-size-lg">
+                    @obj.law_issued_by
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+                    Law Relevant to
+                </td>
+                <td class="font-size-lg">
+                    @obj.law_relevant_to
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+                    Issue Date
+                </td>
+                <td class="font-size-lg">
+                    @if (obj.Eve_date != null && obj.Eve_date > Convert.ToDateTime("01/01/0001"))
+                    {
+                        @Html.Label(obj.Eve_date.ToString("dd/MM/yyyy"))
+                    }
+                </td>
+                <td class="font-size-lg font-weight-bold">
+                    Issue No/Revision No
+                </td>
+                <td class="font-size-lg">
+                    @obj.Revision_No
+                </td>
+            </tr>
+
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+                    URL
+                </td>
+                <td class="font-size-lg">
+                    @obj.url
+                </td>
+                <td class="font-size-lg font-weight-bold">
+                    Document
+                </td>
+                <td class="font-size-lg">
+                    @if (obj.upload != "" && obj.upload != null && obj.upload.Length > 0)
+                    {
+                        foreach (var docs in obj.upload.Trim(',').Split(','))
+                        {
+                            <span>
+                                <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs})' target="_blank">Preview</a>
+                            </span>
+                        }
+                    }
+                    else
+                    {
+                        <span>No File</span>
+                    }
+                </td>
+            </tr>
+
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+                    Compliance Evaluation Frequency
+                </td>
+                <td class="font-size-lg">
+                    @obj.frequency_eval
+                </td>
+                <td class="font-size-lg font-weight-bold">
+                    Notified To
+                </td>
+                <td class="font-size-lg">
+                    @obj.notified_to
+                </td>
+            </tr>                   
+        </table>
+    </div>
+    <br />
+    <br />
+    @if (ViewBag.Law_article != null && ObjList.LegalRegisterMList != null && ObjList.LegalRegisterMList.Count > 0)
+    {
+        <h2 class="bg-dark pl-sm-2"> Law-Article Details</h2>
+        <div class="table-responsive">
+            <table class="table-sm table-bordered table-striped table-hover">
+
+                <thead>
+                    <tr class="bg-brown">
+                        <th>Article Date</th>
+                        <th>Article Number</th>
+                        <th>Article Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    @for (int index = 0; index < ObjList.LegalRegisterMList.Count; index++)
+                    {
+                        <tr>
+                            <td>@ObjList.LegalRegisterMList[index].article_no</td>
+                            <td>
+                                @if (ObjList.LegalRegisterMList[index].article_date != null && ObjList.LegalRegisterMList[index].article_date > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    ObjList.LegalRegisterMList[index].article_date.ToShortDateString();
+                                }
+                            </td>
+                            <td>@ObjList.LegalRegisterMList[index].article_detail</td>
+                        </tr>
+                    }
+
+                </tbody>
+            </table>
+        </div>
+    }
+
+    <br />
+    <br />
+    @if (ViewBag.Law_article != null && ObjList.LegalRegisterMList != null && ObjList.LegalRegisterMList.Count > 0)
+    {
+        if (ObjList.LegalRegisterMList[0].compliance_status != null && ObjList.LegalRegisterMList[0].compliance_status != "")
+        {
+            <h2 class="bg-dark pl-sm-2">Compliance Evaluation Details</h2>
+            <div class="table-responsive">
+                <table class="table-sm table-bordered table-striped table-hover">
+
+                    <thead>
+                        <tr class="bg-brown">
+                            <th>Compliance Status</th>
+                            <th>Description</th>
+                            <th>Action To Be Taken</th>
+                            <th>Target Date</th>
+                            <th>Personnel Responsible</th>
+                            <th>Upload Document</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @for (int index = 0; index < ObjList.LegalRegisterMList.Count; index++)
+                        {
+                            <tr>
+                                <td>@ObjList.LegalRegisterMList[index].compliance_status</td>
+                                <td>@ObjList.LegalRegisterMList[index].article_desc</td>
+                                <td>@ObjList.LegalRegisterMList[index].action_taken</td>
+                                <td>
+                                    @if (ObjList.LegalRegisterMList[index].target_date != null && ObjList.LegalRegisterMList[index].target_date > Convert.ToDateTime("01/01/0001"))
+                                    {
+                                        ObjList.LegalRegisterMList[index].target_date.ToShortDateString();
+                                    }
+                                </td>
+                                <td>@ObjList.LegalRegisterMList[index].person_resp</td>
+                                <td>
+                                    @if (ObjList.LegalRegisterMList[index].article_upload != null && ObjList.LegalRegisterMList[index].article_upload != "")
+                                    {
+                                        <a href='@Url.Action("DisplayDocument", "Reports", new { Document = ObjList.LegalRegisterMList[index].article_upload })' target="_blank" style="color: orange;">
+                                            Preview
+                                        </a>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    }
+
+    <br />
+    <br />
+    @if (ViewBag.Law_article != null && ObjList.LegalRegisterMList != null && ObjList.LegalRegisterMList.Count > 0)
+    {
+        if (ObjList.LegalRegisterMList[0].compliance_status != null && ObjList.LegalRegisterMList[0].compliance_status != "")
+        {
+            <h2 class="bg-dark pl-sm-2">Status Of Action Details</h2>
+            <div class="table-responsive">
+                <table class="table-sm table-bordered table-striped table-hover">
+
+                    <thead>
+                        <tr class="bg-brown">
+                            <th>Action Status</th>
+                            <th>Status Updated On</th>
+                            <th>Reason for pending</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @for (int index = 0; index < ObjList.LegalRegisterMList.Count; index++)
+                        {
+                            <tr>
+                                <td>@ObjList.LegalRegisterMList[index].action_status</td>
+                                <td>
+                                    @if (ObjList.LegalRegisterMList[index].status_updatedon != null && ObjList.LegalRegisterMList[index].status_updatedon > Convert.ToDateTime("01/01/0001"))
+                                    {
+                                        ObjList.LegalRegisterMList[index].status_updatedon.ToShortDateString();
+                                    }
+                                </td>
+                                <td>@ObjList.LegalRegisterMList[index].pending_reason</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    }
+
+</div>
+

@@ -323,12 +323,28 @@ namespace ISOStd.Models
         internal bool FunAddNC(NCModels objModels, NCModelsList objRelatedList)
         {
             try
-            {
-                string[] name = objModels.nc_issueto.Split(',');
-                int issuecount = name.Length;
-
+            {             
+                
                 string sFields = "", sFieldValue = "";
-                string sdivision = objGlobaldata.GetCurrentUserSession().division; /*+ "," + objModels.nc_division;*/
+                string sdivision = objGlobaldata.GetCurrentUserSession().division;
+                int issuecount = 0;
+                if (objModels.nc_issueto != null && objModels.nc_issueto != "")
+                {
+                    string[] name = objModels.nc_issueto.Split(',');
+                    issuecount = name.Length;
+
+
+                    string otherdiv="";
+                    DataSet dsEmpLocList=objGlobaldata.Getdetails("select group_concat(division) as division from t_hr_employee where find_in_set(emp_no,'" + objModels.nc_issueto + "')");
+                    if(dsEmpLocList != null && dsEmpLocList.Tables.Count>0 && dsEmpLocList.Tables[0].Rows.Count > 0)
+                    {
+                        otherdiv = dsEmpLocList.Tables[0].Rows[0]["division"].ToString();
+                    }
+                    sdivision = sdivision + "," + otherdiv;
+                    List<string> uniques = sdivision.Split(',').Distinct().ToList();
+                    sdivision = string.Join(",", uniques);
+                    sdivision = sdivision.Trim();
+                }
                 string sSqlstmt = "insert into t_nc ( nc_category, nc_description, nc_activity, nc_performed, nc_pnc, nc_upload,"
                     + "nc_impact, nc_risk, risklevel, nc_reportedby, nc_notifiedto, nc_division, department,location,logged_by,nc_issueto,nc_audit,audit_no,division,nc_raise_dueto,nc_issuedtocount";
 
@@ -483,6 +499,19 @@ namespace ISOStd.Models
         {
             try
             {
+                //if (objModels.nc_issueto != "")
+                //{
+                //    string otherdiv = "";
+                //    DataSet dsEmpLocList = objGlobaldata.Getdetails("select group_concat(Emp_work_location) as work_loc from t_hr_employee where find_in_set(emp_no,'" + objModels.nc_issueto + "')");
+                //    if (dsEmpLocList != null && dsEmpLocList.Tables.Count > 0 && dsEmpLocList.Tables[0].Rows.Count > 0)
+                //    {
+                //        otherdiv = dsEmpLocList.Tables[0].Rows[0]["work_loc"].ToString();
+                //    }
+                //    string sdivision = objModels.division + "," + otherdiv;
+                //    List<string> uniques = sdivision.Split(',').Distinct().ToList();
+                //    sdivision = string.Join(",", uniques);
+                //    sdivision = sdivision.Trim();
+                //}
 
                 string sSqlstmt = "update t_nc set  nc_category='" + objModels.nc_category + "', " + "nc_description='" + objModels.nc_description + "', nc_activity='" + objModels.nc_activity
                      + "', nc_performed='" + objModels.nc_performed + "', nc_pnc='" + objModels.nc_pnc + "', nc_upload='" + objModels.nc_upload + "', nc_impact='" + objModels.nc_impact

@@ -1,0 +1,272 @@
+﻿@using System.Data
+@using ISOStd.Models;
+
+@{
+    ViewBag.Title = "IssuesPDF";
+
+    DataSet dsCompany = new DataSet();
+    if (ViewBag.CompanyInfo != null)
+    {
+        dsCompany = ViewBag.CompanyInfo;
+    }
+
+    ISOStd.Models.IssuesModels obj = new ISOStd.Models.IssuesModels();
+    ISOStd.Models.clsGlobal ObjGlobal = new ISOStd.Models.clsGlobal();  
+
+    if (ViewBag.ObjIssueList != null)
+    {
+        obj = ViewBag.ObjIssueList;
+    }
+
+    Layout = "~/Views/Shared/_PrintLayout.cshtml";
+}
+
+<STYLE TYPE="text/css">
+    .breakhere {
+        page-break-after: always;
+    }
+</STYLE>
+
+@*@Html.Partial("_ReportHeader", dsCompany)*@
+@Html.Partial("_RptHeader", dsCompany)
+
+<div style="background-color:white">
+    <div>
+        <table class="table table-lg table-bordered">
+            <tr class="row">
+                <td colspan="4">
+                    <h3>Report Details</h3>
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+                    Division
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.branch
+                    </div>
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+                    Department
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.Deptid
+                    </div>
+                </td>
+
+                <td class="font-size-lg font-weight-bold">
+                    Location
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.Location
+                    </div>
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+                    Issue Reported Date
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @if (obj.issue_date != null && obj.issue_date > Convert.ToDateTime("01/01/0001"))
+                        {
+                            @Html.Label(obj.issue_date.ToString("dd/MM/yyyy"))
+                        }
+                        @*@if (Model.issue_date != null && Model.issue_date > Convert.ToDateTime("01/01/0001"))
+                    {
+                        @Model.issue_date.ToString("dd/MM/yyyy")
+                    }*@
+                    </div>
+                </td>
+                <td class="font-size-lg font-weight-bold">
+                    Issue Reported To
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.reporting_to
+                    </div>
+                </td>
+            </tr>
+            <tr class="row">
+
+                <td class="font-size-lg font-weight-bold">
+                    Issue
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.Issue
+                    </div>
+                </td>
+                <td class="font-size-lg font-weight-bold">Effect</td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.Effect
+                    </div>
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">Repetitive Issue</td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.Repet_Issue
+                    </div>
+                </td>
+                <td class="font-size-lg font-weight-bold">Repetitive Issue Details</td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.Repet_Issue_detail
+                    </div>
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+                    Additional Details
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.additional_details
+                    </div>
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+                    Issue Category
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.Issue_Category
+                    </div>
+                </td>
+                <td class="font-size-lg font-weight-bold">
+                    Issue Type
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.IssueType
+                    </div>
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+                    Impact Level
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.Impact
+                    </div>
+                </td>
+                <td class="font-size-lg font-weight-bold">
+                    Impact in detail
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.Impact_detail
+                    </div>
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+                    Evidence
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @if (obj.Evidence != null && obj.Evidence != "" && obj.Evidence.Length > 0)
+                        {
+                            foreach (var docs in obj.Evidence.Trim(',').Split(','))
+                            {
+                                <p class="bg-dark py-1 px-2 rounded">
+
+                                    <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" style="color: orange;">
+                                        Preview
+                                    </a>
+                                </p>
+                            }
+                        }
+                    </div>
+                </td>         
+                <td class="font-size-lg font-weight-bold">
+                   Notified To
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.notified_to
+                    </div>
+                </td>              
+            </tr>
+        </table>
+
+        <table class="table table-lg table-bordered breakhere">
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold" colspan="4">
+                    Status Update
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+                    Action taken
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.action_taken
+                    </div>
+                </td>
+         
+                <td class="font-size-lg font-weight-bold">
+                    Uploaded Document
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @if (obj.status_upload != null && obj.status_upload != "" && obj.status_upload.Length > 0)
+                        {
+                            foreach (var docs in obj.status_upload.Trim(',').Split(','))
+                            {
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" style="color: orange;">
+                                        Preview
+                                    </a>
+                                </p>
+                            }
+                        }
+                    </div>
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+                  Status
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.issue_status
+                    </div>
+                </td>
+                <td class="font-size-lg font-weight-bold">
+                Staus Updated On
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @if (obj.status_date != null && obj.status_date > Convert.ToDateTime("01/01/0001"))
+                        {
+                            @obj.status_date.ToString("dd/MM/yyyy")
+                        }
+                    </div>
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+                    Notified To
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.status_notifiedto
+                    </div>
+                </td>              
+            </tr>
+        </table>
+    </div>
+    
+</div>

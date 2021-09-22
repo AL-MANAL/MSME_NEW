@@ -582,7 +582,7 @@ namespace ISOStd.Controllers
                         ObjectivesModelsList objList = new ObjectivesModelsList();
                         objList.ObjectivesMList = new List<ObjectivesModels>();
 
-                        string sSqlstmtplan = "select id_objective_action, ObjectivesTrans_Id,actionplan,begin_date,end_date,upload,resource,resp_person,action_ref_no " +
+                        string sSqlstmtplan = "select id_objective_action, ObjectivesTrans_Id,actionplan,begin_date,end_date,upload,resource,resp_person,action_ref_no,action_status,reason_notcomplete,status_updated_on " +
                             "from t_objectives_actionplan where ObjectivesTrans_Id  = '" + sObjectivesTrans_Id + "' and active=1";
                         
                         DataSet dsplanList = objGlobaldata.Getdetails(sSqlstmtplan);
@@ -601,6 +601,10 @@ namespace ISOStd.Controllers
                                         resource = dsplanList.Tables[0].Rows[i]["resource"].ToString(),
                                         resp_person = objGlobaldata.GetMultiHrEmpNameById(dsplanList.Tables[0].Rows[i]["resp_person"].ToString()),
                                         action_ref_no = dsplanList.Tables[0].Rows[i]["action_ref_no"].ToString(),
+
+                                        action_status = objGlobaldata.GetDropdownitemById(dsplanList.Tables[0].Rows[i]["action_status"].ToString()),
+                                        reason_notcomplete = (dsplanList.Tables[0].Rows[i]["reason_notcomplete"].ToString()),
+
                                     };
                                     DateTime dtDocDate;
                                     if (dsplanList.Tables[0].Rows[i]["begin_date"].ToString() != ""
@@ -613,6 +617,12 @@ namespace ISOStd.Controllers
                                     {
                                         objplanModels.end_date = dtDocDate;
                                     }
+                                    if (dsplanList.Tables[0].Rows[i]["status_updated_on"].ToString() != ""
+                                      && DateTime.TryParse(dsplanList.Tables[0].Rows[i]["status_updated_on"].ToString(), out dtDocDate))
+                                    {
+                                        objplanModels.status_updated_on = dtDocDate;
+                                    }
+                                    
                                     objList.ObjectivesMList.Add(objplanModels);
                                     ViewBag.ObjectPlan = objList;
                                 }
@@ -934,7 +944,7 @@ namespace ISOStd.Controllers
                         ObjectivesModelsList objList = new ObjectivesModelsList();
                         objList.ObjectivesMList = new List<ObjectivesModels>();
 
-                        string sSqlstmtplan = "select id_objective_action, ObjectivesTrans_Id,actionplan,begin_date,end_date,upload,resource,resp_person,action_ref_no " +
+                        string sSqlstmtplan = "select id_objective_action, ObjectivesTrans_Id,actionplan,begin_date,end_date,upload,resource,resp_person,action_ref_no,action_status,reason_notcomplete,status_updated_on " +
                             "from t_objectives_actionplan where ObjectivesTrans_Id  = '" + sObjectivesTrans_Id + "' and active=1";
                         DataSet dsplanList = objGlobaldata.Getdetails(sSqlstmtplan);
                         if (dsplanList.Tables.Count > 0 && dsplanList.Tables[0].Rows.Count > 0)
@@ -952,6 +962,10 @@ namespace ISOStd.Controllers
                                         resource = dsplanList.Tables[0].Rows[i]["resource"].ToString(),
                                         resp_person = objGlobaldata.GetMultiHrEmpNameById(dsplanList.Tables[0].Rows[i]["resp_person"].ToString()),
                                         action_ref_no = dsplanList.Tables[0].Rows[i]["action_ref_no"].ToString(),
+
+                                        action_status = objGlobaldata.GetDropdownitemById(dsplanList.Tables[0].Rows[i]["action_status"].ToString()),
+                                        reason_notcomplete = dsplanList.Tables[0].Rows[i]["reason_notcomplete"].ToString(),
+
                                     };
                                     DateTime dtDocDate;
                                     if (dsplanList.Tables[0].Rows[i]["begin_date"].ToString() != ""
@@ -963,6 +977,12 @@ namespace ISOStd.Controllers
                                       && DateTime.TryParse(dsplanList.Tables[0].Rows[i]["end_date"].ToString(), out dtDocDate))
                                     {
                                         objplanModels.end_date = dtDocDate;
+                                    }
+
+                                    if (dsplanList.Tables[0].Rows[i]["status_updated_on"].ToString() != ""
+                                     && DateTime.TryParse(dsplanList.Tables[0].Rows[i]["status_updated_on"].ToString(), out dtDocDate))
+                                    {
+                                        objplanModels.status_updated_on = dtDocDate;
                                     }
                                     objList.ObjectivesMList.Add(objplanModels);
                                     ViewBag.ObjectPlan = objList;
@@ -1989,7 +2009,181 @@ public ActionResult AddObjectiveActionPlan(FormCollection form, ObjectivesModels
     return RedirectToAction("AddObjectiveActionPlan", new { ObjectivesTrans_Id = objObjectivesModels.ObjectivesTrans_Id, /*Objectives_Id = objObjectivesModels.Objectives_Id,*/ View = ViewBag.View });
 }
 
-[AllowAnonymous]
+
+        [AllowAnonymous]
+        public ActionResult AddObjectiveActionPlanStatus()
+        {
+
+            ObjectivesModelsList ObjectivesList = new ObjectivesModelsList();
+            ObjectivesList.ObjectivesMList = new List<ObjectivesModels>();
+            
+            ObjectivesModels objObjectivesModels = new ObjectivesModels();
+            
+            try
+            {
+                ViewBag.View = Request.QueryString["View"];
+                if (Request.QueryString["ObjectivesTrans_Id"] != null)
+                {
+                    string sObjectivesTrans_Id = Request.QueryString["ObjectivesTrans_Id"];
+
+                    //     string sSqlstmt1 = "select Obj_Ref, c.Objectives_Id,Obj_Estld_On, b.ObjectivesTrans_Id, " +
+                    //" Obj_Target,Base_Line_Value,Monitoring_Mechanism,Target_Date,Objectives_val from t_objectives_trans b,t_objectives c where " +
+                    //"  c.Objectives_Id = b.Objectives_Id  and b.ObjectivesTrans_Id  = '" + sObjectivesTrans_Id + "' and active=1 and trans_active=1";
+
+                    //     ViewBag.ObjectivesTrans_Id = sObjectivesTrans_Id;
+
+                    //     DataSet dsObjectivesList = objGlobaldata.Getdetails(sSqlstmt1);
+
+                    //     if (dsObjectivesList.Tables.Count > 0 && dsObjectivesList.Tables[0].Rows.Count > 0)
+                    //     {
+
+                    //         ViewBag.Obj_ref = dsObjectivesList.Tables[0].Rows[0]["Obj_Ref"].ToString() + "-AP" + count;
+                    //         ViewBag.Objectives_Id = dsObjectivesList.Tables[0].Rows[0]["Objectives_Id"].ToString();
+                    //         ViewBag.Obj_Estld_On = Convert.ToDateTime(dsObjectivesList.Tables[0].Rows[0]["Obj_Estld_On"].ToString()).ToString("dd/MM/yyyy");
+                    //         ViewBag.Base_Line_Value = dsObjectivesList.Tables[0].Rows[0]["Base_Line_Value"].ToString();
+                    //         ViewBag.Target_Date = Convert.ToDateTime(dsObjectivesList.Tables[0].Rows[0]["Target_Date"].ToString()).ToString("dd/MM/yyyy");
+                    //         ViewBag.Obj_Target = dsObjectivesList.Tables[0].Rows[0]["Obj_Target"].ToString();
+                    //         ViewBag.Monitoring_Mechanism = dsObjectivesList.Tables[0].Rows[0]["Monitoring_Mechanism"].ToString();
+                    //         ViewBag.Objectives_val = dsObjectivesList.Tables[0].Rows[0]["Objectives_val"].ToString();
+                    //     }
+
+                    ViewBag.ActionStatus = objGlobaldata.GetDropdownList("Objective Action Plan Staus");
+                    string sSqlstmt = "select id_objective_action, ObjectivesTrans_Id,actionplan,begin_date,end_date,upload,resource,resp_person,action_ref_no," +
+                        "action_status,reason_notcomplete,status_updated_on " +
+                    "from t_objectives_actionplan where ObjectivesTrans_Id  = '" + sObjectivesTrans_Id + "' and active=1";
+
+                    ViewBag.ObjectivesTrans_Id = sObjectivesTrans_Id;
+
+                    DataSet dsObjectivesModelsList = objGlobaldata.Getdetails(sSqlstmt);
+
+                    if (dsObjectivesModelsList.Tables.Count > 0 && dsObjectivesModelsList.Tables[0].Rows.Count > 0)
+                    {
+                        for (int i = 0; i < dsObjectivesModelsList.Tables[0].Rows.Count; i++)
+                        {
+                            try
+                            {
+                                objObjectivesModels = new ObjectivesModels
+                                {
+                                    id_objective_action = (dsObjectivesModelsList.Tables[0].Rows[i]["id_objective_action"].ToString()),
+                                    ObjectivesTrans_Id = Convert.ToInt16(dsObjectivesModelsList.Tables[0].Rows[i]["ObjectivesTrans_Id"].ToString()),
+                                    actionplan = dsObjectivesModelsList.Tables[0].Rows[i]["actionplan"].ToString(),
+                                    upload = dsObjectivesModelsList.Tables[0].Rows[i]["upload"].ToString(),
+                                    resource = dsObjectivesModelsList.Tables[0].Rows[i]["resource"].ToString(),
+                                    resp_person = objGlobaldata.GetMultiHrEmpNameById(dsObjectivesModelsList.Tables[0].Rows[i]["resp_person"].ToString()),
+                                    action_ref_no = dsObjectivesModelsList.Tables[0].Rows[i]["action_ref_no"].ToString(),
+
+                                    action_status = /*objGlobaldata.GetDropdownitemById*/(dsObjectivesModelsList.Tables[0].Rows[i]["action_status"].ToString()),
+                                    reason_notcomplete = (dsObjectivesModelsList.Tables[0].Rows[i]["reason_notcomplete"].ToString()),
+                                };
+                                DateTime dtDocDate;
+                                if (dsObjectivesModelsList.Tables[0].Rows[i]["begin_date"].ToString() != ""
+                                   && DateTime.TryParse(dsObjectivesModelsList.Tables[0].Rows[i]["begin_date"].ToString(), out dtDocDate))
+                                {
+                                    objObjectivesModels.begin_date = dtDocDate;
+                                }
+                                if (dsObjectivesModelsList.Tables[0].Rows[i]["end_date"].ToString() != ""
+                                  && DateTime.TryParse(dsObjectivesModelsList.Tables[0].Rows[i]["end_date"].ToString(), out dtDocDate))
+                                {
+                                    objObjectivesModels.end_date = dtDocDate;
+                                }
+                                if (dsObjectivesModelsList.Tables[0].Rows[i]["status_updated_on"].ToString() != ""
+                                 && DateTime.TryParse(dsObjectivesModelsList.Tables[0].Rows[i]["status_updated_on"].ToString(), out dtDocDate))
+                                {
+                                    objObjectivesModels.status_updated_on = dtDocDate;
+                                }
+                                ObjectivesList.ObjectivesMList.Add(objObjectivesModels);
+                            }
+                            catch (Exception ex)
+                            {
+                                objGlobaldata.AddFunctionalLog("Exception in AddObjectiveActionPlanStatus: " + ex.ToString());
+                                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                            }
+                        }
+                        ViewBag.ObjectivesList = ObjectivesList;
+
+                        if (sObjectivesTrans_Id != "")
+                        {
+                            DataSet dsObjectives_Id = objGlobaldata.Getdetails("select Objectives_Id from t_objectives_trans where ObjectivesTrans_Id='" + sObjectivesTrans_Id + "'");
+                            if (dsObjectives_Id.Tables.Count > 0 && dsObjectives_Id.Tables[0].Rows.Count > 0)
+                            {
+                                ViewBag.Objectives_Id = dsObjectives_Id.Tables[0].Rows[0]["Objectives_Id"].ToString();
+                            }
+                        }
+                    }                    
+                }
+                else
+                {
+                    TempData["alertdata"] = "Objectives Trans Id cannot be null";
+                    return RedirectToAction("ObjectivesList", new { View = ViewBag.View });
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in AddObjectiveActionPlanStatus: " + ex.ToString());
+                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+            }
+            return View(objObjectivesModels);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult AddObjectiveActionPlanStatus(FormCollection form)
+        {
+            ObjectivesModels objModel = new ObjectivesModels();
+
+            ViewBag.View = form["view"];
+            try
+            {     
+                ObjectivesModelsList objList = new ObjectivesModelsList();
+                objList.ObjectivesMList = new List<ObjectivesModels>();
+
+                int iCnts = 0;
+                DateTime dateValue1;
+                if (form["itemcount"] != null && form["itemcount"] != "" && int.TryParse(form["itemcount"], out iCnts))
+                {
+                    for (int i = 0; i < Convert.ToInt16(form["itemcount"]); i++)
+                    {
+                        if (form["action_status " + i] != null || form["action_status " + i] != "")
+                        {
+                            objModel = new ObjectivesModels()
+                            {
+                                id_objective_action = form["id_objective_action " + i],
+                           
+                                action_status = form["action_status " + i],
+                                reason_notcomplete = form["reason_notcomplete " + i]
+                            };
+                            
+                            if (DateTime.TryParse(form["status_updated_on " + i], out dateValue1) == true)
+                            {
+                                objModel.status_updated_on = dateValue1;
+                            }
+
+                            objList.ObjectivesMList.Add(objModel);
+                        }
+                    }
+                }
+
+                if (objModel.FunUpdateActionPlanStatus(objList))
+                {
+                    TempData["Successdata"] = "Updated Objective ActionPlan Status successfully";
+                }
+                else
+                {
+                    TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in AddObjectiveActionPlanStatus: " + ex.ToString());
+                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+            }
+            //return RedirectToAction("AddObjectiveActionPlanStatus", new { ObjectivesTrans_Id = objModel.ObjectivesTrans_Id, /*Objectives_Id = objObjectivesModels.Objectives_Id,*/ View = ViewBag.View });
+            return RedirectToAction("ObjectivesList", new { View = ViewBag.View });
+        }
+
+
+
+        [AllowAnonymous]
 public ActionResult ObjectiveActionPlanEdit()
 {
     ObjectivesModelsList objObjectivesModelsList = new ObjectivesModelsList();

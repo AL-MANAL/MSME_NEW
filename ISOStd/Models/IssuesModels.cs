@@ -217,7 +217,7 @@ namespace ISOStd.Models
                 string sType = "email";
 
                 string sSqlstmt = "select Issue_refno,id_issue,Issue,IssueType,Impact,Isostd,Evidence," +
-                    "ImpactDesc,Effect,Deptid,Issue_Category,branch,Location,issue_date,reporting_to,notified_to,loggedby from t_issues where id_issue ='" + id_issue + "'";
+                    "ImpactDesc,Effect,Deptid,Issue_Category,branch,Location,issue_date,reporting_to,notified_to,loggedby,Impact_detail from t_issues where id_issue ='" + id_issue + "'";
 
                 DataSet dsIssueList = objGlobalData.Getdetails(sSqlstmt);
                 IssuesModels objType = new IssuesModels();
@@ -270,8 +270,33 @@ namespace ISOStd.Models
                     sCCEmailIds = sCCEmailIds.Trim();
                     sCCEmailIds = sCCEmailIds.TrimEnd(',');
                     sCCEmailIds = sCCEmailIds.TrimStart(',');
-                    //aAttachment = HttpContext.Current.Server.MapPath(dsIssueList.Tables[0].Rows[0]["Evidence"].ToString());
 
+                    if (dsIssueList.Tables[0].Rows[0]["Evidence"].ToString() != "")
+                    {
+                        if (dsIssueList.Tables[0].Rows[0]["Evidence"].ToString().Contains(','))
+                        {
+                            string[] varfile = dsIssueList.Tables[0].Rows[0]["Evidence"].ToString().Split(',');
+
+                            for (int i = 0; i < varfile.Length; i++)
+                            {
+                                //if (System.IO.File.Exists(varfile[i]))
+                                //{
+                                    aAttachment = aAttachment + "," + HttpContext.Current.Server.MapPath(varfile[i]);
+                                //}
+                            }
+                        }
+                        else
+                        {
+                            //if (System.IO.File.Exists(dsIssueList.Tables[0].Rows[0]["Evidence"].ToString()))
+                            //{
+                                aAttachment = HttpContext.Current.Server.MapPath(dsIssueList.Tables[0].Rows[0]["Evidence"].ToString());
+                            //}
+                        }
+
+                    }
+                    aAttachment = aAttachment.Trim();
+                    aAttachment = aAttachment.TrimEnd(',');
+                    aAttachment = aAttachment.TrimStart(',');
 
                     sHeader = "<tr><td colspan=3><b>Issue Number:<b></td> <td colspan=3>"
                         + dsIssueList.Tables[0].Rows[0]["Issue_refno"].ToString() + "</td></tr>"
@@ -283,15 +308,15 @@ namespace ISOStd.Models
                         + "<tr><td colspan=3><b>Impact Level:<b></td> <td colspan=3>" + (dsIssueList.Tables[0].Rows[0]["Impact"].ToString()) + "</td></tr>"
                          + "<tr><td colspan=3><b>Impact Details:<b></td> <td colspan=3>" + objGlobalData.GetDropdownitemById(dsIssueList.Tables[0].Rows[0]["Impact_detail"].ToString()) + "</td></tr>";
 
-                    //if (File.Exists(aAttachment))
-                    //{
-                    //    sHeader = sHeader + "<tr><td colspan=3><b>Document Uploaded:<b></td> <td colspan=3>Please find the attachment</td></tr>";
-                    //}
+                    if (File.Exists(aAttachment))
+                    {
+                        sHeader = sHeader + "<tr><td colspan=3><b>Document Uploaded:<b></td> <td colspan=3>Please find the attachment</td></tr>";
+                    }
 
                     sContent = sContent.Replace("{FromMsg}", "");
                     sContent = sContent.Replace("{UserName}", sName);
                     sContent = sContent.Replace("{Title}", "Issue Details");
-                    sContent = sContent.Replace("{content}", sHeader + sInformation);
+                    sContent = sContent.Replace("{content}", sHeader);
                     sContent = sContent.Replace("{message}", "");
                     sContent = sContent.Replace("{extramessage}", "");
 

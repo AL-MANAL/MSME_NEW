@@ -1,0 +1,252 @@
+﻿@model ISOStd.Models.ObjectivesModels
+@{
+    ViewBag.Title = "AddObjectiveActionPlanStatus";
+
+
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+    ISOStd.Models.ObjectivesModelsList ObjList = new ISOStd.Models.ObjectivesModelsList();
+    int itemcount = 0;
+
+    if (ViewBag.ObjectivesList != null)
+    {
+        ObjList = ViewBag.ObjectivesList;
+        itemcount = ObjList.ObjectivesMList.Count;
+    }
+}
+
+
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a class="breadcrumb-item" onclick="HyperLinkProgressIconFunction();" href='@Url.Action("ObjectivesList", "Objectives", new { Objectives_Id = ViewBag.Objectives_Id,View=ViewBag.View } )'>
+                        <span class="breadcrumb-item"> Objectives</span>
+                    </a>
+                    <span class="breadcrumb-item active">Objective Action Plan Status</span>
+                </div>
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                    <div class="breadcrumb justify-content-center">
+                        <div class="breadcrumb-elements-item dropdown p-0">
+                            <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                                <i class="icon-gear mr-2"></i>
+                                Settings
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <div class="dropdown-divider"></div>
+                                <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>*@
+        </div>
+    </div>
+}
+
+@using (Html.BeginForm("AddObjectiveActionPlanStatus", "Objectives", FormMethod.Post,
+                         new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Objective Action Plan Status</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+                <input type="hidden" id="ObjectivesTrans_Id" name="ObjectivesTrans_Id" value="@ViewBag.ObjectivesTrans_Id" />
+                <input type="hidden" id="Objectives_Id" name="Objectives_Id" value="@ViewBag.Objectives_Id" />
+                <input type="hidden" id="view" name="view" value="@ViewBag.View" />
+
+          
+                <div class="card is-visible" id="hidden_card_count">
+                    <div class="card-header header-elements-inline">
+                        <h5 class="card-title">Objective Action Plan Status Details</h5>
+                        <div class="header-elements">
+                            <div class="list-icons">
+                                <a class="list-icons-item" data-action="collapse"></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+                        <input type="hidden" id="itemcount" name="itemcount" value="@itemcount" />
+                        <div class="card card-table table-responsive shadow-0 mb-0">
+                            <table class="table" id="team-list-count">
+                                <tr class="bg-blue">
+
+                                    <th>Action Details</th>
+                                    <th>Target Date</th>
+                                   
+                                    <th>Action status</th>
+                                    <th>Reasons for not completing</th>
+                                    <th>Status Updated On</th>
+                                </tr>
+                                @if ( ObjList.ObjectivesMList != null &&  ObjList.ObjectivesMList.Count > 0)
+                                {
+                                    for (int index = 0; index <  ObjList.ObjectivesMList.Count; index++)
+                                    {
+                                        <tr>                                          
+                                            <td>
+                                                <input type='hidden' id='id_objective_action @index' name="id_objective_action @index" value='@ObjList.ObjectivesMList[index].id_objective_action' />
+                                                <input type='hidden' id='actionplan @index' name="actionplan @index" value='@ObjList.ObjectivesMList[index].actionplan'>@ObjList.ObjectivesMList[index].actionplan
+                                            </td>
+                                            <td> 
+                                                <input type='hidden' id='end_date @index' name="end_date @index" value='@ObjList.ObjectivesMList[index].end_date.ToString("yyyy-MM-dd")'>@ObjList.ObjectivesMList[index].end_date.ToString("yyyy-MM-dd")
+                                            </td>                                           
+                                           
+                                            <td>
+                                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="action_status @index" name="action_status @index" onchange="GetActionStatus(@index)" required>
+                                                    <option value='' hidden>Select</option>
+                                                    @if (ViewBag.ActionStatus != null)
+                                                    {
+                                                        foreach (var item in ViewBag.ActionStatus)
+                                                        {
+                                                            if (item.Value ==  ObjList.ObjectivesMList[index].action_status)
+                                                            {
+                                                                <option value='@item.Value' selected>@item.Text</option>
+                                                            }
+                                                            else
+                                                            {
+                                                                <option value='@item.Value'>@item.Text</option>
+                                                            }
+                                                        }
+                                                    }
+                                                </select>
+                                            </td>
+                                            <td>
+                                                @if ( ObjList.ObjectivesMList[index].reason_notcomplete != null &&  ObjList.ObjectivesMList[index].reason_notcomplete != "")
+                                                {
+                                                    <textarea id='reason_notcomplete @index' name="reason_notcomplete @index" maxlength="1500" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 6em;width:15em;" class="form-control elastic maxlength-badge-position" required> @ObjList.ObjectivesMList[index].reason_notcomplete</textarea>
+                                                }
+                                                else
+                                                {
+                                                    <textarea id='reason_notcomplete @index' name="reason_notcomplete @index" maxlength="1500" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 6em;width:15em;" class="form-control elastic maxlength-badge-position" required></textarea>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (ObjList.ObjectivesMList[index].status_updated_on != null && ObjList.ObjectivesMList[index].status_updated_on > Convert.ToDateTime("01/01/0001"))
+                                                {
+                                                    <input type='date' class="form-control" id='status_updated_on @index' name="status_updated_on @index" value='@ObjList.ObjectivesMList[index].status_updated_on.ToString("yyyy-MM-dd")' onchange="checkDate(@index)">
+                                                }
+                                                else
+                                                {
+                                                    <input type='date' class="form-control" id='status_updated_on @index' name="status_updated_on @index" value='@DateTime.Now.ToString("yyyy-MM-dd")' onchange="checkDate(@index)">
+                                                }
+                                            </td>
+                                                                                
+                                        </tr>
+                                    }
+                                }
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+            @Html.ActionLink("Back to List", "ObjectivesList", new { ObjectivesTrans_Id = ViewBag.ObjectivesTrans_Id, Objectives_Id = ViewBag.Objectives_Id, View = ViewBag.View }, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+            <button class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" type="submit" value="Save" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Save</button>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript">
+
+         $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+             GetActionStatusEdit();
+         });
+
+        function GetActionStatus(i) {
+            var e = document.getElementById("action_status " + i);
+            var compliance_statustext = e.options[e.selectedIndex].text;
+
+           // alert(compliance_statustext);
+            if (compliance_statustext.toLowerCase() == "incomplete") {
+                document.getElementById("reason_notcomplete " + i).required = true;              
+            }
+            else {
+                document.getElementById("reason_notcomplete " + i).required = false;              
+            }
+        }
+
+        function GetActionStatusEdit() {
+
+            var totallen = document.getElementById("itemcount").value;
+            for (var i = 0; i < totallen; i++) {
+
+                var e = document.getElementById("action_status " + i);
+                var compliance_statustext = e.options[e.selectedIndex].text;
+
+                if (compliance_statustext.toLowerCase() == "incomplete") {
+                    document.getElementById("reason_notcomplete " + i).required = true;
+                }
+                else {
+                    document.getElementById("reason_notcomplete " + i).required = false;
+                }
+            }
+
+            return;
+        }
+
+
+        function checkDate(i) {
+
+            var dt1 = document.getElementById("status_updated_on "+i).value;
+            var dt2 = document.getElementById("end_date "+1).value;
+
+            if (new Date(dt2).getTime() < new Date(dt1).getTime()) {
+
+                bootbox.alert({
+                    title: 'To Date',
+                    message: 'Status Updated On date cannot be before Target date.'
+                });
+                $('#Status Updated On').val("");
+            }
+        }
+
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
+

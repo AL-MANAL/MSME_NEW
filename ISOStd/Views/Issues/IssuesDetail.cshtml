@@ -1,0 +1,420 @@
+﻿@model ISOStd.Models.IssuesModels
+@using System.Data;
+@{
+    ViewBag.Title = "IssuesDetail";
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+}
+
+@section featured {
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+
+
+                    <a class="breadcrumb-item" onclick="HyperLinkProgressIconFunction();" href='@Url.Action("IssuesList", "Issue", new { id_issue = Model.id_issue } )'>
+                        <span class="breadcrumb-item">Issue</span>
+                    </a>
+
+                    <span class="breadcrumb-item active">Issue Detail</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            <div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+                    <a href='@Url.Action("IssuesPDF", "Issues", new { id_issue = Model.id_issue })' title="Generate Report">
+                        <i class="icon-printer2"></i>Generate Report
+                    </a>
+
+                    @*<div class="breadcrumb-elements-item dropdown p-0">
+            <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                <i class="icon-gear mr-2"></i>
+                Settings
+            </a>
+
+            <div class="dropdown-menu dropdown-menu-right">
+
+                <div class="dropdown-divider"></div>
+                <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+            </div>
+        </div>*@
+                </div>
+                </div>
+        </div>
+    </div>
+}
+
+
+<div class="card">
+    <div class="card-header header-elements-inline bg-primary">
+        <h5 class="card-title"> Issue Details</h5>
+        <div class="header-elements">
+            <div class="list-icons">
+                <a class="list-icons-item" data-action="collapse"></a>
+            </div>
+        </div>
+    </div>
+    <div>
+        <div class="card-header bg-white header-elements-sm-inline">
+
+            <div class="header-elements">
+
+                <div class="mt-2 mt-sm-0">
+                    @if (Obj.GetCurrentUserSession().Issues.Contains("3"))
+                    {
+                        <a class="btn bg-orange btn-labeled btn-labeled-left" data-style="radius" href='@Url.Action("IssueEdit", "Issues", new { id_issue = Model.id_issue })' title="Edit" onclick="HyperLinkProgressIconFunction()">
+                            <b>  <i class="icon-add-to-list"></i></b> Edit
+                        </a>
+                    }
+                    @Html.ActionLink("Back to List", "IssuesList", null, new { @class = "btn btn-outline bg-orange text-orange border-orange", onclick = "HyperLinkProgressIconFunction()" })
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <div class="container-fluid">
+            <table class="table table-dark table-bordered table-striped table-hover bg-blue-800">
+                <thead></thead>
+                <tbody>
+                    @*<tr class="row">
+            <td class="col" colspan="4" style="background-color: #4cc4dd; color: #fff; font-weight: bold;">Risk Identification</td>
+        </tr>*@
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.Issue_refno)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.Issue_refno)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.branch)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.branch)
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.Deptid)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.Deptid)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.Location)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.Location)
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.issue_date)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @if (Model.issue_date != null && Model.issue_date > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    @Model.issue_date.ToString("dd/MM/yyyy")
+                                }
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.reporting_to)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.reporting_to)
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.Issue)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.Issue)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.Effect)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.Effect)
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.Repet_Issue)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.Repet_Issue)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.Repet_Issue_detail)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.Repet_Issue_detail)
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.additional_details)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.additional_details)
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.Issue_Category)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.Issue_Category)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.IssueType)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.IssueType)
+                            </p>
+                        </td>
+                    </tr>
+
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.Impact)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.Impact)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.Impact_detail)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.Impact_detail)
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.Evidence)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <span class="bg-dark py-1 px-2 rounded">
+                                @if (Model.Evidence != null && Model.Evidence != "" && Model.Evidence.Length > 0)
+                                {
+                                    foreach (var docs in Model.Evidence.Trim(',').Split(','))
+                                    {
+                                        <p class="bg-dark py-1 px-2 rounded">
+
+                                            <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" style="color: orange;">
+                                                Preview
+                                            </a>
+                                        </p>
+                                    }
+                                }
+                            </span>
+                        </td>
+                   
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.notified_to)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.notified_to)
+                            </p>
+                        </td>
+                    </tr>
+</table>
+            <br />
+            <br />
+
+            <table class="table table-dark table-bordered table-striped table-hover bg-blue-800">
+
+                @if (Model.issue_status != null && Model.issue_status != "")
+                {
+                    <tr class="row">
+                        <td class="col" colspan="4" style="background-color: #4cc4dd; color: #fff; font-weight: bold;">Status Update</td>
+                    </tr>
+
+                    <tr class="row">
+
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.action_taken)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <span class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.action_taken)
+                            </span>
+                        </td>
+
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.status_upload)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <span class="bg-dark py-1 px-2 rounded">
+                                @if (Model.status_upload != null && Model.status_upload != "" && Model.status_upload.Length > 0)
+                                {
+                                    foreach (var docs in Model.status_upload.Trim(',').Split(','))
+                                    {
+                                        <p class="bg-dark py-1 px-2 rounded">
+                                            <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" style="color: orange;">
+                                                Preview
+                                            </a>
+                                        </p>
+                                    }
+                                }
+                            </span>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.issue_status)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <span class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.issue_status)
+                            </span>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.status_date)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @if (Model.status_date != null && Model.status_date > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    @Model.status_date.ToString("dd/MM/yyyy")
+                                }
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                      
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.status_notifiedto)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <span class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.status_notifiedto)
+                            </span>
+                        </td>
+                    </tr>
+                }
+            </table>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+  
+
+        $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+                                @:     text: '@TempData["alertdata"]',
+                                @:     type: 'error'
+                                @: }).show();
+                                             }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+                                @:       text: '@TempData["Successdata"]',
+                                @:       type: 'success'
+                @:}).show();
+        }
+});
+
+    </script>
+
+
+}

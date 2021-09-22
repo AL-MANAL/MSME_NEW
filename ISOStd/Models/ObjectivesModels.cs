@@ -145,13 +145,19 @@ namespace ISOStd.Models
         public string upload { get; set; }
 
         [Display(Name = "Resource Required")]
-        public string resource { get; set; }
-
-        //[Display(Name = "Status")]
-        //public string action_status { get; set; }
+        public string resource { get; set; }      
 
         [Display(Name = "Personnel Responsible")]
         public string resp_person { get; set; }
+
+        [Display(Name = "Action Status")]
+        public string action_status { get; set; }
+
+        [Display(Name = "Reasons for not completing")]
+        public string reason_notcomplete { get; set; }
+
+        [Display(Name = "Status Updated On")]
+        public DateTime status_updated_on { get; set; }
 
 
         // new fields
@@ -274,6 +280,43 @@ namespace ISOStd.Models
             }
             return false;
         }
+
+        internal bool FunUpdateActionPlanStatus(ObjectivesModelsList ObjList)
+        {
+            try
+            {
+                string sSqlstmt = "";
+                for (int i = 0; i < ObjList.ObjectivesMList.Count; i++)
+                {
+                    string sid_objective_action = "null";
+                    string sstatus_updated_on = "";
+
+
+                    if (ObjList.ObjectivesMList[i].id_objective_action != null && ObjList.ObjectivesMList[i].id_objective_action != "")
+                    {
+                        sid_objective_action = ObjList.ObjectivesMList[i].id_objective_action;
+                    }
+
+                    if (ObjList.ObjectivesMList[i].status_updated_on != null && ObjList.ObjectivesMList[i].status_updated_on > Convert.ToDateTime("01/01/0001"))
+                    {
+                        sstatus_updated_on = ObjList.ObjectivesMList[i].status_updated_on.ToString("yyyy-MM-dd");
+                    }
+
+                    sSqlstmt = sSqlstmt + " update t_objectives_actionplan set action_status = '" + ObjList.ObjectivesMList[i].action_status
+                       + "', status_updated_on = '" + sstatus_updated_on + "', reason_notcomplete ='" + ObjList.ObjectivesMList[i].reason_notcomplete + "'";
+
+                    sSqlstmt = sSqlstmt + " where id_objective_action='" + sid_objective_action + "';";
+                }
+
+                return objGlobalData.ExecuteQuery(sSqlstmt);
+            }
+            catch (Exception ex)
+            {
+                objGlobalData.AddFunctionalLog("Exception in FunUpdateActionPlanStatus: " + ex.ToString());
+            }
+            return false;
+        }
+
 
         internal bool FunDeleteObjectivePlan(string sid_objective_action)
         {

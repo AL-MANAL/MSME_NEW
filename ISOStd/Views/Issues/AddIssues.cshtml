@@ -101,7 +101,7 @@
                         </td>
                         <td class="col">
                             <div class="editor-field">
-                                <select class="form-control select-fixed-multiple" data-fouc id="Deptid" name="Deptid" @*multiple="multiple"*@ required>
+                                <select class="form-control select-fixed-multiple" data-fouc id="Deptid" name="Deptid" onchange="GetIssueTypeList()" required> @*Dont Give Multiple*@
                                     <option value='' hidden>Select</option>
                                     @if (ViewBag.Department != null)
                                     {
@@ -677,7 +677,7 @@
 
         function GetIssueType() {
             var issue_type = $("input[name='issue_type']:checked").val();
-           
+
             if (issue_type == "new") {
                 $("#Divnewissue").show();
                 $("#Divoldissue").hide();
@@ -688,10 +688,32 @@
                 $("#Divoldissue").show();
                 document.getElementById("Issue").value = "";
                 $("#Effect").val('').trigger("chosen:updated");
-               
+
             }
         }
 
+        function GetIssueTypeList() {
+            var Deptid = $("#Deptid option:selected").val();
+            if (Deptid != null && Deptid != "") {
+                jQuery.ajax({
+                    url: '@Url.Action("FunIssueList", "Issues")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'Deptid': Deptid },
+                    success: function (result) {
+                        $("#Repet_Issue").children('option').remove();
+                        $("#Repet_Issue").trigger('change');
+                        if (result != null && result.length > 0) {
+                            $.each(result, function (index, item) {
+                                $("#Repet_Issue").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                            });
+                            $("#Repet_Issue").trigger('change');
+                            return;
+                        }
+                    }
+                });
+            }
+        }
     </script>
     @Scripts.Render("~/bundles/jqueryval")
 }

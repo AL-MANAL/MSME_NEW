@@ -381,6 +381,8 @@
         System.Data.DataSet dsNC1 = new System.Data.DataSet();
         System.Data.DataSet dsNCAuditor = new System.Data.DataSet();
 
+        System.Data.DataSet dsApproveInspChecklist = new System.Data.DataSet();
+        System.Data.DataSet dsApproveInspPlan = new System.Data.DataSet();
 
         //Review Dataset
         System.Data.DataSet dsReviewMgmtDocuments = new System.Data.DataSet();
@@ -388,6 +390,7 @@
         System.Data.DataSet dsReviewRiskEnv = new System.Data.DataSet();
         System.Data.DataSet dsReviewRiskHRR = new System.Data.DataSet();
         System.Data.DataSet dsSuppReevalationReview = new System.Data.DataSet();
+        System.Data.DataSet dsReviewInspChecklist = new System.Data.DataSet();
 
         ISOStd.Models.RiskRegisterActivityModels objRisk = new ISOStd.Models.RiskRegisterActivityModels();
         ISOStd.Models.RiskRegisterActivityEvaluationModels objRiskEvl = new ISOStd.Models.RiskRegisterActivityEvaluationModels();
@@ -406,6 +409,7 @@
 
         dsSuppReevalationReview = objGlobaldata.getListPendingForReviewSuppReevaluation(objUser.empid);
 
+        dsReviewInspChecklist = objGlobaldata.getListPendingForReviewInspChecklist(objUser.empid);
 
         //Approval
 
@@ -460,6 +464,11 @@
         dsNC = objGlobaldata.getListPendingForApprovalNC(objUser.empid);
 
         dsDocReviewFreq = objGlobaldata.getListPendingForDocReviewFrequency(objUser.empid);
+
+        dsApproveInspChecklist = objGlobaldata.getListPendingForApproveInspChecklist(objUser.empid);
+
+        dsApproveInspPlan = objGlobaldata.getListPendingForApproveInspPlan(objUser.empid);
+
 
         //
 
@@ -589,6 +598,14 @@
             cnt += dsDocReviewFreq.Tables[0].Rows.Count;
         }
 
+        if (dsApproveInspChecklist != null)
+        {
+            cnt += dsApproveInspChecklist.Tables[0].Rows.Count;
+        }
+        if (dsApproveInspPlan != null)
+        {
+            cnt += dsApproveInspPlan.Tables[0].Rows.Count;
+        }
 
         //Auditcount 
         if (dsAudit != null)
@@ -647,6 +664,10 @@
         if (dsReviewRiskHRR != null)
         {
             cnt2 += dsReviewRiskHRR.Tables[0].Rows.Count;
+        }
+        if (dsReviewInspChecklist != null)
+        {
+            cnt2 += dsReviewInspChecklist.Tables[0].Rows.Count;
         }
     }
 
@@ -823,7 +844,17 @@
                                                 <li class="dropdown-header">HSE</li>
                                                 @if (objGlobaldata.GetCurrentUserSession().HseInsp.Contains("1"))
                                                 {
-                                                    <li class="nav-item"><a href='@Url.Action("InspectionList", "Inspection", null)' class="nav-link @(ViewBag.SubMenutype == "Inspection" ? "active" : "")" onclick="HyperLinkProgressIconFunction()"> HSE Inspection </a></li>
+                                                    <li class="nav-item nav-item-submenu">
+                                                        <a href="#" class="nav-link">Inspection</a>
+                                                        <ul class="nav nav-group-sub">
+                                                            <li class="nav-item">
+                                                                <a href='@Url.Action("AddInspectionSection", "Inspection", null)' class="nav-link @(ViewBag.SubMenutype == "AddInspectionSection" ? "active" : "")" onclick="HyperLinkProgressIconFunction()">Types of inspection </a>
+                                                            </li>
+                                                            <li class="nav-item"><a href='@Url.Action("GenerateInspChecklist", "Inspection", null)' class="nav-link @(ViewBag.SubMenutype == "GenerateInspChecklist" ? "active" : "")" onclick="HyperLinkProgressIconFunction()">Generate inspection checklist</a></li>
+                                                            <li class="nav-item"><a href='@Url.Action("PlanInspectionlist", "Inspection", null)' class="nav-link @(ViewBag.SubMenutype == "PlanInspectionlist" ? "active" : "")" onclick="HyperLinkProgressIconFunction()">Plan inspections</a></li>
+                                                            <li class="nav-item"><a href='@Url.Action("PerformInspectionlist", "Inspection", null)' class="nav-link @(ViewBag.SubMenutype == "PerformInspectionlist" ? "active" : "")" onclick="HyperLinkProgressIconFunction()">Perform inspections</a></li>
+                                                        </ul>
+                                                    </li>
                                                 }
                                                 <li><a href='@Url.Action("AccidentList", "AccidentReport", null)' class="nav-link @(ViewBag.SubMenutype == "AccidentReport" ? "active" : "")" onclick="HyperLinkProgressIconFunction()">Incident Report </a></li>
                                                 @if (objGlobaldata.GetCurrentUserSession().IncidentRpt.Contains("1"))
@@ -869,17 +900,17 @@
                                                     <li class="nav-item"><a href='@Url.Action("SafetyObservationList", "SafetyObservation", null)' class="nav-link @(ViewBag.SubMenutype == "SafetyObservation" ? "active" : "")" onclick="HyperLinkProgressIconFunction()">Safety Observation Card </a></li>
                                                 }
                                                 @*@if (objGlobaldata.GetCurrentUserSession().HseIndu.Contains("1"))
-                            {
-                                <li class="nav-item"><a href='@Url.Action("HseIndList", "HseInd", null)' class="nav-link @(ViewBag.SubMenutype == "HseInd" ? "active" : "")" onclick="HyperLinkProgressIconFunction()"> HSE Induction </a></li>
-                            }
-                            @if (objGlobaldata.GetCurrentUserSession().FirstBox.Contains("1"))
-                            {
-                                <li class="nav-item"><a href='@Url.Action("FirstAidBoxList", "FirstAidBox", null)' class="nav-link @(ViewBag.SubMenutype == "FirstAidBox" ? "active" : "")" onclick="HyperLinkProgressIconFunction()">First Aid Box </a></li>
-                            }
-                            @if (objGlobaldata.GetCurrentUserSession().FireInspection.Contains("1"))
-                            {
-                                <li class="nav-item"><a href='@Url.Action("FireEquipInspectionList", "FireEquipInspection", null)' class="nav-link @(ViewBag.SubMenutype == "FireEquipInspection" ? "active" : "")" onclick="HyperLinkProgressIconFunction()"> Fire Equipment Inspection </a></li>
-                            }*@
+        {
+            <li class="nav-item"><a href='@Url.Action("HseIndList", "HseInd", null)' class="nav-link @(ViewBag.SubMenutype == "HseInd" ? "active" : "")" onclick="HyperLinkProgressIconFunction()"> HSE Induction </a></li>
+        }
+        @if (objGlobaldata.GetCurrentUserSession().FirstBox.Contains("1"))
+        {
+            <li class="nav-item"><a href='@Url.Action("FirstAidBoxList", "FirstAidBox", null)' class="nav-link @(ViewBag.SubMenutype == "FirstAidBox" ? "active" : "")" onclick="HyperLinkProgressIconFunction()">First Aid Box </a></li>
+        }
+        @if (objGlobaldata.GetCurrentUserSession().FireInspection.Contains("1"))
+        {
+            <li class="nav-item"><a href='@Url.Action("FireEquipInspectionList", "FireEquipInspection", null)' class="nav-link @(ViewBag.SubMenutype == "FireEquipInspection" ? "active" : "")" onclick="HyperLinkProgressIconFunction()"> Fire Equipment Inspection </a></li>
+        }*@
                                             </ul>
                                         </li>
                                     </ul>
@@ -1204,7 +1235,34 @@
                         </div>
 
                         <div class="dropdown-content-body dropdown-scrollable">
+                            @if (dsReviewInspChecklist != null && dsReviewInspChecklist.Tables.Count > 0 && dsReviewInspChecklist.Tables[0].Rows.Count > 0)
+                            {
+                                <hr />
+                                <p class="font-weight-bold text-center">Inspection checklist</p>
+                                <hr />
+                                <ul class="media-list">
+                                    @for (int i = 0; i < dsReviewInspChecklist.Tables[0].Rows.Count; i++)
+                                    {
 
+                                        <li class="media" id="@dsReviewInspChecklist.Tables[0].Rows[i]["id_question_master"].ToString()">
+                                            <div class="mr-3 w-25">
+
+                                                <a href='@Url.Action("InspChecklistApprovalDetails", "Inspection", new { id_question_master= dsReviewInspChecklist.Tables[0].Rows[i]["id_question_master"].ToString(),status="Review"})' title="Document Details" class="badge badge-flat badge-icon border-teal text-teal-600"><i class="icon-file-text2"></i></a>
+                                                <br /><span class="font-weight-semibold"> Logged By <text class="text-blue">@objGlobaldata.GetMultiHrEmpNameById(dsReviewInspChecklist.Tables[0].Rows[i]["logged_by"].ToString())</text></span>
+                                            </div>
+                                            <div class="media-body">
+
+                                                <div class="media-title">
+
+                                                    <span class="font-weight-semibold">Checklist Ref:<text class="text-blue">@dsReviewInspChecklist.Tables[0].Rows[i]["checklist_ref"].ToString() </text></span>
+                                                    <br />
+                                                    <span class="font-weight-semibold">Inspection Type:<text class="text-blue">@objGlobaldata.GetDropdownitemById(dsReviewInspChecklist.Tables[0].Rows[i]["insp_type"].ToString()) </text></span>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    }
+                                </ul>
+                            }
                             @if (dsReviewMgmtDocuments != null && dsReviewMgmtDocuments.Tables.Count > 0 && dsReviewMgmtDocuments.Tables[0].Rows.Count > 0)
                             {
                                 <hr />
@@ -1223,11 +1281,11 @@
                                             <div class="media-body">
                                                 <div class="btn-group-vertical float-right">
                                                     @*<a href='@Url.Action("MgmtDocumentsApproveNoty", "MgmtDocuments", new { idMgmt = dsMgmtDocument.Tables[0].Rows[i]["idMgmt"].ToString(), iStatus = 1, PendingFlg = "true", DocName = dsMgmtDocument.Tables[0].Rows[i]["DocName"].ToString(), DocRef = dsMgmtDocument.Tables[0].Rows[i]["DocRef"].ToString(), Document = dsMgmtDocument.Tables[0].Rows[i]["DocUploadPath"].ToString() })' title="Approve Mgmt Documents" style="color:green;">
-                                                <span class="badge badge-info">Approve</span>
-                                            </a>
-                                            <a href='@Url.Action("MgmtDocumentsApproveNoty", "MgmtDocuments", new { idMgmt = dsMgmtDocument.Tables[0].Rows[i]["idMgmt"].ToString(), iStatus = 2, PendingFlg = "true", DocName = dsMgmtDocument.Tables[0].Rows[i]["DocName"].ToString(), DocRef = dsMgmtDocument.Tables[0].Rows[i]["DocRef"].ToString(), Document = dsMgmtDocument.Tables[0].Rows[i]["DocUploadPath"].ToString() })' title="Reject Mgmt Documents" style="color:red;">
-                                                <span class="badge badge-danger mt-1 mb-1">Reject</span>
-                                            </a>*@
+                                    <span class="badge badge-info">Approve</span>
+                                </a>
+                                <a href='@Url.Action("MgmtDocumentsApproveNoty", "MgmtDocuments", new { idMgmt = dsMgmtDocument.Tables[0].Rows[i]["idMgmt"].ToString(), iStatus = 2, PendingFlg = "true", DocName = dsMgmtDocument.Tables[0].Rows[i]["DocName"].ToString(), DocRef = dsMgmtDocument.Tables[0].Rows[i]["DocRef"].ToString(), Document = dsMgmtDocument.Tables[0].Rows[i]["DocUploadPath"].ToString() })' title="Reject Mgmt Documents" style="color:red;">
+                                    <span class="badge badge-danger mt-1 mb-1">Reject</span>
+                                </a>*@
 
                                                     <span class="badge badge-info ripple" title="Approve Mgmt Documents" onclick="MgmtDocumentsReviewNoty(idMgmt = '@dsReviewMgmtDocuments.Tables[0].Rows[i]["idMgmt"].ToString()', iStatus = '1', PendingFlg = 'true', DocName = '@dsReviewMgmtDocuments.Tables[0].Rows[i]["DocName"].ToString()', DocRef = '@dsReviewMgmtDocuments.Tables[0].Rows[i]["DocRef"].ToString()', Document = '@dsReviewMgmtDocuments.Tables[0].Rows[i]["DocUploadPath"].ToString()') " style="cursor:pointer;">Approve</span>
                                                     <span class="badge badge-danger ripple mt-1 mb-1" title="Reject Mgmt Documents" onclick="MgmtDocumentsReviewNoty(idMgmt = '@dsReviewMgmtDocuments.Tables[0].Rows[i]["idMgmt"].ToString()', iStatus = '2', PendingFlg = 'true', DocName = '@dsReviewMgmtDocuments.Tables[0].Rows[i]["DocName"].ToString()', DocRef = '@dsReviewMgmtDocuments.Tables[0].Rows[i]["DocRef"].ToString()', Document = '@dsReviewMgmtDocuments.Tables[0].Rows[i]["DocUploadPath"].ToString()')" style="cursor:pointer;">Reject</span>
@@ -1263,8 +1321,8 @@
                                             <div class="media-body">
                                                 <div class="btn-group-vertical float-right">
                                                     @*<a href='@Url.Action("RiskActivityHRRApprovedNoty", "RiskRegisterActivity", new { risk_hrr_id = dsHRRRisk.Tables[0].Rows[i]["risk_hrr_id"].ToString(), PendingFlg = "true" })' title="Review document details" style="color:red;">
-                                                <span class="badge badge-info">Approve</span>
-                                            </a>*@
+                                    <span class="badge badge-info">Approve</span>
+                                </a>*@
                                                     <span class="badge badge-info ripple" title="Review document details" onclick="RiskActivityHRRReviewNoty(risk_hrr_id = '@dsReviewRiskHRR.Tables[0].Rows[i]["risk_hrr_id"].ToString()', PendingFlg = 'true' )" style="cursor:pointer;">Approve</span>
 
                                                 </div>
@@ -1301,8 +1359,8 @@
                                             <div class="media-body">
                                                 <div class="btn-group-vertical float-right">
                                                     @*<a href='@Url.Action("RiskActivityApprovedNoty", "RiskRegisterActivity", new { Regeval_Id = dsRisk.Tables[0].Rows[i]["Reg_Activity_eval_Id"].ToString(), PendingFlg = "true" })' title="Review document details" style="color:red;">
-                                                <span class="badge badge-info">Approve</span>
-                                            </a>*@
+                                    <span class="badge badge-info">Approve</span>
+                                </a>*@
 
                                                     <span class="badge badge-info ripple" title="Review document details" onclick="RiskActivityReviewNoty(Regeval_Id = '@dsReviewRiskEnv.Tables[0].Rows[i]["Reg_Activity_eval_Id"].ToString()', PendingFlg = 'true')" style="cursor:pointer;">Approve</span>
                                                 </div>
@@ -1339,8 +1397,8 @@
                                             <div class="media-body">
                                                 <div class="btn-group-vertical float-right">
                                                     @*<a href='@Url.Action("LegalRegisterApproveNoty", "LegalRegister", new { LegalRequirement_Id = dslegalregister.Tables[0].Rows[i]["LegalRequirement_Id"].ToString(), PendingFlg = "true" })' title="Approve Legal Register details" style="color:red;">
-                                                <span class="badge badge-info">Approve</span>
-                                            </a>*@
+                                    <span class="badge badge-info">Approve</span>
+                                </a>*@
                                                     <span class="badge badge-info ripple" title="Approve Legal Register details" onclick="LegalRegisterReviewNoty(LegalRequirement_Id = '@dsReviewLegalRegister.Tables[0].Rows[i]["LegalRequirement_Id"].ToString()', PendingFlg = 'true' )" style="cursor:pointer;">Approve</span>
 
                                                 </div>
@@ -2383,6 +2441,64 @@
                                 </ul>
                             }
 
+                            @if (dsApproveInspPlan != null && dsApproveInspPlan.Tables.Count > 0 && dsApproveInspPlan.Tables[0].Rows.Count > 0)
+                            {
+                                <hr />
+                                <p class="font-weight-bold text-center">Inspection Plan</p>
+                                <hr />
+                                <ul class="media-list">
+                                    @for (int i = 0; i < dsApproveInspPlan.Tables[0].Rows.Count; i++)
+                                    {
+
+                                        <li class="media" id="@dsApproveInspPlan.Tables[0].Rows[i]["id_inspection_plan"].ToString()">
+                                            <div class="mr-3 w-25">
+
+                                                <a href='@Url.Action("PlanInspectionApprovalDetails", "Inspection", new { id_inspection_plan= dsApproveInspPlan.Tables[0].Rows[i]["id_inspection_plan"].ToString()})' title="Document Details" class="badge badge-flat badge-icon border-teal text-teal-600"><i class="icon-file-text2"></i></a>
+                                                <br /><span class="font-weight-semibold"> Logged By <text class="text-blue">@objGlobaldata.GetMultiHrEmpNameById(dsApproveInspPlan.Tables[0].Rows[i]["logged_by"].ToString())</text></span>
+                                            </div>
+                                            <div class="media-body">
+
+                                                <div class="media-title">
+
+                                                    <span class="font-weight-semibold">Checklist Ref:<text class="text-blue">@objGlobaldata.GetInspectionChecklistRefNamebyId(dsApproveInspPlan.Tables[0].Rows[i]["checklist_ref"].ToString()) </text></span>
+                                                    <br />
+                                                    <span class="font-weight-semibold">Inspection Type:<text class="text-blue">@objGlobaldata.GetDropdownitemById(dsApproveInspPlan.Tables[0].Rows[i]["insp_type"].ToString()) </text></span>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    }
+                                </ul>
+                            }
+
+                            @if (dsApproveInspChecklist != null && dsApproveInspChecklist.Tables.Count > 0 && dsApproveInspChecklist.Tables[0].Rows.Count > 0)
+                            {
+                                <hr />
+                                <p class="font-weight-bold text-center">Inspection checklist</p>
+                                <hr />
+                                <ul class="media-list">
+                                    @for (int i = 0; i < dsApproveInspChecklist.Tables[0].Rows.Count; i++)
+                                    {
+
+                                        <li class="media" id="@dsApproveInspChecklist.Tables[0].Rows[i]["id_question_master"].ToString()">
+                                            <div class="mr-3 w-25">
+
+                                                <a href='@Url.Action("InspChecklistApprovalDetails", "Inspection", new { id_question_master= dsApproveInspChecklist.Tables[0].Rows[i]["id_question_master"].ToString(),status="Approve"})' title="Document Details" class="badge badge-flat badge-icon border-teal text-teal-600"><i class="icon-file-text2"></i></a>
+                                                <br /><span class="font-weight-semibold"> Logged By <text class="text-blue">@objGlobaldata.GetMultiHrEmpNameById(dsApproveInspChecklist.Tables[0].Rows[i]["logged_by"].ToString())</text></span>
+                                            </div>
+                                            <div class="media-body">
+
+                                                <div class="media-title">
+
+                                                    <span class="font-weight-semibold">Checklist Ref:<text class="text-blue">@dsApproveInspChecklist.Tables[0].Rows[i]["checklist_ref"].ToString() </text></span>
+                                                    <br />
+                                                    <span class="font-weight-semibold">Inspection Type:<text class="text-blue">@objGlobaldata.GetDropdownitemById(dsApproveInspChecklist.Tables[0].Rows[i]["insp_type"].ToString()) </text></span>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    }
+                                </ul>
+                            }
+
 
                             @*AuditApproval*@
                             @if (dsAuditProcess != null && dsAuditProcess.Tables.Count > 0 && dsAuditProcess.Tables[0].Rows.Count > 0)
@@ -3176,7 +3292,17 @@
                                 <ul class="nav nav-group-sub" data-submenu-title="HSE">
                                     @if (objGlobaldata.GetCurrentUserSession().HseInsp.Contains("1"))
                                     {
-                                        <li class="nav-item"><a href='@Url.Action("InspectionList", "Inspection", null)' class="nav-link @(ViewBag.SubMenutype == "Inspection" ? "active" : "")" onclick="HyperLinkProgressIconFunction()"> HSE Inspection </a></li>
+                                        <li class="nav-item nav-item-submenu">
+                                            <a href="#" class="nav-link">Inspection</a>
+                                            <ul class="nav nav-group-sub">
+                                                <li class="nav-item">
+                                                    <a href='@Url.Action("AddInspectionSection", "Inspection", null)' class="nav-link @(ViewBag.SubMenutype == "AddInspectionSection" ? "active" : "")" onclick="HyperLinkProgressIconFunction()">Types of inspection </a>
+                                                </li>
+                                                <li class="nav-item"><a href='@Url.Action("GenerateInspChecklist", "Inspection", null)' class="nav-link @(ViewBag.SubMenutype == "GenerateInspChecklist" ? "active" : "")" onclick="HyperLinkProgressIconFunction()">Generate inspection checklist</a></li>
+                                                <li class="nav-item"><a href='@Url.Action("PlanInspectionlist", "Inspection", null)' class="nav-link @(ViewBag.SubMenutype == "PlanInspectionlist" ? "active" : "")" onclick="HyperLinkProgressIconFunction()">Plan inspections</a></li>
+                                                <li class="nav-item"><a href='@Url.Action("PerformInspectionlist", "Inspection", null)' class="nav-link @(ViewBag.SubMenutype == "PerformInspectionlist" ? "active" : "")" onclick="HyperLinkProgressIconFunction()">Perform inspections</a></li>
+                                            </ul>
+                                        </li>
                                     }
                                     <li class="nav-item"><a href='@Url.Action("AccidentList", "AccidentReport", null)' class="nav-link @(ViewBag.SubMenutype == "AccidentReport" ? "active" : "")" onclick="HyperLinkProgressIconFunction()">Incident Report </a></li>
                                     @if (objGlobaldata.GetCurrentUserSession().IncidentRpt.Contains("1"))
@@ -3209,17 +3335,17 @@
                                         <li class="nav-item"><a href='@Url.Action("PPEIssueLogList", "PPEIssueLog", null)' class="nav-link @(ViewBag.SubMenutype == "PPEIssueLog" ? "active" : "")" onclick="HyperLinkProgressIconFunction()">  PPE  </a></li>
                                     }
                                     @*@if (objGlobaldata.GetCurrentUserSession().AirNoise.Contains("1"))
-                    {
-                        <li class="nav-item"><a href='@Url.Action("QualitySurveyList", "QualitySurvey", null)' class="nav-link @(ViewBag.SubMenutype == "QualitySurvey" ? "active" : "")" onclick="HyperLinkProgressIconFunction()"> Air/Water/Noise Quality Survey </a></li>
-                    }
-                    @if (objGlobaldata.GetCurrentUserSession().Waste.Contains("1"))
-                    {
-                        <li class="nav-item"><a href='@Url.Action("WasteManagementList", "WasteManagement", null)' class="nav-link @(ViewBag.SubMenutype == "WasteManagement" ? "active" : "")" onclick="HyperLinkProgressIconFunction()"> Waste Management </a></li>
-                    }
-                    @if (objGlobaldata.GetCurrentUserSession().ObservCard.Contains("1"))
-                    {
-                        <li class="nav-item"><a href='@Url.Action("SafetyObservationList", "SafetyObservation", null)' class="nav-link @(ViewBag.SubMenutype == "SafetyObservation" ? "active" : "")" onclick="HyperLinkProgressIconFunction()">Safety Observation Card </a></li>
-                    } *@
+        {
+            <li class="nav-item"><a href='@Url.Action("QualitySurveyList", "QualitySurvey", null)' class="nav-link @(ViewBag.SubMenutype == "QualitySurvey" ? "active" : "")" onclick="HyperLinkProgressIconFunction()"> Air/Water/Noise Quality Survey </a></li>
+        }
+        @if (objGlobaldata.GetCurrentUserSession().Waste.Contains("1"))
+        {
+            <li class="nav-item"><a href='@Url.Action("WasteManagementList", "WasteManagement", null)' class="nav-link @(ViewBag.SubMenutype == "WasteManagement" ? "active" : "")" onclick="HyperLinkProgressIconFunction()"> Waste Management </a></li>
+        }
+        @if (objGlobaldata.GetCurrentUserSession().ObservCard.Contains("1"))
+        {
+            <li class="nav-item"><a href='@Url.Action("SafetyObservationList", "SafetyObservation", null)' class="nav-link @(ViewBag.SubMenutype == "SafetyObservation" ? "active" : "")" onclick="HyperLinkProgressIconFunction()">Safety Observation Card </a></li>
+        } *@
                                 </ul>
                             </li>
                         }

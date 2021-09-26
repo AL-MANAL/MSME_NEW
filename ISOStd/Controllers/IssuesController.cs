@@ -52,7 +52,7 @@ namespace ISOStd.Controllers
                 ViewBag.Department = objGlobaldata.GetDepartmentListbox(objIssues.branch);
                 ViewBag.Location = objGlobaldata.GetDivisionLocationList(objIssues.branch);
                 ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
-                ViewBag.Repet_Issue = objGlobaldata.GetAllIssueList();
+                ViewBag.Repet_Issue = objGlobaldata.GetAllIssueList(objIssues.Deptid);
             }
             catch (Exception ex)
             {
@@ -615,7 +615,7 @@ namespace ISOStd.Controllers
                 ViewBag.IssueCategory = objGlobaldata.GetDropdownList("Issue Category Type");
                 ViewBag.IssueEffect = objGlobaldata.GetDropdownList("Issue Effect Type");
                 ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
-                ViewBag.Repet_Issue = objGlobaldata.GetAllIssueList();
+                
 
                 if (Request.QueryString["id_issue"] != null && Request.QueryString["id_issue"] != "")
                 {
@@ -673,7 +673,7 @@ namespace ISOStd.Controllers
                         {
                             ViewBag.ImpactDetails = objGlobaldata.GetDropdownList("Issue Impact Extreme");
                         }
-
+                        ViewBag.Repet_Issue = objGlobaldata.GetAllIssueList(dsIssueList.Tables[0].Rows[0]["Deptid"].ToString());
 
 
                         if (dsIssueList.Tables[0].Rows[0]["notified_to"].ToString() != "")
@@ -1026,6 +1026,12 @@ namespace ISOStd.Controllers
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
             return RedirectToAction("IssuesList");
+        }
+
+        public ActionResult FunIssueList(string Deptid)
+        {
+            MultiSelectList lstDept = objGlobaldata.GetAllIssueList(Deptid);
+            return Json(lstDept);
         }
     }
 }

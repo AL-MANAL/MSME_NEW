@@ -25,28 +25,12 @@
                     <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
                         <span class="breadcrumb-item"> Home</span>
                     </a>
-                    <a href="@Url.Action("InspectionList", "Inspection", null)" class="breadcrumb-item">
-                        <span class="breadcrumb-item"> Inspection List</span>
-                    </a>
+                   
                     <span class="breadcrumb-item active"> Add Inspection Section</span>
                 </div>
                 <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
             </div>
 
-            @*<div class="header-elements d-none">
-                <div class="breadcrumb justify-content-center">
-                    <div class="breadcrumb-elements-item dropdown p-0">
-                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
-                            <i class="icon-gear mr-2"></i>
-                            Settings
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right">
-                            <div class="dropdown-divider"></div>
-                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
-                        </div>
-                    </div>
-                </div>
-            </div>*@
         </div>
     </div>
 }
@@ -72,24 +56,25 @@
                 {
                     @Html.AntiForgeryToken()
                     @Html.ValidationSummary(true)
-                      
-                    <input type="hidden" id="branch_name" name="branch_name" value="@ViewBag.Branch_name" />
+
+                    <input type="hidden" name="Department_Id" id="Department_Id" value="@ViewBag.Dept_Id" />
+
                     <div class="container-fluid">
                         <table class="table table-lg">
                             <tbody>
                                 <tr>
                                     <td>
-                                        @Html.LabelFor(m => m.Category)
+                                        @Html.LabelFor(m => m.dept)
                                     </td>
                                     <td>
 
-                                        <select class="select-fixed-single" data-fouc id="Category" name="Category" onchange="GetSection()" required>
+                                        <select class="select-fixed-single" data-fouc id="dept" name="dept" required onchange="GetSection()">
                                             <option value='' hidden>Select</option>
-                                            @if (ViewBag.Category != null && ViewBag.Category_Id != null)
+                                            @if (ViewBag.Department != null && ViewBag.Dept_Id != null)
                                             {
-                                                foreach (var item in ViewBag.Category)
+                                                foreach (var item in ViewBag.Department)
                                                 {
-                                                    if (item.Value == ViewBag.Category_Id)
+                                                    if (item.Value == ViewBag.Dept_Id)
                                                     {
                                                         <option value="@item.Value" selected>@item.Text</option>
                                                     }
@@ -100,9 +85,9 @@
                                                 }
                                             }
 
-                                            else if (ViewBag.Category != null)
+                                            else if (ViewBag.Department != null)
                                             {
-                                                foreach (var item in ViewBag.Category)
+                                                foreach (var item in ViewBag.Department)
                                                 {
                                                     <option value='@item.Value'>@item.Text</option>
                                                 }
@@ -121,49 +106,14 @@
                                         @Html.ValidationMessageFor(model => model.Section)
                                     </td>
                                 </tr>
-                                <tr>
-                                    <td>
-                                        @Html.LabelFor(model => model.Resp_person)
-                                    </td>
-                                    @*<td>
-                                        <input class="form-control" type="text" id="Resp_person" name="Resp_person" required />
-                                        @Html.ValidationMessageFor(model => model.Resp_person)
-                                    </td>*@
-                                     <td>
-                                            <select class="form-control select-fixed-multiple" data-fouc id="Resp_person" name="Resp_person" multiple="multiple" >
-                                                <option value='' hidden>Select</option>
-                                                @if (ViewBag.EmpList != null && ViewBag.Emp_Id != null)
-                                                {
-                                                    foreach (var item in ViewBag.EmpList)
-                                                    {
-                                                        if (Array.IndexOf(Model.Resp_person.ToString().Split(','), item.Value) >= 0)
-                                                        {
-                                                            <option value="@item.Value" selected>@item.Text</option>
-                                                        }
-                                                        else
-                                                        {
-                                                            <option value="@item.Value">@item.Text</option>
-                                                        }
-                                                    }
-                                                }
-
-                                                else if (ViewBag.EmpList != null)
-                                                {
-                                                    foreach (var item in ViewBag.EmpList)
-                                                    {
-                                                        <option value='@item.Value'>@item.Text</option>
-                                                    }
-                                                }
-                                            </select>
-                                        </td>
-                                </tr>
+                           
                             </tbody>
                         </table>
                     </div>
 
                     <div class="text-right">
                         <button type="submit" class="btn bg-indigo-400">Submit<i class="icon-paperplane ml-2"></i></button>
-                        @Html.ActionLink("Back to List", "InspectionList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+                      
                     </div>
                 }
             </div>
@@ -190,40 +140,26 @@
 
 
                 <div class="container-fluid">
-
-
-                    @using (Html.BeginForm("AddInspectionSection", "Inspection", FormMethod.Post, new { id = "form2", name = "form2" }))
-                    {
-                        @Html.AntiForgeryToken()
-                        @Html.ValidationSummary(true)
-
-
-                        <input type="hidden" name="Category_Id" id="Category_Id" value="@ViewBag.Category_Id" />
-                        <input type="hidden" name="Cat_Id" id="Cat_Id" value="" />
-
                         <table id="tblMeetingList" class="table table-lg">
                             @if (dsItems.Tables.Count > 0 && dsItems.Tables[0].Rows.Count > 0)
                             {
 
                                 <tr style="background-color: #e5eafe; color: #0099ff; font-weight: bold;">
+                                    <th>Department</th>
                                     <th>Section</th>
-                                    <th>Responsible Person</th>
                                     <th>Action</th>
                                 </tr>
                                 for (int item = 0; item < dsItems.Tables[0].Rows.Count; item++)
                                 {
                                     <tr>
                                         <td>
-                                            <input type="text" class="form-control" id="Section @dsItems.Tables[0].Rows[item]["id_inspection"].ToString()" name="Section @dsItems.Tables[0].Rows[item]["id_inspection"].ToString()" value="@dsItems.Tables[0].Rows[item]["Section"].ToString()" />
-                                        </td>
-                                        <td>
-                                            <select class="form-control select-fixed-multiple" data-fouc id="Resp_person @dsItems.Tables[0].Rows[item]["id_inspection"].ToString()" name="Resp_person @dsItems.Tables[0].Rows[item]["id_inspection"].ToString()" multiple="multiple" required>
+                                            <select class="form-control select-fixed-multiple" data-fouc id="dept @dsItems.Tables[0].Rows[item]["id_inspection"].ToString()" name="dept @dsItems.Tables[0].Rows[item]["id_inspection"].ToString()" required>
                                                 <option value='' hidden>Select</option>
-                                                @if (ViewBag.EmpList != null)
+                                                @if (ViewBag.Department != null)
                                                 {
-                                                    foreach (var data in ViewBag.EmpList)
+                                                    foreach (var data in ViewBag.Department)
                                                     {
-                                                        if (Array.IndexOf(dsItems.Tables[0].Rows[item]["Resp_person"].ToString().Split(','), data.Value) >= 0)
+                                                        if (Array.IndexOf(dsItems.Tables[0].Rows[item]["dept"].ToString().Split(','), data.Value) >= 0)
                                                         {
                                                             <option value="@data.Value" selected>@data.Text</option>
                                                         }
@@ -234,9 +170,9 @@
                                                     }
                                                 }
 
-                                                else if (ViewBag.EmpList != null)
+                                                else if (ViewBag.Department != null)
                                                 {
-                                                    foreach (var data in ViewBag.EmpList)
+                                                    foreach (var data in ViewBag.Department)
                                                     {
                                                         <option value='@data.Value'>@data.Text</option>
                                                     }
@@ -244,78 +180,20 @@
                                             </select>
                                         </td>
                                         <td>
+                                            <input type="text" class="form-control" id="Section @dsItems.Tables[0].Rows[item]["id_inspection"].ToString()" name="Section @dsItems.Tables[0].Rows[item]["id_inspection"].ToString()" value="@dsItems.Tables[0].Rows[item]["Section"].ToString()" />
+                                        </td>                                     
+                                        <td>
                                             <span title="Update Inspection Rating"
-                                                  onclick="UpdateSection1(@dsItems.Tables[0].Rows[item]["id_inspection"].ToString())" style="cursor:pointer;" class="badge badge-info">Edit</span>
+                                                  onclick="UpdateSection(@dsItems.Tables[0].Rows[item]["id_inspection"].ToString())" style="cursor:pointer;" class="badge badge-info">Edit</span>
 
                                             <span class="badge badge-danger" title="Delete Inspection Rating"
                                                   onclick="DeleteSection(@dsItems.Tables[0].Rows[item]["id_inspection"].ToString())" style="cursor:pointer;">Delete</span>
                                         </td>
-
                                     </tr>
-
                                 }
                             }
                             </table>
-                        @*<table id="tblMeetingList" class="table table-lg">
-
-                <tr style="background-color: #e5eafe; color: #0099ff; font-weight: bold;">
-                    <th>Section</th>
-                    <th>Responsible Person</th>
-                    <th>Action</th>
-                </tr>
-                @if (ViewBag.CategorySection != null)
-                {
-
-                    int index = 2;
-                    foreach (var item in ViewBag.CategorySection)
-                    {
-                <tr>
-                    <td>
-                         <input type="text" class="form-control" id="Section @item.Value" name="Section @item.Value" value="@item.Text" />
-                    </td>
-                    <td>
-                         <select class="form-control select-fixed-multiple" data-fouc id="Resp_person @item.Value" name="Resp_person @item.Value" multiple="multiple" required>
-                            <option value='' hidden>Select</option>
-                            @if (ViewBag.EmpList != null && ViewBag.CategoryRespPerson != "")
-                            {
-                                foreach (var data in ViewBag.EmpList)
-                                {
-                                    if (Array.IndexOf(item.Text.ToString().Split(','), data.Value) >= 0)
-                                    {
-                                        <option value="@data.Value" selected>@data.Text</option>
-                                    }
-                                    else
-                                    {
-                                        <option value="@data.Value">@data.Text</option>
-                                    }
-                                }
-                            }
-
-                            else if (ViewBag.EmpList != null)
-                            {
-                                foreach (var data in ViewBag.EmpList)
-                                {
-                                    <option value='@data.Value'>@data.Text</option>
-                                }
-                            }
-                        </select>
-                    </td>
-                    <td>
-                        <span title="Update Inspection Rating"
-                              onclick="UpdateSection(@item.Value)" style="cursor:pointer;" class="badge badge-info">Edit</span>
-
-                        <span class="badge badge-danger" title="Delete Inspection Rating"
-                              onclick="DeleteSection(@item.Value)" style="cursor:pointer;">Delete</span>
-                    </td>
-
-                </tr>
-                        index++;
-                    }
-                }
-            </table>*@
-
-
-                    }
+                                  
                 </div>
 
             </div>
@@ -352,16 +230,14 @@
         @:       type: 'success'
         @:   }).show();
     }
-
-
-        GetSection();
+        //GetSection();
     });
     //zzz----
 
     
 
          function DeleteSection(id_Section) {
-             var Category = document.getElementById("Category_Id").value;
+             var Department = document.getElementById("Department_Id").value;
 
              bootbox.confirm({
                  title: 'Confirm dialog',
@@ -383,15 +259,14 @@
                          url: '@Url.Action("InspectionSectionDelete1", "Inspection")',
                          type: 'POST',
                          dataType: "json",
-                         data: { 'id_inspection': id_Section, 'Category': Category },
+                         data: { 'id_inspection': id_Section},
                          success: function (data) {
-                             var Category = document.getElementById("Category_Id").value;
-
+                           
                              window.location.href =
                                  window.location.protocol + "//" +
                                  window.location.host +
                                  window.location.pathname +
-                                '?sCategory=' + Category;
+                                '?sDepartment=' + Department;
                              }
                          });
                          return true;
@@ -407,25 +282,24 @@
 
 
          function UpdateSection(id_Section) {
-
+           
              var Section = document.getElementById("Section " + id_Section).value;
              //var Resp_person = document.getElementById("Resp_person " + id_Section).value;
-             var Resp_person = $("#Resp_person" + id_Section).val();
+             var dept = $("#dept" + id_Section).val();
 
              jQuery.ajax({
                  url: '@Url.Action("InspectionSectionUpdate", "Inspection")',
                  type: 'POST',
                  dataType: "json",
-                 data: { 'id_inspection': id_Section, 'Section': Section, 'Resp_person': Resp_person },
+                 data: { 'id_inspection': id_Section, 'Section': Section, 'dept': dept },
                  success: function (result) {
-                     var Category = document.getElementById("Category").value;
-
+                    
                      window.location.href =
                          window.location.protocol + "//" +
                          window.location.host +
                          window.location.pathname
                          +
-                         '?sCategory=' + Category;
+                         '?sDepartment=' + dept;
 
                      //window.location.href =
                      //    window.location.protocol + "//" +
@@ -468,14 +342,14 @@
                  dataType: "json",
                  data: { 'id_inspection': id_Section, 'Section': Section, 'Resp_person': Resp_person },
                  success: function (result) {
-                     var Category = document.getElementById("Category").value;
+                     var Department = document.getElementById("Department").value;
 
                      window.location.href =
                          window.location.protocol + "//" +
                          window.location.host +
                          window.location.pathname
                          +
-                         '?sCategory=' + Category;
+                         '?sDepartment=' + Department;
 
                      //window.location.href =
                      //    window.location.protocol + "//" +
@@ -488,15 +362,15 @@
          }
 
          function GetSection() {
-             var Category = $('#Category').val();
-             document.getElementById("Cat_Id").value = Category;
-             var branch_name = document.getElementById("branch_name").value;
-             if (Category != "") {
+             var Department = $('#dept').val();
+
+       
+             if (Department != "") {
                  jQuery.ajax({
                      url: '@Url.Action("FunGetSectionRespPerson", "Inspection")',
                      type: 'POST',
                      dataType: "json",
-                     data: { 'Category': Category, 'branch_name': branch_name },
+                     data: { 'dept': Department },
                      success: function (result) {
 
                          var table = document.getElementById("tblMeetingList");
@@ -523,8 +397,8 @@
 
 
 
-                             cellth0.innerHTML = "<th>Section</th>";
-                             cellth1.innerHTML = "<th>Resp Person</th>";
+                             cellth0.innerHTML = "<th>Department</th>";
+                             cellth1.innerHTML = "<th>Section</th>";
                              cellth2.innerHTML = "<th>Action</th>";
 
                              table.rows[1].cells[0].style = "color:#0099ff";
@@ -549,14 +423,12 @@
                                  var dataarray = new Array();
                                  dataarray = data.split("_");
 
-                                 cell0.innerHTML = "<input type='textbox' class='form-control' id='Section " + Id + "' name='Section " + Id + "' value='" + dataarray[0] +"'/>";
-    
-                                 cell1.innerHTML = "<select class='form-control select-fixed-multiple' id='Resp_person" + Id + "' name='Resp_person" + Id + "' multiple='multiple' required> <option value = '" + dataarray[1] + "' selected> " + dataarray[2] + "</option>@if (ViewBag.EmpList != null)
+                                 cell0.innerHTML = "<select class='form-control select-fixed-multiple' id='dept" + Id + "' name='dept" + Id + "'  required> <option value = '" + dataarray[1] + "' selected> " + dataarray[2] + "</option>@if (ViewBag.Department != null)
                                  {  
-                    foreach (var item in ViewBag.EmpList)
-                    { <option value='@item.Value'>@item.Text</option> }
-                    }</select>";
-
+                                     foreach (var item in ViewBag.Department)
+                                     { <option value='@item.Value'>@item.Text</option> }
+                                     }</select>";
+                                 cell1.innerHTML = "<input type='textbox' class='form-control' id='Section " + Id + "' name='Section " + Id + "' value='" + dataarray[0] +"'/>";
                                  cell2.innerHTML = "<span class='badge badge-info' style='cursor: pointer;' title='Update Section' onclick='UpdateSection(" + Id + ")'>Edit</span>"
                                      + " <span class='badge badge-danger' onclick='DeleteSection(" + Id + ")' style='cursor:pointer;' title='Delete Section'/>Delete</span>";
 
@@ -568,21 +440,21 @@
                                  });
                              }
                          }
-                         else {
-                             document.getElementById("tblMeetingList").style.display = "none";
-                             bootbox.dialog({
-                                 title: 'No Data Exist',
-                                 message: 'No Item exists, please add Items and then try again',                                                                  
-                             });
+                         //else {
+                         //    document.getElementById("tblMeetingList").style.display = "none";
+                         //    bootbox.dialog({
+                         //        title: 'No Data Exist',
+                         //        message: 'No Item exists, please add Items and then try again',                                                                  
+                         //    });
 
-                             window.setTimeout(function () {
-                                 bootbox.hideAll();
-                             }, 2000);
-                             //bootbox.alert({
-                             //    title: 'No Data Exist',
-                             //    message: 'No Item exists, please add Items and then try again'
-                             //});
-                         }
+                         //    window.setTimeout(function () {
+                         //        bootbox.hideAll();
+                         //    }, 2000);
+                         //    //bootbox.alert({
+                         //    //    title: 'No Data Exist',
+                         //    //    message: 'No Item exists, please add Items and then try again'
+                         //    //});
+                         //}
 
                      }
                  });

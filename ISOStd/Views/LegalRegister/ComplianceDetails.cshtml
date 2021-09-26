@@ -5,11 +5,17 @@
     ViewBag.Title = "";
     ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
     ISOStd.Models.LegalRegisterModelsList ObjList = new ISOStd.Models.LegalRegisterModelsList();
+    ISOStd.Models.LegalRegisterModelsList ObjAmendList = new ISOStd.Models.LegalRegisterModelsList();
 
-  
+
     if (ViewBag.Law_article != null)
     {
-        ObjList=ViewBag.Law_article;      
+        ObjList=ViewBag.Law_article;
+    }
+
+    if(ViewBag.Ammendment != null)
+    {
+        ObjAmendList = ViewBag.Ammendment;
     }
 }
 
@@ -228,56 +234,7 @@
                               @Html.DisplayFor(model => model.Revision_No)
                           </span>
                       </td>
-                  </tr>
-
-                  @*<tr class="row">
-                    <td class="col-xs-3 col-md-2">
-                        <p class="bg-brown py-1 px-2 rounded">
-                            @Html.DisplayNameFor(model => model.Revision_Date)
-                        </p>
-                    </td>
-                    <td class="col">
-                        <span class="bg-dark py-1 px-2 rounded">
-                            @if (Model.Revision_Date != null && Model.Revision_Date > Convert.ToDateTime("01/01/0001"))
-                            {
-                                @Html.Label(Model.Revision_Date.ToString("dd/MM/yyyy"))
-                            }
-                        </span>
-                    </td>
-                    <td class="col-xs-3 col-md-2">
-                        <p class="bg-brown py-1 px-2 rounded">
-                            @Html.DisplayNameFor(model => model.compliance)
-                        </p>
-                    </td>
-                    <td class="col">
-                        <span class="bg-dark py-1 px-2 rounded">
-                            @Html.DisplayFor(model => model.compliance)
-                        </span>
-                    </td>
-                </tr>
-
-                <tr class="row">
-                    <td class="col-xs-3 col-md-2">
-                        <p class="bg-brown py-1 px-2 rounded">
-                            @Html.DisplayNameFor(model => model.requirement)
-                        </p>
-                    </td>
-                    <td class="col">
-                        <span class="bg-dark py-1 px-2 rounded">
-                            @Html.DisplayFor(model => model.requirement)
-                        </span>
-                    </td>
-                    <td class="col-xs-3 col-md-2">
-                        <p class="bg-brown py-1 px-2 rounded">
-                            @Html.DisplayNameFor(model => model.description)
-                        </p>
-                    </td>
-                    <td class="col">
-                        <span class="bg-dark py-1 px-2 rounded">
-                            @Html.DisplayFor(model => model.description)
-                        </span>
-                    </td>
-                </tr>*@
+                  </tr>                 
 
                   <tr class="row">
 
@@ -321,16 +278,16 @@
                       }
                   </tr>
                   <tr class="row">
-                      <td class="col-xs-3 col-md-2">
-                          <p class="bg-brown py-1 px-2 rounded">
-                              @Html.DisplayNameFor(model => model.frequency_eval)
-                          </p>
-                      </td>
-                      <td class="col">
-                          <span class="bg-dark py-1 px-2 rounded">
-                              @Html.DisplayFor(model => model.frequency_eval)
-                          </span>
-                      </td>
+                      @*<td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.frequency_eval)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.frequency_eval)
+                        </span>
+                    </td>*@
                       <td class="col-xs-3 col-md-2">
                           <p class="bg-brown py-1 px-2 rounded">
                               @Html.DisplayNameFor(model => model.notified_to)
@@ -357,6 +314,8 @@
                               <th>Article Date</th>
                               <th>Article Number</th>
                               <th>Article Details</th>
+                              <th>Record Form Number</th>
+                              <th>Frequency Of Review</th>
                           </tr>
                       </thead>
                       <tbody>
@@ -364,14 +323,16 @@
                           @for (int index = 0; index < ObjList.LegalRegisterMList.Count; index++)
                           {
                               <tr>
-                                  <td>@ObjList.LegalRegisterMList[index].article_no</td>
                                   <td>
                                       @if (ObjList.LegalRegisterMList[index].article_date != null && ObjList.LegalRegisterMList[index].article_date > Convert.ToDateTime("01/01/0001"))
                                       {
-                                          ObjList.LegalRegisterMList[index].article_date.ToShortDateString();
+                                          @ObjList.LegalRegisterMList[index].article_date.ToString("yyyy-MM-dd");
                                       }
                                   </td>
+                                  <td>@ObjList.LegalRegisterMList[index].article_no</td>
                                   <td>@ObjList.LegalRegisterMList[index].article_detail</td>
+                                  <td>@ObjList.LegalRegisterMList[index].article_recordno</td>
+                                  <td>@ObjList.LegalRegisterMList[index].frequency_eval</td>
                               </tr>
                           }
 
@@ -411,7 +372,7 @@
                                       <td>
                                           @if (ObjList.LegalRegisterMList[index].target_date != null && ObjList.LegalRegisterMList[index].target_date > Convert.ToDateTime("01/01/0001"))
                                           {
-                                              ObjList.LegalRegisterMList[index].target_date.ToShortDateString();
+                                              @ObjList.LegalRegisterMList[index].target_date.ToString("yyyy-MM-dd");
                                           }
                                       </td>
                                       <td>@ObjList.LegalRegisterMList[index].person_resp</td>
@@ -461,6 +422,42 @@
                                           }
                                       </td>
                                       <td>@ObjList.LegalRegisterMList[index].pending_reason</td>
+                                  </tr>
+                              }
+                          </tbody>
+                      </table>
+                  </div>
+              }
+          }
+
+          <br />
+          <br />
+          @if (ViewBag.Ammendment != null && ObjAmendList.LegalRegisterMList != null && ObjAmendList.LegalRegisterMList.Count > 0)
+          {
+              if (ObjAmendList.LegalRegisterMList[0].ammend_detail != null && ObjAmendList.LegalRegisterMList[0].ammend_detail != "")
+              {
+                  <h2 class="bg-dark pl-sm-2">Ammendment Details</h2>
+                  <div class="table-responsive">
+                      <table class="table-sm table-bordered table-striped table-hover">
+
+                          <thead>
+                              <tr class="bg-brown">                                 
+                                  <th>Ammendment Date</th>
+                                  <th>Ammendment Details</th>
+                              </tr>
+                          </thead>
+                          <tbody>
+
+                              @for (int index = 0; index < ObjAmendList.LegalRegisterMList.Count; index++)
+                              {
+                                  <tr>                                    
+                                      <td>
+                                          @if (ObjAmendList.LegalRegisterMList[index].ammend_date != null && ObjAmendList.LegalRegisterMList[index].ammend_date > Convert.ToDateTime("01/01/0001"))
+                                          {
+                                              @ObjAmendList.LegalRegisterMList[index].ammend_date.ToString("yyyy-MM-dd")
+                                          }
+                                      </td>
+                                      <td>@ObjAmendList.LegalRegisterMList[index].ammend_detail</td>
                                   </tr>
                               }
                           </tbody>

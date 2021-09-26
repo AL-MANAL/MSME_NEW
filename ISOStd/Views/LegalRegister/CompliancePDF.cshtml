@@ -6,6 +6,8 @@
     ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
     ISOStd.Models.LegalRegisterModelsList ObjList = new ISOStd.Models.LegalRegisterModelsList();
     ISOStd.Models.LegalRegisterModel obj = new ISOStd.Models.LegalRegisterModel();
+    ISOStd.Models.LegalRegisterModelsList ObjAmendList = new ISOStd.Models.LegalRegisterModelsList();
+
 
     if (ViewBag.ObjMainList != null)
     {
@@ -17,11 +19,18 @@
         ObjList = ViewBag.Law_article;
     }
 
+    if (ViewBag.Ammendment != null)
+    {
+        ObjAmendList = ViewBag.Ammendment;
+    }
+
     DataSet dsCompany = new DataSet();
     if (ViewBag.CompanyInfo != null)
     {
         dsCompany = ViewBag.CompanyInfo;
     }
+
+
     Layout = "~/Views/Shared/_PrintLayout.cshtml";
 }
 
@@ -33,16 +42,16 @@
 
 @Html.Partial("_RHeader", dsCompany)
 
-<div class="style=" background-color:white"">
+<div style="background-color:white">
     <div>
 
         <table class="table table-bordered">
             <thead></thead>
             @*<tr class="row">
-                <td colspan="4">
-                    <h3>Legal Register Details</h3>
-                </td>
-            </tr>*@
+                    <td colspan="4">
+                        <h3>Legal Register Details</h3>
+                    </td>
+                </tr>*@
             <tr class="row">
                 <td class="font-size-lg font-weight-bold">
                     Division
@@ -147,19 +156,19 @@
             </tr>
 
             <tr class="row">
-                <td class="font-size-lg font-weight-bold">
-                    Compliance Evaluation Frequency
-                </td>
-                <td class="font-size-lg">
-                    @obj.frequency_eval
-                </td>
+                @*<td class="font-size-lg font-weight-bold">
+                        Compliance Evaluation Frequency
+                    </td>
+                    <td class="font-size-lg">
+                        @obj.frequency_eval
+                    </td>*@
                 <td class="font-size-lg font-weight-bold">
                     Notified To
                 </td>
                 <td class="font-size-lg">
                     @obj.notified_to
                 </td>
-            </tr>                   
+            </tr>
         </table>
     </div>
     <br />
@@ -175,6 +184,8 @@
                         <th>Article Date</th>
                         <th>Article Number</th>
                         <th>Article Details</th>
+                        <th>Record Form Number</th>
+                        <th>Frequency Of Review</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -182,14 +193,16 @@
                     @for (int index = 0; index < ObjList.LegalRegisterMList.Count; index++)
                     {
                         <tr>
-                            <td>@ObjList.LegalRegisterMList[index].article_no</td>
                             <td>
                                 @if (ObjList.LegalRegisterMList[index].article_date != null && ObjList.LegalRegisterMList[index].article_date > Convert.ToDateTime("01/01/0001"))
                                 {
-                                    ObjList.LegalRegisterMList[index].article_date.ToShortDateString();
+                                    @ObjList.LegalRegisterMList[index].article_date.ToString("yyyy-MM-dd");
                                 }
                             </td>
+                            <td>@ObjList.LegalRegisterMList[index].article_no</td>
                             <td>@ObjList.LegalRegisterMList[index].article_detail</td>
+                            <td>@ObjList.LegalRegisterMList[index].article_recordno</td>
+                            <td>@ObjList.LegalRegisterMList[index].frequency_eval</td>
                         </tr>
                     }
 
@@ -229,7 +242,7 @@
                                 <td>
                                     @if (ObjList.LegalRegisterMList[index].target_date != null && ObjList.LegalRegisterMList[index].target_date > Convert.ToDateTime("01/01/0001"))
                                     {
-                                        ObjList.LegalRegisterMList[index].target_date.ToShortDateString();
+                                        @ObjList.LegalRegisterMList[index].target_date.ToShortDateString();
                                     }
                                 </td>
                                 <td>@ObjList.LegalRegisterMList[index].person_resp</td>
@@ -279,6 +292,40 @@
                                     }
                                 </td>
                                 <td>@ObjList.LegalRegisterMList[index].pending_reason</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    }
+    <br />
+    <br />
+    @if (ViewBag.Ammendment != null && ObjAmendList.LegalRegisterMList != null && ObjAmendList.LegalRegisterMList.Count > 0)
+    {
+        if (ObjAmendList.LegalRegisterMList[0].ammend_detail != null && ObjAmendList.LegalRegisterMList[0].ammend_detail != "")
+        {
+            <h2 class="bg-dark pl-sm-2">Ammendment Details</h2>
+            <div class="table-responsive">
+                <table class="table-sm table-bordered table-striped table-hover">
+
+                    <thead>
+                        <tr class="bg-brown">
+                            <th>Ammendment Date</th>
+                            <th>Ammendment Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int index = 0; index < ObjAmendList.LegalRegisterMList.Count; index++)
+                        {
+                            <tr>
+                                <td>
+                                    @if (ObjAmendList.LegalRegisterMList[index].ammend_date != null && ObjAmendList.LegalRegisterMList[index].ammend_date > Convert.ToDateTime("01/01/0001"))
+                                    {
+                                        @ObjAmendList.LegalRegisterMList[index].ammend_date.ToString("yyyy-MM-dd")
+                                    }
+                                </td>
+                                <td>@ObjAmendList.LegalRegisterMList[index].ammend_detail</td>
                             </tr>
                         }
                     </tbody>

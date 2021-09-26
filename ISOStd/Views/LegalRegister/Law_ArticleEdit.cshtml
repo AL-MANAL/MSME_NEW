@@ -160,12 +160,14 @@
                 <table class="table table-lg" id="table1">
                     <tbody>
                         <tr class="row">
-                            <th class="col-xs-6 col-md-3">Article Date</th>
+                            <th class="col">Article Date</th>
                             <th class="col">Article Number</th>
                             <th class="col">Article Details</th>
+                            <th class="col">Record Form Number</th>
+                            <th class="col">Frequency Of Review</th>
                         </tr>
                         <tr class="row">
-                            <td class="col-xs-6 col-md-3">
+                            <td class="col">
                                 <input class="form-control" type='date' id='article_date' name="article_date" />
                                 @Html.ValidationMessageFor(model => model.article_date)
                                 <span class="field-validation-error"><span id="article_date-message" style="display: none;" for="basic">Please select Article Date.</span></span>
@@ -176,10 +178,36 @@
                                 <span class="field-validation-error"><span id="article_no-message" style="display: none;" for="basic">Please write Article Number required.</span></span>
                             </td>
                             <td class="col">
-                                <input class="form-control" type='text' id='article_detail' name="article_detail" @*onchange="GetVerficationDate1()"*@ />
+                                <input class="form-control" type='text' id='article_detail' name="article_detail" />
                                 @Html.ValidationMessageFor(model => model.article_detail)
 
                                 <span class="field-validation-error"><span id="article_detail-message" style="display: none;" for="basic">Please write Article Details.</span></span>
+                            </td>
+                            <td class="col">
+                                <input class="form-control" type='text' id='article_recordno' name="article_recordno" />
+                                @Html.ValidationMessageFor(model => model.article_recordno)
+
+                                <span class="field-validation-error"><span id="article_recordno-message" style="display: none;" for="basic">Please write Record Number.</span></span>
+                            </td>
+                            <td class="col">
+                                <select class="form-control select-fixed-multiple" data-fouc id="frequency_eval" name="frequency_eval">
+                                   <option value="">Select</option>
+                                    @if (ViewBag.FrequencyEval != null)
+                                    {
+                                        foreach (var item in ViewBag.FrequencyEval)
+                                        {
+                                            if (item == Model.frequency_eval)
+                                            {
+                                                <option value='@item' selected>@item</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item'>@item</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                                <span class="field-validation-error"><span id="frequency_eval-message" style="display: none;" for="basic">Please select frequency of evaluation.</span></span>
                             </td>
                             <td class="col-xs-1 col-md-1">
                                 <img src='@Url.Content("~/images/icon_add.png")' onclick='AddLLInfo()' style='cursor:pointer; padding-right: 5px;' />Add
@@ -207,27 +235,35 @@
                                     <th>Action</th>
                                     <th>Article Date</th>
                                     <th>Article Number</th>
-                                    <th>Article Details</th>
+                                    <th>Article Details</th>                                  
+                                    <th>Record Form Number</th>
+                                    <th>Frequency Of Review</th>
                                 </tr>
                                 @if (LRList.LegalRegisterMList != null && LRList.LegalRegisterMList.Count > 0)
                                 {
                                     for (int index = 0; index < LRList.LegalRegisterMList.Count; index++)
                                     {
-                                        <tr>
-                                            <td>
-                                                <img src='@Url.Content("~/images/cancel.png")' onclick='deleteRow1(@LRList.LegalRegisterMList[index].id_article)' style='cursor:pointer; padding-right: 5px;' />Remove
-                                                <input type='hidden' id='id_article @index' name="id_article @index" value='@LRList.LegalRegisterMList[index].id_article' />
-                                            </td>
-                                            <td>
-                                                <input type='hidden' id='article_date @index' name="article_date @index" value='@LRList.LegalRegisterMList[index].article_date.ToString("yyyy-MM-dd")'>@LRList.LegalRegisterMList[index].article_date.ToString("yyyy-MM-dd")
-                                            </td>
-                                            <td>
-                                                <input type='hidden' id='article_no @index' name="article_no @index" value='@LRList.LegalRegisterMList[index].article_no'>@LRList.LegalRegisterMList[index].article_no
-                                            </td>
-                                            <td>
-                                                <input type='hidden' id='article_detail @index' name="article_detail @index" value='@LRList.LegalRegisterMList[index].article_detail'>@LRList.LegalRegisterMList[index].article_detail
-                                            </td>
-                                        </tr>
+                            <tr>
+                                <td>
+                                    <img src='@Url.Content("~/images/cancel.png")' onclick='deleteRow1(@LRList.LegalRegisterMList[index].id_article)' style='cursor:pointer; padding-right: 5px;' />Remove
+                                    <input type='hidden' id='id_article @index' name="id_article @index" value='@LRList.LegalRegisterMList[index].id_article' />
+                                </td>
+                                <td>
+                                    <input type='hidden' id='article_date @index' name="article_date @index" value='@LRList.LegalRegisterMList[index].article_date.ToString("yyyy-MM-dd")'>@LRList.LegalRegisterMList[index].article_date.ToString("yyyy-MM-dd")
+                                </td>
+                                <td>
+                                    <input type='hidden' id='article_no @index' name="article_no @index" value='@LRList.LegalRegisterMList[index].article_no'>@LRList.LegalRegisterMList[index].article_no
+                                </td>
+                                <td>
+                                    <input type='hidden' id='article_detail @index' name="article_detail @index" value='@LRList.LegalRegisterMList[index].article_detail'>@LRList.LegalRegisterMList[index].article_detail
+                                </td>
+                                <td>
+                                    <input type='hidden' id='article_recordno @index' name="article_recordno @index" value='@LRList.LegalRegisterMList[index].article_recordno'>@LRList.LegalRegisterMList[index].article_recordno
+                                </td>
+                                <td>
+                                    <input type='hidden' id='frequency_eval @index' name="frequency_eval @index" value='@LRList.LegalRegisterMList[index].frequency_eval'>@LRList.LegalRegisterMList[index].frequency_eval
+                                </td>
+                            </tr>
                                     }
                                 }
                             </table>
@@ -451,21 +487,23 @@
             var cell1 = row.insertCell(1);
             var cell2 = row.insertCell(2);
             var cell3 = row.insertCell(3);
-            
-           
+            var cell4 = row.insertCell(4);
+            var cell5 = row.insertCell(5);           
             
        
             var article_no = $('#article_no').val();
             var article_detail = $('#article_detail').val();
             var article_date = /*reformatDate*/($("#article_date").val());
-            //var ca_resp_person = $('#ca_resp_person').val();
-            //var ca_resp_personText = $("#ca_resp_person option:selected").text();
+            var article_recordno = $('#article_recordno').val();
+            var frequency_eval = $('#frequency_eval').val();
+            var frequency_evalText = $("#frequency_eval option:selected").text();
 
             cell0.innerHTML = " <img src='@Url.Content("~/images/cancel.png")' onclick='deleteRow1(this)' style='cursor:pointer; padding-right: 5px;'/>Remove";
             cell1.innerHTML = "<input type='hidden' id='article_date " + cnt + "' name='article_date " + cnt + "' value='" + article_date + "'>" + article_date;
             cell2.innerHTML = "<input type='hidden' id='article_no " + cnt + "' name='article_no " + cnt + "' value='" + article_no + "'>" + article_no;
             cell3.innerHTML = "<input type='hidden' id='article_detail " + cnt + "' name='article_detail " + cnt + "' value='" + article_detail + "'>" + article_detail;
-           // cell4.innerHTML = "<input type='hidden' id='ca_resp_person " + cnt + "' name='ca_resp_person " + cnt + "' value='" + ca_resp_person + "'>" + ca_resp_personText;
+            cell4.innerHTML = "<input type='hidden' id='article_recordno " + cnt + "' name='article_recordno " + cnt + "' value='" + article_recordno + "'>" + article_recordno;
+            cell5.innerHTML = "<input type='hidden' id='frequency_eval " + cnt + "' name='frequency_eval " + cnt + "' value='" + frequency_eval + "'>" + frequency_evalText;
 
             cnt++;
             document.getElementById("itemcount").value = cnt;
@@ -512,6 +550,24 @@
                 ssnMessage = $('#article_detail-message');
                 ssnMessage.hide();
             }
+            if (document.getElementById("article_recordno").value == "") {
+                ssnMessage = $('#article_recordno-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#article_recordno-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("frequency_eval").value == "") {
+                ssnMessage = $('#frequency_eval-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#frequency_eval-message');
+                ssnMessage.hide();
+            }
             return validflg;
         }
 
@@ -519,7 +575,8 @@
             document.getElementById("article_date").value = "";
             document.getElementById("article_no").value = "";
             document.getElementById("article_detail").value = "";
-         /*   $("#ca_resp_person").val('').trigger('change');*/
+            document.getElementById("article_recordno").value = "";
+            $("#frequency_eval").val('').trigger('change');
         }
 
         function deleteRow(btn) {

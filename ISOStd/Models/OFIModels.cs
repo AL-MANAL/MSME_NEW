@@ -64,7 +64,7 @@ namespace ISOStd.Models
         [Display(Name = "Actions Proposed by")]
         public string action_proposedby { get; set; }
 
-        [Display(Name = "Realization Approved by")]
+        [Display(Name = "Realization To be Approved by")]
         public string realization_approved_by { get; set; }
 
         [Display(Name = "Realization Approved Status")]
@@ -146,6 +146,25 @@ namespace ISOStd.Models
 
         public string checkedbystatus { get; set; }
         public string ofi_statusId { get; set; }
+
+        [Display(Name = "Person responsible for action")]
+        public string pers_resp { get; set; }
+
+        [Display(Name = "Comments")]
+        public string approver_comments { get; set; }
+
+        [Display(Name = "Document(s)")]
+        public string approver_upload { get; set; }
+
+        [Display(Name = "Comments")]
+        public string realization_comments { get; set; }
+
+        [Display(Name = "Document(s)")]
+        public string realization_upload { get; set; }
+
+        //[Required(ErrorMessage = "Please enter action detail")]
+        [Range(1, 25, ErrorMessage = "Please enter action detail")]
+        public int cntaction { get; set; }
 
         public MultiSelectList GetOFIExpectedImporvementList()
         {
@@ -335,7 +354,7 @@ namespace ISOStd.Models
             return "";
         }
 
-        internal string GetOFIStatusIdByName(string sitem_desc)
+        internal string GetOFIStatusIdByName(string sitem_desc)//checked
         {
             try
             {
@@ -353,15 +372,21 @@ namespace ISOStd.Models
             return "";
         }
 
+        
         //OFI
-        internal bool FunAddReportOFI(OFIModels objModels)
+        internal bool FunAddReportOFI(OFIModels objModels)//checked
         {
             try
             {
                 string sFields = "", sFieldValue = "";
 
-                string sSqlstmt = "insert into t_ofi ( ofi_no, risk_no, reportedby, division, department, location,identified_in,opportunity,improvement,approvedby,ofi_status,loggedby";
-                 
+                string sSqlstmt = "insert into t_ofi ( ofi_no, risk_no, reportedby, division, department, location,identified_in,opportunity,improvement,approvedby,ofi_status,loggedby,pers_resp";
+
+                if (objModels.approvedby == null || objModels.approvedby == "")
+                {
+                    sFields = sFields + ", approved_status";
+                    sFieldValue = sFieldValue + ", 'Approved'";
+                }
                 if (objModels.reported_date != null && objModels.reported_date > Convert.ToDateTime("01/01/0001"))
                 {
                     sFields = sFields + ", reported_date";
@@ -375,19 +400,19 @@ namespace ISOStd.Models
                 sSqlstmt = sSqlstmt + sFields + ") values('" + objModels.ofi_no + "','" + objModels.risk_no
                 + "','" + objModels.reportedby + "','" + objModels.division + "','" + objModels.department + "','" + objModels.location
                 + "','" + objModels.identified_in + "','" + objModels.opportunity + "','" + objModels.improvement + "','" + objModels.approvedby
-                + "','" + objModels.ofi_status + "','" + objGlobaldata.GetCurrentUserSession().empid  + "'";
+                + "','" + objModels.ofi_status + "','" + objGlobaldata.GetCurrentUserSession().empid + "','" + objModels.pers_resp + "'";
 
                 sSqlstmt = sSqlstmt + sFieldValue + ")";
 
                 int iid_ofi = 0;
 
                 if (int.TryParse(objGlobaldata.ExecuteQueryReturnId(sSqlstmt).ToString(), out iid_ofi))
-                {   
-                    if (iid_ofi > 0 )
+                {
+                    if (iid_ofi > 0)
                     {
                         SendOFIReportEmail(iid_ofi, "Opportunity for Improvement (OFI)");
                         return true;
-                    }                  
+                    }
                 }
                 return false;
             }
@@ -398,7 +423,7 @@ namespace ISOStd.Models
             return false;
         }
 
-        internal bool SendOFIReportEmail(int iid_ofi, string sMessage = "")
+        internal bool SendOFIReportEmail(int iid_ofi, string sMessage = "")//checked
         {
             try
             {
@@ -438,11 +463,11 @@ namespace ISOStd.Models
                     sToEmailIds = sToEmailIds.TrimEnd(',');
                     sToEmailIds = sToEmailIds.TrimStart(',');
 
-                    string sCCEmailIds = objGlobaldata.GetMultiHrEmpEmailIdById(dsOFIList.Tables[0].Rows[0]["loggedby"].ToString())  ;
+                    string sCCEmailIds = objGlobaldata.GetMultiHrEmpEmailIdById(dsOFIList.Tables[0].Rows[0]["loggedby"].ToString());
 
                     if (objGlobaldata.GetMultiHrEmpEmailIdById(dsOFIList.Tables[0].Rows[0]["reportedby"].ToString()) != "")
                     {
-                        sCCEmailIds = sCCEmailIds+ "," + objGlobaldata.GetMultiHrEmpEmailIdById(dsOFIList.Tables[0].Rows[0]["reportedby"].ToString()) + ",";
+                        sCCEmailIds = sCCEmailIds + "," + objGlobaldata.GetMultiHrEmpEmailIdById(dsOFIList.Tables[0].Rows[0]["reportedby"].ToString()) + ",";
                     }
                     sCCEmailIds = sCCEmailIds.Trim();
                     sCCEmailIds = sCCEmailIds.TrimEnd(',');
@@ -468,10 +493,10 @@ namespace ISOStd.Models
                         + "<tr><td colspan=3><b>Department:<b></td> <td colspan=3>" + objGlobaldata.GetMultiDeptNameById(dsOFIList.Tables[0].Rows[0]["department"].ToString()) + "</td></tr>"
                         + "<tr><td colspan=3><b>Location:<b></td> <td colspan=3>" + objGlobaldata.GetDivisionLocationById(dsOFIList.Tables[0].Rows[0]["location"].ToString()) + "</td></tr>"
                         + "<tr><td colspan=3><b>OFI identified in:<b></td> <td colspan=3>" + objType.GetOFIIdentifiedById(dsOFIList.Tables[0].Rows[0]["identified_in"].ToString()) + "</td></tr>"
-                      //+ "<tr><td colspan=3><b>Identified Improvement Opportunity:<b></td> <td colspan=3>" + (dsOFIList.Tables[0].Rows[0]["opportunity"].ToString()) + "</td></tr>"
-                      //+ "<tr><td colspan=3><b>Expected improvement:<b></td> <td colspan=3>" + (dsOFIList.Tables[0].Rows[0]["improvement"].ToString()) + "</td></tr>"
+                        //+ "<tr><td colspan=3><b>Identified Improvement Opportunity:<b></td> <td colspan=3>" + (dsOFIList.Tables[0].Rows[0]["opportunity"].ToString()) + "</td></tr>"
+                        //+ "<tr><td colspan=3><b>Expected improvement:<b></td> <td colspan=3>" + (dsOFIList.Tables[0].Rows[0]["improvement"].ToString()) + "</td></tr>"
                         + "<tr><td colspan=3><b>Target Date:<b></td> <td colspan=3>" + Convert.ToDateTime(dsOFIList.Tables[0].Rows[0]["target_date"].ToString()).ToString("dd/MM/yyyy") + "</td></tr>";
-                 
+
                     //if (File.Exists(aAttachment))
                     //{
                     //    sHeader = sHeader + "<tr><td colspan=3><b>Document Uploaded:<b></td> <td colspan=3>Please find the attachment</td></tr>";
@@ -498,13 +523,13 @@ namespace ISOStd.Models
             return false;
         }
 
-        internal bool FunUpdateReportOFI(OFIModels objModels)
+        internal bool FunUpdateReportOFI(OFIModels objModels)//checked
         {
             try
             {
                 string sSqlstmt = "update t_ofi set reportedby='" + objModels.reportedby + "', " + "division='" + objModels.division + "', department='" + objModels.department
                      + "', location='" + objModels.location + "', identified_in='" + objModels.identified_in + "', opportunity='" + objModels.opportunity + "', improvement='" + objModels.improvement
-                    + "', approvedby='" + objModels.approvedby + "'";
+                    + "', approvedby='" + objModels.approvedby + "', pers_resp='" + objModels.pers_resp + "'";
 
                 if (objModels.reported_date != null && objModels.reported_date > Convert.ToDateTime("01/01/0001"))
                 {
@@ -516,7 +541,7 @@ namespace ISOStd.Models
                     sSqlstmt = sSqlstmt + ", target_date ='" + objModels.target_date.ToString("yyyy/MM/dd") + "'";
                 }
                 sSqlstmt = sSqlstmt + " where id_ofi='" + objModels.id_ofi + "'";
-                return objGlobaldata.ExecuteQuery(sSqlstmt);               
+                return objGlobaldata.ExecuteQuery(sSqlstmt);
             }
             catch (Exception ex)
             {
@@ -535,6 +560,10 @@ namespace ISOStd.Models
                 string sSqlstmt = "update t_ofi set  action_proposedby='" + objModels.action_proposedby + "', "
                     + "realization_approved_by='" + objModels.realization_approved_by + "'";
 
+                if (objModels.realization_approved_by == null || objModels.realization_approved_by == "")
+                {
+                    sSqlstmt = sSqlstmt + ", realization_approved_status ='Approved'";
+                }
                 //if (objModels.disp_notifeddate != null && objModels.disp_notifeddate > Convert.ToDateTime("01/01/0001"))
                 //{
                 //    sSqlstmt = sSqlstmt + ", disp_notifeddate ='" + objModels.disp_notifeddate.ToString("yyyy/MM/dd") + "'";
@@ -612,14 +641,14 @@ namespace ISOStd.Models
         {
             try
             {
-                string sSqlstmt = "update t_ofi set  updated='" + objModels.updated + "', updatedby='" + objModels.updatedby + "', improvement_achieve='" + objModels.improvement_achieve + 
+                string sSqlstmt = "update t_ofi set  updated='" + objModels.updated + "', updatedby='" + objModels.updatedby + "', improvement_achieve='" + objModels.improvement_achieve +
                     "', checkedby='" + objModels.checkedby + "' ,checkedbystatus='0' where id_ofi='" + objModels.id_ofi + "'";
 
                 //if (objModels.disp_notifeddate != null && objModels.disp_notifeddate > Convert.ToDateTime("01/01/0001"))
                 //{
                 //    sSqlstmt = sSqlstmt + ", disp_notifeddate ='" + objModels.disp_notifeddate.ToString("yyyy/MM/dd") + "'";
                 //}
-                
+
                 if (objGlobaldata.ExecuteQuery(sSqlstmt))
                 {
                     if (Convert.ToInt32(objOFIList.OFIList.Count) > 0)
@@ -659,8 +688,8 @@ namespace ISOStd.Models
 
                 for (int i = 0; i < objOFIList.OFIList.Count; i++)
                 {
-                    sSqlstmt = sSqlstmt + "insert into t_ofi_improvement(id_ofi,improve_details,improve_achievedin,improve_measurable,imporve_upload)" 
-                           +"values('" + objOFIList.OFIList[0].id_ofi + "', '" + objOFIList.OFIList[i].improve_details + "', '" + objOFIList.OFIList[i].improve_achievedin + "', '" + objOFIList.OFIList[i].improve_measurable + "', '" + objOFIList.OFIList[i].imporve_upload + "');";                    
+                    sSqlstmt = sSqlstmt + "insert into t_ofi_improvement(id_ofi,improve_details,improve_achievedin,improve_measurable,imporve_upload)"
+                           + "values('" + objOFIList.OFIList[0].id_ofi + "', '" + objOFIList.OFIList[i].improve_details + "', '" + objOFIList.OFIList[i].improve_achievedin + "', '" + objOFIList.OFIList[i].improve_measurable + "', '" + objOFIList.OFIList[i].imporve_upload + "');";
                 }
 
                 return objGlobaldata.ExecuteQuery(sSqlstmt);
@@ -695,7 +724,7 @@ namespace ISOStd.Models
 
                 for (int i = 0; i < objOFIList.OFIList.Count; i++)
                 {
-                    sSqlstmt = sSqlstmt + "insert into t_ofi_doc(id_ofi,doc_type,doc_ref,doc_name) values('" 
+                    sSqlstmt = sSqlstmt + "insert into t_ofi_doc(id_ofi,doc_type,doc_ref,doc_name) values('"
                         + objOFIList.OFIList[0].id_ofi + "', '" + objOFIList.OFIList[i].doc_type + "', '" + objOFIList.OFIList[i].doc_ref + "', '" + objOFIList.OFIList[i].doc_name + "' );";
                 }
 
@@ -722,34 +751,34 @@ namespace ISOStd.Models
             return false;
         }
 
-        internal bool FunOFIInitialApproval(string sid_ofi, string sStatus)
+        internal bool FunOFIInitialApproval(string sid_ofi, string sStatus, OFIModels objModel)
         {
             try
             {
                 OFIModels ofModl = new OFIModels();
 
-                string sApprovedDate = DateTime.Now.ToString("yyyy-MM-dd");
+                string sApprovedDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
                 string sSql = "Select approved_status,realization_approved_status from t_ofi where id_ofi = '" + sid_ofi + "' and active=1";
-                
-                    DataSet dsInitial = objGlobaldata.Getdetails(sSql);
+
+                DataSet dsInitial = objGlobaldata.Getdetails(sSql);
                 if (dsInitial.Tables.Count > 0 && dsInitial.Tables[0].Rows.Count > 0)
                 {
-                     ofModl = new OFIModels
+                    ofModl = new OFIModels
                     {
                         approved_status = dsInitial.Tables[0].Rows[0]["approved_status"].ToString(),
                         realization_approved_status = dsInitial.Tables[0].Rows[0]["realization_approved_status"].ToString()
                     };
                 }
-                if(ofModl.approved_status == "0")
+                if (ofModl.approved_status == "0")
                 {
-                    string sSqlstmt = "update t_ofi set approved_status='" + sStatus + "', approved_date='" + sApprovedDate + "' where id_ofi='" + sid_ofi + "'";
+                    string sSqlstmt = "update t_ofi set approved_status='" + sStatus + "', approved_date='" + sApprovedDate + "', approver_comments='" + approver_comments + "', approver_upload='" + approver_upload + "' where id_ofi='" + sid_ofi + "'";
                     return objGlobaldata.ExecuteQuery(sSqlstmt);
                 }
-                else if(ofModl.realization_approved_status == "0")
+                else if (ofModl.realization_approved_status == "0")
                 {
-                    string sSqlstmt = "update t_ofi set realization_approved_status='" + sStatus + "', realization_apporved_date='" + sApprovedDate + "' where id_ofi='" + sid_ofi + "'";
+                    string sSqlstmt = "update t_ofi set realization_approved_status='" + sStatus + "', realization_apporved_date='" + sApprovedDate + "', realization_comments='" + realization_comments + "', realization_upload='" + realization_upload + "' where id_ofi='" + sid_ofi + "'";
                     return objGlobaldata.ExecuteQuery(sSqlstmt);
-                }               
+                }
             }
             catch (Exception ex)
             {
@@ -758,7 +787,7 @@ namespace ISOStd.Models
             return false;
         }
 
-        
+
         internal bool FunAddOFICheckedbystatus(OFIModels objModels)
         {
             try
@@ -793,7 +822,7 @@ namespace ISOStd.Models
     }
 
     public class OFIModelsList
-    { 
-       public List<OFIModels> OFIList { get; set; }
+    {
+        public List<OFIModels> OFIList { get; set; }
     }
 }

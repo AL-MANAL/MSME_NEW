@@ -24,7 +24,7 @@ namespace ISOStd.Models
         public string Issue_refno { get; set; }
         
         [Required]
-        [Display(Name = "New Issue")]
+        [Display(Name = "Issue")]
         public string Issue { get; set; }
 
         [Required]
@@ -32,7 +32,7 @@ namespace ISOStd.Models
         public string IssueType { get; set; }
 
         [Required]
-        [Display(Name = "Impact")]
+        [Display(Name = "Impact Level")]
         public string Impact { get; set; }
 
         [Display(Name = "Standards")]
@@ -55,6 +55,7 @@ namespace ISOStd.Models
 
         [Display(Name = "Division")]
         public string branch { get; set; }
+        public string branchId { get; set; }
 
         [Display(Name = "Location")]
         public string Location { get; set; }
@@ -75,6 +76,25 @@ namespace ISOStd.Models
         [Display(Name = "Repetitive Issue")]
         public string Repet_Issue { get; set; }
         public string Repet_Issue_detail { get; set; }
+
+        [Display(Name = "Status")]
+        public string issue_status { get; set; }
+
+        [Display(Name = "Status updated on")]
+        public DateTime status_date { get; set; }
+
+        [Display(Name = "Action taken")]
+        public string action_taken { get; set; }
+
+        [Display(Name = "Notified To")]
+        public string status_notifiedto { get; set; }
+
+        [Display(Name = "Additional Details")]
+        public string additional_details { get; set; }
+
+        [Display(Name = "Upload")]
+        public string status_upload { get; set; }
+
 
         internal bool CheckForIssueRefNoExists(string sIssue_refno)
         {
@@ -125,16 +145,29 @@ namespace ISOStd.Models
             return false;
         }
 
-        internal bool FunAddIssues(IssuesModels objissue, HttpPostedFileBase file)
+        internal bool FunAddIssues(IssuesModels objissue)
         {
             try
             {
-                // string sBranch = objGlobalData.GetCurrentUserSession().division;
+                if (objissue.reporting_to != null && objissue.reporting_to != "")
+                {
+                    
+                    string otherdiv = "";
+                    DataSet dsEmpLocList = objGlobalData.Getdetails("select group_concat(division) as division from t_hr_employee where find_in_set(emp_no,'" + objissue.reporting_to + "')");
+                    if (dsEmpLocList != null && dsEmpLocList.Tables.Count > 0 && dsEmpLocList.Tables[0].Rows.Count > 0)
+                    {
+                        otherdiv = dsEmpLocList.Tables[0].Rows[0]["division"].ToString();
+                    }
+                    objissue.branch = objissue.branch + "," + otherdiv;
+                    List<string> uniques = objissue.branch.Split(',').Distinct().ToList();
+                    objissue.branch = string.Join(",", uniques);
+                    objissue.branch = objissue.branch.Trim();
+                }
                 string sFiled = "";
                 string sFiledValue = "";
 
                 string sSqlstmt = "insert into t_issues (Issue,IssueType, Impact,Isostd, Evidence,ImpactDesc," +
-                    "Effect,Issue_refno,Deptid,Issue_Category,branch,Location,reporting_to,notified_to,loggedby,Impact_detail,Repet_Issue";
+                    "Effect,Issue_refno,Deptid,Issue_Category,branch,Location,reporting_to,notified_to,loggedby,Impact_detail,Repet_Issue,additional_details";
                     
                     if(objissue.issue_date != null && objissue.issue_date > Convert.ToDateTime("01/01/0001"))
                     {
@@ -145,7 +178,7 @@ namespace ISOStd.Models
                 sSqlstmt = sSqlstmt + sFiled + " ) values('" + objissue.Issue + "','" + objissue.IssueType + "','" + objissue.Impact + "'"
                     + ",'" + objissue.Isostd + "','" + objissue.Evidence + "','" + objissue.ImpactDesc + "','" + objissue.Effect + "','" + objissue.Issue_refno + "','" + objissue.Deptid + "','"
                     + objissue.Issue_Category + "','" + objissue.branch + "','" + objissue.Location + "','" + objissue.reporting_to + "','" + objissue.notified_to 
-                    + "','" + objGlobalData.GetCurrentUserSession().empid + "','" + objissue.Impact_detail + "','" + objissue.Repet_Issue + "'";
+                    + "','" + objGlobalData.GetCurrentUserSession().empid + "','" + objissue.Impact_detail + "','" + objissue.Repet_Issue + "','" + objissue.additional_details + "'";
                     
                 sSqlstmt = sSqlstmt + sFiledValue + ")";
                 int iid_issue = 0;
@@ -153,7 +186,7 @@ namespace ISOStd.Models
                 {
                    if(iid_issue > 0)
                     { 
-                    string sBranch = objGlobalData.GetBranchShortNameByID(objissue.branch)+"-"+ objGlobalData.GetDeptNameById(objissue.Deptid);
+                    string sBranch = objGlobalData.GetBranchShortNameByID(objissue.branch)/*+"-"+ objGlobalData.GetDeptNameById(objissue.Deptid)*/;
                     string sLoc = objGlobalData.GetLocationNameById(objissue.Location);
 
                     DataSet dsData = objGlobalData.GetReportNo("Issue", sLoc, sBranch);
@@ -184,7 +217,7 @@ namespace ISOStd.Models
                 string sType = "email";
 
                 string sSqlstmt = "select Issue_refno,id_issue,Issue,IssueType,Impact,Isostd,Evidence," +
-                    "ImpactDesc,Effect,Deptid,Issue_Category,branch,Location,issue_date,reporting_to,notified_to,loggedby from t_issues where id_issue ='" + id_issue + "'";
+                    "ImpactDesc,Effect,Deptid,Issue_Category,branch,Location,issue_date,reporting_to,notified_to,loggedby,Impact_detail from t_issues where id_issue ='" + id_issue + "'";
 
                 DataSet dsIssueList = objGlobalData.Getdetails(sSqlstmt);
                 IssuesModels objType = new IssuesModels();
@@ -208,9 +241,13 @@ namespace ISOStd.Models
                     }
                     string sName = "All";
                     string sToEmailIds = "";
-                    if (objGlobalData.GetMultiHrEmpEmailIdById(dsIssueList.Tables[0].Rows[0]["loggedby"].ToString()) != "")
+                    if (objGlobalData.GetMultiHrEmpEmailIdById(dsIssueList.Tables[0].Rows[0]["reporting_to"].ToString()) != "")
                     {
-                        sToEmailIds = objGlobalData.GetMultiHrEmpEmailIdById(dsIssueList.Tables[0].Rows[0]["loggedby"].ToString()) + ",";
+                        sToEmailIds = objGlobalData.GetMultiHrEmpEmailIdById(dsIssueList.Tables[0].Rows[0]["reporting_to"].ToString()) + ",";
+                    }
+                    if (objGlobalData.GetMultiHrEmpEmailIdById(dsIssueList.Tables[0].Rows[0]["notified_to"].ToString()) != "")
+                    {
+                        sToEmailIds = sToEmailIds+","+objGlobalData.GetMultiHrEmpEmailIdById(dsIssueList.Tables[0].Rows[0]["notified_to"].ToString()) + ",";
                     }
 
                     sToEmailIds = Regex.Replace(sToEmailIds, ",+", ",");
@@ -218,27 +255,48 @@ namespace ISOStd.Models
                     sToEmailIds = sToEmailIds.TrimEnd(',');
                     sToEmailIds = sToEmailIds.TrimStart(',');
 
-                    string sCCEmailIds = "";
+                    string sCCEmailIds = objGlobalData.GetMultiHrEmpEmailIdById(dsIssueList.Tables[0].Rows[0]["loggedby"].ToString());
+                                        
+                    //if (objGlobalData.GetMultiHrEmpEmailIdById(dsIssueList.Tables[0].Rows[0]["reporting_to"].ToString()) != "")
+                    //{
+                    //    sCCEmailIds = sCCEmailIds +","+ objGlobalData.GetMultiHrEmpEmailIdById(dsIssueList.Tables[0].Rows[0]["reporting_to"].ToString()) + ",";
+                    //}
+                    //sCCEmailIds = sCCEmailIds.Trim();
+                    //sCCEmailIds = sCCEmailIds.TrimEnd(',');
+                    //sCCEmailIds = sCCEmailIds.TrimStart(',');
 
-                    if (objGlobalData.GetMultiHrEmpEmailIdById(dsIssueList.Tables[0].Rows[0]["reporting_to"].ToString()) != "")
-                    {
-                        sCCEmailIds = objGlobalData.GetMultiHrEmpEmailIdById(dsIssueList.Tables[0].Rows[0]["reporting_to"].ToString()) + ",";
-                    }
-                    sCCEmailIds = sCCEmailIds.Trim();
-                    sCCEmailIds = sCCEmailIds.TrimEnd(',');
-                    sCCEmailIds = sCCEmailIds.TrimStart(',');
-
-                    if (objGlobalData.GetMultiHrEmpEmailIdById(dsIssueList.Tables[0].Rows[0]["notified_to"].ToString()) != "")
-                    {
-                        sCCEmailIds = sCCEmailIds + "," + objGlobalData.GetMultiHrEmpEmailIdById(dsIssueList.Tables[0].Rows[0]["notified_to"].ToString()) + ",";
-                    }
 
                     sCCEmailIds = Regex.Replace(sCCEmailIds, ",+", ",");
                     sCCEmailIds = sCCEmailIds.Trim();
                     sCCEmailIds = sCCEmailIds.TrimEnd(',');
                     sCCEmailIds = sCCEmailIds.TrimStart(',');
-                    aAttachment = HttpContext.Current.Server.MapPath(dsIssueList.Tables[0].Rows[0]["Evidence"].ToString());
 
+                    if (dsIssueList.Tables[0].Rows[0]["Evidence"].ToString() != "")
+                    {
+                        if (dsIssueList.Tables[0].Rows[0]["Evidence"].ToString().Contains(','))
+                        {
+                            string[] varfile = dsIssueList.Tables[0].Rows[0]["Evidence"].ToString().Split(',');
+
+                            for (int i = 0; i < varfile.Length; i++)
+                            {
+                                //if (System.IO.File.Exists(varfile[i]))
+                                //{
+                                    aAttachment = aAttachment + "," + HttpContext.Current.Server.MapPath(varfile[i]);
+                                //}
+                            }
+                        }
+                        else
+                        {
+                            //if (System.IO.File.Exists(dsIssueList.Tables[0].Rows[0]["Evidence"].ToString()))
+                            //{
+                                aAttachment = HttpContext.Current.Server.MapPath(dsIssueList.Tables[0].Rows[0]["Evidence"].ToString());
+                            //}
+                        }
+
+                    }
+                    aAttachment = aAttachment.Trim();
+                    aAttachment = aAttachment.TrimEnd(',');
+                    aAttachment = aAttachment.TrimStart(',');
 
                     sHeader = "<tr><td colspan=3><b>Issue Number:<b></td> <td colspan=3>"
                         + dsIssueList.Tables[0].Rows[0]["Issue_refno"].ToString() + "</td></tr>"
@@ -247,7 +305,8 @@ namespace ISOStd.Models
                         + "<tr><td colspan=3><b>Issue Category:<b></td> <td colspan=3>" + objGlobalData.GetDropdownitemById(dsIssueList.Tables[0].Rows[0]["Issue_Category"].ToString()) + "</td></tr>"
                         + "<tr><td colspan=3><b>Issue Type:<b></td> <td colspan=3>" + (dsIssueList.Tables[0].Rows[0]["IssueType"].ToString()) + "</td></tr>"
                         + "<tr><td colspan=3><b>Effect Due to Issue:<b></td> <td colspan=3>" + (dsIssueList.Tables[0].Rows[0]["Effect"].ToString()) + "</td></tr>"
-                        + "<tr><td colspan=3><b>Impact:<b></td> <td colspan=3>" + (dsIssueList.Tables[0].Rows[0]["Impact"].ToString()) + "</td></tr>";
+                        + "<tr><td colspan=3><b>Impact Level:<b></td> <td colspan=3>" + (dsIssueList.Tables[0].Rows[0]["Impact"].ToString()) + "</td></tr>"
+                         + "<tr><td colspan=3><b>Impact Details:<b></td> <td colspan=3>" + objGlobalData.GetDropdownitemById(dsIssueList.Tables[0].Rows[0]["Impact_detail"].ToString()) + "</td></tr>";
 
                     if (File.Exists(aAttachment))
                     {
@@ -257,7 +316,7 @@ namespace ISOStd.Models
                     sContent = sContent.Replace("{FromMsg}", "");
                     sContent = sContent.Replace("{UserName}", sName);
                     sContent = sContent.Replace("{Title}", "Issue Details");
-                    sContent = sContent.Replace("{content}", sHeader + sInformation);
+                    sContent = sContent.Replace("{content}", sHeader);
                     sContent = sContent.Replace("{message}", "");
                     sContent = sContent.Replace("{extramessage}", "");
 
@@ -275,20 +334,37 @@ namespace ISOStd.Models
             return false;
         }
 
-        internal bool FunUpdateIssues(IssuesModels objIssue, HttpPostedFileBase file)
+        internal bool FunUpdateIssues(IssuesModels objIssue)
         {
             try
             {
-                string sSqlstmt = "update t_issues set Issue ='" + objIssue.Issue + "', IssueType='" + objIssue.IssueType + "', "
-                    + "Impact='" + objIssue.Impact + "',Isostd='" + objIssue.Isostd + "',ImpactDesc='" + objIssue.ImpactDesc + "',Effect='" + objIssue.Effect
-                /*+ ",Deptid='" + objIssue.Deptid*/ + "',Issue_Category='" + objIssue.Issue_Category + "',reporting_to='" + objIssue.reporting_to 
-                + "',notified_to='" + objIssue.notified_to + "',Impact_detail='" + objIssue.Impact_detail + "',Repet_Issue='" + objIssue.Repet_Issue + "'";
-
-                if (objIssue.Evidence != null)
+                if (objIssue.reporting_to != null && objIssue.reporting_to != "")
                 {
-                    sSqlstmt = sSqlstmt + ", Evidence='" + objIssue.Evidence + "'";
+
+                    string otherdiv = "";
+                    DataSet dsEmpLocList = objGlobalData.Getdetails("select group_concat(division) as division from t_hr_employee where find_in_set(emp_no,'" + objIssue.reporting_to + "')");
+                    if (dsEmpLocList != null && dsEmpLocList.Tables.Count > 0 && dsEmpLocList.Tables[0].Rows.Count > 0)
+                    {
+                        otherdiv = dsEmpLocList.Tables[0].Rows[0]["division"].ToString();
+                    }
+                    objIssue.branch = objIssue.branch + "," + otherdiv;
+                    objIssue.branch = objIssue.branch.Trim();
+                    objIssue.branch = objIssue.branch.TrimEnd(',');
+                    objIssue.branch = objIssue.branch.TrimStart(',');
+                    List<string> uniques = objIssue.branch.Split(',').Distinct().ToList();
+                    objIssue.branch = string.Join(",", uniques);
+                    objIssue.branch = objIssue.branch.Trim();
+                    objIssue.branch = objIssue.branch.TrimEnd(',');
+                    objIssue.branch = objIssue.branch.TrimStart(',');
                 }
 
+                string sSqlstmt = "update t_issues set Issue ='" + objIssue.Issue + "', IssueType='" + objIssue.IssueType + "', "
+                    + "Impact='" + objIssue.Impact + "',Isostd='" + objIssue.Isostd + "',ImpactDesc='" + objIssue.ImpactDesc + "',Effect='" + objIssue.Effect
+                + "',branch='" + objIssue.branch + "',Issue_Category='" + objIssue.Issue_Category + "',reporting_to='" + objIssue.reporting_to 
+                + "',notified_to='" + objIssue.notified_to + "',Impact_detail='" + objIssue.Impact_detail + "',Repet_Issue='" + objIssue.Repet_Issue 
+                + "',additional_details='" + objIssue.additional_details + "', Evidence='" + objIssue.Evidence + "'";
+
+              
                 if (objIssue.issue_date != null && objIssue.issue_date > Convert.ToDateTime("01/01/0001"))
                 {
                     sSqlstmt = sSqlstmt + ", issue_date ='" + objIssue.issue_date.ToString("yyyy/MM/dd") + "'";
@@ -303,6 +379,27 @@ namespace ISOStd.Models
             catch (Exception ex)
             {
                 objGlobalData.AddFunctionalLog("Exception in FunUpdateIssues: " + ex.ToString());
+            }
+            return false;
+        }
+
+        //status update
+        internal bool FunUpdateStatus(IssuesModels objIssue)
+        {
+            try
+            {
+
+                string sSqlstmt = "update t_issues set issue_status='" + issue_status + "',action_taken='" + action_taken + "',status_notifiedto='" + status_notifiedto + "',status_upload='" + status_upload + "'";
+                if (objIssue.status_date != null && objIssue.status_date > Convert.ToDateTime("01/01/0001 00:00:00"))
+                {
+                    sSqlstmt = sSqlstmt + ",status_date='" + objIssue.status_date.ToString("yyyy/MM/dd") + "'";
+                }
+                sSqlstmt = sSqlstmt + " where id_issue='" + objIssue.id_issue + "'";
+                return objGlobalData.ExecuteQuery(sSqlstmt);
+            }
+            catch (Exception ex)
+            {
+                objGlobalData.AddFunctionalLog("Exception in FunUpdateStatus: " + ex.ToString());
             }
             return false;
         }

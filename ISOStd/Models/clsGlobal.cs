@@ -25,14 +25,267 @@ namespace ISOStd.Models
         private object fileUploader;
         private object mail;
 
-        public MultiSelectList GetAllIssueList()
+        //HSE Inspection
+        public string GetInspectionChecklistRefNamebyRevNo(string item_id, string RevNo)
+        {
+            try
+            {
+                if (item_id != "" && item_id != null)
+                {
+                    DataSet dsEmp = Getdetails("select checklist_ref from t_inspection_question_master where id_question_master='" + item_id + "' and RevNo='" + RevNo + "'");
+                    if (dsEmp.Tables.Count > 0 && dsEmp.Tables[0].Rows.Count > 0)
+                    {
+                        return (dsEmp.Tables[0].Rows[0]["checklist_ref"].ToString());
+                    }
+                    else
+                    {
+                        DataSet dsEmp1 = Getdetails("select checklist_ref from t_inspection_question_master_history where id_question_master='" + item_id + "' and RevNo='" + RevNo + "'");
+                        if (dsEmp1.Tables.Count > 0 && dsEmp1.Tables[0].Rows.Count > 0)
+                        {
+                            return (dsEmp1.Tables[0].Rows[0]["checklist_ref"].ToString());
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                AddFunctionalLog("Exception in GetInspectionChecklistRefNamebyRevNo: " + ex.ToString());
+            }
+            return "";
+        }
+        public DataSet getListPendingForApproveInspPlan(string sempid)
+        {
+            try
+            {
+                string sSqlstmt = "select id_inspection_plan,checklist_ref,insp_type,logged_by from t_inspection_plan"
+                + " where active = 1 and approved_status = 0 and approved_by = '" + sempid + "' order by id_inspection_plan desc";
+
+                DataSet dsApprovalList = Getdetails(sSqlstmt);
+                if (dsApprovalList.Tables.Count > 0 && dsApprovalList.Tables[0].Rows.Count > 0)
+                {
+                    return dsApprovalList;
+                }
+            }
+            catch (Exception ex)
+            {
+                AddFunctionalLog("Exception in getListPendingForApproveInspPlan: " + ex.ToString());
+            }
+            return null;
+        }
+        public string GetInspectionChecklistRefNamebyId(string item_id)
+        {
+            try
+            {
+                if (item_id != "" && item_id != null)
+                {
+                    DataSet dsEmp = Getdetails("select checklist_ref from t_inspection_question_master where id_question_master='" + item_id + "'");
+                    if (dsEmp.Tables.Count > 0 && dsEmp.Tables[0].Rows.Count > 0)
+                    {
+                        return (dsEmp.Tables[0].Rows[0]["checklist_ref"].ToString());
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                AddFunctionalLog("Exception in GetInspectionChecklistRefNamebyId: " + ex.ToString());
+            }
+            return "";
+        }
+        public string GetInspectionStatusIdByName(string item_id)
+        {
+            try
+            {
+                if (item_id != "" && item_id != null)
+                {
+                    DataSet dsEmp = Getdetails("SELEct  item_id FROM dropdownitems m,dropdownheader n where m.header_id=n.header_id"
+                    + " and header_desc='Inspection Status' and item_desc = '" + item_id + "'");
+                    if (dsEmp.Tables.Count > 0 && dsEmp.Tables[0].Rows.Count > 0)
+                    {
+                        return (dsEmp.Tables[0].Rows[0]["item_id"].ToString());
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                AddFunctionalLog("Exception in GetInspectionStatusIdByName: " + ex.ToString());
+            }
+            return "";
+        }
+        public MultiSelectList FunGetChecklistRefList(string insp_type)
+        {
+            DropdownList objReportList = new DropdownList();
+            objReportList.lstDropdown = new List<DropdownItems>();
+            try
+            {
+                string branch = GetCurrentUserSession().division;
+                if (insp_type != "")
+                {
+                    string sSsqlstmt = "select id_question_master as Id,checklist_ref as Name from t_inspection_question_master"
+                    + " where active = 1 and chk_valid = 'Valid' and branch = '" + branch + "' and insp_type='" + insp_type + "' and checklist_status=4";
+
+                    DataSet dsDropdown = Getdetails(sSsqlstmt);
+                    if (dsDropdown.Tables.Count > 0 && dsDropdown.Tables[0].Rows.Count > 0)
+                    {
+                        for (int i = 0; i < dsDropdown.Tables[0].Rows.Count; i++)
+                        {
+                            DropdownItems objReport = new DropdownItems()
+                            {
+                                Id = dsDropdown.Tables[0].Rows[i]["Id"].ToString(),
+                                Name = dsDropdown.Tables[0].Rows[i]["Name"].ToString()
+                            };
+                            objReportList.lstDropdown.Add(objReport);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                AddFunctionalLog("Exception in FunGetChecklistRefList: " + ex.ToString());
+            }
+            return new MultiSelectList(objReportList.lstDropdown, "Id", "Name");
+        }
+        public DataSet getListPendingForReviewInspChecklist(string sempid)
+        {
+            try
+            {
+                string sSqlstmt = "select id_question_master,checklist_ref,insp_type,logged_by from t_inspection_question_master"
+                + " where active = 1 and checklist_status = 0 and reviewed_by = '" + sempid + "' order by id_question_master desc";
+
+                DataSet dsApprovalList = Getdetails(sSqlstmt);
+                if (dsApprovalList.Tables.Count > 0 && dsApprovalList.Tables[0].Rows.Count > 0)
+                {
+                    return dsApprovalList;
+                }
+            }
+            catch (Exception ex)
+            {
+                AddFunctionalLog("Exception in getListPendingForReviewInspChecklist: " + ex.ToString());
+            }
+            return null;
+        }
+        public DataSet getListPendingForApproveInspChecklist(string sempid)
+        {
+            try
+            {
+                string sSqlstmt = "select id_question_master,checklist_ref,insp_type,logged_by from t_inspection_question_master"
+                + " where active = 1 and checklist_status = 2 and approved_by = '" + sempid + "' order by id_question_master desc";
+
+                DataSet dsApprovalList = Getdetails(sSqlstmt);
+                if (dsApprovalList.Tables.Count > 0 && dsApprovalList.Tables[0].Rows.Count > 0)
+                {
+                    return dsApprovalList;
+                }
+            }
+            catch (Exception ex)
+            {
+                AddFunctionalLog("Exception in getListPendingForApproveInspChecklist: " + ex.ToString());
+            }
+            return null;
+        }
+        public MultiSelectList GetTopMgmtEmpListbox()
+        {
+            EmployeeList emplist = new EmployeeList();
+            emplist.EmpList = new List<Employee>();
+
+            try
+            {
+                string branch = GetCurrentUserSession().division;
+                DataSet dsEmp = Getdetails("select emp_no as Empid,concat(concat(emp_firstname,' ',ifnull(emp_middlename,' '),' ',ifnull(emp_lastname,' ')),' - ',EmailId) as Empname from t_hr_employee e,roles r where e.emp_status=1"
+               + " and FIND_IN_SET(id,Role) and RoleName='Top Management' and division='" + branch + "'");
+
+
+                if (dsEmp.Tables.Count > 0 && dsEmp.Tables[0].Rows.Count > 0)
+                {
+                    for (int i = 0; i < dsEmp.Tables[0].Rows.Count; i++)
+                    {
+
+                        Employee emp = new Employee()
+                        {
+                            Empid = dsEmp.Tables[0].Rows[i]["Empid"].ToString(),
+                            Empname = Regex.Replace(dsEmp.Tables[0].Rows[i]["Empname"].ToString(), " +", " ")
+                        };
+                        emp.Empname = emp.Empname.Trim();
+                        emplist.EmpList.Add(emp);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                AddFunctionalLog("Exception in GetTopMgmtEmpListbox: " + ex.ToString());
+            }
+            return new MultiSelectList(emplist.EmpList, "Empid", "Empname");
+        }
+
+        public MultiSelectList FunGetDeptSectionList(string dept)
+        {
+            DropdownList objReportList = new DropdownList();
+            objReportList.lstDropdown = new List<DropdownItems>();
+            try
+            {
+                if (dept != "")
+                {
+                    string sSsqlstmt = "select id_inspection as Id, Section as Name from t_inspection_section where dept='" + dept + "' and active=1";
+
+                    DataSet dsDropdown = Getdetails(sSsqlstmt);
+                    if (dsDropdown.Tables.Count > 0 && dsDropdown.Tables[0].Rows.Count > 0)
+                    {
+                        for (int i = 0; i < dsDropdown.Tables[0].Rows.Count; i++)
+                        {
+                            DropdownItems objReport = new DropdownItems()
+                            {
+                                Id = dsDropdown.Tables[0].Rows[i]["Id"].ToString(),
+                                Name = dsDropdown.Tables[0].Rows[i]["Name"].ToString()
+                            };
+                            objReportList.lstDropdown.Add(objReport);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                AddFunctionalLog("Exception in FunGetDeptSectionList: " + ex.ToString());
+            }
+            return new MultiSelectList(objReportList.lstDropdown, "Id", "Name");
+        }
+
+        public string GetComplianceStausIdByName(string item_desc)
+        {
+            try
+            {
+                if (item_desc != "")
+                {
+                    string sSsqlstmt = "select item_id as Id from dropdownitems, dropdownheader where dropdownheader.header_id=dropdownitems.header_id "
+                       + "and header_desc='Legal Register Compliance Status' and (item_desc='" + item_desc + "')";
+                    DataSet dsData = Getdetails(sSsqlstmt);
+                    if (dsData.Tables.Count > 0 && dsData.Tables[0].Rows.Count > 0)
+                    {
+                        return (dsData.Tables[0].Rows[0]["Id"].ToString());
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                AddFunctionalLog("Exception in GetComplianceStausIdByName: " + ex.ToString());
+            }
+            return "";
+        }
+        public MultiSelectList GetAllIssueList(string deptId="")
         {
             DropdownList objProductList = new DropdownList();
             objProductList.lstDropdown = new List<DropdownItems>();
 
             try
             {
-                string sSsqlstmt = "select id_issue as Id,Issue_refno as Name from t_issues where Active=1 order by id_issue asc";
+                string sSsqlstmt = "";
+
+                if (deptId != "")
+                {
+                    sSsqlstmt = "select id_issue as Id,Issue_refno as Name from t_issues where Active=1 and find_in_set('"+ deptId + "',Deptid) order by id_issue asc";
+                }
+                else
+                {
+                    sSsqlstmt = "select id_issue as Id,Issue_refno as Name from t_issues where Active=1 order by id_issue asc";
+                }
 
                 DataSet dsBranch = Getdetails(sSsqlstmt);
 
@@ -11298,6 +11551,7 @@ namespace ISOStd.Models
             
             switch(sType)
             {
+                case "Issue Frequency Evaluation": return new string[] { "Quarterly", "Semi Annually", "Yearly" };
                 case "IssueImpact": return new string[] { "Low", "Moderate", "High","Extreme" };
                 case "KPIUnit": return new string[] { "Number", "Each", "%" };
                 case "NC-RootCause": return new string[] { "Completely", "Partially", "No" };
@@ -11409,6 +11663,26 @@ namespace ISOStd.Models
 
             switch (sType)
             {
+                case "InspPlanApprove":
+
+                    dicKeyValue.Add("2", "Approved");
+                    dicKeyValue.Add("1", "Rejected");
+                    return dicKeyValue;
+                case "InspChkApprove":
+
+                    dicKeyValue.Add("4", "Approved");
+                    dicKeyValue.Add("3", "Rejected");
+                    return dicKeyValue;
+                case "InspChkReview":
+
+                    dicKeyValue.Add("2", "Reviewed");
+                    dicKeyValue.Add("1", "Rejected");
+                    return dicKeyValue;
+                case "OFI":
+
+                    dicKeyValue.Add("Approved", "Approved");
+                    dicKeyValue.Add("Rejected", "Rejected");
+                    return dicKeyValue;
                 case "AuditNC":
 
                     dicKeyValue.Add("2", "Accept");

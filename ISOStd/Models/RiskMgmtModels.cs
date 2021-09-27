@@ -403,14 +403,23 @@ namespace ISOStd.Models
        
 
       
-        public MultiSelectList GetIsssuesNo()
+        public MultiSelectList GetIsssuesNo(string id_issue = "")
         {
             issuesList lst = new issuesList();
             lst.lstIssue = new List<issues>();
             try
             {
 
-                string sSqlstmt = "select id_issue,Issue_refno from t_issues where Active=1";
+                string sSqlstmt = "";
+                if (id_issue != "")
+                {
+                    sSqlstmt = "select id_issue,Issue_refno from t_issues where id_issue='" + id_issue + "'";
+                }
+                else
+                {
+                    sSqlstmt = "select id_issue,Issue_refno from t_issues where Active=1";
+                }
+               
                 DataSet dsIssue = objGlobaldata.Getdetails(sSqlstmt);
                 if (dsIssue.Tables.Count > 0 && dsIssue.Tables[0].Rows.Count > 0)
                 {

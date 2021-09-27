@@ -66,19 +66,19 @@
             </div>
 
             @*<div class="header-elements d-none">
-                <div class="breadcrumb justify-content-center">
-                    <div class="breadcrumb-elements-item dropdown p-0">
-                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
-                            <i class="icon-gear mr-2"></i>
-                            Settings
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right">
-                            <div class="dropdown-divider"></div>
-                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                    <div class="breadcrumb justify-content-center">
+                        <div class="breadcrumb-elements-item dropdown p-0">
+                            <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                                <i class="icon-gear mr-2"></i>
+                                Settings
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <div class="dropdown-divider"></div>
+                                <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>*@
+                </div>*@
         </div>
     </div>
 }
@@ -206,7 +206,9 @@
                                     <span class="form-text text-muted"><code>(Hold Ctrl Key in case of multiple files or drag multiple files and drop here)</code></span>
                                     <span class="field-validation-error"><label id="imporve_upload-message" class="validation-invalid-label" style="display:none" for="basic">Upload field is required.</label> </span>
                                 </td>
-                                <td class="col-xs-1 col-md-1">
+                                <td class="col">
+                                    <input type="hidden" id="cntaction" name="cntaction" value="@itemcount" min="1" ErrorMessage="Enter value in specified range" />
+
                                     <img src='@Url.Content("~/images/icon_add.png")' onclick='AddActionInfo()' style='cursor:pointer; padding-right: 5px;' />Add
                                 </td>
                             </tr>
@@ -345,6 +347,8 @@
                                         <span class="field-validation-error"><span id="doc_name-message" style="display: none;" for="basic">Please add Document Name.</span></span>
                                     </td>
                                     <td class="col">
+                                        <input type="hidden" id="cntdoc" name="cntdoc" value="@itemcount1" min="1" ErrorMessage="Enter value in specified range" />
+
                                         <img src='@Url.Content("~/images/icon_add.png")' onclick='AddDocumentInfo()' style='cursor:pointer; padding-right: 5px;' />Add
                                     </td>
                                 </tr>
@@ -378,17 +382,17 @@
                                             {
                                                 <tr>
                                                     <td>
-                                                        <img src='@Url.Content("~/images/cancel.png")' onclick='deleteRow(this)' style='cursor:pointer; padding-right: 5px;' />Remove
+                                                        <img src='@Url.Content("~/images/cancel.png")' onclick='deleteDocRow(this)' style='cursor:pointer; padding-right: 5px;' />Remove
                                                         <input type='hidden' id='id_ofi @index' name="id_ofi @index" value='@ObjOFIDocList.OFIList[index].id_ofi' />
                                                     </td>
                                                     <td>
-                                                        <input type='hidden' id='doc_type @index' name="doc_type @index" value='@ObjOFIDocList.OFIList[index].doc_type'/>@objGlobaldata.GetDropdownitemById(ObjOFIDocList.OFIList[index].doc_type)
+                                                        <input type='hidden' id='doc_type @index' name="doc_type @index" value='@ObjOFIDocList.OFIList[index].doc_type' />@objGlobaldata.GetDropdownitemById(ObjOFIDocList.OFIList[index].doc_type)
                                                     </td>
                                                     <td>
-                                                        <input type='hidden' id='doc_ref @index' name="doc_ref @index" value='@ObjOFIDocList.OFIList[index].doc_ref'/> @ObjOFIDocList.OFIList[index].doc_ref
+                                                        <input type='hidden' id='doc_ref @index' name="doc_ref @index" value='@ObjOFIDocList.OFIList[index].doc_ref' /> @ObjOFIDocList.OFIList[index].doc_ref
                                                     </td>
                                                     <td>
-                                                        <input type='hidden' id='doc_name @index' name="doc_name @index" value='@ObjOFIDocList.OFIList[index].doc_name'/>@ObjOFIDocList.OFIList[index].doc_name
+                                                        <input type='hidden' id='doc_name @index' name="doc_name @index" value='@ObjOFIDocList.OFIList[index].doc_name' />@ObjOFIDocList.OFIList[index].doc_name
                                                     </td>
                                                 </tr>
                                             }
@@ -398,28 +402,35 @@
                             </div>
                         </div>
                     </div>
+                    <div  id="DocUpd" style="display:none">
+                        <table class="table table-lg">
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.DisplayNameFor(model => model.updatedby)<text style="color: red;">*</text>
+                                    </div>
+                                </td>
+                                <td class="col-xs-6 col-md-4">
+                                    <div class="editor-field">
+                                        <select class="form-control-select3" data-fouc id="updatedby" name="updatedby" onchange="GetProposedByDetails()">
+                                            <option value='' hidden>Select</option>
+                                            @if (ViewBag.EmpList != null)
+                                            {
+                                                foreach (var item in ViewBag.EmpList)
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+                                </td>
 
+                            </tr>
+                            </table>
+</div>
                     <table class="table table-lg">
                         <tr class="row">
-                            <td class="col-xs-3 col-md-2">
-                                <div class="editor-label">
-                                    @Html.DisplayNameFor(model => model.updatedby)<text style="color: red;">*</text>
-                                </div>
-                            </td>
-                            <td class="col-xs-6 col-md-4">
-                                <div class="editor-field">
-                                    <select class="form-control-select3" data-fouc id="updatedby" name="updatedby" onchange="GetProposedByDetails()">
-                                        <option value='' hidden>Select</option>
-                                        @if (ViewBag.EmpList != null)
-                                        {
-                                            foreach (var item in ViewBag.EmpList)
-                                            {
-                                                <option value='@item.Value'>@item.Text</option>
-                                            }
-                                        }
-                                    </select>
-                                </div>
-                            </td>
+                           
                             <td class="col-xs-3 col-md-2">
                                 <div class="editor-label">
                                     @Html.DisplayNameFor(model => model.improvement_achieve)<text style="color: red;">*</text>
@@ -617,7 +628,7 @@
          {
              document.getElementById("improvementdiv").style.display = 'block';
          }
-         
+
          if (@itemcount1 > 0)
          {
              document.getElementById("actiondiv").style.display = 'block';
@@ -762,8 +773,15 @@
         function deleteRow(btn) {
             var row = btn.parentNode.parentNode;
             row.parentNode.removeChild(row);
+            var cnt = document.getElementById("itemcount").value;
+            document.getElementById("cntaction").value = cnt-1;
         }
-
+        function deleteDocRow(btn) {
+            var row = btn.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+            var cnt = document.getElementById("itemcount1").value;
+            document.getElementById("cntdoc").value = cnt-1;
+        }
         function ValidationAction() {
             var validflg = true;
             var ssnMessage = "";
@@ -808,7 +826,7 @@
             return validflg;
         }
 
-        
+
         function AddActionInfo() {
 
             if (ValidationAction() == true) {
@@ -822,9 +840,9 @@
                 uploadServerPath = UploadDocument(cnt);
             }
         }
-        
+
           function UploadDocument(ind) {
-              var imporve_upload = ($("#imporve_upload")).files; 
+              var imporve_upload = ($("#imporve_upload")).files;
               var formData = new FormData();
               var totalFiles = document.getElementById("imporve_upload").files.length;
             for (var i = 0; i < totalFiles; i++) {
@@ -837,7 +855,7 @@
                 contentType: false,
                 processData: false,
                 data: formData,
-                success: function (result) {                  
+                success: function (result) {
                     DisplayDocument(result,ind);
                     return result;
                 }
@@ -856,7 +874,7 @@
             filename=filename.slice(0, -1);
 
              //alert(filename);
-               
+
                 var table = document.getElementById("team-list-count");
                 // Create an empty <tr> element and add it to the 1st position of the table:
                 var row = table.insertRow();
@@ -867,7 +885,7 @@
                 var cell2 = row.insertCell(2);
                 var cell3 = row.insertCell(3);
                 var cell4 = row.insertCell(4);
-                
+
             var improve_details = document.getElementById("improve_details").value;
             var improve_achievedin = $('#improve_achievedin').val();
             var improve_achievedinText = $('#improve_achievedin option:selected').text();
@@ -879,9 +897,10 @@
             cell2.innerHTML = "<input type='hidden' id='improve_achievedin " + cnt + "' name='improve_achievedin " + cnt + "' value='" + improve_achievedin + "'>" + improve_achievedinText;
             cell3.innerHTML = "<input type='hidden' id='improve_measurable " + cnt + "' name='improve_measurable " + cnt + "' value='" + improve_measurable + "'>" + improve_measurable;
             cell4.innerHTML = "<input type='hidden' id='imporve_upload1 " + cnt + "' name='imporve_upload1 " + cnt + "' value='" + Filepath + "'>" + filename;
-              
+
                 cnt++;
                 document.getElementById("itemcount").value = cnt;
+                document.getElementById("cntaction").value = cnt;
                 document.getElementById("improvementdiv").style.display = "block";
                 ResetControl1();
         }
@@ -928,7 +947,7 @@
                 ssnMessage.hide();
             }
             return validflg;
-        }       
+        }
 
         function AddDocumentInfo() {
         if (Validation() == true) {
@@ -946,22 +965,22 @@
             var cell0 = row.insertCell(0);
             var cell1 = row.insertCell(1);
             var cell2 = row.insertCell(2);
-            var cell3 = row.insertCell(3);        
+            var cell3 = row.insertCell(3);
 
 
             var doc_type = $('#doc_type').val();
             var doc_typeText = $("#doc_type option:selected").text();
             var doc_ref = $('#doc_ref').val();
             var doc_name = $('#doc_name').val();
-           
-            cell0.innerHTML = " <img src='@Url.Content("~/images/cancel.png")' onclick='deleteRow(this)' style='cursor:pointer; padding-right: 5px;'/>Remove";
+
+            cell0.innerHTML = " <img src='@Url.Content("~/images/cancel.png")' onclick='deleteDocRow(this)' style='cursor:pointer; padding-right: 5px;'/>Remove";
             cell1.innerHTML = "<input type='hidden' id='doc_type " + cnt + "' name='doc_type " + cnt + "' value='" + doc_type + "'>" + doc_typeText;
             cell2.innerHTML = "<input type='hidden' id='doc_ref " + cnt + "' name='doc_ref " + cnt + "' value='" + doc_ref + "'>" + doc_ref;
             cell3.innerHTML = "<input type='hidden' id='doc_name " + cnt + "' name='doc_name " + cnt + "' value='" + doc_name + "'>" + doc_name;
-           
+
             cnt++;
             document.getElementById("itemcount1").value = cnt;
-
+            document.getElementById("cntdoc").value = cnt;
             document.getElementById("actiondiv").style.display = "block";
             ResetControl();
             }
@@ -978,17 +997,13 @@
             if (updated == "Yes" || updated == "Select")
             {
                 document.getElementById("DocYN").style.display = 'block';
+                document.getElementById("DocUpd").style.display = 'block';
             }
             else {
                 document.getElementById("DocYN").style.display = 'none';
+                document.getElementById("DocUpd").style.display = 'none';
             }
         }
     </script>
     @Scripts.Render("~/bundles/jqueryval")
 }
-
-
-
-
-
-

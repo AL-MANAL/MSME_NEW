@@ -97,6 +97,31 @@
                         </td>
 
                         <td class="col-xs-1 col-md-1">
+                            Department<text style="color:red;">*</text>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-fixed-multiple" data-fouc id="Deptid" name="Deptid" onchange="GetIssueTypeList()" required> @*Dont Give Multiple*@
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.Department != null)
+                                    {
+                                        foreach (var item in ViewBag.Department)
+                                        {
+                                            if (Array.IndexOf(Model.Deptid.ToString().Split(','), item.Value) >= 0)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+
+                        <td class="col-xs-1 col-md-1">
                             Location<text style="color:red;">*</text>
                         </td>
                         <td class="col">
@@ -119,30 +144,8 @@
                             <br />
                             @Html.ValidationMessageFor(m => m.Location)
                         </td>
-                        <td class="col-xs-1 col-md-1">
-                            Department<text style="color:red;">*</text>
-                        </td>
-                        <td class="col">
-                            <div class="editor-field">
-                                <select class="form-control select-fixed-multiple" data-fouc id="Deptid" name="Deptid" @*multiple="multiple"*@ required>
-                                    <option value='' hidden>Select</option>
-                                    @if (ViewBag.Department != null)
-                                    {
-                                        foreach (var item in ViewBag.Department)
-                                        {
-                                            if (Array.IndexOf(Model.Deptid.ToString().Split(','), item.Value) >= 0)
-                                            {
-                                                <option value='@item.Value' selected>@item.Text</option>
-                                            }
-                                            else
-                                            {
-                                                <option value='@item.Value'>@item.Text</option>
-                                            }
-                                        }
-                                    }
-                                </select>
-                            </div>
-                        </td>
+
+
                     </tr>
                     <tr class="row">
                         <td class="col-xs-3 col-md-2">
@@ -152,7 +155,7 @@
                         </td>
                         <td class="col">
                             <div class="editor-field">
-                                <input type="date" class="form-control" id="issue_date" name="issue_date" required />
+                                <input type="date" class="form-control" id="issue_date" name="issue_date" value="@DateTime.Now.ToString("yyyy-MM-dd")" required />
                             </div>
                         </td>
                         <td class="col-xs-3 col-md-2">
@@ -189,12 +192,28 @@
                                     <th>Location</th>
                                     <th>Department</th>
                                     <th>Email</th>
-                                </tr>                              
+                                </tr>
                             </table>
                         </div>
                     </div>
                 </div>
                 <table class="table table-lg">
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                Type of issue
+                            </div>
+                        </td>
+                        <td class="col" style="font-size:12px;">
+                            <div class="editor-field">
+                                <input type="radio" id="issue_type" name="issue_type" value="new" onchange="GetIssueType()" />New
+                                <input type="radio" id="issue_type" name="issue_type" value="old" onchange="GetIssueType()" />Repetitive
+                            </div>
+                        </td>
+                    </tr>
+
+                </table>
+                <table class="table" id="Divnewissue" style="display:none">
                     <tr class="row">
                         <td class="col-xs-3 col-md-2">
                             <div class="editor-label">
@@ -228,6 +247,8 @@
                             </div>
                         </td>
                     </tr>
+                </table>
+                <table class="table" id="Divoldissue" style="display:none">
                     <tr class="row">
                         <td class="col-xs-3 col-md-2">
                             <div class="editor-label">
@@ -251,6 +272,20 @@
                         <td class="col">
                             <div class="editor-field">
                                 <textarea id="Repet_Issue_detail" name="Repet_Issue_detail" maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" disabled readonly></textarea>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+                <table class="table">
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.additional_details)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <textarea id="additional_details" name="additional_details" maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position"></textarea>
                             </div>
                         </td>
                     </tr>
@@ -288,7 +323,14 @@
                                     {
                                         foreach (var item in ViewBag.IssueType)
                                         {
-                                            <option value='@item'>@item</option>
+                                            if (item == "Internal")
+                                            {
+                                                <option value='@item' selected>@item</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item'>@item</option>
+                                            }
                                         }
                                     }
                                 </select>
@@ -323,7 +365,7 @@
                         </td>
                         <td class="col">
                             <div class="editor-field">
-                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="Impact_detail" name="Impact_detail" required>
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="Impact_detail" name="Impact_detail" multiple required>
                                 </select>
                             </div>
                         </td>
@@ -334,13 +376,16 @@
                                 @Html.LabelFor(model => model.Evidence)
                             </div>
                         </td>
-                        <td class="col">
+                        @*<td class="col">
                             <div class="editor-field">
-                                <input class="bootstrap-uploader" data-fouc type="file" name="file" id="file" onchange="FileFormatValidation(this)" accept=".pdf,.xlsx" />
+                                <input class="bootstrap-uploader" data-fouc type="file" name="file" id="file" onchange="FileFormatValidation(this)" accept=".pdf,.xlsx,.xls,.jpeg,.jpg,.png,.doc,.docx" />
                             </div>
-                        </td>
-
-
+                        </td>*@
+                          <td class="col">
+                                <input type="file" name="Evidence" id="Evidence" title="Documents" onchange="FileFormatValidation(this)"
+                                       multiple="multiple" accept=".pdf,.xlsx,.xls,.jpeg,.jpg,.png,.doc,.docx,image/*" class="bootstrap-uploader" data-fouc />
+                                <span class="form-text text-muted"><code>(Hold Ctrl Key in case of multiple files or drag multiple files and drop here)</code></span>
+                            </td>
                     </tr>
                     <tr class="row">
                         <td class="col-xs-3 col-md-2">
@@ -398,11 +443,11 @@
     <script>
         function FileFormatValidation(file) {
             var ext = file.value.split(".").pop().toLowerCase();
-            if ($.inArray(ext, ["pdf", "xlsx"]) == -1) {
+            if ($.inArray(ext, ["pdf", "xlsx","xls","doc","docx","jpeg","jpg","png"]) == -1) {
                 file.value = "";
                 bootbox.alert({
                     title: 'File type',
-                    message: 'Invalid file format, please upload only xlsx,pdf format.'
+                    message: 'Invalid file format, please upload only xlsx,xls,pdf,jpeg,jpg,png format.'
                 });
             }
         }
@@ -630,8 +675,45 @@
             }
         }
 
-        
+        function GetIssueType() {
+            var issue_type = $("input[name='issue_type']:checked").val();
 
+            if (issue_type == "new") {
+                $("#Divnewissue").show();
+                $("#Divoldissue").hide();
+                $("#Repet_Issue").val('').trigger("chosen:updated");
+            }
+            else {
+                $("#Divnewissue").hide();
+                $("#Divoldissue").show();
+                document.getElementById("Issue").value = "";
+                $("#Effect").val('').trigger("chosen:updated");
+
+            }
+        }
+
+        function GetIssueTypeList() {
+            var Deptid = $("#Deptid option:selected").val();
+            if (Deptid != null && Deptid != "") {
+                jQuery.ajax({
+                    url: '@Url.Action("FunIssueList", "Issues")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'Deptid': Deptid },
+                    success: function (result) {
+                        $("#Repet_Issue").children('option').remove();
+                        $("#Repet_Issue").trigger('change');
+                        if (result != null && result.length > 0) {
+                            $.each(result, function (index, item) {
+                                $("#Repet_Issue").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                            });
+                            $("#Repet_Issue").trigger('change');
+                            return;
+                        }
+                    }
+                });
+            }
+        }
     </script>
     @Scripts.Render("~/bundles/jqueryval")
 }

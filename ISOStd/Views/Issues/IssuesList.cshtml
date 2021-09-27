@@ -130,23 +130,26 @@
                             @Html.DisplayNameFor(model => model.First().Issue)
                         </th>
                         <th>
-                            @Html.DisplayNameFor(model => model.First().branch)
+                            @Html.DisplayNameFor(model => model.First().reporting_to)
                         </th>
                         <th>
-                            @Html.DisplayNameFor(model => model.First().Deptid)
+                            @Html.DisplayNameFor(model => model.First().notified_to)
                         </th>
-                        <th>
+                        @*<th>
                             @Html.DisplayNameFor(model => model.First().Location)
-                        </th>
+                        </th>*@
 
                         <th>
                             @Html.DisplayNameFor(model => model.First().IssueType)
                         </th>
                         <th>
                             @Html.DisplayNameFor(model => model.First().Effect)
-                        </th>                       
+                        </th>
                         <th>
                             @Html.DisplayNameFor(model => model.First().Impact)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.First().issue_status)
                         </th>
                         @*<th class="not-export-column">Edit</th>
         <th class="not-export-column">Delete</th>*@
@@ -164,7 +167,7 @@
                             i = i + 1;
                     <tr>
                         <td>
-                            <a href="#" data-toggle="popover" data-trigger="hover" id="@item.id_issue">@i</a>
+                            @Html.ActionLink(i.ToString(), "IssuesDetail", new { id_issue = item.id_issue.ToString() }, new { data_toggle = "popover", data_trigger = "hover", id = item.id_issue, onclick = "HyperLinkProgressIconFunction()" })
                         </td>
                         <td>
                             @Html.DisplayFor(modelItem => item.Issue_refno)
@@ -173,22 +176,33 @@
                             @Html.DisplayFor(modelItem => item.Issue)
                         </td>
                         <td>
-                            @Html.DisplayFor(modelItem => item.branch)
+                            @Html.DisplayFor(modelItem => item.reporting_to)
                         </td>
                         <td>
-                            @Html.DisplayFor(modelItem => item.Deptid)
+                            @Html.DisplayFor(modelItem => item.notified_to)
                         </td>
-                        <td>
+                        @*<td>
                             @Html.DisplayFor(modelItem => item.Location)
-                        </td>
+                        </td>*@
                         <td>
                             @Html.DisplayFor(modelItem => item.IssueType)
                         </td>
                         <td>
                             @Html.DisplayFor(modelItem => item.Effect)
-                        </td> 
+                        </td>
                         <td>
                             @Html.DisplayFor(modelItem => item.Impact)
+                        </td>
+                        <td>
+
+                            @if (item.issue_status == "")
+                            {
+                                <text>Open</text>
+                            }
+                            else
+                            {
+                                @Html.DisplayFor(modelItem => item.issue_status)
+                            }
                         </td>
                         <td class="text-center">
                             <div class="list-icons">
@@ -198,7 +212,15 @@
                                     </a>
 
                                     <div class="dropdown-menu dropdown-menu-right">
-
+                                        <a class="dropdown-item" href='@Url.Action("StatusUpdate", "Issues", new { id_issue = item.id_issue })' title="Update Status" onclick="HyperLinkProgressIconFunction()">
+                                            <i class="icon-pencil7"></i>Update Status
+                                        </a>
+                                        <a class="dropdown-item" href='@Url.Action("AddRisk", "RiskMgmt", new { id_issue = item.id_issue })' title="Report Risk" onclick="HyperLinkProgressIconFunction()">
+                                            <i class="icon-pencil7"></i>Report Risk
+                                        </a>
+                                        <a class="dropdown-item" href='@Url.Action("IssuesPDF", "Issues", new { id_issue = item.id_issue })' title="Generate Report">
+                                            <i class="icon-pencil7"></i>Generate Report 
+                                        </a>
                                         @if (ShowEdit)
                                         {
                                             <a class="dropdown-item" href='@Url.Action("IssueEdit", "Issues", new { id_issue = item.id_issue })' title="Edit Issue details" onclick="HyperLinkProgressIconFunction()">

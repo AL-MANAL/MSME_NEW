@@ -12,7 +12,6 @@
     if (ViewBag.dsInspection != null)
     {
         dsInspection = ViewBag.dsInspection;
-
     }
 
     Dictionary<string, string> dicInspectionElements = new Dictionary<string, string>();
@@ -53,7 +52,7 @@
                 <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
             </div>
 
-            @*<div class="header-elements d-none">
+            <div class="header-elements d-none">
                 <div class="breadcrumb justify-content-center">
 
 
@@ -73,7 +72,7 @@
                         </div>
                     </div>
                 </div>
-            </div>*@
+            </div>
         </div>
     </div>
 }
@@ -156,7 +155,7 @@
                             Department
                         </td>
                         <td class="col">
-                            <select class="form-control select-fixed-multiple" data-fouc id="Department" name="Department" multiple="multiple">
+                            <select class="form-control select-fixed-multiple" data-fouc id="Department" name="Department" multiple="multiple" onchange="GetTeamDetails()">
 
                                 @if (ViewBag.DepartmentList != null)
                                 {
@@ -177,19 +176,15 @@
                     </tr>
                     <tr class="row">
                         <td class="col-xs-3 col-md-2">
-
-                            Inspection By
-                            @*@Html.LabelFor(model => ViewBag.Inspection_by)<text style="color: red;">*</text>*@
-
+                           Team
                         </td>
                         <td class="col">
-                            <select class="form-control select-search select2-hidden-accessible" data-fouc id="Inspection_by" name="Inspection_by" required>
-                                <option value='' hidden>Select</option>
-                                @if (ViewBag.EmpLists != null)
+                            <select class="form-control select-fixed-multiple" data-fouc id="team" name="team" multiple="multiple">
+                                @if (ViewBag.TeamList != null)
                                 {
-                                    foreach (var item in ViewBag.EmpLists)
+                                    foreach (var item in ViewBag.TeamList)
                                     {
-                                        if (item.Text == ViewBag.Inspection_by)
+                                        if (Array.IndexOf(ViewBag.Team.ToString().Split(','), item.Value) >= 0)
                                         {
                                             <option value='@item.Value' selected>@item.Text</option>
                                         }
@@ -202,11 +197,11 @@
                             </select>
                         </td>
                         <td class="col-xs-3 col-md-2">
-                           Location
-                        </td>                        
+                            Location
+                        </td>
                         <td class="col">
-                            <select class="form-control select-fixed-multiple"  data-fouc id="Location" name="Location" multiple="multiple">
-                                
+                            <select class="form-control select-fixed-multiple" data-fouc id="Location" name="Location" multiple="multiple">
+
                                 @if (ViewBag.LocationList != null)
                                 {
                                     foreach (var item in ViewBag.LocationList)
@@ -253,14 +248,39 @@
                     <tr class="row">
                         <td class="col-xs-3 col-md-2">
 
+                            Inspection By
+                            @*@Html.LabelFor(model => ViewBag.Inspection_by)<text style="color: red;">*</text>*@
+
+                        </td>
+                        <td class="col">
+                            <select class="select-fixed-single" data-fouc id="Inspection_by" name="Inspection_by" required>
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.EmpLists != null)
+                                {
+                                    foreach (var item in ViewBag.EmpLists)
+                                    {
+                                        if (item.Text == ViewBag.Inspection_by)
+                                        {
+                                            <option value='@item.Value' selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+
                             @* @Html.LabelFor(model => ViewBag.TagNo)*@
-                            Comment
+                            Comment <text style="color:red;">*</text>
 
                         </td>
                         <td class="col">
 
                             @* @Html.EditorFor(model => ViewBag.TagNo)*@
-                            <textarea id="Comment" name="Comment" maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position">  @ViewBag.Comment</textarea>
+                            <textarea id="Comment" name="Comment" maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" required>  @ViewBag.Comment</textarea>
 
                         </td>
 
@@ -418,9 +438,7 @@
                                                             </td>
                                                         }
                                                     }
-                                                }
-                                            
-
+                                                }   
                                                 <td>
                                                     <input class="form-control" type="text" id="Action @itmctn" name="Action @itmctn" value="@dsInspection.Tables[0].Rows[n]["Action"].ToString()" />
                                                 </td>
@@ -617,12 +635,12 @@
                             });
                             return;
                         }
-                        //else {
-                        //    bootbox.alert({
-                        //        title: 'Department List',
-                        //        message: 'No Department exists.'
-                        //    });
-                        //}
+                        else {
+                            bootbox.alert({
+                                title: 'Department List',
+                                message: 'No Department exists.'
+                            });
+                        }
                     }
                 });          
         }
@@ -644,16 +662,44 @@
                         });
                         return;
                     }
-                    //else {
-                    //    bootbox.alert({
-                    //        title: 'Location List',
-                    //        message: 'No Location exists.'
-                    //    });
-                    //}
+                    else {
+                        bootbox.alert({
+                            title: 'Location List',
+                            message: 'No Location exists.'
+                        });
+                    }
                 }
             });       
         }
 
+         function GetTeamDetails() {
+         $("#team").empty();
+            var sDept = $('#Department').val();          
+                jQuery.ajax({
+                    url: '@Url.Action("FunGetTeamList", "EmployeeDetails")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'group': sDept },
+                    success: function (result) {
+                        $("#team").empty();
+                        if (result != null && result.length > 0) {
+                            $("#team").append("<option value=''>" + "Select" + "</option>");
+                            $.each(result, function (index, item) {
+                                $("#team").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                                $("#team").trigger('change');
+                            });
+                            return;
+                        }
+                        //else {
+                        //    bootbox.alert({
+                        //        title: 'Team Code',
+                        //        message: 'Please add Team code to this Group selected'
+                        //    });
+                        //    return;
+                        //}
+                    }
+                });
+        }
     </script>
     @Scripts.Render("~/bundles/jqueryval")
 }

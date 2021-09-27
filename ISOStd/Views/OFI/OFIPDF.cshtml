@@ -1,4 +1,4 @@
-﻿x`@using System.Data
+﻿@using System.Data
 @using ISOStd.Models;
 
 @{
@@ -45,7 +45,8 @@
     }
 </STYLE>
 
-@Html.Partial("_ReportHeader", dsCompany)
+@*@Html.Partial("_ReportHeader", dsCompany)*@
+@Html.Partial("_RptHeader", dsCompany)
 
 <div style="background-color:white">
     <div>
@@ -103,12 +104,6 @@
                 </td>
             </tr>
             <tr class="row">
-                <td class="font-size-lg font-weight-bold">IO Reported By</td>
-                <td class="font-size-lg">
-                    <div>
-                        @obj.reportedby
-                    </div>
-                </td>
 
                 <td class="font-size-lg font-weight-bold">
                     IO Reported Date
@@ -119,6 +114,12 @@
                         {
                             @Html.Label(obj.reported_date.ToString("dd/MM/yyyy"))
                         }
+                    </div>
+                </td>
+                <td class="font-size-lg font-weight-bold">IO Reported By</td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.reportedby
                     </div>
                 </td>
             </tr>
@@ -159,31 +160,154 @@
             </tr>
             <tr class="row">
                 <td class="font-size-lg font-weight-bold">
-                    To be approved by
+                    Person responsible for action
                 </td>
                 <td class="font-size-lg">
                     <div>
-                        @obj.approvedby
-                    </div>
-                </td>
-                <td class="font-size-lg font-weight-bold">
-                    Realization Approved by
-                </td>
-                <td class="font-size-lg">
-                    <div>
-                        @obj.realization_approved_by
+                        @obj.pers_resp
                     </div>
                 </td>
             </tr>
+            @if (obj.approved_status == "0")
+            {
+                <tr class="row">
+                    <td class="font-size-lg font-weight-bold">
+                        To be approved by
+                    </td>
+                    <td class="font-size-lg">
+                        <div>
+                            @obj.approvedby
+                        </div>
+                    </td>
+                </tr>
+            }
+            else
+            {
+                <tr class="row">
+                    <td colspan="4" class="font-size-lg font-weight-bold">Approver Details</td>
+                </tr>
+                <tr class="row">
+                    <td class="font-size-lg font-weight-bold">
+                        Approved By
+                    </td>
+                    <td class="font-size-lg">
+                        @ObjGlobal.GetMultiHrEmpNameById(obj.approvedby)
+                    </td>
+                    <td class="font-size-lg font-weight-bold">
+                        Approved Status
+                    </td>
+                    <td class="font-size-lg">
+                        <div>
+                            @obj.approved_status
+                        </div>
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td class="font-size-lg font-weight-bold">
+                        Approved Date
+                    </td>
+                    <td class="font-size-lg">
+                        @if (obj.approved_date != null && obj.approved_date > Convert.ToDateTime("01/01/0001"))
+                        {
+                            @(obj.approved_date.ToString("dd/MM/yyyy hh:mm:ss"))
+                        }
+                    </td>
+                    <td class="font-size-lg font-weight-bold">
+                        Comments
+                    </td>
+                    <td class="font-size-lg">
+                        <div>
+                            @obj.approver_comments
+                        </div>
+                    </td>
+                </tr>
+               
+            }
+
+
+
             <tr class="row">
-                <td class="font-size-lg font-weight-bold">
-                    Actions Proposed by
-                </td>
-                <td class="font-size-lg">
-                    <div>
-                        @obj.action_proposedby
-                    </div>
-                </td>
+                <td colspan="4" class="font-size-lg  font-weight-bold">Realization of IO</td>
+            </tr>
+            @if (obj.realization_approved_status == "0")
+            {
+                <tr class="row">
+                    <td class="font-size-lg font-weight-bold">
+                        Realization Approved by
+                    </td>
+                    <td class="font-size-lg">
+                        <div>
+                            @ObjGlobal.GetMultiHrEmpNameById(obj.realization_approved_by)
+                        </div>
+                    </td>
+                    <td class="font-size-lg font-weight-bold">
+                        Actions Proposed by
+                    </td>
+                    <td class="font-size-lg">
+                        <div>
+                            @obj.action_proposedby
+                        </div>
+                    </td>
+
+                </tr>
+            }
+            else
+            {
+                <tr class="row">
+
+                    <td class="font-size-lg font-weight-bold">
+                        Actions Proposed by
+                    </td>
+                    <td class="font-size-lg">
+                        <div>
+                            @obj.action_proposedby
+                        </div>
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td class="font-size-lg font-weight-bold">
+                        Realization approved By
+                    </td>
+                    <td class="font-size-lg">
+                        <div>
+                            @ObjGlobal.GetMultiHrEmpNameById(obj.realization_approved_by)
+                        </div>
+                    </td>
+                    <td class="font-size-lg font-weight-bold">
+                        Realization Approved Status
+                    </td>
+                    <td class="font-size-lg">
+                        <div>
+                            @obj.realization_approved_status
+                        </div>
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td class="font-size-lg font-weight-bold">
+                        Realization Approved Date
+                    </td>
+                    <td class="font-size-lg">
+                        @if (obj.realization_apporved_date != null && obj.realization_apporved_date > Convert.ToDateTime("01/01/0001"))
+                        {
+                            @(obj.realization_apporved_date.ToString("dd/MM/yyyy hh:mm:ss"))
+                        }
+                    </td>
+                    <td class="font-size-lg font-weight-bold">
+                        Comments
+                    </td>
+                    <td class="font-size-lg">
+                        <div>
+                            @obj.approver_comments
+                        </div>
+                    </td>
+                </tr>
+                
+            }
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">Improvement Achieved</td>
+            </tr>
+            <tr class="row">
+
                 <td class="font-size-lg font-weight-bold">
                     Updated by
                 </td>
@@ -202,6 +326,7 @@
                         @obj.updated
                     </div>
                 </td>
+
                 <td class="font-size-lg font-weight-bold">
                     Is expected improvement achieved?
                 </td>
@@ -363,7 +488,6 @@
                 </table>
             </div>
         }
-        
+
     </div>
 </div>
-

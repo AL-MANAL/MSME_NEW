@@ -70,7 +70,7 @@
     @Html.ValidationSummary(true)
     
 <input type="hidden" id="id_issue" name="id_issue" value="@ViewBag.id_issue" />
-
+<input type="hidden" id="branchId" name="branchId" value="@Model.branchId" />
 <div class="card">
     <div class="card-header header-elements-inline bg-primary">
         <h5 class="card-title">Update Internal & External Issues</h5>
@@ -103,13 +103,6 @@
                     </td>
                 </tr>
                 <tr class="row">
-
-                    <td class="col-xs-3 col-md-2">
-                        @Html.LabelFor(model => model.Location)
-                    </td>
-                    <td class="col">
-                        @Html.DisplayFor(model => model.Location)
-                    </td>
                     <td class="col-xs-3 col-md-2">
                         <div class="editor-label">
                             @Html.LabelFor(model => model.Deptid)
@@ -119,6 +112,12 @@
                         <div class="editor-field">
                             @Html.DisplayFor(model => model.Deptid)
                         </div>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        @Html.LabelFor(model => model.Location)
+                    </td>
+                    <td class="col">
+                        @Html.DisplayFor(model => model.Location)
                     </td>
                 </tr>
                 <tr class="row">
@@ -149,11 +148,11 @@
                     <td class="col">
                         <div class="editor-field">
                             <select class="form-control select-fixed-multiple" data-fouc id="reporting_to" name="reporting_to" multiple="multiple" onchange="GetReportedByDetails()">
-                              @if (ViewBag.EmpList != null)
+                                @if (ViewBag.EmpList != null)
                                 {
                                     foreach (var item in ViewBag.EmpList)
                                     {
-                                       <option value='@item.Value'>@item.Text</option>
+                                        <option value='@item.Value'>@item.Text</option>
                                     }
                                 }
                             </select>
@@ -216,6 +215,35 @@
                 <tr class="row">
                     <td class="col-xs-3 col-md-2">
                         <div class="editor-label">
+                            Type of issue
+                        </div>
+                    </td>
+                    <td class="col" style="font-size:12px;">
+                        <div class="editor-field">
+                            @if (Model.Issue != null && Model.Issue != "")
+                            {
+                                <label><input type="radio" id="issue_type" name="issue_type" value="new" checked onchange="GetIssueType()" />New</label>
+                                <label><input type="radio" id="issue_type" name="issue_type" value="old" onchange="GetIssueType()" />Repetitive</label>
+                            }
+                            else if (Model.Repet_Issue != null && Model.Repet_Issue != "")
+                            {
+                                <label><input type="radio" id="issue_type" name="issue_type" value="new" onchange="GetIssueType()" />New</label>
+                                <label><input type="radio" id="issue_type" name="issue_type" value="old" checked onchange="GetIssueType()" />Repetitive</label>
+                            }
+                           else
+                            {
+                                <label><input type="radio" id="issue_type" name="issue_type" value="new" onchange="GetIssueType()" />New</label>
+                                <label><input type="radio" id="issue_type" name="issue_type" value="old" onchange="GetIssueType()" />Repetitive</label>
+                            }
+                        </div>
+                    </td>
+                </tr>
+
+            </table>
+            <table class="table" id="Divnewissue" style="display:none">
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <div class="editor-label">
                             @Html.LabelFor(model => model.Issue)<text style="color: red;">*</text>
                         </div>
                     </td>
@@ -254,6 +282,8 @@
                         </div>
                     </td>
                 </tr>
+            </table>
+            <table class="table" id="Divoldissue" style="display:none">
                 <tr class="row">
                     <td class="col-xs-3 col-md-2">
                         <div class="editor-label">
@@ -285,6 +315,20 @@
                     <td class="col">
                         <div class="editor-field">
                             <textarea id="Repet_Issue_detail" name="Repet_Issue_detail" maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" disabled readonly></textarea>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            <table class="table">
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.additional_details)
+                        </div>
+                    </td>
+                    <td class="col">
+                        <div class="editor-field">
+                            <textarea id="additional_details" name="additional_details" maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position">@Model.additional_details</textarea>
                         </div>
                     </td>
                 </tr>
@@ -403,17 +447,44 @@
                             @Html.LabelFor(model => model.Evidence)
                         </div>
                     </td>
-                    <td class="col">
+                    @*<td class="col">
                         <div class="editor-field">
-                            <input class="bootstrap-uploader" data-fouc type="file" name="file" id="file" value="" onchange="FileFormatValidation(this)" accept=".pdf" />
+                            <input class="bootstrap-uploader" data-fouc type="file" name="file" id="file" value="" onchange="FileFormatValidation(this)" accept=".pdf,.xlsx,.xls,.jpeg,.jpg,.png,.doc,.docx" />
                             @if (Model.Evidence != "")
                             {
                                 <a href='@Url.Action("DisplayDocument", "Reports", new { Document = Model.Evidence })' class="text-orange" target="_blank">Preview</a>
                             }
                         </div>
-                    </td>
+                    </td>*@
+                     <td class="col">
+                            <input type="file" name="Evidence" id="Evidence" title="Documents" onchange="FileFormatValidation(this)"
+                                   multiple="multiple" accept=".pdf, .doc, .docx,image/*" class="bootstrap-uploader" data-fouc />
 
+                            <span class="form-text text-muted"><code>(Hold Ctrl Key in case of multiple files or drag multiple files and drop here)</code></span>
+                            <br />
+                            @if (Model.Evidence != null && Model.Evidence != "" && Model.Evidence.Length > 0)
+                            {
+                                <h6> <span class="bg-dark py-1 px-2 rounded">Document List</span></h6>
 
+                                <span class="form-text text-muted">
+                                    <code>
+                                        (Uncheck in case to remove a uploaded file)
+                                    </code>
+                                </span>
+                                foreach (var docs in Model.Evidence.Trim(',').Split(','))
+                                {
+                                    <div class="form-check">
+                                        <label class="form-check-label">
+                                            <input type="checkbox" id="QCDocsVal" name="QCDocsVal" class="form-check-input-styled QCDocsVal" value="@docs.Trim(',')" checked title="Uncheck in case to remove a uploaded file" data-fouc />
+                                            <input type="hidden" id="QCDocsValselectall" name="QCDocsValselectall" />
+                                            <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" class="text-orange">
+                                                @System.IO.Path.GetFileName(docs)
+                                            </a>
+                                        </label>
+                                    </div>
+                                }
+                            }
+                        </td>
                 </tr>
                 <tr class="row">
                     <td class="col-xs-3 col-md-2">
@@ -498,17 +569,10 @@
         <script>
             $(document).ready(function () {
                 GetRepeatissueDetail();
+                GetIssueTypeEdit();
             });
-            function FileFormatValidation(file) {
-                var ext = file.value.split(".").pop().toLowerCase();
-                if ($.inArray(ext, ["pdf", "xlsx"]) == -1) {
-                    file.value = "";
-                    bootbox.alert({
-                        title: 'File type',
-                        message: 'Invalid file format, please upload only xlsx,pdf format.'
-                    });
-                }
-            }
+
+           
 
              function GetDeptList() {
             var selectedValues = [];
@@ -733,6 +797,65 @@
                 });
             }
         }
+
+
+            function GetIssueType() {
+                var issue_type = $("input[name='issue_type']:checked").val();
+
+                if (issue_type == "new") {
+                    $("#Divnewissue").show();
+                    $("#Divoldissue").hide();
+                    $("#Repet_Issue").val('').trigger("chosen:updated");                   
+                }
+                else {
+                    $("#Divnewissue").hide();
+                    $("#Divoldissue").show();
+                    document.getElementById("Issue").value = "";
+                    $("#Effect").val('').trigger("chosen:updated");                  
+                }
+            }
+
+            function GetIssueTypeEdit() {
+                var Issue = $("#Issue").val();
+                var Repet_Issue = $("#Repet_Issue").val();
+
+                if (Issue != null && Issue != "") {
+                    $("#Divnewissue").show();
+                    $("#Divoldissue").hide();                   
+                }
+                else if (Repet_Issue != null && Repet_Issue != "") {
+                    $("#Divnewissue").hide();
+                    $("#Divoldissue").show();                   
+                }
+            }
+
+            $('.form-check-input-styled').uniform();
+
+            function FileFormatValidation(file) {
+                var ext = file.value.split(".").pop().toLowerCase();
+                if ($.inArray(ext, ["pdf", "xlsx", "xls", "doc", "docx", "jpeg", "jpg", "png"]) == -1) {
+                    file.value = "";
+                    bootbox.alert({
+                        title: 'File type',
+                        message: 'Invalid file format, please upload only xlsx,xls,pdf,jpeg,jpg,png format.'
+                    });
+                }
+            }
+
+            $("#QCDocsVal").click(function () {
+                if ($("#QCDocsVal").prop('checked')) {
+                    {
+                        $(this).prop('checked', true);
+                    }
+                }
+                else {
+
+                    $(this).prop('checked', false);
+                    document.getElementById("QCDocsValselectall").value = "DeleteQC";
+                }
+
+            });
+
 
         </script>
         @Scripts.Render("~/bundles/jqueryval")

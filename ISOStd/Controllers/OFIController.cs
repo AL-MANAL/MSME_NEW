@@ -19,9 +19,9 @@ namespace ISOStd.Controllers
             ViewBag.Menutype = "Risk";
             ViewBag.SubMenutype = "OFI";
         }
-
+        //checked
         [AllowAnonymous]
-        public ActionResult AddReportOFI(string risk_id="")
+        public ActionResult AddReportOFI(string risk_id = "")
         {
             OFIModels objModel = new OFIModels();
             try
@@ -31,7 +31,7 @@ namespace ISOStd.Controllers
                 objModel.location = objGlobaldata.GetCurrentUserSession().Work_Location;
                 ViewBag.Branch = objGlobaldata.GetCompanyBranchListbox();
                 ViewBag.Department = objGlobaldata.GetDepartmentListbox(objModel.division);
-                ViewBag.Location = objGlobaldata.GetDivisionLocationList(objModel.division);
+                ViewBag.Location = objGlobaldata.GetLocationListBox();
 
                 objModel.reportedby = objGlobaldata.GetCurrentUserSession().empid;
                 ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
@@ -39,7 +39,7 @@ namespace ISOStd.Controllers
                 ViewBag.YesNo = objGlobaldata.GetConstantValue("YesNo");
                 ViewBag.RiskNo = objGlobaldata.GetRiskNoList();
                 ViewBag.Identified = objModel.GetOFIIdentifiedList();
-                if(risk_id != "")
+                if (risk_id != "")
                 {
                     objModel.risk_no = risk_id;
                 }
@@ -51,7 +51,7 @@ namespace ISOStd.Controllers
             }
             return View(objModel);
         }
-
+        //checked
         [HttpPost]
         [AllowAnonymous]
         public ActionResult AddReportOFI(OFIModels objModel, FormCollection form/*, IEnumerable<HttpPostedFileBase> nc_upload*/)
@@ -66,7 +66,20 @@ namespace ISOStd.Controllers
                     objModel.identified_in = form["identified_in"];
                     objModel.risk_no = form["risk_no"];
                     objModel.ofi_status = objModel.GetOFIStatusIdByName("Pending");
-                    objModel.ofi_no = "IO-" + objGlobaldata.GetRiskRefByRiskId(form["risk_no"]);
+                    if (objGlobaldata.GetRiskRefByRiskId(form["risk_no"]) != null && objGlobaldata.GetRiskRefByRiskId(form["risk_no"]) != "")
+                    {
+                        objModel.ofi_no = "IO-" + objGlobaldata.GetRiskRefByRiskId(form["risk_no"]);
+                    }
+                    else
+                    {
+
+                        DataSet dsData = objGlobaldata.GetReportNo("OFI", "", objGlobaldata.GetBranchShortNameByID(objGlobaldata.GetCurrentUserSession().division));
+                        if (dsData != null && dsData.Tables.Count > 0)
+                        {
+                            objModel.ofi_no = dsData.Tables[0].Rows[0]["ReportNO"].ToString();
+                        }
+                    }
+
                     ////if (Request.Files.Count > 0)
                     //if (nc_upload != null)
                     //{
@@ -102,7 +115,7 @@ namespace ISOStd.Controllers
                     {
                         if (form["empno " + i] != "" && form["empno " + i] != null)
                         {
-                            objModel.reportedby = form["empno " + i] + "," +  objModel.reportedby;
+                            objModel.reportedby = form["empno " + i] + "," + objModel.reportedby;
                         }
                     }
                     if (objModel.reportedby != null)
@@ -141,7 +154,40 @@ namespace ISOStd.Controllers
             return Json(true);
         }
 
-        [AllowAnonymous]
+        [HttpPost]
+        public JsonResult FunGetRiskNoDesc()
+        {
+            string[] len = new string[100];
+            DataSet dsData = new DataSet();
+            try
+            {
+                string sSqlstmt = "select  risk_desc as Name, 'RR' as Name1 from risk_register where active = 1 and Risk_Type = 'Positive' " +
+                    "union " +
+                    "select  hazards as Name, 'HR' as Name1 from t_hazard where active = 1 " +
+                    "union " +
+                    "select activity as Name, 'ER' as Name1 from t_environment_risk where active = 1";
+                dsData = objGlobaldata.Getdetails(sSqlstmt);
+
+                if (dsData.Tables.Count > 0 && dsData.Tables[0].Rows.Count > 0)
+                {
+                    for (int i = 0; i < dsData.Tables[0].Rows.Count; i++)
+                    {
+                        len[i] = dsData.Tables[0].Rows[i]["Name"].ToString();
+
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in FunGetRiskNoDesc: " + ex.ToString());
+                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+            }
+            return Json(len);
+        }
+    
+    //checked
+    [AllowAnonymous]
         public ActionResult OFIList(string branch_name)
         {
             OFIModelsList objList = new OFIModelsList();
@@ -153,7 +199,7 @@ namespace ISOStd.Controllers
             {
                 string sBranch_name = objGlobaldata.GetCurrentUserSession().division;
                 string sBranchtree = objGlobaldata.GetCurrentUserSession().BranchTree;
-                ViewBag.Branch = objGlobaldata.GetMultiBranchListByID(sBranchtree);
+                ViewBag.Branch = objGlobaldata.GetMultiCompanyBranchNameByID(sBranchtree);
 
                 //string sSqlstmt = "select id_ofi, ofi_no, risk_no, reportedby, reported_date, division, department, location, identified_in,opportunity, improvement,"
                 //    + "target_date, approvedby,loggedby,ofi_status,(case when approved_status = '0' then 'Not approved'  when approved_status = '1' then 'Approved' when approved_status = '2' then 'Rejected' end) as approved_status" +
@@ -161,7 +207,7 @@ namespace ISOStd.Controllers
                 string sSqlstmt = "select id_ofi, ofi_no, risk_no, reportedby, reported_date, division, department, location, identified_in,opportunity, improvement,"
                     + "target_date, approvedby,loggedby,ofi_status,approved_status,realization_approved_status,checkedby,checkedbystatus from t_ofi where active =1";
 
-                string sSearchtext = "";              
+                string sSearchtext = "";
 
                 if (branch_name != null && branch_name != "")
                 {
@@ -195,14 +241,14 @@ namespace ISOStd.Controllers
                                 department = objGlobaldata.GetMultiDeptNameById(dsOFIModels.Tables[0].Rows[i]["department"].ToString()),
                                 division = objGlobaldata.GetMultiCompanyBranchNameById(dsOFIModels.Tables[0].Rows[i]["division"].ToString()),
                                 checkedby = dsOFIModels.Tables[0].Rows[i]["checkedby"].ToString(),
-                                ofi_status =objModel.GetOFIStatusById(dsOFIModels.Tables[0].Rows[i]["ofi_status"].ToString()),
+                                ofi_status = objModel.GetOFIStatusById(dsOFIModels.Tables[0].Rows[i]["ofi_status"].ToString()),
                                 checkedbystatus = (dsOFIModels.Tables[0].Rows[i]["checkedbystatus"].ToString()),
                             };
                             DateTime dtValue;
                             if (DateTime.TryParse(dsOFIModels.Tables[0].Rows[i]["reported_date"].ToString(), out dtValue))
                             {
                                 objNCModels.reported_date = dtValue;
-                            }                           
+                            }
                             objList.OFIList.Add(objNCModels);
                         }
                         catch (Exception ex)
@@ -221,12 +267,13 @@ namespace ISOStd.Controllers
             return View(objList.OFIList.ToList());
         }
 
+        //checked
         [AllowAnonymous]
         public ActionResult UpdateOFI()
-        {            
+        {
             OFIModels objModel = new OFIModels();
             try
-            {                
+            {
                 if (Request.QueryString["id_ofi"] != null && Request.QueryString["id_ofi"] != "")
                 {
                     string sid_ofi = Request.QueryString["id_ofi"];
@@ -234,7 +281,7 @@ namespace ISOStd.Controllers
                     //    + "target_date, approvedby,loggedby,ofi_status,(case when approved_status = '0' then 'Not approved'  when approved_status = '1' then 'Approved' when approved_status = '2' then 'Rejected' end) as approved_status" +
                     //    ",(case when realization_approved_status = '0' then 'Not approved'  when realization_approved_status = '1' then 'Approved' when realization_approved_status = '2' then 'Rejected' end) as realization_approved_status,checkedby from t_ofi where id_ofi = '"+ sid_ofi + "'";
                     string sSqlstmt = "select id_ofi, ofi_no, risk_no, reportedby, reported_date, division, department, location, identified_in,opportunity, improvement,"
-                        + "target_date, approvedby,loggedby,checkedby from t_ofi where id_ofi = '" + sid_ofi + "'";
+                        + "target_date, approvedby,loggedby,checkedby,pers_resp from t_ofi where id_ofi = '" + sid_ofi + "'";
 
                     DataSet dsOFIModels = objGlobaldata.Getdetails(sSqlstmt);
 
@@ -242,7 +289,7 @@ namespace ISOStd.Controllers
                     {
                         try
                         {
-                            objModel= new OFIModels
+                            objModel = new OFIModels
                             {
                                 id_ofi = (dsOFIModels.Tables[0].Rows[0]["id_ofi"].ToString()),
                                 ofi_no = (dsOFIModels.Tables[0].Rows[0]["ofi_no"].ToString()),
@@ -259,12 +306,13 @@ namespace ISOStd.Controllers
                                 opportunity = dsOFIModels.Tables[0].Rows[0]["opportunity"].ToString(),
                                 improvement = dsOFIModels.Tables[0].Rows[0]["improvement"].ToString(),
                                 approvedby = dsOFIModels.Tables[0].Rows[0]["approvedby"].ToString(),
+                                loggedby = dsOFIModels.Tables[0].Rows[0]["loggedby"].ToString(),
                             };
                             ViewBag.Branch = objGlobaldata.GetCompanyBranchListbox();
                             ViewBag.Department = objGlobaldata.GetDepartmentList1(dsOFIModels.Tables[0].Rows[0]["division"].ToString());
                             ViewBag.Location = objGlobaldata.GetLocationbyMultiDivision(dsOFIModels.Tables[0].Rows[0]["division"].ToString());
-                           // ViewBag.EmpList = objGlobaldata.GetGEmpListBymulitBDL(dsOFIModels.Tables[0].Rows[0]["division"].ToString(), dsOFIModels.Tables[0].Rows[0]["department"].ToString(), dsOFIModels.Tables[0].Rows[0]["location"].ToString());
-                            
+                            // ViewBag.EmpList = objGlobaldata.GetGEmpListBymulitBDL(dsOFIModels.Tables[0].Rows[0]["division"].ToString(), dsOFIModels.Tables[0].Rows[0]["department"].ToString(), dsOFIModels.Tables[0].Rows[0]["location"].ToString());
+
                             DateTime dtValue;
                             if (DateTime.TryParse(dsOFIModels.Tables[0].Rows[0]["reported_date"].ToString(), out dtValue))
                             {
@@ -294,7 +342,7 @@ namespace ISOStd.Controllers
                             objGlobaldata.AddFunctionalLog("Exception in OFIList: " + ex.ToString());
                             TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                         }
-                        
+
                     }
                 }
             }
@@ -306,6 +354,7 @@ namespace ISOStd.Controllers
             return View(objModel);
         }
 
+        //checked
         [HttpPost]
         [AllowAnonymous]
         public ActionResult UpdateOFI(OFIModels objModel, FormCollection form)
@@ -318,7 +367,7 @@ namespace ISOStd.Controllers
                     objModel.location = form["location"];
                     objModel.department = form["department"];
                     objModel.identified_in = form["identified_in"];
-                    
+
                     //Reported By
                     for (int i = 0; i < Convert.ToInt16(form["itemcnt"]); i++)
                     {
@@ -362,7 +411,7 @@ namespace ISOStd.Controllers
             }
             return Json(true);
         }
-        
+
         //Realization OFI
         public ActionResult AddRealizationOFI()
         {
@@ -395,7 +444,7 @@ namespace ISOStd.Controllers
                             location = objGlobaldata.GetDivisionLocationById(dsOFIModels.Tables[0].Rows[0]["location"].ToString()),
                             checkedby = dsOFIModels.Tables[0].Rows[0]["checkedby"].ToString(),
                             //ofi_status = (dsOFIModels.Tables[0].Rows[0]["ofi_status"].ToString()),
-                            identified_in =objModel.GetOFIIdentifiedById(dsOFIModels.Tables[0].Rows[0]["identified_in"].ToString()),
+                            identified_in = objModel.GetOFIIdentifiedById(dsOFIModels.Tables[0].Rows[0]["identified_in"].ToString()),
                             opportunity = dsOFIModels.Tables[0].Rows[0]["opportunity"].ToString(),
                             improvement = dsOFIModels.Tables[0].Rows[0]["improvement"].ToString(),
                             approvedby = objGlobaldata.GetMultiHrEmpNameById(dsOFIModels.Tables[0].Rows[0]["approvedby"].ToString()),
@@ -420,8 +469,8 @@ namespace ISOStd.Controllers
                             ViewBag.ApprovedtoArray = (dsOFIModels.Tables[0].Rows[0]["realization_approved_by"].ToString()).Split(',');
                         }
 
-                       // ViewBag.EmpList = objGlobaldata.GetGEmpListBymulitBDL(dsOFIModels.Tables[0].Rows[0]["division"].ToString(), dsOFIModels.Tables[0].Rows[0]["department"].ToString(), dsOFIModels.Tables[0].Rows[0]["location"].ToString());
-                       // ViewBag.Approver = objGlobaldata.GetGRoleList(dsOFIModels.Tables[0].Rows[0]["division"].ToString(), dsOFIModels.Tables[0].Rows[0]["department"].ToString(), dsOFIModels.Tables[0].Rows[0]["location"].ToString(), "Approver");
+                        // ViewBag.EmpList = objGlobaldata.GetGEmpListBymulitBDL(dsOFIModels.Tables[0].Rows[0]["division"].ToString(), dsOFIModels.Tables[0].Rows[0]["department"].ToString(), dsOFIModels.Tables[0].Rows[0]["location"].ToString());
+                        // ViewBag.Approver = objGlobaldata.GetGRoleList(dsOFIModels.Tables[0].Rows[0]["division"].ToString(), dsOFIModels.Tables[0].Rows[0]["department"].ToString(), dsOFIModels.Tables[0].Rows[0]["location"].ToString(), "Approver");
 
                         OFIModelsList ObjOFIList = new OFIModelsList();
                         ObjOFIList.OFIList = new List<OFIModels>();
@@ -548,7 +597,7 @@ namespace ISOStd.Controllers
             }
             return Json(true);
         }
-        
+
         //Improvement Achieved
         public ActionResult AddImprovementOFI()
         {
@@ -613,7 +662,7 @@ namespace ISOStd.Controllers
                         {
                             ViewBag.ApprovedtoArray = (dsOFIModels.Tables[0].Rows[0]["checkedby"].ToString()).Split(',');
                         }
-                       // ViewBag.EmpList = objGlobaldata.GetGEmpListBymulitBDL(dsOFIModels.Tables[0].Rows[0]["division"].ToString(), dsOFIModels.Tables[0].Rows[0]["department"].ToString(), dsOFIModels.Tables[0].Rows[0]["location"].ToString());
+                        // ViewBag.EmpList = objGlobaldata.GetGEmpListBymulitBDL(dsOFIModels.Tables[0].Rows[0]["division"].ToString(), dsOFIModels.Tables[0].Rows[0]["department"].ToString(), dsOFIModels.Tables[0].Rows[0]["location"].ToString());
 
                         OFIModelsList ObjOFIList = new OFIModelsList();
                         ObjOFIList.OFIList = new List<OFIModels>();
@@ -635,7 +684,7 @@ namespace ISOStd.Controllers
                                         improve_achievedin = (dsCALsit.Tables[0].Rows[i]["improve_achievedin"].ToString()),
                                         improve_measurable = (dsCALsit.Tables[0].Rows[i]["improve_measurable"].ToString()),
                                         imporve_upload = (dsCALsit.Tables[0].Rows[i]["imporve_upload"].ToString()),
-                                    };                                   
+                                    };
                                     ObjOFIList.OFIList.Add(objNCModels);
                                 }
                                 catch (Exception ex)
@@ -701,7 +750,7 @@ namespace ISOStd.Controllers
         {
             try
             {
-                
+
                 //updatedby
                 for (int i = 0; i < Convert.ToInt16(form["itemcnt"]); i++)
                 {
@@ -741,7 +790,7 @@ namespace ISOStd.Controllers
                         objNCModel.improve_achievedin = form["improve_achievedin " + i];
                         objNCModel.improve_measurable = form["improve_measurable " + i];
                         objNCModel.imporve_upload = form["imporve_upload1 " + i];
-                        
+
                         objModelList.OFIList.Add(objNCModel);
                     }
                 }
@@ -756,7 +805,7 @@ namespace ISOStd.Controllers
                     {
                         objOFIModel.doc_type = form["doc_type " + i];
                         objOFIModel.doc_ref = form["doc_ref " + i];
-                        objOFIModel.doc_name = form["doc_name " + i];                        
+                        objOFIModel.doc_name = form["doc_name " + i];
 
                         objOFIList.OFIList.Add(objOFIModel);
                     }
@@ -822,27 +871,28 @@ namespace ISOStd.Controllers
             {
                 string srisk_desc = "";
                 string sSsqlstmt = "";
-               if(srisk_id != "") { 
-                string[] id = srisk_id.Split(':');
-                if (id[1] == "RR")
+                if (srisk_id != "")
                 {
-                    sSsqlstmt = "select risk_desc as Name from risk_register where risk_id='" + id[0] + "'";
+                    string[] id = srisk_id.Split(':');
+                    if (id[1] == "RR")
+                    {
+                        sSsqlstmt = "select risk_desc as Name from risk_register where risk_id='" + id[0] + "'";
+                    }
+                    if (id[1] == "HR")
+                    {
+                        sSsqlstmt = "select hazards as Name from t_hazard where id_hazard='" + id[0] + "'";
+                    }
+                    if (id[1] == "ER")
+                    {
+                        sSsqlstmt = "select aspects as Name from t_environment_risk where id_env_risk='" + id[0] + "'";
+                    }
+                    DataSet dsList = objGlobaldata.Getdetails(sSsqlstmt);
+                    if (dsList.Tables.Count > 0 && dsList.Tables[0].Rows.Count > 0)
+                    {
+                        srisk_desc = dsList.Tables[0].Rows[0]["Name"].ToString();
+                    }
+                    return Json(srisk_desc);
                 }
-                if (id[1] == "HR")
-                {
-                    sSsqlstmt = "select hazards as Name from t_hazard where id_hazard='" + id[0] + "'";
-                }
-                if (id[1] == "ER")
-                {
-                    sSsqlstmt = "select aspects as Name from t_environment_risk where id_env_risk='" + id[0] + "'";
-                }
-                DataSet dsList = objGlobaldata.Getdetails(sSsqlstmt);
-                if (dsList.Tables.Count > 0 && dsList.Tables[0].Rows.Count > 0)
-                {
-                    srisk_desc = dsList.Tables[0].Rows[0]["Name"].ToString();
-                }
-                return Json(srisk_desc);
-            }
             }
             catch (Exception ex)
             {
@@ -870,7 +920,7 @@ namespace ISOStd.Controllers
             obj.upload = obj.upload.Trim(',');
             return Json(obj.upload);
         }
-        
+
         [AllowAnonymous]
         public ActionResult OFIDetails()
         {
@@ -878,12 +928,12 @@ namespace ISOStd.Controllers
             try
             {
                 ViewBag.OFIStatus = objModel.GetOFIStatusList();
-
+                ViewBag.ApproveStatus = objGlobaldata.GetConstantValueKeyValuePair("OFI");
                 if (Request.QueryString["id_ofi"] != null && Request.QueryString["id_ofi"] != "")
                 {
                     string sid_ofi = Request.QueryString["id_ofi"];
                     string sSqlstmt = "select id_ofi, ofi_no, risk_no, reportedby, reported_date, division, department, location, identified_in,opportunity, improvement,"
-                        + "target_date, approvedby,loggedby,ofi_status,approved_status,realization_approved_status,checkedby,checkedbystatus,realization_approved_by,updatedby,updated,improvement_achieve,action_proposedby,remark from t_ofi where id_ofi = '" + sid_ofi + "'";
+                        + "target_date, approvedby,approved_date,loggedby,ofi_status,approved_status,realization_approved_status,checkedby,checkedbystatus,realization_approved_by,updatedby,updated,improvement_achieve,action_proposedby,remark,pers_resp,approver_comments,approver_upload,realization_approved_status,realization_apporved_date from t_ofi where id_ofi = '" + sid_ofi + "'";
 
                     DataSet dsOFIModels = objGlobaldata.Getdetails(sSqlstmt);
 
@@ -908,18 +958,24 @@ namespace ISOStd.Controllers
                                 opportunity = dsOFIModels.Tables[0].Rows[0]["opportunity"].ToString(),
                                 improvement = dsOFIModels.Tables[0].Rows[0]["improvement"].ToString(),
                                 reportedby = objGlobaldata.GetMultiHrEmpNameById(dsOFIModels.Tables[0].Rows[0]["reportedby"].ToString()),
-                                approvedby = objGlobaldata.GetMultiHrEmpNameById(dsOFIModels.Tables[0].Rows[0]["approvedby"].ToString()),
+                                approvedby = (dsOFIModels.Tables[0].Rows[0]["approvedby"].ToString()),
                                 checkedby = objGlobaldata.GetMultiHrEmpNameById(dsOFIModels.Tables[0].Rows[0]["checkedby"].ToString()),
                                 checkedbyId = (dsOFIModels.Tables[0].Rows[0]["checkedby"].ToString()),
-                                realization_approved_by = objGlobaldata.GetMultiHrEmpNameById(dsOFIModels.Tables[0].Rows[0]["realization_approved_by"].ToString()),
-                                updatedby = objGlobaldata.GetMultiHrEmpNameById(dsOFIModels.Tables[0].Rows[0]["updatedby"].ToString()),
+                                realization_approved_by = (dsOFIModels.Tables[0].Rows[0]["realization_approved_by"].ToString()),
+                                updatedby = (dsOFIModels.Tables[0].Rows[0]["updatedby"].ToString()),
                                 action_proposedby = objGlobaldata.GetMultiHrEmpNameById(dsOFIModels.Tables[0].Rows[0]["action_proposedby"].ToString()),
                                 updated = dsOFIModels.Tables[0].Rows[0]["updated"].ToString(),
                                 improvement_achieve = objModel.GetOFIExpectedImporvementById(dsOFIModels.Tables[0].Rows[0]["improvement_achieve"].ToString()),
                                 checkedbystatus = dsOFIModels.Tables[0].Rows[0]["checkedbystatus"].ToString(),
                                 remark = dsOFIModels.Tables[0].Rows[0]["remark"].ToString(),
+                                approved_status = dsOFIModels.Tables[0].Rows[0]["approved_status"].ToString(),
+                                pers_resp =objGlobaldata.GetMultiHrEmpNameById(dsOFIModels.Tables[0].Rows[0]["pers_resp"].ToString()),
+                                approver_comments = dsOFIModels.Tables[0].Rows[0]["approver_comments"].ToString(),
+                                approver_upload = dsOFIModels.Tables[0].Rows[0]["approver_upload"].ToString(),
+                                realization_approved_status = dsOFIModels.Tables[0].Rows[0]["realization_approved_status"].ToString(),
+                             
                             };
-                           
+
                             DateTime dtValue;
                             if (DateTime.TryParse(dsOFIModels.Tables[0].Rows[0]["reported_date"].ToString(), out dtValue))
                             {
@@ -928,10 +984,17 @@ namespace ISOStd.Controllers
                             if (DateTime.TryParse(dsOFIModels.Tables[0].Rows[0]["target_date"].ToString(), out dtValue))
                             {
                                 objModel.target_date = dtValue;
-                            }                        
-
-                             //----------------- OFI Action Starts----------------
-                             OFIModelsList ObjOFIList = new OFIModelsList();
+                            }
+                            if (DateTime.TryParse(dsOFIModels.Tables[0].Rows[0]["approved_date"].ToString(), out dtValue))
+                            {
+                                objModel.approved_date = dtValue;
+                            }
+                            if (DateTime.TryParse(dsOFIModels.Tables[0].Rows[0]["realization_apporved_date"].ToString(), out dtValue))
+                            {
+                                objModel.realization_apporved_date = dtValue;
+                            }
+                            //----------------- OFI Action Starts----------------
+                            OFIModelsList ObjOFIList = new OFIModelsList();
                             ObjOFIList.OFIList = new List<OFIModels>();
 
                             string Ssql = "select id_ofi_action,id_ofi,action_details,area_improved,resp,resource,action_target_date from t_ofi_action where id_ofi = '" + sid_ofi + "'";
@@ -1082,43 +1145,90 @@ namespace ISOStd.Controllers
             return RedirectToAction("OFILIST");
         }
 
-        public JsonResult OFIInitialApproveNoty(string id_ofi, string sStatus, string PendingFlg)
+        //public JsonResult OFIInitialApproveNoty(string id_ofi, string sStatus, string PendingFlg)
+        //{
+        //    try
+        //    {
+        //        OFIModels objModel = new OFIModels();
+
+        //        if (objModel.FunOFIInitialApproval(id_ofi, sStatus))
+        //        {
+        //            return Json("Success" + sStatus);
+        //        }
+        //        else
+        //        {
+        //            return Json("Failed");
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        objGlobaldata.AddFunctionalLog("Exception in OFIInitialApproveNoty: " + ex.ToString());
+        //    }
+
+        //    if (PendingFlg != null && PendingFlg == "true")
+        //    {
+        //        return Json("Success");
+        //    }
+        //    else
+        //    {
+        //        return Json("Failed");
+        //    }
+        //}
+
+        public ActionResult OFIInitialApprove(OFIModels objModel, FormCollection form,string id_ofi, string sStatus, string PendingFlg, IEnumerable<HttpPostedFileBase> approver_upload, IEnumerable<HttpPostedFileBase> realization_upload)
         {
             try
-            {
-                OFIModels objModel = new OFIModels();
-
-                if (objModel.FunOFIInitialApproval(id_ofi,sStatus))
+            {              
+                sStatus = form["approved_status"];
+                HttpPostedFileBase files = Request.Files[0];
+                if (approver_upload != null && files.ContentLength > 0)
                 {
-                    return Json("Success"+ sStatus);
+                    objModel.approver_upload = "";
+                    foreach (var file in approver_upload)
+                    {
+                        try
+                        {
+                            string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/RiskMgmt"), Path.GetFileName(file.FileName));
+                            string sFilename = "OFI" + "_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath), sFilepath = Path.GetDirectoryName(spath);
+                            file.SaveAs(sFilepath + "/" + sFilename);
+                            objModel.approver_upload = objModel.approver_upload + "," + "~/DataUpload/MgmtDocs/RiskMgmt/" + sFilename;
+                        }
+                        catch (Exception ex)
+                        {
+                            objGlobaldata.AddFunctionalLog("Exception in OFIInitialApprove-upload: " + ex.ToString());
+                        }
+                    }
+                    objModel.approver_upload = objModel.approver_upload.Trim(',');
                 }
                 else
                 {
-                    return Json("Failed");
-                }               
-            }
-            catch (Exception ex)
-            {
-                objGlobaldata.AddFunctionalLog("Exception in OFIInitialApproveNoty: " + ex.ToString());
-            }
-
-            if (PendingFlg != null && PendingFlg == "true")
-            {
-                return Json("Success");
-            }
-            else
-            {
-                return Json("Failed");
-            }
-        }
-        
-        public ActionResult OFIInitialApprove(string id_ofi, string sStatus, string PendingFlg)
-        {
-            try
-            {
-                OFIModels objModel = new OFIModels();
-
-                if (objModel.FunOFIInitialApproval(id_ofi, sStatus))
+                    ViewBag.Message = "You have not specified a file.";
+                }
+               
+                if (realization_upload != null && files.ContentLength > 0)
+                {
+                    objModel.realization_upload = "";
+                    foreach (var file in realization_upload)
+                    {
+                        try
+                        {
+                            string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/RiskMgmt"), Path.GetFileName(file.FileName));
+                            string sFilename = "OFI" + "_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath), sFilepath = Path.GetDirectoryName(spath);
+                            file.SaveAs(sFilepath + "/" + sFilename);
+                            objModel.realization_upload = objModel.realization_upload + "," + "~/DataUpload/MgmtDocs/RiskMgmt/" + sFilename;
+                        }
+                        catch (Exception ex)
+                        {
+                            objGlobaldata.AddFunctionalLog("Exception in OFIInitialApprove-upload: " + ex.ToString());
+                        }
+                    }
+                    objModel.realization_upload = objModel.realization_upload.Trim(',');
+                }
+                else
+                {
+                    ViewBag.Message = "You have not specified a file.";
+                }
+                if (objModel.FunOFIInitialApproval(id_ofi, sStatus, objModel))
                 {
                     TempData["Successdata"] = "Improvement Opportunity(IO) is " + sStatus;
                 }
@@ -1132,14 +1242,7 @@ namespace ISOStd.Controllers
                 objGlobaldata.AddFunctionalLog("Exception in OFIInitialApproveNoty: " + ex.ToString());
             }
 
-            if (PendingFlg != null && PendingFlg == "true")
-            {
-                return RedirectToAction("ListPendingForApproval", "Dashboard");
-            }
-            else
-            {
-                return RedirectToAction("ListPendingForApproval", "Dashboard");
-            }
+            return RedirectToAction("Index", "Home");
         }
 
         [AllowAnonymous]
@@ -1149,12 +1252,13 @@ namespace ISOStd.Controllers
             try
             {
                 ViewBag.OFIStatus = objModel.GetOFIStatusList();
-
+                ViewBag.ApproveStatus = objGlobaldata.GetConstantValueKeyValuePair("OFI");
                 if (form["id_ofi"] != null && form["id_ofi"] != "")
                 {
                     string sid_ofi = form["id_ofi"];
                     string sSqlstmt = "select id_ofi, ofi_no, risk_no, reportedby, reported_date, division, department, location, identified_in,opportunity, improvement,"
-                        + "target_date, approvedby,loggedby,ofi_status,approved_status,realization_approved_status,checkedby,checkedbystatus,realization_approved_by,updatedby,updated,improvement_achieve,action_proposedby,remark from t_ofi where id_ofi = '" + sid_ofi + "'";
+                        + "target_date, approvedby,approved_date,loggedby,ofi_status,approved_status,realization_approved_status,checkedby,checkedbystatus,realization_approved_by," +
+                        "updatedby,updated,improvement_achieve,action_proposedby,remark,pers_resp,approver_comments,approver_upload,realization_approved_status,realization_apporved_date,loggedby from t_ofi where id_ofi = '" + sid_ofi + "'";
 
                     DataSet dsOFIModels = objGlobaldata.Getdetails(sSqlstmt);
 
@@ -1179,16 +1283,22 @@ namespace ISOStd.Controllers
                                 opportunity = dsOFIModels.Tables[0].Rows[0]["opportunity"].ToString(),
                                 improvement = dsOFIModels.Tables[0].Rows[0]["improvement"].ToString(),
                                 reportedby = objGlobaldata.GetMultiHrEmpNameById(dsOFIModels.Tables[0].Rows[0]["reportedby"].ToString()),
-                                approvedby = objGlobaldata.GetMultiHrEmpNameById(dsOFIModels.Tables[0].Rows[0]["approvedby"].ToString()),
+                                approvedby = (dsOFIModels.Tables[0].Rows[0]["approvedby"].ToString()),
                                 checkedby = objGlobaldata.GetMultiHrEmpNameById(dsOFIModels.Tables[0].Rows[0]["checkedby"].ToString()),
                                 checkedbyId = (dsOFIModels.Tables[0].Rows[0]["checkedby"].ToString()),
-                                realization_approved_by = objGlobaldata.GetMultiHrEmpNameById(dsOFIModels.Tables[0].Rows[0]["realization_approved_by"].ToString()),
+                                realization_approved_by = (dsOFIModels.Tables[0].Rows[0]["realization_approved_by"].ToString()),
                                 updatedby = objGlobaldata.GetMultiHrEmpNameById(dsOFIModels.Tables[0].Rows[0]["updatedby"].ToString()),
                                 action_proposedby = objGlobaldata.GetMultiHrEmpNameById(dsOFIModels.Tables[0].Rows[0]["action_proposedby"].ToString()),
                                 updated = dsOFIModels.Tables[0].Rows[0]["updated"].ToString(),
                                 improvement_achieve = objModel.GetOFIExpectedImporvementById(dsOFIModels.Tables[0].Rows[0]["improvement_achieve"].ToString()),
                                 checkedbystatus = dsOFIModels.Tables[0].Rows[0]["checkedbystatus"].ToString(),
                                 remark = dsOFIModels.Tables[0].Rows[0]["remark"].ToString(),
+                                approved_status = dsOFIModels.Tables[0].Rows[0]["approved_status"].ToString(),
+                                pers_resp = objGlobaldata.GetMultiHrEmpNameById(dsOFIModels.Tables[0].Rows[0]["pers_resp"].ToString()),
+                                approver_comments = dsOFIModels.Tables[0].Rows[0]["approver_comments"].ToString(),
+                                approver_upload = dsOFIModels.Tables[0].Rows[0]["approver_upload"].ToString(),
+                                realization_approved_status = dsOFIModels.Tables[0].Rows[0]["realization_approved_status"].ToString(),
+                                loggedby = objGlobaldata.GetMultiHrEmpNameById(dsOFIModels.Tables[0].Rows[0]["loggedby"].ToString()),
                             };
 
                             DateTime dtValue;
@@ -1200,14 +1310,20 @@ namespace ISOStd.Controllers
                             {
                                 objModel.target_date = dtValue;
                             }
-
+                            if (DateTime.TryParse(dsOFIModels.Tables[0].Rows[0]["approved_date"].ToString(), out dtValue))
+                            {
+                                objModel.approved_date = dtValue;
+                            }
+                            if (DateTime.TryParse(dsOFIModels.Tables[0].Rows[0]["realization_apporved_date"].ToString(), out dtValue))
+                            {
+                                objModel.realization_apporved_date = dtValue;
+                            }
                             CompanyModels objCompany = new CompanyModels();
+
                             dsOFIModels = objCompany.GetCompanyDetailsForReport(dsOFIModels);
-                            dsOFIModels = objGlobaldata.GetReportDetails(dsOFIModels, objModel.ofi_no, objGlobaldata.GetCurrentUserSession().empid, "Improvement Opportunity (IO) Report");
+                            dsOFIModels = objGlobaldata.GetReportDetails(dsOFIModels, objModel.ofi_no, objGlobaldata.GetCurrentUserSession().empid, "OFI REPORT");
 
                             ViewBag.CompanyInfo = dsOFIModels;
-                            ViewBag.ObjOFIList=objModel;
-
                             //----------------- OFI Action Starts----------------
                             OFIModelsList ObjOFIList = new OFIModelsList();
                             ObjOFIList.OFIList = new List<OFIModels>();
@@ -1312,7 +1428,8 @@ namespace ISOStd.Controllers
                                 }
                             }
                             ViewBag.ObjOFIDocList = ObjOFIDocList;
-                            //-------------------OFI Document Ends---------------                          
+                            //-------------------OFI Document Ends---------------
+
                         }
                         catch (Exception ex)
                         {
@@ -1325,9 +1442,11 @@ namespace ISOStd.Controllers
             }
             catch (Exception ex)
             {
-                objGlobaldata.AddFunctionalLog("Exception in OFIDetails: " + ex.ToString());
+                objGlobaldata.AddFunctionalLog("Exception in OFIPDF: " + ex.ToString());
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
+            //return View(objModel);
+            ViewBag.ObjOFIList = objModel;
             Dictionary<string, string> cookieCollection = new Dictionary<string, string>();
 
             foreach (var key in Request.Cookies.AllKeys)
@@ -1344,4 +1463,5 @@ namespace ISOStd.Controllers
             };
         }
     }
+
 }

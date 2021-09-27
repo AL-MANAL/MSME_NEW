@@ -503,6 +503,7 @@ namespace ISOStd.Controllers
                     objModel.nc_division = form["nc_division"];
                     objModel.location = form["location"];
                     objModel.department = form["department"];
+                    objModel.division = form["division"]; //Can access
 
                     IList<HttpPostedFileBase> nc_uploadList = (IList<HttpPostedFileBase>)nc_upload;
                     string QCDelete = Request.Form["QCDocsValselectall"];

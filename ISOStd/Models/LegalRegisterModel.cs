@@ -294,6 +294,30 @@ namespace ISOStd.Models
         [Display(Name = "Details of Ammendment")]
         public string ammend_detail { get; set; }
 
+        //t_compliance_obligation
+
+        [Display(Name = "Frequency of review")]
+        public string frequency_review { get; set; }
+
+        [Display(Name = "Review date")]
+        public DateTime amend_review_date { get; set; }
+
+        [Display(Name = "Review by")]
+        public string amend_review_by { get; set; }
+
+        [Display(Name = "Review details")]
+        public string amend_review_detail { get; set; }
+
+        [Display(Name = "Any actions to be taken")]
+        public string amend_actions { get; set; }
+
+        [Display(Name = "Notified to")]
+        public string amend_notified_to { get; set; }
+
+        //t_compliance_obligation_article
+        [Display(Name = "Report Date")]
+        public DateTime report_date { get; set; }
+
         //----------------- Start Law - Articles-----------------
         internal bool FunUpdateArticle(LegalRegisterModel objComp, LegalRegisterModelsList objCompList)
         {
@@ -403,7 +427,7 @@ namespace ISOStd.Models
                 for (int i = 0; i < objList.LegalRegisterMList.Count; i++)
                 {
                     string sid_article = "null";
-                    string starget_date = "";
+                    
 
 
                     if (objList.LegalRegisterMList[i].id_article != null && objList.LegalRegisterMList[i].id_article != "")
@@ -411,17 +435,22 @@ namespace ISOStd.Models
                         sid_article = objList.LegalRegisterMList[i].id_article;
                     }
 
-                    if (objList.LegalRegisterMList[i].target_date != null && objList.LegalRegisterMList[i].target_date > Convert.ToDateTime("01/01/0001"))
-                    {
-                        starget_date = objList.LegalRegisterMList[i].target_date.ToString("yyyy-MM-dd");
-                    }
+                   
                     
                     sSqlstmt = sSqlstmt + " update t_compliance_obligation_article set compliance_status = '" + objList.LegalRegisterMList[i].compliance_status
-                       + "', article_desc = '" + objList.LegalRegisterMList[i].article_desc + "', action_taken ='"+objList.LegalRegisterMList[i].action_taken+"', target_date = '" + starget_date + "', person_resp ='" + objList.LegalRegisterMList[i].person_resp + "'";
+                       + "', article_desc = '" + objList.LegalRegisterMList[i].article_desc + "', action_taken ='"+objList.LegalRegisterMList[i].action_taken+"', person_resp ='" + objList.LegalRegisterMList[i].person_resp + "'";
 
                     if (objList.LegalRegisterMList[i].article_upload != null)
                     {
                         sSqlstmt = sSqlstmt + ", article_upload='" + objList.LegalRegisterMList[i].article_upload + "' ";
+                    }
+                    if (objList.LegalRegisterMList[i].target_date != null && objList.LegalRegisterMList[i].target_date > Convert.ToDateTime("01/01/0001"))
+                    {
+                        sSqlstmt = sSqlstmt + ",target_date='" + objList.LegalRegisterMList[i].target_date.ToString("yyyy-MM-dd") + "'";
+                    }
+                    if (objList.LegalRegisterMList[i].report_date != null && objList.LegalRegisterMList[i].report_date > Convert.ToDateTime("01/01/0001"))
+                    {
+                        sSqlstmt = sSqlstmt + ",report_date='" + objList.LegalRegisterMList[i].report_date.ToString("yyyy-MM-dd") + "'";
                     }
                     sSqlstmt = sSqlstmt + " where id_article='" + sid_article + "';";
                 }
@@ -478,22 +507,28 @@ namespace ISOStd.Models
         //----------------- End Complaince Status-------------------
 
         //----------------- Start Ammendment-----------------
-        internal bool FunUpdateAmmendment(LegalRegisterModelsList objCompList,string sid_law)
+        internal bool FunUpdateAmmendment(LegalRegisterModel objComp)
         {
             try
-            {              
+            {
+                string sSqlstmt = "update t_compliance_obligation set ammend_detail ='" + objComp.ammend_detail + "', amend_review_by='" + objComp.amend_review_by + "', "
+                   + "amend_review_detail='" + objComp.amend_review_detail + "',amend_actions='" + objComp.amend_actions + "',amend_notified_to='" + objComp.amend_notified_to + "'";
+                  
+                if (objComp.ammend_date != null && objComp.ammend_date > Convert.ToDateTime("01/01/0001 00:00:00"))
+                {
+                    sSqlstmt = sSqlstmt + ", ammend_date ='" + objComp.ammend_date.ToString("yyyy/MM/dd") + "'";
+                }
+                if (objComp.amend_review_date != null && objComp.amend_review_date > Convert.ToDateTime("01/01/0001 00:00:00"))
+                {
+                    sSqlstmt = sSqlstmt + ", amend_review_date ='" + objComp.amend_review_date.ToString("yyyy/MM/dd") + "'";
+                }
+                sSqlstmt = sSqlstmt + " where id_law='" + objComp.id_law + "'";
 
-                   if (Convert.ToInt32(objCompList.LegalRegisterMList.Count) > 0)
-                    {
-                        objCompList.LegalRegisterMList[0].id_law = sid_law;
-                        FunAddComplianceAmmendment(objCompList);
-                    }
-                    else
-                    {
-                        FunUpdateComplianceAmmendment(sid_law);
+                if (objGlobalData.ExecuteQuery(sSqlstmt))
+                {
+                    return true;
+                }
 
-                    }
-                    return true;                
             }
             catch (Exception ex)
             {
@@ -586,7 +621,7 @@ namespace ISOStd.Models
             try
             {
                 string sSqlstmt = "insert into t_compliance_obligation (lawNo,Isostd,lawTitle,deptid,compliance,upload,url,Revision_No,requirement," +
-                    "description,branch,Location,law_issue_authority,law_issued_by,law_relevant_to,frequency_eval,notified_to";
+                    "description,branch,Location,law_issue_authority,law_issued_by,law_relevant_to,frequency_eval,notified_to,frequency_review";
                // string sBranch = objGlobalData.GetCurrentUserSession().division;
                 string sFields = "", sFieldValue = "";
                 if (objComp.Eve_date != null && objComp.Eve_date > Convert.ToDateTime("01/01/0001 00:00:00"))
@@ -609,7 +644,7 @@ namespace ISOStd.Models
                 sSqlstmt = sSqlstmt + ")values('" + objComp.lawNo + "','" + objComp.Isostd + "','" + objComp.lawTitle + "'"
                     + ",'" + objComp.deptid + "','" + objComp.compliance + "','" + objComp.upload + "','" + objComp.url + "','"
                     + objComp.Revision_No + "','" + objComp.requirement + "','" + objComp.description + "','" + objComp.branch 
-                    + "','" + objComp.Location + "','" + objComp.law_issue_authority + "','" + objComp.law_issued_by + "','" + objComp.law_relevant_to + "','" + objComp.frequency_eval + "','" + objComp.notified_to + "'";
+                    + "','" + objComp.Location + "','" + objComp.law_issue_authority + "','" + objComp.law_issued_by + "','" + objComp.law_relevant_to + "','" + objComp.frequency_eval + "','" + objComp.notified_to + "','" + frequency_review + "'";
                 sSqlstmt = sSqlstmt + sFieldValue + ")";
 
                 if (objGlobalData.ExecuteQuery(sSqlstmt))
@@ -631,7 +666,7 @@ namespace ISOStd.Models
                 string sSqlstmt = "update t_compliance_obligation set lawNo ='" + objComp.lawNo + "', Isostd='" + objComp.Isostd + "', "
                     + "lawTitle='" + objComp.lawTitle + "',deptid='" + objComp.deptid + "',compliance='" + objComp.compliance + "',upload='" + objComp.upload + "',url='" + objComp.url + "',Revision_No='" + objComp.Revision_No + "'"
                     + ",requirement='" + objComp.requirement + "',description='" + objComp.description + "',branch='" + objComp.branch + "',Location='" + objComp.Location + "'"
-                    + ",law_issue_authority='" + objComp.law_issue_authority + "',law_issued_by='" + objComp.law_issued_by + "',law_relevant_to='" + objComp.law_relevant_to + "',frequency_eval='" + objComp.frequency_eval + "',notified_to='" + objComp.notified_to + "'";
+                    + ",law_issue_authority='" + objComp.law_issue_authority + "',law_issued_by='" + objComp.law_issued_by + "',law_relevant_to='" + objComp.law_relevant_to + "',frequency_eval='" + objComp.frequency_eval + "',notified_to='" + objComp.notified_to + "',frequency_review='" + objComp.frequency_review + "'";
 
                 if (objComp.Eve_date != null && objComp.Eve_date > Convert.ToDateTime("01/01/0001 00:00:00"))
                 {

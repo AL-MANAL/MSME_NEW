@@ -280,11 +280,13 @@ namespace ISOStd.Models
 
                 if (deptId != "")
                 {
-                    sSsqlstmt = "select id_issue as Id,Issue_refno as Name from t_issues where Active=1 and find_in_set('"+ deptId + "',Deptid) order by id_issue asc";
+                    sSsqlstmt = "select T1.id_issue as Id,CONCAT(Issue_refno,'-',(select count(*) from t_issues AS T2 where T2.Repet_Issue=T1.id_issue)) as Name"
+                    + " from t_issues as T1 where T1.Active = 1 and find_in_set('"+ deptId + "', Deptid) order by id_issue asc";
                 }
                 else
                 {
-                    sSsqlstmt = "select id_issue as Id,Issue_refno as Name from t_issues where Active=1 order by id_issue asc";
+                    sSsqlstmt = "select T1.id_issue as Id,CONCAT(Issue_refno,'-',(select count(*) from t_issues AS T2 where T2.Repet_Issue=T1.id_issue)) as Name"
+                   + " from t_issues as T1 where T1.Active = 1  order by id_issue asc";
                 }
 
                 DataSet dsBranch = Getdetails(sSsqlstmt);

@@ -75,6 +75,8 @@ namespace ISOStd.Models
 
         [Display(Name = "Repetitive Issue")]
         public string Repet_Issue { get; set; }
+
+        [Display(Name = "Repetitive issue detail")]
         public string Repet_Issue_detail { get; set; }
 
         [Display(Name = "Status")]
@@ -388,11 +390,13 @@ namespace ISOStd.Models
         {
             try
             {
-
+                string sTime = DateTime.Now.ToString("HH':'mm':'ss");
                 string sSqlstmt = "update t_issues set issue_status='" + issue_status + "',action_taken='" + action_taken + "',status_notifiedto='" + status_notifiedto + "',status_upload='" + status_upload + "'";
                 if (objIssue.status_date != null && objIssue.status_date > Convert.ToDateTime("01/01/0001 00:00:00"))
                 {
-                    sSqlstmt = sSqlstmt + ",status_date='" + objIssue.status_date.ToString("yyyy/MM/dd") + "'";
+                    string sDate = objIssue.status_date.ToString("yyyy/MM/dd");
+                    string sStatus = sDate +" "+ sTime;
+                    sSqlstmt = sSqlstmt + ",status_date='" + sStatus + "'";
                 }
                 sSqlstmt = sSqlstmt + " where id_issue='" + objIssue.id_issue + "'";
                 return objGlobalData.ExecuteQuery(sSqlstmt);

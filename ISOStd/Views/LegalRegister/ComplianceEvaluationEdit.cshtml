@@ -182,6 +182,7 @@
                                     <th>Description</th>
                                     <th>Action To Be Taken</th>
                                     <th>Target Date</th>
+                                    <th>Report Date</th>
                                     <th>Personnel Responsible</th>
                                     <th>Upload Document</th>
                                 </tr>
@@ -252,6 +253,17 @@
                                                 else
                                                 {
                                                     <input type="date" class="form-control" id='target_date @index' name="target_date @index" required />
+                                                }
+                                                @*<span class="field-validation-error"><span id="target_date @index-message" style="display: none;">Target date is required.</span></span>*@
+                                            </td>
+                                            <td>
+                                                @if (LRList.LegalRegisterMList[index].report_date != null && LRList.LegalRegisterMList[index].report_date > Convert.ToDateTime("01/01/0001"))
+                                                {
+                                                    <input type="date" class="form-control" id='report_date @index' name="report_date @index" value="@LRList.LegalRegisterMList[index].report_date.ToString("yyyy-MM-dd")" required />
+                                                }
+                                                else
+                                                {
+                                                    <input type="date" class="form-control" id='report_date @index' name="report_date @index" required />
                                                 }
                                                 @*<span class="field-validation-error"><span id="target_date @index-message" style="display: none;">Target date is required.</span></span>*@
                                             </td>
@@ -499,6 +511,16 @@
                 document.getElementById("person_resp " + i).required = true;
                 document.getElementById("target_date " + i).required = true;
             }
+            else if (compliance_statustext.toLowerCase() == "complied") {
+                document.getElementById("action_taken " + i).value = "";
+                document.getElementById("target_date " + i).value = "";
+                document.getElementById("article_desc " + i).value = "";
+                
+                document.getElementById("action_taken " + i).disabled = true;
+                document.getElementById("target_date " + i).disabled = true;
+                document.getElementById("article_desc " + i).disabled = true;
+               
+            }
             else {
                 document.getElementById("action_taken " + i).required = false;
                 document.getElementById("person_resp " + i).required = false;
@@ -519,6 +541,16 @@
                     document.getElementById("action_taken " + i).required = true;
                     document.getElementById("person_resp " + i).required = true;
                     document.getElementById("target_date " + i).required = true;
+                }
+                else if (compliance_statustext.toLowerCase() == "complied") {
+                    document.getElementById("action_taken " + i).value = "";
+                    document.getElementById("target_date " + i).value = "";
+                    document.getElementById("article_desc " + i).value = "";
+
+                    document.getElementById("action_taken " + i).disabled = true;
+                    document.getElementById("target_date " + i).disabled = true;
+                    document.getElementById("article_desc " + i).disabled = true;
+
                 }
                 else {
                     document.getElementById("action_taken " + i).required = false;

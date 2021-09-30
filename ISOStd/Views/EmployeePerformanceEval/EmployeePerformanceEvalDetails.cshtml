@@ -17,11 +17,15 @@
     string user = Obj.GetCurrentUserSession().empid;
 
     System.Data.DataSet ObjMaxRate = new System.Data.DataSet();
+    System.Data.DataSet dsList = new System.Data.DataSet();
     if (ViewBag.MaxRate != null)
     {
         ObjMaxRate = ViewBag.MaxRate;
     }
-
+    if (ViewBag.dsList != null)
+    {
+        dsList = ViewBag.dsList;
+    }
     int sObjMaxRate = 0;
 }
 
@@ -221,12 +225,12 @@
                 <tr class="row">
                     <td class="col-xs-3 col-md-2">
                         <p class="bg-brown py-1 px-2 rounded">
-                            @Html.LabelFor(model => model.Training_Reqd)
+                            @Html.LabelFor(model => model.training_need)
                         </p>
                     </td>
                     <td class="col">
                         <span class="bg-dark py-1 px-2 rounded">
-                            @Html.DisplayFor(model => model.Training_Reqd)
+                            @Html.DisplayFor(model => model.training_need)
                         </span>
                     </td>
                     <td class="col-xs-3 col-md-2">
@@ -274,7 +278,41 @@
                         </td>
                     }
                 </tr>
-
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.LabelFor(model => model.remarks)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.remarks)
+                        </span>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.LabelFor(model => model.recommendation)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.recommendation)
+                        </span>
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.LabelFor(model => model.notified_to)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.notified_to)
+                        </span>
+                    </td>
+                  
+                </tr>
                 <tr class="row">
                     <td class="col-xs-3 col-md-2">
                         <p class="bg-brown py-1 px-2 rounded">
@@ -370,6 +408,43 @@
                     
                 </tr>
             </table>
+
+            @if (dsList != null && dsList.Tables.Count > 0 && dsList.Tables[0].Rows.Count > 0)
+            {
+                <br />
+                <h2 class="bg-dark pl-sm-2">Training Detail</h2>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped table-hover datatable-responsive" id="table1">
+                        <thead>
+                            <tr class="bg-brown">
+                                <th>Sl No</th>
+                                <th>Training Topic</th>
+                                <th>Criticality</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0, j = 1; i < dsList.Tables[0].Rows.Count; i++, j++)
+                            {
+                                <tr>
+
+                                    <td>
+                                        @j
+                                    </td>
+                                    <td>
+                                        @dsList.Tables[0].Rows[i]["training_topic"].ToString()
+                                    </td>
+                                    <td>
+                                        @Obj.GetDropdownitemById(dsList.Tables[0].Rows[i]["criticality"].ToString())
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+
+
+                </div>
+            }
 
             @if (ViewBag.PerformanceElement != null)
             {

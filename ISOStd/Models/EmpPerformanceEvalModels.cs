@@ -108,6 +108,29 @@ namespace ISOStd.Models
         public string Eval_DoneById { get; set; }
         public string sstatus { get; set; }
 
+        //t_emp_performance_eval
+        [Display(Name = "Need of trainings")]
+        public string training_need { get; set; }
+
+        [Display(Name = "Remarks")]
+        public string remarks { get; set; }
+
+        [Display(Name = "Recommendation")]
+        public string recommendation { get; set; }
+
+        [Display(Name = "Notified to")]
+        public string notified_to { get; set; }
+
+        //t_emp_performance_training
+        [Display(Name = "Id")]
+        public string id_training { get; set; }
+
+        [Display(Name = "Training Topic")]
+        public string training_topic { get; set; }
+
+        [Display(Name = "Criticality")]
+        public string criticality { get; set; }
+
         internal bool FunDeletePerformanceDoc(string sPerformance_EvalId)
         {
             try
@@ -124,7 +147,7 @@ namespace ISOStd.Models
             return false;
         }
 
-        internal bool FunAddEmpPerformanceEvaluation(EmpPerformanceEvalModels objEmpPerformanceEval, EmpPerformanceElementsModelsList objEmpPerformanceEeleList)
+        internal bool FunAddEmpPerformanceEvaluation(EmpPerformanceEvalModels objEmpPerformanceEval, EmpPerformanceElementsModelsList objEmpPerformanceEeleList, EmpPerformanceEvalModelsList objModelList)
         {
             try
             {
@@ -141,7 +164,7 @@ namespace ISOStd.Models
                 
 
                 string sSqlstmt = "insert into t_emp_performance_eval (emp_id, Designation, Dept_id, Eval_DoneBy, Eval_DoneBy_Desig,"
-                    + "Eval_DoneBy_DeptId, Weakness, Strengths, Training_Reqd, Actions_Taken, Eval_ReviewedBy, Eval_ReviewedBy_Desig, Eval_ReviewedBy_DeptId, LoggedBy,DocUploadPath,branch,JrMgr,SrMgr";
+                    + "Eval_DoneBy_DeptId, Weakness, Strengths, Training_Reqd, Actions_Taken, Eval_ReviewedBy, Eval_ReviewedBy_Desig, Eval_ReviewedBy_DeptId, LoggedBy,DocUploadPath,branch,JrMgr,SrMgr,training_need,remarks,recommendation,notified_to";
 
                 if (objEmpPerformanceEval.Evaluation_DoneOn > Convert.ToDateTime("01/01/0001"))
                 {
@@ -166,7 +189,7 @@ namespace ISOStd.Models
                  + "','" + objEmpPerformanceEval.Eval_DoneBy_DeptId + "','" + objEmpPerformanceEval.Weakness
                  + "','" + objEmpPerformanceEval.Strengths + "','" + objEmpPerformanceEval.Training_Reqd + "','" + objEmpPerformanceEval.Actions_Taken
                  + "','" + objEmpPerformanceEval.Eval_ReviewedBy + "','" + objEmpPerformanceEval.Eval_ReviewedBy_Desig + "','" + objEmpPerformanceEval.Eval_ReviewedBy_DeptId
-                 + "','" + user + "','" + objEmpPerformanceEval.DocUploadPath + "','" + sBranch + "','" + VarJrMgr + "','" + VarSrMgr + "'";
+                 + "','" + user + "','" + objEmpPerformanceEval.DocUploadPath + "','" + sBranch + "','" + VarJrMgr + "','" + VarSrMgr + "','" + training_need + "','" + remarks + "','" + recommendation + "','" + notified_to + "'";
 
                 sSqlstmt = sSqlstmt + sValues + ")";
 
@@ -179,7 +202,9 @@ namespace ISOStd.Models
                         EmpPerformanceElementsModels objElement = new EmpPerformanceElementsModels();
 
                        objEmpPerformanceEeleList.lstEmpPerformanceElements[0].Performance_EvalId = iPerformance_EvalId.ToString();
-                       objElement.FunAddEmpPerformanceEvaluation(objEmpPerformanceEeleList);
+                        objModelList.lstEmpPerformanceEvalModels[0].Performance_EvalId = iPerformance_EvalId.ToString();
+                        objElement.FunAddEmpPerformanceEvaluation(objEmpPerformanceEeleList);
+                       FunAddTrainingList(objModelList);
                     }
                     return true;
                 }
@@ -282,7 +307,7 @@ namespace ISOStd.Models
             return false;
         }
         
-        internal bool FunUpdateEmpPerformanceEvaluation(EmpPerformanceEvalModels objEmpPerformanceEval, EmpPerformanceElementsModelsList objEmpPerformanceEeleList)
+        internal bool FunUpdateEmpPerformanceEvaluation(EmpPerformanceEvalModels objEmpPerformanceEval, EmpPerformanceElementsModelsList objEmpPerformanceEeleList, EmpPerformanceEvalModelsList objModelList)
         {
             try
             {
@@ -291,7 +316,7 @@ namespace ISOStd.Models
                  + "', Eval_DoneBy_DeptId='" + objEmpPerformanceEval.Eval_DoneBy_DeptId + "', Weakness='" + objEmpPerformanceEval.Weakness
                  + "', Strengths='" + objEmpPerformanceEval.Strengths + "', Training_Reqd='" + objEmpPerformanceEval.Training_Reqd + "', Actions_Taken='" + objEmpPerformanceEval.Actions_Taken
                  + "', Eval_ReviewedBy='" + objEmpPerformanceEval.Eval_ReviewedBy + "', Eval_ReviewedBy_Desig='" + objEmpPerformanceEval.Eval_ReviewedBy_Desig
-                 + "', Eval_ReviewedBy_DeptId='" + objEmpPerformanceEval.Eval_ReviewedBy_DeptId + "'";
+                 + "', Eval_ReviewedBy_DeptId='" + objEmpPerformanceEval.Eval_ReviewedBy_DeptId + "',training_need='" + training_need + "',remarks='" + remarks + "',recommendation='" + recommendation + "',notified_to='" + notified_to + "'";
 
                 if (objEmpPerformanceEval.DocUploadPath != null)
                 {
@@ -319,6 +344,10 @@ namespace ISOStd.Models
                 {
                     EmpPerformanceElementsModels objElement = new EmpPerformanceElementsModels();
                     objElement.FunAddEmpPerformanceEvaluation(objEmpPerformanceEeleList);
+
+                    objModelList.lstEmpPerformanceEvalModels[0].Performance_EvalId = Performance_EvalId.ToString();
+                   
+                    FunAddTrainingList(objModelList);
                     return true;
                 }
             }
@@ -449,6 +478,31 @@ namespace ISOStd.Models
             return false;
         }
 
+        internal bool FunAddTrainingList(EmpPerformanceEvalModelsList objModelsList)
+        {
+            try
+            {
+                string sSqlstmt = "delete from t_emp_performance_training where Performance_EvalId='" + objModelsList.lstEmpPerformanceEvalModels[0].Performance_EvalId + "'; ";
+
+                for (int i = 0; i < objModelsList.lstEmpPerformanceEvalModels.Count; i++)
+                {
+                    sSqlstmt = sSqlstmt + "insert into t_emp_performance_training(Performance_EvalId,training_topic,criticality";
+
+                    string sFieldValue = "", sFields = "";
+                    
+                    sSqlstmt = sSqlstmt + sFields;
+                    sSqlstmt = sSqlstmt + ") values('" + objModelsList.lstEmpPerformanceEvalModels[0].Performance_EvalId + "', '" + objModelsList.lstEmpPerformanceEvalModels[i].training_topic + "', '" + objModelsList.lstEmpPerformanceEvalModels[i].criticality + "'";
+
+                    sSqlstmt = sSqlstmt + sFieldValue + ");";
+                }
+                return objGlobalData.ExecuteQuery(sSqlstmt);
+            }
+            catch (Exception ex)
+            {
+                objGlobalData.AddFunctionalLog("Exception in FunAddTrainingList: " + ex.ToString());
+            }
+            return false;
+        }
     }
 
 

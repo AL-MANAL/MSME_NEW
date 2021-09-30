@@ -312,6 +312,7 @@ namespace ISOStd.Controllers
                 ViewBag.Division = objGlobaldata.GetCompanyBranchListbox();
                 ViewBag.YesNo = objGlobaldata.GetConstantValue("YesNo");                
                 ViewBag.Roles = objGlobaldata.GetRoles();
+                ViewBag.EmploymentType = objGlobaldata.GetDropdownList("Employment Type");
             }
             catch (Exception ex)
             {
@@ -1110,7 +1111,7 @@ namespace ISOStd.Controllers
                             + " Emp_work_location, Emp_accomodation, Date_of_join, Date_of_exit, Basic_Salary, Acc_allow, Other_allow, Gratuity, Remarks, Custody_Documents,"
                             + " Date_of_Birth, dept_id, ProfilePic, JobDesc, EvaluatedBy, CompetancyFromDate, CompetancyToDate, CompetancyDoc, Basic_Salary, Acc_allow,"
                             + " Other_allow Food_allow, Transport_allow,visa_Exp_date,PassportUpload,EIDUpload,HealthCardUpload,HealthCardIssueDate,HealthCardExpDate,"
-                            + " Logged_date,Visa_upload,DeptInCharge,division,Role from t_hr_employee where emp_status=1 and emp_no='" + sEmp_no + "'";
+                            + " Logged_date,Visa_upload,DeptInCharge,division,Role,employment_type from t_hr_employee where emp_status=1 and emp_no='" + sEmp_no + "'";
 
                     DataSet dsEmployeeList = objGlobaldata.Getdetails(sSqlstmt);
                     if (dsEmployeeList.Tables.Count > 0 && dsEmployeeList.Tables[0].Rows.Count > 0)
@@ -1155,6 +1156,7 @@ namespace ISOStd.Controllers
                             DeptInCharge = dsEmployeeList.Tables[0].Rows[0]["DeptInCharge"].ToString(),
                             division =objGlobaldata.GetCompanyBranchNameById(dsEmployeeList.Tables[0].Rows[0]["division"].ToString()),
                             Role = objGlobaldata.GetMultiRoleById(dsEmployeeList.Tables[0].Rows[0]["Role"].ToString()),
+                            employment_type =objGlobaldata.GetDropdownitemById(dsEmployeeList.Tables[0].Rows[0]["employment_type"].ToString()),
                         };
 
                         decimal dValue;
@@ -1287,7 +1289,7 @@ namespace ISOStd.Controllers
                             + " Emp_work_location, Emp_accomodation, Date_of_join, Date_of_exit, Basic_Salary, Acc_allow, Other_allow, Gratuity, Remarks, Custody_Documents,"
                             + " Date_of_Birth, dept_id, ProfilePic, JobDesc, EvaluatedBy, CompetancyFromDate, CompetancyToDate, CompetancyDoc, Basic_Salary, Acc_allow,"
                             + " Other_allow Food_allow, Transport_allow,visa_Exp_date,PassportUpload,EIDUpload,HealthCardUpload,HealthCardIssueDate,HealthCardExpDate,"
-                            + " Visa_upload,DeptInCharge,division,Role from t_hr_employee where emp_status=1 and emp_no='" + sEmp_no + "'";
+                            + " Visa_upload,DeptInCharge,division,Role,employment_type from t_hr_employee where emp_status=1 and emp_no='" + sEmp_no + "'";
 
                     DataSet dsEmployeeList = objGlobaldata.Getdetails(sSqlstmt);
                     if (dsEmployeeList.Tables.Count > 0 && dsEmployeeList.Tables[0].Rows.Count > 0)
@@ -1334,7 +1336,8 @@ namespace ISOStd.Controllers
                             DeptInCharge = dsEmployeeList.Tables[0].Rows[0]["DeptInCharge"].ToString(),
                             division = dsEmployeeList.Tables[0].Rows[0]["division"].ToString(),
                             Role = objGlobaldata.GetMultiRoleById(dsEmployeeList.Tables[0].Rows[0]["Role"].ToString()),
-                            DeptId = dsEmployeeList.Tables[0].Rows[0]["dept_id"].ToString()
+                            DeptId = dsEmployeeList.Tables[0].Rows[0]["dept_id"].ToString(),
+                            employment_type = dsEmployeeList.Tables[0].Rows[0]["employment_type"].ToString()
                         };
 
                         decimal dValue;
@@ -1432,6 +1435,7 @@ namespace ISOStd.Controllers
                          ViewBag.YesNo = objGlobaldata.GetConstantValue("YesNo");
                         ViewBag.Division = objGlobaldata.GetCompanyBranchListbox();
                         ViewBag.Roles = objGlobaldata.GetRoles();
+                        ViewBag.EmploymentType = objGlobaldata.GetDropdownList("Employment Type");
                         return View(objEmployee); 
                     }
                     else

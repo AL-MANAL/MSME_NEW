@@ -162,7 +162,7 @@ namespace ISOStd.Models
         public string Emp_accomodation { get; set; }
 
         // [Required]
-        [Display(Name = "Date of Join")]
+        [Display(Name = "Date of Joining")]
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
         public DateTime Date_of_join { get; set; }
 
@@ -264,6 +264,10 @@ namespace ISOStd.Models
         [Display(Name = "Error found to upload")]
         public string error_found { get; set; }
 
+        //t_hr_employee
+        [Display(Name = "Employment Type")]
+        public string employment_type { get; set; }
+
         internal bool FunDeleteChart(string schartId)
         {
             try
@@ -333,7 +337,7 @@ namespace ISOStd.Models
                 string sSqlstmt = "insert into t_hr_employee (emp_id, emp_lastname, emp_firstname, emp_middlename, Nationaliity, Designation, Gender, Marital_status,"
                         + " EmailId, MobileNo, UID_no, Visa_Type, Visa_no, Eid_no, Emp_info_no, Passport_no, Labour_cardno, Health_insurance_provider, Emp_local_contact,"
                         + " Emp_native_phoneno, Emp_native_country, Emp_work_location, Emp_accomodation, Basic_Salary, Acc_allow, Other_allow, Gratuity, Remarks,"
-                        + " Custody_Documents, Date_of_Birth, dept_id, JobDesc, EvaluatedBy, CompetancyFromDate, CompetancyToDate, CompetancyDoc, Food_allow, Transport_allow,DeptInCharge,division,Role";
+                        + " Custody_Documents, Date_of_Birth, dept_id, JobDesc, EvaluatedBy, CompetancyFromDate, CompetancyToDate, CompetancyDoc, Food_allow, Transport_allow,DeptInCharge,division,Role,employment_type";
 
                 string sFields = "", sFieldValue = "";
 
@@ -428,7 +432,7 @@ namespace ISOStd.Models
                  + "','" + objEmployeeModel.Gratuity + "','" + objEmployeeModel.Remarks + "','" + objEmployeeModel.Custody_Documents
                  + "','" + objEmployeeModel.Date_of_Birth.ToString("yyyy/MM/dd") + "','" + objEmployeeModel.dept_id + "','" + objEmployeeModel.JobDesc
                  + "','" + objEmployeeModel.EvaluatedBy + "','" + sCompetancyFromDate + "','" + sCompetancyToDate + "','" + objEmployeeModel.CompetancyDoc
-                 + "','" + objEmployeeModel.Food_allow + "','" + objEmployeeModel.Transport_allow + "','" + objEmployeeModel.DeptInCharge + "','" + objEmployeeModel.division + "','" + objEmployeeModel.Role + "'";
+                 + "','" + objEmployeeModel.Food_allow + "','" + objEmployeeModel.Transport_allow + "','" + objEmployeeModel.DeptInCharge + "','" + objEmployeeModel.division + "','" + objEmployeeModel.Role + "','" + employment_type + "'";
 
                 sSqlstmt = sSqlstmt + sFieldValue + ")";
 
@@ -504,7 +508,7 @@ namespace ISOStd.Models
                  + "', Date_of_Birth='" + objEmployeeModel.Date_of_Birth.ToString("yyyy/MM/dd") + "', dept_id='" + objEmployeeModel.dept_id
                   + "', EvaluatedBy='" + objEmployeeModel.EvaluatedBy + "', CompetancyFromDate='" + sCompetancyFromDate
                   + "', CompetancyToDate='" + sCompetancyToDate + "', Food_allow='" + objEmployeeModel.Food_allow + "', Transport_allow='" + objEmployeeModel.Transport_allow + "'"
-                + ",Logged_date='" + sLogged_date + "',DeptInCharge='" + DeptInCharge + "',emp_id='" + emp_id + "',division='" + division + "',Role='" + objEmployeeModel.Role + "'";
+                + ",Logged_date='" + sLogged_date + "',DeptInCharge='" + DeptInCharge + "',emp_id='" + emp_id + "',division='" + division + "',Role='" + objEmployeeModel.Role + "',employment_type='" + employment_type + "'";
 
                 if (objEmployeeModel.Passport_expiry != null && objEmployeeModel.Passport_expiry > Convert.ToDateTime("01/01/0001 00:00:00"))
                 {

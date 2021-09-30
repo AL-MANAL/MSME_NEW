@@ -25,6 +25,30 @@ namespace ISOStd.Models
         private object fileUploader;
         private object mail;
 
+        //--------------------------------9/30/2021-------------------------------------------------
+        public string GetHRDeptEmployees() 
+        {
+            try
+            {
+                string sSqlstmt = "select group_concat(emp_no) emp_no"
+               + " from t_hr_employee t,t_departments tt where emp_status = 1 and t.Dept_Id = tt.DeptId and DeptName like '%HR%'";
+
+                DataSet dsData = Getdetails(sSqlstmt);
+                if (dsData.Tables.Count > 0 && dsData.Tables[0].Rows.Count > 0)
+                {
+                    return (dsData.Tables[0].Rows[0]["emp_no"].ToString());
+                }
+
+            }
+            catch (Exception ex)
+            {
+                AddFunctionalLog("Exception in GetHRDeptEmployees: " + ex.ToString());
+            }
+            return "";
+        }
+
+       
+
         //HSE Inspection
         public string GetInspectionChecklistRefNamebyRevNo(string item_id, string RevNo)
         {

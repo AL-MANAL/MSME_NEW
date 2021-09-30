@@ -317,7 +317,40 @@ namespace ISOStd.Models
 
         [Display(Name = "Upload Document")]
         public string disp_upload { get; set; }
-      
+
+        //t_nc
+        [Display(Name = "OA No")]
+        public string oa_no { get; set; }
+
+        [Display(Name = "Model code")]
+        public string model_code { get; set; }
+
+        [Display(Name = "Part Name")]
+        public string part_name { get; set; }
+
+        [Display(Name = "Stage")]
+        public string stage { get; set; }
+
+        [Display(Name = "Responsible person")]
+        public string nc_resp_pers { get; set; }
+
+        [Display(Name = "Supplier name")]
+        public string supplier_name { get; set; }
+
+        [Display(Name = "Supplier DC")]
+        public string supplier_dc { get; set; }
+
+        [Display(Name = "DC/PO")]
+        public string dc_po { get; set; }
+
+        [Display(Name = "Batch qty")]
+        public string batch_qty { get; set; }
+
+        [Display(Name = "NC qty")]
+        public string nc_qty { get; set; }
+
+        
+
 
         //NC
         internal bool FunAddNC(NCModels objModels, NCModelsList objRelatedList)
@@ -346,7 +379,8 @@ namespace ISOStd.Models
                     sdivision = sdivision.Trim();
                 }
                 string sSqlstmt = "insert into t_nc ( nc_category, nc_description, nc_activity, nc_performed, nc_pnc, nc_upload,"
-                    + "nc_impact, nc_risk, risklevel, nc_reportedby, nc_notifiedto, nc_division, department,location,logged_by,nc_issueto,nc_audit,audit_no,division,nc_raise_dueto,nc_issuedtocount";
+                    + "nc_impact, nc_risk, risklevel, nc_reportedby, nc_notifiedto, nc_division, department,location,logged_by,nc_issueto,nc_audit,audit_no,division,nc_raise_dueto,nc_issuedtocount"
+                    + ",oa_no,model_code,part_name,stage,nc_resp_pers,supplier_name,supplier_dc,dc_po,batch_qty,nc_qty";
 
                 if (objModels.nc_reported_date != null && objModels.nc_reported_date > Convert.ToDateTime("01/01/0001"))
                 {
@@ -361,9 +395,10 @@ namespace ISOStd.Models
                 sSqlstmt = sSqlstmt + sFields + ") values('" + objModels.nc_category + "','" + objModels.nc_description
                 + "','" + objModels.nc_activity + "','" + objModels.nc_performed + "','" + objModels.nc_pnc + "','" + objModels.nc_upload
                 + "','" + objModels.nc_impact + "','" + objModels.nc_risk + "','" + objModels.risklevel + "','" + objModels.nc_reportedby
-                + "','" + objModels.nc_notifiedto + "','" + objModels.nc_division + "','" + objModels.department + "','" + objModels.location 
-                + "','" + objGlobaldata.GetCurrentUserSession().empid + "','" + objModels.nc_issueto + "','" + objModels.nc_audit + "','" + objModels.audit_no 
-                + "','" + sdivision + "','" + objModels.nc_raise_dueto + "','" + issuecount + "'";
+                + "','" + objModels.nc_notifiedto + "','" + objModels.nc_division + "','" + objModels.department + "','" + objModels.location
+                + "','" + objGlobaldata.GetCurrentUserSession().empid + "','" + objModels.nc_issueto + "','" + objModels.nc_audit + "','" + objModels.audit_no
+                + "','" + sdivision + "','" + objModels.nc_raise_dueto + "','" + issuecount + "',"
+                + "'" + oa_no + "','" + model_code + "','" + part_name + "','" + stage + "','" + nc_resp_pers + "','" + supplier_name + "','" + supplier_dc + "','" + dc_po + "','" + batch_qty + "','" + nc_qty + "'";
 
                 sSqlstmt = sSqlstmt + sFieldValue + ")";
 
@@ -517,7 +552,8 @@ namespace ISOStd.Models
                      + "', nc_performed='" + objModels.nc_performed + "', nc_pnc='" + objModels.nc_pnc + "', nc_upload='" + objModels.nc_upload + "', nc_impact='" + objModels.nc_impact
                      + "', nc_risk='" + objModels.nc_risk + "', risklevel='" + objModels.risklevel + "', nc_reportedby='" + objModels.nc_reportedby + "', nc_notifiedto='" + objModels.nc_notifiedto
                      + "', nc_division='" + objModels.nc_division + "', department='" + objModels.department + "', location='" + objModels.location/* + "', nc_issueto='" + objModels.nc_issueto*/
-                     + "', nc_audit='" + objModels.nc_audit + "', audit_no='" + objModels.audit_no + "', nc_raise_dueto='" + objModels.nc_raise_dueto + "'";
+                     + "', nc_audit='" + objModels.nc_audit + "', audit_no='" + objModels.audit_no + "', nc_raise_dueto='" + objModels.nc_raise_dueto + "'"
+                     + ", oa_no='" + objModels.oa_no + "', model_code='" + objModels.model_code + "', part_name='" + objModels.part_name + "', stage='" + objModels.stage + "', nc_resp_pers='" + objModels.nc_resp_pers + "', supplier_name='" + objModels.supplier_name + "', supplier_dc='" + objModels.supplier_dc + "', dc_po='" + objModels.dc_po + "', batch_qty='" + objModels.batch_qty + "', nc_qty='" + objModels.nc_qty + "'";
 
                 if (objModels.nc_reported_date != null && objModels.nc_reported_date > Convert.ToDateTime("01/01/0001"))
                 {

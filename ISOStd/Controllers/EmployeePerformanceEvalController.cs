@@ -48,6 +48,12 @@ namespace ISOStd.Controllers
                 ViewBag.DeptHeadList = objGlobaldata.GetHrEmployeeListbox();
                 ViewBag.EmpList = objGlobaldata.GetHrEmpEvaluatedByList();
                 ViewBag.EmpHead = objGlobaldata.GetDeptHeadList();
+                ViewBag.Citicality = objGlobaldata.GetDropdownList("Training Criticality");
+                ViewBag.TrainingNeed = objGlobaldata.GetConstantValue("YesNo");
+                ViewBag.NotifiedEmpList = objGlobaldata.GetHrEmployeeListbox();
+                ViewBag.NotifiedToArray = objGlobaldata.GetHRDeptEmployees().Split(',');
+                ViewBag.Recommendation = objGlobaldata.GetDropdownList("Employee Performance Recommendation");
+
             }
             catch (Exception ex)
             {
@@ -65,6 +71,34 @@ namespace ISOStd.Controllers
         {
             try
             {
+
+                EmpPerformanceEvalModelsList objModelList = new EmpPerformanceEvalModelsList();
+                objModelList.lstEmpPerformanceEvalModels = new List<EmpPerformanceEvalModels>();
+
+                for (int i = 0; i < Convert.ToInt16(form["itemcnt"]); i++)
+                {
+                    EmpPerformanceEvalModels objModels = new EmpPerformanceEvalModels();
+
+                    if (form["training_topic " + i] != null && form["training_topic " + i] != "")
+                    {
+
+                        objModels.training_topic = form["training_topic " + i];
+                        objModels.criticality = form["criticality " + i];
+                        objModelList.lstEmpPerformanceEvalModels.Add(objModels);
+                    }
+                }
+                //notified to
+                for (int i = 0; i < Convert.ToInt16(form["notified_cnt"]); i++)
+                {
+                    if (form["empno " + i] != "" && form["empno " + i] != null)
+                    {
+                        objEmpPerformanceEval.notified_to = objEmpPerformanceEval.notified_to + "," + form["empno " + i];
+                    }
+                }
+                if (objEmpPerformanceEval.notified_to != null)
+                {
+                    objEmpPerformanceEval.notified_to = objEmpPerformanceEval.notified_to.Trim(',');
+                }
 
                 objEmpPerformanceEval.LoggedBy = objGlobaldata.GetCurrentUserSession().empid;
 
@@ -133,7 +167,7 @@ namespace ISOStd.Controllers
                     objEmpPerformanceElements.lstEmpPerformanceElements.Add(objElements);
                 }
 
-                if (objEmpPerformanceEval.FunAddEmpPerformanceEvaluation(objEmpPerformanceEval, objEmpPerformanceElements))
+                if (objEmpPerformanceEval.FunAddEmpPerformanceEvaluation(objEmpPerformanceEval, objEmpPerformanceElements, objModelList))
                 {
                     EmpPerformanceEvalModels objMdls = new EmpPerformanceEvalModels();
                     objMdls.SendJrMgrPerpEmail("Employee Performace Evaluation");
@@ -405,7 +439,7 @@ namespace ISOStd.Controllers
                     string sSqlstmt = "select Performance_EvalId, emp_id, Designation, Dept_id, Evaluation_DoneOn, Evaluated_From, Evaluated_To, Eval_DoneBy, Eval_DoneBy_Desig,"
                     + " Eval_DoneBy_DeptId, Weakness, Strengths, Training_Reqd, Actions_Taken, Eval_ReviewedBy, Eval_ReviewedBy_Desig, Eval_ReviewedBy_DeptId, "
                     + " LoggedBy,DocUploadPath,JrMgr,Comment_JrMgr,JrMgr_Comment_Date,SrMgr,Comment_SrMgr,SrMgr_Comment_Date," +
-                    "(case when (Comment_JrMgr is null || Comment_JrMgr = '')then 'Pending Reviewer' when (Comment_SrMgr is null || Comment_SrMgr = '') then 'Pending Approval' else 'Evaluation Completed' end) as sstatus" +
+                    "(case when (Comment_JrMgr is null || Comment_JrMgr = '')then 'Pending Reviewer' when (Comment_SrMgr is null || Comment_SrMgr = '') then 'Pending Approval' else 'Evaluation Completed' end) as sstatus,training_need,remarks,recommendation,notified_to" +
                     " from t_emp_performance_eval where Performance_EvalId='" + sPerformance_EvalId + "'";
 
 
@@ -439,7 +473,10 @@ namespace ISOStd.Controllers
                             SrMgrId =(dsPerformance.Tables[0].Rows[0]["SrMgr"].ToString()),
                             Comment_SrMgr = dsPerformance.Tables[0].Rows[0]["Comment_SrMgr"].ToString(),
                             sstatus = dsPerformance.Tables[0].Rows[0]["sstatus"].ToString(),
-
+                            training_need = dsPerformance.Tables[0].Rows[0]["training_need"].ToString(),
+                            remarks = dsPerformance.Tables[0].Rows[0]["remarks"].ToString(),
+                            recommendation =objGlobaldata.GetDropdownitemById(dsPerformance.Tables[0].Rows[0]["recommendation"].ToString()),
+                            notified_to =objGlobaldata.GetMultiHrEmpNameById(dsPerformance.Tables[0].Rows[0]["notified_to"].ToString()),
                         };
 
                         DateTime dtValue;
@@ -468,6 +505,10 @@ namespace ISOStd.Controllers
 
                         //sSqlstmt = " SELECT Performance_Id, Performance_EvalId, tt.SQId, SQ_OptionsId,Section FROM t_emp_performance_elements t," +
                         //    " t_emp_performance_eval_questions tt where Performance_EvalId = '" + objPerformance.Performance_EvalId + "' and t.SQId = tt.SQId order by Section asc, Performance_Id asc";
+
+                        //training
+                        sSqlstmt = "select id_training,Performance_EvalId,training_topic,criticality from t_emp_performance_training where Performance_EvalId='" + objPerformance.Performance_EvalId + "'";
+                        ViewBag.dsList = objGlobaldata.Getdetails(sSqlstmt);
 
                         string sSqlstmt1 = "select max(Weightage) as Weightage  from t_emp_performance_eval_rating where active=1";
                         ViewBag.MaxRate = objGlobaldata.Getdetails(sSqlstmt1);
@@ -780,8 +821,7 @@ namespace ISOStd.Controllers
 
                     string sSqlstmt = "select Performance_EvalId, emp_id, Designation, Dept_id, Evaluation_DoneOn, Evaluated_From, Evaluated_To, Eval_DoneBy, Eval_DoneBy_Desig,"
                     + " Eval_DoneBy_DeptId, Weakness, Strengths, Training_Reqd, Actions_Taken, Eval_ReviewedBy, Eval_ReviewedBy_Desig, Eval_ReviewedBy_DeptId, "
-                    + " LoggedBy,DocUploadPath from t_emp_performance_eval where Performance_EvalId='" + sPerformance_EvalId + "'";
-
+                    + " LoggedBy,DocUploadPath,training_need,remarks,recommendation,notified_to from t_emp_performance_eval where Performance_EvalId='" + sPerformance_EvalId + "'";
 
                     DataSet dsCustomer = objGlobaldata.Getdetails(sSqlstmt);
 
@@ -804,8 +844,16 @@ namespace ISOStd.Controllers
                             Eval_ReviewedBy_Desig = dsCustomer.Tables[0].Rows[0]["Eval_ReviewedBy_Desig"].ToString(),
                             Eval_ReviewedBy_DeptId = objGlobaldata.GetDeptNameById(dsCustomer.Tables[0].Rows[0]["Eval_ReviewedBy_DeptId"].ToString()),
                             LoggedBy = (dsCustomer.Tables[0].Rows[0]["LoggedBy"].ToString()),
-                            DocUploadPath = dsCustomer.Tables[0].Rows[0]["DocUploadPath"].ToString()
+                            DocUploadPath = dsCustomer.Tables[0].Rows[0]["DocUploadPath"].ToString(),
+                            training_need = dsCustomer.Tables[0].Rows[0]["training_need"].ToString(),
+                             remarks = dsCustomer.Tables[0].Rows[0]["remarks"].ToString(),
+                              recommendation = dsCustomer.Tables[0].Rows[0]["recommendation"].ToString()
                         };
+                        if (dsCustomer.Tables[0].Rows[0]["notified_to"].ToString() != "")
+                        {
+                            ViewBag.NotifiedToArray = (dsCustomer.Tables[0].Rows[0]["notified_to"].ToString()).Split(',');
+                        }
+
 
                         DateTime dtValue;
                         if (DateTime.TryParse(dsCustomer.Tables[0].Rows[0]["Evaluation_DoneOn"].ToString(), out dtValue))
@@ -820,6 +868,43 @@ namespace ISOStd.Controllers
                         {
                             objPerformance.Evaluated_To = dtValue;
                         }
+                        ViewBag.Citicality = objGlobaldata.GetDropdownList("Training Criticality");
+                        ViewBag.TrainingNeed = objGlobaldata.GetConstantValue("YesNo");
+                        ViewBag.NotifiedEmpList = objGlobaldata.GetHrEmployeeListbox();
+                       
+                        ViewBag.Recommendation = objGlobaldata.GetDropdownList("Employee Performance Recommendation");
+
+                        //training topic
+                        EmpPerformanceEvalModelsList objModelList = new EmpPerformanceEvalModelsList();
+                        objModelList.lstEmpPerformanceEvalModels = new List<EmpPerformanceEvalModels>();
+
+                        sSqlstmt = "select id_training,Performance_EvalId,training_topic,criticality from t_emp_performance_training where Performance_EvalId='" + objPerformance.Performance_EvalId + "'";
+                        DataSet dsList = objGlobaldata.Getdetails(sSqlstmt);
+                        if (dsList.Tables.Count > 0 && dsList.Tables[0].Rows.Count > 0)
+                        {
+                            for (int i = 0; i < dsList.Tables[0].Rows.Count; i++)
+                            {
+                                try
+                                {
+                                    EmpPerformanceEvalModels objModel = new EmpPerformanceEvalModels
+                                    {
+                                        id_training = dsList.Tables[0].Rows[i]["id_training"].ToString(),
+                                        Performance_EvalId = dsList.Tables[0].Rows[i]["Performance_EvalId"].ToString(),
+                                        training_topic = dsList.Tables[0].Rows[i]["training_topic"].ToString(),
+                                        criticality = dsList.Tables[0].Rows[i]["criticality"].ToString(),
+                                    };
+                                    objModelList.lstEmpPerformanceEvalModels.Add(objModel);
+                                }
+                                catch (Exception ex)
+                                {
+                                    objGlobaldata.AddFunctionalLog("Exception in EmployeePerformanceEvalEdit: " + ex.ToString());
+                                    TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                                    return RedirectToAction("EmployeePerformanceEvalList");
+                                }
+                            }
+                            ViewBag.objList = objModelList;
+                        }
+
 
                         sSqlstmt = "SELECT Performance_Id, Performance_EvalId, SQId, SQ_OptionsId FROM t_emp_performance_elements where Performance_EvalId='"
                              + objPerformance.Performance_EvalId + "'";
@@ -894,6 +979,33 @@ namespace ISOStd.Controllers
             try
             {
 
+                EmpPerformanceEvalModelsList objModelList = new EmpPerformanceEvalModelsList();
+                objModelList.lstEmpPerformanceEvalModels = new List<EmpPerformanceEvalModels>();
+
+                for (int i = 0; i < Convert.ToInt16(form["itemcnt"]); i++)
+                {
+                    EmpPerformanceEvalModels objModels = new EmpPerformanceEvalModels();
+
+                    if (form["training_topic " + i] != null && form["training_topic " + i] != "")
+                    {
+
+                        objModels.training_topic = form["training_topic " + i];
+                        objModels.criticality = form["criticality " + i];
+                        objModelList.lstEmpPerformanceEvalModels.Add(objModels);
+                    }
+                }
+                //notified to
+                for (int i = 0; i < Convert.ToInt16(form["notified_cnt"]); i++)
+                {
+                    if (form["empno " + i] != "" && form["empno " + i] != null)
+                    {
+                        objEmpPerformanceEval.notified_to = objEmpPerformanceEval.notified_to + "," + form["empno " + i];
+                    }
+                }
+                if (objEmpPerformanceEval.notified_to != null)
+                {
+                    objEmpPerformanceEval.notified_to = objEmpPerformanceEval.notified_to.Trim(',');
+                }
                 objEmpPerformanceEval.LoggedBy = objGlobaldata.GetCurrentUserSession().empid;
 
                 objEmpPerformanceEval.Dept_id = objGlobaldata.GetDeptIdByHrEmpId(objEmpPerformanceEval.emp_id);
@@ -964,7 +1076,7 @@ namespace ISOStd.Controllers
                     objEmpPerformanceElements.lstEmpPerformanceElements[0].Performance_EvalId = objEmpPerformanceEval.Performance_EvalId;
                 }
 
-                if (objEmpPerformanceEval.FunUpdateEmpPerformanceEvaluation(objEmpPerformanceEval, objEmpPerformanceElements))
+                if (objEmpPerformanceEval.FunUpdateEmpPerformanceEvaluation(objEmpPerformanceEval, objEmpPerformanceElements, objModelList))
                 {
                     TempData["Successdata"] = "Updated Performance details successfully";
                 }

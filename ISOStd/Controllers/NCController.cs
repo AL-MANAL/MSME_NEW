@@ -345,7 +345,8 @@ namespace ISOStd.Controllers
                 {
                     string sid_nc = Request.QueryString["id_nc"];
                     string sSqlstmt = "select id_nc, nc_no, nc_reported_date, nc_detected_date, nc_category, nc_description, nc_activity, nc_performed,  nc_pnc, nc_upload,"
-                    + "nc_impact, nc_risk, risklevel, nc_reportedby,  nc_notifiedto, nc_division,division, department, location,nc_issueto,nc_audit,audit_no,nc_raise_dueto from t_nc where id_nc ='" + sid_nc + "'";
+                    + "nc_impact, nc_risk, risklevel, nc_reportedby,  nc_notifiedto, nc_division,division, department, location,nc_issueto,nc_audit,audit_no,nc_raise_dueto,"
+                    + "oa_no,model_code,part_name,stage,nc_resp_pers,supplier_name,supplier_dc,dc_po,batch_qty,nc_qty from t_nc where id_nc ='" + sid_nc + "'";
 
                     DataSet dsNCModels = objGlobaldata.Getdetails(sSqlstmt);
 
@@ -377,6 +378,17 @@ namespace ISOStd.Controllers
                                     nc_audit = (dsNCModels.Tables[0].Rows[0]["nc_audit"].ToString()),
                                     audit_no = (dsNCModels.Tables[0].Rows[0]["audit_no"].ToString()),
                                     nc_raise_dueto = dsNCModels.Tables[0].Rows[0]["nc_raise_dueto"].ToString(),
+
+                                    oa_no = (dsNCModels.Tables[0].Rows[0]["oa_no"].ToString()),
+                                    model_code = (dsNCModels.Tables[0].Rows[0]["model_code"].ToString()),
+                                    part_name = (dsNCModels.Tables[0].Rows[0]["part_name"].ToString()),
+                                    stage = (dsNCModels.Tables[0].Rows[0]["stage"].ToString()),
+                                    nc_resp_pers = (dsNCModels.Tables[0].Rows[0]["nc_resp_pers"].ToString()),
+                                    supplier_name = (dsNCModels.Tables[0].Rows[0]["supplier_name"].ToString()),
+                                    supplier_dc = (dsNCModels.Tables[0].Rows[0]["supplier_dc"].ToString()),
+                                    dc_po = (dsNCModels.Tables[0].Rows[0]["dc_po"].ToString()),
+                                    batch_qty = (dsNCModels.Tables[0].Rows[0]["batch_qty"].ToString()),
+                                    nc_qty = (dsNCModels.Tables[0].Rows[0]["nc_qty"].ToString()),
                                 };
                                 if (dsNCModels.Tables[0].Rows[0]["nc_issueto"].ToString() != "")
                                 {
@@ -1889,8 +1901,11 @@ namespace ISOStd.Controllers
                     string sid_nc = Request.QueryString["id_nc"];
                   
                     string sSqlstmt = "select id_nc, nc_no, nc_reported_date, nc_detected_date, nc_category, nc_description, nc_activity, nc_performed, nc_pnc, nc_upload,"
-                   + "nc_impact, nc_risk, risklevel, nc_reportedby,  nc_notifiedto, nc_division, division, department, location,nc_audit,audit_no,nc_raise_dueto,nc_issueto," +
-                   "(case when nc_issuedto_status=1 then 'Accepted' end) as nc_issuedto_status,nc_issuedto_status as nc_issuedto_statusId,nc_initial_status as nc_initial_statusId,nc_issuer_rejector,nc_issuers from t_nc where id_nc ='" + sid_nc + "'";
+                   + "nc_impact, nc_risk, risklevel, nc_reportedby,  nc_notifiedto, nc_division, division, department, location,nc_audit,audit_no,nc_raise_dueto,nc_issueto," 
+                   +"(case when nc_issuedto_status=1 then 'Accepted' end) as nc_issuedto_status,nc_issuedto_status as nc_issuedto_statusId,nc_initial_status as nc_initial_statusId,nc_issuer_rejector,nc_issuers,"
+                    +"oa_no,model_code,part_name,stage,nc_resp_pers,supplier_name,supplier_dc,dc_po,batch_qty,nc_qty from t_nc where id_nc ='" + sid_nc + "'";
+
+
                     DataSet dsNCModels = objGlobaldata.Getdetails(sSqlstmt);
 
                     if (dsNCModels.Tables.Count > 0 && dsNCModels.Tables[0].Rows.Count > 0)
@@ -1928,6 +1943,17 @@ namespace ISOStd.Controllers
                                     nc_issuer_rejector = dsNCModels.Tables[0].Rows[0]["nc_issuer_rejector"].ToString(),
                                     nc_issuers = dsNCModels.Tables[0].Rows[0]["nc_issuers"].ToString(),
                                     nc_initial_statusId = dsNCModels.Tables[0].Rows[0]["nc_initial_statusId"].ToString(),
+
+                                    oa_no = (dsNCModels.Tables[0].Rows[0]["oa_no"].ToString()),
+                                    model_code = (dsNCModels.Tables[0].Rows[0]["model_code"].ToString()),
+                                    part_name = (dsNCModels.Tables[0].Rows[0]["part_name"].ToString()),
+                                    stage = (dsNCModels.Tables[0].Rows[0]["stage"].ToString()),
+                                    nc_resp_pers = (dsNCModels.Tables[0].Rows[0]["nc_resp_pers"].ToString()),
+                                    supplier_name = (dsNCModels.Tables[0].Rows[0]["supplier_name"].ToString()),
+                                    supplier_dc = (dsNCModels.Tables[0].Rows[0]["supplier_dc"].ToString()),
+                                    dc_po = (dsNCModels.Tables[0].Rows[0]["dc_po"].ToString()),
+                                    batch_qty = (dsNCModels.Tables[0].Rows[0]["batch_qty"].ToString()),
+                                    nc_qty = (dsNCModels.Tables[0].Rows[0]["nc_qty"].ToString()),
                                 };
 
                                DateTime dtValue;
@@ -2055,7 +2081,8 @@ namespace ISOStd.Controllers
                 {
                     string sid_nc = Request.QueryString["id_nc"];
                     string sSqlstmt = "select id_nc, nc_no, nc_reported_date, nc_detected_date, nc_category, nc_description, nc_activity, nc_performed,  nc_pnc, nc_upload,"
-                    + "nc_impact, nc_risk, risklevel, nc_reportedby,  nc_notifiedto, nc_division,division, department, location,nc_issueto,logged_by,nc_audit,audit_no,nc_raise_dueto from t_nc where id_nc ='" + sid_nc + "'";
+                    + "nc_impact, nc_risk, risklevel, nc_reportedby,  nc_notifiedto, nc_division,division, department, location,nc_issueto,logged_by,nc_audit,audit_no,nc_raise_dueto,"
+                    +"oa_no,model_code,part_name,stage,nc_resp_pers,supplier_name,supplier_dc,dc_po,batch_qty,nc_qty from t_nc where id_nc ='" + sid_nc + "'";
 
                     DataSet dsNCModels = objGlobaldata.Getdetails(sSqlstmt);
 
@@ -2090,6 +2117,17 @@ namespace ISOStd.Controllers
                                 nc_audit = (dsNCModels.Tables[0].Rows[0]["nc_audit"].ToString()),
                                 audit_no = objGlobaldata.GetAuditNoFromAuditProcessById(dsNCModels.Tables[0].Rows[0]["audit_no"].ToString()),
                                 nc_raise_dueto = objGlobaldata.GetDropdownitemById(dsNCModels.Tables[0].Rows[0]["nc_raise_dueto"].ToString()),
+
+                                oa_no = (dsNCModels.Tables[0].Rows[0]["oa_no"].ToString()),
+                                model_code = (dsNCModels.Tables[0].Rows[0]["model_code"].ToString()),
+                                part_name = (dsNCModels.Tables[0].Rows[0]["part_name"].ToString()),
+                                stage = (dsNCModels.Tables[0].Rows[0]["stage"].ToString()),
+                                nc_resp_pers = (dsNCModels.Tables[0].Rows[0]["nc_resp_pers"].ToString()),
+                                supplier_name = (dsNCModels.Tables[0].Rows[0]["supplier_name"].ToString()),
+                                supplier_dc = (dsNCModels.Tables[0].Rows[0]["supplier_dc"].ToString()),
+                                dc_po = (dsNCModels.Tables[0].Rows[0]["dc_po"].ToString()),
+                                batch_qty = (dsNCModels.Tables[0].Rows[0]["batch_qty"].ToString()),
+                                nc_qty = (dsNCModels.Tables[0].Rows[0]["nc_qty"].ToString()),
                             };                          
 
                             DateTime dtValue;

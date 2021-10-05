@@ -7,6 +7,8 @@ using System.ComponentModel.DataAnnotations;
 using ISOStd.Models;
 using System.Web.Mvc;
 using MySql.Data.MySqlClient;
+using System.IO;
+using System.Text.RegularExpressions;
 
 namespace ISOStd.Models
 {
@@ -112,16 +114,39 @@ namespace ISOStd.Models
         public string Emp_Not_Competent_Action { get; set; }
 
 
-        [Display(Name = "Evaluation Reviewed By")]
+        [Display(Name = "To be reviewed by")]
         public string Eval_ReviewedBy { get; set; }
 
 
-        [Display(Name = "Evaluation Approved By")]
+        [Display(Name = "To be approved by")]
         public string Eval_ApprovedBy { get; set; }
 
 
         [Display(Name = "Logged By")]
         public string LoggedBy { get; set; }
+
+        [Display(Name = "Evaluation status")]
+        public string eval_status { get; set; }
+
+        public string eval_status_id { get; set; }
+
+        [Display(Name = "Remarks")]
+        public string review_comments { get; set; }
+
+        [Display(Name = "Reviewed Date")]
+        public DateTime reviewed_date { get; set; }
+
+        [Display(Name = "Document(s)")]
+        public string review_upload { get; set; }
+
+        [Display(Name = "Remarks")]
+        public string approver_comments { get; set; }
+
+        [Display(Name = "Approved Date")]
+        public DateTime approved_date { get; set; }
+
+        [Display(Name = "Document(s)")]
+        public string approver_upload { get; set; }
 
         internal bool FunDeleteCompetenceDoc(string sCompetenceId)
         {
@@ -148,7 +173,7 @@ namespace ISOStd.Models
                 string sSqlstmt = "insert into t_emp_competence_eval (Evaluated_Freq, Evalaution_Done_By, Academic_MinComp_Details,"
                     + " Academic_EmpComp_Details, Academic_EvalOutput, YrExp_MinComp_Details, YrExp_EmpComp_Details, YrExp_EvalOutput, Relevant_MinComp_Details,"
                     + "Relevant_EmpComp_Details, Relevant_EvalOutput, Skills_MinComp_Details, Skills_EmpComp_Details, Skills_EvalOutput, Emp_Suit_Hold_Pos,"
-                    + " Emp_Prom_Nxt_Pos, Need_Of_Trainings, Emp_Not_Competent_Action, Eval_ReviewedBy, Eval_ApprovedBy,Name,branch";
+                    + " Emp_Prom_Nxt_Pos, Need_Of_Trainings, Emp_Not_Competent_Action, Eval_ReviewedBy, Eval_ApprovedBy,Name,branch,LoggedBy";
 
                 if (objEmployeeCompetence.Evaluation_DoneOn > Convert.ToDateTime("01/01/0001"))
                 {
@@ -163,11 +188,16 @@ namespace ISOStd.Models
                  + "','" + objEmployeeCompetence.Relevant_EvalOutput + "','" + objEmployeeCompetence.Skills_MinComp_Details + "','" + objEmployeeCompetence.Skills_EmpComp_Details
                  + "','" + objEmployeeCompetence.Skills_EvalOutput + "','" + objEmployeeCompetence.Emp_Suit_Hold_Pos + "','" + objEmployeeCompetence.Emp_Prom_Nxt_Pos
                  + "','" + objEmployeeCompetence.Need_Of_Trainings + "','" + objEmployeeCompetence.Emp_Not_Competent_Action + "','" + objEmployeeCompetence.Eval_ReviewedBy
-                 + "','" + objEmployeeCompetence.Eval_ApprovedBy + "','" + objEmployeeCompetence.Name + "','" + sBranch + "'";
+                 + "','" + objEmployeeCompetence.Eval_ApprovedBy + "','" + objEmployeeCompetence.Name + "','" + sBranch + "','" + objGlobalData.GetCurrentUserSession().empid + "'";
 
                 sSqlstmt = sSqlstmt + sValues + ")";
+                int CompetenceId = 0;
+                if (int.TryParse(objGlobalData.ExecuteQueryReturnId(sSqlstmt).ToString(), out CompetenceId))
+                {
+                    return SendEmpCompetencemail(CompetenceId, "Employee Completence Evaluation for review");
+                }
 
-                return objGlobalData.ExecuteQuery(sSqlstmt);
+               
             }
             catch (Exception ex)
             {
@@ -177,8 +207,258 @@ namespace ISOStd.Models
 
 
         }
+        internal bool SendEmpCompetencemail(int  CompetenceId, string sMessage = "")
+        {
+            try
+            {
+                string sType = "email";
+                string sSqlstmt = "select CompetenceId,Name,Evaluation_DoneOn,Evalaution_Done_By,LoggedBy,Eval_ReviewedBy,Eval_ApprovedBy"
+               + " from t_emp_competence_eval  where CompetenceId = '" + CompetenceId + "'";
+
+                DataSet dsList = objGlobalData.Getdetails(sSqlstmt);
+
+                if (dsList.Tables.Count > 0 && dsList.Tables[0].Rows.Count > 0)
+                {
+
+                    string sHeader, sInformation = "", sTitle = "", sSubject = "", sContent = "", aAttachment = "", BccEmailIds = "";
+
+                    DataSet dsEmailXML = new DataSet();
+                    dsEmailXML.ReadXml(HttpContext.Current.Server.MapPath("~/EmailTemplates.xml"));
+
+                    if (sType != "" && dsEmailXML.Tables.Count > 0 && dsEmailXML.Tables[sType] != null && dsEmailXML.Tables[sType].Rows.Count > 0)
+                    {
+                        sSubject = dsEmailXML.Tables[sType].Rows[0]["subject"].ToString();
+                    }
+
+                    using (StreamReader reader = new StreamReader(HttpContext.Current.Server.MapPath("~/Views/EmailTemplate/EmailTemplate.html")))
+                    {
+                        sContent = reader.ReadToEnd();
+                    }
+                    string sName = objGlobalData.GetMultiHrEmpNameById(dsList.Tables[0].Rows[0]["Eval_ReviewedBy"].ToString());
+                    string sToEmailIds = objGlobalData.GetMultiHrEmpEmailIdById(dsList.Tables[0].Rows[0]["LoggedBy"].ToString());
+                    string sCCEmailIds = objGlobalData.GetMultiHrEmpEmailIdById(dsList.Tables[0].Rows[0]["Eval_ReviewedBy"].ToString());
 
 
+                    sHeader = "<tr><td colspan=3><b>Employee Name:<b></td> <td colspan=3>"
+                    + objGlobalData.GetMultiHrEmpNameById(dsList.Tables[0].Rows[0]["Name"].ToString()) + "</td></tr>"
+                    + "<tr><td colspan=3><b>Evaluation done by:<b></td> <td colspan=3>" + objGlobalData.GetMultiHrEmpNameById(dsList.Tables[0].Rows[0]["Evalaution_Done_By"].ToString()) + "</td></tr>";
+
+                    sContent = sContent.Replace("{FromMsg}", "");
+                    sContent = sContent.Replace("{UserName}", sName);
+                    sContent = sContent.Replace("{Title}", "Employee Competence Evaluation");
+                    sContent = sContent.Replace("{content}", sHeader);
+                    sContent = sContent.Replace("{message}", "");
+                    sContent = sContent.Replace("{extramessage}", "");
+
+                    sToEmailIds = Regex.Replace(sToEmailIds, ",+", ",");
+                    sToEmailIds = sToEmailIds.Trim();
+                    sToEmailIds = sToEmailIds.TrimEnd(',');
+                    sToEmailIds = sToEmailIds.TrimStart(',');
+
+                    sCCEmailIds = Regex.Replace(sCCEmailIds, ",+", ",");
+                    sCCEmailIds = sCCEmailIds.Trim();
+                    sCCEmailIds = sCCEmailIds.TrimEnd(',');
+                    sCCEmailIds = sCCEmailIds.TrimStart(',');
+
+                    return objGlobalData.Sendmail(sToEmailIds, sSubject + sMessage, sContent, aAttachment, sCCEmailIds, "");
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobalData.AddFunctionalLog("Exception in SendEmpCompetencemail: " + ex.ToString());
+            }
+            return false;
+        }
+        internal bool FunCompetenceEvaluationReview(EmployeeCompetenceEvalModels objModel)
+        {
+            try
+            {
+                string TodayDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+
+                string sSqlstmt = "update t_emp_competence_eval set eval_status='" + eval_status + "',review_comments='" + review_comments + "',reviewed_date='" + TodayDate + "',review_upload='" + review_upload + "'";
+
+                sSqlstmt = sSqlstmt + " where CompetenceId='" + objModel.CompetenceId + "'";
+                objGlobalData.ExecuteQuery(sSqlstmt);
+                return SendEmpCompetencemailReviewmail(CompetenceId, eval_status, "Employee competence evaluation status");
+            }
+            catch (Exception ex)
+            {
+                objGlobalData.AddFunctionalLog("Exception in FunInspChecklistReview: " + ex.ToString());
+            }
+            return false;
+        }
+        internal bool FunCompetenceEvaluationApprove(EmployeeCompetenceEvalModels objModel)
+        {
+            try
+            {
+                string TodayDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+
+                string sSqlstmt = "update t_emp_competence_eval set eval_status='" + eval_status + "',approver_comments='" + approver_comments + "',approved_date='" + TodayDate + "',approver_upload='" + approver_upload + "'";
+
+                sSqlstmt = sSqlstmt + " where CompetenceId='" + objModel.CompetenceId + "'";
+                objGlobalData.ExecuteQuery(sSqlstmt);
+                return SendEmpCompetencemailApprovemail(CompetenceId, eval_status, "Employee competence evaluation status");
+            }
+            catch (Exception ex)
+            {
+                objGlobalData.AddFunctionalLog("Exception in FunCompetenceEvaluationApprove: " + ex.ToString());
+            }
+            return false;
+        }
+        internal bool SendEmpCompetencemailApprovemail(string CompetenceId, string iStatus, string sMessage = "")
+        {
+            try
+            {
+                string sType = "email";
+                string sSqlstmt = "select CompetenceId,Name,Evaluation_DoneOn,Evalaution_Done_By,LoggedBy,Eval_ReviewedBy,Eval_ApprovedBy,review_comments,approver_comments"
+                + " from t_emp_competence_eval  where CompetenceId = '" + CompetenceId + "'";
+
+                DataSet dsList = objGlobalData.Getdetails(sSqlstmt);
+
+                if (dsList.Tables.Count > 0 && dsList.Tables[0].Rows.Count > 0)
+                {
+
+                    string sHeader, sInformation = "", sTitle = "", sSubject = "", sContent = "", aAttachment = "", BccEmailIds = "";
+
+                    DataSet dsEmailXML = new DataSet();
+                    dsEmailXML.ReadXml(HttpContext.Current.Server.MapPath("~/EmailTemplates.xml"));
+
+                    if (sType != "" && dsEmailXML.Tables.Count > 0 && dsEmailXML.Tables[sType] != null && dsEmailXML.Tables[sType].Rows.Count > 0)
+                    {
+                        sSubject = dsEmailXML.Tables[sType].Rows[0]["subject"].ToString();
+                    }
+
+                    using (StreamReader reader = new StreamReader(HttpContext.Current.Server.MapPath("~/Views/EmailTemplate/EmailTemplate.html")))
+                    {
+                        sContent = reader.ReadToEnd();
+                    }
+                    string sName = objGlobalData.GetMultiHrEmpNameById(dsList.Tables[0].Rows[0]["Eval_ReviewedBy"].ToString());
+                    string sToEmailIds = objGlobalData.GetMultiHrEmpEmailIdById(dsList.Tables[0].Rows[0]["Eval_ReviewedBy"].ToString());
+                    string sCCEmailIds = objGlobalData.GetMultiHrEmpEmailIdById(dsList.Tables[0].Rows[0]["Eval_ApprovedBy"].ToString()) + "," + objGlobalData.GetMultiHrEmpEmailIdById(dsList.Tables[0].Rows[0]["LoggedBy"].ToString());
+
+
+                    if (iStatus == "4") // Approve
+                    {
+                        sHeader = "<tr><td colspan=3><b>Employee Name:<b></td> <td colspan=3>"
+                  + objGlobalData.GetMultiHrEmpNameById(dsList.Tables[0].Rows[0]["Name"].ToString()) + "</td></tr>"
+                  + "<tr><td colspan=3><b>Evaluation done by:<b></td> <td colspan=3>" + objGlobalData.GetMultiHrEmpNameById(dsList.Tables[0].Rows[0]["Evalaution_Done_By"].ToString()) + "</td></tr>"
+                        + "<tr><td colspan=3><b>Approve Status:<b></td> <td colspan=3>Approved</td></tr>"
+                       + "<tr><td colspan=3><b>Approved By:<b></td> <td colspan=3>" + objGlobalData.GetMultiHrEmpNameById(dsList.Tables[0].Rows[0]["Eval_ApprovedBy"].ToString()) + "</td></tr>"
+                       + "<tr><td colspan=3><b>Comment:<b></td> <td colspan=3>" + (dsList.Tables[0].Rows[0]["approver_comments"].ToString()) + "</td></tr>";
+                    }
+                    else
+                    {
+                        sHeader = "<tr><td colspan=3><b>Employee Name:<b></td> <td colspan=3>"
+                + objGlobalData.GetMultiHrEmpNameById(dsList.Tables[0].Rows[0]["Name"].ToString()) + "</td></tr>"
+                + "<tr><td colspan=3><b>Evaluation done by:<b></td> <td colspan=3>" + objGlobalData.GetMultiHrEmpNameById(dsList.Tables[0].Rows[0]["Evalaution_Done_By"].ToString()) + "</td></tr>"
+                            + "<tr><td colspan=3><b>Approve Status:<b></td> <td colspan=3>Rejected</td></tr>"
+                       + "<tr><td colspan=3><b>Approved By:<b></td> <td colspan=3>" + objGlobalData.GetMultiHrEmpNameById(dsList.Tables[0].Rows[0]["Eval_ApprovedBy"].ToString()) + "</td></tr>"
+                       + "<tr><td colspan=3><b>Comment:<b></td> <td colspan=3>" + (dsList.Tables[0].Rows[0]["approver_comments"].ToString()) + "</td></tr>";
+                    }
+
+                    sContent = sContent.Replace("{FromMsg}", "");
+                    sContent = sContent.Replace("{UserName}", sName);
+                    sContent = sContent.Replace("{Title}", "Employee competence evaluation");
+                    sContent = sContent.Replace("{content}", sHeader);
+                    sContent = sContent.Replace("{message}", "");
+                    sContent = sContent.Replace("{extramessage}", "");
+
+                    sToEmailIds = Regex.Replace(sToEmailIds, ",+", ",");
+                    sToEmailIds = sToEmailIds.Trim();
+                    sToEmailIds = sToEmailIds.TrimEnd(',');
+                    sToEmailIds = sToEmailIds.TrimStart(',');
+
+                    sCCEmailIds = Regex.Replace(sCCEmailIds, ",+", ",");
+                    sCCEmailIds = sCCEmailIds.Trim();
+                    sCCEmailIds = sCCEmailIds.TrimEnd(',');
+                    sCCEmailIds = sCCEmailIds.TrimStart(',');
+
+                    return objGlobalData.Sendmail(sToEmailIds, sSubject + sMessage, sContent, aAttachment, sCCEmailIds, "");
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobalData.AddFunctionalLog("Exception in SendEmpCompetencemailApprovemail: " + ex.ToString());
+            }
+            return false;
+        }
+        internal bool SendEmpCompetencemailReviewmail(string CompetenceId, string iStatus, string sMessage = "")
+        {
+            try
+            {
+                string sType = "email";
+                string sSqlstmt = "select CompetenceId,Name,Evaluation_DoneOn,Evalaution_Done_By,LoggedBy,Eval_ReviewedBy,Eval_ApprovedBy,review_comments"
+                + " from t_emp_competence_eval  where CompetenceId = '" + CompetenceId + "'";
+
+                DataSet dsList = objGlobalData.Getdetails(sSqlstmt);
+
+                if (dsList.Tables.Count > 0 && dsList.Tables[0].Rows.Count > 0)
+                {
+
+                    string sHeader, sInformation = "", sTitle = "", sSubject = "", sContent = "", aAttachment = "", BccEmailIds = "";
+
+                    DataSet dsEmailXML = new DataSet();
+                    dsEmailXML.ReadXml(HttpContext.Current.Server.MapPath("~/EmailTemplates.xml"));
+
+                    if (sType != "" && dsEmailXML.Tables.Count > 0 && dsEmailXML.Tables[sType] != null && dsEmailXML.Tables[sType].Rows.Count > 0)
+                    {
+                        sSubject = dsEmailXML.Tables[sType].Rows[0]["subject"].ToString();
+                    }
+
+                    using (StreamReader reader = new StreamReader(HttpContext.Current.Server.MapPath("~/Views/EmailTemplate/EmailTemplate.html")))
+                    {
+                        sContent = reader.ReadToEnd();
+                    }
+                    string sName = objGlobalData.GetMultiHrEmpNameById(dsList.Tables[0].Rows[0]["Eval_ApprovedBy"].ToString());
+                    string sToEmailIds = objGlobalData.GetMultiHrEmpEmailIdById(dsList.Tables[0].Rows[0]["Eval_ApprovedBy"].ToString());
+                    string sCCEmailIds = objGlobalData.GetMultiHrEmpEmailIdById(dsList.Tables[0].Rows[0]["Eval_ReviewedBy"].ToString())+","+ objGlobalData.GetMultiHrEmpEmailIdById(dsList.Tables[0].Rows[0]["LoggedBy"].ToString());
+
+
+                    if (iStatus == "2") // Approve
+                    {
+                        sHeader = "<tr><td colspan=3><b>Employee Name:<b></td> <td colspan=3>"
+                  + objGlobalData.GetMultiHrEmpNameById(dsList.Tables[0].Rows[0]["Name"].ToString()) + "</td></tr>"
+                  + "<tr><td colspan=3><b>Evaluation done by:<b></td> <td colspan=3>" + objGlobalData.GetMultiHrEmpNameById(dsList.Tables[0].Rows[0]["Evalaution_Done_By"].ToString()) + "</td></tr>"
+                        +"<tr><td colspan=3><b>Review Status:<b></td> <td colspan=3>Reviewed</td></tr>"
+                       + "<tr><td colspan=3><b>Reviewed By:<b></td> <td colspan=3>" + objGlobalData.GetMultiHrEmpNameById(dsList.Tables[0].Rows[0]["Eval_ReviewedBy"].ToString()) + "</td></tr>"
+                       + "<tr><td colspan=3><b>Comment:<b></td> <td colspan=3>" + (dsList.Tables[0].Rows[0]["review_comments"].ToString()) + "</td></tr>";
+                    }
+                    else
+                    {
+                        sHeader = "<tr><td colspan=3><b>Employee Name:<b></td> <td colspan=3>"
+                + objGlobalData.GetMultiHrEmpNameById(dsList.Tables[0].Rows[0]["Name"].ToString()) + "</td></tr>"
+                + "<tr><td colspan=3><b>Evaluation done by:<b></td> <td colspan=3>" + objGlobalData.GetMultiHrEmpNameById(dsList.Tables[0].Rows[0]["Evalaution_Done_By"].ToString()) + "</td></tr>"
+                      + "<tr><td colspan=3><b>Review Status:<b></td> <td colspan=3>Rejected</td></tr>"
+                        + "<tr><td colspan=3><b>Reviewed By:<b></td> <td colspan=3>" + objGlobalData.GetMultiHrEmpNameById(dsList.Tables[0].Rows[0]["Eval_ReviewedBy"].ToString()) + "</td></tr>"
+                        + "<tr><td colspan=3><b>Comment:<b></td> <td colspan=3>" + (dsList.Tables[0].Rows[0]["review_comments"].ToString()) + "</td></tr>";
+                    }
+
+                    sContent = sContent.Replace("{FromMsg}", "");
+                    sContent = sContent.Replace("{UserName}", sName);
+                    sContent = sContent.Replace("{Title}", "Employee competence evaluation");
+                    sContent = sContent.Replace("{content}", sHeader);
+                    sContent = sContent.Replace("{message}", "");
+                    sContent = sContent.Replace("{extramessage}", "");
+
+                    sToEmailIds = Regex.Replace(sToEmailIds, ",+", ",");
+                    sToEmailIds = sToEmailIds.Trim();
+                    sToEmailIds = sToEmailIds.TrimEnd(',');
+                    sToEmailIds = sToEmailIds.TrimStart(',');
+
+                    sCCEmailIds = Regex.Replace(sCCEmailIds, ",+", ",");
+                    sCCEmailIds = sCCEmailIds.Trim();
+                    sCCEmailIds = sCCEmailIds.TrimEnd(',');
+                    sCCEmailIds = sCCEmailIds.TrimStart(',');
+
+                    return objGlobalData.Sendmail(sToEmailIds, sSubject + sMessage, sContent, aAttachment, sCCEmailIds, "");
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobalData.AddFunctionalLog("Exception in SendEmpCompetencemailReviewmail: " + ex.ToString());
+            }
+            return false;
+        }
         internal bool FunUpdateCompetenceEvaluation(EmployeeCompetenceEvalModels objEmployeeCompetence)
         {
             try

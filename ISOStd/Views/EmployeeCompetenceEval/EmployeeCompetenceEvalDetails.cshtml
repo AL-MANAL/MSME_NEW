@@ -3,6 +3,8 @@
 @{
     ViewBag.Title = "AddEmployeeCompetenceEval";
     ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+
+    string login_user = Obj.GetCurrentUserSession().empid;
 }
 @section featured {
 
@@ -21,33 +23,33 @@
                     <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
                         <span class="breadcrumb-item">Home</span>
                     </a>
-                   <a href="@Url.Action("EmployeeCompetenceEvalList", "EmployeeCompetenceEval", null)" class="breadcrumb-item">
-                       <span class="breadcrumb-item">Competency Evaluation</span>
+                    <a href="@Url.Action("EmployeeCompetenceEvalList", "EmployeeCompetenceEval", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Competency Evaluation</span>
                     </a>
-                   <span class="breadcrumb-item active">Competency Evaluation Details</span>
+                    <span class="breadcrumb-item active">Competency Evaluation Details</span>
                 </div>
 
                 <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
             </div>
 
             @*<div class="header-elements d-none">
-                <div class="breadcrumb justify-content-center">
+                    <div class="breadcrumb justify-content-center">
 
 
-                    <div class="breadcrumb-elements-item dropdown p-0">
-                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
-                            <i class="icon-gear mr-2"></i>
-                            Settings
-                        </a>
+                        <div class="breadcrumb-elements-item dropdown p-0">
+                            <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                                <i class="icon-gear mr-2"></i>
+                                Settings
+                            </a>
 
-                        <div class="dropdown-menu dropdown-menu-right">
+                            <div class="dropdown-menu dropdown-menu-right">
 
-                            <div class="dropdown-divider"></div>
-                            <a href="#" class="dropdown-item"><i class="icon-gear"></i>All settings</a>
+                                <div class="dropdown-divider"></div>
+                                <a href="#" class="dropdown-item"><i class="icon-gear"></i>All settings</a>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>*@
+                </div>*@
         </div>
     </div>
 }
@@ -86,278 +88,466 @@
         <div class="container-fluid">
 
 
-   <table class="table table-dark table-bordered table-striped table-hover bg-blue-800">
-        <tr class="row">
-            <td class="col-xs-3 col-md-2">
-                <p class="bg-brown py-1 px-2 rounded">
-                    @Html.LabelFor(model => model.Name)
-                </p>
-            </td>
-            <td class="col">
-                <span class="bg-dark py-1 px-2 rounded">
-                    @Html.DisplayFor(model => model.Name)
-                </span>
-            </td>
-            <td class="col-xs-3 col-md-2">
+            <table class="table table-dark table-bordered table-striped table-hover bg-blue-800">
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.LabelFor(model => model.Name)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.Name)
+                        </span>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
 
-                <p class="bg-brown py-1 px-2 rounded">
-                    @Html.LabelFor(model => model.Evaluation_DoneOn)
-                </p>
-            </td>
-             <td class="col">
-                <span class="bg-dark py-1 px-2 rounded">
-                    @if (Model.Evaluation_DoneOn > Convert.ToDateTime("01/01/0001"))
-                    {
-                        @Model.Evaluation_DoneOn.ToString("dd/MM/yyyy")
-                    }
-                 </span>
-            </td>
-        </tr>
-        <tr class="row">
-            <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.LabelFor(model => model.Evaluation_DoneOn)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @if (Model.Evaluation_DoneOn > Convert.ToDateTime("01/01/0001"))
+                            {
+                                @Model.Evaluation_DoneOn.ToString("dd/MM/yyyy")
+                            }
+                        </span>
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
 
-                <p class="bg-brown py-1 px-2 rounded">
-                    @Html.LabelFor(model => model.Evaluated_Freq)
-               </p>
-            </td>
-            <td class="col">
-                <span class="bg-dark py-1 px-2 rounded">
-                    @Html.DisplayFor(model => model.Evaluated_Freq)
-                 </span>
-            </td>
-            <td class="col-xs-3 col-md-2">
-                <p class="bg-brown py-1 px-2 rounded">
-                    @Html.LabelFor(model => model.Evalaution_Done_By)
-               </p>
-            </td>
-            <td class="col">
-                <span class="bg-dark py-1 px-2 rounded">
-                    @Html.DisplayFor(model => model.Evalaution_Done_By)
-                 </span>
-            </td>
-        </tr>
-        <tr class="row">
-            <td colspan="4" class="col">Academic Qualification</td>
-        </tr>
-        <tr class="row">
-            <td class="col-xs-3 col-md-2">
-                <p class="bg-brown py-1 px-2 rounded">
-                    @Html.LabelFor(model => model.Academic_MinComp_Details)
-                </p>
-            </td>
-            <td class="col">
-                <span class="bg-dark py-1 px-2 rounded">
-                    @Html.DisplayFor(model => model.Academic_MinComp_Details)
-                </span>
-            </td>
-            <td class="col-xs-3 col-md-2">
-                <p class="bg-brown py-1 px-2 rounded">
-                    @Html.LabelFor(model => model.Academic_EmpComp_Details)
-                </p>
-            </td>
-             <td class="col">
-                <span class="bg-dark py-1 px-2 rounded">
-                    @Html.DisplayFor(model => model.Academic_EmpComp_Details)
-                </span>
-            </td>
-        </tr>
-        <tr class="row">
-            <td class="col-xs-3 col-md-2">
-                <p class="bg-brown py-1 px-2 rounded">
-                    @Html.LabelFor(model => model.Academic_EvalOutput)
-                </p>
-            </td>
-             <td class="col">
-                <span class="bg-dark py-1 px-2 rounded">
-                    @Html.DisplayFor(model => model.Academic_EvalOutput)
-                 </span>
-            </td>
-        </tr>
-        <tr class="row">
-            <td colspan="4" class="col">Years of Experience</td>
-        </tr>
-        <tr class="row">
-            <td class="col-xs-3 col-md-2">
-                <p class="bg-brown py-1 px-2 rounded">
-                    @Html.LabelFor(model => model.YrExp_MinComp_Details)
-                </p>
-            </td>
-             <td class="col">
-                <span class="bg-dark py-1 px-2 rounded">
-                    @Html.DisplayFor(model => model.YrExp_MinComp_Details)
-                 </span>
-            </td>
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.LabelFor(model => model.Evaluated_Freq)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.Evaluated_Freq)
+                        </span>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.LabelFor(model => model.Evalaution_Done_By)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.Evalaution_Done_By)
+                        </span>
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td colspan="4" class="col">Academic Qualification</td>
+                </tr>
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.LabelFor(model => model.Academic_MinComp_Details)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.Academic_MinComp_Details)
+                        </span>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.LabelFor(model => model.Academic_EmpComp_Details)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.Academic_EmpComp_Details)
+                        </span>
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.LabelFor(model => model.Academic_EvalOutput)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.Academic_EvalOutput)
+                        </span>
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td colspan="4" class="col">Years of Experience</td>
+                </tr>
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.LabelFor(model => model.YrExp_MinComp_Details)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.YrExp_MinComp_Details)
+                        </span>
+                    </td>
 
-            <td class="col-xs-3 col-md-2">
-                <p class="bg-brown py-1 px-2 rounded">
-                    @Html.LabelFor(model => model.YrExp_EmpComp_Details)
-               </p>
-            </td>
-            <td class="col">
-                <span class="bg-dark py-1 px-2 rounded">
-                    @Html.DisplayFor(model => model.YrExp_EmpComp_Details)
-                </span>
-            </td>
-        </tr>
-        <tr class="row">
-            <td class="col-xs-3 col-md-2">
-                <p class="bg-brown py-1 px-2 rounded">
-                    @Html.LabelFor(model => model.YrExp_EvalOutput)
-                </p>
-            </td>
-            <td class="col">
-                <span class="bg-dark py-1 px-2 rounded">
-                    @Html.DisplayFor(model => model.YrExp_EvalOutput)
-                 </span>
-            </td>
-        </tr>
-        <tr class="row">
-            <td colspan="4" class="col">Relevant Trainings</td>
-        </tr>
-        <tr class="row">
-            <td class="col-xs-3 col-md-2">
-                <p class="bg-brown py-1 px-2 rounded">
-                    @Html.LabelFor(model => model.Relevant_MinComp_Details)
-                </p>
-            </td>
-            <td class="col">
-                <span class="bg-dark py-1 px-2 rounded">
-                    @Html.DisplayFor(model => model.Relevant_MinComp_Details)
-                </span>
-            </td>
-            <td class="col-xs-3 col-md-2">
-                <p class="bg-brown py-1 px-2 rounded">
-                    @Html.LabelFor(model => model.Relevant_EmpComp_Details)
-               </p>
-            </td>
-             <td class="col">
-                <span class="bg-dark py-1 px-2 rounded">
-                    @Html.DisplayFor(model => model.Relevant_EmpComp_Details)
-                 </span>
-            </td>
-        </tr>
-        <tr class="row">
-            <td class="col-xs-3 col-md-2">
-                <p class="bg-brown py-1 px-2 rounded">
-                    @Html.LabelFor(model => model.Relevant_EvalOutput)
-               </p>
-            </td>
-             <td class="col">
-                <span class="bg-dark py-1 px-2 rounded">
-                    @Html.DisplayFor(model => model.Relevant_EvalOutput)
-                </span>
-            </td>
-        </tr>
-        <tr class="row">
-            <td colspan="4" class="col">Skills</td>
-        </tr>
-        <tr class="row">
-            <td class="col-xs-3 col-md-2">
-                <p class="bg-brown py-1 px-2 rounded">
-                    @Html.LabelFor(model => model.Skills_MinComp_Details)
-                </p>
-            </td>
-             <td class="col">
-                <span class="bg-dark py-1 px-2 rounded">
-                    @Html.DisplayFor(model => model.Skills_MinComp_Details)
-                </span>
-            </td>
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.LabelFor(model => model.YrExp_EmpComp_Details)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.YrExp_EmpComp_Details)
+                        </span>
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.LabelFor(model => model.YrExp_EvalOutput)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.YrExp_EvalOutput)
+                        </span>
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td colspan="4" class="col">Relevant Trainings</td>
+                </tr>
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.LabelFor(model => model.Relevant_MinComp_Details)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.Relevant_MinComp_Details)
+                        </span>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.LabelFor(model => model.Relevant_EmpComp_Details)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.Relevant_EmpComp_Details)
+                        </span>
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.LabelFor(model => model.Relevant_EvalOutput)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.Relevant_EvalOutput)
+                        </span>
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td colspan="4" class="col">Skills</td>
+                </tr>
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.LabelFor(model => model.Skills_MinComp_Details)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.Skills_MinComp_Details)
+                        </span>
+                    </td>
 
-            <td class="col-xs-3 col-md-2">
-                <p class="bg-brown py-1 px-2 rounded">
-                    @Html.LabelFor(model => model.Skills_EmpComp_Details)
-               </p>
-            </td>
-             <td class="col">
-                <span class="bg-dark py-1 px-2 rounded">
-                    @Html.DisplayFor(model => model.Skills_EmpComp_Details)
-                 </span>
-            </td>
-        </tr>
-        <tr class="row">
-            <td class="col-xs-3 col-md-2">
-                <p class="bg-brown py-1 px-2 rounded">
-                    @Html.LabelFor(model => model.Skills_EvalOutput)
-                </p>
-            </td>
-             <td class="col">
-                <span class="bg-dark py-1 px-2 rounded">
-                    @Html.DisplayFor(model => model.Skills_EvalOutput)
-                </span>
-            </td>
-        </tr>
-        <tr class="row">
-            <td class="col" colspan="4">Evaluation</td>
-        </tr>
-        <tr class="row">
-            <td class="col-xs-3 col-md-2">
-                <p class="bg-brown py-1 px-2 rounded">
-                    @Html.LabelFor(model => model.Emp_Suit_Hold_Pos)
-               </p>
-            </td>
-             <td class="col">
-                <span class="bg-dark py-1 px-2 rounded">
-                    @Html.DisplayFor(model => model.Emp_Suit_Hold_Pos)
-                </span>
-            </td>
-            <td class="col-xs-3 col-md-2">
-                <p class="bg-brown py-1 px-2 rounded">
-                    @Html.LabelFor(model => model.Emp_Prom_Nxt_Pos)
-               </p>
-            </td>
-             <td class="col">
-                <span class="bg-dark py-1 px-2 rounded">
-                    @Html.DisplayFor(model => model.Emp_Prom_Nxt_Pos)
-                 </span>
-            </td>
-        </tr>
-        <tr class="row">
-            <td class="col-xs-3 col-md-2">
-                <p class="bg-brown py-1 px-2 rounded">
-                    @Html.LabelFor(model => model.Need_Of_Trainings)
-                </p>
-            </td>
-            <td class="col">
-                <span class="bg-dark py-1 px-2 rounded">
-                    @Html.DisplayFor(model => model.Need_Of_Trainings)
-                </span>
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.LabelFor(model => model.Skills_EmpComp_Details)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.Skills_EmpComp_Details)
+                        </span>
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.LabelFor(model => model.Skills_EvalOutput)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.Skills_EvalOutput)
+                        </span>
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td class="col" colspan="4">Evaluation</td>
+                </tr>
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.LabelFor(model => model.Emp_Suit_Hold_Pos)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.Emp_Suit_Hold_Pos)
+                        </span>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.LabelFor(model => model.Emp_Prom_Nxt_Pos)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.Emp_Prom_Nxt_Pos)
+                        </span>
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.LabelFor(model => model.Need_Of_Trainings)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.Need_Of_Trainings)
+                        </span>
 
-            </td>
-            <td class="col-xs-3 col-md-2">
-                <p class="bg-brown py-1 px-2 rounded">
-                    @Html.LabelFor(model => model.Emp_Not_Competent_Action)
-                </p>
-            </td>
-             <td class="col">
-                <span class="bg-dark py-1 px-2 rounded">
-                    @Html.DisplayFor(model => model.Emp_Not_Competent_Action)
-                </span>
-            </td>
-        </tr>
-        <tr class="row">
-            <td class="col-xs-3 col-md-2">
-                <p class="bg-brown py-1 px-2 rounded">
-                    @Html.LabelFor(model => model.Eval_ReviewedBy)
-               </p>
-            </td>
-             <td class="col">
-                <span class="bg-dark py-1 px-2 rounded">
-                    @Html.DisplayFor(model => model.Eval_ReviewedBy)
-               </span>
-            </td>
-            <td class="col-xs-3 col-md-2">
-                <p class="bg-brown py-1 px-2 rounded">
-                    @Html.LabelFor(model => model.Eval_ApprovedBy)
-                </p>
-            </td>
-             <td class="col">
-                <span class="bg-dark py-1 px-2 rounded">
-                    @Html.DisplayFor(model => model.Eval_ApprovedBy)
-                 </span>
-            </td>
-        </tr>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.LabelFor(model => model.Emp_Not_Competent_Action)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.Emp_Not_Competent_Action)
+                        </span>
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.LabelFor(model => model.eval_status)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.eval_status)
+                        </span>
+                    </td>
+                </tr>
+                @if (Model.eval_status_id == "0")
+                {
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.LabelFor(model => model.Eval_ReviewedBy)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <span class="bg-dark py-1 px-2 rounded">
+                                @Obj.GetMultiHrEmpNameById(Model.Eval_ReviewedBy)
+                            </span>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.LabelFor(model => model.Eval_ApprovedBy)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <span class="bg-dark py-1 px-2 rounded">
+                               @Obj.GetMultiHrEmpNameById(Model.Eval_ApprovedBy)
+                            </span>
+                        </td>
+                    </tr>
+                }
+                @if (Model.eval_status_id == "1" || Model.eval_status_id == "2" || Model.eval_status_id == "3" || Model.eval_status_id == "4")
+                {
+                    <tr class="row">
+                        <td class="col-md-12">
+                            Reviewer details
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                Reviewed By
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                               @Obj.GetMultiHrEmpNameById(Model.Eval_ReviewedBy)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.eval_status)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.eval_status)
+                            </p>
+                        </td>
 
-    </table>
+                    </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.review_comments)
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @Html.DisplayFor(model => model.review_comments)
+                                </p>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.reviewed_date)
+                                </p>
+                            </td>
+                            <td class="col">
+
+                                @if (Model.reviewed_date != null && Model.reviewed_date > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    <p class="bg-dark py-1 px-2 rounded">
+                                        @Model.reviewed_date.ToString("dd/MM/yyyy hh:mm:ss")
+                                    </p>
+                                }
+
+                            </td>
+
+                        </tr>
+                        <tr class="row">
+
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    Document(s)
+                                </p>
+                            </td>
+                            <td class="col">
+
+                                @if (Model.review_upload != null && Model.review_upload != "" && Model.review_upload.Length > 0)
+                                {
+                                    foreach (var docs in Model.review_upload.Trim(',').Split(','))
+                                    {
+                                        <p style="margin: 0px;">
+
+                                            <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" style="color: orange;">
+                                                Preview
+                                            </a>
+                                        </p>
+                                        <br />
+                                    }
+                                }
+
+                            </td>
+
+
+                        </tr>
+                        <tr></tr>
+                }
+                @if (Model.eval_status_id == "3" || Model.eval_status_id == "4")
+                {
+                    <tr class="row">
+                        <td class="col-md-12">
+                            Approver details
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                Approved By
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Obj.GetMultiHrEmpNameById(Model.Eval_ApprovedBy)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.eval_status)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.eval_status)
+                            </p>
+                        </td>
+
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.approver_comments)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.approver_comments)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.approved_date)
+                            </p>
+                        </td>
+                        <td class="col">
+
+                            @if (Model.approved_date != null && Model.approved_date > Convert.ToDateTime("01/01/0001"))
+                            {
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @Model.approved_date.ToString("dd/MM/yyyy hh:mm:ss")
+                                </p>
+                            }
+
+                        </td>
+
+                    </tr>
+                        <tr class="row">
+
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    Document(s)
+                                </p>
+                            </td>
+                            <td class="col">
+
+                                @if (Model.approver_upload != null && Model.approver_upload != "" && Model.approver_upload.Length > 0)
+                                {
+                                    foreach (var docs in Model.approver_upload.Trim(',').Split(','))
+                                    {
+                                        <p style="margin: 0px;">
+
+                                            <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" style="color: orange;">
+                                                Preview
+                                            </a>
+                                        </p>
+                                        <br />
+                                    }
+                                }
+
+                            </td>
+
+
+                        </tr>
+                        <tr></tr>
+                }
+            </table>
 
 
 
@@ -365,6 +555,120 @@
     </div>
 
 </div>
+@if (Model.eval_status_id == "0" && Model.Eval_ReviewedBy.Contains(login_user))
+            {
+                using (Html.BeginForm("EmployeeCompetenceEvalReview", "EmployeeCompetenceEval", FormMethod.Post, new { enctype = "multipart/form-data", id = "formstatus", name = "formstatus" }))
+                {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true)
+        <input type="hidden" id="CompetenceId" name="CompetenceId" value="@Model.CompetenceId" />
+
+        <table class="table table-dark table-bordered table-striped table-hover bg-blue-800">
+            <tr class="row">
+                <td class="col-xs-3 col-md-2">
+                    <p class="bg-brown py-1 px-2 rounded">
+                        Review/Reject <text style="color:red;">*</text>
+                    </p>
+                </td>
+                <td class="col">
+                    <p class="bg-dark py-1 px-2 rounded">
+                        @if (ViewBag.ReviewStatus != null)
+                        {
+                            foreach (var item in ViewBag.ReviewStatus)
+                            {
+                                <input type="radio" name="eval_status" id="eval_status" data-name='@item.Value' value='@item.Key' required />@item.Value
+                            }
+                        }
+                    </p>
+                </td>
+
+                <td class="col-xs-3 col-md-2">
+                    <p class="bg-brown py-1 px-2 rounded">
+                        Comments
+                    </p>
+                </td>
+                <td class="col">
+                    <div class="bg-dark py-1 px-2 rounded">
+                        <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="review_comments" name="review_comments"></textarea>
+                    </div>
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="col-xs-3 col-md-2">
+                    <p class="bg-brown py-1 px-2 rounded">
+                        @Html.LabelFor(model => model.review_upload)
+                    </p>
+                </td>
+                <td class="col">
+                    <div class="editor-field">
+                        <input type="file" name="review_upload" id="review_upload" onchange="FileFormatValidation(this)" multiple accept=".pdf,.xlsx,.xls,.doc,.docx,.image/*,.png,.jpeg,.jpg" @*class="bootstrap-uploader" data-fouc*@ />
+                    </div>
+                </td>
+            </tr>
+        </table>
+
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+            <button type="submit" id="btnCreate" value="Save" style="display: block; margin: 0 auto; text-align: center" class="btn bg-indigo-400" onclick="ProgressIconFunction('#formstatus')"><i class="icon-checkmark3 mr-2"></i> Save</button>
+        </div>
+    }
+}
+@if (Model.eval_status_id == "2" && Model.Eval_ReviewedBy.Contains(login_user))
+            {
+                using (Html.BeginForm("EmployeeCompetenceEvalApprove", "EmployeeCompetenceEval", FormMethod.Post, new { enctype = "multipart/form-data", id = "formstatus", name = "formstatus" }))
+                {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true)
+        <input type="hidden" id="CompetenceId" name="CompetenceId" value="@Model.CompetenceId" />
+
+        <table class="table table-dark table-bordered table-striped table-hover bg-blue-800">
+            <tr class="row">
+                <td class="col-xs-3 col-md-2">
+                    <p class="bg-brown py-1 px-2 rounded">
+                        Review/Reject <text style="color:red;">*</text>
+                    </p>
+                </td>
+                <td class="col">
+                    <p class="bg-dark py-1 px-2 rounded">
+                        @if (ViewBag.ApproveStatus != null)
+                        {
+                            foreach (var item in ViewBag.ApproveStatus)
+                            {
+                                <input type="radio" name="eval_status" id="eval_status" data-name='@item.Value' value='@item.Key' required />@item.Value
+                            }
+                        }
+                    </p>
+                </td>
+
+                <td class="col-xs-3 col-md-2">
+                    <p class="bg-brown py-1 px-2 rounded">
+                        Comments
+                    </p>
+                </td>
+                <td class="col">
+                    <div class="bg-dark py-1 px-2 rounded">
+                        <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="approver_comments" name="approver_comments"></textarea>
+                    </div>
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="col-xs-3 col-md-2">
+                    <p class="bg-brown py-1 px-2 rounded">
+                        @Html.LabelFor(model => model.approver_upload)
+                    </p>
+                </td>
+                <td class="col">
+                    <div class="editor-field">
+                        <input type="file" name="approver_upload" id="approver_upload" onchange="FileFormatValidation(this)" multiple accept=".pdf,.xlsx,.xls,.doc,.docx,.image/*,.png,.jpeg,.jpg" @*class="bootstrap-uploader" data-fouc*@ />
+                    </div>
+                </td>
+            </tr>
+        </table>
+
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+            <button type="submit" id="btnCreate" value="Save" style="display: block; margin: 0 auto; text-align: center" class="btn bg-indigo-400" onclick="ProgressIconFunction('#formstatus')"><i class="icon-checkmark3 mr-2"></i> Save</button>
+        </div>
+    }
+}
 
 @section scripts {
     <script>
@@ -373,25 +677,34 @@
 
         $(document).ready(function () {
 
-    @if (TempData["alertdata"] != null)
+            @if (TempData["alertdata"] != null)
     {
 
         @: new Noty({
-                                        @:     text: '@TempData["alertdata"]',
-                                        @:     type: 'error'
-                                @:}).show();
-                                                                 }
+                                                        @:     text: '@TempData["alertdata"]',
+                                                        @:     type: 'error'
+                                                @:}).show();
+                                                                             }
 
-    @if (@TempData["Successdata"] != null)
+            @if (@TempData["Successdata"] != null)
     {
 
         @:    new Noty({
-                                        @:       text: '@TempData["Successdata"]',
-                                        @:       type: 'success'
-        @:}).show();
-                                                        }
+                                                        @:       text: '@TempData["Successdata"]',
+                                                        @:       type: 'success'
+                        @:).show();
+                                                                    }
         });
-
+        function FileFormatValidation(file) {
+            var ext = file.value.split(".").pop().toLowerCase();
+            if ($.inArray(ext, ["pdf", "xlsx", "xls", "doc","docx"]) == -1) {
+                file.value = "";
+                bootbox.alert({
+                    title: 'File type',
+                    message: 'Invalid file format, please upload only pdf format.'
+                });
+            }
+        }
     </script>
 
 

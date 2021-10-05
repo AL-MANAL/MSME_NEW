@@ -157,14 +157,30 @@
                                     @Html.ValidationMessageFor(model => model.training_type)
                                     <span class="field-validation-error"><span id="training_type-message" style="display: none;">Please select Type of Training.</span></span>
                                 </td>
-                                <th class="col-xs-3 col-md-2" style="font-weight: bold;">Required On or Before</th>
+                                @*<th class="col-xs-3 col-md-2" style="font-weight: bold;">Required On or Before</th>
                                 <td class="col">
                                     <input class="form-control" type='date' id='scheduled_date' name="scheduled_date"/>
                                     @Html.ValidationMessageFor(model => model.scheduled_date)
                                     <span class="field-validation-error"><span id="scheduled_date-message" style="display: none;" for="basic">Please select <S></S>cheduled Date.</span></span>
-                                </td>
-                            </tr>
+                                </td>*@
 
+                                <th class="col-xs-3 col-md-2" style="font-weight: bold;">Criticality</th>
+                                <td class="col">
+                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="criticality" name="criticality">
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.Citicality != null)
+                                        {
+                                            foreach (var item in ViewBag.Citicality)
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+
+                                            }
+                                        }
+                                    </select>
+                                    <span class="field-validation-error"><span id="criticality-message" style="display: none;">This field is required.</span></span>
+                                    @Html.ValidationMessageFor(model => model.criticality)
+                                    </td>
+</tr>
                             <tr class="row">
                                 <th class="col-xs-3 col-md-2" style="font-weight: bold;">Justification</th>
                                 <td class="col">
@@ -266,18 +282,51 @@
             var cell3 = row.insertCell(3);          
 
            
-            var training_type = $('#training_type').val();
-            var training_typeName = $("#training_type option:selected").toArray().map(item => item.text).join(); 
+            //var training_type = $('#training_type').val();
+            //var training_typeName = $("#training_type option:selected").toArray().map(item => item.text).join(); 
+
+            var training_type = $.map($("#training_type option:selected"), function (el, i) {
+                return $(el).text();
+            });
+            var training_typeVal = $("#training_type").val();
 
             var justification = $('#justification').val();
 
-            var scheduled_date = reformatDate($("#scheduled_date").val());
+            //var scheduled_date = reformatDate($("#scheduled_date").val());
+
+            var criticality = $.map($("#criticality option:selected"), function (el, i) {
+                return $(el).text();
+            });
+            var criticalityVal = $("#criticality").val();
 
             cell0.innerHTML = " <img src='@Url.Content("~/images/cancel.png")' onclick='deleteRow(this)' style='cursor:pointer; padding-right: 5px;'/>Remove";
-            cell1.innerHTML = "<input type='hidden' id='training_type" + cnt + "' name='training_type" + cnt + "' value='" + training_type + "'>" + training_typeName;
-            cell2.innerHTML = "<input type='hidden' id='scheduled_date" + cnt + "' name='scheduled_date" + cnt + "' value='" + scheduled_date + "'>" + scheduled_date;
-            cell3.innerHTML = "<input type='hidden' id='justification" + cnt + "' name='justification" + cnt + "' value='" + justification + "'>" + justification;
-            
+            //cell1.innerHTML = "<input type='hidden' id='training_type" + cnt + "' name='training_type" + cnt + "' value='" + training_type + "'>" + training_typeName;
+
+            cell1.innerHTML = "<select class='select-fixed-single' id='training_type" + cnt + "' name='training_type" + cnt + "'><option value='" + training_typeVal + "' selected>" + training_type + "</option>@if (ViewBag.TrainingType != null)
+            {
+                foreach (var item in ViewBag.TrainingType)
+                { <option value='@item.Value'>@item.Text</option> }
+                }</select>";
+            //cell2.innerHTML = "<input type='hidden' id='scheduled_date" + cnt + "' name='scheduled_date" + cnt + "' value='" + scheduled_date + "'>" + scheduled_date;
+            cell2.innerHTML = "<select class='select-fixed-single' id='criticality" + cnt + "' name='criticality" + cnt + "'><option value='" + criticalityVal + "' selected>" + criticality + "</option>@if (ViewBag.Citicality != null)
+            {
+                foreach (var item in ViewBag.Citicality)
+                { <option value='@item.Value'>@item.Text</option> }
+                }</select>";
+          
+            cell3.innerHTML = "<textarea id='justification" + cnt + "' name='justification" + cnt + "' style='overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;' class='form-control elastic maxlength-badge-position' cols='4' rows='4' placeholder='Textarea' maxlength='2000'>" + justification + "</textarea>";
+            // Badge position
+            $('.maxlength-badge-position').maxlength({
+                alwaysShow: true,
+                placement: 'top'
+            });
+            //auto resize
+            autosize($('.elastic'));
+            $('.select-fixed-single').select2({
+                minimumResultsForSearch: Infinity,
+                width: 150
+            });
+
             cnt++;
             document.getElementById("itemcnt").value = cnt;
 
@@ -301,15 +350,15 @@
                 ssnMessage.hide();
             }
 
-            if (document.getElementById("scheduled_date").value == "") {
-                ssnMessage = $('#scheduled_date-message');
-                ssnMessage.show();
-                validflg = false;
-            }
-            else {
-                ssnMessage = $('#scheduled_date-message');
-                ssnMessage.hide();
-            }
+            //if (document.getElementById("scheduled_date").value == "") {
+            //    ssnMessage = $('#scheduled_date-message');
+            //    ssnMessage.show();
+            //    validflg = false;
+            //}
+            //else {
+            //    ssnMessage = $('#scheduled_date-message');
+            //    ssnMessage.hide();
+            //}
 
             if (document.getElementById("justification").value == "") {
                 ssnMessage = $('#justification-message');
@@ -320,13 +369,23 @@
                 ssnMessage = $('#justification-message');
                 ssnMessage.hide();
             }
+            if (document.getElementById("criticality").value == "") {
+                ssnMessage = $('#criticality-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#criticality-message');
+                ssnMessage.hide();
+            }
             return validflg;
         }
 
         function ResetControl() {
             $("#training_type").val('').trigger('change');
-            document.getElementById("scheduled_date").value = "";
+            //document.getElementById("scheduled_date").value = "";
             document.getElementById("justification").value = "";
+            $("#criticality").val('').trigger('change');
         }
 
         function reformatDate(dateStr) {

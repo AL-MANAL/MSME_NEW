@@ -114,7 +114,8 @@ namespace ISOStd.Controllers
                 string sSqlstmt = "SELECT CompetenceId,Name,Evaluation_DoneOn, Evaluated_Freq, Evalaution_Done_By, Academic_MinComp_Details,"
                         + "Academic_EmpComp_Details, Academic_EvalOutput, YrExp_MinComp_Details, YrExp_EmpComp_Details, YrExp_EvalOutput, Relevant_MinComp_Details,"
                         + "Relevant_EmpComp_Details, Relevant_EvalOutput, Skills_MinComp_Details, Skills_EmpComp_Details, Skills_EvalOutput, Emp_Suit_Hold_Pos,"
-                        + " Emp_Prom_Nxt_Pos, Need_Of_Trainings, Emp_Not_Competent_Action, Eval_ReviewedBy, Eval_ApprovedBy, LoggedBy"
+                        + " Emp_Prom_Nxt_Pos, Need_Of_Trainings, Emp_Not_Competent_Action, Eval_ReviewedBy, Eval_ApprovedBy, LoggedBy,"
+                       + "(CASE WHEN eval_status = '0' THEN 'Pending for review' WHEN eval_status = '1' THEN 'Reviewer Rejected' WHEN eval_status = '2' THEN 'Reviewed' WHEN eval_status = '3' THEN 'Approver Rejected' ELSE 'Approved' END) as eval_status,eval_status as eval_status_id"
                         + " FROM t_emp_competence_eval where Active=1";
 
                 if (SearchText != null && SearchText != "")
@@ -154,7 +155,9 @@ namespace ISOStd.Controllers
                                 //Academic_EvalOutput = objGlobaldata.GetRolesNameById(dsCompetenceList.Tables[0].Rows[i]["Academic_EvalOutput"].ToString()),
                                 Academic_EvalOutput = objcomp.GetEvaluationOutputNameById(dsCompetenceList.Tables[0].Rows[i]["Academic_EvalOutput"].ToString()),
                                 Eval_ReviewedBy = objGlobaldata.GetMultiHrEmpNameById(dsCompetenceList.Tables[0].Rows[i]["Eval_ReviewedBy"].ToString()),
-                                Eval_ApprovedBy = objGlobaldata.GetMultiHrEmpNameById(dsCompetenceList.Tables[0].Rows[i]["Eval_ApprovedBy"].ToString())
+                                Eval_ApprovedBy = objGlobaldata.GetMultiHrEmpNameById(dsCompetenceList.Tables[0].Rows[i]["Eval_ApprovedBy"].ToString()),
+                                eval_status = dsCompetenceList.Tables[0].Rows[i]["eval_status"].ToString(),
+                                eval_status_id = dsCompetenceList.Tables[0].Rows[i]["eval_status_id"].ToString(),
                             };
 
                             DateTime dateValue;
@@ -275,11 +278,14 @@ namespace ISOStd.Controllers
                 EmployeeCompetenceEvalModels objcomp = new EmployeeCompetenceEvalModels();
                 if (Request.QueryString["CompetenceId"] != null && Request.QueryString["CompetenceId"] != "")
                 {
+                    ViewBag.ReviewStatus = objGlobaldata.GetConstantValueKeyValuePair("CompetenceEvalReview");
+                    ViewBag.ApproveStatus = objGlobaldata.GetConstantValueKeyValuePair("CompetenceEvalApprove");
                     string sCompetenceId = Request.QueryString["CompetenceId"];
                     string sSqlstmt = "SELECT CompetenceId,Evaluation_DoneOn, Evaluated_Freq, Evalaution_Done_By, Academic_MinComp_Details,"
                             + "Academic_EmpComp_Details, Academic_EvalOutput, YrExp_MinComp_Details, YrExp_EmpComp_Details, YrExp_EvalOutput, Relevant_MinComp_Details,"
                             + "Relevant_EmpComp_Details, Relevant_EvalOutput, Skills_MinComp_Details, Skills_EmpComp_Details, Skills_EvalOutput, Emp_Suit_Hold_Pos,"
-                            + " Emp_Prom_Nxt_Pos, Need_Of_Trainings, Emp_Not_Competent_Action, Eval_ReviewedBy, Eval_ApprovedBy,Name"
+                            + " Emp_Prom_Nxt_Pos, Need_Of_Trainings, Emp_Not_Competent_Action, Eval_ReviewedBy, Eval_ApprovedBy,Name,eval_status as eval_status_id,review_comments,reviewed_date,review_upload,approver_comments,approved_date,approver_upload,"
+                            + "(CASE WHEN eval_status = '0' THEN 'Pending for review' WHEN eval_status = '1' THEN 'Reviewer Rejected' WHEN eval_status = '2' THEN 'Reviewed' WHEN eval_status = '3' THEN 'Approver Rejected' ELSE 'Approved' END) as eval_status"
                             + " FROM t_emp_competence_eval where CompetenceId='" + sCompetenceId + "'";
 
                     DataSet dsCompetenceList = objGlobaldata.Getdetails(sSqlstmt);
@@ -307,9 +313,16 @@ namespace ISOStd.Controllers
                             Emp_Prom_Nxt_Pos = dsCompetenceList.Tables[0].Rows[0]["Emp_Prom_Nxt_Pos"].ToString(),
                             Need_Of_Trainings = (dsCompetenceList.Tables[0].Rows[0]["Need_Of_Trainings"].ToString()),
                             Emp_Not_Competent_Action = (dsCompetenceList.Tables[0].Rows[0]["Emp_Not_Competent_Action"].ToString()),
-                            Eval_ReviewedBy = objGlobaldata.GetMultiHrEmpNameById(dsCompetenceList.Tables[0].Rows[0]["Eval_ReviewedBy"].ToString()),
-                            Eval_ApprovedBy = objGlobaldata.GetMultiHrEmpNameById(dsCompetenceList.Tables[0].Rows[0]["Eval_ApprovedBy"].ToString()),
+                            Eval_ReviewedBy = (dsCompetenceList.Tables[0].Rows[0]["Eval_ReviewedBy"].ToString()),
+                            Eval_ApprovedBy = (dsCompetenceList.Tables[0].Rows[0]["Eval_ApprovedBy"].ToString()),
                             //LoggedBy = objGlobaldata.GetEmpHrNameById(dsCompetenceList.Tables[0].Rows[0]["LoggedBy"].ToString())
+
+                            eval_status = (dsCompetenceList.Tables[0].Rows[0]["eval_status"].ToString()),
+                            review_comments = (dsCompetenceList.Tables[0].Rows[0]["review_comments"].ToString()),   
+                            review_upload = (dsCompetenceList.Tables[0].Rows[0]["review_upload"].ToString()),
+                            eval_status_id = (dsCompetenceList.Tables[0].Rows[0]["eval_status_id"].ToString()),
+                            approver_comments = (dsCompetenceList.Tables[0].Rows[0]["approver_comments"].ToString()),
+                            approver_upload = (dsCompetenceList.Tables[0].Rows[0]["approver_upload"].ToString()),
                         };
 
                         DateTime dateValue;
@@ -317,7 +330,14 @@ namespace ISOStd.Controllers
                         {
                             objEmployeeCompetence.Evaluation_DoneOn = dateValue;
                         }
-
+                        if (DateTime.TryParse(dsCompetenceList.Tables[0].Rows[0]["reviewed_date"].ToString(), out dateValue))
+                        {
+                            objEmployeeCompetence.reviewed_date = dateValue;
+                        }
+                        if (DateTime.TryParse(dsCompetenceList.Tables[0].Rows[0]["approved_date"].ToString(), out dateValue))
+                        {
+                            objEmployeeCompetence.approved_date = dateValue;
+                        }
                         return View(objEmployeeCompetence);
                     }
                     else
@@ -341,7 +361,98 @@ namespace ISOStd.Controllers
             return RedirectToAction("EmployeeCompetenceEvalList");
         }
 
-        
+        //review
+        public ActionResult EmployeeCompetenceEvalReview(EmployeeCompetenceEvalModels objModel, FormCollection form, IEnumerable<HttpPostedFileBase> review_upload)
+        {
+            try
+            {
+                HttpPostedFileBase files = Request.Files[0];
+                if (review_upload != null && files.ContentLength > 0)
+                {
+                    objModel.review_upload = "";
+                    foreach (var file in review_upload)
+                    {
+                        try
+                        {
+                            string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/Employee"), Path.GetFileName(file.FileName));
+                            string sFilename = "Competence" + "_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath), sFilepath = Path.GetDirectoryName(spath);
+                            file.SaveAs(sFilepath + "/" + sFilename);
+                            objModel.review_upload = objModel.review_upload + "," + "~/DataUpload/MgmtDocs/Employee/" + sFilename;
+                        }
+                        catch (Exception ex)
+                        {
+                            objGlobaldata.AddFunctionalLog("Exception in EmployeeCompetenceEvalReview-upload: " + ex.ToString());
+                        }
+                    }
+                    objModel.review_upload = objModel.review_upload.Trim(',');
+                }
+                else
+                {
+                    ViewBag.Message = "You have not specified a file.";
+                }
+                if (objModel.FunCompetenceEvaluationReview(objModel))
+                {
+                    TempData["Successdata"] = "Reviewed Successfully";
+                }
+                else
+                {
+                    TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in EmployeeCompetenceEvalReview: " + ex.ToString());
+                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+            }
+            return RedirectToAction("Index", "Home");
+        }
+
+        //approve
+        public ActionResult EmployeeCompetenceEvalApprove(EmployeeCompetenceEvalModels objModel, FormCollection form, IEnumerable<HttpPostedFileBase> approver_upload)
+        {
+            try
+            {
+                HttpPostedFileBase files = Request.Files[0];
+                if (approver_upload != null && files.ContentLength > 0)
+                {
+                    objModel.approver_upload = "";
+                    foreach (var file in approver_upload)
+                    {
+                        try
+                        {
+                            string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/Employee"), Path.GetFileName(file.FileName));
+                            string sFilename = "Competence" + "_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath), sFilepath = Path.GetDirectoryName(spath);
+                            file.SaveAs(sFilepath + "/" + sFilename);
+                            objModel.approver_upload = objModel.approver_upload + "," + "~/DataUpload/MgmtDocs/Employee/" + sFilename;
+                        }
+                        catch (Exception ex)
+                        {
+                            objGlobaldata.AddFunctionalLog("Exception in EmployeeCompetenceEvalReview-upload: " + ex.ToString());
+                        }
+                    }
+                    objModel.approver_upload = objModel.approver_upload.Trim(',');
+                }
+                else
+                {
+                    ViewBag.Message = "You have not specified a file.";
+                }
+                if (objModel.FunCompetenceEvaluationApprove(objModel))
+                {
+                    TempData["Successdata"] = "Approved Successfully";
+                }
+                else
+                {
+                    TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in EmployeeCompetenceEvalApprove: " + ex.ToString());
+                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+            }
+            return RedirectToAction("Index", "Home");
+        }
+
         [AllowAnonymous]
         public ActionResult EmployeeCompetenceEvalInfo(int id)
         {

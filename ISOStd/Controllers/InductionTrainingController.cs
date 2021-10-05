@@ -39,12 +39,12 @@ namespace ISOStd.Controllers
                 ViewBag.EmpList = objGlobaldata.GetHrEmpListByDivision(objModel.division);
                 ViewBag.AllEmpList = objGlobaldata.GetHrEmployeeListbox();
                 ViewBag.YesNo = objGlobaldata.GetConstantValue("YesNo");
-                ViewBag.TrainingTopic = objGlobaldata.GetDropdownList("Training Topic");
+                ViewBag.TrainingTopic = objGlobaldata.GetTrainingTopicList();
                 ViewBag.Priority = objModel.GetInductionPriorityList();
                 ViewBag.Status = objModel.GetInductionStatusList();
                 ViewBag.PlanTimeInHour = objGlobaldata.GetAuditTimeInHour();
                 ViewBag.PlanTimeInMin = objGlobaldata.GetAuditTimeInMin();
-
+               
             }
             catch (Exception ex)
             {
@@ -211,7 +211,7 @@ namespace ISOStd.Controllers
                                 department = objGlobaldata.GetMultiDeptNameById(dsIndList.Tables[0].Rows[i]["department"].ToString()),
                                 location = objGlobaldata.GetDivisionLocationById(dsIndList.Tables[0].Rows[i]["location"].ToString()),
                                 planned_by = dsIndList.Tables[0].Rows[i]["planned_by"].ToString(),
-                                training_topic = objGlobaldata.GetDropdownitemById(dsIndList.Tables[0].Rows[i]["training_topic"].ToString()),
+                                training_topic = objGlobaldata.GetTrainingTopicById(dsIndList.Tables[0].Rows[i]["training_topic"].ToString()),
                                 employee_id = objGlobaldata.GetMultiHrEmpNameById(dsIndList.Tables[0].Rows[i]["employee_id"].ToString()),
                                 priority = objModels.GetInductionPriorityById(dsIndList.Tables[0].Rows[i]["priority"].ToString()),
                                };
@@ -304,7 +304,7 @@ namespace ISOStd.Controllers
                 //ViewBag.EmpList = objGlobaldata.GetHrEmpListByDivision(objModel.division);
                 ViewBag.AllEmpList = objGlobaldata.GetHrEmployeeListbox();
                 ViewBag.YesNo = objGlobaldata.GetConstantValue("YesNo");
-                ViewBag.TrainingTopic = objGlobaldata.GetDropdownList("Training Topic");
+                ViewBag.TrainingTopic = objGlobaldata.GetTrainingTopicList();
                 ViewBag.Priority = objModels.GetInductionPriorityList();
                 ViewBag.Status = objModels.GetInductionStatusList();
                 ViewBag.PlanTimeInHour = objGlobaldata.GetAuditTimeInHour();
@@ -559,7 +559,7 @@ namespace ISOStd.Controllers
                                 location =objGlobaldata.GetDivisionLocationById(dsIndList.Tables[0].Rows[0]["location"].ToString()),
                                 planned_id = (dsIndList.Tables[0].Rows[0]["planned_by"].ToString()),
                                 planned_by = objGlobaldata.GetMultiHrEmpNameById(dsIndList.Tables[0].Rows[0]["planned_by"].ToString()),
-                                training_topic = objGlobaldata.GetDropdownitemById(dsIndList.Tables[0].Rows[0]["training_topic"].ToString()),
+                                training_topic = objGlobaldata.GetTrainingTopicById(dsIndList.Tables[0].Rows[0]["training_topic"].ToString()),
                                 employee_id = objGlobaldata.GetMultiHrEmpNameById(dsIndList.Tables[0].Rows[0]["employee_id"].ToString()),
                                 priority = objModels.GetInductionPriorityById(dsIndList.Tables[0].Rows[0]["priority"].ToString()),
                                 plan_notifiedto = objGlobaldata.GetMultiHrEmpNameById(dsIndList.Tables[0].Rows[0]["plan_notifiedto"].ToString()),
@@ -736,7 +736,7 @@ namespace ISOStd.Controllers
                                 division = objGlobaldata.GetMultiCompanyBranchNameById(dsIndList.Tables[0].Rows[0]["division"].ToString()),
                                 department = objGlobaldata.GetMultiDeptNameById(dsIndList.Tables[0].Rows[0]["department"].ToString()),
                                 location = objGlobaldata.GetDivisionLocationById(dsIndList.Tables[0].Rows[0]["location"].ToString()),
-                                training_topic = objGlobaldata.GetDropdownitemById(dsIndList.Tables[0].Rows[0]["training_topic"].ToString()),
+                                training_topic = objGlobaldata.GetTrainingTopicById(dsIndList.Tables[0].Rows[0]["training_topic"].ToString()),
                                 employee_Name = objGlobaldata.GetMultiHrEmpNameById(dsIndList.Tables[0].Rows[0]["employee_id"].ToString()),
                                 priority = objModels.GetInductionPriorityById(dsIndList.Tables[0].Rows[0]["priority"].ToString()),
                               
@@ -924,7 +924,7 @@ namespace ISOStd.Controllers
                                 division = objGlobaldata.GetMultiCompanyBranchNameById(dsIndList.Tables[0].Rows[i]["division"].ToString()),
                                 department = objGlobaldata.GetMultiDeptNameById(dsIndList.Tables[0].Rows[i]["department"].ToString()),
                                 location = objGlobaldata.GetDivisionLocationById(dsIndList.Tables[0].Rows[i]["location"].ToString()),
-                                training_topic = objGlobaldata.GetDropdownitemById(dsIndList.Tables[0].Rows[i]["training_topic"].ToString()),
+                                training_topic = objGlobaldata.GetTrainingTopicById(dsIndList.Tables[0].Rows[i]["training_topic"].ToString()),
                                 employee_id = (dsIndList.Tables[0].Rows[i]["employee_id"].ToString()),
                                 employee_Name = objGlobaldata.GetMultiHrEmpNameById(dsIndList.Tables[0].Rows[i]["employee_id"].ToString()),
                                 priority = objModels.GetInductionPriorityById(dsIndList.Tables[0].Rows[i]["priority"].ToString()),
@@ -1000,7 +1000,7 @@ namespace ISOStd.Controllers
                                 division = objGlobaldata.GetMultiCompanyBranchNameById(dsIndList.Tables[0].Rows[0]["division"].ToString()),
                                 department = objGlobaldata.GetMultiDeptNameById(dsIndList.Tables[0].Rows[0]["department"].ToString()),
                                 location =objGlobaldata.GetDivisionLocationById(dsIndList.Tables[0].Rows[0]["location"].ToString()),
-                                training_topic = objGlobaldata.GetDropdownitemById(dsIndList.Tables[0].Rows[0]["training_topic"].ToString()),
+                                training_topic = objGlobaldata.GetTrainingTopicById(dsIndList.Tables[0].Rows[0]["training_topic"].ToString()),
                                 employee_id = (dsIndList.Tables[0].Rows[0]["allemployee_id"].ToString()),
                                 employee_Name = objGlobaldata.GetMultiHrEmpNameById(dsIndList.Tables[0].Rows[0]["allemployee_id"].ToString()),
                                 priority = objModels.GetInductionPriorityById(dsIndList.Tables[0].Rows[0]["priority"].ToString()),
@@ -1117,7 +1117,7 @@ namespace ISOStd.Controllers
                                 division = objGlobaldata.GetMultiCompanyBranchNameById(dsIndList.Tables[0].Rows[0]["division"].ToString()),
                                 department = objGlobaldata.GetMultiDeptNameById(dsIndList.Tables[0].Rows[0]["department"].ToString()),
                                 location = objGlobaldata.GetDivisionLocationById(dsIndList.Tables[0].Rows[0]["location"].ToString()),
-                                training_topic = objGlobaldata.GetDropdownitemById(dsIndList.Tables[0].Rows[0]["training_topic"].ToString()),
+                                training_topic = objGlobaldata.GetTrainingTopicById(dsIndList.Tables[0].Rows[0]["training_topic"].ToString()),
                                 // employee_id = (dsIndList.Tables[0].Rows[0]["employee_id"].ToString()),
                                 employee_Name = objGlobaldata.GetMultiHrEmpNameById(dsIndList.Tables[0].Rows[0]["allemployee_id"].ToString()),
                                 priority = objModels.GetInductionPriorityById(dsIndList.Tables[0].Rows[0]["priority"].ToString()),

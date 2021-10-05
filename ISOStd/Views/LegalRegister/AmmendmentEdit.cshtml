@@ -7,12 +7,17 @@
 
     ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
     ISOStd.Models.LegalRegisterModelsList LRList = new ISOStd.Models.LegalRegisterModelsList();
-    int itemcount = 0;
-
+    int itemcount = 0; int not_cnt = 0;
+    string[] NotifiedToArray = new string[0];
     if (ViewBag.Ammendment != null)
     {
         LRList = ViewBag.Ammendment;
         itemcount = LRList.LegalRegisterMList.Count;
+    }
+    if (ViewBag.NotifiedToArray != null)
+    {
+        NotifiedToArray = ViewBag.NotifiedToArray;
+        not_cnt = NotifiedToArray.Length;
     }
 }
 
@@ -34,7 +39,7 @@
                 <a href="@Url.Action("ComplianceList", "LegalRegister", null)" class="breadcrumb-item">
                     <span class="breadcrumb-item">Legal Register</span>
                 </a>
-                <span class="breadcrumb-item active">Update Ammendment</span>
+                <span class="breadcrumb-item active">Update Amendment</span>
             </div>
 
             <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
@@ -67,7 +72,7 @@
 
 <div class="card">
     <div class="card-header header-elements-inline bg-primary">
-        <h5 class="card-title">Ammendment</h5>
+        <h5 class="card-title">Amendment</h5>
         <div class="header-elements">
             <div class="list-icons">
                 <a class="list-icons-item" data-action="collapse"></a>
@@ -148,7 +153,7 @@
                 </tr>
             </table>
             <hr />
-            <div> <b>Ammendment Details:</b> </div>
+            <div> <b>Amendment Details:</b> </div>
             <br />
             <table class="table table-lg">
                 <tr class="row">
@@ -235,20 +240,15 @@
                     </td>
                     <td class="col-xs-3 col-md-4">
                         <div class="editor-field">
-                            <select class="form-control select-fixed-multiple" data-fouc id="amend_notified_to" name="amend_notified_to" multiple>
+                            <select class="form-control select-fixed-multiple" data-fouc id="amend_notified_to" name="amend_notified_to" onchange="GetNotifiedByDetails()">
                                 <option value="">Select</option>
                                 @if (ViewBag.EmpList != null)
                                 {
                                     foreach (var data in ViewBag.EmpList)
                                     {
-                                        if (Array.IndexOf(Model.amend_notified_to.ToString().Split(','), data.Value) >= 0)
-                                        {
-                                            <option value='@data.Value' selected>@data.Text</option>
-                                        }
-                                        else
-                                        {
+                                       
                                             <option value='@data.Value'>@data.Text</option>
-                                        }
+                                        
                                     }
                                 }
                             </select>
@@ -257,6 +257,59 @@
 
                 </tr>
                 </table>
+            <div id="notified" style="display:none">
+                <div class="card-body">
+                    <input type="hidden" id="notified_cnt" name="notified_cnt" value="@not_cnt" />
+
+                    <div class="card card-table table-responsive shadow-0 mb-0">
+                        <table class="table" id="notified-list">
+                            <tr class="bg-blue">
+                                <th>Action</th>
+                                <th>Id</th>
+                                <th>Notified To</th>
+                                <th>Division</th>
+                                <th>Location</th>
+                                <th>Department</th>
+                                <th>Email</th>
+                            </tr>
+
+                            @if (ViewBag.NotifiedToArray != null && NotifiedToArray != null && NotifiedToArray.Length > 0)
+                            {
+                                for (int index = 0; index < NotifiedToArray.Length; index++)
+                                {
+                                    //string[] sEmp = @objIncidentLTIList.lstIncidentLTIModels[index].Emp_Id.Split(';');
+                                    <tr>
+                                        <td>
+                                            <span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span>
+                                            @*<img src='@Url.Content("~/images/cancel.png")' onclick='deleteRow1(this)' style='cursor:pointer; padding-right: 5px;' />Remove*@
+                                            <input type='hidden' id='empno @index' name="empno @index" value='@NotifiedToArray[index]' />
+                                        </td>
+                                        <td>
+                                            <input type='hidden' id='empid @index' name="empid @index" readonly>@Obj.GetEmpIDByEmpNo(NotifiedToArray[index])
+                                        </td>
+                                        <td>
+                                            <input type='hidden' id='empname @index' name="empname @index" readonly>@Obj.GetEmpHrNameById(NotifiedToArray[index])
+                                        </td>
+                                        <td>
+                                            <input type='hidden' id='empdiv @index' name="empdiv @index" readonly>@Obj.GetCompanyBranchNameById(Obj.GetDivisionIdByHrEmpId(NotifiedToArray[index]))
+                                        </td>
+                                        <td>
+                                            <input type='hidden' id='emploc @index' name="emploc @index" readonly>@Obj.GetDivisionLocationById(Obj.GetWorkLocationIdByHrEmpId(NotifiedToArray[index]))
+                                        </td>
+                                        <td>
+                                            <input type='hidden' id='empdept @index' name="empdept @index" readonly>@Obj.GetDeptNameById(Obj.GetDeptIdByHrEmpId(NotifiedToArray[index]))
+                                        </td>
+                                        <td>
+                                            <input type='hidden' id='empemail @index' name="empemail @index" readonly>@Obj.GetHrEmpEmailIdById(NotifiedToArray[index])
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </table>
+                    </div>
+                </div>
+            </div>
+
 </div>
     </div>
 
@@ -291,6 +344,71 @@
     }
 
     });
+    var cnt = document.getElementById("notified_cnt").value;
+    if (cnt > 0) {
+        document.getElementById("notified").style.display = "block";
+    }
+    function GetNotifiedByDetails() {
+        var notified_to = $('#amend_notified_to').val();
+        if (notified_to != "" && notified_to != null) {
+            jQuery.ajax({
+                url: '@Url.Action("FunGetEmpDetails", "NC")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'semp_no': notified_to },
+                success: function (result) {
+                    if (result != null) {
+
+                        document.getElementById("notified").style.display = 'block';
+
+                        var empno = $('#amend_notified_to option:Selected').val();
+                        var empid = result.emp_id;
+                        var empname = result.empname;
+                        var empdiv = result.division;
+                        var empdept = result.department;
+                        var emploc = result.location;
+                        var empemail = result.EmailId;
+
+                        if (empid != null) {
+                            var cnt = document.getElementById("notified_cnt").value;
+
+                            document.getElementById("notified_cnt").value = cnt;
+                            // Find a <table> element with id="myTable":
+                            var table = document.getElementById("notified-list");
+
+                            // Create an empty <tr> element and add it to the 1st position of the table:
+                            var row = table.insertRow();
+
+
+                            // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                            var cell0 = row.insertCell(0);
+                            var cell1 = row.insertCell(1);
+                            var cell2 = row.insertCell(2);
+                            var cell3 = row.insertCell(3);
+                            var cell4 = row.insertCell(4);
+                            var cell5 = row.insertCell(5);
+                            var cell6 = row.insertCell(6);
+
+                            cell0.innerHTML = "<span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span> <input type = 'hidden' id = 'empno " + cnt + "' name = 'empno " + cnt + "' value = '" + empno + "'>";
+                            cell1.innerHTML = "<input type='hidden' id='empid " + cnt + "' name='empid " + cnt + "' value='" + empid + "'>" + empid;
+                            cell2.innerHTML = "<input type='hidden' id='empname " + cnt + "' name='empname " + cnt + "' value='" + empname + "'>" + empname;
+                            cell3.innerHTML = "<input type='hidden' id='empdiv " + cnt + "' name='empdiv " + cnt + "' value='" + empdiv + "'>" + empdiv;
+                            cell4.innerHTML = "<input type='hidden' id='emploc " + cnt + "' name='emploc " + cnt + "' value='" + emploc + "'>" + emploc;
+                            cell5.innerHTML = "<input type='hidden' id='empdept " + cnt + "' name='empdept " + cnt + "' value='" + empdept + "'>" + empdept;
+                            cell6.innerHTML = "<input type='hidden' id='empemail " + cnt + "' name='empemail " + cnt + "' value='" + empemail + "'>" + empemail;
+
+                            cnt++;
+                            document.getElementById("notified_cnt").value = cnt;
+
+
+                            $("#amend_notified_to").val('').trigger('change');
+                        }
+
+                    }
+                }
+            });
+        }
+    }
 
     var showClass = 'is-visible';
     var hideClass = 'invisible';

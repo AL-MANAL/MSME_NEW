@@ -196,11 +196,27 @@
                                     @Html.ValidationMessageFor(model => model.training_type)
                                     <span class="field-validation-error"><span id="training_type-message" style="display: none;">Please select Type of Training.</span></span>
                                 </td>
-                                <th class="col-xs-3 col-md-2" style="font-weight: bold;">Scheduled Date</th>
+                                @*<th class="col-xs-3 col-md-2" style="font-weight: bold;">Scheduled Date</th>
                                 <td class="col">
                                     <input class="form-control" type="date" id="scheduled_date" name="scheduled_date" />
                                     @Html.ValidationMessageFor(model => model.scheduled_date)
                                     <span class="field-validation-error"><span id="scheduled_date-message" style="display: none;" for="basic">Please select <S></S>cheduled Date.</span></span>
+                                </td>*@
+                                <th class="col-xs-3 col-md-2" style="font-weight: bold;">Criticality</th>
+                                <td class="col">
+                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="criticality" name="criticality">
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.Citicality != null)
+                                        {
+                                            foreach (var item in ViewBag.Citicality)
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+
+                                            }
+                                        }
+                                    </select>
+                                    <span class="field-validation-error"><span id="criticality-message" style="display: none;">This field is required.</span></span>
+                                    @Html.ValidationMessageFor(model => model.criticality)
                                 </td>
                             </tr>
 
@@ -224,7 +240,24 @@
                                     <span class="field-validation-error"><span id="acceptance-message" style="display: none;">Please select Acceptance.</span></span>
                                 </td>
                             </tr>
-
+                            <tr class="row">
+                                <th class="col-xs-3 col-md-2" style="font-weight: bold;">Scheduled Date</th>
+                                <td class="col">
+                                    <input class="form-control" type='date' id='scheduled_date' name="scheduled_date"  />
+                                    <span class="field-validation-error"><span id="scheduled_date-message" style="display: none;">Please Scheduled Date.</span></span>
+                                </td>
+                          
+                                <th class="col-xs-3 col-md-2" style="font-weight: bold;">Time</th>
+                                <td class="col">
+                                    <div class="input-group">
+                                        <span class="input-group-prepend">
+                                            <span class="input-group-text"><i class="icon-watch2"></i></span>
+                                        </span><input type="text" class="form-control" id="scheduled_time" value="00:00">
+                                    </div>
+                                    <span class="field-validation-error"><span id="scheduled_time-message" style="display: none;">Please select Time.</span></span>
+                                </td>
+                                
+                            </tr>
                             <tr class="row">                                
                                 <th class="col-xs-3 col-md-2" style="font-weight: bold;">Suggestion</th>
                                 <td class="col">
@@ -262,10 +295,11 @@
                                 <tr class="bg-blue">
                                     <th>Action</th>
                                     <th>Training Type</th>
-                                    <th>Scheduled Date</th>
+                                    <th>Criticality</th>
                                     <th>Justification</th>
+                                    <th>Scheduled Date</th>
                                     <th>Acceptance</th>
-                                    <th>Suggestion</th>
+                                    <th colspan="2">Suggestion</th>
                                 </tr>
                                 @if (objList.TrainList != null && objList.TrainList.Count > 0)
                                 {
@@ -281,16 +315,32 @@
                                         <input type='hidden' id='training_type @index' name="training_type @index" value='@objList.TrainList[index].training_type'>@ObjGlobal.GetDropdownitemById(objList.TrainList[index].training_type)
                                     </td>
                                     <td>
-                                        <input type='hidden' id='scheduled_date @index' name="scheduled_date @index" value='@objList.TrainList[index].scheduled_date'>@objList.TrainList[index].scheduled_date.ToString("dd-MM-yyyy")
+                                        <input type='hidden' id='criticality @index' name="criticality @index" value='@objList.TrainList[index].criticality'>@ObjGlobal.GetDropdownitemById(objList.TrainList[index].criticality)
                                     </td>
+                                  
                                     <td>
                                         <input type='hidden' id='justification @index' name="justification @index" value='@objList.TrainList[index].justification'>@(objList.TrainList[index].justification)
+                                    </td>
+                                    <td>
+                                        @if (objList.TrainList[index].scheduled_date != null && objList.TrainList[index].scheduled_date > Convert.ToDateTime("01/01/0001"))
+                                        {
+                                            <input class="form-control" type="hidden" id='scheduled_date @index' name="scheduled_date @index" value='@objList.TrainList[index].scheduled_date.ToString("yyyy-MM-dd")' />@objList.TrainList[index].scheduled_date.ToString("yyyy-MM-dd hh:mm")
+                                        }
+                                        else
+                                        {
+                                            <input class="form-control" type="hidden" id='scheduled_date @index' name="scheduled_date @index" value='@objList.TrainList[index].scheduled_date.ToString("yyyy-MM-dd")' />
+                                        }
+
+                                        @*<input type='hidden' id='scheduled_date @index' name="scheduled_date @index" value='@objList.TrainList[index].scheduled_date'>@objList.TrainList[index].scheduled_date.ToString("dd-MM-yyyy hh:mm")*@
                                     </td>
                                     <td>
                                         <input type='hidden' id='acceptance @index' name="acceptance @index" value='@objList.TrainList[index].acceptance'>@objList.TrainList[index].acceptance
                                     </td>
                                     <td>
                                         <input type='hidden' id='suggestion @index' name="suggestion @index" value='@objList.TrainList[index].suggestion'>@(objList.TrainList[index].suggestion)
+                                    </td>
+                                    <td>
+                                        <input type='hidden' id='scheduled_time @index' name="scheduled_time @index" value='@objList.TrainList[index].scheduled_date.ToString("hh:mm")'>
                                     </td>
                                 </tr>
                                     }
@@ -311,6 +361,9 @@
 
 @section Scripts {
     <script>
+        $('#scheduled_time').AnyTime_picker({
+            format: '%H:%i'
+        });
         var showClass = 'is-visible';
         var hideClass = 'invisible';
 
@@ -357,22 +410,40 @@
             var cell3 = row.insertCell(3);
             var cell4 = row.insertCell(4);
             var cell5 = row.insertCell(5);
+            var cell6 = row.insertCell(6);
+            var cell7 = row.insertCell(7);
             
             var training_type = $('#training_type').val();
             var training_typeName = $("#training_type option:selected").toArray().map(item => item.text).join(); // to break the array value with comma ","
            
+            var criticality = $('#criticality').val();
+            var criticalityName = $("#criticality option:selected").toArray().map(item => item.text).join();
+
+
             var justification = $('#justification').val();
             var acceptance = $("input[name='acceptance']:checked").val();            
             var suggestion = $('#suggestion').val();
-            var scheduled_date = reformatDate($("#scheduled_date").val());
+            //var scheduled_date = reformatDate($("#scheduled_date").val());
+
+            var scheduled_date = $('#scheduled_date').val();
+            var scheduled_time = $('#scheduled_time').val();
 
             cell0.innerHTML = " <img src='@Url.Content("~/images/cancel.png")' onclick='deleteRow(this)' style='cursor:pointer; padding-right: 5px; title=Remove the Row' /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <img src='@Url.Content("~/images/pencil_edit.png")' onclick='EditRow(this)' style='cursor:pointer; title=Edit the Row; width:1.5em ' />";
             cell1.innerHTML = "<input type='hidden' id='training_type " + cnt + "' name='training_type " + cnt + "' value='" + training_type + "'>" + training_typeName;
-            cell2.innerHTML = "<input type='hidden' id='scheduled_date " + cnt + "' name='scheduled_date " + cnt + "' value='" + scheduled_date + "'>" + scheduled_date;
+            cell2.innerHTML = "<input type='hidden' id='criticality " + cnt + "' name='criticality " + cnt + "' value='" + criticality + "'>" + criticalityName;
             cell3.innerHTML = "<input type='hidden' id='justification " + cnt + "' name='justification " + cnt + "' value='" + justification + "'>" + justification;
-            cell4.innerHTML = "<input type='hidden' id='acceptance " + cnt + "' name='acceptance " + cnt + "' value='" + acceptance + "'>" + acceptance;
-            cell5.innerHTML = "<input type='hidden' id='suggestion " + cnt + "' name='suggestion " + cnt + "' value='" + suggestion + "'>" + suggestion;
-
+            if (scheduled_date != "")
+            {
+                  cell4.innerHTML = "<input type='hidden' id='scheduled_date " + cnt + "' name='scheduled_date " + cnt + "' value='" + scheduled_date + "'>" + scheduled_date + " " + scheduled_time;
+            }
+        else
+        {
+            cell4.innerHTML = "<input type='hidden' id='scheduled_date " + cnt + "' name='scheduled_date " + cnt + "' value='" + scheduled_date + "'>" + scheduled_date;
+        }
+          
+            cell5.innerHTML = "<input type='hidden' id='acceptance " + cnt + "' name='acceptance " + cnt + "' value='" + acceptance + "'>" + acceptance;
+            cell6.innerHTML = "<input type='hidden' id='suggestion " + cnt + "' name='suggestion " + cnt + "' value='" + suggestion + "'>" + suggestion;
+            cell7.innerHTML = "<input type='hidden' id='scheduled_time " + cnt + "' name='scheduled_time " + cnt + "' value='" + scheduled_time + "'>";
             cnt++;
             document.getElementById("itemcnt").value = cnt;
 
@@ -396,13 +467,13 @@
                 ssnMessage.hide();
             }
 
-            if (document.getElementById("scheduled_date").value == "") {
-                ssnMessage = $('#scheduled_date-message');
+            if (document.getElementById("criticality").value == "") {
+                ssnMessage = $('#criticality-message');
                 ssnMessage.show();
                 validflg = false;
             }
             else {
-                ssnMessage = $('#scheduled_date-message');
+                ssnMessage = $('#criticality-message');
                 ssnMessage.hide();
             }
 
@@ -434,17 +505,28 @@
                 ssnMessage = $('#suggestion-message');
                 ssnMessage.hide();
             }
+            //if (document.getElementById("scheduled_date").value == "") {
+            //    ssnMessage = $('#scheduled_date-message');
+            //    ssnMessage.show();
+            //    validflg = false;
+            //}
+            //else {
+            //    ssnMessage = $('#scheduled_date-message');
+            //    ssnMessage.hide();
+            //}
             return validflg;
         }
 
         function ResetControl() {
             var el_down = document.getElementById("acceptance");
             $("#training_type").val('').trigger('change');
+            $("#criticality").val('').trigger('change');
             document.getElementById("scheduled_date").value = "";
             document.getElementById("justification").value = "";
             el_down.checked = false;
             el_down.innerHTML = "Unchecked"; 
             document.getElementById("suggestion").value = "";
+            document.getElementById("scheduled_time").value = "";
         }
 
         function reformatDate(dateStr) {
@@ -466,13 +548,22 @@
         function EditRow(btn) {
             var row = btn.parentNode.parentNode;
             var straining_type = row.cells[1].getElementsByTagName('input')[0].value;
-            var sscheduled_date = row.cells[2].getElementsByTagName('input')[0].value;
+            var scriticality = row.cells[2].getElementsByTagName('input')[0].value;
             var sjustification = row.cells[3].getElementsByTagName('input')[0].value;
-            var sacceptance = row.cells[4].getElementsByTagName('input')[0].value;
-            var ssuggestion = row.cells[5].getElementsByTagName('input')[0].value;
+            var sscheduled_date = row.cells[4].getElementsByTagName('input')[0].value;
+            var sacceptance = row.cells[5].getElementsByTagName('input')[0].value;
+            var ssuggestion = row.cells[6].getElementsByTagName('input')[0].value;
+            var scheduled_time = row.cells[7].getElementsByTagName('input')[0].value;
+
             
             $("#training_type").val(straining_type.split(",")).trigger('change');
-            document.getElementById("scheduled_date").value = reformDate(sscheduled_date);
+            $("#criticality").val(scriticality.split(",")).trigger('change');
+            if (sscheduled_date != "0001-01-01")
+            {
+                  document.getElementById("scheduled_date").value = (sscheduled_date);
+            }
+          
+            document.getElementById("scheduled_time").value = scheduled_time;
             document.getElementById("justification").value = sjustification; 
             var el_down = document.getElementById("acceptance");
             if (sacceptance != "") {

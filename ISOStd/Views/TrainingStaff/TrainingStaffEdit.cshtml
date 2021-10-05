@@ -188,11 +188,27 @@
                                     @Html.ValidationMessageFor(model => model.training_type)
                                     <span class="field-validation-error"><span id="training_type-message" style="display: none;">Please select Type of Training.</span></span>
                                 </td>
-                                <th class="col-xs-3 col-md-2" style="font-weight: bold;">Scheduled Date</th>
+                                @*<th class="col-xs-3 col-md-2" style="font-weight: bold;">Scheduled Date</th>
                                 <td class="col">
                                     <input class="form-control" type="date" id="scheduled_date" name="scheduled_date" />
                                     @Html.ValidationMessageFor(model => model.scheduled_date)
                                     <span class="field-validation-error"><span id="scheduled_date-message" style="display: none;" for="basic">Please select Scheduled Date.</span></span>
+                                </td>*@
+                                <th class="col-xs-3 col-md-2" style="font-weight: bold;">Criticality</th>
+                                <td class="col">
+                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="criticality" name="criticality">
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.Citicality != null)
+                                        {
+                                            foreach (var item in ViewBag.Citicality)
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+
+                                            }
+                                        }
+                                    </select>
+                                    <span class="field-validation-error"><span id="criticality-message" style="display: none;">This field is required.</span></span>
+                                    @Html.ValidationMessageFor(model => model.criticality)
                                 </td>
                             </tr>
 
@@ -234,7 +250,7 @@
                                 <tr class="bg-blue">
                                     <th>Action</th>
                                     <th>Training Type</th>
-                                    <th>Scheduled Date</th>
+                                    <th>Criticality</th>
                                     <th>Justification</th>
                                 </tr>
                                 @if( objList.TrainList != null && objList.TrainList.Count > 0)
@@ -250,8 +266,11 @@
                                         <input type='hidden' id='training_type @index' name="training_type @index" value='@objList.TrainList[index].training_type'>@ObjGlobal.GetDropdownitemById(objList.TrainList[index].training_type)
                                     </td>
                                     <td>
-                                        <input type='hidden' id='scheduled_date @index' name="scheduled_date @index" value='@objList.TrainList[index].scheduled_date'>@objList.TrainList[index].scheduled_date.ToString("dd-MM-yyyy")
+                                        <input type='hidden' id='criticality @index' name="criticality @index" value='@objList.TrainList[index].criticality'>@ObjGlobal.GetDropdownitemById(objList.TrainList[index].criticality)
                                     </td>
+                                    @*<td>
+                                        <input type='hidden' id='scheduled_date @index' name="scheduled_date @index" value='@objList.TrainList[index].scheduled_date'>@objList.TrainList[index].scheduled_date.ToString("dd-MM-yyyy")
+                                    </td>*@
                                     <td>
                                         <input type='hidden' id='justification @index' name="justification @index" value='@objList.TrainList[index].justification'>@(objList.TrainList[index].justification)
                                     </td>
@@ -323,13 +342,18 @@
             var training_type = $('#training_type').val();
             var training_typeName = $("#training_type option:selected").toArray().map(item => item.text).join(); 
 
+            var criticality = $('#criticality').val();
+            var criticalityName = $("#criticality option:selected").toArray().map(item => item.text).join();
+
+
             var justification = $('#justification').val();
 
-            var scheduled_date = reformatDate($("#scheduled_date").val());
+            //var scheduled_date = reformatDate($("#scheduled_date").val());
 
             cell0.innerHTML = " <img src='@Url.Content("~/images/cancel.png")' onclick='deleteRow(this)' style='cursor:pointer; padding-right: 5px;'/>Remove";
             cell1.innerHTML = "<input type='hidden' id='training_type " + cnt + "' name='training_type " + cnt + "' value='" + training_type + "'>" + training_typeName;
-            cell2.innerHTML = "<input type='hidden' id='scheduled_date " + cnt + "' name='scheduled_date " + cnt + "' value='" + scheduled_date + "'>" + scheduled_date;
+            cell2.innerHTML = "<input type='hidden' id='criticality " + cnt + "' name='criticality " + cnt + "' value='" + criticality + "'>" + criticalityName;
+            //cell2.innerHTML = "<input type='hidden' id='scheduled_date " + cnt + "' name='scheduled_date " + cnt + "' value='" + scheduled_date + "'>" + scheduled_date;
             cell3.innerHTML = "<input type='hidden' id='justification " + cnt + "' name='justification " + cnt + "' value='" + justification + "'>" + justification;
 
             cnt++;
@@ -355,16 +379,24 @@
                 ssnMessage.hide();
             }
 
-            if (document.getElementById("scheduled_date").value == "") {
-                ssnMessage = $('#scheduled_date-message');
+            //if (document.getElementById("scheduled_date").value == "") {
+            //    ssnMessage = $('#scheduled_date-message');
+            //    ssnMessage.show();
+            //    validflg = false;
+            //}
+            //else {
+            //    ssnMessage = $('#scheduled_date-message');
+            //    ssnMessage.hide();
+            //}
+            if (document.getElementById("criticality").value == "") {
+                ssnMessage = $('#criticality-message');
                 ssnMessage.show();
                 validflg = false;
             }
             else {
-                ssnMessage = $('#scheduled_date-message');
+                ssnMessage = $('#criticality-message');
                 ssnMessage.hide();
             }
-
             if (document.getElementById("justification").value == "") {
                 ssnMessage = $('#justification-message');
                 ssnMessage.show();
@@ -379,7 +411,8 @@
 
         function ResetControl() {
             $("#training_type").val('').trigger('change');
-            document.getElementById("scheduled_date").value = "";
+            $("#criticality").val('').trigger('change');
+            //document.getElementById("scheduled_date").value = "";
             document.getElementById("justification").value = "";
         }
 

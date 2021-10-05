@@ -36,7 +36,8 @@ namespace ISOStd.Controllers
                 ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
                 ViewBag.PerfPeriod = objGlobaldata.GetDropdownList("Performance Monitoring Period");
                 ViewBag.ReportNo = objModel.GetTrainingReportNoList();
-                ViewBag.PlannedObjective = objGlobaldata.GetDropdownList("Training Planned Objectives");               
+                ViewBag.PlannedObjective = objGlobaldata.GetDropdownList("Training Planned Objectives");
+                ViewBag.Method = objGlobaldata.GetDropdownList("Method of Effectiveness Evaluation");            
             }
             catch (Exception ex)
             {
@@ -284,7 +285,7 @@ namespace ISOStd.Controllers
                     string sid_training_evalution = Request.QueryString["id_training_evalution"];
 
                     string sSqlstmt = "select id_training_evalution, report_no, perf_monitor_period, emp_name, upload,comments," +
-                    "emp_perf_improved,action_taken,planned_objective,logged_by from t_trainings_evalution where id_training_evalution='" + sid_training_evalution + "'";
+                    "emp_perf_improved,action_taken,planned_objective,logged_by,method_eval,further_training from t_trainings_evalution where id_training_evalution='" + sid_training_evalution + "'";
 
                     DataSet dsTraining = objGlobaldata.Getdetails(sSqlstmt);
 
@@ -301,7 +302,10 @@ namespace ISOStd.Controllers
                             emp_perf_improved = dsTraining.Tables[0].Rows[0]["emp_perf_improved"].ToString(),
                             action_taken = (dsTraining.Tables[0].Rows[0]["action_taken"].ToString()),
                             planned_objective = /*objModel.GetPlannedObjectivesById*/(dsTraining.Tables[0].Rows[0]["planned_objective"].ToString()),
-                        };
+                             method_eval = (dsTraining.Tables[0].Rows[0]["method_eval"].ToString()),
+                             further_training = (dsTraining.Tables[0].Rows[0]["further_training"].ToString()),
+
+                         };
 
                         //DateTime dtValue;
                         //if (DateTime.TryParse(dsSupplier.Tables[0].Rows[0]["evalu_date"].ToString(), out dtValue))
@@ -343,7 +347,7 @@ namespace ISOStd.Controllers
                         ViewBag.PerfPeriod = objGlobaldata.GetDropdownList("Performance Monitoring Period");
                         ViewBag.ReportNo = objModel.GetTrainingReportNoList();
                         ViewBag.PlannedObjective = objGlobaldata.GetDropdownList("Training Planned Objectives");
-
+                        ViewBag.Method = objGlobaldata.GetDropdownList("Method of Effectiveness Evaluation");
                         return View(objModel);
                     }
                     else
@@ -476,7 +480,7 @@ namespace ISOStd.Controllers
                     string sid_training_evalution = Request.QueryString["id_training_evalution"];
 
                     string sSqlstmt = "select id_training_evalution, report_no, perf_monitor_period, emp_name, upload,comments," +
-                    "emp_perf_improved,action_taken,planned_objective,logged_by from t_trainings_evalution where id_training_evalution='" + sid_training_evalution + "'";
+                    "emp_perf_improved,action_taken,planned_objective,logged_by,method_eval,further_training from t_trainings_evalution where id_training_evalution='" + sid_training_evalution + "'";
 
                     DataSet dsTraining = objGlobaldata.Getdetails(sSqlstmt);
 
@@ -496,6 +500,8 @@ namespace ISOStd.Controllers
                             Training_Topic = objModel.GetTrainingTopicByReportNo(dsTraining.Tables[0].Rows[0]["report_no"].ToString()),
                             Sourceof_Training = TrainingModel.GetTrainingSourceNameById(objModel.GetSorceofTrainingByReportNo(dsTraining.Tables[0].Rows[0]["report_no"].ToString())),
                             //Trainer_Name =/* objModel.GetTrainingReportNoById*/(dsTraining.Tables[0].Rows[0]["report_no"].ToString()),
+                            method_eval =objGlobaldata.GetDropdownitemById(dsTraining.Tables[0].Rows[0]["method_eval"].ToString()),
+                            further_training = (dsTraining.Tables[0].Rows[0]["further_training"].ToString()),
                         };
 
                         //DateTime dtValue;

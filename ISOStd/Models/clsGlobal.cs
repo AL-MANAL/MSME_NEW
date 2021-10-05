@@ -26,6 +26,97 @@ namespace ISOStd.Models
         private object mail;
 
         //--------------------------------9/30/2021-------------------------------------------------
+        public DataSet getListPendingForReviewEmpCompetence(string sempid) // emp competence eval review
+        {
+            try
+            {
+                string sSqlstmt = "select CompetenceId,Evalaution_Done_By,Name,LoggedBy from t_emp_competence_eval where Active = 1 and eval_status = 0 and find_in_set('" + sempid + "', Eval_ReviewedBy)";
+
+                DataSet dsApprovalList = Getdetails(sSqlstmt);
+                if (dsApprovalList.Tables.Count > 0 && dsApprovalList.Tables[0].Rows.Count > 0)
+                {
+                    return dsApprovalList;
+                }
+            }
+            catch (Exception ex)
+            {
+                AddFunctionalLog("Exception in getListPendingForReviewEmpCompetence: " + ex.ToString());
+            }
+            return null;
+        }
+        public DataSet getListPendingForApprovalEmpCompetence(string sempid) // emp competence eval approve
+        {
+            try
+            {
+                string sSqlstmt = "select CompetenceId,Evalaution_Done_By,Name,LoggedBy from t_emp_competence_eval where Active = 1 and eval_status = 2 and find_in_set('" + sempid + "', Eval_ApprovedBy)";
+
+                DataSet dsApprovalList = Getdetails(sSqlstmt);
+                if (dsApprovalList.Tables.Count > 0 && dsApprovalList.Tables[0].Rows.Count > 0)
+                {
+                    return dsApprovalList;
+                }
+            }
+            catch (Exception ex)
+            {
+                AddFunctionalLog("Exception in getListPendingForApprovalEmpCompetence: " + ex.ToString());
+            }
+            return null;
+        }
+        public MultiSelectList GetTrainingTopicList()
+        {
+            DropdownList objProductList = new DropdownList();
+            objProductList.lstDropdown = new List<DropdownItems>();
+
+            try
+            {
+                string sSsqlstmt = "select TrainingOrientation_Id as Id, Topic as Name from t_trainingorientation where Active=1";
+
+
+                DataSet dsBranch = Getdetails(sSsqlstmt);
+
+                if (dsBranch.Tables.Count > 0 && dsBranch.Tables[0].Rows.Count > 0)
+                {
+                    for (int i = 0; i < dsBranch.Tables[0].Rows.Count; i++)
+                    {
+                        DropdownItems objProduct = new DropdownItems()
+                        {
+                            Id = dsBranch.Tables[0].Rows[i]["Id"].ToString(),
+                            Name = dsBranch.Tables[0].Rows[i]["Name"].ToString()
+                        };
+
+                        objProductList.lstDropdown.Add(objProduct);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                AddFunctionalLog("Exception in GetTrainingTopicList: " + ex.ToString());
+            }
+
+            return new MultiSelectList(objProductList.lstDropdown, "Id", "Name");
+        }
+        public string GetTrainingTopicById(string item_id)
+        {
+            try
+            {
+                if (item_id != "")
+                {
+                    string sSqlstmt = "select group_concat(Topic) Topic from t_trainingorientation where TrainingOrientation_Id in (" + item_id + ")";
+
+                    DataSet dsData = Getdetails(sSqlstmt);
+                    if (dsData.Tables.Count > 0 && dsData.Tables[0].Rows.Count > 0)
+                    {
+                        return (dsData.Tables[0].Rows[0]["Topic"].ToString());
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                AddFunctionalLog("Exception in GetTrainingTopicById: " + ex.ToString());
+            }
+            return "";
+        }
+
         public string GetHRDeptEmployees() 
         {
             try
@@ -6998,7 +7089,7 @@ namespace ISOStd.Models
             {
                 if (Emp_no != "")
                 {
-                    DataSet dsDept = Getdetails("select dept_id from t_hr_employee where emp_no='" + Emp_no + "'");
+                    DataSet dsDept = Getdetails("select group_concat(dept_id) dept_id from t_hr_employee where emp_no in (" + Emp_no + ")");
                     if (dsDept.Tables.Count > 0 && dsDept.Tables[0].Rows.Count > 0)
                     {
                         return (dsDept.Tables[0].Rows[0]["dept_id"].ToString());
@@ -11689,6 +11780,16 @@ namespace ISOStd.Models
 
             switch (sType)
             {
+                case "CompetenceEvalApprove":
+
+                    dicKeyValue.Add("4", "Approved");
+                    dicKeyValue.Add("3", "Rejected");
+                    return dicKeyValue;
+                case "CompetenceEvalReview":
+
+                    dicKeyValue.Add("2", "Reviewed");
+                    dicKeyValue.Add("1", "Rejected");
+                    return dicKeyValue;
                 case "InspPlanApprove":
 
                     dicKeyValue.Add("2", "Approved");

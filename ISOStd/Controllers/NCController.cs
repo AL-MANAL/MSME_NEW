@@ -213,7 +213,7 @@ namespace ISOStd.Controllers
 
                 string sSqlstmt = "select id_nc, nc_no, nc_reported_date, nc_detected_date, nc_category, nc_description, nc_activity, nc_performed, nc_pnc, nc_upload,"
                     + "nc_impact, nc_risk, risklevel, nc_reportedby,  nc_notifiedto, nc_division, division, department, location,nc_audit,audit_no,nc_raise_dueto," +
-                    "(case when nc_issuedto_status=1 then 'Accepted' end) as nc_issuedto_status,nc_issuedto_status as nc_issuedto_statusId,nc_initial_status as nc_initial_statusId,ca_verfiry_duedate from t_nc where Active=1";
+                    "(case when nc_issuedto_status=1 then 'Accepted' end) as nc_issuedto_status,nc_issuedto_status as nc_issuedto_statusId,nc_initial_status as nc_initial_statusId,ca_verfiry_duedate,nc_issueto from t_nc where Active=1";
                 string sSearchtext = "";
                              
 
@@ -262,7 +262,10 @@ namespace ISOStd.Controllers
                                 nc_issuedto_status = dsNCModels.Tables[0].Rows[i]["nc_issuedto_status"].ToString(),
                                 nc_issuedto_statusId = dsNCModels.Tables[0].Rows[i]["nc_issuedto_statusId"].ToString(),
                                 nc_initial_statusId = dsNCModels.Tables[0].Rows[i]["nc_initial_statusId"].ToString(),
-                              
+
+                                nc_issueto = objGlobaldata.GetMultiHrEmpNameById(dsNCModels.Tables[0].Rows[i]["nc_issueto"].ToString()),
+                                nc_reportedby_dept = objGlobaldata.GetMultiDeptNameById(objGlobaldata.GetDeptIdByHrEmpId(dsNCModels.Tables[0].Rows[i]["nc_reportedby"].ToString())),
+                                nc_issueto_dept = objGlobaldata.GetMultiDeptNameById(objGlobaldata.GetDeptIdByHrEmpId(dsNCModels.Tables[0].Rows[i]["nc_issueto"].ToString()))
                             };
 
                             DateTime dtValue;

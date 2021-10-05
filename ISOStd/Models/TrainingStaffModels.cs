@@ -72,7 +72,7 @@ namespace ISOStd.Models
         [Display(Name = "Was Training Effective")]
         public string effective { get; set; }
 
-        [Display(Name = "If training was not effective, specify the reasons")]
+        [Display(Name = "Training feedback")]
         public string reason { get; set; }
 
         [Display(Name = "Recommendations for the improvement")]
@@ -86,9 +86,16 @@ namespace ISOStd.Models
 
         [Display(Name = "Training Status")]
         public string training_status { get; set; }
-             
 
-                
+        [Display(Name = "Criticality")]
+        public string criticality { get; set; }
+        public string scheduled_time { get; set; }
+
+
+        [Display(Name = "Training effectiveness due date")]
+        public DateTime due_date { get; set; }
+
+
         internal bool FunAddTrainingStaff(TrainingStaffModels objMdl, TrainingStaffModelsList objList)
         {
             try
@@ -158,12 +165,12 @@ namespace ISOStd.Models
                     }
 
                     sSqlstmt = sSqlstmt + " insert into t_training_staff_trans (id_training_trans,id_training,training_type," +
-                        "justification,scheduled_date)"
+                        "justification,criticality)"
                     + " values(" + sid_training_trans + "," + objList.TrainList[0].id_training + ",'"
                     + objList.TrainList[i].training_type + "','" + objList.TrainList[i].justification + "','"
-                    + sscheduled_date  + "')"
+                    + objList.TrainList[i].criticality + "')"
                     + " ON DUPLICATE KEY UPDATE" + " id_training_trans= values(id_training_trans), id_training= values(id_training), training_type = values(training_type)," +
-                    " justification= values(justification),  scheduled_date= values(scheduled_date); ";
+                    " justification= values(justification),  criticality= values(criticality); ";
                 }
 
                 return objGlobalData.ExecuteQuery(sSqlstmt);
@@ -184,20 +191,21 @@ namespace ISOStd.Models
                 for (int i = 0; i < objList.TrainList.Count; i++)
                 {
                     string sid_training_trans = "null";
-                    string sscheduled_date = "";
+                    string sscheduled_date = "NULL";
 
                     if (objList.TrainList[i].scheduled_date != null && objList.TrainList[i].scheduled_date > Convert.ToDateTime("01/01/0001"))
                     {
-                        sscheduled_date = objList.TrainList[i].scheduled_date.ToString("yyyy-MM-dd");
+                        sscheduled_date = objList.TrainList[i].scheduled_date.ToString("yyyy-MM-dd") + " " + objList.TrainList[i].scheduled_time;
+                        sscheduled_date = "'" + sscheduled_date + "'";
                     }
 
                     sSqlstmt = sSqlstmt + " insert into t_training_staff_trans (id_training_trans,id_training,training_type," +
-                        "justification,scheduled_date,acceptance,suggestion)"
+                        "justification,criticality,acceptance,suggestion,scheduled_date)"
                     + " values(" + sid_training_trans + "," + objList.TrainList[0].id_training + ",'"
                     + objList.TrainList[i].training_type + "','" + objList.TrainList[i].justification + "','"
-                    + sscheduled_date + "','" + objList.TrainList[i].acceptance + "','" + objList.TrainList[i].suggestion + "')"
+                    + objList.TrainList[i].criticality + "','" + objList.TrainList[i].acceptance + "','" + objList.TrainList[i].suggestion + "'," + sscheduled_date + ")"
                     + " ON DUPLICATE KEY UPDATE" + " id_training_trans= values(id_training_trans), id_training= values(id_training), training_type = values(training_type)," +
-                    " justification= values(justification),  scheduled_date= values(scheduled_date),acceptance= values(acceptance),suggestion= values(suggestion) ; ";
+                    " justification= values(justification),  criticality= values(criticality),acceptance= values(acceptance),suggestion= values(suggestion),scheduled_date= values(scheduled_date) ; ";
                 }
 
                 return objGlobalData.ExecuteQuery(sSqlstmt);
@@ -329,7 +337,10 @@ namespace ISOStd.Models
                 {
                     sSqlstmt = sSqlstmt + ", end_date='" + objMdl.end_date.ToString("yyyy/MM/dd") + "'";
                 }
-
+                if (objMdl.due_date != null && objMdl.due_date > Convert.ToDateTime("01/01/0001"))
+                {
+                    sSqlstmt = sSqlstmt + ", due_date='" + objMdl.due_date.ToString("yyyy/MM/dd") + "'";
+                }
                 sSqlstmt = sSqlstmt + " where id_training='" + objMdl.id_training + "'";
 
                 return objGlobalData.ExecuteQuery(sSqlstmt);

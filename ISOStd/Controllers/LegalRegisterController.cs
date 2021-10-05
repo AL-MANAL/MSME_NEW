@@ -1617,7 +1617,11 @@ namespace ISOStd.Controllers
                             amend_notified_to = dsComplList.Tables[0].Rows[0]["amend_notified_to"].ToString(),
 
                         };
-                        if(objComp.amend_review_by == "")
+                        if (dsComplList.Tables[0].Rows[0]["amend_notified_to"].ToString() != "")
+                        {
+                            ViewBag.NotifiedToArray = (dsComplList.Tables[0].Rows[0]["amend_notified_to"].ToString()).Split(',');
+                        }
+                        if (objComp.amend_review_by == "")
                         {
                             objComp.amend_review_by = objGlobaldata.GetCurrentUserSession().empid;
                         }
@@ -1702,8 +1706,7 @@ namespace ISOStd.Controllers
             try
             {
                 objComp.amend_review_by = form["amend_review_by"];
-                objComp.amend_notified_to = form["amend_notified_to"];
-
+                
                 DateTime dateValue;
                 if (DateTime.TryParse(form["ammend_date"], out dateValue) == true)
                 {
@@ -1713,6 +1716,20 @@ namespace ISOStd.Controllers
                 {
                     objComp.amend_review_date = dateValue;
                 }
+
+                //notified to
+                for (int i = 0; i < Convert.ToInt16(form["notified_cnt"]); i++)
+                {
+                    if (form["empno " + i] != "" && form["empno " + i] != null)
+                    {
+                        objComp.amend_notified_to = objComp.amend_notified_to + "," + form["empno " + i];
+                    }
+                }
+                if (objComp.amend_notified_to != null)
+                {
+                    objComp.amend_notified_to = objComp.amend_notified_to.Trim(',');
+                }
+
                 //LegalRegisterModel objComp = new LegalRegisterModel();
                 //objComp.id_law = form["id_law"];
 

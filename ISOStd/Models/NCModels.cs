@@ -61,6 +61,7 @@ namespace ISOStd.Models
 
         [Display(Name = "NC reported by")]
         public string nc_reportedby { get; set; }
+        public string nc_reportedby_dept { get; set; }
         public string nc_reportedbyId { get; set; }
 
         [Display(Name = "NC notified to")]
@@ -78,6 +79,7 @@ namespace ISOStd.Models
 
         [Display(Name = "NC Issued To")]
         public string nc_issueto { get; set; }
+        public string nc_issueto_dept { get; set; }
         public string nc_issuetoId { get; set; }
 
         [Display(Name = "Division")]

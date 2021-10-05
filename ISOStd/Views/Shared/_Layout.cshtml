@@ -345,6 +345,7 @@
         ViewBag.Chairman = objGlobaldata.GetChairman();
 
         //Approve Dataset
+        System.Data.DataSet dsApproveEmpCompetence = new System.Data.DataSet();
         System.Data.DataSet dsDocReviewFreq = new System.Data.DataSet();
         System.Data.DataSet dsKPI = new System.Data.DataSet();
         System.Data.DataSet dsTraining = new System.Data.DataSet();
@@ -385,6 +386,7 @@
         System.Data.DataSet dsApproveInspPlan = new System.Data.DataSet();
 
         //Review Dataset
+        System.Data.DataSet dsReviewEmpCompetence = new System.Data.DataSet();
         System.Data.DataSet dsReviewMgmtDocuments = new System.Data.DataSet();
         System.Data.DataSet dsReviewLegalRegister = new System.Data.DataSet();
         System.Data.DataSet dsReviewRiskEnv = new System.Data.DataSet();
@@ -399,6 +401,8 @@
         int cnt2 = 0; //Review
 
         //Review
+        dsReviewEmpCompetence= objGlobaldata.getListPendingForReviewEmpCompetence(objUser.empid);
+
         dsReviewMgmtDocuments = objGlobaldata.getListPendingForReviewSystemDocuments(objUser.empid);
 
         dsReviewLegalRegister = objGlobaldata.getListPendingForReviewLegalRegister(objUser.empid);
@@ -414,6 +418,7 @@
         //Approval
 
         // dsAudit = objGlobaldata.getListPendingForApprovalAudit(objUser.empid);
+        dsApproveEmpCompetence = objGlobaldata.getListPendingForApprovalEmpCompetence(objUser.empid);
 
         dsKPI = objGlobaldata.getListPendingForApprovalKPI(objUser.empid);
 
@@ -495,6 +500,10 @@
         //{
         //    cnt += dsAudit.Tables[0].Rows.Count;
         //}
+        if (dsApproveEmpCompetence != null)
+        {
+            cnt += dsApproveEmpCompetence.Tables[0].Rows.Count;
+        }
 
         if (dsKPI != null)
         {
@@ -645,6 +654,10 @@
 
 
         //Review
+        if (dsReviewEmpCompetence != null)
+        {
+            cnt2 += dsReviewEmpCompetence.Tables[0].Rows.Count;
+        }
         if (dsSuppReevalationReview != null)
         {
             cnt2 += dsSuppReevalationReview.Tables[0].Rows.Count;
@@ -1235,6 +1248,35 @@
                         </div>
 
                         <div class="dropdown-content-body dropdown-scrollable">
+                            @if (dsReviewEmpCompetence != null && dsReviewEmpCompetence.Tables.Count > 0 && dsReviewEmpCompetence.Tables[0].Rows.Count > 0)
+                            {
+                                <hr />
+                                <p class="font-weight-bold text-center">Employee Competency Evaluation</p>
+                                <hr />
+                                <ul class="media-list">
+                                    @for (int i = 0; i < dsReviewEmpCompetence.Tables[0].Rows.Count; i++)
+                                    {
+
+                                        <li class="media" id="@dsReviewEmpCompetence.Tables[0].Rows[i]["CompetenceId"].ToString()">
+                                            <div class="mr-3 w-25">
+                                                @*<img src="../../../../global_assets/images/placeholders/placeholder.jpg" width="36" height="36" class="rounded-circle" alt="">*@
+                                                <a href='@Url.Action("EmployeeCompetenceEvalDetails", "EmployeeCompetenceEval", new { CompetenceId = dsReviewEmpCompetence.Tables[0].Rows[i]["CompetenceId"].ToString() })' title="Document Details" class="badge badge-flat badge-icon border-teal text-teal-600"><i class="icon-file-text2"></i></a>
+                                                <br /><span class="font-weight-semibold"> Logged By <text class="text-blue">@objGlobaldata.GetMultiHrEmpNameById(dsReviewEmpCompetence.Tables[0].Rows[i]["LoggedBy"].ToString())</text></span>
+                                            </div>
+                                            <div class="media-body">
+                                                <div class="btn-group-vertical float-right">
+                                                    
+                                                </div>
+                                                <div class="media-title">
+                                                    <span class="font-weight-semibold">Employee Name:<text class="text-blue">  @objGlobaldata.GetMultiHrEmpNameById(dsReviewEmpCompetence.Tables[0].Rows[i]["Name"].ToString()) </text></span>
+                                                    <br />
+                                                    <span class="font-weight-semibold">Evaluation By:<text class="text-blue">@objGlobaldata.GetMultiHrEmpNameById(dsReviewEmpCompetence.Tables[0].Rows[i]["Evalaution_Done_By"].ToString()) </text></span>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    }
+                                </ul>
+                            }
                             @if (dsReviewInspChecklist != null && dsReviewInspChecklist.Tables.Count > 0 && dsReviewInspChecklist.Tables[0].Rows.Count > 0)
                             {
                                 <hr />
@@ -1465,7 +1507,35 @@
 
                         </div>
                         <div class="dropdown-content-body dropdown-scrollable">
+                            @if (dsApproveEmpCompetence != null && dsApproveEmpCompetence.Tables.Count > 0 && dsApproveEmpCompetence.Tables[0].Rows.Count > 0)
+                            {
+                                <hr />
+                                <p class="font-weight-bold text-center">Employee Competency Evaluation</p>
+                                <hr />
+                                <ul class="media-list">
+                                    @for (int i = 0; i < dsApproveEmpCompetence.Tables[0].Rows.Count; i++)
+                                    {
 
+                                        <li class="media" id="@dsApproveEmpCompetence.Tables[0].Rows[i]["CompetenceId"].ToString()">
+                                            <div class="mr-3 w-25">
+                                                @*<img src="../../../../global_assets/images/placeholders/placeholder.jpg" width="36" height="36" class="rounded-circle" alt="">*@
+                                                <a href='@Url.Action("EmployeeCompetenceEvalDetails", "EmployeeCompetenceEval", new { CompetenceId = dsApproveEmpCompetence.Tables[0].Rows[i]["CompetenceId"].ToString() })' title="Document Details" class="badge badge-flat badge-icon border-teal text-teal-600"><i class="icon-file-text2"></i></a>
+                                                <br /><span class="font-weight-semibold"> Logged By <text class="text-blue">@objGlobaldata.GetMultiHrEmpNameById(dsApproveEmpCompetence.Tables[0].Rows[i]["LoggedBy"].ToString())</text></span>
+                                            </div>
+                                            <div class="media-body">
+                                                <div class="btn-group-vertical float-right">
+
+                                                </div>
+                                                <div class="media-title">
+                                                    <span class="font-weight-semibold">Employee Name:<text class="text-blue">  @objGlobaldata.GetMultiHrEmpNameById(dsApproveEmpCompetence.Tables[0].Rows[i]["Name"].ToString()) </text></span>
+                                                    <br />
+                                                    <span class="font-weight-semibold">Evaluation By:<text class="text-blue">@objGlobaldata.GetMultiHrEmpNameById(dsApproveEmpCompetence.Tables[0].Rows[i]["Evalaution_Done_By"].ToString()) </text></span>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    }
+                                </ul>
+                            }
                             @if (dsDocReviewFreq != null && dsDocReviewFreq.Tables.Count > 0 && dsDocReviewFreq.Tables[0].Rows.Count > 0)
                             {
                                 <hr />

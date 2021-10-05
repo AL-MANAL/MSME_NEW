@@ -41,7 +41,8 @@ namespace ISOStd.Controllers
             ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
             ViewBag.DeptHead = objGlobaldata.GetDeptHeadList();
             ViewBag.Acceptance = objGlobaldata.GetConstantValue("TrainingStaff");
-            ViewBag.TrainingType = objGlobaldata.GetDropdownList("Training Topic");           
+            ViewBag.TrainingType = objGlobaldata.GetDropdownList("Training Topic");
+            ViewBag.Citicality = objGlobaldata.GetDropdownList("Training Criticality");
         }
 
         [HttpPost]
@@ -68,11 +69,11 @@ namespace ISOStd.Controllers
                     {
                         objTrainingMdl.training_type = form["training_type" + i];
                         objTrainingMdl.justification = form["justification" + i];
-        
-                        if (DateTime.TryParse(form["scheduled_date" + i], out dateValue) == true)
-                        {
-                            objTrainingMdl.scheduled_date = dateValue;
-                        }
+                        objTrainingMdl.criticality = form["criticality" + i];
+                        //if (DateTime.TryParse(form["scheduled_date" + i], out dateValue) == true)
+                        //{
+                        //    objTrainingMdl.scheduled_date = dateValue;
+                        //}
                         objList.TrainList.Add(objTrainingMdl);
                     }
                 }
@@ -204,7 +205,7 @@ namespace ISOStd.Controllers
                     TrainingStaffModelsList objList = new TrainingStaffModelsList();
                     objList.TrainList = new List<TrainingStaffModels>();
 
-                    string Ssqlstmt1 = "select id_training_trans,id_training,training_type,justification,scheduled_date " +
+                    string Ssqlstmt1 = "select id_training_trans,id_training,training_type,justification,scheduled_date,criticality " +
                         "from t_training_staff_trans where id_training = '" + sid_training + "'";
                     DataSet dsTrainList = objGlobaldata.Getdetails(Ssqlstmt1);
                     if(dsTrainList.Tables.Count>0 && dsTrainList.Tables[0].Rows.Count>0)
@@ -217,14 +218,15 @@ namespace ISOStd.Controllers
                                 {
                                     id_training_trans=dsTrainList.Tables[0].Rows[i]["id_training_trans"].ToString(),
                                     training_type = dsTrainList.Tables[0].Rows[i]["training_type"].ToString(),
+                                    criticality = dsTrainList.Tables[0].Rows[i]["criticality"].ToString(),
                                     justification = dsTrainList.Tables[0].Rows[i]["justification"].ToString(),
                                 };
-                                DateTime dtDocDate;
-                                if (dsTrainList.Tables[0].Rows[i]["scheduled_date"].ToString() != ""
-                                   && DateTime.TryParse(dsTrainList.Tables[0].Rows[i]["scheduled_date"].ToString(), out dtDocDate))
-                                {
-                                    objtrain.scheduled_date = dtDocDate;
-                                }
+                                //DateTime dtDocDate;
+                                //if (dsTrainList.Tables[0].Rows[i]["scheduled_date"].ToString() != ""
+                                //   && DateTime.TryParse(dsTrainList.Tables[0].Rows[i]["scheduled_date"].ToString(), out dtDocDate))
+                                //{
+                                //    objtrain.scheduled_date = dtDocDate;
+                                //}
                                 objList.TrainList.Add(objtrain);
                             }
                             ViewBag.TrainDetails = objList;
@@ -269,12 +271,13 @@ namespace ISOStd.Controllers
                     if (form["training_type " + i] != null)
                     {
                         objTrainingMdl.training_type = form["training_type " + i];
+                        objTrainingMdl.criticality = form["criticality " + i];
                         objTrainingMdl.justification = form["justification " + i];
 
-                        if (DateTime.TryParse(form["scheduled_date " + i], out dateValue) == true)
-                        {
-                            objTrainingMdl.scheduled_date = dateValue;
-                        }
+                        //if (DateTime.TryParse(form["scheduled_date " + i], out dateValue) == true)
+                        //{
+                        //    objTrainingMdl.scheduled_date = dateValue;
+                        //}
                         objList.TrainList.Add(objTrainingMdl);
                     }
                 }
@@ -340,7 +343,7 @@ namespace ISOStd.Controllers
                     TrainingStaffModelsList objList = new TrainingStaffModelsList();
                     objList.TrainList = new List<TrainingStaffModels>();
 
-                    string Ssqlstmt1 = "select id_training_trans,id_training,training_type,justification,scheduled_date,acceptance,suggestion " +
+                    string Ssqlstmt1 = "select id_training_trans,id_training,training_type,justification,scheduled_date,acceptance,suggestion,criticality,scheduled_date " +
                         "from t_training_staff_trans where id_training = '" + sid_training + "'";
                     DataSet dsTrainList = objGlobaldata.Getdetails(Ssqlstmt1);
                     if (dsTrainList.Tables.Count > 0 && dsTrainList.Tables[0].Rows.Count > 0)
@@ -353,6 +356,7 @@ namespace ISOStd.Controllers
                                 {
                                     id_training_trans = dsTrainList.Tables[0].Rows[i]["id_training_trans"].ToString(),
                                     training_type = dsTrainList.Tables[0].Rows[i]["training_type"].ToString(),
+                                    criticality = dsTrainList.Tables[0].Rows[i]["criticality"].ToString(),
                                     justification = dsTrainList.Tables[0].Rows[i]["justification"].ToString(),
                                     acceptance = dsTrainList.Tables[0].Rows[i]["acceptance"].ToString(),
                                     suggestion = dsTrainList.Tables[0].Rows[i]["suggestion"].ToString(),
@@ -407,13 +411,15 @@ namespace ISOStd.Controllers
                     if (form["training_type " + i] != null)
                     {
                         objTrainingMdl.training_type = form["training_type " + i];
+                        objTrainingMdl.criticality = form["criticality " + i];
                         objTrainingMdl.justification = form["justification " + i];
                         objTrainingMdl.acceptance = form["acceptance " + i];
                         objTrainingMdl.suggestion = form["suggestion " + i];
-
+                        objTrainingMdl.scheduled_time = form["scheduled_time " + i];
                         if (DateTime.TryParse(form["scheduled_date " + i], out dateValue) == true)
                         {
                             objTrainingMdl.scheduled_date = dateValue;
+
                         }
                         objList.TrainList.Add(objTrainingMdl);
                     }
@@ -489,7 +495,7 @@ namespace ISOStd.Controllers
                     TrainingStaffModelsList objList = new TrainingStaffModelsList();
                     objList.TrainList = new List<TrainingStaffModels>();
 
-                    string Ssqlstmt1 = "select id_training_trans,id_training,training_type,justification,scheduled_date,acceptance,suggestion " +
+                    string Ssqlstmt1 = "select id_training_trans,id_training,training_type,justification,scheduled_date,acceptance,suggestion,criticality " +
                         "from t_training_staff_trans where id_training = '" + sid_training + "'";
                     DataSet dsTrainList = objGlobaldata.Getdetails(Ssqlstmt1);
                     if (dsTrainList.Tables.Count > 0 && dsTrainList.Tables[0].Rows.Count > 0)
@@ -505,6 +511,7 @@ namespace ISOStd.Controllers
                                     justification = dsTrainList.Tables[0].Rows[i]["justification"].ToString(),
                                     acceptance = dsTrainList.Tables[0].Rows[i]["acceptance"].ToString(),
                                     suggestion = dsTrainList.Tables[0].Rows[i]["suggestion"].ToString(),
+                                    criticality = dsTrainList.Tables[0].Rows[i]["criticality"].ToString(),
                                 };
                                 DateTime dtDocDate;
                                 if (dsTrainList.Tables[0].Rows[i]["scheduled_date"].ToString() != ""
@@ -755,7 +762,7 @@ namespace ISOStd.Controllers
                 {
                     string sid_training = Request.QueryString["id_training"];
                     string sSqlstmt = "select id_training,employee,date_taining,dept_head,comments,comment_head,start_date,end_date,conducted_by,details," +
-                        "upload,effective,reason,recommendation,traing_required,notify_to,training_status from t_training_staff where id_training = '" + sid_training + "'";
+                        "upload,effective,reason,recommendation,traing_required,notify_to,training_status,due_date from t_training_staff where id_training = '" + sid_training + "'";
                     DataSet dsTrainingList = objGlobaldata.Getdetails(sSqlstmt);
                     if (dsTrainingList.Tables.Count > 0 && dsTrainingList.Tables[0].Rows.Count > 0)
                     {
@@ -797,7 +804,11 @@ namespace ISOStd.Controllers
                             {
                                 objTrainingMdl.end_date = dtDocDate;
                             }
-
+                            if (dsTrainingList.Tables[0].Rows[0]["due_date"].ToString() != ""
+                              && DateTime.TryParse(dsTrainingList.Tables[0].Rows[0]["due_date"].ToString(), out dtDocDate))
+                            {
+                                objTrainingMdl.due_date = dtDocDate;
+                            }
                             string stmt = "Select division,Dept_Id,Designation" +
                             " from t_hr_employee where emp_no ='" + dsTrainingList.Tables[0].Rows[0]["employee"].ToString() + "'";
                             DataSet dsEmpList = objGlobaldata.Getdetails(stmt);
@@ -892,7 +903,10 @@ namespace ISOStd.Controllers
                 {
                     objTraining.end_date = dateValue;
                 }
-
+                if (DateTime.TryParse(form["due_date"], out dateValue) == true)
+                {
+                    objTraining.due_date = dateValue;
+                }
                 HttpPostedFileBase files = Request.Files[0];
 
                 if (upload != null && files.ContentLength > 0)
@@ -961,7 +975,7 @@ namespace ISOStd.Controllers
                 {
                     string sid_training = form["id_training"];
                     string sSqlstmt = "select id_training,employee,date_taining,dept_head,comments,comment_head,start_date,end_date,conducted_by,details," +
-                        "upload,effective,reason,recommendation,traing_required,notify_to,training_status from t_training_staff where id_training = '" + sid_training + "'";
+                        "upload,effective,reason,recommendation,traing_required,notify_to,training_status,due_date from t_training_staff where id_training = '" + sid_training + "'";
                     DataSet dsTrainingList = objGlobaldata.Getdetails(sSqlstmt);
                     if (dsTrainingList.Tables.Count > 0 && dsTrainingList.Tables[0].Rows.Count > 0)
                     {
@@ -1003,7 +1017,11 @@ namespace ISOStd.Controllers
                             {
                                 objTrainingMdl.end_date = dtDocDate;
                             }
-
+                            if (dsTrainingList.Tables[0].Rows[0]["due_date"].ToString() != ""
+                              && DateTime.TryParse(dsTrainingList.Tables[0].Rows[0]["due_date"].ToString(), out dtDocDate))
+                            {
+                                objTrainingMdl.due_date = dtDocDate;
+                            }
                             CompanyModels objCompany = new CompanyModels();
                             dsTrainingList = objCompany.GetCompanyDetailsForReport(dsTrainingList);
 

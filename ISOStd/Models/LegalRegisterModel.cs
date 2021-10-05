@@ -288,10 +288,10 @@ namespace ISOStd.Models
         //t_compliance_obligation_ammendment
         public string id_ammendment { get; set; }
 
-        [Display(Name = "Date of Ammendment")]
+        [Display(Name = "Date of Amendment")]
         public DateTime ammend_date { get; set; }
 
-        [Display(Name = "Details of Ammendment")]
+        [Display(Name = "Details of Amendment")]
         public string ammend_detail { get; set; }
 
         //t_compliance_obligation

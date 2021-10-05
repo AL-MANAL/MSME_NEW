@@ -58,6 +58,12 @@ namespace ISOStd.Models
         [Display(Name = "Id")]
         public string SQ_OptionsId { get; set; }
 
+        [Display(Name = "Method of effectiveness evaluation")]
+        public string method_eval { get; set; }
+
+        [Display(Name = "Further training required")]
+        public string further_training { get; set; }
+
         public MultiSelectList GetTrainingReportNoList()
         {
             DropdownList objReportList = new DropdownList();
@@ -200,7 +206,7 @@ namespace ISOStd.Models
 
 
                 string sSqlstmt = "insert into t_trainings_evalution (report_no, perf_monitor_period, emp_name, upload, comments,emp_perf_improved," +
-                    "action_taken,planned_objective,logged_by,branch";
+                    "action_taken,planned_objective,logged_by,branch,method_eval,further_training";
 
                 //if (ObjModel.evalu_date > Convert.ToDateTime("01/01/0001"))
                 //{
@@ -209,7 +215,7 @@ namespace ISOStd.Models
                 //}
 
                 sSqlstmt = sSqlstmt + sColumn + ") values('" + ObjModel.report_no + "','" + ObjModel.perf_monitor_period + "','" + ObjModel.emp_name
-                 + "','" + ObjModel.upload + "','" + ObjModel.comments + "','" + ObjModel.emp_perf_improved + "','" + ObjModel.action_taken + "','" + ObjModel.planned_objective + "','" + user + "','" + sBranch + "'";
+                 + "','" + ObjModel.upload + "','" + ObjModel.comments + "','" + ObjModel.emp_perf_improved + "','" + ObjModel.action_taken + "','" + ObjModel.planned_objective + "','" + user + "','" + sBranch + "','" + method_eval + "','" + further_training + "'";
 
                 sSqlstmt = sSqlstmt + sValues + ")";
 
@@ -264,7 +270,7 @@ namespace ISOStd.Models
             {
                 string sSqlstmt = "update t_trainings_evalution set perf_monitor_period='" + ObjModel.perf_monitor_period + "', emp_name='" + ObjModel.emp_name
                     + "', comments='" + ObjModel.comments + "', upload='" + ObjModel.upload + "', emp_perf_improved='" + ObjModel.emp_perf_improved + "', action_taken='" + ObjModel.action_taken
-                     + "', planned_objective='" + ObjModel.planned_objective + "'";
+                     + "', planned_objective='" + ObjModel.planned_objective + "', method_eval='" + ObjModel.method_eval + "', further_training='" + ObjModel.further_training + "'";
 
                 //if (ObjModel.upload != null)
                 //{

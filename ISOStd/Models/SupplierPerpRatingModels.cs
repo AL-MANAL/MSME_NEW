@@ -58,6 +58,9 @@ namespace ISOStd.Models
         [Display(Name = "Location")]
         public string Location { get; set; }
 
+        [Display(Name = "Evaluated By")]
+        public string evaluated_by { get; set; }
+
         //Trans
 
         [Display(Name = "ID")]
@@ -80,7 +83,7 @@ namespace ISOStd.Models
 
 
                 string sSqlstmt = "insert into t_supplier_perf_rating (supplier_name, auditee, auditor, upload, loggedby,overall_perf,exceptional," +
-                    "satisfactory,unsatisfactory,na,insufficient,branch,Department,Location";
+                    "satisfactory,unsatisfactory,na,insufficient,branch,Department,Location,evaluated_by";
 
                 if (ObjModel.evalu_date > Convert.ToDateTime("01/01/0001"))
                 {
@@ -90,7 +93,7 @@ namespace ISOStd.Models
 
                 sSqlstmt = sSqlstmt + sColumn + ") values('" + ObjModel.supplier_name + "','" + ObjModel.auditee + "','" + ObjModel.auditor
                  + "','" + ObjModel.upload + "','" + user + "','" + ObjModel.overall_perf + "','" + ObjModel.exceptional + "','" + ObjModel.satisfactory
-                 + "','" + ObjModel.unsatisfactory + "','" + ObjModel.na + "','" + ObjModel.insufficient + "','" + ObjModel.branch + "','" + ObjModel.Department + "','" + ObjModel.Location + "'";
+                 + "','" + ObjModel.unsatisfactory + "','" + ObjModel.na + "','" + ObjModel.insufficient + "','" + ObjModel.branch + "','" + ObjModel.Department + "','" + ObjModel.Location + "','" + ObjModel.evaluated_by + "'";
 
                 sSqlstmt = sSqlstmt + sValues + ")";
 
@@ -146,7 +149,7 @@ namespace ISOStd.Models
                 string sSqlstmt = "update t_supplier_perf_rating set supplier_name='" + ObjModel.supplier_name + "', auditee='" + ObjModel.auditee
                     + "', auditor='" + ObjModel.auditor + "', overall_perf='" + ObjModel.overall_perf + "', exceptional='" + ObjModel.exceptional + "', satisfactory='" + ObjModel.satisfactory
                      + "', unsatisfactory='" + ObjModel.unsatisfactory + "', na='" + ObjModel.na + "', insufficient='" + ObjModel.insufficient
-                      + "', branch='" + ObjModel.branch + "', Department='" + ObjModel.Department + "', Location='" + ObjModel.Location + "'"; 
+                      + "', branch='" + ObjModel.branch + "', Department='" + ObjModel.Department + "', Location='" + ObjModel.Location + "', evaluated_by='" + ObjModel.evaluated_by + "'"; 
 
                 if (ObjModel.upload != null)
                 {

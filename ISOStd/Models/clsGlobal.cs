@@ -25,6 +25,90 @@ namespace ISOStd.Models
         private object fileUploader;
         private object mail;
 
+        //--------------------------------10/14/2021-----------------------------------------------
+        public string GetQAQCDeptEmployees()
+        {
+            try
+            {
+                string sSqlstmt = "select group_concat(emp_no) emp_no"
+               + " from t_hr_employee t,t_departments tt where emp_status = 1 and t.Dept_Id = tt.DeptId and DeptName like '%QA/QC%'";
+
+                DataSet dsData = Getdetails(sSqlstmt);
+                if (dsData.Tables.Count > 0 && dsData.Tables[0].Rows.Count > 0 && dsData.Tables[0].Rows[0]["emp_no"].ToString() != "")
+                {
+                    return (dsData.Tables[0].Rows[0]["emp_no"].ToString());
+                }
+
+            }
+            catch (Exception ex)
+            {
+                AddFunctionalLog("Exception in GetQAQCDeptEmployees: " + ex.ToString());
+            }
+            return "";
+        }
+        //returning emp_no by name
+        public string GetEmpIDByEmpName(string emp_firstname)
+        {
+            try
+            {
+                if (emp_firstname != "")
+                {
+                    DataSet dsComp = Getdetails("select emp_no from t_hr_employee where emp_firstname='" + emp_firstname + "' and emp_status=1");
+                    if (dsComp.Tables.Count > 0 && dsComp.Tables[0].Rows.Count > 0)
+                    {
+                        return (dsComp.Tables[0].Rows[0]["emp_no"].ToString());
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                AddFunctionalLog("Exception in GetEmpIDByEmpName: " + ex.ToString());
+            }
+            return "";
+        }
+        public DataSet getListPendingForSupplierPerfReview(string sempid)
+        {
+            try
+            {
+                string sSqlstmt = "select Id_Performace,ReportNo,Ext_Provider_Name,Scheduled_by from t_extprovider_performance where active=1 and " +
+                    "(apprv_status = '0' and find_in_set('" + sempid + "',Approved_by)) ";
+
+                DataSet dsApprovalList = Getdetails(sSqlstmt);
+                if (dsApprovalList.Tables.Count > 0 && dsApprovalList.Tables[0].Rows.Count > 0)
+                {
+                    return dsApprovalList;
+                }
+            }
+            catch (Exception ex)
+            {
+                AddFunctionalLog("Exception in getListPendingForSupplierPerfReview: " + ex.ToString());
+            }
+            return null;
+        }
+
+        //--------------------------------10/7/2021------------------------------------------------
+        public string GetNCNOById(string item_id)
+        {
+            try
+            {
+                if (item_id != "")
+                {
+                    string sSqlstmt = "select group_concat(nc_no) nc_no from t_nc where id_nc in (" + item_id + ")";
+
+                    DataSet dsData = Getdetails(sSqlstmt);
+                    if (dsData.Tables.Count > 0 && dsData.Tables[0].Rows.Count > 0)
+                    {
+                        return (dsData.Tables[0].Rows[0]["nc_no"].ToString());
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                AddFunctionalLog("Exception in GetNCNOById: " + ex.ToString());
+            }
+            return "";
+        }
+
         //--------------------------------9/30/2021-------------------------------------------------
         public DataSet getListPendingForReviewEmpCompetence(string sempid) // emp competence eval review
         {
@@ -11780,6 +11864,11 @@ namespace ISOStd.Models
 
             switch (sType)
             {
+                case "ExtProviderPerf":
+
+                    dicKeyValue.Add("2", "Reviewed");
+                    dicKeyValue.Add("1", "Rejected");
+                    return dicKeyValue;
                 case "CompetenceEvalApprove":
 
                     dicKeyValue.Add("4", "Approved");

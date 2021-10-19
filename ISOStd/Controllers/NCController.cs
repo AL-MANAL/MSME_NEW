@@ -48,6 +48,7 @@ namespace ISOStd.Controllers
                 { 
                    ViewBag.objective_Id = Request.QueryString["objective_Id"];
                 }
+                ViewBag.SupplierList = objGlobaldata.GetSupplierList();
             }
             catch (Exception ex)
             {
@@ -1952,7 +1953,7 @@ namespace ISOStd.Controllers
                                     part_name = (dsNCModels.Tables[0].Rows[0]["part_name"].ToString()),
                                     stage = (dsNCModels.Tables[0].Rows[0]["stage"].ToString()),
                                     nc_resp_pers = (dsNCModels.Tables[0].Rows[0]["nc_resp_pers"].ToString()),
-                                    supplier_name = (dsNCModels.Tables[0].Rows[0]["supplier_name"].ToString()),
+                                    supplier_name =objGlobaldata.GetSupplierNameById(dsNCModels.Tables[0].Rows[0]["supplier_name"].ToString()),
                                     supplier_dc = (dsNCModels.Tables[0].Rows[0]["supplier_dc"].ToString()),
                                     dc_po = (dsNCModels.Tables[0].Rows[0]["dc_po"].ToString()),
                                     batch_qty = (dsNCModels.Tables[0].Rows[0]["batch_qty"].ToString()),

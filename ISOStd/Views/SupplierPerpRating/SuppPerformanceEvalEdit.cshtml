@@ -55,22 +55,22 @@
             <div class="header-elements d-none">
                 <div class="breadcrumb justify-content-center">
 
-                     <div class="breadcrumb-elements-item dropdown p-0">                          
-                         <a href="#" data-toggle="popover" data-trigger="hover" class="dropdown-item">
-                              <i class="icon-newspaper"></i>
-                             Rating 
-                         </a> 
-                        </div>
-                    @*<div class="breadcrumb-elements-item dropdown p-0">
-                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
-                            <i class="icon-gear mr-2"></i>
-                            Settings
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" data-toggle="popover" data-trigger="hover" class="dropdown-item">
+                            <i class="icon-newspaper"></i>
+                            Rating
                         </a>
-                        <div class="dropdown-menu dropdown-menu-right">
-                            <div class="dropdown-divider"></div>
-                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
-                        </div>
-                    </div>*@
+                    </div>
+                    @*<div class="breadcrumb-elements-item dropdown p-0">
+                            <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                                <i class="icon-gear mr-2"></i>
+                                Settings
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <div class="dropdown-divider"></div>
+                                <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                            </div>
+                        </div>*@
                 </div>
             </div>
         </div>
@@ -78,11 +78,11 @@
 }
 
 @using (Html.BeginForm("SuppPerformanceEvalEdit", "SupplierPerpRating", FormMethod.Post,
-                     new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+                                 new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
 {
     @Html.AntiForgeryToken()
     @Html.ValidationSummary(true)
-     <input type="hidden" id="id_sup_rating" name="id_sup_rating" value="@Model.id_sup_rating" />
+    <input type="hidden" id="id_sup_rating" name="id_sup_rating" value="@Model.id_sup_rating" />
 
     <div class="card">
         <div class="card-header header-elements-inline bg-primary">
@@ -220,18 +220,18 @@
                     <tr class="row">
                         <td class="col-xs-3 col-md-2">
                             <div class="editor-label">
-                                @Html.LabelFor(model => model.auditor)<text style="color:red;">*</text>
+                                @Html.LabelFor(model => model.evaluated_by)
                             </div>
                         </td>
-                        <td class="col">
+                        <td class="col-xs-3 col-md-4">
                             <div class="editor-field">
-                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="auditor" name="auditor" required>
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="evaluated_by" name="evaluated_by">
                                     <option value='' hidden>Select</option>
                                     @if (ViewBag.EmpList != null)
                                     {
                                         foreach (var item in ViewBag.EmpList)
                                         {
-                                            if (item.Value == Model.auditor)
+                                            if (item.Value == Model.evaluated_by)
                                             {
                                                 <option value='@item.Value' selected>@item.Text</option>
                                             }
@@ -242,137 +242,98 @@
                                         }
                                     }
                                 </select>
-                                @Html.ValidationMessageFor(model => model.auditor)
-                            </div>
-                        </td>
-                        <td class="col-xs-3 col-md-2">
-                            <div class="editor-label">
-                                @Html.LabelFor(model => model.auditee)
-                            </div>
-                        </td>
-                        <td class="col">
-                            <div class="editor-field">
-                                @Html.EditorFor(model => model.auditee, new { htmlAttributes = new { @required = "required", @class = "form-control" } })
+
                             </div>
                         </td>
                     </tr>
-                    <tr class="row">
-                        <td class="col-xs-3 col-md-2">
-                            <div class="editor-label">
-                                @Html.LabelFor(model => model.upload)
-                            </div>
-                        </td>
-                        <td class="col">
-                            <input type="file" name="upload" id="upload" title="Documents" onchange="FileFormatValidation(this)"
-                                   multiple="multiple" accept=".pdf, .doc, .docx,.xls,.xlsx,.png,.jpeg,.jpg,.image/*" class="bootstrap-uploader" data-fouc />
 
-                            <span class="form-text text-muted"><code>(Hold Ctrl Key in case of multiple files or drag multiple files and drop here)</code></span>
-                            <br />
-                            @if (Model.upload != null && Model.upload != "" && Model.upload.Length > 0)
-                            {
-                                <h6> <span class="bg-dark py-1 px-2 rounded">Document List</span></h6>
-
-                                <span class="form-text text-muted">
-                                    <code>
-                                        (Uncheck in case to remove a uploaded file)
-                                    </code>
-                                </span>
-                                foreach (var docs in Model.upload.Trim(',').Split(','))
-                                {
-                                    <div class="form-check">
-                                        <label class="form-check-label">
-                                            <input type="checkbox" id="QCDocsVal" name="QCDocsVal" class="form-check-input-styled QCDocsVal" value="@docs.Trim(',')" checked title="Uncheck in case to remove a uploaded file" data-fouc />
-                                            <input type="hidden" id="QCDocsValselectall" name="QCDocsValselectall" />
-                                            <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" class="text-orange">
-                                                @System.IO.Path.GetFileName(docs)
-                                            </a>
-                                        </label>
-                                    </div>
-                                }
-                            }
-                        </td>
-                        @*<td class="col">
-                <div class="editor-field">
-                     <input type="file" name="fileUploader" id="Upload" onchange="FileFormatValidation(this)" accept=".pdf,.xlsx,.xls,.doc,.docx" class="bootstrap-uploader" data-fouc />
-                  @if (Model.upload != "")
-                  {
-                   <span class="bg-dark py-1 px-2 rounded">
-                       <a href='@Url.Action("DisplayDocument", "Reports", new { Document = Model.upload })' target="_blank">Preview</a>
-                   </span>
-                  }
-                </div>
-            </td>*@
-                        <td class="col-xs-3 col-md-2">
-                            <div class="editor-label">
-                                @Html.LabelFor(model => model.overall_perf)
-                            </div>
-                        </td>
-                        <td class="col">
-                            <div class="editor-field">
-                                @if (ViewBag.Performance != null)
-                                {
-                                    foreach (var item in ViewBag.Performance)
-                                    {
-                                        if (item.Value == Model.overall_perf)
+                    @*<tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.auditor)<text style="color:red;">*</text>
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="auditor" name="auditor" required>
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.EmpList != null)
                                         {
-                                            <input type="radio" name="overall_perf" value='@item.Value' checked />@item.Text
+                                            foreach (var item in ViewBag.EmpList)
+                                            {
+                                                if (item.Value == Model.auditor)
+                                                {
+                                                    <option value='@item.Value' selected>@item.Text</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+                                                }
+                                            }
                                         }
-                                        else
-                                        {
-                                            <input type="radio" name="overall_perf" value='@item.Value' />@item.Text
-                                        }
-                                    }
-                                }
-                            </div>
-                        </td>
-                    </tr>
+                                    </select>
+                                    @Html.ValidationMessageFor(model => model.auditor)
+                                </div>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.auditee)
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.auditee, new { htmlAttributes = new { @required = "required", @class = "form-control" } })
+                                </div>
+                            </td>
+                        </tr>*@
+                   
                 </table>
             </div>
         </div>
-     
+
     </div>
-    
-    
+
+
     <div class="card">
-<div class="card-body">
-    <div style="overflow-x:auto;">
-                     <table class="table table-lg">
+        <div class="card-body">
+            <div style="overflow-x:auto;">
+                <table class="table table-lg">
                     <thead>
 
                         <tr>
-                         <th>
-                            Sl.No
-                        </th>
-                        <th>
-                             Questions
-                        </th>
-                       @if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                            <th>
+                                Sl.No
+                            </th>
+                            <th>
+                                Questions
+                            </th>
+                            @if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
                        {
                            for (int item = 0; item < dsrating.Tables[0].Rows.Count; item++)
                            {
-                        <th>
-                            @dsrating.Tables[0].Rows[item]["RatingOptions"].ToString()
-                        </th>
+                            <th>
+                                @dsrating.Tables[0].Rows[item]["RatingOptions"].ToString()
+                            </th>
                            }
                        }
                     </thead>
                     <tbody>
-            @if (ViewBag.SurveyQuestions != null)
+                        @if (ViewBag.SurveyQuestions != null)
             {
                 int iSrno = 0;
                 foreach (var item in ViewBag.SurveyQuestions)
                 {
                     iSrno = iSrno + 1;
-                                <tr>
-                                     <td>
-	                           @iSrno
-                                    </td>
+                        <tr>
                             <td>
-   			                @item.Text
-                            <input type="hidden" id="Question @item.Value" name="Question @item.Value" value="@item.Value" />
-			                </td>
+                                @iSrno
+                            </td>
+                            <td>
+                                @item.Text
+                                <input type="hidden" id="Question @item.Value" name="Question @item.Value" value="@item.Value" />
+                            </td>
 
-                    @if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                            @if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
                     {
 
                         if (dicPerformanceElements.ContainsKey(item.Value))
@@ -386,17 +347,17 @@
                                     if (dicPerformanceElements[item.Value] == dsrating.Tables[0].Rows[rating]["SQ_OptionsId"].ToString())
                                     {
 
-                            <td>
-                                <input type="radio" id="SQ_OptionsId @item.Value" name="SQ_OptionsId @item.Value" class="radioClass"
-                                       value="@dsrating.Tables[0].Rows[rating]["RatingOptions"].ToString()" checked required />
-                            </td>
+                                    <td>
+                                        <input type="radio" id="SQ_OptionsId @item.Value" name="SQ_OptionsId @item.Value" class="radioClass"
+                                               value="@dsrating.Tables[0].Rows[rating]["RatingOptions"].ToString()" checked required />
+                                    </td>
                                     }
                                     else
                                     {
-                            <td>
-                                <input type="radio" id="SQ_OptionsId @item.Value" name="SQ_OptionsId @item.Value" class="radioClass"
-                                       value="@dsrating.Tables[0].Rows[rating]["RatingOptions"].ToString()" required />
-                            </td>
+                                    <td>
+                                        <input type="radio" id="SQ_OptionsId @item.Value" name="SQ_OptionsId @item.Value" class="radioClass"
+                                               value="@dsrating.Tables[0].Rows[rating]["RatingOptions"].ToString()" required />
+                                    </td>
                                     }
 
                                 }
@@ -406,179 +367,261 @@
                         {
                             for (int rating = 0; rating < dsrating.Tables[0].Rows.Count; rating++)
                             {
-                  <td>
-                            @if (ViewBag.PerformanceElement != null)
+                                    <td>
+                                        @if (ViewBag.PerformanceElement != null)
                             {
-                                <input type="radio" id="SQ_OptionsId @item.Value" name="SQ_OptionsId @item.Value" class="radioClass"
-                                       value="@dsrating.Tables[0].Rows[rating]["RatingOptions"].ToString()" />
+                    <input type="radio" id="SQ_OptionsId @item.Value" name="SQ_OptionsId @item.Value" class="radioClass"
+                           value="@dsrating.Tables[0].Rows[rating]["RatingOptions"].ToString()" />
                             }
 
-                        </td>
+                                    </td>
                             }
                         }
 
                     }
-                               
-                </tr>
-                         
+
+                        </tr>
+
                 }
             }
 
                     </tbody>
                 </table>
-        </div>
             </div>
-     <div class="card-footer bg-white d-flex justify-content-between align-items-center">
-          @Html.ActionLink("Back to List", "SuppPerformanceEvalList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
-  
-          <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Add</button>
-      </div>
-
-</div>
+        </div>
       
+    </div>
+
     <div class="card">
-<div class="card-body">
+        <div class="card-body">
 
-<table class="table table-lg">
-  
-    
-    <tr class="row"> 
- 			<td class="col-xs-3 col-md-2">
-                            Exceptional <input  class="form-control" type="text" id="Exceptional" name="Exceptional" value="@Model.exceptional" readonly style="background :#efefe6;" />
-                        </td>
-			<td class="col-xs-3 col-md-2">
-                            Satisfactory <input  class="form-control" type="text" id="Satisfactory" name="Satisfactory" value="@Model.satisfactory" readonly style="background :#efefe6;" />  
-                        </td>
-			<td class="col-xs-3 col-md-2">
-                           Unsatisfactory<input  class="form-control" type="text" id="Unsatisfactory" name="Unsatisfactory" value="@Model.unsatisfactory" readonly style="background :#efefe6;" />    
-                        </td>
-			<td class="col-xs-3 col-md-2">
-                           N/A <input  class="form-control" type="text" id="N/A" name="N/A"  value="@Model.na" readonly style="background :#efefe6;" />   
-                        </td>
-            <td class="col-xs-3 col-md-3">
-                         Insufficient info. to rate<input  class="form-control" type="text" id="Insufficient" name="Insufficient" value="@Model.insufficient" readonly style="background :#efefe6;" />
-                        </td>
-</tr>
-</table>
-
-</div>
-</div>
-}
+            <table class="table table-lg">
 
 
-@section Scripts {
-    <script>
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        Exceptional <input class="form-control" type="text" id="Exceptional" name="Exceptional" value="@Model.exceptional" readonly style="background :#efefe6;" />
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        Satisfactory <input class="form-control" type="text" id="Satisfactory" name="Satisfactory" value="@Model.satisfactory" readonly style="background :#efefe6;" />
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        Unsatisfactory<input class="form-control" type="text" id="Unsatisfactory" name="Unsatisfactory" value="@Model.unsatisfactory" readonly style="background :#efefe6;" />
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        N/A <input class="form-control" type="text" id="N/A" name="N/A" value="@Model.na" readonly style="background :#efefe6;" />
+                    </td>
+                    <td class="col-xs-3 col-md-3">
+                        Insufficient info. to rate<input class="form-control" type="text" id="Insufficient" name="Insufficient" value="@Model.insufficient" readonly style="background :#efefe6;" />
+                    </td>
+                </tr>
+            </table>
 
-        $(document).ready(function () {
+        </div>
+    </div>
 
-        @if (TempData["alertdata"] != null)
+    <div class="card">
+        <div class="card-body">
+            <table class="table table-lg">
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.upload)
+                        </div>
+                    </td>
+                    <td class="col">
+                        <input type="file" name="upload" id="upload" title="Documents" onchange="FileFormatValidation(this)"
+                               multiple="multiple" accept=".pdf, .doc, .docx,.xls,.xlsx,.png,.jpeg,.jpg,.image/*" class="bootstrap-uploader" data-fouc />
+
+                        <span class="form-text text-muted"><code>(Hold Ctrl Key in case of multiple files or drag multiple files and drop here)</code></span>
+                        <br />
+                        @if (Model.upload != null && Model.upload != "" && Model.upload.Length > 0)
+                        {
+                            <h6> <span class="bg-dark py-1 px-2 rounded">Document List</span></h6>
+
+                            <span class="form-text text-muted">
+                                <code>
+                                    (Uncheck in case to remove a uploaded file)
+                                </code>
+                            </span>
+                            foreach (var docs in Model.upload.Trim(',').Split(','))
+                            {
+                                <div class="form-check">
+                                    <label class="form-check-label">
+                                        <input type="checkbox" id="QCDocsVal" name="QCDocsVal" class="form-check-input-styled QCDocsVal" value="@docs.Trim(',')" checked title="Uncheck in case to remove a uploaded file" data-fouc />
+                                        <input type="hidden" id="QCDocsValselectall" name="QCDocsValselectall" />
+                                        <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" class="text-orange">
+                                            @System.IO.Path.GetFileName(docs)
+                                        </a>
+                                    </label>
+                                </div>
+                            }
+                        }
+                    </td>
+                    @*<td class="col">
+                    <div class="editor-field">
+                         <input type="file" name="fileUploader" id="Upload" onchange="FileFormatValidation(this)" accept=".pdf,.xlsx,.xls,.doc,.docx" class="bootstrap-uploader" data-fouc />
+                      @if (Model.upload != "")
+                      {
+                       <span class="bg-dark py-1 px-2 rounded">
+                           <a href='@Url.Action("DisplayDocument", "Reports", new { Document = Model.upload })' target="_blank">Preview</a>
+                       </span>
+                      }
+                    </div>
+                </td>*@
+                    <td class="col-xs-3 col-md-2">
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.overall_perf)
+                        </div>
+                    </td>
+                    <td class="col">
+                        <div class="editor-field">
+                            @if (ViewBag.Performance != null)
+                            {
+                                foreach (var item in ViewBag.Performance)
+                                {
+                                    if (item.Value == Model.overall_perf)
+                                    {
+                                        <input type="radio" name="overall_perf" value='@item.Value' checked />@item.Text
+                                    }
+                                    else
+                                    {
+                                        <input type="radio" name="overall_perf" value='@item.Value' />@item.Text
+                                    }
+                                }
+                            }
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            </div>
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+            @Html.ActionLink("Back to List", "SuppPerformanceEvalList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+
+            <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Add</button>
+        </div>
+
+        </div>
+
+
+            }
+
+
+            @section Scripts {
+                <script>
+
+                    $(document).ready(function () {
+
+                        @if (TempData["alertdata"] != null)
         {
 
            @: new Noty({
-                                                                       @:     text: '@TempData["alertdata"]',
-                                                                       @:     type: 'error'
-                                                                       @: }).show();
-                                                              }
+                                                                                                   @:     text: '@TempData["alertdata"]',
+                                                                                                   @:     type: 'error'
+                                                                                                   @:
+                        }).show();
+                                                                                      }
 
-        @if (@TempData["Successdata"] != null)
+                        @if (@TempData["Successdata"] != null)
         {
 
         @:    new Noty({
-                                                                     @:       text: '@TempData["Successdata"]',
-                                                                     @:       type: 'success'
-         @:}).show();
-        }
-        });
-        function FileFormatValidation(file) {
-            var ext = file.value.split(".").pop().toLowerCase();
-            if ($.inArray(ext, ["doc", "pdf", "docx", "jpg", "jpeg", "gif", "png"]) == -1) {
-                file.value = "";
-                jAlert("Invalid file format, please upload only doc, pdf, docx, jpg, jpeg, gif, png format");
-            }
-        }
+                                                                                                 @:       text: '@TempData["Successdata"]',
+                                                                                                 @:       type: 'success'
+                                     @:
+                        }).show();
+                                }
+                    });
+                    function FileFormatValidation(file) {
+                        var ext = file.value.split(".").pop().toLowerCase();
+                        if ($.inArray(ext, ["doc", "pdf", "docx", "jpg", "jpeg", "gif", "png"]) == -1) {
+                            file.value = "";
+                            jAlert("Invalid file format, please upload only doc, pdf, docx, jpg, jpeg, gif, png format");
+                        }
+                    }
 
-        $(document).ready(function () {
-            var varExceptional = document.getElementById("Exceptional").value;
-            var varSatisfactory = document.getElementById("Satisfactory").value;
-            var varUnsatisfactory = document.getElementById("Unsatisfactory").value;;
-            var varna = document.getElementById("N/A").value;
-            var varInsufficient = document.getElementById("Insufficient").value;
+                    $(document).ready(function () {
+                        var varExceptional = document.getElementById("Exceptional").value;
+                        var varSatisfactory = document.getElementById("Satisfactory").value;
+                        var varUnsatisfactory = document.getElementById("Unsatisfactory").value;;
+                        var varna = document.getElementById("N/A").value;
+                        var varInsufficient = document.getElementById("Insufficient").value;
 
-            setupDeselectEvent(true);
-
-
-            $('input[class="radioClass"]').on('deselect', function () {
-                //alert(+ this.value + ' deselected');
-                if (this.value.trim() == "Exceptional") {
-                    varExceptional--;
-                    document.getElementById("Exceptional").value = varExceptional;
-                }
-                if (this.value.trim() == "Satisfactory") {
-                    varSatisfactory--;
-                    document.getElementById("Satisfactory").value = varSatisfactory;
-                }
-                if (this.value.trim() == "Unsatisfactory") {
-                    varUnsatisfactory--;
-                    document.getElementById("Unsatisfactory").value = varUnsatisfactory;
-                }
-                if (this.value.trim() == "N/A") {
-                    varna--;
-                    document.getElementById("N/A").value = varna;
-                }
-                if (this.value.trim() == "Insufficient info. to rate") {
-                    varInsufficient--;
-                    document.getElementById("Insufficient").value = varInsufficient;
-                }
-
-            }).on('change', function () {
-                //alert( + this.value + ' selected');
-                if (this.value.trim() == "Exceptional") {
-                    varExceptional++;
-                    document.getElementById("Exceptional").value = varExceptional;
-                }
-                if (this.value.trim() == "Satisfactory") {
-                    varSatisfactory++;
-                    document.getElementById("Satisfactory").value = varSatisfactory;
-                }
-                if (this.value.trim() == "Unsatisfactory") {
-                    varUnsatisfactory++;
-                    document.getElementById("Unsatisfactory").value = varUnsatisfactory;
-                }
-                if (this.value.trim() == "N/A") {
-                    varna++;
-                    document.getElementById("N/A").value = varna;
-                }
-                if (this.value.trim() == "Insufficient info. to rate") {
-                    varInsufficient++;
-                    document.getElementById("Insufficient").value = varInsufficient;
-                }
-            });
-
-            //$('[data-toggle="popover"]').popover({
-
-            //    title: setData,
-            //    html: true,
-            //    placement: 'right',
-            //    container: 'body'
-            //});
-            $('[data-toggle="popover"]').popover({
-
-                html: true,
-                content: setData,
-                container: 'body'
-                //data: setData,
+                        setupDeselectEvent(true);
 
 
-            });
-                
-        });
-        function setData(id) {
+                        $('input[class="radioClass"]').on('deselect', function () {
+                            //alert(+ this.value + ' deselected');
+                            if (this.value.trim() == "Exceptional") {
+                                varExceptional--;
+                                document.getElementById("Exceptional").value = varExceptional;
+                            }
+                            if (this.value.trim() == "Satisfactory") {
+                                varSatisfactory--;
+                                document.getElementById("Satisfactory").value = varSatisfactory;
+                            }
+                            if (this.value.trim() == "Unsatisfactory") {
+                                varUnsatisfactory--;
+                                document.getElementById("Unsatisfactory").value = varUnsatisfactory;
+                            }
+                            if (this.value.trim() == "N/A") {
+                                varna--;
+                                document.getElementById("N/A").value = varna;
+                            }
+                            if (this.value.trim() == "Insufficient info. to rate") {
+                                varInsufficient--;
+                                document.getElementById("Insufficient").value = varInsufficient;
+                            }
 
-            var set_data = '';
-            var element = $(this);
-            var id = element.attr("id");
-            $.ajax({
-                url: '@Url.Action("GetRating", "SupplierPerpRating")',
+                        }).on('change', function () {
+                            //alert( + this.value + ' selected');
+                            if (this.value.trim() == "Exceptional") {
+                                varExceptional++;
+                                document.getElementById("Exceptional").value = varExceptional;
+                            }
+                            if (this.value.trim() == "Satisfactory") {
+                                varSatisfactory++;
+                                document.getElementById("Satisfactory").value = varSatisfactory;
+                            }
+                            if (this.value.trim() == "Unsatisfactory") {
+                                varUnsatisfactory++;
+                                document.getElementById("Unsatisfactory").value = varUnsatisfactory;
+                            }
+                            if (this.value.trim() == "N/A") {
+                                varna++;
+                                document.getElementById("N/A").value = varna;
+                            }
+                            if (this.value.trim() == "Insufficient info. to rate") {
+                                varInsufficient++;
+                                document.getElementById("Insufficient").value = varInsufficient;
+                            }
+                        });
+
+                        //$('[data-toggle="popover"]').popover({
+
+                        //    title: setData,
+                        //    html: true,
+                        //    placement: 'right',
+                        //    container: 'body'
+                        //});
+                        $('[data-toggle="popover"]').popover({
+
+                            html: true,
+                            content: setData,
+                            container: 'body'
+                            //data: setData,
+
+
+                        });
+
+                    });
+                    function setData(id) {
+
+                        var set_data = '';
+                        var element = $(this);
+                        var id = element.attr("id");
+                        $.ajax({
+                            url: '@Url.Action("GetRating", "SupplierPerpRating")',
                             methos: "post",
                             async: false,
                             data: { id: id },
@@ -592,46 +635,46 @@
                         return set_data;
                     }
 
-        function setupDeselectEvent() {
-            var selected = {};
-            $('input[type="radio"]').on('click', function () {
-                if (this.name in selected && this != selected[this.name])
-                    $(selected[this.name]).trigger("deselect");
-                selected[this.name] = this;
-            }).filter(':checked').each(function () {
-                selected[this.name] = this;
-            });
-        }
-        function GetDeptList() {
-            var selectedValues = [];
-            $("#branch :selected").each(function () {
-                selectedValues.push($(this).val());
-            });
-            var svalue = selectedValues.join(",");
-            /*GetAuditorList();*/
-            updateDeptnlocation(svalue, "Location", "location");
-            updateDeptnlocation(svalue, "Department", "department");
-        }
+                    function setupDeselectEvent() {
+                        var selected = {};
+                        $('input[type="radio"]').on('click', function () {
+                            if (this.name in selected && this != selected[this.name])
+                                $(selected[this.name]).trigger("deselect");
+                            selected[this.name] = this;
+                        }).filter(':checked').each(function () {
+                            selected[this.name] = this;
+                        });
+                    }
+                    function GetDeptList() {
+                        var selectedValues = [];
+                        $("#branch :selected").each(function () {
+                            selectedValues.push($(this).val());
+                        });
+                        var svalue = selectedValues.join(",");
+                        /*GetAuditorList();*/
+                        updateDeptnlocation(svalue, "Location", "location");
+                        updateDeptnlocation(svalue, "Department", "department");
+                    }
 
-        function GetAuditorList() {
-            var sbranch = $.map($("#branch option:selected"), function (el, i) {
-                return $(el).val();
-            });
-            var sbvalue = (sbranch.join(","));
+                    function GetAuditorList() {
+                        var sbranch = $.map($("#branch option:selected"), function (el, i) {
+                            return $(el).val();
+                        });
+                        var sbvalue = (sbranch.join(","));
 
-            var sDepartment = $.map($("#Department option:selected"), function (el, i) {
-                return $(el).val();
-            });
-            var sdvalue = (sDepartment.join(","));
+                        var sDepartment = $.map($("#Department option:selected"), function (el, i) {
+                            return $(el).val();
+                        });
+                        var sdvalue = (sDepartment.join(","));
 
-            var sLocation = $.map($("#Location option:selected"), function (el, i) {
-                return $(el).val();
-            });
-            var slvalue = (sLocation.join(","));
+                        var sLocation = $.map($("#Location option:selected"), function (el, i) {
+                            return $(el).val();
+                        });
+                        var slvalue = (sLocation.join(","));
 
-            updateRoleLikeList(sbvalue, sdvalue, slvalue, "auditor", "%Auditor%");
-        }
+                        updateRoleLikeList(sbvalue, sdvalue, slvalue, "auditor", "%Auditor%");
+                    }
 
-    </script>
-    @Scripts.Render("~/bundles/jqueryval")
-}
+                </script>
+                @Scripts.Render("~/bundles/jqueryval")
+            }

@@ -405,7 +405,7 @@ namespace ISOStd.Controllers
                             string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/LegalReg"), Path.GetFileName(file.FileName));
                             string sFilename = "Enquiry" + "_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath), sFilepath = Path.GetDirectoryName(spath);
                             file.SaveAs(sFilepath + "/" + sFilename);
-                            objComp.upload = objComp.upload + "," + "~/DataUpload/MgmtDocs/CRM/" + sFilename;
+                            objComp.upload = objComp.upload + "," + "~/DataUpload/MgmtDocs/LegalReg/" + sFilename;
                         }
                         catch (Exception ex)
                         {

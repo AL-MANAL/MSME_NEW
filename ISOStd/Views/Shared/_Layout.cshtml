@@ -386,6 +386,7 @@
         System.Data.DataSet dsApproveInspPlan = new System.Data.DataSet();
 
         //Review Dataset
+        System.Data.DataSet dsReviewSupPerf = new System.Data.DataSet();
         System.Data.DataSet dsReviewEmpCompetence = new System.Data.DataSet();
         System.Data.DataSet dsReviewMgmtDocuments = new System.Data.DataSet();
         System.Data.DataSet dsReviewLegalRegister = new System.Data.DataSet();
@@ -401,7 +402,9 @@
         int cnt2 = 0; //Review
 
         //Review
-        dsReviewEmpCompetence= objGlobaldata.getListPendingForReviewEmpCompetence(objUser.empid);
+        dsReviewSupPerf = objGlobaldata.getListPendingForSupplierPerfReview(objUser.empid);
+
+        dsReviewEmpCompetence = objGlobaldata.getListPendingForReviewEmpCompetence(objUser.empid);
 
         dsReviewMgmtDocuments = objGlobaldata.getListPendingForReviewSystemDocuments(objUser.empid);
 
@@ -654,6 +657,10 @@
 
 
         //Review
+        if (dsReviewSupPerf != null)
+        {
+            cnt2 += dsReviewSupPerf.Tables[0].Rows.Count;
+        }
         if (dsReviewEmpCompetence != null)
         {
             cnt2 += dsReviewEmpCompetence.Tables[0].Rows.Count;
@@ -1248,6 +1255,35 @@
                         </div>
 
                         <div class="dropdown-content-body dropdown-scrollable">
+                            @if (dsReviewSupPerf != null && dsReviewSupPerf.Tables.Count > 0 && dsReviewSupPerf.Tables[0].Rows.Count > 0)
+                            {
+                                <hr />
+                                <p class="font-weight-bold text-center">External Provider Performance Evaluation</p>
+                                <hr />
+                                <ul class="media-list">
+                                    @for (int i = 0; i < dsReviewSupPerf.Tables[0].Rows.Count; i++)
+                                    {
+
+                                        <li class="media" id="@dsReviewSupPerf.Tables[0].Rows[i]["Id_Performace"].ToString()">
+                                            <div class="mr-3 w-25">
+                                                @*<img src="../../../../global_assets/images/placeholders/placeholder.jpg" width="36" height="36" class="rounded-circle" alt="">*@
+                                                <a href='@Url.Action("ExtProviderPerformanceDetails", "ExtProviderPerformance", new { Id_Performace= dsReviewSupPerf.Tables[0].Rows[i]["Id_Performace"].ToString() })' title="Document Details" class="badge badge-flat badge-icon border-teal text-teal-600"><i class="icon-file-text2"></i></a>
+                                                <br /><span class="font-weight-semibold"> Evaluated By <text class="text-blue">@objGlobaldata.GetMultiHrEmpNameById(dsReviewSupPerf.Tables[0].Rows[i]["Scheduled_by"].ToString())</text></span>
+                                            </div>
+                                            <div class="media-body">
+                                                <div class="btn-group-vertical float-right">
+
+                                                </div>
+                                                <div class="media-title">
+                                                    <span class="font-weight-semibold">Report No:<text class="text-blue">  @(dsReviewSupPerf.Tables[0].Rows[i]["ReportNo"].ToString()) </text></span>
+                                                    <br />
+                                                    <span class="font-weight-semibold">External Provider Name:<text class="text-blue">@objGlobaldata.GetSupplierNameById(dsReviewSupPerf.Tables[0].Rows[i]["Ext_Provider_Name"].ToString()) </text></span>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    }
+                                </ul>
+                            }
                             @if (dsReviewEmpCompetence != null && dsReviewEmpCompetence.Tables.Count > 0 && dsReviewEmpCompetence.Tables[0].Rows.Count > 0)
                             {
                                 <hr />
@@ -2116,6 +2152,7 @@
                                     <span class="badge badge-info">Approve</span>
                                 </a>*@
                                                     <span class="badge badge-info ripple" title="Approve Supplier" onclick="SupplierApproveNoty(SupplierID ='@dsSupplier.Tables[0].Rows[i]["SupplierID"].ToString()', iStatus = '1')" style="cursor:pointer;">Approve</span>
+                                                    <span class="badge badge-danger mt-1 mb-1 ripple" title="Reject Supplier" onclick="SupplierApproveNoty(SupplierID ='@dsSupplier.Tables[0].Rows[i]["SupplierID"].ToString()', iStatus = '2')" style="cursor:pointer;">Reject</span>
 
                                                 </div>
                                                 <div class="media-title">
@@ -3240,8 +3277,8 @@
                                     {
                                         <li class="nav-item"><a href='@Url.Action("SuppPerformanceEvalList", "SupplierPerpRating", null)' class="nav-link @(ViewBag.SubMenutype == "SupplierReportWithRate" ? "active" : "")" onclick="HyperLinkProgressIconFunction()">Supplier Rating</a></li>
                                     }
-                                    <li class="nav-item"><a href='@Url.Action("SuppliedMaterialList", "SuppliedMaterial", null)' class="nav-link @(ViewBag.SubMenutype == "SuppliedMaterial" ? "active" : "")" onclick="HyperLinkProgressIconFunction()">Purchase Details</a></li>
-                                    <li class="nav-item"><a href='@Url.Action("SupplierReevalutionList", "SupplierReevalution", null)' class="nav-link @(ViewBag.SubMenutype == "SupplierReevalution" ? "active" : "")" onclick="HyperLinkProgressIconFunction()">Supplier ReEvaluation</a></li>
+                                    @*<li class="nav-item"><a href='@Url.Action("SuppliedMaterialList", "SuppliedMaterial", null)' class="nav-link @(ViewBag.SubMenutype == "SuppliedMaterial" ? "active" : "")" onclick="HyperLinkProgressIconFunction()">Purchase Details</a></li>
+                                    <li class="nav-item"><a href='@Url.Action("SupplierReevalutionList", "SupplierReevalution", null)' class="nav-link @(ViewBag.SubMenutype == "SupplierReevalution" ? "active" : "")" onclick="HyperLinkProgressIconFunction()">Supplier ReEvaluation</a></li>*@
                                 </ul>
                             </li>
                         }
@@ -3667,7 +3704,7 @@
                         success: function (result) {
                             if (result == "Success") {
                                 new Noty({
-                                    text: "Supplier Approved successfully",
+                                    text: "Updated successfully",
                                     type: 'success'
                                 }).show();
                             }

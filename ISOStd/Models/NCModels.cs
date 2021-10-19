@@ -405,7 +405,7 @@ namespace ISOStd.Models
                 sSqlstmt = sSqlstmt + sFieldValue + ")";
 
                 int iid_nc = 0;
-
+                string sql = "", ssFields = "", ssFieldValue = "";
                 if (int.TryParse(objGlobaldata.ExecuteQueryReturnId(sSqlstmt).ToString(), out iid_nc))
                 {                    
                     //if (iid_nc > 0 && Convert.ToInt32(objIssueList.lstNC.Count) > 0)
@@ -413,7 +413,24 @@ namespace ISOStd.Models
                     //    objIssueList.lstNC[0].id_nc = iid_nc.ToString();
                     //    FunAddNCIssue(objIssueList);
                     //}
+                    if(supplier_name != "")
+                    {
+                        sql = "insert into t_external_provider_discrepancylog(ext_provider_name,id_nc,branch,Department,Location";
 
+                        if (objModels.nc_reported_date != null && objModels.nc_reported_date > Convert.ToDateTime("01/01/0001"))
+                        {
+                            ssFields = ssFields + ", discre_reported_date";
+                            ssFieldValue = ssFieldValue + ", '" + objModels.nc_reported_date.ToString("yyyy/MM/dd") + "'";
+                        }
+                        if (objModels.nc_detected_date != null && objModels.nc_detected_date > Convert.ToDateTime("01/01/0001"))
+                        {
+                            ssFields = ssFields + ", discre_registerd_date";
+                            ssFieldValue = ssFieldValue + ", '" + objModels.nc_detected_date.ToString("yyyy/MM/dd") + "'";
+                        }
+                        sql = sql + ssFields + ") values('" + supplier_name + "','" + iid_nc + "','" + sdivision + "', '" + department + "','" + location + "'";
+                        sql = sql + ssFieldValue + ")";
+                        objGlobaldata.ExecuteQuery(sql);
+                    }
                     if (iid_nc > 0 && Convert.ToInt32(objRelatedList.lstNC.Count) > 0)
                     {
                         objRelatedList.lstNC[0].id_nc = iid_nc.ToString();

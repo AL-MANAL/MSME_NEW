@@ -53,6 +53,7 @@ namespace ISOStd.Controllers
                 ViewBag.SuppCriticality = objGlobaldata.GetConstantValue("Criticality");
                 ViewBag.SupplierType = objGlobaldata.GetDropdownList("Supplier Type");
                 ViewBag.SupplierTypes = objGlobaldata.GetDropdownList("Supplier Work Type");
+                ViewBag.HeaderId = objGlobaldata.GetDropdownHeaderIdByDesc("Supplier payment term");
             }
             catch (Exception ex)
             {
@@ -199,7 +200,7 @@ namespace ISOStd.Controllers
                 ViewBag.Branch = objGlobaldata.GetMultiBranchListByID(sBranchtree);
 
                 string sSqlstmt = "select SupplierId, SupplierCode, SupplierName, SupplyScope, ApprovalCriteria, SupportingDoc, ApprovedOn, ApprovedBy, Remarks, "
-                    + " (case when ApprovedStatus='1' then 'Approved' else 'Not Approved' end) as ApprovedStatus, Added_Updated_By, UpdatedOn,"
+                    + " (case when ApprovedStatus='0' then 'Pending for Approval' when ApprovedStatus='1' then 'Approved' else 'Not Approved' end) as ApprovedStatus, Added_Updated_By, UpdatedOn,"
                     + " City,Country, ContactPerson, ContactNo, Address, FaxNo, PO_No,Email,VatNo,RefNo,Supplier_type,License_Expiry,Criticality,Supplier_Work_Nature," +
                     "branch,Department,Location FROM t_supplier where Active=1";
 
@@ -468,8 +469,8 @@ namespace ISOStd.Controllers
                     string sSupplierId = Request.QueryString["SupplierId"];
 
                     string sSqlstmt = "select SupplierId, SupplierCode, SupplierName, SupplyScope, ApprovalCriteria, SupportingDoc, ApprovedOn, ApprovedBy, Remarks,"
-                    + " (case when ApprovedStatus='1' then 'Approved' else 'Not Approved' end) as ApprovedStatus, Added_Updated_By, UpdatedOn, "
-                    + " City,Country, ContactPerson, ContactNo, Address, FaxNo, PO_No,Email,VatNo,RefNo,Supplier_type,Payment_term,License_Expiry,NotificationDays,NotificationPeriod,NotificationValue,Criticality,Supplier_Work_Nature,branch,Department,Location FROM t_supplier where SupplierId='" + sSupplierId + "'";
+                    + " (case when ApprovedStatus = '0' then 'Pending for Approval' when ApprovedStatus = '1' then 'Approved' else 'Not Approved' end) as ApprovedStatus, Added_Updated_By, UpdatedOn, "
+                    + " City,Country, ContactPerson, ContactNo, Address, FaxNo, PO_No,Email,VatNo,RefNo,Supplier_type,Payment_term,License_Expiry,NotificationDays,NotificationPeriod,NotificationValue,Criticality,Supplier_Work_Nature,branch,Department,Location,pan_no FROM t_supplier where SupplierId='" + sSupplierId + "'";
 
                     DataSet dsSupplier = objGlobaldata.Getdetails(sSqlstmt);
 
@@ -506,7 +507,7 @@ namespace ISOStd.Controllers
                             branch = objGlobaldata.GetMultiCompanyBranchNameById(dsSupplier.Tables[0].Rows[0]["branch"].ToString()),
                             Department = objGlobaldata.GetMultiDeptNameById(dsSupplier.Tables[0].Rows[0]["Department"].ToString()),
                             Location = objGlobaldata.GetDivisionLocationById(dsSupplier.Tables[0].Rows[0]["Location"].ToString()),
-
+                            pan_no = dsSupplier.Tables[0].Rows[0]["pan_no"].ToString(),
                         };
 
                         DateTime dateValue;
@@ -554,7 +555,7 @@ namespace ISOStd.Controllers
             try
             {
                 string sSqlstmt = "select SupplierId, SupplierCode, SupplierName, SupplyScope, ApprovalCriteria, SupportingDoc, ApprovedOn, ApprovedBy, Remarks,"
-                + " (case when ApprovedStatus='1' then 'Approved' else 'Not Approved' end) as ApprovedStatus, Added_Updated_By, UpdatedOn, "
+                + " (case when ApprovedStatus = '0' then 'Pending for Approval' when ApprovedStatus = '1' then 'Approved' else 'Not Approved' end) as ApprovedStatus, Added_Updated_By, UpdatedOn, "
                 + " City,Country, ContactPerson, ContactNo, Address, FaxNo, PO_No,Email,VatNo,RefNo,Supplier_type,Payment_term,License_Expiry,NotificationDays,NotificationPeriod,NotificationValue,Criticality,Supplier_Work_Nature,branch,Department,Location FROM t_supplier where SupplierId='" + id + "'";
 
                 DataSet dsSupplier = objGlobaldata.Getdetails(sSqlstmt);
@@ -650,7 +651,7 @@ namespace ISOStd.Controllers
 
                     string sSqlstmt = "select SupplierId, SupplierCode, SupplierName, SupplyScope, ApprovalCriteria, SupportingDoc, ApprovedOn, ApprovedBy, Remarks,"
                         + " Added_Updated_By, ApprovedStatus, UpdatedOn , City,Country, ContactPerson, ContactNo, Address, FaxNo, PO_No,Email,VatNo,RefNo,"
-                        + " Supplier_type,Payment_term,License_Expiry,NotificationDays,NotificationPeriod,NotificationValue,Criticality,Supplier_Work_Nature,branch,Department,Location FROM t_supplier where SupplierId='"
+                        + " Supplier_type,Payment_term,License_Expiry,NotificationDays,NotificationPeriod,NotificationValue,Criticality,Supplier_Work_Nature,branch,Department,Location,pan_no FROM t_supplier where SupplierId='"
                         + sSupplierId + "'";
                     DataSet dsSupplier = objGlobaldata.Getdetails(sSqlstmt);
 
@@ -690,7 +691,7 @@ namespace ISOStd.Controllers
                             branch =(dsSupplier.Tables[0].Rows[0]["branch"].ToString()),
                             Department = (dsSupplier.Tables[0].Rows[0]["Department"].ToString()),
                             Location = (dsSupplier.Tables[0].Rows[0]["Location"].ToString()),
-
+                            pan_no = (dsSupplier.Tables[0].Rows[0]["pan_no"].ToString()),
                         };
                         ViewBag.Branch = objGlobaldata.GetCompanyBranchListbox();
                         ViewBag.Location = objGlobaldata.GetLocationbyMultiDivision(dsSupplier.Tables[0].Rows[0]["branch"].ToString());
@@ -1411,9 +1412,11 @@ namespace ISOStd.Controllers
                 if (iStatus == 1)
                 {
                     sStatus = "Approved";
-
                 }
-
+                if (iStatus == 2)
+                {
+                    sStatus = "Rejected";
+                }
                 if (objSupModels.FunApproveSupplier(SupplierID, iStatus))
                 {
                     return Json("Success");

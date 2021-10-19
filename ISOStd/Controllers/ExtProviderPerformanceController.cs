@@ -57,7 +57,7 @@ namespace ISOStd.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult AddExtProviderPerformance(ExtProviderPerformanceModels objPerfModel, FormCollection form)
+        public ActionResult AddExtProviderPerformance(ExtProviderPerformanceModels objPerfModel, FormCollection form, IEnumerable<HttpPostedFileBase> upload)
         {
 
             try
@@ -82,6 +82,46 @@ namespace ISOStd.Controllers
                     if (DateTime.TryParse(form["Eval_ToDate"], out dateValue) == true)
                     {
                         objPerfModel.Eval_ToDate = dateValue;
+                    }
+
+                    //notified_to
+                    for (int i = 0; i < Convert.ToInt16(form["itemcnt1"]); i++)
+                    {
+                        if (form["nempno " + i] != "" && form["nempno " + i] != null)
+                        {
+                            objPerfModel.notified_to = form["nempno " + i] + "," + objPerfModel.notified_to;
+                        }
+                    }
+                    if (objPerfModel.notified_to != null)
+                    {
+                        objPerfModel.notified_to = objPerfModel.notified_to.Trim(',');
+                    }
+
+                    //upload
+                    HttpPostedFileBase files = Request.Files[0];
+                    if (upload != null && files.ContentLength > 0)
+                    {
+                        objPerfModel.upload = "";
+                        foreach (var file in upload)
+                        {
+                            try
+                            {
+                                string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/Supplier"), Path.GetFileName(file.FileName));
+                                string sFilename = "Perf" + "_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath), sFilepath = Path.GetDirectoryName(spath);
+                                file.SaveAs(sFilepath + "/" + sFilename);
+                                objPerfModel.upload = objPerfModel.upload + "," + "~/DataUpload/MgmtDocs/Supplier/" + sFilename;
+                            }
+                            catch (Exception ex)
+                            {
+                                objGlobalData.AddFunctionalLog("Exception in AddExtProviderPerformance-upload: " + ex.ToString());
+
+                            }
+                        }
+                        objPerfModel.upload = objPerfModel.upload.Trim(',');
+                    }
+                    else
+                    {
+                        ViewBag.Message = "You have not specified a file.";
                     }
 
                     ExtProviderPerformanceModelsList objExtList = new ExtProviderPerformanceModelsList();
@@ -119,7 +159,217 @@ namespace ISOStd.Controllers
 
             return RedirectToAction("ExtProviderPerformanceList");
         }
-                
+
+        //[AllowAnonymous]
+        //public ActionResult ExtProviderPerformanceList(string ExtProviderId, int? page, string branch_name)
+        //{
+        //    ViewBag.SubMenutype = "ExtProviderPerformance";
+
+        //    ExtProviderPerformanceModelsList objExtProviderList = new ExtProviderPerformanceModelsList();
+        //    objExtProviderList.ExtPerfpList = new List<ExtProviderPerformanceModels>();
+
+        //    try
+        //    {
+
+        //        string sBranch_name = objGlobalData.GetCurrentUserSession().division;
+        //        string sBranchtree = objGlobalData.GetCurrentUserSession().BranchTree;
+        //        ViewBag.Branch = objGlobalData.GetMultiBranchListByID(sBranchtree);
+
+        //        string sSqlstmt = "select Id_Performace,ReportNo,Ext_Provider_Name,Eval_Date,Eval_FromDate,Eval_ToDate,Scope_ofSupplies,PO_Issued,PO_Completed,"
+        //        + "Scheduled_by,Approved_by,branch,Department,Location from t_extprovider_performance where Active=1";
+        //        string sSearchtext = "";
+        //        string SupplierId = "";
+        //        DateTime EveFromDate = new DateTime(0001, 01, 01);
+        //        DateTime EveToDate = new DateTime(0001, 01, 01);
+        //        decimal sQuality_Issue = 0, sDelivery_Issue = 0;
+        //        decimal varQuality_Issue = 0, varDelivery_Issue = 0;
+
+        //        if (branch_name != null && branch_name != "")
+        //        {
+        //            sSearchtext = sSearchtext + " and find_in_set('" + branch_name + "', branch)";
+        //            ViewBag.Branch_name = branch_name;
+        //        }
+        //        else
+        //        {
+        //            sSearchtext = sSearchtext + " and find_in_set('" + sBranch_name + "', branch)";
+        //        }
+        //        sSqlstmt = sSqlstmt + sSearchtext + " order by Ext_Provider_Name";
+        //        DataSet dsExtProviderModels = objGlobalData.Getdetails(sSqlstmt);
+        //        if (dsExtProviderModels.Tables.Count > 0 && dsExtProviderModels.Tables[0].Rows.Count > 0)
+        //        {
+        //            for (int i = 0; i < dsExtProviderModels.Tables[0].Rows.Count; i++)
+        //            {
+        //                try
+        //                {
+        //                    string Sqlstmt = "select Id_Performace,Ext_Provider_Name,Eval_FromDate,Eval_ToDate from t_extprovider_performance where Id_Performace='" + dsExtProviderModels.Tables[0].Rows[i]["Id_Performace"].ToString() + "'";
+
+        //                    DataSet dsExtModels = objGlobalData.Getdetails(Sqlstmt);
+        //                    if (dsExtModels.Tables.Count > 0 && dsExtModels.Tables[0].Rows.Count > 0)
+        //                    {
+        //                        try
+        //                        {
+        //                            SupplierId = (dsExtModels.Tables[0].Rows[0]["Ext_Provider_Name"].ToString());
+
+        //                            DateTime dateValue1;
+
+        //                            if (DateTime.TryParse(dsExtModels.Tables[0].Rows[0]["Eval_FromDate"].ToString(), out dateValue1))
+        //                            {
+        //                                EveFromDate = dateValue1;
+        //                            }
+        //                            if (DateTime.TryParse(dsExtModels.Tables[0].Rows[0]["Eval_ToDate"].ToString(), out dateValue1))
+        //                            {
+        //                                EveToDate = dateValue1;
+        //                            }
+        //                        }
+        //                        catch (Exception ex)
+        //                        {
+        //                            objGlobalData.AddFunctionalLog("Exception in ExtProviderPerformanceList: " + ex.ToString());
+        //                            TempData["alertdata"] = objGlobalData.GetConstantValue("ExceptionError")[0];
+        //                        }
+        //                    }
+        //                    if (SupplierId != "" && EveFromDate > Convert.ToDateTime("0001/01/01") && EveToDate > Convert.ToDateTime("0001/01/01"))
+        //                    {
+        //                        string stmt = "select count(*) as counts from t_external_provider_discrepancylog ," +
+        //                            "(Select item_id FROM dropdownitems m, dropdownheader n where m.header_id = n.header_id and header_desc = 'ExtProvider Discrepancy Type'" +
+        //                            " and item_desc = 'Delivery') as tt where find_in_set(item_id, discre_relatedto ) > 0 " +
+        //                            "and ext_provider_name = '" + SupplierId + "' and discre_registerd_date >= '" + EveFromDate + "' and discre_registerd_date <= '" + EveToDate + "'";
+        //                        DataSet dsModels = objGlobalData.Getdetails(stmt);
+
+        //                        if (dsModels.Tables.Count > 0 && dsModels.Tables[0].Rows.Count > 0)
+        //                        {
+        //                            try
+        //                            {
+        //                                sDelivery_Issue = Convert.ToInt32(dsModels.Tables[0].Rows[0]["counts"].ToString());
+        //                                varDelivery_Issue = sDelivery_Issue;
+        //                            }
+        //                            catch (Exception ex)
+        //                            {
+        //                                objGlobalData.AddFunctionalLog("Exception in ExtProviderPerformanceList: " + ex.ToString());
+        //                                TempData["alertdata"] = objGlobalData.GetConstantValue("ExceptionError")[0];
+        //                            }
+        //                        }
+        //                        if(sDelivery_Issue == 0 )
+        //                        {
+        //                            sDelivery_Issue = 1;
+        //                        }
+
+        //                        string stmt1 = "select count(*) as counts from t_external_provider_discrepancylog ," +
+        //                           "(Select item_id FROM dropdownitems m, dropdownheader n where m.header_id = n.header_id and header_desc = 'ExtProvider Discrepancy Type'" +
+        //                           " and item_desc = 'Quality') as tt where find_in_set(item_id, discre_relatedto ) > 0 " +
+        //                           "and ext_provider_name = '" + SupplierId + "' and discre_registerd_date >= '" + EveFromDate + "' and discre_registerd_date <= '" + EveToDate + "'";
+        //                        DataSet dsModel = objGlobalData.Getdetails(stmt1);
+
+        //                        if (dsModel.Tables.Count > 0 && dsModel.Tables[0].Rows.Count > 0)
+        //                        {
+        //                            try
+        //                            {
+        //                                sQuality_Issue = Convert.ToInt32(dsModel.Tables[0].Rows[0]["counts"].ToString());
+        //                                varQuality_Issue = sQuality_Issue;                                   }
+        //                            catch (Exception ex)
+        //                            {
+        //                                objGlobalData.AddFunctionalLog("Exception in ExtProviderPerformanceList: " + ex.ToString());
+        //                                TempData["alertdata"] = objGlobalData.GetConstantValue("ExceptionError")[0];
+        //                            }
+        //                        }
+
+        //                    }
+        //                    if (sQuality_Issue == 0)
+        //                    {
+        //                        sQuality_Issue = 1;
+        //                    }
+
+        //                    decimal sPO_Completed = Convert.ToDecimal(dsExtProviderModels.Tables[0].Rows[i]["PO_Completed"].ToString());
+
+        //                            decimal QualityRate = 0, DeliveryRate = 0, Perfp_rate = 0;
+        //                            string Perfp_rate_action = "";
+        //                            if (sQuality_Issue != 0 && sPO_Completed != 0)
+        //                            {
+        //                                QualityRate = (sQuality_Issue * sPO_Completed) / 100;
+        //                            }
+        //                            if (sDelivery_Issue != 0 && sPO_Completed != 0)
+        //                            {
+        //                                DeliveryRate = (sDelivery_Issue * sPO_Completed) / 100;
+        //                            }
+        //                            if (QualityRate != 0 && DeliveryRate != 0)
+        //                            {
+        //                                Perfp_rate = ((70 * QualityRate) / 100) + ((30 * DeliveryRate) / 100);
+        //                            }
+        //                            if (Perfp_rate != 0)
+        //                            {
+        //                                Perfp_rate = System.Math.Round(Perfp_rate, 2)*100;
+
+        //                                if (Perfp_rate < 95)
+        //                                {
+        //                                    Perfp_rate_action = "Continue to maintain as approved external provider";
+        //                                }
+        //                                if (Perfp_rate < 85)
+        //                                {
+        //                                    Perfp_rate_action = "Monitor closely the performance of External Provider";
+        //                                }
+        //                                if (Perfp_rate < 75)
+        //                                {
+        //                                    Perfp_rate_action = "Hold on until External Provider submits improvent action plan";
+        //                                }
+        //                                if (Perfp_rate < 65)
+        //                                {
+        //                                    Perfp_rate_action = "Remove from approved external providers list";
+        //                                }
+        //                            }
+
+
+        //                   ExtProviderPerformanceModels objExtProviderPerformanceModels = new ExtProviderPerformanceModels
+        //                    {
+        //                        Id_Performace = dsExtProviderModels.Tables[0].Rows[i]["Id_Performace"].ToString(),
+        //                        ReportNo = dsExtProviderModels.Tables[0].Rows[i]["ReportNo"].ToString(),
+        //                        Ext_Provider_Name = objGlobalData.GetSupplierNameById(dsExtProviderModels.Tables[0].Rows[i]["Ext_Provider_Name"].ToString()),
+        //                        Scope_ofSupplies = dsExtProviderModels.Tables[0].Rows[i]["Scope_ofSupplies"].ToString(),
+        //                        PO_Issued = Convert.ToDecimal(dsExtProviderModels.Tables[0].Rows[i]["PO_Issued"].ToString()),
+        //                        PO_Completed = System.Math.Round(sPO_Completed, 2),
+        //                        Quality_Issue = System.Math.Round(varQuality_Issue, 2),
+        //                        Delivery_Issue = System.Math.Round(varDelivery_Issue, 2),
+        //                       //Quality_Issue = System.Math.Round(Convert.ToDecimal(dsExtProviderModels.Tables[0].Rows[i]["Quality_Issue"].ToString())),
+        //                       // Delivery_Issue = System.Math.Round(Convert.ToDecimal(dsExtProviderModels.Tables[0].Rows[i]["Delivery_Issue"].ToString())),
+        //                        QualityRate = System.Math.Round(QualityRate, 2),
+        //                        DeliveryRate = System.Math.Round(DeliveryRate, 2),
+        //                        Perfp_rate = Perfp_rate,
+        //                        Perfp_rate_action = Perfp_rate_action,
+        //                        Scheduled_by = objGlobalData.GetMultiHrEmpNameById(dsExtProviderModels.Tables[0].Rows[i]["Scheduled_by"].ToString()),
+        //                        Approved_by = objGlobalData.GetMultiHrEmpNameById(dsExtProviderModels.Tables[0].Rows[i]["Approved_by"].ToString()),
+        //                        branch = objGlobalData.GetMultiCompanyBranchNameById(dsExtProviderModels.Tables[0].Rows[i]["branch"].ToString()),
+        //                        Department = objGlobalData.GetMultiDeptNameById(dsExtProviderModels.Tables[0].Rows[i]["Department"].ToString()),
+        //                        Location = objGlobalData.GetDivisionLocationById(dsExtProviderModels.Tables[0].Rows[i]["Location"].ToString()),
+        //                   };
+        //                    DateTime dateValue;
+        //                    if (DateTime.TryParse(dsExtProviderModels.Tables[0].Rows[i]["Eval_Date"].ToString(), out dateValue))
+        //                    {
+        //                        objExtProviderPerformanceModels.Eval_Date = dateValue;
+        //                    }
+        //                    if (DateTime.TryParse(dsExtProviderModels.Tables[0].Rows[i]["Eval_FromDate"].ToString(), out dateValue))
+        //                    {
+        //                        objExtProviderPerformanceModels.Eval_FromDate = dateValue;
+        //                    }
+        //                    if (DateTime.TryParse(dsExtProviderModels.Tables[0].Rows[i]["Eval_ToDate"].ToString(), out dateValue))
+        //                    {
+        //                        objExtProviderPerformanceModels.Eval_ToDate = dateValue;
+        //                    }
+        //                    objExtProviderList.ExtPerfpList.Add(objExtProviderPerformanceModels);
+        //                }
+        //                catch (Exception ex)
+        //                {
+        //                    objGlobalData.AddFunctionalLog("Exception in ExtProviderPerformanceList: " + ex.ToString());
+        //                    TempData["alertdata"] = objGlobalData.GetConstantValue("ExceptionError")[0];
+        //                }
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        objGlobalData.AddFunctionalLog("Exception in ExtProviderPerformanceList: " + ex.ToString());
+        //        TempData["alertdata"] = objGlobalData.GetConstantValue("ExceptionError")[0];
+        //    }
+        //    return View(objExtProviderList.ExtPerfpList.ToList());
+        //}
+
         [AllowAnonymous]
         public ActionResult ExtProviderPerformanceList(string ExtProviderId, int? page, string branch_name)
         {
@@ -130,20 +380,15 @@ namespace ISOStd.Controllers
 
             try
             {
-                
+
                 string sBranch_name = objGlobalData.GetCurrentUserSession().division;
                 string sBranchtree = objGlobalData.GetCurrentUserSession().BranchTree;
                 ViewBag.Branch = objGlobalData.GetMultiBranchListByID(sBranchtree);
-                               
-                string sSqlstmt = "select Id_Performace,ReportNo,Ext_Provider_Name,Eval_Date,Eval_FromDate,Eval_ToDate,Scope_ofSupplies,PO_Issued,PO_Completed,"
-                + "Scheduled_by,Approved_by,branch,Department,Location from t_extprovider_performance where Active=1";
-                string sSearchtext = "";
-                string SupplierId = "";
-                DateTime EveFromDate = new DateTime(0001, 01, 01);
-                DateTime EveToDate = new DateTime(0001, 01, 01);
-                decimal sQuality_Issue = 0, sDelivery_Issue = 0;
-                decimal varQuality_Issue = 0, varDelivery_Issue = 0;
 
+                string sSqlstmt = "select Id_Performace,ReportNo,Ext_Provider_Name,Eval_Date,Eval_FromDate,Eval_ToDate,Scope_ofSupplies,PO_Issued,PO_Completed,"
+                + "Scheduled_by,Approved_by,branch,Department,Location,Quality_Issue,Delivery_Issue,quantity_issue,lots_received,quality_rating,quantity_rating,delivery_rating,total_rating,apprv_status from t_extprovider_performance where Active=1";
+                string sSearchtext = "";
+             
                 if (branch_name != null && branch_name != "")
                 {
                     sSearchtext = sSearchtext + " and find_in_set('" + branch_name + "', branch)";
@@ -159,147 +404,55 @@ namespace ISOStd.Controllers
                 {
                     for (int i = 0; i < dsExtProviderModels.Tables[0].Rows.Count; i++)
                     {
-                        try
-                        {
-                            string Sqlstmt = "select Id_Performace,Ext_Provider_Name,Eval_FromDate,Eval_ToDate from t_extprovider_performance where Id_Performace='" + dsExtProviderModels.Tables[0].Rows[i]["Id_Performace"].ToString() + "'";
-
-                            DataSet dsExtModels = objGlobalData.Getdetails(Sqlstmt);
-                            if (dsExtModels.Tables.Count > 0 && dsExtModels.Tables[0].Rows.Count > 0)
-                            {
-                                try
-                                {
-                                    SupplierId = (dsExtModels.Tables[0].Rows[0]["Ext_Provider_Name"].ToString());
-
-                                    DateTime dateValue1;
-
-                                    if (DateTime.TryParse(dsExtModels.Tables[0].Rows[0]["Eval_FromDate"].ToString(), out dateValue1))
-                                    {
-                                        EveFromDate = dateValue1;
-                                    }
-                                    if (DateTime.TryParse(dsExtModels.Tables[0].Rows[0]["Eval_ToDate"].ToString(), out dateValue1))
-                                    {
-                                        EveToDate = dateValue1;
-                                    }
-                                }
-                                catch (Exception ex)
-                                {
-                                    objGlobalData.AddFunctionalLog("Exception in ExtProviderPerformanceList: " + ex.ToString());
-                                    TempData["alertdata"] = objGlobalData.GetConstantValue("ExceptionError")[0];
-                                }
-                            }
-                            if (SupplierId != "" && EveFromDate > Convert.ToDateTime("0001/01/01") && EveToDate > Convert.ToDateTime("0001/01/01"))
-                            {
-                                string stmt = "select count(*) as counts from t_external_provider_discrepancylog ," +
-                                    "(Select item_id FROM dropdownitems m, dropdownheader n where m.header_id = n.header_id and header_desc = 'ExtProvider Discrepancy Type'" +
-                                    " and item_desc = 'Delivery') as tt where find_in_set(item_id, discre_relatedto ) > 0 " +
-                                    "and ext_provider_name = '" + SupplierId + "' and discre_registerd_date >= '" + EveFromDate + "' and discre_registerd_date <= '" + EveToDate + "'";
-                                DataSet dsModels = objGlobalData.Getdetails(stmt);
-
-                                if (dsModels.Tables.Count > 0 && dsModels.Tables[0].Rows.Count > 0)
-                                {
-                                    try
-                                    {
-                                        sDelivery_Issue = Convert.ToInt32(dsModels.Tables[0].Rows[0]["counts"].ToString());
-                                        varDelivery_Issue = sDelivery_Issue;
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        objGlobalData.AddFunctionalLog("Exception in ExtProviderPerformanceList: " + ex.ToString());
-                                        TempData["alertdata"] = objGlobalData.GetConstantValue("ExceptionError")[0];
-                                    }
-                                }
-                                if(sDelivery_Issue == 0 )
-                                {
-                                    sDelivery_Issue = 1;
-                                }
-
-                                string stmt1 = "select count(*) as counts from t_external_provider_discrepancylog ," +
-                                   "(Select item_id FROM dropdownitems m, dropdownheader n where m.header_id = n.header_id and header_desc = 'ExtProvider Discrepancy Type'" +
-                                   " and item_desc = 'Quality') as tt where find_in_set(item_id, discre_relatedto ) > 0 " +
-                                   "and ext_provider_name = '" + SupplierId + "' and discre_registerd_date >= '" + EveFromDate + "' and discre_registerd_date <= '" + EveToDate + "'";
-                                DataSet dsModel = objGlobalData.Getdetails(stmt1);
-
-                                if (dsModel.Tables.Count > 0 && dsModel.Tables[0].Rows.Count > 0)
-                                {
-                                    try
-                                    {
-                                        sQuality_Issue = Convert.ToInt32(dsModel.Tables[0].Rows[0]["counts"].ToString());
-                                        varQuality_Issue = sQuality_Issue;                                   }
-                                    catch (Exception ex)
-                                    {
-                                        objGlobalData.AddFunctionalLog("Exception in ExtProviderPerformanceList: " + ex.ToString());
-                                        TempData["alertdata"] = objGlobalData.GetConstantValue("ExceptionError")[0];
-                                    }
-                                }
-
-                            }
-                            if (sQuality_Issue == 0)
-                            {
-                                sQuality_Issue = 1;
-                            }
-
-                            decimal sPO_Completed = Convert.ToDecimal(dsExtProviderModels.Tables[0].Rows[i]["PO_Completed"].ToString());
-
-                                    decimal QualityRate = 0, DeliveryRate = 0, Perfp_rate = 0;
-                                    string Perfp_rate_action = "";
-                                    if (sQuality_Issue != 0 && sPO_Completed != 0)
-                                    {
-                                        QualityRate = (sQuality_Issue * sPO_Completed) / 100;
-                                    }
-                                    if (sDelivery_Issue != 0 && sPO_Completed != 0)
-                                    {
-                                        DeliveryRate = (sDelivery_Issue * sPO_Completed) / 100;
-                                    }
-                                    if (QualityRate != 0 && DeliveryRate != 0)
-                                    {
-                                        Perfp_rate = ((70 * QualityRate) / 100) + ((30 * DeliveryRate) / 100);
-                                    }
-                                    if (Perfp_rate != 0)
-                                    {
-                                        Perfp_rate = System.Math.Round(Perfp_rate, 2)*100;
-
-                                        if (Perfp_rate < 95)
-                                        {
-                                            Perfp_rate_action = "Continue to maintain as approved external provider";
-                                        }
-                                        if (Perfp_rate < 85)
-                                        {
-                                            Perfp_rate_action = "Monitor closely the performance of External Provider";
-                                        }
-                                        if (Perfp_rate < 75)
-                                        {
-                                            Perfp_rate_action = "Hold on until External Provider submits improvent action plan";
-                                        }
-                                        if (Perfp_rate < 65)
-                                        {
-                                            Perfp_rate_action = "Remove from approved external providers list";
-                                        }
-                                    }
-
-
-                           ExtProviderPerformanceModels objExtProviderPerformanceModels = new ExtProviderPerformanceModels
+                            ExtProviderPerformanceModels objExtProviderPerformanceModels = new ExtProviderPerformanceModels
                             {
                                 Id_Performace = dsExtProviderModels.Tables[0].Rows[i]["Id_Performace"].ToString(),
                                 ReportNo = dsExtProviderModels.Tables[0].Rows[i]["ReportNo"].ToString(),
                                 Ext_Provider_Name = objGlobalData.GetSupplierNameById(dsExtProviderModels.Tables[0].Rows[i]["Ext_Provider_Name"].ToString()),
                                 Scope_ofSupplies = dsExtProviderModels.Tables[0].Rows[i]["Scope_ofSupplies"].ToString(),
-                                PO_Issued = Convert.ToDecimal(dsExtProviderModels.Tables[0].Rows[i]["PO_Issued"].ToString()),
-                                PO_Completed = System.Math.Round(sPO_Completed, 2),
-                                Quality_Issue = System.Math.Round(varQuality_Issue, 2),
-                                Delivery_Issue = System.Math.Round(varDelivery_Issue, 2),
-                               //Quality_Issue = System.Math.Round(Convert.ToDecimal(dsExtProviderModels.Tables[0].Rows[i]["Quality_Issue"].ToString())),
-                               // Delivery_Issue = System.Math.Round(Convert.ToDecimal(dsExtProviderModels.Tables[0].Rows[i]["Delivery_Issue"].ToString())),
-                                QualityRate = System.Math.Round(QualityRate, 2),
-                                DeliveryRate = System.Math.Round(DeliveryRate, 2),
-                                Perfp_rate = Perfp_rate,
-                                Perfp_rate_action = Perfp_rate_action,
+                              
                                 Scheduled_by = objGlobalData.GetMultiHrEmpNameById(dsExtProviderModels.Tables[0].Rows[i]["Scheduled_by"].ToString()),
                                 Approved_by = objGlobalData.GetMultiHrEmpNameById(dsExtProviderModels.Tables[0].Rows[i]["Approved_by"].ToString()),
                                 branch = objGlobalData.GetMultiCompanyBranchNameById(dsExtProviderModels.Tables[0].Rows[i]["branch"].ToString()),
                                 Department = objGlobalData.GetMultiDeptNameById(dsExtProviderModels.Tables[0].Rows[i]["Department"].ToString()),
                                 Location = objGlobalData.GetDivisionLocationById(dsExtProviderModels.Tables[0].Rows[i]["Location"].ToString()),
-                           };
-                            DateTime dateValue;
+                                apprv_status = dsExtProviderModels.Tables[0].Rows[i]["apprv_status"].ToString(),
+
+                            };
+                        if (dsExtProviderModels.Tables[0].Rows[i]["Quality_Issue"].ToString() != "")
+                        {
+                            objExtProviderPerformanceModels.Quality_Issue = Convert.ToDecimal(dsExtProviderModels.Tables[0].Rows[i]["Quality_Issue"].ToString());
+                        }
+                        if (dsExtProviderModels.Tables[0].Rows[i]["Delivery_Issue"].ToString() != "")
+                        {
+                            objExtProviderPerformanceModels.Delivery_Issue = Convert.ToDecimal(dsExtProviderModels.Tables[0].Rows[i]["Delivery_Issue"].ToString());
+                        }
+                        if (dsExtProviderModels.Tables[0].Rows[i]["quantity_issue"].ToString() != "")
+                        {
+                            objExtProviderPerformanceModels.quantity_issue = Convert.ToDecimal(dsExtProviderModels.Tables[0].Rows[i]["quantity_issue"].ToString());
+                        }
+                        if (dsExtProviderModels.Tables[0].Rows[i]["lots_received"].ToString() != "")
+                        {
+                            objExtProviderPerformanceModels.lots_received = Convert.ToDecimal(dsExtProviderModels.Tables[0].Rows[i]["lots_received"].ToString());
+                        }
+                        if (dsExtProviderModels.Tables[0].Rows[i]["quality_rating"].ToString() != "")
+                        {
+                            objExtProviderPerformanceModels.quality_rating = Convert.ToDecimal(dsExtProviderModels.Tables[0].Rows[i]["quality_rating"].ToString());
+                        }
+                        if (dsExtProviderModels.Tables[0].Rows[i]["quantity_rating"].ToString() != "")
+                        {
+                            objExtProviderPerformanceModels.quantity_rating = Convert.ToDecimal(dsExtProviderModels.Tables[0].Rows[i]["quantity_rating"].ToString());
+                        }
+                        if (dsExtProviderModels.Tables[0].Rows[i]["delivery_rating"].ToString() != "")
+                        {
+                            objExtProviderPerformanceModels.delivery_rating = Convert.ToDecimal(dsExtProviderModels.Tables[0].Rows[i]["delivery_rating"].ToString());
+                        }
+                        if (dsExtProviderModels.Tables[0].Rows[i]["total_rating"].ToString() != "")
+                        {
+                            objExtProviderPerformanceModels.total_rating = Convert.ToDecimal(dsExtProviderModels.Tables[0].Rows[i]["total_rating"].ToString());
+                        }
+
+                        DateTime dateValue;
                             if (DateTime.TryParse(dsExtProviderModels.Tables[0].Rows[i]["Eval_Date"].ToString(), out dateValue))
                             {
                                 objExtProviderPerformanceModels.Eval_Date = dateValue;
@@ -314,13 +467,10 @@ namespace ISOStd.Controllers
                             }
                             objExtProviderList.ExtPerfpList.Add(objExtProviderPerformanceModels);
                         }
-                        catch (Exception ex)
-                        {
-                            objGlobalData.AddFunctionalLog("Exception in ExtProviderPerformanceList: " + ex.ToString());
-                            TempData["alertdata"] = objGlobalData.GetConstantValue("ExceptionError")[0];
-                        }
+                       
                     }
-                }
+                
+
             }
             catch (Exception ex)
             {
@@ -329,7 +479,7 @@ namespace ISOStd.Controllers
             }
             return View(objExtProviderList.ExtPerfpList.ToList());
         }
-        
+
         [AllowAnonymous]
         public JsonResult ExtProviderPerformanceListSearch(string ExtProviderId, int? page, string branch_name)
         {
@@ -560,7 +710,8 @@ namespace ISOStd.Controllers
 
 
                 string sSqlstmt = "select Id_Performace,ReportNo,Ext_Provider_Name,Eval_Date,Eval_FromDate,Eval_ToDate,Scope_ofSupplies,PO_Issued,PO_Completed,"
-               + "Quality_Issue,Delivery_Issue,Scheduled_by,Approved_by,branch,Department,Location  from t_extprovider_performance where Id_Performace='" + sId_Performace + "' order by Id_Performace desc";
+               + "Quality_Issue,Delivery_Issue,Scheduled_by,Approved_by,branch,Department,Location,quantity_issue,lots_received,quality_rating,quantity_rating,delivery_rating,total_rating,upload,notified_to,po_detail"
+               + " from t_extprovider_performance where Id_Performace='" + sId_Performace + "' order by Id_Performace desc";
                               
                     DataSet dsExtProviderModels = objGlobalData.Getdetails(sSqlstmt);
                     if (dsExtProviderModels.Tables.Count > 0 && dsExtProviderModels.Tables[0].Rows.Count > 0)
@@ -583,7 +734,47 @@ namespace ISOStd.Controllers
                                      branch = (dsExtProviderModels.Tables[0].Rows[0]["branch"].ToString()),
                                      Department = (dsExtProviderModels.Tables[0].Rows[0]["Department"].ToString()),
                                      Location = (dsExtProviderModels.Tables[0].Rows[0]["Location"].ToString()),
+                                     upload = (dsExtProviderModels.Tables[0].Rows[0]["upload"].ToString()),
+                                     po_detail = (dsExtProviderModels.Tables[0].Rows[0]["po_detail"].ToString()),
+
                                  };
+                        if (dsExtProviderModels.Tables[0].Rows[0]["notified_to"].ToString() != "")
+                        {
+                            ViewBag.notified_Array = (dsExtProviderModels.Tables[0].Rows[0]["notified_to"].ToString()).Split(',');
+                        }
+                        if (dsExtProviderModels.Tables[0].Rows[0]["Quality_Issue"].ToString() != "")
+                        {
+                            objExtProviderPerformanceModels.Quality_Issue = Convert.ToDecimal(dsExtProviderModels.Tables[0].Rows[0]["Quality_Issue"].ToString());
+                        }
+                        if (dsExtProviderModels.Tables[0].Rows[0]["Delivery_Issue"].ToString() != "")
+                        {
+                            objExtProviderPerformanceModels.Delivery_Issue = Convert.ToDecimal(dsExtProviderModels.Tables[0].Rows[0]["Delivery_Issue"].ToString());
+                        }
+                        if (dsExtProviderModels.Tables[0].Rows[0]["quantity_issue"].ToString() != "")
+                        {
+                            objExtProviderPerformanceModels.quantity_issue=Convert.ToDecimal(dsExtProviderModels.Tables[0].Rows[0]["quantity_issue"].ToString());
+                        }
+                        if (dsExtProviderModels.Tables[0].Rows[0]["lots_received"].ToString() != "")
+                        {
+                            objExtProviderPerformanceModels.lots_received = Convert.ToDecimal(dsExtProviderModels.Tables[0].Rows[0]["lots_received"].ToString());
+                        }
+                        if (dsExtProviderModels.Tables[0].Rows[0]["quality_rating"].ToString() != "")
+                        {
+                            objExtProviderPerformanceModels.quality_rating = Convert.ToDecimal(dsExtProviderModels.Tables[0].Rows[0]["quality_rating"].ToString());
+                        }
+                        if (dsExtProviderModels.Tables[0].Rows[0]["quantity_rating"].ToString() != "")
+                        {
+                            objExtProviderPerformanceModels.quantity_rating = Convert.ToDecimal(dsExtProviderModels.Tables[0].Rows[0]["quantity_rating"].ToString());
+                        }
+                        if (dsExtProviderModels.Tables[0].Rows[0]["delivery_rating"].ToString() != "")
+                        {
+                            objExtProviderPerformanceModels.delivery_rating = Convert.ToDecimal(dsExtProviderModels.Tables[0].Rows[0]["delivery_rating"].ToString());
+                        }
+                        if (dsExtProviderModels.Tables[0].Rows[0]["total_rating"].ToString() != "")
+                        {
+                            objExtProviderPerformanceModels.total_rating = Convert.ToDecimal(dsExtProviderModels.Tables[0].Rows[0]["total_rating"].ToString());
+                        }
+
                         ViewBag.Branch = objGlobalData.GetCompanyBranchListbox();
                         ViewBag.Location = objGlobalData.GetLocationbyMultiDivision(dsExtProviderModels.Tables[0].Rows[0]["branch"].ToString());
                         ViewBag.Department = objGlobalData.GetDepartmentList1(dsExtProviderModels.Tables[0].Rows[0]["branch"].ToString());
@@ -669,7 +860,7 @@ namespace ISOStd.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult ExtProviderPerformanceEdit(ExtProviderPerformanceModels objExtProviderPerformance, FormCollection form)
+        public ActionResult ExtProviderPerformanceEdit(ExtProviderPerformanceModels objExtProviderPerformance, FormCollection form, IEnumerable<HttpPostedFileBase> upload)
         {
             ViewBag.SubMenutype = "ExtProviderPerformance";
             try
@@ -696,7 +887,60 @@ namespace ISOStd.Controllers
                     {
                         objExtProviderPerformance.Eval_ToDate = dateValue;
                     }
+                    //notified_to
+                    for (int i = 0; i < Convert.ToInt16(form["itemcnt1"]); i++)
+                    {
+                        if (form["nempno " + i] != "" && form["nempno " + i] != null)
+                        {
+                            objExtProviderPerformance.notified_to = form["nempno " + i] + "," + objExtProviderPerformance.notified_to;
+                        }
+                    }
+                    if (objExtProviderPerformance.notified_to != null)
+                    {
+                        objExtProviderPerformance.notified_to = objExtProviderPerformance.notified_to.Trim(',');
+                    }
+                    //upload
+                    HttpPostedFileBase files = Request.Files[0];
+                    string QCDelete = Request.Form["QCDocsValselectall"];
 
+                    if (upload != null && files.ContentLength > 0)
+                    {
+                        objExtProviderPerformance.upload = "";
+                        foreach (var file in upload)
+                        {
+                            try
+                            {
+                                string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/Supplier"), Path.GetFileName(file.FileName));
+                                string sFilename = "Perf" + "_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath), sFilepath = Path.GetDirectoryName(spath);
+                                file.SaveAs(sFilepath + "/" + sFilename);
+                                objExtProviderPerformance.upload = objExtProviderPerformance.upload + "," + "~/DataUpload/MgmtDocs/Supplier/" + sFilename;
+                            }
+                            catch (Exception ex)
+                            {
+                                objGlobalData.AddFunctionalLog("Exception in ExtProviderPerformanceEdit-upload: " + ex.ToString());
+
+                            }
+                        }
+                        objExtProviderPerformance.upload = objExtProviderPerformance.upload.Trim(',');
+                    }
+                    else
+                    {
+                        ViewBag.Message = "You have not specified a file.";
+                    }
+
+                    if (form["QCDocsVal"] != null && form["QCDocsVal"] != "")
+                    {
+                        objExtProviderPerformance.upload = objExtProviderPerformance.upload + "," + form["QCDocsVal"];
+                        objExtProviderPerformance.upload = objExtProviderPerformance.upload.Trim(',');
+                    }
+                    else if (form["QCDocsVal"] == null && QCDelete != null && files.ContentLength == 0)
+                    {
+                        objExtProviderPerformance.upload = null;
+                    }
+                    else if (form["QCDocsVal"] == null && files.ContentLength == 0)
+                    {
+                        objExtProviderPerformance.upload = null;
+                    }
                     ExtProviderPerformanceModelsList objExtProviderList = new ExtProviderPerformanceModelsList();
                     objExtProviderList.ExtPerfpList = new List<ExtProviderPerformanceModels>();
                     
@@ -742,6 +986,136 @@ namespace ISOStd.Controllers
             }
             return RedirectToAction("ExtProviderPerformanceList");
         }
+
+        //action initiated
+        //Audit Status    
+        [AllowAnonymous]
+        public ActionResult ActionInitiated()
+        {
+            ExtProviderPerformanceModels objModel = new ExtProviderPerformanceModels();
+            try
+            {
+                if (Request.QueryString["Id_Performace"] != null && Request.QueryString["Id_Performace"] != "")
+                {
+                    string Id_Performace = Request.QueryString["Id_Performace"];
+
+                    string sSqlstmt = "select Id_Performace,ReportNo,Ext_Provider_Name,initiated_date,action_taken,Due_Date,action_by,action_notified_to from t_extprovider_performance where Id_Performace='" + Id_Performace + "'";
+
+                    DataSet dsModelsList = objGlobalData.Getdetails(sSqlstmt);
+                    ViewBag.Action = objGlobalData.GetDropdownList("Supplier action to be taken");
+                    ViewBag.EmpList = objGlobalData.GetHrEmployeeListbox();
+                    if (dsModelsList.Tables.Count > 0 && dsModelsList.Tables[0].Rows.Count > 0)
+                    {
+
+                        objModel = new ExtProviderPerformanceModels
+                        {
+                            Id_Performace = dsModelsList.Tables[0].Rows[0]["Id_Performace"].ToString(),
+                            ReportNo = dsModelsList.Tables[0].Rows[0]["ReportNo"].ToString(),
+                            Ext_Provider_Name = objGlobalData.GetSupplierNameById(dsModelsList.Tables[0].Rows[0]["Ext_Provider_Name"].ToString()),
+                            action_taken = dsModelsList.Tables[0].Rows[0]["action_taken"].ToString(),
+                            action_by = dsModelsList.Tables[0].Rows[0]["action_by"].ToString(),
+                            action_notified_to = dsModelsList.Tables[0].Rows[0]["action_notified_to"].ToString(),
+                        };
+                        if (dsModelsList.Tables[0].Rows[0]["action_by"].ToString() != "")
+                        {
+                            ViewBag.actbyArray = (dsModelsList.Tables[0].Rows[0]["action_by"].ToString()).Split(',');
+                        }
+                        else
+                        {
+                            if (objGlobalData.GetEmpIDByEmpName("Malhari") != "")
+                            {
+                                ViewBag.actbyArray = objGlobalData.GetEmpIDByEmpName("Malhari").Split(',');
+                            }
+                           
+                        }
+                        if (dsModelsList.Tables[0].Rows[0]["action_notified_to"].ToString() != "")
+                        {
+                            ViewBag.NotifiedToArray = (dsModelsList.Tables[0].Rows[0]["action_notified_to"].ToString()).Split(',');
+                        }
+                        else
+                        {
+                            if(objGlobalData.GetQAQCDeptEmployees() != "")
+                            {
+                                ViewBag.NotifiedToArray = objGlobalData.GetQAQCDeptEmployees().Split(',');
+                            }
+                           
+                        }
+                        DateTime dtValue;
+                        if (DateTime.TryParse(dsModelsList.Tables[0].Rows[0]["initiated_date"].ToString(), out dtValue))
+                        {
+                            objModel.initiated_date = dtValue;
+                        }
+                        if (DateTime.TryParse(dsModelsList.Tables[0].Rows[0]["Due_Date"].ToString(), out dtValue))
+                        {
+                            objModel.Due_Date = dtValue;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobalData.AddFunctionalLog("Exception in AuditStatusUpdate: " + ex.ToString());
+                TempData["alertdata"] = objGlobalData.GetConstantValue("ExceptionError")[0];
+            }
+            return View(objModel);
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public ActionResult ActionInitiated(FormCollection form, ExtProviderPerformanceModels objModel)
+        {
+            try
+            {
+                DateTime dateValue;
+                //action by
+                for (int i = 0; i < Convert.ToInt16(form["actby_cnt"]); i++)
+                {
+                    if (form["act_empno " + i] != "" && form["act_empno " + i] != null)
+                    {
+                        objModel.action_by = form["act_empno " + i] + "," + objModel.action_by;
+                    }
+                }
+                if (objModel.action_by != null)
+                {
+                    objModel.action_by = objModel.action_by.Trim(',');
+                }
+                //notified_to
+                for (int i = 0; i < Convert.ToInt16(form["notified_cnt"]); i++)
+                {
+                    if (form["empno " + i] != "" && form["empno " + i] != null)
+                    {
+                        objModel.action_notified_to = form["empno " + i] + "," + objModel.action_notified_to;
+                    }
+                }
+                if (objModel.action_notified_to != null)
+                {
+                    objModel.action_notified_to = objModel.action_notified_to.Trim(',');
+                }
+                if (DateTime.TryParse(form["initiated_date"], out dateValue) == true)
+                {
+                    objModel.initiated_date = dateValue;
+                }
+                if (DateTime.TryParse(form["Due_Date"], out dateValue) == true)
+                {
+                    objModel.Due_Date = dateValue;
+                }
+                if (objModel.FunUpdateActionInitiated(objModel))
+                {
+                    TempData["Successdata"] = "Action initiated successfully";
+                }
+                else
+                {
+                    TempData["alertdata"] = objGlobalData.GetConstantValue("ExceptionError")[0];
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobalData.AddFunctionalLog("Exception in ActionInitiated: " + ex.ToString());
+                TempData["alertdata"] = objGlobalData.GetConstantValue("ExceptionError")[0];
+            }
+            return RedirectToAction("ExtProviderPerformanceList");
+        }
+
 
         [AllowAnonymous]
         public ActionResult ExtProviderPerformanceInfo(int id)
@@ -945,97 +1319,17 @@ namespace ISOStd.Controllers
         [AllowAnonymous]
         public ActionResult ExtProviderPerformanceDetails()
         {
-            ViewBag.SubMenutype = "ExtProviderPerformance";
-
+           
             string sId_Performace = Request.QueryString["Id_Performace"];
             ExtProviderPerformanceModels objExtProviderPerformanceModels = new ExtProviderPerformanceModels();
 
             try
             {
-                string SupplierId = "";
-                DateTime EveFromDate = new DateTime(0001,01,01);
-                DateTime EveToDate = new DateTime(0001,01,01);
-                decimal sQuality_Issue=0, sDelivery_Issue=0;
-                decimal varQuality_Issue = 0, varDelivery_Issue = 0;
-
-                string Sqlstmt = "select Id_Performace,Ext_Provider_Name,Eval_FromDate,Eval_ToDate" +
-                    "  from t_extprovider_performance where Id_Performace='" + sId_Performace + "'";
-
-                DataSet dsExtModels = objGlobalData.Getdetails(Sqlstmt);
-                if (dsExtModels.Tables.Count > 0 && dsExtModels.Tables[0].Rows.Count > 0)
-                {
-                    try
-                    {
-                        SupplierId = (dsExtModels.Tables[0].Rows[0]["Ext_Provider_Name"].ToString());
-                         
-                        DateTime dateValue;
-
-                        if (DateTime.TryParse(dsExtModels.Tables[0].Rows[0]["Eval_FromDate"].ToString(), out dateValue))
-                        {
-                            EveFromDate = dateValue;
-                        }
-                        if (DateTime.TryParse(dsExtModels.Tables[0].Rows[0]["Eval_ToDate"].ToString(), out dateValue))
-                        {
-                            EveToDate = dateValue;
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        objGlobalData.AddFunctionalLog("Exception in ExtProviderPerformanceList: " + ex.ToString());
-                        TempData["alertdata"] = objGlobalData.GetConstantValue("ExceptionError")[0];
-                    }
-                }
-                if (SupplierId != "" && EveFromDate > Convert.ToDateTime("0001/01/01") && EveToDate > Convert.ToDateTime("0001/01/01"))
-               { 
-                string stmt = "select count(*) as counts from t_external_provider_discrepancylog ," +
-                    "(Select item_id FROM dropdownitems m, dropdownheader n where m.header_id = n.header_id and header_desc = 'ExtProvider Discrepancy Type'" +
-                    " and item_desc = 'Delivery') as tt where find_in_set(item_id, discre_relatedto ) > 0 " +
-                    "and ext_provider_name = '" + SupplierId + "' and discre_registerd_date >= '" + EveFromDate + "' and discre_registerd_date <= '" + EveToDate + "'";
-                DataSet dsModels = objGlobalData.Getdetails(stmt);
-
-                if (dsModels.Tables.Count > 0 && dsModels.Tables[0].Rows.Count > 0)
-                {
-                    try
-                    {
-                            sDelivery_Issue = Convert.ToInt32(dsModels.Tables[0].Rows[0]["counts"].ToString());
-                            varDelivery_Issue = sDelivery_Issue;
-                    }
-                    catch (Exception ex)
-                    {
-                        objGlobalData.AddFunctionalLog("Exception in ExtProviderPerformanceList: " + ex.ToString());
-                        TempData["alertdata"] = objGlobalData.GetConstantValue("ExceptionError")[0];
-                    }
-                }
-                    if (sDelivery_Issue == 0)
-                    {
-                        sDelivery_Issue = 1;
-                    }
-                    string stmt1 = "select count(*) as counts from t_external_provider_discrepancylog ," +
-                       "(Select item_id FROM dropdownitems m, dropdownheader n where m.header_id = n.header_id and header_desc = 'ExtProvider Discrepancy Type'" +
-                       " and item_desc = 'Quality') as tt where find_in_set(item_id, discre_relatedto ) > 0 " +
-                       "and ext_provider_name = '" + SupplierId + "' and discre_registerd_date >= '" + EveFromDate + "' and discre_registerd_date <= '" + EveToDate + "'";
-                    DataSet dsModel = objGlobalData.Getdetails(stmt1);
-
-                    if (dsModel.Tables.Count > 0 && dsModel.Tables[0].Rows.Count > 0)
-                    {
-                        try
-                        {
-                            sQuality_Issue = Convert.ToInt32(dsModel.Tables[0].Rows[0]["counts"].ToString());
-                            varQuality_Issue = sQuality_Issue;
-                        }
-                        catch (Exception ex)
-                        {
-                            objGlobalData.AddFunctionalLog("Exception in ExtProviderPerformanceList: " + ex.ToString());
-                            TempData["alertdata"] = objGlobalData.GetConstantValue("ExceptionError")[0];
-                        }
-                    }
-                    if (sQuality_Issue == 0)
-                    {
-                        sQuality_Issue = 1;
-                    }
-                }
+                ViewBag.ApproveStatus = objGlobalData.GetConstantValueKeyValuePair("ExtProviderPerf");
                 string sSqlstmt = "select Id_Performace,ReportNo,Ext_Provider_Name,Eval_Date,Eval_FromDate,Eval_ToDate,Scope_ofSupplies,PO_Issued,PO_Completed,"
-               + "Scheduled_by,Approved_by,branch,Department,Location from t_extprovider_performance where Id_Performace='" + sId_Performace + "' order by Id_Performace desc";
+               + "Quality_Issue,Delivery_Issue,Scheduled_by,Approved_by,branch,Department,Location,quantity_issue,lots_received,quality_rating,quantity_rating,delivery_rating,total_rating,upload,notified_to,po_detail,initiated_date,action_taken,Due_Date,action_by,action_notified_to,apprv_status as apprv_status_id,approved_date,apprv_comments,approver_upload,"
+                 + "(CASE WHEN apprv_status = '0' THEN 'Pending for review' WHEN apprv_status = '1' THEN 'Rejected' WHEN apprv_status = '2' THEN 'Reviewed' END) as apprv_status"
+                + " from t_extprovider_performance where Id_Performace='" + sId_Performace + "' order by Id_Performace desc";
 
                 DataSet dsExtProviderModels = objGlobalData.Getdetails(sSqlstmt);
                 if (dsExtProviderModels.Tables.Count > 0 && dsExtProviderModels.Tables[0].Rows.Count > 0)
@@ -1043,67 +1337,66 @@ namespace ISOStd.Controllers
 
                     try
                     {
-                        decimal sPO_Completed = Convert.ToDecimal(dsExtProviderModels.Tables[0].Rows[0]["PO_Completed"].ToString());
-                       
-                        decimal QualityRate = 0, DeliveryRate = 0, Perfp_rate = 0;
-                        string Perfp_rate_action = "";
-                        if (sQuality_Issue != 0 && sPO_Completed != 0)
-                        {
-                            QualityRate = (sQuality_Issue * sPO_Completed) / 100;
-                        }
-                        if (sDelivery_Issue != 0 && sPO_Completed != 0)
-                        {
-                            DeliveryRate = (sDelivery_Issue * sPO_Completed) / 100;
-                        }
-                        if (QualityRate != 0 && DeliveryRate != 0)
-                        {
-                            Perfp_rate = ((70 * QualityRate) / 100) + ((30 * DeliveryRate) / 100);
-                        }
-                        if (Perfp_rate != 0)
-                        {
-                            Perfp_rate = System.Math.Round(Perfp_rate, 2)*100;
-
-                            if (Perfp_rate < 95)
-                            {
-                                Perfp_rate_action = "Continue to maintain as approved external provider";
-                            }
-                            if (Perfp_rate < 85)
-                            {
-                                Perfp_rate_action = "Monitor closely the performance of External Provider";
-                            }
-                            if (Perfp_rate < 75)
-                            {
-                                Perfp_rate_action = "Hold on until External Provider submits improvent action plan";
-                            }
-                            if (Perfp_rate < 65)
-                            {
-                                Perfp_rate_action = "Remove from approved external providers list";
-                            }
-                        }
-
                         objExtProviderPerformanceModels = new ExtProviderPerformanceModels()
                         {
                             Id_Performace = dsExtProviderModels.Tables[0].Rows[0]["Id_Performace"].ToString(),
                             ReportNo = dsExtProviderModels.Tables[0].Rows[0]["ReportNo"].ToString(),
                             Ext_Provider_Name = objGlobalData.GetSupplierNameById(dsExtProviderModels.Tables[0].Rows[0]["Ext_Provider_Name"].ToString()),
                             Scope_ofSupplies = dsExtProviderModels.Tables[0].Rows[0]["Scope_ofSupplies"].ToString(),
-                            PO_Issued = Convert.ToDecimal(dsExtProviderModels.Tables[0].Rows[0]["PO_Issued"].ToString()),
-                            PO_Completed = System.Math.Round(sPO_Completed, 2),
-                            Quality_Issue = System.Math.Round(varQuality_Issue, 2),
-                            Delivery_Issue = System.Math.Round(varDelivery_Issue, 2),
-                            //Quality_Issue = System.Math.Round(Convert.ToDecimal(dsExtProviderModels.Tables[0].Rows[0]["Quality_Issue"].ToString())),
-                            //Delivery_Issue = System.Math.Round(Convert.ToDecimal(dsExtProviderModels.Tables[0].Rows[0]["Delivery_Issue"].ToString())),
-                            QualityRate = System.Math.Round(QualityRate, 2),
-                            DeliveryRate = System.Math.Round(DeliveryRate, 2),
-                            Perfp_rate = Perfp_rate,
-                            Perfp_rate_action = Perfp_rate_action,
+                         
                             Scheduled_by = objGlobalData.GetMultiHrEmpNameById(dsExtProviderModels.Tables[0].Rows[0]["Scheduled_by"].ToString()),
-                            Approved_by = objGlobalData.GetMultiHrEmpNameById(dsExtProviderModels.Tables[0].Rows[0]["Approved_by"].ToString()),
+                            Approved_by = (dsExtProviderModels.Tables[0].Rows[0]["Approved_by"].ToString()),
                             branch = objGlobalData.GetMultiCompanyBranchNameById(dsExtProviderModels.Tables[0].Rows[0]["branch"].ToString()),
                             Department = objGlobalData.GetMultiDeptNameById(dsExtProviderModels.Tables[0].Rows[0]["Department"].ToString()),
                             Location = objGlobalData.GetDivisionLocationById(dsExtProviderModels.Tables[0].Rows[0]["Location"].ToString()),
+                            upload = (dsExtProviderModels.Tables[0].Rows[0]["upload"].ToString()),
+                            po_detail = (dsExtProviderModels.Tables[0].Rows[0]["po_detail"].ToString()),
+                            notified_to = objGlobalData.GetMultiHrEmpNameById(dsExtProviderModels.Tables[0].Rows[0]["notified_to"].ToString()),
 
+                            action_taken =objGlobalData.GetDropdownitemById(dsExtProviderModels.Tables[0].Rows[0]["action_taken"].ToString()),
+                            action_by = objGlobalData.GetMultiHrEmpNameById(dsExtProviderModels.Tables[0].Rows[0]["action_by"].ToString()),
+                            action_notified_to = objGlobalData.GetMultiHrEmpNameById(dsExtProviderModels.Tables[0].Rows[0]["action_notified_to"].ToString()),
+
+                            apprv_status = dsExtProviderModels.Tables[0].Rows[0]["apprv_status"].ToString(),
+                            apprv_comments = dsExtProviderModels.Tables[0].Rows[0]["apprv_comments"].ToString(),
+                            apprv_status_id = dsExtProviderModels.Tables[0].Rows[0]["apprv_status_id"].ToString(),
+                            approver_upload = dsExtProviderModels.Tables[0].Rows[0]["approver_upload"].ToString(),
                         };
+                       
+                        if (dsExtProviderModels.Tables[0].Rows[0]["Quality_Issue"].ToString() != "")
+                        {
+                            objExtProviderPerformanceModels.Quality_Issue = Convert.ToDecimal(dsExtProviderModels.Tables[0].Rows[0]["Quality_Issue"].ToString());
+                        }
+                        if (dsExtProviderModels.Tables[0].Rows[0]["Delivery_Issue"].ToString() != "")
+                        {
+                            objExtProviderPerformanceModels.Delivery_Issue = Convert.ToDecimal(dsExtProviderModels.Tables[0].Rows[0]["Delivery_Issue"].ToString());
+                        }
+                        if (dsExtProviderModels.Tables[0].Rows[0]["quantity_issue"].ToString() != "")
+                        {
+                            objExtProviderPerformanceModels.quantity_issue = Convert.ToDecimal(dsExtProviderModels.Tables[0].Rows[0]["quantity_issue"].ToString());
+                        }
+                        if (dsExtProviderModels.Tables[0].Rows[0]["lots_received"].ToString() != "")
+                        {
+                            objExtProviderPerformanceModels.lots_received = Convert.ToDecimal(dsExtProviderModels.Tables[0].Rows[0]["lots_received"].ToString());
+                        }
+                        if (dsExtProviderModels.Tables[0].Rows[0]["quality_rating"].ToString() != "")
+                        {
+                            objExtProviderPerformanceModels.quality_rating = Convert.ToDecimal(dsExtProviderModels.Tables[0].Rows[0]["quality_rating"].ToString());
+                        }
+                        if (dsExtProviderModels.Tables[0].Rows[0]["quantity_rating"].ToString() != "")
+                        {
+                            objExtProviderPerformanceModels.quantity_rating = Convert.ToDecimal(dsExtProviderModels.Tables[0].Rows[0]["quantity_rating"].ToString());
+                        }
+                        if (dsExtProviderModels.Tables[0].Rows[0]["delivery_rating"].ToString() != "")
+                        {
+                            objExtProviderPerformanceModels.delivery_rating = Convert.ToDecimal(dsExtProviderModels.Tables[0].Rows[0]["delivery_rating"].ToString());
+                        }
+                        if (dsExtProviderModels.Tables[0].Rows[0]["total_rating"].ToString() != "")
+                        {
+                            objExtProviderPerformanceModels.total_rating = Convert.ToDecimal(dsExtProviderModels.Tables[0].Rows[0]["total_rating"].ToString());
+                        }
+
+                     
                         DateTime dateValue;
                         if (DateTime.TryParse(dsExtProviderModels.Tables[0].Rows[0]["Eval_Date"].ToString(), out dateValue))
                         {
@@ -1117,59 +1410,33 @@ namespace ISOStd.Controllers
                         {
                             objExtProviderPerformanceModels.Eval_ToDate = dateValue;
                         }
+
+                       
+                        if (DateTime.TryParse(dsExtProviderModels.Tables[0].Rows[0]["initiated_date"].ToString(), out dateValue))
+                        {
+                            objExtProviderPerformanceModels.initiated_date = dateValue;
+                        }
+                        if (DateTime.TryParse(dsExtProviderModels.Tables[0].Rows[0]["Due_Date"].ToString(), out dateValue))
+                        {
+                            objExtProviderPerformanceModels.Due_Date = dateValue;
+                        }
+                        if (DateTime.TryParse(dsExtProviderModels.Tables[0].Rows[0]["approved_date"].ToString(), out dateValue))
+                        {
+                            objExtProviderPerformanceModels.approved_date = dateValue;
+                        }
                     }
                     catch (Exception ex)
                     {
-                        objGlobalData.AddFunctionalLog("Exception in ExtProviderPerformanceDetails: " + ex.ToString());
+                        objGlobalData.AddFunctionalLog("Exception in ExtProviderPerformanceList: " + ex.ToString());
                         TempData["alertdata"] = objGlobalData.GetConstantValue("ExceptionError")[0];
                     }
+
                 }
                 else
                 {
                     TempData["alertdata"] = "Id cannot be Null or empty";
                     return RedirectToAction("ExtProviderPerformanceList");
                 }
-                ExtProviderPerformanceModelsList objList = new ExtProviderPerformanceModelsList();
-                objList.ExtPerfpList = new List<ExtProviderPerformanceModels>();
-
-                sSqlstmt = "select id_Performance_trans,Id_Performace,Actions,Personnel_Resp,Due_Date,Priority " +
-                    "from t_extprovider_performance_trans where Id_Performace='" + sId_Performace + "'";
-
-                DataSet dsActionList = objGlobalData.Getdetails(sSqlstmt);
-                if (dsActionList.Tables.Count > 0 && dsActionList.Tables[0].Rows.Count > 0)
-                {
-                    for (int i = 0; i < dsActionList.Tables[0].Rows.Count; i++)
-                    {
-                        try
-                        {
-                            ExtProviderPerformanceModels objActionMdl = new ExtProviderPerformanceModels
-                            {
-                                id_Performance_trans = dsActionList.Tables[0].Rows[i]["id_Performance_trans"].ToString(),
-                                Id_Performace = dsActionList.Tables[0].Rows[i]["Id_Performace"].ToString(),
-                                Personnel_Resp = objGlobalData.GetMultiHrEmpNameById(dsActionList.Tables[0].Rows[i]["Personnel_Resp"].ToString()),
-                                Actions = dsActionList.Tables[0].Rows[i]["Actions"].ToString(),
-                                Priority = objGlobalData.GetDropdownitemById(dsActionList.Tables[0].Rows[i]["Priority"].ToString()),
-                            };
-
-                            DateTime dtDocDate1;
-                            if (dsActionList.Tables[0].Rows[i]["Due_Date"].ToString() != ""
-                     && DateTime.TryParse(dsActionList.Tables[0].Rows[i]["Due_Date"].ToString(), out dtDocDate1))
-                            {
-                                objActionMdl.Due_Date = dtDocDate1;
-                            }
-
-                            objList.ExtPerfpList.Add(objActionMdl);
-                        }
-                        catch (Exception ex)
-                        {
-                            objGlobalData.AddFunctionalLog("Exception in ExtProviderPerformanceEdit: " + ex.ToString());
-                            TempData["alertdata"] = objGlobalData.GetConstantValue("ExceptionError")[0];
-                            return RedirectToAction("ExtProviderPerformanceList");
-                        }
-                    }
-                    ViewBag.objPerfList = objList;
-                }
-
             }
             catch (Exception ex)
             {
@@ -1179,6 +1446,291 @@ namespace ISOStd.Controllers
 
             return View(objExtProviderPerformanceModels);
         }
+
+        //Review
+        public ActionResult ExtProviderPerformanceReview(ExtProviderPerformanceModels objModel, FormCollection form, IEnumerable<HttpPostedFileBase> approver_upload)
+        {
+            try
+            {
+                HttpPostedFileBase files = Request.Files[0];
+                if (approver_upload != null && files.ContentLength > 0)
+                {
+                    objModel.approver_upload = "";
+                    foreach (var file in approver_upload)
+                    {
+                        try
+                        {
+                            string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/Supplier"), Path.GetFileName(file.FileName));
+                            string sFilename = "Perf" + "_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath), sFilepath = Path.GetDirectoryName(spath);
+                            file.SaveAs(sFilepath + "/" + sFilename);
+                            objModel.approver_upload = objModel.approver_upload + "," + "~/DataUpload/MgmtDocs/Supplier/" + sFilename;
+                        }
+                        catch (Exception ex)
+                        {
+                            objGlobalData.AddFunctionalLog("Exception in ExtProviderPerformanceReview-upload: " + ex.ToString());
+                        }
+                    }
+                    objModel.approver_upload = objModel.approver_upload.Trim(',');
+                }
+                else
+                {
+                    ViewBag.Message = "You have not specified a file.";
+                }
+                if (objModel.FunReviewPerfEvaluation(objModel))
+                {
+                    TempData["Successdata"] = "Updated Successfully";
+                }
+                else
+                {
+                    TempData["alertdata"] = objGlobalData.GetConstantValue("ExceptionError")[0];
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobalData.AddFunctionalLog("Exception in AuditChecklistApprove: " + ex.ToString());
+                TempData["alertdata"] = objGlobalData.GetConstantValue("ExceptionError")[0];
+            }
+            return RedirectToAction("Index", "Home");
+        }
+
+
+        //[AllowAnonymous]
+        //public ActionResult ExtProviderPerformanceDetails()
+        //{
+        //    ViewBag.SubMenutype = "ExtProviderPerformance";
+
+        //    string sId_Performace = Request.QueryString["Id_Performace"];
+        //    ExtProviderPerformanceModels objExtProviderPerformanceModels = new ExtProviderPerformanceModels();
+
+        //    try
+        //    {
+        //        string SupplierId = "";
+        //        DateTime EveFromDate = new DateTime(0001,01,01);
+        //        DateTime EveToDate = new DateTime(0001,01,01);
+        //        decimal sQuality_Issue=0, sDelivery_Issue=0;
+        //        decimal varQuality_Issue = 0, varDelivery_Issue = 0;
+
+        //        string Sqlstmt = "select Id_Performace,Ext_Provider_Name,Eval_FromDate,Eval_ToDate" +
+        //            "  from t_extprovider_performance where Id_Performace='" + sId_Performace + "'";
+
+        //        DataSet dsExtModels = objGlobalData.Getdetails(Sqlstmt);
+        //        if (dsExtModels.Tables.Count > 0 && dsExtModels.Tables[0].Rows.Count > 0)
+        //        {
+        //            try
+        //            {
+        //                SupplierId = (dsExtModels.Tables[0].Rows[0]["Ext_Provider_Name"].ToString());
+
+        //                DateTime dateValue;
+
+        //                if (DateTime.TryParse(dsExtModels.Tables[0].Rows[0]["Eval_FromDate"].ToString(), out dateValue))
+        //                {
+        //                    EveFromDate = dateValue;
+        //                }
+        //                if (DateTime.TryParse(dsExtModels.Tables[0].Rows[0]["Eval_ToDate"].ToString(), out dateValue))
+        //                {
+        //                    EveToDate = dateValue;
+        //                }
+        //            }
+        //            catch (Exception ex)
+        //            {
+        //                objGlobalData.AddFunctionalLog("Exception in ExtProviderPerformanceList: " + ex.ToString());
+        //                TempData["alertdata"] = objGlobalData.GetConstantValue("ExceptionError")[0];
+        //            }
+        //        }
+        //        if (SupplierId != "" && EveFromDate > Convert.ToDateTime("0001/01/01") && EveToDate > Convert.ToDateTime("0001/01/01"))
+        //       { 
+        //        string stmt = "select count(*) as counts from t_external_provider_discrepancylog ," +
+        //            "(Select item_id FROM dropdownitems m, dropdownheader n where m.header_id = n.header_id and header_desc = 'ExtProvider Discrepancy Type'" +
+        //            " and item_desc = 'Delivery') as tt where find_in_set(item_id, discre_relatedto ) > 0 " +
+        //            "and ext_provider_name = '" + SupplierId + "' and discre_registerd_date >= '" + EveFromDate + "' and discre_registerd_date <= '" + EveToDate + "'";
+        //        DataSet dsModels = objGlobalData.Getdetails(stmt);
+
+        //        if (dsModels.Tables.Count > 0 && dsModels.Tables[0].Rows.Count > 0)
+        //        {
+        //            try
+        //            {
+        //                    sDelivery_Issue = Convert.ToInt32(dsModels.Tables[0].Rows[0]["counts"].ToString());
+        //                    varDelivery_Issue = sDelivery_Issue;
+        //            }
+        //            catch (Exception ex)
+        //            {
+        //                objGlobalData.AddFunctionalLog("Exception in ExtProviderPerformanceList: " + ex.ToString());
+        //                TempData["alertdata"] = objGlobalData.GetConstantValue("ExceptionError")[0];
+        //            }
+        //        }
+        //            if (sDelivery_Issue == 0)
+        //            {
+        //                sDelivery_Issue = 1;
+        //            }
+        //            string stmt1 = "select count(*) as counts from t_external_provider_discrepancylog ," +
+        //               "(Select item_id FROM dropdownitems m, dropdownheader n where m.header_id = n.header_id and header_desc = 'ExtProvider Discrepancy Type'" +
+        //               " and item_desc = 'Quality') as tt where find_in_set(item_id, discre_relatedto ) > 0 " +
+        //               "and ext_provider_name = '" + SupplierId + "' and discre_registerd_date >= '" + EveFromDate + "' and discre_registerd_date <= '" + EveToDate + "'";
+        //            DataSet dsModel = objGlobalData.Getdetails(stmt1);
+
+        //            if (dsModel.Tables.Count > 0 && dsModel.Tables[0].Rows.Count > 0)
+        //            {
+        //                try
+        //                {
+        //                    sQuality_Issue = Convert.ToInt32(dsModel.Tables[0].Rows[0]["counts"].ToString());
+        //                    varQuality_Issue = sQuality_Issue;
+        //                }
+        //                catch (Exception ex)
+        //                {
+        //                    objGlobalData.AddFunctionalLog("Exception in ExtProviderPerformanceList: " + ex.ToString());
+        //                    TempData["alertdata"] = objGlobalData.GetConstantValue("ExceptionError")[0];
+        //                }
+        //            }
+        //            if (sQuality_Issue == 0)
+        //            {
+        //                sQuality_Issue = 1;
+        //            }
+        //        }
+        //        string sSqlstmt = "select Id_Performace,ReportNo,Ext_Provider_Name,Eval_Date,Eval_FromDate,Eval_ToDate,Scope_ofSupplies,PO_Issued,PO_Completed,"
+        //       + "Scheduled_by,Approved_by,branch,Department,Location from t_extprovider_performance where Id_Performace='" + sId_Performace + "' order by Id_Performace desc";
+
+        //        DataSet dsExtProviderModels = objGlobalData.Getdetails(sSqlstmt);
+        //        if (dsExtProviderModels.Tables.Count > 0 && dsExtProviderModels.Tables[0].Rows.Count > 0)
+        //        {
+
+        //            try
+        //            {
+        //                decimal sPO_Completed = Convert.ToDecimal(dsExtProviderModels.Tables[0].Rows[0]["PO_Completed"].ToString());
+
+        //                decimal QualityRate = 0, DeliveryRate = 0, Perfp_rate = 0;
+        //                string Perfp_rate_action = "";
+        //                if (sQuality_Issue != 0 && sPO_Completed != 0)
+        //                {
+        //                    QualityRate = (sQuality_Issue * sPO_Completed) / 100;
+        //                }
+        //                if (sDelivery_Issue != 0 && sPO_Completed != 0)
+        //                {
+        //                    DeliveryRate = (sDelivery_Issue * sPO_Completed) / 100;
+        //                }
+        //                if (QualityRate != 0 && DeliveryRate != 0)
+        //                {
+        //                    Perfp_rate = ((70 * QualityRate) / 100) + ((30 * DeliveryRate) / 100);
+        //                }
+        //                if (Perfp_rate != 0)
+        //                {
+        //                    Perfp_rate = System.Math.Round(Perfp_rate, 2)*100;
+
+        //                    if (Perfp_rate < 95)
+        //                    {
+        //                        Perfp_rate_action = "Continue to maintain as approved external provider";
+        //                    }
+        //                    if (Perfp_rate < 85)
+        //                    {
+        //                        Perfp_rate_action = "Monitor closely the performance of External Provider";
+        //                    }
+        //                    if (Perfp_rate < 75)
+        //                    {
+        //                        Perfp_rate_action = "Hold on until External Provider submits improvent action plan";
+        //                    }
+        //                    if (Perfp_rate < 65)
+        //                    {
+        //                        Perfp_rate_action = "Remove from approved external providers list";
+        //                    }
+        //                }
+
+        //                objExtProviderPerformanceModels = new ExtProviderPerformanceModels()
+        //                {
+        //                    Id_Performace = dsExtProviderModels.Tables[0].Rows[0]["Id_Performace"].ToString(),
+        //                    ReportNo = dsExtProviderModels.Tables[0].Rows[0]["ReportNo"].ToString(),
+        //                    Ext_Provider_Name = objGlobalData.GetSupplierNameById(dsExtProviderModels.Tables[0].Rows[0]["Ext_Provider_Name"].ToString()),
+        //                    Scope_ofSupplies = dsExtProviderModels.Tables[0].Rows[0]["Scope_ofSupplies"].ToString(),
+        //                    PO_Issued = Convert.ToDecimal(dsExtProviderModels.Tables[0].Rows[0]["PO_Issued"].ToString()),
+        //                    PO_Completed = System.Math.Round(sPO_Completed, 2),
+        //                    Quality_Issue = System.Math.Round(varQuality_Issue, 2),
+        //                    Delivery_Issue = System.Math.Round(varDelivery_Issue, 2),
+        //                    //Quality_Issue = System.Math.Round(Convert.ToDecimal(dsExtProviderModels.Tables[0].Rows[0]["Quality_Issue"].ToString())),
+        //                    //Delivery_Issue = System.Math.Round(Convert.ToDecimal(dsExtProviderModels.Tables[0].Rows[0]["Delivery_Issue"].ToString())),
+        //                    QualityRate = System.Math.Round(QualityRate, 2),
+        //                    DeliveryRate = System.Math.Round(DeliveryRate, 2),
+        //                    Perfp_rate = Perfp_rate,
+        //                    Perfp_rate_action = Perfp_rate_action,
+        //                    Scheduled_by = objGlobalData.GetMultiHrEmpNameById(dsExtProviderModels.Tables[0].Rows[0]["Scheduled_by"].ToString()),
+        //                    Approved_by = objGlobalData.GetMultiHrEmpNameById(dsExtProviderModels.Tables[0].Rows[0]["Approved_by"].ToString()),
+        //                    branch = objGlobalData.GetMultiCompanyBranchNameById(dsExtProviderModels.Tables[0].Rows[0]["branch"].ToString()),
+        //                    Department = objGlobalData.GetMultiDeptNameById(dsExtProviderModels.Tables[0].Rows[0]["Department"].ToString()),
+        //                    Location = objGlobalData.GetDivisionLocationById(dsExtProviderModels.Tables[0].Rows[0]["Location"].ToString()),
+
+        //                };
+        //                DateTime dateValue;
+        //                if (DateTime.TryParse(dsExtProviderModels.Tables[0].Rows[0]["Eval_Date"].ToString(), out dateValue))
+        //                {
+        //                    objExtProviderPerformanceModels.Eval_Date = dateValue;
+        //                }
+        //                if (DateTime.TryParse(dsExtProviderModels.Tables[0].Rows[0]["Eval_FromDate"].ToString(), out dateValue))
+        //                {
+        //                    objExtProviderPerformanceModels.Eval_FromDate = dateValue;
+        //                }
+        //                if (DateTime.TryParse(dsExtProviderModels.Tables[0].Rows[0]["Eval_ToDate"].ToString(), out dateValue))
+        //                {
+        //                    objExtProviderPerformanceModels.Eval_ToDate = dateValue;
+        //                }
+        //            }
+        //            catch (Exception ex)
+        //            {
+        //                objGlobalData.AddFunctionalLog("Exception in ExtProviderPerformanceDetails: " + ex.ToString());
+        //                TempData["alertdata"] = objGlobalData.GetConstantValue("ExceptionError")[0];
+        //            }
+        //        }
+        //        else
+        //        {
+        //            TempData["alertdata"] = "Id cannot be Null or empty";
+        //            return RedirectToAction("ExtProviderPerformanceList");
+        //        }
+        //        ExtProviderPerformanceModelsList objList = new ExtProviderPerformanceModelsList();
+        //        objList.ExtPerfpList = new List<ExtProviderPerformanceModels>();
+
+        //        sSqlstmt = "select id_Performance_trans,Id_Performace,Actions,Personnel_Resp,Due_Date,Priority " +
+        //            "from t_extprovider_performance_trans where Id_Performace='" + sId_Performace + "'";
+
+        //        DataSet dsActionList = objGlobalData.Getdetails(sSqlstmt);
+        //        if (dsActionList.Tables.Count > 0 && dsActionList.Tables[0].Rows.Count > 0)
+        //        {
+        //            for (int i = 0; i < dsActionList.Tables[0].Rows.Count; i++)
+        //            {
+        //                try
+        //                {
+        //                    ExtProviderPerformanceModels objActionMdl = new ExtProviderPerformanceModels
+        //                    {
+        //                        id_Performance_trans = dsActionList.Tables[0].Rows[i]["id_Performance_trans"].ToString(),
+        //                        Id_Performace = dsActionList.Tables[0].Rows[i]["Id_Performace"].ToString(),
+        //                        Personnel_Resp = objGlobalData.GetMultiHrEmpNameById(dsActionList.Tables[0].Rows[i]["Personnel_Resp"].ToString()),
+        //                        Actions = dsActionList.Tables[0].Rows[i]["Actions"].ToString(),
+        //                        Priority = objGlobalData.GetDropdownitemById(dsActionList.Tables[0].Rows[i]["Priority"].ToString()),
+        //                    };
+
+        //                    DateTime dtDocDate1;
+        //                    if (dsActionList.Tables[0].Rows[i]["Due_Date"].ToString() != ""
+        //             && DateTime.TryParse(dsActionList.Tables[0].Rows[i]["Due_Date"].ToString(), out dtDocDate1))
+        //                    {
+        //                        objActionMdl.Due_Date = dtDocDate1;
+        //                    }
+
+        //                    objList.ExtPerfpList.Add(objActionMdl);
+        //                }
+        //                catch (Exception ex)
+        //                {
+        //                    objGlobalData.AddFunctionalLog("Exception in ExtProviderPerformanceEdit: " + ex.ToString());
+        //                    TempData["alertdata"] = objGlobalData.GetConstantValue("ExceptionError")[0];
+        //                    return RedirectToAction("ExtProviderPerformanceList");
+        //                }
+        //            }
+        //            ViewBag.objPerfList = objList;
+        //        }
+
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        objGlobalData.AddFunctionalLog("Exception in ExtProviderPerformanceDetails: " + ex.ToString());
+        //        TempData["alertdata"] = objGlobalData.GetConstantValue("ExceptionError")[0];
+        //    }
+
+        //    return View(objExtProviderPerformanceModels);
+        //}
 
         [AllowAnonymous]
         public JsonResult ExtProviderPerformanceDelete(FormCollection form)
@@ -1335,7 +1887,7 @@ namespace ISOStd.Controllers
 
                 string sSqlstmt = "select id_discrepancylog, discrepancy_no, discre_registerd_date,discre_reported_date," +
                     "ext_provider_name, delivery_note_no, po_no, discre_detail,discre_relatedto,upload,actions,impact," +
-                    "ncr_required,branch,Department,Location from t_external_provider_discrepancylog where active=1";
+                    "ncr_required,branch,Department,Location,id_nc from t_external_provider_discrepancylog where active=1";
 
                 SupplierModels objSupplier = new SupplierModels();
 
@@ -1378,6 +1930,7 @@ namespace ISOStd.Controllers
                                 branch = objGlobalData.GetMultiCompanyBranchNameById(dsSupplier.Tables[0].Rows[i]["branch"].ToString()),
                                 Department = objGlobalData.GetMultiDeptNameById(dsSupplier.Tables[0].Rows[i]["Department"].ToString()),
                                 Location = objGlobalData.GetDivisionLocationById(dsSupplier.Tables[0].Rows[i]["Location"].ToString()),
+                                id_nc =objGlobalData.GetNCNOById(dsSupplier.Tables[0].Rows[i]["id_nc"].ToString()),
                             };
                             DateTime dtDocDate;
 
@@ -1831,6 +2384,29 @@ namespace ISOStd.Controllers
             }
             return Json("Failed");
         }
+        public JsonResult FunGetSupplierScope(string SupplierName)
+        {
+            try
+            {
+                if (SupplierName != "")
+                {
+                    string scope = "";
+                    string sSsqlstmt = "Select SupplyScope from t_supplier where SupplierID = '" + SupplierName + "'";
+                    DataSet dsList = objGlobalData.Getdetails(sSsqlstmt);
+                    if (dsList.Tables.Count > 0 && dsList.Tables[0].Rows.Count > 0)
+                    {
+                        scope = dsList.Tables[0].Rows[0]["SupplyScope"].ToString();
+                    }
+                    return Json(scope);
+                }
 
+            }
+            catch (Exception ex)
+            {
+                objGlobalData.AddFunctionalLog("Exception in FunGetSupplierScope: " + ex.ToString());
+                TempData["alertdata"] = objGlobalData.GetConstantValue("ExceptionError")[0];
+            }
+            return Json("");
+        }
     }
 }

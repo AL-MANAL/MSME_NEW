@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
+using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Web;
 
 namespace ISOStd.Models
@@ -39,13 +41,13 @@ namespace ISOStd.Models
         [Display(Name = "Total number of POs completed")]
         public decimal PO_Completed { get; set; }
 
-        [Display(Name = "Total number of quality issues")]
+        [Display(Name = "Total no of quality issued(TQI)")]
         public decimal Quality_Issue { get; set; }
 
-        [Display(Name = "Total number of delivery issues")]
+        [Display(Name = "Total no of delivery issued(TDI)")]
         public decimal Delivery_Issue { get; set; }
 
-        [Display(Name = "Scheduled By")]
+        [Display(Name = "Evaluated By")]
         public string Scheduled_by { get; set; }
 
         [Display(Name = "To be reviewed & verified by")]
@@ -89,6 +91,62 @@ namespace ISOStd.Models
         [Display(Name = "Location")]
         public string Location { get; set; }
 
+        //t_extprovider_performance
+
+        [Display(Name = "Total no of quantity issued(TQNI)")]
+        public decimal quantity_issue { get; set; }
+
+        [Display(Name = "Total number of LOTs received")]
+        public decimal lots_received { get; set; }
+
+        [Display(Name = "Quality Rating")]
+        public decimal quality_rating { get; set; }
+
+        [Display(Name = "Quantity Rating")]
+        public decimal quantity_rating { get; set; }
+
+        [Display(Name = "Delivery Rating")]
+        public decimal delivery_rating { get; set; }
+
+        [Display(Name = "Total Supplier Rating")]
+        public decimal total_rating { get; set; }
+
+        [Display(Name = "Document(s)")]
+        public string upload { get; set; }
+
+        [Display(Name = "Notified To")]
+        public string notified_to { get; set; }
+
+        [Display(Name = "Action Initiated on")]
+        public DateTime initiated_date { get; set; }
+
+        [Display(Name = "Action to be taken")]
+        public string action_taken { get; set; }
+
+        
+        [Display(Name = "Action to be taken by")]
+        public string action_by { get; set; }
+
+        [Display(Name = "Notified To")]
+        public string action_notified_to { get; set; }
+
+        [Display(Name = "PO Details")]
+        public string po_detail { get; set; }
+
+        [Display(Name = "Approval Status")]
+        public string apprv_status { get; set; }
+
+        [Display(Name = "Approval Date")]
+        public DateTime approved_date { get; set; }
+
+        [Display(Name = "Comments")]
+        public string apprv_comments { get; set; }
+
+        public string apprv_status_id { get; set; }
+
+        [Display(Name = "Document(s)")]
+        public string approver_upload { get; set; }
+
         internal bool FunDeleteExtProviderPerf(string sId_Performace)
         {
             try
@@ -111,7 +169,7 @@ namespace ISOStd.Models
                 string sBranch = objGlobalData.GetCurrentUserSession().division;
 
                 string sSqlstmt = "insert into t_extprovider_performance (Ext_Provider_Name, Scope_ofSupplies, PO_Issued,"
-                    + " PO_Completed, Scheduled_by,Approved_by,branch,Department,Location";
+                    + " PO_Completed, Scheduled_by,Approved_by,branch,Department,Location,quantity_issue,lots_received,quality_rating,quantity_rating,delivery_rating,total_rating,upload,notified_to,Quality_Issue,Delivery_Issue,po_detail";
                 string sFields = "", sFieldValue = "";
 
                 if (ObjPerfModels.Eval_Date != null && ObjPerfModels.Eval_Date > Convert.ToDateTime("01/01/0001"))
@@ -137,7 +195,8 @@ namespace ISOStd.Models
                 //+ "','" + ObjPerfModels.Delivery_Issue + "','" + ObjPerfModels.Scheduled_by + "','" + ObjPerfModels.Approved_by + "','" + sBranch + "'";
                 + "','" + ObjPerfModels.PO_Issued + "','" + ObjPerfModels.PO_Completed 
                 + "','" + ObjPerfModels.Scheduled_by + "','" + ObjPerfModels.Approved_by + "','" + ObjPerfModels.branch
-                + "','" + ObjPerfModels.Department + "','" + ObjPerfModels.Location + "'";
+                + "','" + ObjPerfModels.Department + "','" + ObjPerfModels.Location + "'"
+                + ",'" + ObjPerfModels.quantity_issue + "','" + ObjPerfModels.lots_received + "','" + ObjPerfModels.quality_rating + "','" + ObjPerfModels.quantity_rating + "','" + ObjPerfModels.delivery_rating + "','" + ObjPerfModels.total_rating + "','" + ObjPerfModels.upload + "','" + ObjPerfModels.notified_to + "','" + ObjPerfModels.Quality_Issue + "','" + ObjPerfModels.Delivery_Issue + "','" + ObjPerfModels.po_detail + "'";
 
                 sSqlstmt = sSqlstmt + sFieldValue + ")";
 
@@ -160,11 +219,10 @@ namespace ISOStd.Models
                         }
 
                         string sql = "update t_extprovider_performance set ReportNo='" + ReportNo + "' where Id_Performace = '" + Id_Performace + "'";
-                        return (objGlobalData.ExecuteQuery(sql));
-                        //{
-                        //    SendAuditScheduleEmail(Id_Performace, "Planning or Scheduling the Audits");
-                        //}
-                        //return true;
+                        if (objGlobalData.ExecuteQuery(sql))
+                        {
+                          return SendPerformanceEvaluationmail(Id_Performace, "External Provider Performance Evaluation Review");
+                        }    
                     }
                 }
                 return false;
@@ -175,7 +233,158 @@ namespace ISOStd.Models
             }
             return false;
         }
+        internal bool SendPerformanceEvaluationmail(int Id_Performace, string sMessage = "")
+        {
+            try
+            {
+                string sType = "email";
 
+                string sSqlstmt = "select Id_Performace,ReportNo,Ext_Provider_Name,Scheduled_by,Approved_by,notified_to"
+                    + " from t_extprovider_performance where Id_Performace='" + Id_Performace + "'";
+
+                DataSet dsList = objGlobalData.Getdetails(sSqlstmt);
+
+                if (dsList.Tables.Count > 0 && dsList.Tables[0].Rows.Count > 0)
+                {
+
+                    string sHeader, sInformation = "", sTitle = "", sSubject = "", sContent = "", aAttachment = "", BccEmailIds = "";
+
+                    //using streamreader for reading my htmltemplate 
+                    //Form the Email Subject and Body content
+                    DataSet dsEmailXML = new DataSet();
+                    dsEmailXML.ReadXml(HttpContext.Current.Server.MapPath("~/EmailTemplates.xml"));
+
+                    if (sType != "" && dsEmailXML.Tables.Count > 0 && dsEmailXML.Tables[sType] != null && dsEmailXML.Tables[sType].Rows.Count > 0)
+                    {
+                        sSubject = dsEmailXML.Tables[sType].Rows[0]["subject"].ToString();
+                    }
+
+                    using (StreamReader reader = new StreamReader(HttpContext.Current.Server.MapPath("~/Views/EmailTemplate/EmailTemplate.html")))
+                    {
+                        sContent = reader.ReadToEnd();
+                    }
+                    string sName = objGlobalData.GetMultiHrEmpNameById(dsList.Tables[0].Rows[0]["Approved_by"].ToString());
+                    string sToEmailIds = objGlobalData.GetMultiHrEmpEmailIdById(dsList.Tables[0].Rows[0]["Approved_by"].ToString());
+                    string sCCEmailIds = objGlobalData.GetMultiHrEmpEmailIdById(dsList.Tables[0].Rows[0]["Scheduled_by"].ToString())+","+ objGlobalData.GetMultiHrEmpEmailIdById(dsList.Tables[0].Rows[0]["notified_to"].ToString());
+
+                    sHeader = "<tr><td colspan=3><b>Report No:<b></td> <td colspan=3>"
+                        + (dsList.Tables[0].Rows[0]["ReportNo"].ToString()) + "</td></tr>"
+                          + "<tr><td colspan=3><b>External Provider Name:<b></td> <td colspan=3>" + objGlobalData.GetSupplierNameById(dsList.Tables[0].Rows[0]["Ext_Provider_Name"].ToString()) + "</td></tr>";
+
+                    sContent = sContent.Replace("{FromMsg}", "");
+                    sContent = sContent.Replace("{UserName}", sName);
+                    sContent = sContent.Replace("{Title}", "External Provider Performance Evaluation");
+                    sContent = sContent.Replace("{content}", sHeader);
+                    sContent = sContent.Replace("{message}", "");
+                    sContent = sContent.Replace("{extramessage}", "");
+
+                    sToEmailIds = Regex.Replace(sToEmailIds, ",+", ",");
+                    sToEmailIds = sToEmailIds.Trim();
+                    sToEmailIds = sToEmailIds.TrimEnd(',');
+                    sToEmailIds = sToEmailIds.TrimStart(',');
+
+                    sCCEmailIds = Regex.Replace(sCCEmailIds, ",+", ",");
+                    sCCEmailIds = sCCEmailIds.Trim();
+                    sCCEmailIds = sCCEmailIds.TrimEnd(',');
+                    sCCEmailIds = sCCEmailIds.TrimStart(',');
+
+                    return objGlobalData.Sendmail(sToEmailIds, sSubject + sMessage, sContent, aAttachment, sCCEmailIds, "");
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobalData.AddFunctionalLog("Exception in SendPerformanceEvaluationmail: " + ex.ToString());
+            }
+            return false;
+        }
+
+        internal bool FunReviewPerfEvaluation(ExtProviderPerformanceModels objModel)
+        {
+            try
+            {
+                string sApprovedDate = DateTime.Now.ToString("yyyy-MM-dd HH':'mm':'ss");
+                string sSqlstmt = "update t_extprovider_performance set apprv_status='" + apprv_status + "',apprv_comments='" + apprv_comments + "',approved_date='" + sApprovedDate + "',approver_upload='" + approver_upload + "' where Id_Performace='" + Id_Performace + "'";
+
+                if (objGlobalData.ExecuteQuery(sSqlstmt))
+                {
+                    return SendPerformanceEvaluationReviewmail(Id_Performace, apprv_status, "External Performance Evaluation Review Status");
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobalData.AddFunctionalLog("Exception in FunReviewPerfEvaluation: " + ex.ToString());
+            }
+            return false;
+        }
+        internal bool SendPerformanceEvaluationReviewmail(string Id_Performace, string iStatus, string sMessage = "")
+        {
+            try
+            {
+                string sType = "email";
+
+                string sSqlstmt = "select Id_Performace,ReportNo,Ext_Provider_Name,Scheduled_by,Approved_by,notified_to,apprv_comments,"
+                     + "(CASE WHEN apprv_status = '0' THEN 'Pending for review' WHEN apprv_status = '1' THEN 'Rejected' WHEN apprv_status = '2' THEN 'Reviewed' end) as apprv_status"
+                     + " from t_extprovider_performance where Id_Performace='" + Id_Performace + "'";
+
+                DataSet dsList = objGlobalData.Getdetails(sSqlstmt);
+
+                if (dsList.Tables.Count > 0 && dsList.Tables[0].Rows.Count > 0)
+                {
+
+                    string sHeader, sInformation = "", sTitle = "", sSubject = "", sContent = "", aAttachment = "", BccEmailIds = "";
+
+                    //using streamreader for reading my htmltemplate 
+                    //Form the Email Subject and Body content
+                    DataSet dsEmailXML = new DataSet();
+                    dsEmailXML.ReadXml(HttpContext.Current.Server.MapPath("~/EmailTemplates.xml"));
+
+                    if (sType != "" && dsEmailXML.Tables.Count > 0 && dsEmailXML.Tables[sType] != null && dsEmailXML.Tables[sType].Rows.Count > 0)
+                    {
+                        sSubject = dsEmailXML.Tables[sType].Rows[0]["subject"].ToString();
+                    }
+
+                    using (StreamReader reader = new StreamReader(HttpContext.Current.Server.MapPath("~/Views/EmailTemplate/EmailTemplate.html")))
+                    {
+                        sContent = reader.ReadToEnd();
+                    }
+                    string sName = objGlobalData.GetMultiHrEmpNameById(dsList.Tables[0].Rows[0]["Scheduled_by"].ToString());
+                    string sToEmailIds = objGlobalData.GetMultiHrEmpEmailIdById(dsList.Tables[0].Rows[0]["Scheduled_by"].ToString());
+                    string sCCEmailIds = objGlobalData.GetMultiHrEmpEmailIdById(dsList.Tables[0].Rows[0]["Approved_by"].ToString()) +","+ objGlobalData.GetMultiHrEmpEmailIdById(dsList.Tables[0].Rows[0]["notified_to"].ToString());
+
+
+
+                    sHeader = "<tr><td colspan=3><b>Report No:<b></td> <td colspan=3>"
+                        + (dsList.Tables[0].Rows[0]["ReportNo"].ToString()) + "</td></tr>"
+                          + "<tr><td colspan=3><b>External Provider Name:<b></td> <td colspan=3>" + objGlobalData.GetSupplierNameById(dsList.Tables[0].Rows[0]["Ext_Provider_Name"].ToString()) + "</td></tr>"
+                           + "<tr><td colspan=3><b>Approval Status:<b></td> <td colspan=3>" + (dsList.Tables[0].Rows[0]["apprv_status"].ToString()) + "</td></tr>"
+                            + "<tr><td colspan=3><b>Comments:<b></td> <td colspan=3>" + (dsList.Tables[0].Rows[0]["apprv_comments"].ToString()) + "</td></tr>";
+
+                    sContent = sContent.Replace("{FromMsg}", "");
+                    sContent = sContent.Replace("{UserName}", sName);
+                    sContent = sContent.Replace("{Title}", "External Provider Performance");
+                    sContent = sContent.Replace("{content}", sHeader);
+                    sContent = sContent.Replace("{message}", "");
+                    sContent = sContent.Replace("{extramessage}", "");
+
+                    sToEmailIds = Regex.Replace(sToEmailIds, ",+", ",");
+                    sToEmailIds = sToEmailIds.Trim();
+                    sToEmailIds = sToEmailIds.TrimEnd(',');
+                    sToEmailIds = sToEmailIds.TrimStart(',');
+
+                    sCCEmailIds = Regex.Replace(sCCEmailIds, ",+", ",");
+                    sCCEmailIds = sCCEmailIds.Trim();
+                    sCCEmailIds = sCCEmailIds.TrimEnd(',');
+                    sCCEmailIds = sCCEmailIds.TrimStart(',');
+
+                    return objGlobalData.Sendmail(sToEmailIds, sSubject + sMessage, sContent, aAttachment, sCCEmailIds, "");
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobalData.AddFunctionalLog("Exception in SendPerformanceEvaluationReviewmail: " + ex.ToString());
+            }
+            return false;
+        }
         internal bool FunAddExtProviderPerfTrans(ExtProviderPerformanceModelsList objPerfList)
         {
             try
@@ -224,9 +433,10 @@ namespace ISOStd.Models
                
                 string sSqlstmt = "update t_extprovider_performance set  Ext_Provider_Name='" + ObjPerfModels.Ext_Provider_Name
                    + "', Scope_ofSupplies='" + ObjPerfModels.Scope_ofSupplies + "', PO_Issued='" + ObjPerfModels.PO_Issued
-                   + "', PO_Completed='" + ObjPerfModels.PO_Completed /*+ "', Quality_Issue='" + ObjPerfModels.Quality_Issue + "', Delivery_Issue='" + ObjPerfModels.Delivery_Issue +*/
-                   + "', Scheduled_by='" + ObjPerfModels.Scheduled_by + "', Approved_by='" + ObjPerfModels.Approved_by
-                   + "', branch='" + ObjPerfModels.branch + "', Department='" + ObjPerfModels.Department + "', Location='" + ObjPerfModels.Location + "'";
+                   + "', PO_Completed='" + ObjPerfModels.PO_Completed + "', Quality_Issue='" + ObjPerfModels.Quality_Issue + "', Delivery_Issue='" + ObjPerfModels.Delivery_Issue +"'"
+                   + ", Scheduled_by='" + ObjPerfModels.Scheduled_by + "', Approved_by='" + ObjPerfModels.Approved_by
+                   + "', branch='" + ObjPerfModels.branch + "', Department='" + ObjPerfModels.Department + "', Location='" + ObjPerfModels.Location + "'"
+                   + ", quantity_issue='" + ObjPerfModels.quantity_issue + "', lots_received='" + ObjPerfModels.lots_received + "', quality_rating='" + ObjPerfModels.quality_rating + "', quantity_rating='" + ObjPerfModels.quantity_rating + "', delivery_rating='" + ObjPerfModels.delivery_rating + "', total_rating='" + ObjPerfModels.total_rating + "', upload='" + ObjPerfModels.upload + "', notified_to='" + ObjPerfModels.notified_to + "', po_detail='" + ObjPerfModels.po_detail + "'";
 
                 if (ObjPerfModels.Eval_Date != null && ObjPerfModels.Eval_Date > Convert.ToDateTime("01/01/0001"))
                 {
@@ -279,6 +489,32 @@ namespace ISOStd.Models
             }
             return false;
         }
+
+        //action initiated
+        internal bool FunUpdateActionInitiated(ExtProviderPerformanceModels objModel)
+        {
+            try
+            {
+
+                string sSqlstmt = "update t_extprovider_performance set action_taken='" + action_taken + "',action_by='" + action_by + "',action_notified_to='" + action_notified_to + "'";
+                if (objModel.initiated_date != null && objModel.initiated_date > Convert.ToDateTime("01/01/0001 00:00:00"))
+                {
+                    sSqlstmt = sSqlstmt + ",initiated_date='" + objModel.initiated_date.ToString("yyyy/MM/dd") + "'";
+                }
+                if (objModel.Due_Date != null && objModel.Due_Date > Convert.ToDateTime("01/01/0001 00:00:00"))
+                {
+                    sSqlstmt = sSqlstmt + ",Due_Date='" + objModel.Due_Date.ToString("yyyy/MM/dd") + "'";
+                }
+                sSqlstmt = sSqlstmt + " where Id_Performace='" + Id_Performace + "'";
+                return objGlobalData.ExecuteQuery(sSqlstmt);
+            }
+            catch (Exception ex)
+            {
+                objGlobalData.AddFunctionalLog("Exception in FunUpdateAuditStatus: " + ex.ToString());
+            }
+            return false;
+        }
+
     }
 
     public class ExtProviderPerformanceModelsList
@@ -294,11 +530,11 @@ namespace ISOStd.Models
         public string id_discrepancylog { get; set; }
 
         [Required]
-        [Display(Name = "Discrepancy Registered On")]
+        [Display(Name = "Discrepancy identified on")]
         public DateTime discre_registerd_date { get; set; }
         
         [Required]
-        [Display(Name = "Discrepancy Identified / Reported On")]
+        [Display(Name = "Discrepancy reported on")]
         public DateTime discre_reported_date { get; set; }
 
         [Required]
@@ -323,7 +559,7 @@ namespace ISOStd.Models
         public string ext_provider_name { get; set; }
 
         [Required]
-        [Display(Name = "Delivery Note Number")]
+        [Display(Name = "Delivery Challan/Invoice No")]
         public string delivery_note_no { get; set; }
 
         [Required]
@@ -354,6 +590,9 @@ namespace ISOStd.Models
 
         [Display(Name = "Division")]
         public string branch { get; set; }
+
+        [Display(Name = "NC No")]
+        public string id_nc { get; set; }
 
         internal bool FunAddExtProviderDiscrepencyLog(ExtProviderDiscrepencyLogModels objDescripencyLog)
         {

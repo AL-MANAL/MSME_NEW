@@ -290,7 +290,7 @@ namespace ISOStd.Controllers
                     string sid_sup_rating = Request.QueryString["id_sup_rating"];
 
                     string sSqlstmt = "select id_sup_rating, supplier_name, evalu_date, auditee, auditor, upload," +
-                        " loggedby,overall_perf,exceptional,satisfactory,unsatisfactory,na,insufficient,branch,Department,Location  from t_supplier_perf_rating where id_sup_rating='" + sid_sup_rating + "'";
+                        " loggedby,overall_perf,exceptional,satisfactory,unsatisfactory,na,insufficient,branch,Department,Location,evaluated_by  from t_supplier_perf_rating where id_sup_rating='" + sid_sup_rating + "'";
 
 
                     DataSet dsSupplier = objGlobaldata.Getdetails(sSqlstmt);
@@ -314,7 +314,7 @@ namespace ISOStd.Controllers
                             branch = (dsSupplier.Tables[0].Rows[0]["branch"].ToString()),
                             Department = (dsSupplier.Tables[0].Rows[0]["Department"].ToString()),
                             Location = (dsSupplier.Tables[0].Rows[0]["Location"].ToString()),
-
+                            evaluated_by = (dsSupplier.Tables[0].Rows[0]["evaluated_by"].ToString()),
                         };
                         ViewBag.Branch = objGlobaldata.GetCompanyBranchListbox();
                         ViewBag.Location = objGlobaldata.GetLocationbyMultiDivision(dsSupplier.Tables[0].Rows[0]["branch"].ToString());
@@ -515,7 +515,7 @@ namespace ISOStd.Controllers
                 {
                     string sid_sup_rating = Request.QueryString["id_sup_rating"];
 
-                    string sSqlstmt = "select id_sup_rating, supplier_name, evalu_date, auditee, auditor, upload, loggedby,overall_perf,overall_perf,exceptional,satisfactory,unsatisfactory,na,insufficient,branch,Department,Location " +
+                    string sSqlstmt = "select id_sup_rating, supplier_name, evalu_date, auditee, auditor, upload, loggedby,overall_perf,overall_perf,exceptional,satisfactory,unsatisfactory,na,insufficient,branch,Department,Location,evaluated_by " +
                         " from t_supplier_perf_rating where id_sup_rating='" + sid_sup_rating + "'";
 
 
@@ -540,6 +540,7 @@ namespace ISOStd.Controllers
                             branch = objGlobaldata.GetMultiCompanyBranchNameById(dsSupplier.Tables[0].Rows[0]["branch"].ToString()),
                             Department = objGlobaldata.GetMultiDeptNameById(dsSupplier.Tables[0].Rows[0]["Department"].ToString()),
                             Location = objGlobaldata.GetDivisionLocationById(dsSupplier.Tables[0].Rows[0]["Location"].ToString()),
+                            evaluated_by = objGlobaldata.GetEmpHrNameById(dsSupplier.Tables[0].Rows[0]["evaluated_by"].ToString()),
                         };
 
                         DateTime dtValue;

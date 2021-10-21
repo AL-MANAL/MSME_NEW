@@ -91,6 +91,29 @@ namespace ISOStd.Models
         [Display(Name = "External Attendees Email")]
         public string ext_email { get; set; }
 
+        //t_meeting_external_attendees
+
+        public string id_attendees { get; set; }
+
+        [Display(Name = "Company Name")]
+        public string company_name { get; set; }
+
+        [Display(Name = "Attendee Name")]
+        public string attendee_name { get; set; }
+
+        [Display(Name = "Designation")]
+        public string designation { get; set; }
+
+        [Display(Name = "Email Id")]
+        public string email_id { get; set; }
+
+        [Display(Name = "Action status ")]
+        public string action_status { get; set; }
+
+        [Display(Name = "Status updated on")]
+        public DateTime status_update_on { get; set; }
+
+
         public string GetMeetingAgendaNameById(string AgendaId)
         {
             try
@@ -122,8 +145,54 @@ namespace ISOStd.Models
             }
             return false;
         }
+        internal bool FunAddMeetingSchedule(MeetingModels objMeetingModels, MeetingModelsList objModelsList)
+        {
+            try
+            {
+                string sMeetingDate = objMeetingModels.meeting_date.ToString("yyyy-MM-dd HH':'mm':'ss");
+                string sBranch = objGlobalData.GetCurrentUserSession().division;
+                string sSqlstmt = "";
 
-        internal bool FunAddMeetingSchedule(MeetingModels objMeetingModels)
+                //foreach (string AgendaId in lstAgendaId)
+                {
+                    sSqlstmt = sSqlstmt + "insert into t_meeting (last_meeting_id, meeting_date, meeting_type_desc, AttendeesUser, agenda_id, MeetingCreatedBy, Venue"
+                        + ", NotificationPeriod, NotificationValue, NotificationDays,branch,ext_attendees,ext_email,remarks)"
+                                + " values('" + objMeetingModels.last_meeting_id + "', '" + sMeetingDate + "', '" + objMeetingModels.meeting_type_desc
+                                + "','" + objMeetingModels.AttendeesUser + "','" + objMeetingModels.agenda_id + "','" + objMeetingModels.MeetingCreatedBy
+                                + "','" + objMeetingModels.Venue + "','" + objMeetingModels.NotificationPeriod + "','" + objMeetingModels.NotificationValue + "','"
+                                + objMeetingModels.NotificationDays + "','" + sBranch + "','" + objMeetingModels.ext_attendees + "','" + objMeetingModels.ext_email + "','" + remarks + "')";
+                }
+
+                MeetingItemModels objItemModel = new MeetingItemModels();
+
+                int meeting_id = 0;
+
+                if (int.TryParse(objGlobalData.ExecuteQueryReturnId(sSqlstmt).ToString(), out meeting_id))
+                {
+                    DataSet dsData = objGlobalData.GetReportNo("MTG", "", objGlobalData.GetCompanyBranchNameById(sBranch));
+                    if (dsData != null && dsData.Tables.Count > 0)
+                    {
+                        meeting_ref = dsData.Tables[0].Rows[0]["ReportNO"].ToString();
+                    }
+                    if (objModelsList.MeetingMList.Count > 0)
+                    {
+                        objModelsList.MeetingMList[0].meeting_id = meeting_id.ToString();
+                        FunAddExternalAttendeesList(objModelsList);
+                    }
+
+                    string sql1 = "update t_meeting set meeting_ref='" + meeting_ref + "' where meeting_id='" + meeting_id + "'";
+
+                    return (objGlobalData.ExecuteQuery(sql1));
+                }
+
+            }
+            catch (Exception ex)
+            {
+                objGlobalData.AddFunctionalLog("Exception in FunAddMeetingSchedule: " + ex.ToString());
+            }
+            return false;
+        }
+        internal bool FunAddUnplanMeetingSchedule(MeetingModels objMeetingModels)
         {
             try
             {
@@ -152,6 +221,8 @@ namespace ISOStd.Models
                     {
                         meeting_ref = dsData.Tables[0].Rows[0]["ReportNO"].ToString();
                     }
+                   
+
                     string sql1 = "update t_meeting set meeting_ref='" + meeting_ref + "' where meeting_id='" + meeting_id + "'";
 
                     return (objGlobalData.ExecuteQuery(sql1));
@@ -161,6 +232,34 @@ namespace ISOStd.Models
             catch (Exception ex)
             {
                 objGlobalData.AddFunctionalLog("Exception in FunAddMeetingSchedule: " + ex.ToString());
+            }
+            return false;
+        }
+        internal bool FunAddExternalAttendeesList(MeetingModelsList objModelsList)
+        {
+            try
+            {
+                string sSqlstmt = "delete from t_meeting_external_attendees where meeting_id='" + objModelsList.MeetingMList[0].meeting_id + "'; ";
+
+                for (int i = 0; i < objModelsList.MeetingMList.Count; i++)
+                {
+                   
+                        sSqlstmt = sSqlstmt + " insert into t_meeting_external_attendees (meeting_id,company_name,attendee_name,designation,email_id";
+
+                        string sFields = "", sFieldValue = "";
+                       
+                      
+                        sSqlstmt = sSqlstmt + sFields;
+                        sSqlstmt = sSqlstmt + ") values('" + objModelsList.MeetingMList[0].meeting_id + "','" + objModelsList.MeetingMList[i].company_name
+                          + "','" + objModelsList.MeetingMList[i].attendee_name + "','" + objModelsList.MeetingMList[i].designation + "','" + objModelsList.MeetingMList[i].email_id + "'";
+                        sSqlstmt = sSqlstmt + sFieldValue + ");";
+     
+                }
+                return objGlobalData.ExecuteQuery(sSqlstmt);
+            }
+            catch (Exception ex)
+            {
+                objGlobalData.AddFunctionalLog("Exception in FunAddExternalAttendeesList: " + ex.ToString());
             }
             return false;
         }
@@ -304,7 +403,7 @@ namespace ISOStd.Models
             return false;
         }
 
-        internal bool FunUpdateMeeting(MeetingModels objMeetingModels)
+        internal bool FunUpdateMeeting(MeetingModels objMeetingModels, MeetingModelsList objModelsList)
         {
             try
             {
@@ -324,12 +423,19 @@ namespace ISOStd.Models
                 {
                     sSqlstmt = sSqlstmt + ", agenda_id='" + objMeetingModels.agenda_id + "', AttendeesUser='" + objMeetingModels.AttendeesUser + "', Venue='" + objMeetingModels.Venue
                         + "', meeting_date='" + sMeetingDate + "', NotificationPeriod='" + objMeetingModels.NotificationPeriod + "', NotificationValue='"
-                        + objMeetingModels.NotificationValue + "', NotificationDays='" + objMeetingModels.NotificationDays + "', meeting_type_desc='" + objMeetingModels.meeting_type_desc + "', ext_attendees='" + objMeetingModels.ext_attendees + "', ext_email='" + objMeetingModels.ext_email + "'";
+                        + objMeetingModels.NotificationValue + "', NotificationDays='" + objMeetingModels.NotificationDays + "', meeting_type_desc='" + objMeetingModels.meeting_type_desc + "', ext_attendees='" + objMeetingModels.ext_attendees + "', ext_email='" + objMeetingModels.ext_email + "', remarks='" + objMeetingModels.remarks + "'";
                 }
 
                 sSqlstmt = sSqlstmt + " where meeting_id='" + objMeetingModels.meeting_id + "'";
 
-                return objGlobalData.ExecuteQuery(sSqlstmt);
+                if(objGlobalData.ExecuteQuery(sSqlstmt))
+                {
+                    if (objModelsList.MeetingMList.Count > 0)
+                    {
+                        objModelsList.MeetingMList[0].meeting_id = meeting_id.ToString();
+                        FunAddExternalAttendeesList(objModelsList);
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -412,6 +518,27 @@ namespace ISOStd.Models
                 objGlobalData.AddFunctionalLog("Exception in checkMeetingRefExists: " + ex.ToString());
             }
             return true;
+        }
+
+        //status update
+        internal bool FunUpdateStatus(MeetingModels objModel)
+        {
+            try
+            {
+
+                string sSqlstmt = "update t_meeting set action_status='" + action_status + "'";
+                if (objModel.status_update_on != null && objModel.status_update_on > Convert.ToDateTime("01/01/0001 00:00:00"))
+                {
+                    sSqlstmt = sSqlstmt + ",status_update_on='" + objModel.status_update_on.ToString("yyyy/MM/dd") + "'";
+                }
+                sSqlstmt = sSqlstmt + " where meeting_id='" + objModel.meeting_id + "'";
+                return objGlobalData.ExecuteQuery(sSqlstmt);
+            }
+            catch (Exception ex)
+            {
+                objGlobalData.AddFunctionalLog("Exception in FunUpdateStatus: " + ex.ToString());
+            }
+            return false;
         }
     }
 
@@ -576,7 +703,7 @@ namespace ISOStd.Models
                         sHeader = sHeader + "<tr><td colspan=3><b>Attendance Sheet:<b></td> <td colspan=3>Please find the attachment</td></tr>";
                     }
 
-                    sSqlstmt = "select item_no, Agenda_Desc,Agenda_Details, item_discussed, action_agreed,remarks, due_date, action_owner, item_status,"
+                    sSqlstmt = "select item_no, Agenda_Desc,Agenda_Details, item_discussed, action_agreed,t_meeting_items.remarks, due_date, action_owner, item_status,"
                     + "completiondate from t_meeting_items, t_meeting, t_meeting_agenda where" 
                     +" t_meeting_items.meeting_ref=t_meeting.meeting_ref and t_meeting_items.agenda_Id=t_meeting_agenda.Agenda_Id"
                     + " and t_meeting.meeting_ref='" + dsMeetingList.Tables[0].Rows[0]["meeting_ref"].ToString() + "' order by item_no desc";

@@ -7,7 +7,7 @@
     {
         dsItems = ViewBag.Itemlist;
     }
-
+    DataSet dsAttend = ViewBag.items;
     ISOStd.Models.MeetingModels objMeeting = new ISOStd.Models.MeetingModels();
     if (ViewBag.Meeting != null)
     {
@@ -23,22 +23,14 @@
     Layout = "~/Views/Shared/_PrintLayout.cshtml";
     ISOStd.Models.MeetingModels objmod = new ISOStd.Models.MeetingModels();
     ISOStd.Models.clsGlobal obj = new ISOStd.Models.clsGlobal();
+
+   
 }
 
-
-
-
-@*<fieldset class="border p-2">
-    <legend class="font-weight-semibold text-center font-size-lg">Meeting Details</legend>*@
-@Html.Partial("_ReportHeader", dsCompany)
-<div style="background-color:white">
+<div>
     <div>
         <table class="table table-lg table-bordered">
-            <tr class="row">
-                <td colspan="4">
-                    <h3>Report Details</h3>
-                </td>
-            </tr>
+           
             <tr>
                 <td>
                     <div class="display-label">
@@ -72,7 +64,7 @@
                     <div class="display-field">
                         @if (objMeeting.meeting_date > Convert.ToDateTime("01/01/0001"))
                         {
-                            @objMeeting.meeting_date.ToString("dd/MM/yyyy")
+                            @objMeeting.meeting_date.ToString("dd/MM/yyyy hh:mm:ss")
                         }
                     </div>
                 </td>
@@ -87,8 +79,7 @@
                     </div>
                 </td>
             </tr>
-            @if (objMeeting.ext_attendees != null && objMeeting.ext_attendees != "")
-            { 
+           
             <tr>
                 <td>
                     <div class="display-label">
@@ -100,23 +91,57 @@
                         @objMeeting.ext_attendees
                     </div>
                 </td>
-                <td>
-                    <div class="display-label">
-                        External Attendees Email
-                    </div>
-                </td>
-                <td>
-                    <div class="display-field">
-                        @objMeeting.ext_email
-                    </div>
-                </td>
+             
             </tr>
-            }
+            
         </table>
     </div>
     @*</fieldset>*@
 
+@if (dsAttend != null && dsAttend.Tables.Count > 0 && dsAttend.Tables[0].Rows.Count > 0)
+{
+        <br />
+        <br />
+        <div id="Items">
 
+
+            <fieldset class="border p-2">
+                <legend class="font-weight-semibold text-center font-size-lg">External Attendees</legend>
+                <table class="table table-lg" id="team-list">
+
+                    <tr>
+                        <th>Company Name</th>
+                        <th>Attendee Name</th>
+                        <th>Designation</th>
+                        <th>Email Id</th>
+                        <th>Signature</th>
+                    </tr>
+                    @for (int i = 0; i < dsAttend.Tables[0].Rows.Count; i++)
+                    {
+                        <tr>
+                            <td>
+                                @(dsAttend.Tables[0].Rows[i]["company_name"].ToString())
+                            </td>
+                            <td>
+                                @(dsAttend.Tables[0].Rows[i]["attendee_name"].ToString())
+                            </td>
+                            <td>
+                                @(dsAttend.Tables[0].Rows[i]["designation"].ToString())
+                            </td>
+                            <td>
+                                @(dsAttend.Tables[0].Rows[i]["email_id"].ToString())
+                            </td>
+                            <td>
+
+                            </td>
+                        </tr>
+
+                    }
+                </table>
+            </fieldset>
+        </div>
+
+    }
 
     @if (dsItems != null && dsItems.Tables.Count > 0 && dsItems.Tables[0].Rows.Count > 0)
     {

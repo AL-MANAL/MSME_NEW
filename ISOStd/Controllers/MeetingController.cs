@@ -272,6 +272,7 @@ namespace ISOStd.Controllers
                 //ViewBag.item_status = objGlobaldata.GetConstantValue("AuditStatus");
                 ViewBag.EmpLists = objGlobaldata.GetHrEmployeeListbox();
                 ViewBag.NotificationPeriod = objGlobaldata.GetConstantValueKeyValuePair("NotificationPeriodMeeting");
+                ViewBag.YesNo = objGlobaldata.GetConstantValue("YesNo");
             }
             catch (Exception ex)
             {
@@ -343,8 +344,25 @@ namespace ISOStd.Controllers
                     //lstAgendaId = new List<string>(form["Agendas"].ToString().Split(','));
                     objMeeting.agenda_id = form["Agendas"].ToString();
                 }
+                MeetingModelsList objModelsList = new MeetingModelsList();
+                objModelsList.MeetingMList = new List<MeetingModels>();
+                //external attendees
+                for (int i = 0; i < Convert.ToInt16(form["itemcnt"]); i++)
+                {
+                    MeetingModels objModels = new MeetingModels();
 
-                if (objMeeting.FunAddMeetingSchedule(objMeeting))
+                    if (form["company_name" + i] != null && form["company_name" + i] != "")
+                    {
+
+                        objModels.company_name = form["company_name" + i];
+                        objModels.attendee_name = form["attendee_name" + i];
+                        objModels.designation = form["designation" + i];
+                        objModels.email_id = form["email_id" + i];
+                        objModelsList.MeetingMList.Add(objModels);
+                    }
+                }
+
+                if (objMeeting.FunAddMeetingSchedule(objMeeting, objModelsList))
                 {
                     TempData["Successdata"] = "Added Meeting details successfully  with Reference Number '" + objMeeting.meeting_ref + "'"; 
                     //Send MOM email
@@ -546,7 +564,7 @@ namespace ISOStd.Controllers
                 //end
 
 
-                if (objMeeting.FunAddMeetingSchedule(objMeeting) && objMeeting.FunAddMeeting(objMeeting, objMeetingItemList, lstAgendaId))
+                if (objMeeting.FunAddUnplanMeetingSchedule(objMeeting) && objMeeting.FunAddMeeting(objMeeting, objMeetingItemList, lstAgendaId))
                 {
                     TempData["Successdata"] = "Added Meeting details successfully";
 
@@ -804,7 +822,7 @@ namespace ISOStd.Controllers
 
                     //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS  
                     string sSqlstmt = "SELECT agenda_id, meeting_id, last_meeting_id, meeting_date, meeting_type_desc, meeting_ref,  Attendees, AttendeesUser, Venue"
-                        + ", NotificationPeriod, NotificationValue,ext_attendees,ext_email from t_meeting where meeting_id='" + smeeting_id + "'";
+                        + ", NotificationPeriod, NotificationValue,ext_attendees,ext_email,remarks from t_meeting where meeting_id='" + smeeting_id + "'";
 
                     DataSet dsMeetingList = objGlobaldata.Getdetails(sSqlstmt);
 
@@ -827,6 +845,7 @@ namespace ISOStd.Controllers
                             NotificationValue = dsMeetingList.Tables[0].Rows[0]["NotificationValue"].ToString(),
                             ext_attendees = dsMeetingList.Tables[0].Rows[0]["ext_attendees"].ToString(),
                             ext_email = dsMeetingList.Tables[0].Rows[0]["ext_email"].ToString(),
+                            remarks = dsMeetingList.Tables[0].Rows[0]["remarks"].ToString(),
                         };
                         // ViewBag.AgendaList = objMeetingAgendaModels.GetMeetingAgendaListbox(dsMeetingList.Tables[0].Rows[0]["meeting_type_desc"].ToString());
 
@@ -842,6 +861,38 @@ namespace ISOStd.Controllers
                         ViewBag.NotificationPeriod = objGlobaldata.GetConstantValueKeyValuePair("NotificationPeriodMeeting");
                         ViewBag.PlanTimeInHour = objGlobaldata.GetAuditTimeInHour();
                         ViewBag.PlanTimeInMin = objGlobaldata.GetAuditTimeInMin();
+                        ViewBag.YesNo = objGlobaldata.GetConstantValue("YesNo");
+                        MeetingModelsList objModelsList = new MeetingModelsList();
+                        objModelsList.MeetingMList = new List<MeetingModels>();
+
+                        sSqlstmt = "select id_attendees,meeting_id,company_name,attendee_name,designation,email_id from t_meeting_external_attendees where meeting_id='" + smeeting_id + "'";
+                        DataSet dsList = objGlobaldata.Getdetails(sSqlstmt);
+                        if (dsList.Tables.Count > 0 && dsList.Tables[0].Rows.Count > 0)
+                        {
+                            for (int i = 0; i < dsList.Tables[0].Rows.Count; i++)
+                            {
+                                try
+                                {
+                                    MeetingModels objMeeting = new MeetingModels
+                                    {
+                                        id_attendees = dsList.Tables[0].Rows[i]["id_attendees"].ToString(),
+                                        meeting_id = dsList.Tables[0].Rows[i]["meeting_id"].ToString(),
+                                        company_name = dsList.Tables[0].Rows[i]["company_name"].ToString(),
+                                        attendee_name = dsList.Tables[0].Rows[i]["attendee_name"].ToString(),
+                                        designation = dsList.Tables[0].Rows[i]["designation"].ToString(),
+                                        email_id = dsList.Tables[0].Rows[i]["email_id"].ToString(),
+                                    };
+                                    objModelsList.MeetingMList.Add(objMeeting);
+                                }
+                                catch (Exception ex)
+                                {
+                                    objGlobaldata.AddFunctionalLog("Exception in MeetingScheduleEdit: " + ex.ToString());
+                                    TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                                    return RedirectToAction("MeetingList");
+                                }
+                            }
+                            ViewBag.objList = objModelsList;
+                        }
 
                         return View(objMeetingModels);
                     }
@@ -926,8 +977,24 @@ namespace ISOStd.Controllers
                 objMeetingModels.NotificationDays = Convert.ToDecimal(Notificationval);
                
                 objMeetingModels.AttendeesUser = form["AttendeesUser"];
+                MeetingModelsList objModelsList = new MeetingModelsList();
+                objModelsList.MeetingMList = new List<MeetingModels>();
+                //external attendees
+                for (int i = 0; i < Convert.ToInt16(form["itemcnt"]); i++)
+                {
+                    MeetingModels objModels = new MeetingModels();
 
-                if (objMeetingModels.FunUpdateMeeting(objMeetingModels))
+                    if (form["company_name" + i] != null && form["company_name" + i] != "")
+                    {
+                        objModels.company_name = form["company_name" + i];
+                        objModels.attendee_name = form["attendee_name" + i];
+                        objModels.designation = form["designation" + i];
+                        objModels.email_id = form["email_id" + i];
+                        objModelsList.MeetingMList.Add(objModels);
+                    }
+                }
+
+                if (objMeetingModels.FunUpdateMeeting(objMeetingModels, objModelsList))
                 {
                     TempData["Successdata"] = "Meeting details updated successfully";
                 }
@@ -1005,8 +1072,11 @@ namespace ISOStd.Controllers
                         dsMeetingList = objGlobaldata.GetReportDetails(dsMeetingList, objMeetingModels.meeting_ref, loggedby, "MEETING REPORT");
                         ViewBag.CompanyInfo = dsMeetingList;
 
+                        string sql = "select * from t_meeting_external_attendees where meeting_id='" + objMeetingModels.meeting_id + "'";
+                        ViewBag.items = objGlobaldata.Getdetails(sql);
+
                         sSqlstmt = "select item_no, t_meeting_items.Agenda_Id, item_discussed, action_agreed, due_date, action_owner,"
-                       + "item_status, completiondate,remarks,upload from t_meeting_items, t_meeting where t_meeting_items.meeting_ref=t_meeting.meeting_ref and"
+                       + "item_status, completiondate,t_meeting_items.remarks,upload from t_meeting_items, t_meeting where t_meeting_items.meeting_ref=t_meeting.meeting_ref and"
                        + " t_meeting.meeting_ref='" + dsMeetingList.Tables[0].Rows[0]["meeting_ref"].ToString() + "' order by item_no desc";
                         DataSet dsItems = new DataSet();
                         dsItems = objGlobaldata.Getdetails(sSqlstmt);
@@ -1033,13 +1103,16 @@ namespace ISOStd.Controllers
             {
                 cookieCollection.Add(key, Request.Cookies.Get(key).Value);
             }
-            string footer = "--footer-right \"Date: [date] [time]\" " + "--footer-center \"Page: [page] of [toPage]\" --footer-line --footer-font-size \"9\" --footer-spacing 5 --footer-font-name \"calibri light\"";
+            string header = Server.MapPath("~/views/Meeting/PrintHeader.html");//Path of PrintHeader.html File
+
+            string customSwitches = string.Format("--header-html  \"{0}\" " +
+                                 "--header-spacing \"0\" ", header);
 
             return new ViewAsPdf("MeetingDetailsToPDF","Meeting")
             {
                 FileName = "MeetingDetails.pdf",
                 Cookies = cookieCollection,
-                CustomSwitches = footer
+                CustomSwitches = customSwitches
             };
            
         }
@@ -1138,7 +1211,7 @@ namespace ISOStd.Controllers
                     string smeeting_ref = Request.QueryString["meeting_ref"];                    
 
                     //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS  
-                    string sSqlstmt = "SELECT agenda_id, meeting_id, last_meeting_id, meeting_date, meeting_type_desc, meeting_ref,  Attendees, AttendeesUser, Venue,ext_attendees,ext_email "
+                    string sSqlstmt = "SELECT agenda_id, meeting_id, last_meeting_id, meeting_date, meeting_type_desc, meeting_ref,  Attendees, AttendeesUser, Venue,ext_attendees,ext_email,remarks,action_status,status_update_on "
                         + "from t_meeting where meeting_ref='" + smeeting_ref + "' order by agenda_id desc limit 1";
 
                     DataSet dsMeetingList = objGlobaldata.Getdetails(sSqlstmt);
@@ -1160,12 +1233,28 @@ namespace ISOStd.Controllers
                             AttendeesUser = objGlobaldata.GetMultiHrEmpNameById(dsMeetingList.Tables[0].Rows[0]["AttendeesUser"].ToString()),
                             ext_attendees = dsMeetingList.Tables[0].Rows[0]["ext_attendees"].ToString(),
                             ext_email = dsMeetingList.Tables[0].Rows[0]["ext_email"].ToString(),
+                            remarks = dsMeetingList.Tables[0].Rows[0]["remarks"].ToString(),
+                            action_status =objGlobaldata.GetDropdownitemById(dsMeetingList.Tables[0].Rows[0]["action_status"].ToString()),
                         };
+                        DateTime dtValue;
+                        if (dsMeetingList.Tables[0].Rows[0]["status_update_on"].ToString() != ""
+                         && DateTime.TryParse(dsMeetingList.Tables[0].Rows[0]["status_update_on"].ToString(), out dtValue))
+                        {
+                            objMeetingModels.status_update_on = dtValue;
+                        }
+                        //if(dsMeetingList.Tables[0].Rows[0]["AttendeesUser"].ToString() != "")
+                        //{
+                        //    ViewBag.attendee = dsMeetingList.Tables[0].Rows[0]["AttendeesUser"].ToString().Split(',');
+                        //}
+                        
                         ViewBag.meeting_id = dsMeetingList.Tables[0].Rows[0]["meeting_id"].ToString();
                         ViewBag.Agenda_Id = dsMeetingList.Tables[0].Rows[0]["agenda_id"].ToString();
 
+                        string sql = "select * from t_meeting_external_attendees where meeting_id='" + objMeetingModels.meeting_id + "'";
+                        ViewBag.items = objGlobaldata.Getdetails(sql);
+
                         sSqlstmt = "select item_no, t_meeting_items.Agenda_Id, item_discussed, action_agreed, due_date, action_owner,"
-                        + "item_status, completiondate,remarks,upload from t_meeting_items, t_meeting where t_meeting_items.meeting_ref=t_meeting.meeting_ref and"
+                        + "item_status, completiondate,t_meeting_items.remarks,upload from t_meeting_items, t_meeting where t_meeting_items.meeting_ref=t_meeting.meeting_ref and"
                         + " t_meeting.meeting_ref='" + dsMeetingList.Tables[0].Rows[0]["meeting_ref"].ToString() + "' order by item_no desc";
                         DataSet dsItems = new DataSet();
                         dsItems = objGlobaldata.Getdetails(sSqlstmt);
@@ -1230,7 +1319,7 @@ namespace ISOStd.Controllers
                         };
                    
                         sSqlstmt = "select item_no, t_meeting_items.Agenda_Id, item_discussed, action_agreed, due_date, action_owner,"
-                        + "item_status, completiondate,remarks,upload from t_meeting_items, t_meeting where t_meeting_items.meeting_ref=t_meeting.meeting_ref and"
+                        + "item_status, completiondate,t_meeting_items.remarks,upload from t_meeting_items, t_meeting where t_meeting_items.meeting_ref=t_meeting.meeting_ref and"
                         + " t_meeting.meeting_ref='" + dsMeetingList.Tables[0].Rows[0]["meeting_ref"].ToString() + "' order by item_no desc";
                         DataSet dsItems = new DataSet();
                         dsItems = objGlobaldata.Getdetails(sSqlstmt);
@@ -1304,7 +1393,7 @@ namespace ISOStd.Controllers
                         //ViewBag.item_status = objGlobaldata.GetConstantValue("AuditStatus");
 
                         sSqlstmt = "select item_no, t_meeting_items.agenda_id, item_discussed, action_agreed,"
-                        + "due_date, action_owner, item_status, completiondate,remarks,upload from t_meeting_items, t_meeting"
+                        + "due_date, action_owner, item_status, completiondate,t_meeting_items.remarks,upload from t_meeting_items, t_meeting"
                         + " where t_meeting_items.meeting_ref=t_meeting.meeting_ref and t_meeting.meeting_ref='" + sMeeting_ref + "' order by item_no desc";
 
                         DataSet dsItems = objGlobaldata.Getdetails(sSqlstmt);
@@ -2094,5 +2183,82 @@ namespace ISOStd.Controllers
             return Json("");//Failed return null value
         }
 
+        // Update Action Status
+        [AllowAnonymous]
+        public ActionResult StatusUpdate()
+        {
+            MeetingModels objModel = new MeetingModels();
+            MeetingAgendaModels objMeetingAgendaModels = new MeetingAgendaModels();
+            try
+            {
+
+                if (Request.QueryString["meeting_id"] != null && Request.QueryString["meeting_id"] != "")
+                {
+                    string meeting_id = Request.QueryString["meeting_id"];
+
+                    string sSqlstmt = "select meeting_id,meeting_ref,Agenda_Id,action_status,status_update_on from t_meeting where meeting_id='" + meeting_id + "'";
+
+                    DataSet dsModelsList = objGlobaldata.Getdetails(sSqlstmt);
+
+                    if (dsModelsList.Tables.Count > 0 && dsModelsList.Tables[0].Rows.Count > 0)
+                    {
+
+                        objModel = new MeetingModels
+                        {
+                            meeting_id = (dsModelsList.Tables[0].Rows[0]["meeting_id"].ToString()),
+                            meeting_ref = (dsModelsList.Tables[0].Rows[0]["meeting_ref"].ToString()),
+                            agenda_id = objMeetingAgendaModels.GetOnlyMeetingAgendaById(dsModelsList.Tables[0].Rows[0]["Agenda_Id"].ToString()),
+                            action_status = dsModelsList.Tables[0].Rows[0]["action_status"].ToString(),
+                        };
+                      
+                        DateTime dtValue;
+                        if (DateTime.TryParse(dsModelsList.Tables[0].Rows[0]["status_update_on"].ToString(), out dtValue))
+                        {
+                            objModel.status_update_on = dtValue;
+                        }
+
+                        string sql = "select * from t_meeting_items where meeting_ref='" + objModel.meeting_ref + "'";
+                        ViewBag.items = objGlobaldata.Getdetails(sql);
+                    }
+                    ViewBag.Status = objGlobaldata.GetDropdownList("Meeting Item Status");
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in StatusUpdate: " + ex.ToString());
+                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+            }
+            return View(objModel);
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public ActionResult StatusUpdate(FormCollection form, MeetingModels obj)
+        {
+            try
+            {
+                DateTime dateValue;
+            
+
+                if (DateTime.TryParse(form["status_update_on"], out dateValue) == true)
+                {
+                    obj.status_update_on = dateValue;
+                }
+                if (obj.FunUpdateStatus(obj))
+                {
+                    TempData["Successdata"] = "Status updated successfully";
+                }
+                else
+                {
+                    TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in StatusUpdate: " + ex.ToString());
+                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+            }
+            return RedirectToAction("MeetingList");
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using ISOStd.Filters;
 using ISOStd.Models;
+using Rotativa;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -1887,7 +1888,7 @@ namespace ISOStd.Controllers
 
                 string sSqlstmt = "select id_discrepancylog, discrepancy_no, discre_registerd_date,discre_reported_date," +
                     "ext_provider_name, delivery_note_no, po_no, discre_detail,discre_relatedto,upload,actions,impact," +
-                    "ncr_required,branch,Department,Location,id_nc from t_external_provider_discrepancylog where active=1";
+                    "ncr_required,branch,Department,Location,id_nc from t_external_provider_discrepancylog where active=1 and ext_valid='Valid'";
 
                 SupplierModels objSupplier = new SupplierModels();
 
@@ -1930,7 +1931,8 @@ namespace ISOStd.Controllers
                                 branch = objGlobalData.GetMultiCompanyBranchNameById(dsSupplier.Tables[0].Rows[i]["branch"].ToString()),
                                 Department = objGlobalData.GetMultiDeptNameById(dsSupplier.Tables[0].Rows[i]["Department"].ToString()),
                                 Location = objGlobalData.GetDivisionLocationById(dsSupplier.Tables[0].Rows[i]["Location"].ToString()),
-                                id_nc =objGlobalData.GetNCNOById(dsSupplier.Tables[0].Rows[i]["id_nc"].ToString()),
+                                id_ncs =objGlobalData.GetNCNOById(dsSupplier.Tables[0].Rows[i]["id_nc"].ToString()),
+                                id_nc = (dsSupplier.Tables[0].Rows[i]["id_nc"].ToString()),
                             };
                             DateTime dtDocDate;
 
@@ -2122,7 +2124,96 @@ namespace ISOStd.Controllers
             }
             return View(objSupplierModels);
         }
-        
+
+        [AllowAnonymous]
+        public ActionResult DiscrepancyLogReport(FormCollection form)
+        {
+            ViewBag.SubMenutype = "DiscrepancyLog";
+            ExtProviderDiscrepencyLogModels objSupplierModels = new ExtProviderDiscrepencyLogModels();
+            try
+            {
+                string sid_discrepancylog = form["id_discrepancylog"];
+                if (sid_discrepancylog != null && sid_discrepancylog != "")
+                {
+                    string sSqlstmt = "select id_discrepancylog, discrepancy_no, discre_registerd_date,discre_reported_date," +
+                   "ext_provider_name, delivery_note_no, po_no, discre_detail,discre_relatedto,upload,actions,impact,ncr_required,branch,Department,Location from t_external_provider_discrepancylog"
+                   + " where id_discrepancylog = '" + sid_discrepancylog + "'";
+
+                    DataSet dsSupplier = objGlobalData.Getdetails(sSqlstmt);
+
+                    if (dsSupplier.Tables.Count > 0 && dsSupplier.Tables[0].Rows.Count > 0)
+                    {
+                        try
+                        {
+                            objSupplierModels = new ExtProviderDiscrepencyLogModels
+                            {
+                                id_discrepancylog = dsSupplier.Tables[0].Rows[0]["id_discrepancylog"].ToString(),
+                                discrepancy_no = dsSupplier.Tables[0].Rows[0]["discrepancy_no"].ToString(),
+                                ext_provider_name = objGlobalData.GetSupplierNameById(dsSupplier.Tables[0].Rows[0]["ext_provider_name"].ToString()),
+                                delivery_note_no = dsSupplier.Tables[0].Rows[0]["delivery_note_no"].ToString(),
+                                po_no = dsSupplier.Tables[0].Rows[0]["po_no"].ToString(),
+                                discre_detail = dsSupplier.Tables[0].Rows[0]["discre_detail"].ToString(),
+                                discre_relatedto = objGlobalData.GetDropdownitemById(dsSupplier.Tables[0].Rows[0]["discre_relatedto"].ToString()),
+                                upload = dsSupplier.Tables[0].Rows[0]["upload"].ToString(),
+                                actions = dsSupplier.Tables[0].Rows[0]["actions"].ToString(),
+                                impact = dsSupplier.Tables[0].Rows[0]["impact"].ToString(),
+                                ncr_required = (dsSupplier.Tables[0].Rows[0]["ncr_required"].ToString()),
+                                branch = objGlobalData.GetMultiCompanyBranchNameById(dsSupplier.Tables[0].Rows[0]["branch"].ToString()),
+                                Department = objGlobalData.GetMultiDeptNameById(dsSupplier.Tables[0].Rows[0]["Department"].ToString()),
+                                Location = objGlobalData.GetDivisionLocationById(dsSupplier.Tables[0].Rows[0]["Location"].ToString()),
+                            };
+                            DateTime dtDocDate;
+
+                            if (dsSupplier.Tables[0].Rows[0]["discre_registerd_date"].ToString() != ""
+                                   && DateTime.TryParse(dsSupplier.Tables[0].Rows[0]["discre_registerd_date"].ToString(), out dtDocDate))
+                            {
+                                objSupplierModels.discre_registerd_date = dtDocDate;
+                            }
+                            if (dsSupplier.Tables[0].Rows[0]["discre_reported_date"].ToString() != ""
+                              && DateTime.TryParse(dsSupplier.Tables[0].Rows[0]["discre_reported_date"].ToString(), out dtDocDate))
+                            {
+                                objSupplierModels.discre_reported_date = dtDocDate;
+                            }
+                            ViewBag.Supplier = objSupplierModels;
+                        }
+
+                        catch (Exception ex)
+                        {
+                            objGlobalData.AddFunctionalLog("Exception in DiscrepancyLogReport: " + ex.ToString());
+                            TempData["alertdata"] = objGlobalData.GetConstantValue("ExceptionError")[0];
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobalData.AddFunctionalLog("Exception in DiscrepancyLogReport: " + ex.ToString());
+                TempData["alertdata"] = objGlobalData.GetConstantValue("ExceptionError")[0];
+            }
+
+            Dictionary<string, string> cookieCollection = new Dictionary<string, string>();
+            foreach (var key in Request.Cookies.AllKeys)
+            {
+                cookieCollection.Add(key, Request.Cookies.Get(key).Value);
+            }
+            string header = Server.MapPath("~/views/ExtProviderPerformance/PrintHeader.html");//Path of PrintHeader.html File
+
+            string customSwitches = string.Format("--header-html  \"{0}\" " +
+                                 "--header-spacing \"0\" ", header);
+
+            return new ViewAsPdf("DiscrepancyLogReport", "ExtProviderPerformance")
+            {
+                FileName = "DiscrepancyLogReport.pdf",
+                Cookies = cookieCollection,
+                PageSize = Rotativa.Options.Size.A3,
+                PageOrientation = Rotativa.Options.Orientation.Portrait,
+                CustomSwitches =
+                   customSwitches,
+                PageMargins = { Left = 20, Bottom = 20, Right = 20, Top = 35 },
+                // PageMargins = new Rotativa.Options.Margins(0, 3, 32, 3),
+            };
+        }
+
         [AllowAnonymous]
         public ActionResult DiscrepancyLogInfo(int id)
         {
@@ -2408,5 +2499,40 @@ namespace ISOStd.Controllers
             }
             return Json("");
         }
+
+        [AllowAnonymous]
+        public JsonResult DiscrepancyInvalid(string id_discrepancylog, string invalid_reason)
+        {
+            try
+            {
+                if (id_discrepancylog != "" && id_discrepancylog != "")
+                {
+                    ExtProviderDiscrepencyLogModels Doc = new ExtProviderDiscrepencyLogModels();
+                    string sid_discrepancylog = id_discrepancylog;
+                    if (Doc.FunInvalidSupplierDescp(sid_discrepancylog, invalid_reason))
+                    {
+                        TempData["Successdata"] = "Updated successfully";
+                        return Json("Success");
+                    }
+                    else
+                    {
+                        TempData["alertdata"] = objGlobalData.GetConstantValue("ExceptionError")[0];
+                        return Json("Failed");
+                    }
+                }
+                else
+                {
+                    TempData["alertdata"] = "Id cannot be Null or empty";
+                    return Json("Failed");
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobalData.AddFunctionalLog("Exception in DiscrepancyInvalid: " + ex.ToString());
+                TempData["alertdata"] = objGlobalData.GetConstantValue("ExceptionError")[0];
+            }
+            return Json("Failed");
+        }
+
     }
 }

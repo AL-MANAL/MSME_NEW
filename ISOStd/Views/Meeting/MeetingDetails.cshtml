@@ -4,6 +4,7 @@
 @{
     ViewBag.Title = "MeetingDetails";
     DataSet dsItems = ViewBag.Itemlist;
+    DataSet dsAttend = ViewBag.items;
     ISOStd.Models.MeetingModels objmod = new ISOStd.Models.MeetingModels();
     ISOStd.Models.clsGlobal obj = new ISOStd.Models.clsGlobal();
 }
@@ -222,8 +223,6 @@
                         </td>
                     }
                 </tr>
-                @if(Model.ext_attendees != null && Model.ext_attendees != "")
-                {
                 <tr class="row">
                     <td class="col-xs-3 col-md-2">
                         <p class="bg-brown py-1 px-2 rounded">
@@ -237,20 +236,89 @@
                     </td>
                     <td class="col-xs-3 col-md-2">
                         <p class="bg-brown py-1 px-2 rounded">
-                            @Html.DisplayNameFor(model => model.ext_email)
+                            @Html.DisplayNameFor(model => model.remarks)
                         </p>
                     </td>
                     <td class="col">
                         <span class="bg-dark py-1 px-2 rounded">
-                            @Html.DisplayFor(model => model.ext_email)
+                            @Html.DisplayFor(model => model.remarks)
                         </span>
                     </td>
                 </tr>
-                }
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.action_status)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.action_status)
+                        </span>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.status_update_on)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @if (Model.status_update_on != null && Model.status_update_on > Convert.ToDateTime("01/01/0001"))
+                            {
+                                @Html.Label(Model.status_update_on.ToString("dd/MM/yyyy"))
+                            }
+                        </span>
+                    </td>
+                </tr>
+               
 </table>
     </div>
 
 
+    @if (dsAttend != null && dsAttend.Tables.Count > 0 && dsAttend.Tables[0].Rows.Count > 0)
+    {
+        <br />
+        <br />
+        <h2 class="bg-dark pl-sm-2">External Attendees</h2>
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped table-hover datatable-responsive" id="table1">
+
+                <thead>
+                    <tr class="bg-brown">
+
+                        <th>Company Name</th>
+                        <th>Attendee Name</th>
+                        <th>Designation</th>
+                        <th>Email Id</th>
+                        
+
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < dsAttend.Tables[0].Rows.Count; i++)
+                    {
+                        <tr>
+                            <td>
+                                @(dsAttend.Tables[0].Rows[i]["company_name"].ToString())
+                            </td>
+                            <td>
+                                @(dsAttend.Tables[0].Rows[i]["attendee_name"].ToString())
+                            </td>
+                            <td>
+                                @(dsAttend.Tables[0].Rows[i]["designation"].ToString())
+                            </td>
+                            <td>
+                                @(dsAttend.Tables[0].Rows[i]["email_id"].ToString())
+                            </td>
+                        </tr>
+
+                    }
+                </tbody>
+            </table>
+        </div>
+
+
+    }
 
     @if (dsItems != null && dsItems.Tables.Count > 0 && dsItems.Tables[0].Rows.Count > 0)
     {

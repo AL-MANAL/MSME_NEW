@@ -2072,7 +2072,7 @@ namespace ISOStd.Controllers
         }
 
         //NC PDF       
-        public ActionResult NCPDF()
+        public ActionResult NCPDF(FormCollection form)
         {
             NCModels objModel = new NCModels();
             CompanyModels objCompany = new CompanyModels();
@@ -2081,9 +2081,10 @@ namespace ISOStd.Controllers
             NcList.lstNC = new List<NCModels>();
             try
             {
-                if (Request.QueryString["id_nc"] != null && Request.QueryString["id_nc"] != "")
+                string sid_nc = form["id_nc"];
+                if (sid_nc != null && sid_nc != "")
                 {
-                    string sid_nc = Request.QueryString["id_nc"];
+                   
                     string sSqlstmt = "select id_nc, nc_no, nc_reported_date, nc_detected_date, nc_category, nc_description, nc_activity, nc_performed,  nc_pnc, nc_upload,"
                     + "nc_impact, nc_risk, risklevel, nc_reportedby,  nc_notifiedto, nc_division,division, department, location,nc_issueto,logged_by,nc_audit,audit_no,nc_raise_dueto,"
                     +"oa_no,model_code,part_name,stage,nc_resp_pers,supplier_name,supplier_dc,dc_po,batch_qty,nc_qty from t_nc where id_nc ='" + sid_nc + "'";

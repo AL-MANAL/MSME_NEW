@@ -593,6 +593,26 @@ namespace ISOStd.Models
 
         [Display(Name = "NC No")]
         public string id_nc { get; set; }
+        public string id_ncs { get; set; }
+
+        internal bool FunInvalidSupplierDescp(string sid_discrepancylog, string invalid_reason)
+        {
+            try
+            {
+                string user = "";
+                user = objGlobalData.GetCurrentUserSession().empid;
+                string TodayDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+
+                string sSqlstmt = "update t_external_provider_discrepancylog set ext_valid='Invalid',invalid_reason='" + invalid_reason + "',invalid_date='" + TodayDate + "',invalid_logged_by='" + user + "' where id_discrepancylog='" + sid_discrepancylog + "'";
+
+                return objGlobalData.ExecuteQuery(sSqlstmt);
+            }
+            catch (Exception ex)
+            {
+                objGlobalData.AddFunctionalLog("Exception in FunInvalidInspChecklist: " + ex.ToString());
+            }
+            return false;
+        }
 
         internal bool FunAddExtProviderDiscrepencyLog(ExtProviderDiscrepencyLogModels objDescripencyLog)
         {

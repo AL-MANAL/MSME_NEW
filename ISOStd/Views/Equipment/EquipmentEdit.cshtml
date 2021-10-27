@@ -191,6 +191,16 @@
                     <tr class="row">
                         <td class="col-xs-3 col-md-2">
                             <div class="editor-label">
+                                @Html.LabelFor(model => model.Equipment_serial_no)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @Html.DisplayFor(model => model.Equipment_serial_no)
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
                                 @Html.LabelFor(model => model.Equipment_Name)<text style="color:red;">*</text>
                             </div>
                         </td>
@@ -201,29 +211,20 @@
                                 @Html.ValidationMessageFor(m => m.Equipment_Name)
                             </div>
                         </td>
-                        <td class="col-xs-3 col-md-2">
-                            <div class="editor-label">
-                                @Html.LabelFor(model => model.Manufacturer)<text style="color:red;">*</text>
-                            </div>
-                        </td>
-                        <td class="col">
-                            <div class="editor-field">
-                                <input class="form-control" type="text" id="Manufacturer" name="Manufacturer" value="@Model.Manufacturer" required />
-                                <br />
-                                @Html.ValidationMessageFor(m => m.Manufacturer)
-                            </div>
-                        </td>
+                       
                     </tr>
 
                     <tr class="row">
                         <td class="col-xs-3 col-md-2">
                             <div class="editor-label">
-                                @Html.LabelFor(model => model.Equipment_serial_no)<text style="color:red;">*</text>
+                                @Html.LabelFor(model => model.Manufacturer)
                             </div>
                         </td>
                         <td class="col">
                             <div class="editor-field">
-                                @Html.DisplayFor(model => model.Equipment_serial_no)
+                                <input class="form-control" type="text" id="Manufacturer" name="Manufacturer" value="@Model.Manufacturer"/>
+                                <br />
+                                @Html.ValidationMessageFor(m => m.Manufacturer)
                             </div>
                         </td>
                         <td class="col-xs-3 col-md-2">
@@ -363,20 +364,18 @@
                         </td>
                         <td class="col">
                             <div class="editor-field">
-                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="RespPerson" name="RespPerson" required>
-                                    <option value='' hidden>Select</option>
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="RespPerson" name="RespPerson" required multiple>
+                                   
                                     @if (ViewBag.RespPerson != null)
                                     {
                                         foreach (var item in ViewBag.RespPerson)
                                         {
-                                            if (item.Text == Model.RespPerson)
+                                            if (Array.IndexOf(Model.RespPerson.ToString().Split(','), item.Value) >= 0)
                                             {
-                                                <option value='@item.Value' selected>@item.Text</option>
-                                            }
+                                                <option value='@item.Value' selected>@item.Text</option> }
                                             else
                                             {
-                                                <option value='@item.Value'>@item.Text</option>
-                                            }
+                                                <option value='@item.Value'>@item.Text</option>}
                                         }
                                     }
                                 </select>
@@ -441,12 +440,14 @@
             if (value == "Calibrated Equipment") {
                 $('#Source_of_calibration').prop('required', true).trigger('change');
                 $('#Freq_of_calibration').prop('required', true).trigger('change');
+
             }
             else {
                 $('#Source_of_calibration').prop('required', false).trigger('change');
                 $('#Freq_of_calibration').prop('required', false).trigger('change');
                 $('#Source_of_calibration').val('').trigger('change');
                 $('#Freq_of_calibration').val('').trigger('change');
+               
             }
 
             $("#QCDocsVal").click(function () {
@@ -480,12 +481,14 @@
             if (value == "Calibrated Equipment") {
                 $('#Source_of_calibration').prop('required', true).trigger('change');
                 $('#Freq_of_calibration').prop('required', true).trigger('change');
+               
             }
             else {
                 $('#Source_of_calibration').prop('required', false).trigger('change');
                 $('#Freq_of_calibration').prop('required', false).trigger('change');
                 $('#Source_of_calibration').val('').trigger('change');
                 $('#Freq_of_calibration').val('').trigger('change');
+               
             }
         }
 

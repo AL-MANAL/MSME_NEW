@@ -28,7 +28,7 @@ namespace ISOStd.Models
         [Display(Name = "Model Number")]
         public string Model_No { get; set; }
                 
-        [Display(Name = "Application")]
+        [Display(Name = "Purpose of Machine")]
         public string Equipment_Application { get; set; }
 
         [Required]
@@ -61,7 +61,7 @@ namespace ISOStd.Models
         [Display(Name = "Document")]
         public string DocUploadPath { get; set; }
 
-        [Display(Name = "Responsible Person")]
+        [Display(Name = "Notified To")]
         public string RespPerson { get; set; }
 
         [Display(Name = "Equipment Type")]
@@ -653,7 +653,7 @@ namespace ISOStd.Models
         public string accuracy { get; set; }
 
         [Required]
-        [Display(Name = "Status")]
+        [Display(Name = "Calibration status")]
         public string calibration_status { get; set; }
 
         [Required]
@@ -692,15 +692,27 @@ namespace ISOStd.Models
         public int NotificationDays { get; set; }
 
         [Required]
-        [Display(Name = "Person Responsible for Calibration")]
+        [Display(Name = "Notified To")]
         public string Person_Responsible { get; set; }
 
         [Display(Name = "Reference No")]
         public string Ref_no { get; set; }
 
         public string branch { get; set; }
+
+        [Display(Name = "Department")]
         public string Department { get; set; }
+
         public string Location { get; set; }
+
+        [Display(Name = "Certificate No")]
+        public string certificate_no { get; set; }
+
+        
+
+        [Display(Name = "Calibration Frequency")]
+        public string Freq_of_calibration { get; set; }
+
 
         internal bool FunAddCalibration(CalibrationModels objCalibrationModels)
         {
@@ -712,13 +724,13 @@ namespace ISOStd.Models
 
                 string sSqlstmt = "insert into t_calibration (Equipment_id, calibration_by, method_of_calibration, accuracy, calibration_status, "
                     + "calibration_report_ref, calibration_certificate, due_date, Remarks, CalibrationDate, NotificationPeriod, NotificationValue, Person_Responsible,"
-                    + " NotificationDays,Ref_no,branch";
+                    + " NotificationDays,Ref_no,branch, certificate_no";
 
                 sSqlstmt = sSqlstmt + ") values('" + objCalibrationModels.Equipment_Id + "','" + objCalibrationModels.calibration_by + "','" + objCalibrationModels.method_of_calibration
                 + "','" + objCalibrationModels.accuracy + "','" + objCalibrationModels.calibration_status + "','" + objCalibrationModels.calibration_report_ref + "','"
                 + objCalibrationModels.calibration_certificate + "','" + sdue_date + "','" + objCalibrationModels.Remarks + "','" + sCalibrationDate
                 + "','" + objCalibrationModels.NotificationPeriod + "','" + objCalibrationModels.NotificationValue + "','" + objCalibrationModels.Person_Responsible
-                + "', '" + objCalibrationModels.NotificationDays + "','" + objCalibrationModels.Ref_no + "','" + sBranch + "')";
+                + "', '" + objCalibrationModels.NotificationDays + "','" + objCalibrationModels.Ref_no + "','" + sBranch + "','" + certificate_no + "')";
 
                 return objGlobalData.ExecuteQuery(sSqlstmt);
             }
@@ -743,7 +755,7 @@ namespace ISOStd.Models
                     + "', due_date='" + sdue_date + "', Remarks='" + objCalibrationModels.Remarks + "', CalibrationDate='" + sCalibrationDate +
                     "', NotificationPeriod='" + objCalibrationModels.NotificationPeriod + "', NotificationValue='" + objCalibrationModels.NotificationValue
                     + "', Person_Responsible='" + objCalibrationModels.Person_Responsible + "', NotificationDays='" + objCalibrationModels.NotificationDays
-                    + "',Ref_no='" + objCalibrationModels.Ref_no + "'";
+                    + "',Ref_no='" + objCalibrationModels.Ref_no + "',certificate_no='" + objCalibrationModels.certificate_no + "'";
 
                 if (objCalibrationModels.calibration_report_ref != null && objCalibrationModels.calibration_report_ref != "")
                 {

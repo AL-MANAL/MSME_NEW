@@ -181,6 +181,17 @@
                     <tr class="row">
                         <td class="col-xs-3 col-md-2">
                             <div class="editor-label">
+                                @Html.LabelFor(model => model.Equipment_serial_no)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.Equipment_serial_no, new { htmlAttributes = new { @required = "required", @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.Equipment_serial_no)
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
                                 @Html.LabelFor(model => model.Equipment_Name)<text style="color:red;">*</text>
                             </div>
                         </td>
@@ -191,30 +202,20 @@
                                 @Html.ValidationMessageFor(m => m.Equipment_Name)
                             </div>
                         </td>
-                        <td class="col-xs-3 col-md-2">
-                            <div class="editor-label">
-                                @Html.LabelFor(model => model.Manufacturer)<text style="color:red;">*</text>
-                            </div>
-                        </td>
-                        <td class="col">
-                            <div class="editor-field">
-                                <input class="form-control" type="text" id="Manufacturer" name="Manufacturer" required />
-                                <br />
-                                @Html.ValidationMessageFor(m => m.Manufacturer)
-                            </div>
-                        </td>
+                        
                     </tr>
 
                     <tr class="row">
                         <td class="col-xs-3 col-md-2">
                             <div class="editor-label">
-                                @Html.LabelFor(model => model.Equipment_serial_no)<text style="color:red;">*</text>
+                                @Html.LabelFor(model => model.Manufacturer)
                             </div>
                         </td>
                         <td class="col">
                             <div class="editor-field">
-                                @Html.EditorFor(model => model.Equipment_serial_no, new { htmlAttributes = new { @required = "required", @class = "form-control" } })
-                                @Html.ValidationMessageFor(model => model.Equipment_serial_no)
+                                <input class="form-control" type="text" id="Manufacturer" name="Manufacturer"  />
+                              
+                               
                             </div>
                         </td>
                         <td class="col-xs-3 col-md-2">
@@ -246,7 +247,7 @@
                         </td>
                         <td class="col">
                             <div class="editor-field">
-                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="Source_of_calibration" name="Source_of_calibration">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="Source_of_calibration" name="Source_of_calibration" >
                                     <option value='' hidden>Select</option>
                                     @if (ViewBag.Source_of_calibration != null)
                                     {
@@ -256,6 +257,7 @@
                                         }
                                     }
                                 </select>
+                                <span id="Source_of_calibration-Message"> @Html.ValidationMessageFor(m => m.Source_of_calibration)</span>
                             </div>
                         </td>
                     </tr>
@@ -270,7 +272,7 @@
                         </td>
                         <td class="col">
                             <div class="editor-field">
-                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="Freq_of_calibration" name="Freq_of_calibration" required>
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="Freq_of_calibration" name="Freq_of_calibration" required >
                                     <option value='' hidden>Select</option>
                                     @if (ViewBag.Freq_of_calibration != null)
                                     {
@@ -328,8 +330,8 @@
                         </td>
                         <td class="col">
                             <div class="editor-field">
-                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="RespPerson" name="RespPerson" required>
-                                    <option value='' hidden>Select</option>
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="RespPerson" name="RespPerson" required multiple>
+                                    @*<option value='' hidden>Select</option>*@
                                     @if (ViewBag.RespPerson != null)
                                     {
                                         foreach (var item in ViewBag.RespPerson)
@@ -376,6 +378,8 @@
 @section Scripts {
     <script>
 
+        
+
         function FileFormatValidation(file) {
             var ext = file.value.split(".").pop().toLowerCase();
             if ($.inArray(ext, ["doc", "pdf", "docx", "jpg", "jpeg", "gif", "png"]) == -1) {
@@ -392,6 +396,7 @@
                 $('#Source_of_calibration').prop('required', true).trigger('change');
                 $('#Freq_of_calibration').prop('required', true).trigger('change');
                 $("#Freq_of_calibration-Message").show();
+                $("#Source_of_calibration-Message").show();
             }
             else {
                 $('#Source_of_calibration').prop('required', false).trigger('change');
@@ -399,6 +404,7 @@
                 $('#Source_of_calibration').val('').trigger('change');
                 $('#Freq_of_calibration').val('').trigger('change');
                 $("#Freq_of_calibration-Message").hide();
+                $("#Source_of_calibration-Message").hide();
             }
         }
 

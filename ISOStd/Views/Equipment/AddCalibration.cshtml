@@ -23,9 +23,9 @@
                         <span class="breadcrumb-item">Home</span>
                     </a>
                     <a href="@Url.Action("CalibrationList", "Equipment", null)" class="breadcrumb-item">
-                        <span class="breadcrumb-item">Tools & Gauges</span>
+                        <span class="breadcrumb-item">Calibration</span>
                     </a>
-                    <span class="breadcrumb-item active">Add Tools & Gauges</span>
+                    <span class="breadcrumb-item active">Add Calibration</span>
                 </div>
 
                 <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
@@ -63,7 +63,7 @@
 
     <div class="card">
         <div class="card-header header-elements-inline bg-primary">
-            <h5 class="card-title">Add Tools & Gauges</h5>
+            <h5 class="card-title">Add Calibration</h5>
             <div class="header-elements">
                 <div class="list-icons">
                     <a class="list-icons-item" data-action="collapse"></a>
@@ -82,7 +82,7 @@
                                 @Html.LabelFor(model => model.Equipment_Id)<text style="color:red;">*</text>
                             </div>
                         </td>
-                        <td class="col-xs-3 col-md-4">
+                        <td class="col">
                             <div class="editor-field">
                                 <select class="form-control select-search select2-hidden-accessible" data-fouc id="Equipment_Id" name="Equipment_Id" onchange="GetDetails()" required>
                                     <option value='' hidden>Select</option>
@@ -98,7 +98,16 @@
                                 @Html.ValidationMessageFor(m => m.Equipment_Id)
                             </div>
                         </td>
-                        
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                Frequency of Calibration
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input type="text" class="form-control" id="Freq_of_calibration" name="Freq_of_calibration" readonly style="background-color:lightgray" />
+                            </div>
+                        </td>
                     </tr>
                     <tr class="row">
                         <td class="col-xs-3 col-md-2">
@@ -178,8 +187,8 @@
                         </td>
                         <td class="col">
                             <div class="editor-field">
-                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="Person_Responsible" name="Person_Responsible" required>
-                                    <option value='' hidden>Select</option>
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="Person_Responsible" name="Person_Responsible" required multiple>
+                                    @*<option value='' hidden>Select</option>*@
                                     @if (ViewBag.EmpLists != null)
                                     {
                                         foreach (var item in ViewBag.EmpLists)
@@ -192,27 +201,19 @@
                                 @Html.ValidationMessageFor(m => m.Person_Responsible)
                             </div>
                         </td>
+
                         <td class="col-xs-3 col-md-2">
                             <div class="editor-label">
-                                @Html.LabelFor(model => model.calibration_status)<text style="color:red;">*</text>
+                                @Html.LabelFor(model => model.certificate_no)<text style="color:red;">*</text>
                             </div>
                         </td>
                         <td class="col">
                             <div class="editor-field">
-                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="calibration_status" name="calibration_status" required>
-                                    <option value='' hidden>Select</option>
-                                    @if (ViewBag.calibration_status != null)
-                                    {
-                                        foreach (var item in ViewBag.calibration_status)
-                                        {
-                                            <option value='@item'>@item</option>
-                                        }
-                                    }
-                                </select>
-                                <br />
-                                @Html.ValidationMessageFor(m => m.calibration_status)
+                                @Html.EditorFor(model => model.certificate_no, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.certificate_no)
                             </div>
                         </td>
+                       
                     </tr>
                     <tr class="row">
                         <td class="col-xs-3 col-md-2">
@@ -239,9 +240,20 @@
                         </td>
                     </tr>
 
-
                     <tr class="row">
-
+                       
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.CalibrationDate)<text style="color:red;"> *</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input class="form-control" type="date" id="CalibrationDate" name="CalibrationDate" onchange="setDueDate()" required />
+                                <br />
+                                @Html.ValidationMessageFor(m => m.CalibrationDate)
+                            </div>
+                        </td>
                         <td class="col-xs-3 col-md-2">
                             <div class="editor-label">
                                 @Html.LabelFor(model => model.due_date)<text style="color:red;"> *</text>
@@ -252,6 +264,31 @@
                                 <input class="form-control" type="date" id="due_date" name="due_date" required />
                                 <br />
                                 @Html.ValidationMessageFor(m => m.due_date)
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+
+                     
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.calibration_status)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="calibration_status" name="calibration_status" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.calibration_status != null)
+                                    {
+                                        foreach (var item in ViewBag.calibration_status)
+                                        {
+                                            <option value='@item'>@item</option>
+                                        }
+                                    }
+                                </select>
+                                <br />
+                                @Html.ValidationMessageFor(m => m.calibration_status)
                             </div>
                         </td>
                         <td class="col-xs-3 col-md-2">
@@ -287,11 +324,11 @@
 
                             </div>
                             <div class="form-group form-group-float">
-                                <input class="form-control" type="number" id="NotificationValue" name="NotificationValue" value="0" max="3" />
+                                <input class="form-control" type="number" id="NotificationValue" name="NotificationValue" value="15"  />
                                 <span class="form-text text-muted"><code>(Alert on or before Target date)</code></span>
                             </div>
                         </td>
-                        <td class="col-xs-3 col-md-2">
+                        @*<td class="col-xs-3 col-md-2">
                             <div class="editor-label">
                                 @Html.LabelFor(model => model.Ref_no)
                             </div>
@@ -300,7 +337,7 @@
                             <div class="editor-field">
                                 @Html.EditorFor(model => model.Ref_no, new { htmlAttributes = new { @class = "form-control" } })
                             </div>
-                        </td>
+                        </td>*@
                     </tr>
 
 
@@ -329,6 +366,43 @@
             }
         }
 
+        function setDueDate()
+        {
+            var Freq_of_calibration = document.getElementById("Freq_of_calibration").value;
+            var cal_date = document.getElementById("CalibrationDate").value;
+           
+            var dt = new Date(cal_date);
+            if (cal_date != "" && Freq_of_calibration != "")
+            {
+                if (Freq_of_calibration == "Annually")
+                {
+                    var cal_dates = new Date(cal_date);
+                    dt.setDate(cal_dates.getDate() + 360);
+                    document.getElementById("due_date").value = dt.toISOString().slice(0, 10);
+                }
+                if (Freq_of_calibration == "Monthly") {
+                    var cal_dates = new Date(cal_date);
+                    dt.setDate(cal_dates.getDate() + 30);
+                    document.getElementById("due_date").value = dt.toISOString().slice(0, 10);
+                }
+                if (Freq_of_calibration == "Periodical") {
+                    var cal_dates = new Date(cal_date);
+                    dt.setDate(cal_dates.getDate() + 1);
+                    document.getElementById("due_date").value = dt.toISOString().slice(0, 10);
+                }
+                if (Freq_of_calibration == "Quarterly") {
+                    var cal_dates = new Date(cal_date);
+                    dt.setDate(cal_dates.getDate() + 90);
+                    document.getElementById("due_date").value = dt.toISOString().slice(0, 10);
+                }
+                if (Freq_of_calibration == "Semi Annually") {
+                    var cal_dates = new Date(cal_date);
+                    dt.setDate(cal_dates.getDate() + 180);
+                    document.getElementById("due_date").value = dt.toISOString().slice(0, 10);
+                }
+            }
+        }
+
         function GetDetails() {
             var EquipmentId = $("#Equipment_Id").val();
             if (EquipmentId != "" && EquipmentId != null) {
@@ -347,6 +421,7 @@
                             document.getElementById("branch").value = result.branch;
                             document.getElementById("Department").value = result.Department;
                             document.getElementById("Location").value = result.location;
+                            document.getElementById("Freq_of_calibration").value = result.Freq_of_calibration;
                         }
                     }
                 });

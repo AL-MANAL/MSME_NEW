@@ -23,9 +23,9 @@
                         <span class="breadcrumb-item"> Home</span>
                     </a>
                     <a href="@Url.Action("CalibrationList", "Equipment", null)" class="breadcrumb-item">
-                        <span class="breadcrumb-item">Tools & Gauges</span>
+                        <span class="breadcrumb-item">Calibration</span>
                     </a>
-                    <span class="breadcrumb-item active">Update Tools & Gauges</span>
+                    <span class="breadcrumb-item active">Update Calibration</span>
                 </div>
 
                 <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
@@ -62,7 +62,7 @@
      <input type="hidden" id="calibration_id" name="calibration_id" value="@Model.calibration_id" />
     <div class="card">
         <div class="card-header header-elements-inline bg-primary">
-            <h5 class="card-title">Update Tools & Gauges</h5>
+            <h5 class="card-title">Update Calibration</h5>
             <div class="header-elements">
                 <div class="list-icons">
                     <a class="list-icons-item" data-action="collapse"></a>
@@ -105,7 +105,16 @@
                                 @Html.ValidationMessageFor(m => m.Equipment_Id)
                             </div>
                         </td>
-
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                Frequency of Calibration
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input type="text" class="form-control" id="Freq_of_calibration" name="Freq_of_calibration" readonly style="background-color:lightgray" />
+                            </div>
+                        </td>
                     </tr>
                     <tr class="row">
                         <td class="col-xs-3 col-md-2">
@@ -185,13 +194,13 @@
                         </td>
                         <td class="col">
                             <div class="editor-field">
-                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="Person_Responsible" name="Person_Responsible" required>
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="Person_Responsible" name="Person_Responsible" required multiple>
                                     <option value='' hidden>Select</option>
                                     @if (ViewBag.EmpLists != null)
                                     {
                                         foreach (var data in ViewBag.EmpLists)
                                         {
-                                            if (data.Text == Model.Person_Responsible)
+                                            if (Array.IndexOf(Model.Person_Responsible.ToString().Split(','), data.Value) >= 0)
                                             {
                                                 <option value='@data.Value' selected>@data.Text</option>
                                             }
@@ -208,32 +217,16 @@
                         </td>
                         <td class="col-xs-3 col-md-2">
                             <div class="editor-label">
-                                @Html.LabelFor(model => model.calibration_status)<text style="color:red;">*</text>
+                                @Html.LabelFor(model => model.certificate_no)<text style="color:red;">*</text>
                             </div>
                         </td>
                         <td class="col">
                             <div class="editor-field">
-                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="calibration_status" name="calibration_status" required>
-                                    <option value='' hidden>Select</option>
-                                    @if (ViewBag.calibration_status != null)
-                                    {
-                                        foreach (var data in ViewBag.calibration_status)
-                                        {
-                                            if (data == Model.calibration_status)
-                                            {
-                                                <option value='@data' selected>@data</option>
-                                            }
-                                            else
-                                            {
-                                                <option value='@data'>@data</option>
-                                            }
-                                        }
-                                    }
-                                </select>
-                                <br />
-                                @Html.ValidationMessageFor(m => m.calibration_status)
+                                @Html.EditorFor(model => model.certificate_no, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.certificate_no)
                             </div>
                         </td>
+                     
                     </tr>
                     <tr class="row">
                         <td class="col-xs-3 col-md-2">
@@ -274,7 +267,25 @@
 
 
                     <tr class="row">
-
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.CalibrationDate)<text style="color:red;"> *</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @if (Model.CalibrationDate != null && Model.CalibrationDate > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    <input class="form-control" type="date" id="CalibrationDate" name="CalibrationDate" value="@Model.CalibrationDate.ToString("yyyy-MM-dd")" required onchange="setDueDate()"  />
+                                }
+                                else
+                                {
+                                    <input class="form-control" type="date" id="CalibrationDate" name="CalibrationDate" required onchange="setDueDate()" />
+                                }
+                                <br />
+                                @Html.ValidationMessageFor(m => m.due_date)
+                            </div>
+                        </td>
                         <td class="col-xs-3 col-md-2">
                             <div class="editor-label">
                                 @Html.LabelFor(model => model.due_date)<text style="color:red;"> *</text>
@@ -292,6 +303,36 @@
                                 }
                                 <br />
                                 @Html.ValidationMessageFor(m => m.due_date)
+                            </div>
+                        </td>
+                        </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.calibration_status)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="calibration_status" name="calibration_status" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.calibration_status != null)
+                                    {
+                                        foreach (var data in ViewBag.calibration_status)
+                                        {
+                                            if (data == Model.calibration_status)
+                                            {
+                                                <option value='@data' selected>@data</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@data'>@data</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                                <br />
+                                @Html.ValidationMessageFor(m => m.calibration_status)
                             </div>
                         </td>
                         <td class="col-xs-3 col-md-2">
@@ -334,14 +375,14 @@
 
                             </div>
                             <div class="form-group form-group-float">
-                                <input class="form-control" type="number" id="NotificationValue" value="@Model.NotificationValue" name="NotificationValue" value="0" max="3" />
+                                <input class="form-control" type="number" id="NotificationValue" value="@Model.NotificationValue" name="NotificationValue"  />
 
                                 <span class="form-text text-muted"><code>(Alert on or before Target date)</code></span>
 
 
                             </div>
                         </td>
-                        <td class="col-xs-3 col-md-2">
+                        @*<td class="col-xs-3 col-md-2">
                             <div class="editor-label">
                                 @Html.LabelFor(model => model.Ref_no)
                             </div>
@@ -350,7 +391,7 @@
                             <div class="editor-field">
                                 @Html.EditorFor(model => model.Ref_no, new { htmlAttributes = new { @class = "form-control" } })
                             </div>
-                        </td>
+                        </td>*@
                     </tr>
 
 
@@ -378,8 +419,40 @@
                 jAlert("Invalid file format, please upload only doc, pdf, docx, jpg, jpeg, gif, png format");
             }
         }
+        function setDueDate() {
+            var Freq_of_calibration = document.getElementById("Freq_of_calibration").value;
+            var cal_date = document.getElementById("CalibrationDate").value;
 
-        function GetDetails() {
+            var dt = new Date(cal_date);
+            if (cal_date != "" && Freq_of_calibration != "") {
+                if (Freq_of_calibration == "Annually") {
+                    var cal_dates = new Date(cal_date);
+                    dt.setDate(cal_dates.getDate() + 360);
+                    document.getElementById("due_date").value = dt.toISOString().slice(0, 10);
+                }
+                if (Freq_of_calibration == "Monthly") {
+                    var cal_dates = new Date(cal_date);
+                    dt.setDate(cal_dates.getDate() + 30);
+                    document.getElementById("due_date").value = dt.toISOString().slice(0, 10);
+                }
+                if (Freq_of_calibration == "Periodical") {
+                    var cal_dates = new Date(cal_date);
+                    dt.setDate(cal_dates.getDate() + 1);
+                    document.getElementById("due_date").value = dt.toISOString().slice(0, 10);
+                }
+                if (Freq_of_calibration == "Quarterly") {
+                    var cal_dates = new Date(cal_date);
+                    dt.setDate(cal_dates.getDate() + 90);
+                    document.getElementById("due_date").value = dt.toISOString().slice(0, 10);
+                }
+                if (Freq_of_calibration == "Semi Annually") {
+                    var cal_dates = new Date(cal_date);
+                    dt.setDate(cal_dates.getDate() + 180);
+                    document.getElementById("due_date").value = dt.toISOString().slice(0, 10);
+                }
+            }
+        }
+         function GetDetails() {
             var EquipmentId = $("#Equipment_Id").val();
             if (EquipmentId != "" && EquipmentId != null) {
                 jQuery.ajax({
@@ -388,7 +461,7 @@
                     dataType: "json",
                     data: { 'EquipmentId': EquipmentId },
                     success: function (result) {
-                        if (result == "") {                            
+                        if (result == "") {
                             document.getElementById("branch").value = "";
                             document.getElementById("Department").value = "";
                             document.getElementById("Location").value = "";
@@ -397,6 +470,7 @@
                             document.getElementById("branch").value = result.branch;
                             document.getElementById("Department").value = result.Department;
                             document.getElementById("Location").value = result.location;
+                            document.getElementById("Freq_of_calibration").value = result.Freq_of_calibration;
                         }
                     }
                 });

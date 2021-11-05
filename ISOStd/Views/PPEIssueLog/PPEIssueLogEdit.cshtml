@@ -2,6 +2,18 @@
 
 @{
     ViewBag.Title = "AddPPEIssueLog";
+
+    ISOStd.Models.clsGlobal objGlobaldata = new ISOStd.Models.clsGlobal();
+
+    int itemcnt = 0;
+
+    string[] ReceivedByArray = new string[0];
+
+    if (ViewBag.ReceivedByArray != null)
+    {
+        ReceivedByArray = ViewBag.ReceivedByArray;
+        itemcnt = ReceivedByArray.Length;
+    }
 }
 
 @section featured {
@@ -74,7 +86,7 @@
             <div class="container-fluid">
 
                 <table class="table table-lg">
-                    <tbody>
+                 
                         <tr class="row">
                             <td class="col-xs-3 col-md-2">
                                 @Html.LabelFor(model => model.branch)
@@ -170,7 +182,7 @@
                         </tr>
                         <tr class="row">
 
-                            <td class="col-xs-3 col-md-2">
+                            @*<td class="col-xs-3 col-md-2">
 
                                 @Html.LabelFor(model => model.Cust_Project_Name)
 
@@ -196,7 +208,7 @@
                                     }
                                 </select>
 
-                            </td>
+                            </td>*@
                             <td class="col-xs-3 col-md-2">
 
                                 @Html.LabelFor(model => model.PPE_Issue_Voucher)
@@ -218,14 +230,14 @@
                             </td>
                         </tr>
                         <tr class="row">
-                            <td class="col-xs-3 col-md-2">
+                            @*<td class="col-xs-3 col-md-2">
 
-                                @Html.LabelFor(model => model.Receiver_Name)
+                                @Html.LabelFor(model => model.Receiver_Name)<text style="color: red;">*</text>
 
                             </td>
                             <td class="col">
 
-                                <select class="form-control select-search select2-hidden-accessible" data-fouc" id="Receiver_Name" name="Receiver_Name">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc" id="Receiver_Name" name="Receiver_Name" onchange="GetReceiverDetails()" required>
                                     <option value='' hidden>Select</option>
                                     @if (ViewBag.EmpList != null)
                                     {
@@ -243,7 +255,7 @@
                                     }
                                 </select>
 
-                            </td>
+                            </td>*@
                             <td class="col-xs-3 col-md-2">
 
                                 @Html.LabelFor(model => model.PPE_Issued)<text style="color: red;">*</text>
@@ -251,19 +263,19 @@
                             </td>
                             <td class="col">
 
-                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="PPE_Issued" name="PPE_Issued" required>
-                                    <option value='' hidden>Select</option>
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="PPE_Issued" name="PPE_Issued" required multiple>
+                                   
                                     @if (ViewBag.PPEIssued != null)
                                     {
-                                        foreach (var item in ViewBag.PPEIssued)
+                                        foreach (var data in ViewBag.PPEIssued)
                                         {
-                                            if (item.Value == Model.PPE_Issued)
+                                            if (Array.IndexOf(Model.PPE_Issued.ToString().Split(','), data.Value) >= 0)
                                             {
-                                                <option value='@item.Value' selected>@item.Text</option>
+                                                <option value='@data.Value' selected>@data.Text</option>
                                             }
                                             else
                                             {
-                                                <option value='@item.Value'>@item.Text</option>
+                                                <option value='@data.Value'>@data.Text</option>
                                             }
                                         }
                                     }
@@ -272,55 +284,121 @@
                             </td>
 
                         </tr>
-                        <tr class="row">
-                            <td class="col-xs-3 col-md-2">
-
-                                @Html.LabelFor(model => model.PPE_Issued_Last_Date)
-
-                            </td>
-                            <td class="col">
-
-                                @if (Model.PPE_Issued_Last_Date > Convert.ToDateTime("01/01/0001"))
+                        </table>
+                <div id="recieverdiv">
+                    <div class="card-body">
+                        <input type="hidden" id="itemcnt" name="itemcnt" value="@itemcnt" />
+                        <h5 class="card-title">Receiver Name</h5>
+                        <div class="card card-table table-responsive shadow-0 mb-0">
+                            <table class="table" id="team-list">
+                                <tr class="bg-blue">
+                                 
+                                    <th>Id</th>
+                                    <th>Receiver Name</th>
+                                    <th>Division</th>
+                                    <th>Location</th>
+                                    <th>Department</th>
+                                    <th>Email</th>
+                                </tr>
+                                @if (ViewBag.ReceivedByArray != null && ReceivedByArray != null && ReceivedByArray.Length > 0)
                                 {
-                                    <input class="form-control" type="date" id="PPE_Issued_Last_Date" name="PPE_Issued_Last_Date" value="@Model.PPE_Issued_Last_Date.ToString("yyyy-MM-dd")" onchange="checkdate();" />
-                                }
-                                else
-                                {
-                                    <input class="form-control" type="date" id="PPE_Issued_Last_Date" name="PPE_Issued_Last_Date" onchange="checkdate();" />
-                                }
-
-                            </td>
-                            <td class="col-xs-3 col-md-2">
-
-
-                                @Html.LabelFor(model => model.Issued_By)
-
-                            </td>
-                            <td class="col">
-
-                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="Issued_By" name="Issued_By">
-                                    <option value='' hidden>Select</option>
-                                    @if (ViewBag.EmpList != null)
+                                    for (int index = 0; index < ReceivedByArray.Length; index++)
                                     {
-                                        foreach (var item in ViewBag.EmpList)
-                                        {
-                                            if (item.Value == Model.Issued_By)
-                                            {
-                                                <option value='@item.Value' selected>@item.Text</option>
-                                            }
-                                            else
-                                            {
-                                                <option value='@item.Value'>@item.Text</option>
-                                            }
-                                        }
+                                        <tr>
+                                            @*<td>
+                                                <span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span>
+                                               
+                                                <input type='hidden' id='empno @index' name="empno @index" value='@ReceivedByArray[index]' />
+                                            </td>*@
+                                            <td>
+                                                <input type='hidden' id='empid @index' name="empid @index" readonly>@objGlobaldata.GetEmpIDByEmpNo(ReceivedByArray[index])
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='empname @index' name="empname @index" readonly>@objGlobaldata.GetEmpHrNameById(ReceivedByArray[index])
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='empdiv @index' name="empdiv @index" readonly>@objGlobaldata.GetCompanyBranchNameById(objGlobaldata.GetDivisionIdByHrEmpId(ReceivedByArray[index]))
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='emploc @index' name="emploc @index" readonly>@objGlobaldata.GetDivisionLocationById(objGlobaldata.GetWorkLocationIdByHrEmpId(ReceivedByArray[index]))
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='empdept @index' name="empdept @index" readonly>@objGlobaldata.GetDeptNameById(objGlobaldata.GetDeptIdByHrEmpId(ReceivedByArray[index]))
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='empemail @index' name="empemail @index" readonly>@objGlobaldata.GetHrEmpEmailIdById(ReceivedByArray[index])
+                                            </td>
+                                        </tr>
                                     }
-                                </select>
+                                }
+                            </table>
+                        </div>
+                    </div>
+                </div>
+               <table class="table table-lg">
+                   <tr class="row">
+                       <td class="col-xs-3 col-md-2">
+                           @Html.LabelFor(model => model.ppe_detail)
+                       </td>
+                       <td class="col">
+                           @Html.TextAreaFor(model => model.ppe_detail, new { @maxlength = "2000", @placeholder = "Textarea", @style = "overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;", @rows = "4", @cols = "4", @class = "form-control elastic maxlength-badge-position" })
+                       </td>
+                       <td class="col-xs-3 col-md-2">
+                           @Html.LabelFor(model => model.ppe_qty)
+                       </td>
+                       <td class="col">
+                           <input type="number" class="form-control" id="ppe_qty" name="ppe_qty" value="@Model.ppe_qty"/>
+                       </td>
+                   </tr>
+    <tr class="row">
+        <td class="col-xs-3 col-md-2">
 
-                            </td>
-                        </tr>
+            @Html.LabelFor(model => model.PPE_Issued_Last_Date)
 
-                    </tbody>
-                </table>
+        </td>
+        <td class="col">
+
+            @if (Model.PPE_Issued_Last_Date > Convert.ToDateTime("01/01/0001"))
+            {
+                <input class="form-control" type="date" id="PPE_Issued_Last_Date" name="PPE_Issued_Last_Date" value="@Model.PPE_Issued_Last_Date.ToString("yyyy-MM-dd")" onchange="checkdate();" />
+            }
+            else
+            {
+                <input class="form-control" type="date" id="PPE_Issued_Last_Date" name="PPE_Issued_Last_Date" onchange="checkdate();" />
+            }
+
+        </td>
+        <td class="col-xs-3 col-md-2">
+
+
+            @Html.LabelFor(model => model.Issued_By)<text style="color: red;">*</text>
+
+        </td>
+        <td class="col">
+
+            <select class="form-control select-search select2-hidden-accessible" data-fouc id="Issued_By" name="Issued_By" required>
+                <option value='' hidden>Select</option>
+                @if (ViewBag.IssueBy != null)
+                {
+                    foreach (var item in ViewBag.IssueBy)
+                    {
+                        if (item.Value == Model.Issued_By)
+                        {
+                            <option value='@item.Value' selected>@item.Text</option>
+                        }
+                        else
+                        {
+                            <option value='@item.Value'>@item.Text</option>
+                        }
+                    }
+                }
+            </select>
+
+        </td>
+    </tr>
+
+   
+            </table>
             </div>
 
 
@@ -366,7 +444,68 @@
 
 
     });
+        function GetReceiverDetails() {
+                var Receiver_Name = $('#Receiver_Name').val();
+                if (Receiver_Name != "" && Receiver_Name != null) {
+                    jQuery.ajax({
+                        url: '@Url.Action("FunGetEmpDetails", "EmployeeDetails")',
+                        type: 'POST',
+                        dataType: "json",
+                        data: { 'semp_no': Receiver_Name },
+                        success: function (result) {
+                            if (result != null) {
+                                document.getElementById("recieverdiv").style.display = 'block';
 
+                                var Receiver_Name = $('#Receiver_Name option:selected').val();
+                                var empid = result.emp_id;
+                                var empname = result.empname;
+                                var empdivision = result.division;
+                                var empdept = result.department;
+                                var emploc = result.location;
+                                var empemail = result.EmailId;
+
+                                if (empid != "") {
+                                    var cnt = document.getElementById("itemcnt").value;
+
+                                    document.getElementById("itemcnt").value = cnt;
+                                    // Find a <table> element with id="myTable":
+                                    var table = document.getElementById("team-list");
+                                    if(cnt > 0)
+                                    {
+                                          table.deleteRow(1);
+                                    }
+
+                                    // Create an empty <tr> element and add it to the 1st position of the table:
+                                    var row = table.insertRow();
+
+
+                                    // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                                    var cell0 = row.insertCell(0);
+                                    var cell1 = row.insertCell(1);
+                                    var cell2 = row.insertCell(2);
+                                    var cell3 = row.insertCell(3);
+                                    var cell4 = row.insertCell(4);
+                                    var cell5 = row.insertCell(5);
+
+
+                                    //cell0.innerHTML = "<span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span> <input type='hidden' id='empno " + cnt + "' name='empno " + cnt + "' value='" + Receiver_Name + "'>";
+                                    cell0.innerHTML = "<input type='hidden' id='empid " + cnt + "' name='empid " + cnt + "' value='" + empid + "'>" + empid;
+                                    cell1.innerHTML = "<input type='hidden' id='empname " + cnt + "' name='empname " + cnt + "' value='" + empname + "'>" + empname;
+                                    cell2.innerHTML = "<input type='hidden' id='empdivision " + cnt + "' name='empdivision " + cnt + "' value='" + empdivision + "'>" + empdivision;
+                                    cell3.innerHTML = "<input type='hidden' id='emploc " + cnt + "' name='emploc " + cnt + "' value='" + emploc + "'>" + emploc;
+                                    cell4.innerHTML = "<input type='hidden' id='empdept " + cnt + "' name='empdept " + cnt + "' value='" + empdept + "'>" + empdept;
+                                    cell5.innerHTML = "<input type='hidden' id='empemail " + cnt + "' name='empemail " + cnt + "' value='" + empemail + "'>" + empemail;
+
+                                    cnt++;
+                                    document.getElementById("itemcnt").value = cnt;
+
+                                   // $("#Receiver_Name").val('').trigger('change');
+                                }
+                            }
+                        }
+                    });
+                }
+            }
 
             function checkDate() {
 
@@ -406,7 +545,7 @@
             var selectedValues = [];
             $("#branch :selected").each(function () {
                 selectedValues.push($(this).val());
-            });  
+            });
                 jQuery.ajax({
                     url: '@Url.Action("FunGetAllDeptList", "EmployeeDetails")',
                     type: 'POST',
@@ -430,10 +569,10 @@
                         //    });
                         //}
                     }
-                });          
+                });
         }
 
-        function GetLocList(selectedValues) {                   
+        function GetLocList(selectedValues) {
             jQuery.ajax({
                 url: '@Url.Action("FunGetAllLocList", "EmployeeDetails")',
                 type: 'POST',
@@ -456,10 +595,10 @@
                     //    });
                     //}
                 }
-            });       
+            });
         }
-  
-         
+
+
 
 
     </script>

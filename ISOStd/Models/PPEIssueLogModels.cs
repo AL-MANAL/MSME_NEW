@@ -52,6 +52,30 @@ namespace ISOStd.Models
         [Display(Name = "Division")]
         public string branch { get; set; }
 
+        [Display(Name = "Details of PPE")]
+        public string ppe_detail { get; set; }
+
+
+        [Display(Name = "Quantity")]
+        public string ppe_qty { get; set; }
+
+        public string checkEmployeePPEExists(string Receiver_Name)
+        {
+            try
+            {
+                string sSqlstmt = "select IssueLog_Id from t_ppe_issuelog where Receiver_Name='" + Receiver_Name + "' and active=1";
+                DataSet dsEmp =objGlobalData.Getdetails(sSqlstmt);
+                if (dsEmp.Tables.Count > 0 && dsEmp.Tables[0].Rows.Count > 0)
+                {
+                    return "false";
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobalData.AddFunctionalLog("Exception in checkEmployeePPEExists: " + ex.ToString());
+            }
+            return Receiver_Name;
+        }
 
         internal bool FunDeletePPELogDoc(string sIssueLog_Id)
         {
@@ -74,7 +98,7 @@ namespace ISOStd.Models
             {
                 string sColumn = "", sValues = "";
                 string sSqlstmt = "insert into t_ppe_issuelog (Receiver_Name, Position, Cust_Project_Name, Work_Location, PPE_Issued, "
-                    + " Issued_By, LoggedBy,branch,Department";
+                    + " Issued_By, LoggedBy,branch,Department,ppe_detail,ppe_qty";
                 string user = "";               
                 user = objGlobalData.GetCurrentUserSession().empid;
                // string sBranch = objGlobalData.GetCurrentUserSession().division;
@@ -99,7 +123,7 @@ namespace ISOStd.Models
 
                 sSqlstmt = sSqlstmt + sColumn + ") values('" + objPPEIssueLog.Receiver_Name + "','" + objPPEIssueLog.Position
                     + "','" + objPPEIssueLog.Cust_Project_Name + "','" + objPPEIssueLog.Work_Location + "','" + objPPEIssueLog.PPE_Issued + "','" + objPPEIssueLog.Issued_By
-                 + "','" + user + "','" + objPPEIssueLog.branch + "','" + objPPEIssueLog.Department + "'";
+                 + "','" + user + "','" + objPPEIssueLog.branch + "','" + objPPEIssueLog.Department + "','" + objPPEIssueLog.ppe_detail + "','" + objPPEIssueLog.ppe_qty + "'";
 
                 sSqlstmt = sSqlstmt + sValues + ")";
 
@@ -117,9 +141,9 @@ namespace ISOStd.Models
         {
             try
             {
-                string sSqlstmt = "update t_ppe_issuelog set Receiver_Name='" + objPPEIssueLog.Receiver_Name + "', Position='" + objPPEIssueLog.Position
+                string sSqlstmt = "update t_ppe_issuelog set  Position='" + objPPEIssueLog.Position
                     + "', Cust_Project_Name='" + objPPEIssueLog.Cust_Project_Name + "', Work_Location='" + objPPEIssueLog.Work_Location
-                    + "', PPE_Issued='" + objPPEIssueLog.PPE_Issued + "', Issued_By='" + objPPEIssueLog.Issued_By + "', Department='" + objPPEIssueLog.Department + "', branch='" + objPPEIssueLog.branch + "'";
+                    + "', PPE_Issued='" + objPPEIssueLog.PPE_Issued + "', Issued_By='" + objPPEIssueLog.Issued_By + "', Department='" + objPPEIssueLog.Department + "', branch='" + objPPEIssueLog.branch + "', ppe_detail='" + objPPEIssueLog.ppe_detail + "', ppe_qty='" + objPPEIssueLog.ppe_qty + "'";
 
                 if (objPPEIssueLog.Issue_Date > Convert.ToDateTime("01/01/0001"))
                 {

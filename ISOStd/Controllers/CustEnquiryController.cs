@@ -1246,7 +1246,7 @@ namespace ISOStd.Controllers
 
             return new ViewAsPdf("QuotationPrint")
             {
-                FileName = "QuotationPdf.pdf",
+                //FileName = "QuotationPdf.pdf",
                 Cookies = cookieCollection,
                 CustomSwitches = footer
             };

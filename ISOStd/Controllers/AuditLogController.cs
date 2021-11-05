@@ -1330,7 +1330,7 @@ namespace ISOStd.Controllers
 
             return new ViewAsPdf("NonconformityReportPDF", "AuditProcess")
             {
-                FileName = "NonconformityReport.pdf",
+                //FileName = "NonconformityReport.pdf",
                 Cookies = cookieCollection,
                 PageSize = Rotativa.Options.Size.A3,
                 PageOrientation = Rotativa.Options.Orientation.Portrait,
@@ -1604,7 +1604,7 @@ namespace ISOStd.Controllers
 
             return new ViewAsPdf("NCPDF")
             {
-                FileName = "NCPDF.pdf",
+                //FileName = "NCPDF.pdf",
                 Cookies = cookieCollection,
                 CustomSwitches = footer
             };

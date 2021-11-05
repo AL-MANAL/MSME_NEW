@@ -451,7 +451,7 @@
 
                             <tbody>
                                 <tr class="row">
-                                    <th class="col-xs-3 col-md-2" style="font-weight: bold;">Accident Type</th>
+                                    <th class="col-xs-3 col-md-2" style="font-weight: bold;">Injury details</th>
                                     <td class="col">
                                         <select class="form-control form-control-select3" data-fouc id="AccidentTypeSelect" name="AccidentTypeSelect">
                                             <option value='' hidden>Select</option>
@@ -464,11 +464,46 @@
                                             }
                                         </select>
                                         @Html.ValidationMessageFor(model => model.AccidentTypeSelect)
-                                        <span class="field-validation-error"><span id="AccidentTypeSelect-message" style="display: none;">Please select Accident Type.</span></span>
+                                        <span class="field-validation-error"><span id="AccidentTypeSelect-message" style="display: none;">Please select</span></span>
                                     </td>
 
                                 </tr>
+                                <tr class="row">
+                                    <th class="col-xs-3 col-md-2" style="font-weight: bold;">Type of Injury</th>
+                                    <td class="col">
+                                        <select class="form-control form-control-select3" data-fouc id="injury_type" name="injury_type">
+                                            <option value='' hidden>Select</option>
+                                            @if (ViewBag.Injury != null)
+                                            {
+                                                foreach (var item in ViewBag.Injury)
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+                                                }
+                                            }
+                                        </select>
+                                        @Html.ValidationMessageFor(model => model.injury_type)
+                                        <span class="field-validation-error"><span id="injury_type-message" style="display: none;">Please select</span></span>
+                                    </td>
 
+                                </tr>
+                                <tr class="row">
+                                    <th class="col-xs-3 col-md-2" style="font-weight: bold;">Investigation start date</th>
+                                    <td class="col">
+                                        <input type="date" class="form-control" id="invest_start_date" name="invest_start_date" />
+                                        @Html.ValidationMessageFor(model => model.invest_start_date)
+                                        <span class="field-validation-error"><span id="invest_start_date-message" style="display: none;">Please select</span></span>
+                                    </td>
+
+                                </tr>
+                                <tr class="row">
+                                    <th class="col-xs-3 col-md-2" style="font-weight: bold;">Investigation end date</th>
+                                    <td class="col">
+                                        <input type="date" class="form-control" id="invest_end_date" name="invest_end_date" />
+                                        @Html.ValidationMessageFor(model => model.invest_end_date)
+                                        <span class="field-validation-error"><span id="invest_end_date-message" style="display: none;">Please select</span></span>
+                                    </td>
+
+                                </tr>
                                 <tr class="row">
                                     <th class="col-xs-3 col-md-2" style="font-weight: bold;">Name</th>
                                     <td class="col">
@@ -523,7 +558,10 @@
                                 <table class="table" id="team-list">
                                     <tr class="bg-blue">
                                         <th>Action</th>
-                                        <th>Accident Type</th>
+                                        <th>Injury details</th>
+                                        <th>Type of Injury</th>
+                                        <th>Investigation start date</th>
+                                        <th>Investigation end date</th>
                                         <th>Name</th>
                                         <th>LTI (Hrs)</th>
                                     </tr>
@@ -544,7 +582,7 @@
                                                         {
                                                             foreach (var item in ViewBag.AccidentType)
                                                             {
-                                                                if (item.Text == objIncidentLTIList.lstIncidentLTIModels[index].AccidentType)
+                                                                if (item.Value == objIncidentLTIList.lstIncidentLTIModels[index].AccidentType)
                                                                 {
                                                                     <option value='@item.Value' selected>@item.Text</option>
                                                                 }
@@ -557,6 +595,47 @@
                                                     </select>
                                                   
                                                 </td>
+                                                <td>
+                                                    <select class="form-control form-control-select3" data-fouc id="injury_type @index" name="injury_type @index">
+                                                        <option value='' hidden>Select</option>
+                                                        @if (ViewBag.Injury != null)
+                                                        {
+                                                            foreach (var item in ViewBag.Injury)
+                                                            {
+                                                                if (item.Value == objIncidentLTIList.lstIncidentLTIModels[index].injury_type)
+                                                                {
+                                                                    <option value='@item.Value' selected>@item.Text</option>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <option value='@item.Value'>@item.Text</option>
+                                                                }
+                                                            }
+                                                        }
+                                                    </select>
+
+                                                </td>
+                                                <td>
+                                                    @if (objIncidentLTIList.lstIncidentLTIModels[index].invest_start_date != null && objIncidentLTIList.lstIncidentLTIModels[index].invest_start_date > Convert.ToDateTime("01/01/0001"))
+                                                    {
+                                                        <input class="form-control" type="date" id='invest_start_date @(index)' name='invest_start_date @(index)' value="@objIncidentLTIList.lstIncidentLTIModels[index].invest_start_date.ToString("yyyy-MM-dd")"  />
+                                                    }
+                                                    else
+                                                    {
+                                                        <input class="form-control" type="date" id='invest_start_date @(index)' name='invest_start_date @(index)'  />
+                                                    }
+                                                </td>
+                                                <td>
+                                                    @if (objIncidentLTIList.lstIncidentLTIModels[index].invest_end_date != null && objIncidentLTIList.lstIncidentLTIModels[index].invest_end_date > Convert.ToDateTime("01/01/0001"))
+                                                    {
+                                                        <input class="form-control" type="date" id='invest_end_date @(index)' name='invest_end_date @(index)' value="@objIncidentLTIList.lstIncidentLTIModels[index].invest_end_date.ToString("yyyy-MM-dd")" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <input class="form-control" type="date" id='invest_end_date @(index)' name='invest_end_date @(index)' />
+                                                    }
+                                                </td>
+
                                                 <td>
                                                     <select class="form-control form-control-select3" data-fouc id="Emp_Id @index" name="Emp_Id @index">
                                                         <option value='' hidden>Select</option>
@@ -647,7 +726,7 @@
                                         </span>
                                     </div>
                                 </td>
-                                <td class="col-xs-3 col-md-2">
+                                @*<td class="col-xs-3 col-md-2">
                                     <div class="editor-label">
                                         @Html.LabelFor(model => model.incident_status)
                                     </div>
@@ -668,7 +747,7 @@
                                             <label id="incident_status-message" class="validation-invalid-label" style="display: none" for="basic">This field is required.</label>
                                         </span>
                                     </div>
-                                </td>
+                                </td>*@
                             </tr>
                             <tr class="row">
                                 <td class="col-xs-3 col-md-2">
@@ -716,7 +795,7 @@
                                         <th>Action to be taken</th>
                                         <th>Responsible Person</th>
                                         <th>Target Date</th>
-                                        <th>Status</th>
+                                        @*<th>Status</th>*@
                                         <th>Contractor</th>
                                         <th>Report</th>
                                     </tr>
@@ -765,7 +844,7 @@
 
 
                                                 </td>
-                                                <td>
+                                                @*<td>
                                                     <select class="form-control form-control-select3" data-fouc id="incident_status @index" name="incident_status @index">
                                                         <option value='' hidden>Select</option>
                                                         @if (ViewBag.Status != null)
@@ -784,7 +863,7 @@
                                                         }
                                                     </select>
 
-                                                </td>
+                                                </td>*@
                                                 <td>
                                                     <input class="form-control" type='text' id='contractor @index' name="contractor @index" value='@objActionList.lstIncidentReportModels[index].contractor'>
                                                 </td>
@@ -1203,8 +1282,9 @@
             var cell1 = row.insertCell(1);
             var cell2 = row.insertCell(2);
             var cell3 = row.insertCell(3);
-            //var cell4 = row.insertCell(4);
-            //var cell5 = row.insertCell(5);
+            var cell4 = row.insertCell(4);
+            var cell5 = row.insertCell(5);
+            var cell6 = row.insertCell(6);
 
 
 
@@ -1215,23 +1295,44 @@
             var Emp_Id = $('#Emp_IdSelect').val();
             var Emp_Name = $("#Emp_IdSelect option:selected").text();
             var LTI_Hrs = $('#LTI_Hrs').val();
+            var injury_type = $.map($("#injury_type option:selected"), function (el, i) {
+                return $(el).text();
+            });
+            var injury_typeVal = $("#injury_type").val();
+
+            var invest_start_date = $('#invest_start_date').val();
+            var invest_end_date = $('#invest_end_date').val();
 
                 cell0.innerHTML = "<span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span>";
            
-            cell1.innerHTML = "<select  id='AccidentType " + cnt + "' name='AccidentType " + cnt + "'><option value='" + AccidentType + "' selected>" + sAccidentTypeSelectText + "</option>@if (ViewBag.AccidentType != null)
+                cell1.innerHTML = "<select class='select-fixed-single' id='AccidentType " + cnt + "' name='AccidentType " + cnt + "'><option value='" + AccidentType + "' selected>" + sAccidentTypeSelectText + "</option>@if (ViewBag.AccidentType != null)
             {
                 foreach (var item in ViewBag.AccidentType)
                 { <option value='@item.Value'>@item.Text</option> }
                 }</select>";
-            cell2.innerHTML = "<select  id='Emp_Id " + cnt + "' name='Emp_Id " + cnt + "'><option value='" + Emp_Id + "' selected>" + Emp_Name + "</option>@if (ViewBag.EmpList != null)
+            cell2.innerHTML = "<select class='select-fixed-single' id='injury_type " + cnt + "' name='injury_type " + cnt + "'><option value='" + injury_typeVal + "' selected>" + injury_type + "</option>@if (ViewBag.Injury != null)
+            {
+                foreach (var item in ViewBag.Injury)
+                { <option value='@item.Value'>@item.Text</option> }
+                }</select>";
+
+                cell3.innerHTML = "<input class='form-control' type='date' id='invest_start_date " + cnt + "' name='invest_start_date " + cnt + "' value='" + invest_start_date + "'/>";
+
+                cell4.innerHTML = "<input class='form-control' type='date' id='invest_end_date " + cnt + "' name='invest_end_date " + cnt + "' value='" + invest_end_date + "'/>";
+
+            cell5.innerHTML = "<select  id='Emp_Id " + cnt + "' name='Emp_Id " + cnt + "'><option value='" + Emp_Id + "' selected>" + Emp_Name + "</option>@if (ViewBag.EmpList != null)
             {
                 foreach (var item in ViewBag.EmpList)
                 { <option value='@item.Value'>@item.Text</option> }
                 }</select>";
           
-                cell3.innerHTML = "<input type='number' id='LTI_Hrs " + cnt + "' name='LTI_Hrs " + cnt + "' value='" + LTI_Hrs + "'>";
+                cell6.innerHTML = "<input type='number' id='LTI_Hrs " + cnt + "' name='LTI_Hrs " + cnt + "' value='" + LTI_Hrs + "'>";
 
                 cnt++;
+                $('.select-fixed-single').select2({
+                    minimumResultsForSearch: Infinity,
+                    width: 150
+                });
             document.getElementById("itemcnt").value = cnt;
 
 
@@ -1241,6 +1342,9 @@
             $("#AccidentTypeSelect").val('').trigger('change');
             $("#Emp_IdSelect").val('').trigger('change');
             document.getElementById("LTI_Hrs").value = "";
+            $("#injury_type").val('').trigger('change');
+            document.getElementById("invest_start_date").value = "";
+            document.getElementById("invest_end_date").value = "";
             }
 
         }
@@ -1280,7 +1384,33 @@
                 ssnMessage = $('#LTI_Hrs-message');
                 ssnMessage.hide();
             }
-
+            if (document.getElementById("injury_type").value == "") {
+                ssnMessage = $('#injury_type-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#injury_type-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("invest_start_date").value == "") {
+                ssnMessage = $('#invest_start_date-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#invest_start_date-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("invest_end_date").value == "") {
+                ssnMessage = $('#invest_end_date-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#invest_end_date-message');
+                ssnMessage.hide();
+            }
             return validflg;
         }
 
@@ -1288,31 +1418,50 @@
         function SetAccidentDetailsRequired() {
             if ($('#Injuries').val() == "Yes") {
                 $('#AccidentTypeSelect').prop('disabled', false).trigger('change');
+                $('#injury_type').prop('disabled', false).trigger('change');
                 $('#Emp_IdSelect').prop('disabled', false).trigger('change');
                 document.getElementById("LTI_Hrs").disabled = false;
+                document.getElementById("invest_start_date").disabled = false;
+                document.getElementById("invest_end_date").disabled = false;
 
                 document.getElementById("AccidentTypeSelect").style.background = "#fff";
+                document.getElementById("injury_type").style.background = "#fff";
                 document.getElementById("Emp_IdSelect").style.background = "#fff";
                 document.getElementById("LTI_Hrs").style.background = "#fff";
+                document.getElementById("invest_start_date").style.background = "#fff";
+                document.getElementById("invest_end_date").style.background = "#fff";
 
             }
             else {
 
                 $('#AccidentTypeSelect').prop('disabled', true).trigger('change');
+                $('#injury_type').prop('disabled', true).trigger('change');
                 $('#Emp_IdSelect').prop('disabled', true).trigger('change');
                 document.getElementById("LTI_Hrs").disabled = true;
+                document.getElementById("invest_start_date").disabled = true;
+                document.getElementById("invest_end_date").disabled = true;
 
                 document.getElementById("AccidentTypeSelect").style.background = "#efefe6";
                 document.getElementById("Emp_IdSelect").style.background = "#efefe6";
                 document.getElementById("LTI_Hrs").style.background = "#efefe6";
+                document.getElementById("injury_type").style.background = "#efefe6";
+                document.getElementById("invest_start_date").style.background = "#efefe6";
+                document.getElementById("invest_end_date").style.background = "#efefe6";
 
                 $("#AccidentTypeSelect-message").hide();
                 $("#Emp_IdSelect-message").hide();
                 $("#LTI_Hrs-message").hide();
+                $("#injury_type-message").hide();
+                $("#invest_start_date-message").hide();
+                $("#invest_end_date-message").hide();
+
 
                 $("#AccidentTypeSelect").val('').trigger('change');
                 $("#Emp_IdSelect").val('').trigger('change');
                 document.getElementById("LTI_Hrs").value = "";
+                $("#injury_type").val('').trigger('change');
+                document.getElementById("invest_start_date").value = "";
+                document.getElementById("invest_end_date").value = "";
             }
         }
 
@@ -1327,20 +1476,32 @@
             // $('#Injuries').val('').trigger('change');
 
             $('#AccidentTypeSelect').prop('disabled', true).trigger('change');
+            $('#injury_type').prop('disabled', true).trigger('change');
             $('#Emp_IdSelect').prop('disabled', true).trigger('change');
             document.getElementById("LTI_Hrs").disabled = true;
+            document.getElementById("invest_start_date").disabled = true;
+            document.getElementById("invest_end_date").disabled = true;
 
             document.getElementById("AccidentTypeSelect").style.background = "#efefe6";
             document.getElementById("Emp_IdSelect").style.background = "#efefe6";
             document.getElementById("LTI_Hrs").style.background = "#efefe6";
+            document.getElementById("injury_type").style.background = "#efefe6";
+            document.getElementById("invest_start_date").style.background = "#efefe6";
+            document.getElementById("invest_end_date").style.background = "#efefe6";
 
             $("#AccidentTypeSelect-message").hide();
             $("#Emp_IdSelect-message").hide();
             $("#LTI_Hrs-message").hide();
+            $("#injury_type-message").hide();
+            $("#invest_start_date-message").hide();
+            $("#invest_end_date-message").hide();
 
             $("#AccidentTypeSelect").val('').trigger('change');
             $("#Emp_IdSelect").val('').trigger('change');
             document.getElementById("LTI_Hrs").value = "";
+            $("#injury_type").val('').trigger('change');
+            document.getElementById("invest_start_date").value = "";
+            document.getElementById("invest_end_date").value = "";
 
 
         }
@@ -1375,15 +1536,15 @@
                 ssnMessage = $('#target_date-message');
                 ssnMessage.hide();
             }
-            if (document.getElementById("incident_status").value == "") {
-                ssnMessage = $('#incident_status-message');
-                ssnMessage.show();
-                validflg = false;
-            }
-            else {
-                ssnMessage = $('#incident_status-message');
-                ssnMessage.hide();
-            }
+            //if (document.getElementById("incident_status").value == "") {
+            //    ssnMessage = $('#incident_status-message');
+            //    ssnMessage.show();
+            //    validflg = false;
+            //}
+            //else {
+            //    ssnMessage = $('#incident_status-message');
+            //    ssnMessage.hide();
+            //}
             //if (document.getElementById("contractor").value == "") {
             //    ssnMessage = $('#contractor-message');
             //    ssnMessage.show();
@@ -1418,7 +1579,7 @@
                 var cell4 = row.insertCell(4);
 
                 var cell5 = row.insertCell(5);
-                var cell6 = row.insertCell(6);
+              
 
 
 
@@ -1430,9 +1591,9 @@
                 var resp_pers_val = document.getElementById("resp_pers");
                 var resp_pers_text = resp_pers_val.options[resp_pers_val.selectedIndex].text;
 
-                var incident_status = $('#incident_status').val();
-                var incident_status_val = document.getElementById("incident_status");
-                var incident_status_text = incident_status_val.options[incident_status_val.selectedIndex].text;
+                //var incident_status = $('#incident_status').val();
+                //var incident_status_val = document.getElementById("incident_status");
+                //var incident_status_text = incident_status_val.options[incident_status_val.selectedIndex].text;
 
                 var action_report = $('#action_report').val();
 
@@ -1450,14 +1611,14 @@
                     { <option value='@item.Value'>@item.Text</option> }
                     }</select>";
                 cell3.innerHTML = "<input type='text' class='form-control' id='target_date " + cnt + "' name='target_date " + cnt + "' value='" + target_date + "'  style='width:8em'>";
-                cell4.innerHTML = "<select class='form-control select-fixed-multiple'  id='incident_status " + cnt + "' name='incident_status " + cnt + "'  style='width:10em'><option value='" + incident_status + "' selected>" + incident_status_text + "</option>@if (ViewBag.Status != null)
+                @*cell4.innerHTML = "<select class='form-control select-fixed-multiple'  id='incident_status " + cnt + "' name='incident_status " + cnt + "'  style='width:10em'><option value='" + incident_status + "' selected>" + incident_status_text + "</option>@if (ViewBag.Status != null)
                 {
                     foreach (var item in ViewBag.Status)
                     { <option value='@item.Value'>@item.Text</option> }
-                    }</select>";
+                    }</select>";*@
 
-                cell5.innerHTML = "<input type='text' class='form-control' id='contractor " + cnt + "' name='contractor " + cnt + "' value='" + contractor + "'>";
-                cell6.innerHTML = "<input type='hidden' id='action_report " + cnt + "' name='action_report " + cnt + "' value='" + uploadServerPath + "' >" + action_report;
+                cell4.innerHTML = "<input type='text' class='form-control' id='contractor " + cnt + "' name='contractor " + cnt + "' value='" + contractor + "'>";
+                cell5.innerHTML = "<input type='hidden' id='action_report " + cnt + "' name='action_report " + cnt + "' value='" + uploadServerPath + "' >" + action_report;
 
                 cnt++;
                 document.getElementById("itemcnts").value = cnt;
@@ -1470,7 +1631,7 @@
                 document.getElementById("contractor").value = "";
                 document.getElementById("action_report").value = "";
                 $("#resp_pers").val('').trigger('change');
-                $("#incident_status").val('').trigger('change');
+                //$("#incident_status").val('').trigger('change');
 
 
                 ssnMessage = $('#incident_action-message');
@@ -1481,8 +1642,8 @@
                 //ssnMessage.hide();
                 ssnMessage = $('#resp_pers-message');
                 ssnMessage.hide();
-                ssnMessage = $('#incident_status-message');
-                ssnMessage.hide();
+                //ssnMessage = $('#incident_status-message');
+                //ssnMessage.hide();
 
 
             }

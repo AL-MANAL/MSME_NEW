@@ -2267,7 +2267,7 @@ namespace ISOStd.Controllers
 
             return new ViewAsPdf("NCPDF")
             {
-                FileName = "NCPDF.pdf",
+                //FileName = "NCPDF.pdf",
                 Cookies = cookieCollection,
                 CustomSwitches = footer
             };

@@ -409,7 +409,7 @@
 
                         <tbody>
                             <tr class="row">
-                                <th class="col-xs-3 col-md-2" style="font-weight: bold;">Incident injuries or fatalities</th>
+                                <th class="col-xs-3 col-md-2" style="font-weight: bold;">Incident injuries or fatalities<text style="color:red;">*</text></th>
                                 <td class="col">
                                     <select class="form-control select-search select2-hidden-accessible" data-fouc id="injury_type" name="injury_type">
                                         <option value='' hidden>Select</option>
@@ -424,11 +424,25 @@
                                     @Html.ValidationMessageFor(model => model.injury_type)
                                     <span class="field-validation-error"><span id="injury_type-message" style="display: none;">Please select Incident Type.</span></span>
                                 </td>
-
+                                <th class="col-xs-3 col-md-2" style="font-weight: bold;">Person Name<text style="color:red;">*</text></th>
+                                <td class="col">
+                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="pers_name" name="pers_name" multiple>
+                                        @*<option value='' hidden>Select</option>*@
+                                        @if (ViewBag.EmpList != null)
+                                        {
+                                            foreach (var item in ViewBag.EmpList)
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    </select>
+                                    @Html.ValidationMessageFor(model => model.pers_name)
+                                    <span class="field-validation-error"><span id="pers_name-message" style="display: none;">Please select</span></span>
+                                </td>
                             </tr>
 
                             <tr class="row">
-                                <th class="col-xs-3 col-md-2" style="font-weight: bold;">Number of person</th>
+                                <th class="col-xs-3 col-md-2" style="font-weight: bold;">Number of person<text style="color:red;">*</text></th>
                                 <td class="col">
                                     <input class="form-control" type='number' id='no_person' name="no_person" />
                                     @Html.ValidationMessageFor(model => model.no_person)
@@ -442,6 +456,8 @@
                         </tbody>
                     </table>
                 </fieldset>
+
+
 
                 <span class="form-text text-muted"><code>Please click Add or Plus button to add N number of Incident details</code></span>
 
@@ -462,6 +478,7 @@
                                 <tr class="bg-blue">
                                     <th>Action</th>
                                     <th>Incident Type</th>
+                                    <th>Person Name</th>
                                     <th>Number of Person</th>
                                 </tr>
 
@@ -477,6 +494,9 @@
                                             </td>
                                             <td>
                                                 <input type='hidden' id='injury_type @index' name="injury_type @index" value='@objReporterList.AccidentList[index].injury_type'>@Obj.GetDropdownitemById(objReporterList.AccidentList[index].injury_type)
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='pers_name @index' name="pers_name @index" value='@objReporterList.AccidentList[index].pers_name'>@Obj.GetMultiHrEmpNameById(objReporterList.AccidentList[index].pers_name)
                                             </td>
                                             <td>
                                                 <input type='hidden' id='no_person @index' name="no_person @index" value='@objReporterList.AccidentList[index].no_person'>@objReporterList.AccidentList[index].no_person
@@ -498,10 +518,10 @@
 
                         <tbody>
                             <tr class="row">
-                                <th class="col-xs-3 col-md-2" style="font-weight: bold;">Incident Reported To</th>
+                                <th class="col-xs-3 col-md-2" style="font-weight: bold;">Incident Reported To<text style="color:red;">*</text></th>
                                 <td class="col">
-                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="reported_to" name="reported_to">
-                                        <option value='' hidden>Select</option>
+                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="reported_to" name="reported_to" multiple>
+                                        @*<option value='' hidden>Select</option>*@
                                         @if (ViewBag.EmpList != null)
                                         {
                                             foreach (var item in ViewBag.EmpList)
@@ -513,7 +533,7 @@
                                     @Html.ValidationMessageFor(model => model.reported_to)
                                     <span class="field-validation-error"><span id="reported_to-message" style="display: none;">Please select Reported To.</span></span>
                                 </td>
-                                <th class="col-xs-3 col-md-2" style="font-weight: bold;">Incident Report Date</th>
+                                <th class="col-xs-3 col-md-2" style="font-weight: bold;">Incident Report Date<text style="color:red;">*</text></th>
                                 <td class="col">
                                     <input class="form-control" type='date' id='reportedon_date' name="reportedon_date" />
                                     @Html.ValidationMessageFor(model => model.reportedon_date)
@@ -523,7 +543,7 @@
                             </tr>
 
                             <tr class="row">
-                                <th class="col-xs-3 col-md-2" style="font-weight: bold;">Comments</th>
+                                <th class="col-xs-3 col-md-2" style="font-weight: bold;">Comments<text style="color:red;">*</text></th>
                                 <td class="col">
                                     <div class="editor-field">
                                         <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="comments" name="comments"></textarea>
@@ -661,7 +681,16 @@
                 ssnMessage = $('#no_person-message');
                 ssnMessage.hide();
             }
+            if (document.getElementById("pers_name").value == "") {
+                ssnMessage = $('#pers_name-message');
+                ssnMessage.show();
 
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#pers_name-message');
+                ssnMessage.hide();
+            }
             return validflg;
         }
 
@@ -685,7 +714,7 @@
             var cell0 = row.insertCell(0);
             var cell1 = row.insertCell(1);
             var cell2 = row.insertCell(2);
-
+            var cell3 = row.insertCell(3);
             //var AccidentType = $('#AccidentTypeSelect').val();
             //var sAccidentTypeSelect = document.getElementById("AccidentTypeSelect");
             //var sAccidentTypeSelectText = sAccidentTypeSelect.options[sAccidentTypeSelect.selectedIndex].text;
@@ -693,10 +722,12 @@
             var injury_type = $('#injury_type').val();
             var InjuryTypeName = $("#injury_type option:selected").text();
             var no_person = $('#no_person').val();
-
+            var pers_name = $('#pers_name').val();
+            var pers_nameName = $("#pers_name option:selected").text();
             cell0.innerHTML = " <img src='@Url.Content("~/images/cancel.png")' onclick='deleteRow(this)' style='cursor:pointer; padding-right: 5px;'/>Remove";
             cell1.innerHTML = "<input type='hidden' id='injury_type " + cnt + "' name='injury_type " + cnt + "' value='" + injury_type + "'>" + InjuryTypeName;
-            cell2.innerHTML = "<input type='hidden' id='no_person" + cnt + "' name='no_person " + cnt + "' value='" + no_person + "'>" + no_person;
+            cell2.innerHTML = "<input type='hidden' id='pers_name" + cnt + "' name='pers_name " + cnt + "' value='" + pers_name + "'>" + pers_nameName;
+            cell3.innerHTML = "<input type='hidden' id='no_person" + cnt + "' name='no_person " + cnt + "' value='" + no_person + "'>" + no_person;
 
             cnt++;
             document.getElementById("itemcnt").value = cnt;
@@ -712,6 +743,7 @@
             //$("#injury_type").val('').trigger("chosen:updated");
             $("#injury_type").val('').trigger('change');
             document.getElementById("no_person").value = "";
+            $("#pers_name").val('').trigger('change');
         }
 
         function deleteRow(btn) {

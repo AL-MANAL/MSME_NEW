@@ -1218,7 +1218,7 @@ namespace ISOStd.Controllers
 
             return new ViewAsPdf("PerformInductionPdf")
             {
-                FileName = "InductionReport.pdf",
+                //FileName = "InductionReport.pdf",
                 Cookies = cookieCollection,
                 CustomSwitches = footer
             };

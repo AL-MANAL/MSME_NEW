@@ -254,7 +254,7 @@ namespace ISOStd.Controllers
                     {
                         objCompany.expiry_date = dtDocDate;
                     }
-                    ViewBag.IsoStdList = objGlobaldata.GetAllIsoStdListbox();
+                    ViewBag.IsoStdList = objGlobaldata.GetIsoAndDescList();
                     ViewBag.Branches = objGlobaldata.GetCompanyBranch(objCompany.CompanyID);
                     ViewBag.Currency_Code = objGlobaldata.GetCurrencyCode();
                     ViewBag.Company = objGlobaldata.GetCompanyBranchListbox();
@@ -371,12 +371,12 @@ namespace ISOStd.Controllers
 
         //POST: /Company/MeetingItemEdit
 
-        public ActionResult BranchEdit(string Parent,string Name,string Code, string Address, string Curr_code, string sItemNo, string scope)
+        public ActionResult BranchEdit(string Parent,string Name,string Code, string Address,  string sItemNo, string scope)
         {
             try
             {
                 CompanyModels objCustomerModels = new CompanyModels();
-                objCustomerModels.FunUpdateBranch(sItemNo,Parent, Name,Code, Address, Curr_code, scope);
+                objCustomerModels.FunUpdateBranch(sItemNo,Parent, Name,Code, Address, scope);
                 return Json("Update Success");
             }
             catch (Exception ex)
@@ -417,11 +417,11 @@ namespace ISOStd.Controllers
                
 
         [AllowAnonymous]
-        public JsonResult AddNewBranch(string parent_level, string BranchName, string BranchCode, string BranchAddress, string Curr_code, string scope, int CompId = 1)
+        public JsonResult AddNewBranch(string parent_level, string BranchName, string BranchCode, string BranchAddress, string scope, int CompId = 1)
         {
             CompanyModels objCustomerModels = new CompanyModels(); ;
             Dictionary<string, string> dicBranch = new Dictionary<string, string>();
-            dicBranch.Add(BranchName, BranchAddress + "$" + Curr_code + "$" + scope + "$" + parent_level + "$" + BranchCode);
+            dicBranch.Add(BranchName, BranchAddress + "$" +  scope + "$" + parent_level + "$" + BranchCode);
             //CompanyModels objCustomerModels = new CompanyModels();
             if (objCustomerModels.FunAddBranch(dicBranch, CompId))
             {

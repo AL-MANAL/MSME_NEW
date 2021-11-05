@@ -1266,7 +1266,7 @@ namespace ISOStd.Controllers
                 ViewBag.InspArea = objGlobaldata.GetDropdownList("Inspection Area");
                 ViewBag.Location = objGlobaldata.GetDivisionLocationList(branch);
                 ViewBag.Frequency = objGlobaldata.GetDropdownList("Inspection Frequency");
-               
+                ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
             }
             catch (Exception ex)
             {
@@ -1284,7 +1284,7 @@ namespace ISOStd.Controllers
             {
                 DateTime dateValue;
                 objModel.insp_criteria = form["insp_criteria"];
-
+                objModel.notified_to = form["notified_to"];
                 InspctionQuestionList objInsp = new InspctionQuestionList();
                 objInsp.InspectionQstList = new List<InspctionQuestionModels>();
 
@@ -1334,7 +1334,7 @@ namespace ISOStd.Controllers
 
                     string id_inspection_plan = Request.QueryString["id_inspection_plan"];
                   
-                    string sSqlstmt = "select id_inspection_plan,branch,checklist_ref,RevNo,insp_type,insp_detail,dept,Section,insp_area,location,insp_freq,project,approved_by"
+                    string sSqlstmt = "select id_inspection_plan,branch,checklist_ref,RevNo,insp_type,insp_detail,dept,Section,insp_area,location,insp_freq,project,approved_by,notified_to"
 
                         + " from t_inspection_plan where id_inspection_plan = '" + id_inspection_plan + "'";
 
@@ -1357,6 +1357,7 @@ namespace ISOStd.Controllers
                             approved_by = (dsList.Tables[0].Rows[0]["approved_by"].ToString()),
                             branch = (dsList.Tables[0].Rows[0]["branch"].ToString()),
                             dept_name =objGlobaldata.GetDeptNameById(dsList.Tables[0].Rows[0]["dept"].ToString()),
+                            notified_to = (dsList.Tables[0].Rows[0]["notified_to"].ToString()),
                         };
                     }
 
@@ -1370,6 +1371,7 @@ namespace ISOStd.Controllers
                     ViewBag.checklist_ref = objGlobaldata.FunGetChecklistRefList(objModel.insp_type);
                     ViewBag.ApprovedBy = FunGetApproverMultiList(objModel.dept);
                     ViewBag.pers_resp = FunGetPersRespMultiList(objModel.dept);
+                    ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
                     // inspection dates
 
                     InspctionQuestionList objInsp = new InspctionQuestionList();
@@ -1424,7 +1426,7 @@ namespace ISOStd.Controllers
             {
                 DateTime dateValue;
                 objModel.insp_criteria = form["insp_criteria"];
-
+                objModel.notified_to = form["notified_to"];
                 InspctionQuestionList objInsp = new InspctionQuestionList();
                 objInsp.InspectionQstList = new List<InspctionQuestionModels>();
 
@@ -1478,7 +1480,7 @@ namespace ISOStd.Controllers
                 string sBranchtree = objGlobaldata.GetCurrentUserSession().BranchTree;
                 ViewBag.Branch = objGlobaldata.GetMultiBranchListByID(sBranchtree);
 
-                string sSqlstmt = "select id_inspection_date,T1.id_inspection_plan,insp_date,checklist_ref,RevNo,insp_type,dept,Section,insp_area,location,pers_resp,insp_status,approved_status"
+                string sSqlstmt = "select id_inspection_date,T1.id_inspection_plan,insp_date,checklist_ref,RevNo,insp_type,dept,Section,insp_area,location,pers_resp,insp_status,approved_status,approved_by"
                 + " from t_inspection_plan T1,t_inspection_plan_dates T2 where T1.id_inspection_plan = T2.id_inspection_plan and active = 1";
 
                 if (branch_name != null && branch_name != "")
@@ -1514,6 +1516,7 @@ namespace ISOStd.Controllers
                                 pers_resp = objGlobaldata.GetMultiHrEmpNameById(dsList.Tables[0].Rows[i]["pers_resp"].ToString()),
                                 insp_status = objGlobaldata.GetDropdownitemById(dsList.Tables[0].Rows[i]["insp_status"].ToString()),
                                 approved_status = dsList.Tables[0].Rows[i]["approved_status"].ToString(),
+                                approved_by = dsList.Tables[0].Rows[i]["approved_by"].ToString(),
                             };
                             DateTime dtDocDate;
                             if (dsList.Tables[0].Rows[i]["insp_date"].ToString() != ""
@@ -1663,7 +1666,7 @@ namespace ISOStd.Controllers
                     ViewBag.ApproveStatus = objGlobaldata.GetConstantValueKeyValuePair("InspPlanApprove");
                     string id_inspection_plan = Request.QueryString["id_inspection_plan"];
                     string sSqlstmt = "select id_inspection_plan,checklist_ref,RevNo,insp_type,insp_detail,dept,Section,insp_area,location,insp_freq,project,logged_by,logged_date,approved_by,approved_date,approver_comments,"
-                          + "(CASE WHEN approved_status = '0' THEN 'Pending for Approval' WHEN approved_status = '1' THEN 'Rejected' WHEN approved_status = '2' THEN 'Approved' END) as approved_status"
+                          + "(CASE WHEN approved_status = '0' THEN 'Pending for Approval' WHEN approved_status = '1' THEN 'Rejected' WHEN approved_status = '2' THEN 'Approved' END) as approved_status,notified_to"
                         + " from t_inspection_plan where id_inspection_plan = '" + id_inspection_plan + "'";
 
                     DataSet dsList = objGlobaldata.Getdetails(sSqlstmt);
@@ -1687,6 +1690,7 @@ namespace ISOStd.Controllers
                             approved_by = objGlobaldata.GetEmpHrNameById(dsList.Tables[0].Rows[0]["approved_by"].ToString()),
                             approver_comments = dsList.Tables[0].Rows[0]["approver_comments"].ToString(),
                             approved_status = dsList.Tables[0].Rows[0]["approved_status"].ToString(),
+                            notified_to =objGlobaldata.GetMultiHrEmpNameById(dsList.Tables[0].Rows[0]["notified_to"].ToString()),
                         };
                         DateTime dtDocDate;
                         if (dsList.Tables[0].Rows[0]["logged_date"].ToString() != ""

@@ -1606,7 +1606,7 @@ namespace ISOStd.Controllers
 
             return new ViewAsPdf("SupplierReevalutionPDF")
             {
-                FileName = "Reevaluation.pdf",
+                //FileName = "Reevaluation.pdf",
                 Cookies = cookieCollection,
                 CustomSwitches = footer
             };

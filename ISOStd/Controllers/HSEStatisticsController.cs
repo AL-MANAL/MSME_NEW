@@ -75,7 +75,7 @@ namespace ISOStd.Controllers
                 }
                 return new ViewAsPdf("HSEStatisticsReportPrint", ViewBag.dsReport)
                 {
-                    FileName = "HSEStatisticsReport.pdf",
+                    //FileName = "HSEStatisticsReport.pdf",
                     Cookies = cookieCollection,
                     PageOrientation = Rotativa.Options.Orientation.Landscape
                   

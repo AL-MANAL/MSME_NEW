@@ -859,7 +859,7 @@ namespace ISOStd.Controllers
 
             return new ViewAsPdf("AuditChecklistReportToPDF")
             {
-                FileName = "AuditChecklistReport.pdf",
+                //FileName = "AuditChecklistReport.pdf",
                 Cookies = cookieCollection,
                 CustomSwitches = footer
             };
@@ -1505,7 +1505,7 @@ namespace ISOStd.Controllers
 
             return new ViewAsPdf("PerformAuditReport")
             {
-                FileName = "PerformAuditReport.pdf",
+                //FileName = "PerformAuditReport.pdf",
                 Cookies = cookieCollection,
                 CustomSwitches = footer
             };

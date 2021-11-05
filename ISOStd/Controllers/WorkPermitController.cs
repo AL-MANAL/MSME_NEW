@@ -1056,7 +1056,7 @@ namespace ISOStd.Controllers
 
             return new ViewAsPdf("AccessPermitPdf")
             {
-                FileName = "InspectionChecklistReport.pdf",
+                //FileName = "InspectionChecklistReport.pdf",
                 Cookies = cookieCollection,
                 CustomSwitches = footer
             };

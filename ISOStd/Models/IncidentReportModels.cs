@@ -18,7 +18,7 @@ namespace ISOStd.Models
         [Display(Name = "ID")]
         public string Incident_Id { get; set; }
 
-        [Display(Name = "Incident No.")]
+        [Display(Name = "Accident No.")]
         public string Incident_Num { get; set; }
         
         [Display(Name = "Reported On")]
@@ -27,7 +27,7 @@ namespace ISOStd.Models
         [Display(Name = "Prepared By")]
         public string PreparedBy { get; set; }
 
-        [Display(Name = "Incident Type")]
+        [Display(Name = "Accident Type")]
         public string Incident_Type { get; set; }
 
         [Display(Name = "Date & Time")]
@@ -43,7 +43,7 @@ namespace ISOStd.Models
         [Display(Name = "Is incident occurred within the work premises?")]
         public string InWork_Premises { get; set; }
         
-        [Display(Name = "Incident witnessed by (name and other detail)")]
+        [Display(Name = "Accident witnessed by (name and other detail)")]
         public string WitnessedBy { get; set; }
         
         [Display(Name = "Upload the witness statement")]
@@ -54,7 +54,7 @@ namespace ISOStd.Models
         public string Incident_Desc { get; set; }
           
         [DataType(DataType.MultilineText)]
-        [Display(Name = "Consequences of an Incident:")]
+        [Display(Name = "Consequences of an Accident:")]
         public string Consequences { get; set; }
 
         [DataType(DataType.MultilineText)]
@@ -81,7 +81,7 @@ namespace ISOStd.Models
         public string Actions_Taken { get; set; }
         
         [DataType(DataType.MultilineText)]
-        [Display(Name = "Reasons for Incident Occurrence")]
+        [Display(Name = "Reasons for Accident Occurrence")]
         public string Incident_Reasons { get; set; }
         
         [DataType(DataType.MultilineText)]
@@ -130,7 +130,7 @@ namespace ISOStd.Models
         [Display(Name = "Accident Report No")]
         public string accident_reportno { get; set; }
 
-        [Display(Name = "Risk due to Incident")]
+        [Display(Name = "Risk due to Accident")]
         public string risk_incident { get; set; }
 
         [Display(Name = "HSE officer")]
@@ -195,7 +195,16 @@ namespace ISOStd.Models
 
         [Display(Name = "Date of Accident Report")]
         public DateTime reported_date { get; set; }
-        
+
+        //t_incident_report_lti
+        [Display(Name = "Type of injury")]
+        public string injury_type { get; set; }
+
+        [Display(Name = "Investigation start date")]
+        public DateTime invest_start_date { get; set; }
+
+        [Display(Name = "Investigation end date")]
+        public DateTime invest_end_date { get; set; }
 
         internal bool FunUpdateIncidentAction(string Incident_Id)
         {
@@ -568,6 +577,16 @@ namespace ISOStd.Models
         [Display(Name = "Logged By")]
         public string LoggedBy { get; set; }
 
+        //t_incident_report_lti
+        [Display(Name = "Type of injury")]
+        public string injury_type { get; set; }
+
+        [Display(Name = "Investigation start date")]
+        public DateTime invest_start_date { get; set; }
+
+        [Display(Name = "Investigation end date")]
+        public DateTime invest_end_date { get; set; }
+
         internal bool FunUpdateIncidentLTI(string Incident_Id)
         {
             try
@@ -595,12 +614,31 @@ namespace ISOStd.Models
                     {
                         sLtiid = objIncidentLTIList.lstIncidentLTIModels[i].LTI_Id;
                     }
-                    sSqlstmt = sSqlstmt + " insert into t_incident_report_lti (LTI_Id, Incident_Id, AccidentType, Emp_Id, LTI_Hrs)"
-                    + " values(" + sLtiid + ", " + objIncidentLTIList.lstIncidentLTIModels[0].Incident_Id
+                    sSqlstmt = sSqlstmt + " insert into t_incident_report_lti (LTI_Id, Incident_Id, AccidentType, Emp_Id, LTI_Hrs,injury_type";
+                          string sFieldValue = "", sFields = "", sValue = "", sStatement = ""; ;
+                    if (objIncidentLTIList.lstIncidentLTIModels[i].invest_start_date != null && objIncidentLTIList.lstIncidentLTIModels[i].invest_start_date > Convert.ToDateTime("01/01/0001 00:00:00"))
+                    {
+                        sStatement = sStatement + ", invest_start_date= values(invest_start_date)";
+                        sFields = sFields + ", invest_start_date";
+                        sFieldValue = sFieldValue + ", '" + objIncidentLTIList.lstIncidentLTIModels[i].invest_start_date.ToString("yyyy/MM/dd") + "'";
+                    }
+                    if (objIncidentLTIList.lstIncidentLTIModels[i].invest_end_date != null && objIncidentLTIList.lstIncidentLTIModels[i].invest_end_date > Convert.ToDateTime("01/01/0001 00:00:00"))
+                    {
+                        sStatement = sStatement + ", invest_end_date= values(invest_end_date)";
+                        sFields = sFields + ", invest_end_date";
+                        sFieldValue = sFieldValue + ", '" + objIncidentLTIList.lstIncidentLTIModels[i].invest_end_date.ToString("yyyy/MM/dd") + "'";
+                    }
+                    sSqlstmt = sSqlstmt + sFields;
+                    sSqlstmt = sSqlstmt + ") values(" + sLtiid + ", " + objIncidentLTIList.lstIncidentLTIModels[0].Incident_Id
                     + ",'" + objIncidentLTIList.lstIncidentLTIModels[i].AccidentType + "','" + objIncidentLTIList.lstIncidentLTIModels[i].Emp_Id
-                    + "'," + objIncidentLTIList.lstIncidentLTIModels[i].LTI_Hrs + ")"
-                    + " ON DUPLICATE KEY UPDATE "
-                     + " LTI_Id= values(LTI_Id), Incident_Id= values(Incident_Id), AccidentType = values(AccidentType), LTI_Hrs= values(LTI_Hrs) ; ";
+                    + "'," + objIncidentLTIList.lstIncidentLTIModels[i].LTI_Hrs + "," + objIncidentLTIList.lstIncidentLTIModels[i].injury_type + "";
+                    sSqlstmt = sSqlstmt + sFieldValue + ")";
+                    sValue = " ON DUPLICATE KEY UPDATE "
+                     + " LTI_Id= values(LTI_Id), Incident_Id= values(Incident_Id), AccidentType = values(AccidentType), LTI_Hrs= values(LTI_Hrs), injury_type= values(injury_type)";
+                    sSqlstmt = sSqlstmt + sValue;
+                    sSqlstmt = sSqlstmt + sStatement + ";";
+
+                   
                 }
 
                 return objGlobalData.ExecuteQuery(sSqlstmt);

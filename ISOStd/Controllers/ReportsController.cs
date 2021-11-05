@@ -488,7 +488,7 @@ namespace ISOStd.Controllers
 
                 return new ViewAsPdf("AuditLogPrintPdf", new { AuditNum = AuditNo, DeptId = sDeptId })
                 {
-                    FileName = "AuditLog.pdf",
+                    //FileName = "AuditLog.pdf",
                     Cookies = cookieCollection,
                     CustomSwitches = footer
                 };
@@ -574,7 +574,7 @@ namespace ISOStd.Controllers
 
                 return new ViewAsPdf("AuditSummaryPrintPdf", new { AuditNum = AuditNo })
                 {
-                    FileName = "AuditSummary.pdf",
+                    //FileName = "AuditSummary.pdf",
                     Cookies = cookieCollection,
                     CustomSwitches = footer
                 };
@@ -649,7 +649,7 @@ namespace ISOStd.Controllers
 
             return new ViewAsPdf("MasterDocumentReport", "Reports")
             {
-                FileName = "MasterListDocument.pdf",
+                //FileName = "MasterListDocument.pdf",
                 Cookies = cookieCollection,
                 CustomSwitches = footer
             };           
@@ -714,7 +714,7 @@ namespace ISOStd.Controllers
 
                 return new ViewAsPdf("MasterDocumentPrintPdf", "Reports")
                 {
-                    FileName = "MasterListDocument.pdf",
+                    //FileName = "MasterListDocument.pdf",
                     Cookies = cookieCollection,
                     CustomSwitches = footer
                 };
@@ -831,7 +831,7 @@ namespace ISOStd.Controllers
 
                 return new ViewAsPdf("ObjectivesPrintPdf", new { dtFromDate = fromdateValue.ToString("yyyy/MM/dd"), dtToDate = toDateValue.ToString("yyyy/MM/dd") })
                 {
-                    FileName = "ObjectivesList.pdf",
+                    //FileName = "ObjectivesList.pdf",
                     Cookies = cookieCollection,
                     CustomSwitches = footer,
                     PageSize = Rotativa.Options.Size.A3
@@ -911,7 +911,7 @@ namespace ISOStd.Controllers
 
                 return new ViewAsPdf("KPIPrintPdf", new { dtFromDate = fromdateValue.ToString("yyyy/MM/dd"), dtToDate = toDateValue.ToString("yyyy/MM/dd") })
                 {
-                    FileName = "KPIList.pdf",
+                    //FileName = "KPIList.pdf",
                     Cookies = cookieCollection,
                     CustomSwitches = footer,
                     PageSize = Rotativa.Options.Size.A3

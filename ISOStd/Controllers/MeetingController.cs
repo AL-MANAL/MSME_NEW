@@ -1110,7 +1110,7 @@ namespace ISOStd.Controllers
 
             return new ViewAsPdf("MeetingDetailsToPDF","Meeting")
             {
-                FileName = "MeetingDetails.pdf",
+                //FileName = "MeetingDetails.pdf",
                 Cookies = cookieCollection,
                 CustomSwitches = customSwitches
             };

@@ -285,6 +285,7 @@
                                                     <i class="icon-pencil7"></i>Edit
                                                 </a>
                                             }
+                                            <span class="dropdown-item text-center" title="Invalid" onclick="Invalid(@item.SupplierId)" style="cursor:pointer;"><i class="icon-bin"></i>Invalid</span>
                                             <div class="dropdown-divider"></div>
                                             @if (ShowDel)
                                             {
@@ -691,7 +692,58 @@
                                 window.location.host +
                                 window.location.pathname +
                                '?' + queryString;
-            }
+                }
+
+                function Invalid(SupplierId) {
+                    bootbox.confirm({
+                        title: '',
+                        message: 'Are you Sure you want to Invalid the current Record?',
+                        buttons: {
+                            confirm: {
+                                label: 'Yes',
+                                className: 'btn-primary'
+                            },
+                            cancel: {
+                                label: 'Cancel',
+                                className: 'btn-link'
+                            }
+                        },
+                        callback: function (r) {
+
+                            if (r == true) {
+
+                                bootbox.prompt({
+                                    title: "Reason for invalid",
+                                    centerVertical: true,
+                                    callback: function (result) {
+                                        if (result != null) {
+
+                                            jQuery.ajax({
+                                                url: '@Url.Action("SuppliertInvalid", "Supplier")',
+                                                type: 'POST',
+                                                dataType: "json",
+                                                data: { 'SupplierId': SupplierId, 'invalid_reason': result },
+                                                success: function (result) {
+                                                    //// Add new params to the querystring dictionary
+                                                    window.location.href =
+                                                        window.location.protocol + "//" +
+                                                        window.location.host +
+                                                        window.location.pathname
+                                                }
+                                            });
+                                            return true;
+                                        }
+                                    }
+                                });
+                            }
+                            else if (r == false) {
+                                bootbox.hideAll();
+                                return false;
+                            }
+
+                        }
+                    });
+                }
                 </script>
 
             }

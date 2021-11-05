@@ -118,7 +118,7 @@ namespace ISOStd.Controllers
 
                     objAccRpt.injury_type = form["injury_type " + i];
                     objAccRpt.no_person = form["no_person " + i];
-
+                    objAccRpt.pers_name = form["pers_name " + i];
                     objAccTypeList.AccidentList.Add(objAccRpt);
                 }
 
@@ -431,7 +431,7 @@ namespace ISOStd.Controllers
                     AccidentReportModelsList objReporterList = new AccidentReportModelsList();
                     objReporterList.AccidentList = new List<AccidentReportModels>();
 
-                    sSqlstmt = "select id_accident_type,id_accident_rept,injury_type,no_person from t_accident_type where id_accident_rept='" + id_accident_rept + "'";
+                    sSqlstmt = "select id_accident_type,id_accident_rept,injury_type,no_person,pers_name from t_accident_type where id_accident_rept='" + id_accident_rept + "'";
 
                     DataSet dsReportList = objGlobaldata.Getdetails(sSqlstmt);
                     if (dsReportList.Tables.Count > 0 && dsReportList.Tables[0].Rows.Count > 0)
@@ -445,7 +445,8 @@ namespace ISOStd.Controllers
                                     id_accident_type = dsReportList.Tables[0].Rows[i]["id_accident_type"].ToString(),
                                     id_accident_rept = dsReportList.Tables[0].Rows[i]["id_accident_rept"].ToString(),
                                     injury_type = /*objGlobaldata.GetAccidentTypeById*/(dsReportList.Tables[0].Rows[i]["injury_type"].ToString()),
-                                    no_person = dsReportList.Tables[0].Rows[i]["no_person"].ToString(),       
+                                    no_person = dsReportList.Tables[0].Rows[i]["no_person"].ToString(),
+                                    pers_name = dsReportList.Tables[0].Rows[i]["pers_name"].ToString(),
                                 };
                                 objReporterList.AccidentList.Add(objAccInfoList);
                             }
@@ -570,7 +571,8 @@ namespace ISOStd.Controllers
                             {
                                 id_accident_type = form["id_accident_type " + i],
                                 injury_type = form["injury_type " + i],
-                                no_person = form["no_person " + i],                               
+                                no_person = form["no_person " + i],
+                                pers_name = form["pers_name " + i],
                             };
                             objAccTypeList.AccidentList.Add(objAccRpt);
                         }
@@ -835,7 +837,7 @@ namespace ISOStd.Controllers
                     AccidentReportModelsList objAccTypeList = new AccidentReportModelsList();
                     objAccTypeList.AccidentList = new List<AccidentReportModels>();
 
-                    sSqlstmt = "select id_accident_type,id_accident_rept,injury_type,no_person from t_accident_type where id_accident_rept='" + id_accident_rept + "'";
+                    sSqlstmt = "select id_accident_type,id_accident_rept,injury_type,no_person,pers_name from t_accident_type where id_accident_rept='" + id_accident_rept + "'";
 
                     DataSet dsAccTypeList = objGlobaldata.Getdetails(sSqlstmt);
                     if (dsAccTypeList.Tables.Count > 0 && dsAccTypeList.Tables[0].Rows.Count > 0)
@@ -850,6 +852,7 @@ namespace ISOStd.Controllers
                                     id_accident_rept = dsAccTypeList.Tables[0].Rows[i]["id_accident_rept"].ToString(),
                                     injury_type = objGlobaldata.GetDropdownitemById(dsAccTypeList.Tables[0].Rows[i]["injury_type"].ToString()),
                                     no_person = dsAccTypeList.Tables[0].Rows[i]["no_person"].ToString(),
+                                    pers_name = dsAccTypeList.Tables[0].Rows[i]["pers_name"].ToString(),
                                 };
                                 objAccTypeList.AccidentList.Add(objAccInfoMdl);
                             }
@@ -982,7 +985,7 @@ namespace ISOStd.Controllers
                     
                     ViewBag.objAccidentList=objAccidentReportModels;
 
-                    string sSqlstmt1 = "select id_accident_type,id_accident_rept,injury_type,no_person from t_accident_type where id_accident_rept='" + id_accident_rept + "'";
+                    string sSqlstmt1 = "select id_accident_type,id_accident_rept,injury_type,no_person,pers_name from t_accident_type where id_accident_rept='" + id_accident_rept + "'";
                     ViewBag.objAccTypeList = objGlobaldata.Getdetails(sSqlstmt1);                  
 
                     string sSqlstmt2 = "select id_accident_info,id_accident_rept,reported_to,reportedon_date,comments from t_accident_info where id_accident_rept='" + id_accident_rept + "'";
@@ -1006,7 +1009,7 @@ namespace ISOStd.Controllers
 
             return new ViewAsPdf("AccidentReportToPDF")
             {
-                FileName = "IncidentReport.pdf",
+                //FileName = "IncidentReport.pdf",
                 Cookies = cookieCollection,
                 CustomSwitches = footer
             };

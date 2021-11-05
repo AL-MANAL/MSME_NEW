@@ -1522,7 +1522,7 @@ namespace ISOStd.Controllers
 
             return new ViewAsPdf("CustomerComplaintToPDF")
             {
-                FileName = "CustomerComplaint.pdf",
+                //FileName = "CustomerComplaint.pdf",
                 Cookies = cookieCollection,
                 CustomSwitches = footer
             };
@@ -3570,7 +3570,7 @@ namespace ISOStd.Controllers
 
             return new ViewAsPdf("NCPDF")
             {
-                FileName = "NCPDF.pdf",
+                //FileName = "NCPDF.pdf",
                 Cookies = cookieCollection,
                 CustomSwitches = footer
             };

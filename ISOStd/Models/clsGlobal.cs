@@ -25,6 +25,67 @@ namespace ISOStd.Models
         private object fileUploader;
         private object mail;
 
+        //-----------------------------------11/2/2021-----------------------------------------------
+        public MultiSelectList GetIsoAndDescList()
+        {
+            ISOStdList IsoStdlist = new ISOStdList();
+            IsoStdlist.IsoStdList = new List<ISOStds>();
+            try
+            {
+                DataSet dsEmp = Getdetails("select StdId, IsoName,Descriptions from t_isostandards where Active=1");
+                if (dsEmp.Tables.Count > 0 && dsEmp.Tables[0].Rows.Count > 0)
+                {
+                    for (int i = 0; i < dsEmp.Tables[0].Rows.Count; i++)
+                    {
+                        ISOStds Isostd = new ISOStds()
+                        {
+                            StdId = dsEmp.Tables[0].Rows[i]["StdId"].ToString(),
+                            IsoName = dsEmp.Tables[0].Rows[i]["IsoName"].ToString() + '$'+ dsEmp.Tables[0].Rows[i]["Descriptions"].ToString()
+                        };
+
+                        IsoStdlist.IsoStdList.Add(Isostd);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                AddFunctionalLog("Exception in GetIsoAndDescList: " + ex.ToString());
+            }
+            return new MultiSelectList(IsoStdlist.IsoStdList, "StdId", "IsoName");
+        }
+        //--------------------------------10/29/2021-----------------------------------------------
+        public MultiSelectList GetHrEmployeeList()
+        {
+            EmployeeList emplist = new EmployeeList();
+            emplist.EmpList = new List<Employee>();
+            try
+            {
+                string sSqlstmt = "select concat(emp_firstname,' ',ifnull(emp_middlename,' '),' ',ifnull(emp_lastname,' ')) as Empname,"
+                +" emp_no as Empid  from t_hr_employee t,t_departments tt where emp_status = 1 and t.Dept_Id = tt.DeptId and DeptName like '%HR%'";
+                DataSet dsEmp = Getdetails(sSqlstmt);// and CompanyId='" + sCompanyId+"'");
+                if (dsEmp.Tables.Count > 0 && dsEmp.Tables[0].Rows.Count > 0)
+                {
+                    for (int i = 0; i < dsEmp.Tables[0].Rows.Count; i++)
+                    {
+                        Employee emp = new Employee()
+                        {
+                            Empid = dsEmp.Tables[0].Rows[i]["Empid"].ToString(),
+                            Empname = Regex.Replace(dsEmp.Tables[0].Rows[i]["Empname"].ToString(), " +", " ")
+                        };
+                        emp.Empname = emp.Empname.Trim();
+                        emplist.EmpList.Add(emp);
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                AddFunctionalLog("Exception in GetHrEmployeeList: " + ex.ToString());
+            }
+
+            return new MultiSelectList(emplist.EmpList, "Empid", "Empname");
+
+        }
         //--------------------------------10/14/2021-----------------------------------------------
         public string GetQAQCDeptEmployees()
         {
@@ -11638,8 +11699,8 @@ namespace ISOStd.Models
         public DataSet GetCompanyBranch(string sCompId)
         {
 
-            string sSqlstmt = "select tcb.*, item_id, item_desc from t_Company_Branch as tcb, dropdownitems, dropdownheader where CompId="
-                + sCompId + " and active=1 and dropdownheader.header_id=dropdownitems.header_id and curr_code=item_id and header_desc='Currency Code'";
+            string sSqlstmt = "select * from t_Company_Branch where CompId="
+                + sCompId + " and active=1";
             
             return Getdetails(sSqlstmt);
             

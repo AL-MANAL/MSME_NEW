@@ -1457,7 +1457,7 @@ namespace ISOStd.Controllers
 
             return new ViewAsPdf("OFIPDF")
             {
-                FileName = "OFIPDF.pdf",
+                //FileName = "OFIPDF.pdf",
                 Cookies = cookieCollection,
                 CustomSwitches = footer
             };

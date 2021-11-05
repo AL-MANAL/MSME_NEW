@@ -41,7 +41,7 @@ namespace ISOStd.Models
         [Display(Name = "Need of thorough investigation?")]
         public string invest_need { get; set; }
 
-        [Display(Name = "Justify")]
+        [Display(Name = "Justify for no investigation")]
         public string justify { get; set; }
 
         [Display(Name = "Incident investigation report number")]
@@ -89,6 +89,10 @@ namespace ISOStd.Models
 
         [Display(Name = "Department")]
         public string Department { get; set; }
+
+        //t_accident_type
+        [Display(Name = "Person Name")]
+        public string pers_name { get; set; }
 
         internal bool FunAddAccidentReport(AccidentReportModels objAcc, AccidentReportModelsList objAccTypeList, AccidentReportModelsList objAccInfoList)
         {
@@ -172,11 +176,11 @@ namespace ISOStd.Models
                     {
                         sid_accident_type = objAccTypeList.AccidentList[i].id_accident_type;
                     }
-                    sSqlstmt = sSqlstmt + " insert into t_accident_type (id_accident_type,id_accident_rept,injury_type,no_person)"
+                    sSqlstmt = sSqlstmt + " insert into t_accident_type (id_accident_type,id_accident_rept,injury_type,no_person,pers_name)"
                     + " values(" + sid_accident_type + "," + objAccTypeList.AccidentList[0].id_accident_rept
-                    + ",'" + objAccTypeList.AccidentList[i].injury_type + "','" + objAccTypeList.AccidentList[i].no_person + "')"
+                    + ",'" + objAccTypeList.AccidentList[i].injury_type + "','" + objAccTypeList.AccidentList[i].no_person + "','" + objAccTypeList.AccidentList[i].pers_name + "')"
                     + " ON DUPLICATE KEY UPDATE "
-                     + " id_accident_type= values(id_accident_type), id_accident_rept= values(id_accident_rept), injury_type = values(injury_type), no_person= values(no_person) ; ";
+                     + " id_accident_type= values(id_accident_type), id_accident_rept= values(id_accident_rept), injury_type = values(injury_type), no_person= values(no_person), pers_name= values(pers_name) ; ";
 
                 }
 

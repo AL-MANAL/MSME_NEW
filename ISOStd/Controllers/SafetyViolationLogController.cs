@@ -79,7 +79,7 @@ namespace ISOStd.Controllers
                 objSafetyViolationLog.ApprovedBy = form["ApprovedBy"];
                 objSafetyViolationLog.Location = form["Location"];
                 objSafetyViolationLog.branch = form["branch"];
-
+                objSafetyViolationLog.issued_to = form["issued_to"];
                 DateTime dateValue;
 
                 if (form["Reported_On"] != null && DateTime.TryParse(form["Reported_On"], out dateValue) == true)
@@ -357,7 +357,7 @@ namespace ISOStd.Controllers
                     string sViolationLog_Id = Request.QueryString["ViolationLog_Id"];
                     string sSqlstmt = "select ViolationLog_Id, Reported_On, UnasafeAct_OccurredOn, UnsafeAct_ReportedBy, UnsafeAct_Personnel, UnsafeAct_Why, Report_No,"
                         + " Upload_Report, LoggedBy,VoilationType,Action_taken,HSE_observation,Emp_statement,Violation_warning,Dept,Supervisor,IssuedBy,Other_supervisor" +
-                        ",ApprovedBy,branch,Location from t_safety_violationlog where ViolationLog_Id='" + sViolationLog_Id + "'";
+                        ",ApprovedBy,branch,Location,voilation_detail,issued_to from t_safety_violationlog where ViolationLog_Id='" + sViolationLog_Id + "'";
 
                     DataSet dsToolboxTalk = objGlobaldata.Getdetails(sSqlstmt);
                     if (dsToolboxTalk.Tables.Count > 0)
@@ -384,6 +384,8 @@ namespace ISOStd.Controllers
                             branch = objGlobaldata.GetMultiCompanyBranchNameById(dsToolboxTalk.Tables[0].Rows[0]["branch"].ToString()),
                             Dept = objGlobaldata.GetMultiDeptNameById(dsToolboxTalk.Tables[0].Rows[0]["Dept"].ToString()),
                             Location = objGlobaldata.GetDivisionLocationById(dsToolboxTalk.Tables[0].Rows[0]["Location"].ToString()),
+                            issued_to = objGlobaldata.GetMultiHrEmpNameById(dsToolboxTalk.Tables[0].Rows[0]["issued_to"].ToString()),
+                            voilation_detail = (dsToolboxTalk.Tables[0].Rows[0]["voilation_detail"].ToString()),
                         };
 
                         DateTime dateValue;
@@ -495,7 +497,7 @@ namespace ISOStd.Controllers
                     string sViolationLog_Id = Request.QueryString["ViolationLog_Id"];
                     string sSqlstmt = "select ViolationLog_Id, Reported_On, UnasafeAct_OccurredOn, UnsafeAct_ReportedBy, UnsafeAct_Personnel, UnsafeAct_Why, Report_No,"
                         + " Upload_Report, LoggedBy,VoilationType,Action_taken,HSE_observation,Emp_statement,Violation_warning,Dept,Supervisor,IssuedBy,Other_supervisor," +
-                        "ApprovedBy,branch,Location  from t_safety_violationlog where ViolationLog_Id='" + sViolationLog_Id + "'";
+                        "ApprovedBy,branch,Location,voilation_detail,issued_to  from t_safety_violationlog where ViolationLog_Id='" + sViolationLog_Id + "'";
 
                     DataSet dsToolboxTalk = objGlobaldata.Getdetails(sSqlstmt);
                     if (dsToolboxTalk.Tables.Count > 0)
@@ -522,6 +524,8 @@ namespace ISOStd.Controllers
                             branch = (dsToolboxTalk.Tables[0].Rows[0]["branch"].ToString()),
                             Dept = (dsToolboxTalk.Tables[0].Rows[0]["Dept"].ToString()),
                             Location = (dsToolboxTalk.Tables[0].Rows[0]["Location"].ToString()),
+                            voilation_detail = (dsToolboxTalk.Tables[0].Rows[0]["voilation_detail"].ToString()),
+                            issued_to = (dsToolboxTalk.Tables[0].Rows[0]["issued_to"].ToString()),
                         };
 
                         DateTime dateValue;

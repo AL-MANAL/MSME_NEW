@@ -745,7 +745,7 @@ namespace ISOStd.Controllers
 
             return new ViewAsPdf("TrainingStaffPDF")
             {
-                FileName = "TrainingRpt.pdf",
+                //FileName = "TrainingRpt.pdf",
                 Cookies = cookieCollection,
                 CustomSwitches = footer
             };
@@ -1102,7 +1102,7 @@ namespace ISOStd.Controllers
 
             return new ViewAsPdf("GenerateTrainingReportPDF")
             {
-                FileName = "TrainingRpt.pdf",
+                //FileName = "TrainingRpt.pdf",
                 Cookies = cookieCollection,
                 CustomSwitches = footer
             };

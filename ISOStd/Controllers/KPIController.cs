@@ -1372,7 +1372,7 @@ namespace ISOStd.Controllers
 
             return new ViewAsPdf("KPIReportPDF", "KPI")
             {
-                FileName = "KPIReport.pdf",
+                //FileName = "KPIReport.pdf",
                 Cookies = cookieCollection,
                 PageSize = Rotativa.Options.Size.A3,
                 PageOrientation = Rotativa.Options.Orientation.Portrait,
@@ -1477,7 +1477,7 @@ namespace ISOStd.Controllers
 
             return new ViewAsPdf("KPIEvaluationPDF", "KPI")
             {
-                FileName = "KPIEvaluationReport.pdf",
+                //FileName = "KPIEvaluationReport.pdf",
                 Cookies = cookieCollection,
                 PageSize = Rotativa.Options.Size.A3,
                 PageOrientation = Rotativa.Options.Orientation.Portrait,

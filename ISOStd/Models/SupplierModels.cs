@@ -137,6 +137,25 @@ namespace ISOStd.Models
         [Display(Name = "PAN No")]
         public string pan_no { get; set; }
 
+        internal bool FunInvalidSupplier(string sSupplierID, string invalid_reason)
+        {
+            try
+            {
+                string user = "";
+                user = objGlobalData.GetCurrentUserSession().empid;
+                string TodayDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+
+                string sSqlstmt = "update t_supplier set chk_valid='Invalid',invalid_reason='" + invalid_reason + "',invalid_date='" + TodayDate + "',invalid_logged_by='" + user + "' where SupplierID='" + sSupplierID + "'";
+
+                return objGlobalData.ExecuteQuery(sSqlstmt);
+            }
+            catch (Exception ex)
+            {
+                objGlobalData.AddFunctionalLog("Exception in FunInvalidSupplier: " + ex.ToString());
+            }
+            return false;
+        }
+
         public bool checkSupplierNameExists(string SupplierName)
         {
             try

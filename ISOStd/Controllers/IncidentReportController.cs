@@ -59,6 +59,7 @@ namespace ISOStd.Controllers
                ViewBag.AccidentReport = objGlobaldata.GetAccidentReportsWithInvestList();
                ViewBag.HSEEmp = objGlobaldata.GetHrEmpHseList();
                 ViewBag.Status = objGlobaldata.GetDropdownList("Incident Status");
+                ViewBag.Injury = objGlobaldata.GetDropdownList("Type of Injury");
             }
             catch (Exception ex)
             {
@@ -218,8 +219,18 @@ namespace ISOStd.Controllers
                                 LTI_Id = form["LTI_Id " + i],
                                 AccidentType = form["AccidentType " + i],
                                 Emp_Id = form["Emp_Id " + i],
-                                LTI_Hrs = form["LTI_Hrs " + i]
+                                LTI_Hrs = form["LTI_Hrs " + i],
+                                injury_type = form["injury_type " + i],
+                               
                             };
+                            if (form["invest_start_date " + i] != null && DateTime.TryParse(form["invest_start_date " + i], out dateValue) == true)
+                            {
+                                objIncidentLTI.invest_start_date = dateValue;
+                            }
+                            if (form["invest_end_date " + i] != null && DateTime.TryParse(form["invest_end_date " + i], out dateValue) == true)
+                            {
+                                objIncidentLTI.invest_end_date = dateValue;
+                            }
                             objIncidentLTIList.lstIncidentLTIModels.Add(objIncidentLTI);
                         }
                     }
@@ -610,7 +621,7 @@ namespace ISOStd.Controllers
                         IncidentLTIModelsList objIncidentLTIList = new IncidentLTIModelsList();
                         objIncidentLTIList.lstIncidentLTIModels = new List<IncidentLTIModels>();
 
-                        sSqlstmt = "SELECT LTI_Id, Incident_Id, AccidentType, Emp_Id, LTI_Hrs FROM t_incident_report_lti where Incident_Id='" + sIncident_Id 
+                        sSqlstmt = "SELECT LTI_Id, Incident_Id, AccidentType, Emp_Id, LTI_Hrs,injury_type,invest_start_date,invest_end_date FROM t_incident_report_lti where Incident_Id='" + sIncident_Id 
                             + "' order by AccidentType asc";
 
                         dsIncident = objGlobaldata.Getdetails(sSqlstmt);
@@ -626,8 +637,17 @@ namespace ISOStd.Controllers
                                         LTI_Id = (dsIncident.Tables[0].Rows[i]["LTI_Id"].ToString()),
                                         AccidentType = objGlobaldata.GetDropdownitemById(dsIncident.Tables[0].Rows[i]["AccidentType"].ToString()),
                                         Emp_Id =objGlobaldata.GetEmpHrNameById(dsIncident.Tables[0].Rows[i]["Emp_Id"].ToString()),
-                                        LTI_Hrs = dsIncident.Tables[0].Rows[i]["LTI_Hrs"].ToString()
+                                        LTI_Hrs = dsIncident.Tables[0].Rows[i]["LTI_Hrs"].ToString(),
+                                        injury_type = objGlobaldata.GetDropdownitemById(dsIncident.Tables[0].Rows[i]["injury_type"].ToString()),
                                     };
+                                    if (DateTime.TryParse(dsIncident.Tables[0].Rows[i]["invest_start_date"].ToString(), out dateValue))
+                                    {
+                                        objIncidentLTI.invest_start_date = dateValue;
+                                    }
+                                    if (DateTime.TryParse(dsIncident.Tables[0].Rows[i]["invest_end_date"].ToString(), out dateValue))
+                                    {
+                                        objIncidentLTI.invest_end_date = dateValue;
+                                    }
                                     objIncidentLTIList.lstIncidentLTIModels.Add(objIncidentLTI);
                                 }
                                 catch (Exception ex)
@@ -986,7 +1006,7 @@ namespace ISOStd.Controllers
                         IncidentLTIModelsList objIncidentLTIList = new IncidentLTIModelsList();
                         objIncidentLTIList.lstIncidentLTIModels = new List<IncidentLTIModels>();
 
-                        sSqlstmt = "SELECT LTI_Id, Incident_Id, AccidentType, Emp_Id, LTI_Hrs FROM t_incident_report_lti where Incident_Id='" + sIncident_Id 
+                        sSqlstmt = "SELECT LTI_Id, Incident_Id, AccidentType, Emp_Id, LTI_Hrs,injury_type,invest_start_date,invest_end_date FROM t_incident_report_lti where Incident_Id='" + sIncident_Id 
                             + "' order by AccidentType asc";
 
                         dsIncident = objGlobaldata.Getdetails(sSqlstmt);
@@ -1000,10 +1020,20 @@ namespace ISOStd.Controllers
                                     {
                                         Incident_Id = dsIncident.Tables[0].Rows[i]["Incident_Id"].ToString(),
                                         LTI_Id = (dsIncident.Tables[0].Rows[i]["LTI_Id"].ToString()),
-                                        AccidentType =objGlobaldata.GetDropdownitemById(dsIncident.Tables[0].Rows[i]["AccidentType"].ToString()),
+                                        AccidentType =(dsIncident.Tables[0].Rows[i]["AccidentType"].ToString()),
                                         Emp_Id =objGlobaldata.GetEmpHrNameById(dsIncident.Tables[0].Rows[i]["Emp_Id"].ToString()),
-                                        LTI_Hrs = dsIncident.Tables[0].Rows[i]["LTI_Hrs"].ToString()
+                                        LTI_Hrs = dsIncident.Tables[0].Rows[i]["LTI_Hrs"].ToString(),
+                                        injury_type = dsIncident.Tables[0].Rows[i]["injury_type"].ToString(),
+                                       
                                     };
+                                    if (DateTime.TryParse(dsIncident.Tables[0].Rows[i]["invest_start_date"].ToString(), out dateValue))
+                                    {
+                                        objIncidentLTI.invest_start_date = dateValue;
+                                    }
+                                    if (DateTime.TryParse(dsIncident.Tables[0].Rows[i]["invest_end_date"].ToString(), out dateValue))
+                                    {
+                                        objIncidentLTI.invest_end_date = dateValue;
+                                    }
                                     objIncidentLTIList.lstIncidentLTIModels.Add(objIncidentLTI);
                                 }
                                 catch (Exception ex)
@@ -1103,6 +1133,7 @@ namespace ISOStd.Controllers
                         ViewBag.AccidentReport = objGlobaldata.GetAccidentReportsWithInvestList();
                         ViewBag.HSEEmp = objGlobaldata.GetHrEmpHseList();
                         ViewBag.Status = objGlobaldata.GetDropdownList("Incident Status");
+                        ViewBag.Injury = objGlobaldata.GetDropdownList("Type of Injury");
 
                         if (objGlobaldata.GetIncidentInvestigators(sIncident_Id) != "" && objGlobaldata.GetIncidentInvestigators(sIncident_Id) != null)
                         {
@@ -1279,8 +1310,17 @@ namespace ISOStd.Controllers
                                 LTI_Id = form["LTI_Id " + i],
                                 AccidentType = form["AccidentType " + i],
                                 Emp_Id = form["Emp_Id " + i],
-                                LTI_Hrs = form["LTI_Hrs " + i]
+                                LTI_Hrs = form["LTI_Hrs " + i],
+                                injury_type = form["injury_type " + i]
                             };
+                            if (form["invest_start_date " + i] != null && DateTime.TryParse(form["invest_start_date " + i], out dateValue) == true)
+                            {
+                                objIncidentLTI.invest_start_date = dateValue;
+                            }
+                            if (form["invest_end_date " + i] != null && DateTime.TryParse(form["invest_end_date " + i], out dateValue) == true)
+                            {
+                                objIncidentLTI.invest_end_date = dateValue;
+                            }
                             objIncidentLTIList.lstIncidentLTIModels.Add(objIncidentLTI);
                         }
                     }
@@ -1616,7 +1656,7 @@ namespace ISOStd.Controllers
 
             return new ViewAsPdf("IncidentReportToPDF")
             {
-                FileName = "IncidentReport.pdf",
+                //FileName = "IncidentReport.pdf",
                 Cookies = cookieCollection,
                 CustomSwitches = footer
             };

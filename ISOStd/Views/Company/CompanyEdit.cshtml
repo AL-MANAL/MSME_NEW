@@ -51,7 +51,7 @@
                                 <i class="icon-address-book"></i> Branches
                             </button>*@
 
-                        <button type="button" class="btn" data-toggle="modal" data-target="#modal_form_vertical"><i class="icon-address-book"></i>Branches</button>
+                        <button type="button" class="btn" data-toggle="modal" data-target="#modal_form_vertical"><i class="icon-address-book"></i>Division</button>
 
                     </div>
 
@@ -166,7 +166,7 @@
                             </td>
                             <td class="col">
 
-                                <input class="form-control" type="text" id="PhoneNumber" name="PhoneNumber" required="required" @*pattern="[0-9]{10}"*@ title="This is an error message"
+                                <input class="form-control" type="text" id="PhoneNumber" name="PhoneNumber" required="required" @*pattern="[0-9]{10}"*@ 
                                        value="@Model.PhoneNumber" />
 
                             </td>
@@ -190,13 +190,15 @@
                                     {
                                         foreach (var data in ViewBag.IsoStdList)
                                         {
+                                            string[] sText = data.Text.Split('$');
+
                                             if (Model.Audit_Criteria != null && Model.Audit_Criteria != "" && Model.Audit_Criteria.ToString().Contains(data.Value))
                                             {
-                                        <option value='@data.Value' selected>@data.Text</option>
+                                        <option value='@data.Value' selected title="@sText[1]">@sText[0]</option>
                                             }
                                             else
                                             {
-                                        <option value='@data.Value'>@data.Text</option>
+                                        <option value='@data.Value'>@sText[0]</option>
                                             }
                                         }
                                     }
@@ -544,7 +546,7 @@
                              </div>
 
 
-                            <div class="form-group">
+                            @*<div class="form-group">
                                 <label>Currency Code</label>
                                 <select class="form-control select-search select2-hidden-accessible" data-fouc id="@curr_code" name="@curr_code" required="required">
                                     @if (ViewBag.Currency_Code != null)
@@ -562,7 +564,7 @@
                                         }
                                     }
                                 </select>
-                            </div>
+                            </div>*@
 
 
                             <div class="form-group">
@@ -661,7 +663,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Branch Details</h5>
+                <h5 class="modal-title">Division Details</h5>
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
             </div>
             <input type="hidden" name="CompId" id="CompId" value="@Model.CompanyID" />
@@ -670,7 +672,7 @@
                   <div class="form-group">
                     <div class="row">
                         <div class="col">
-                            <label>Parent Company</label>
+                            <label>Parent Division</label>
                             <select class="form-control select-search select2-hidden-accessible" data-fouc id="parent_level" name="parent_level" required="required">
                                 <option value=''>Select</option>
                                 @if (ViewBag.Company != null)
@@ -688,7 +690,7 @@
                 <div class="form-group">
                     <div class="row">
                         <div class="col">
-                            <label> Branch Name</label>
+                            <label> Division Name</label>
                             <input type="text" id="BranchName" name="BranchName" class="form-control" required />
                             <span class="field-validation-error"><span id="owner-BranchName" style="display: none;">This field is required.</span></span>
                         </div>
@@ -699,7 +701,7 @@
                   <div class="form-group">
                     <div class="row">
                         <div class="col">
-                            <label> Branch Code</label>
+                            <label> Division Code</label>
                             <input type="text" id="BranchCode" name="BranchCode" class="form-control" required />
                             <span class="field-validation-error"><span id="owner-BranchCode" style="display: none;">This field is required.</span></span>
                         </div>
@@ -727,7 +729,7 @@
                     </div>
                 </div>
 
-                <div class="form-group">
+                @*<div class="form-group">
                     <div class="row">
                         <div class="col">
                             <label>Currency</label>
@@ -747,7 +749,7 @@
 
 
                     </div>
-                </div>
+                </div>*@
 
                 <div class="form-group">
                     <div class="row">
@@ -867,7 +869,7 @@
                 url: '@Url.Action("BranchEdit", "Company")',
                 type: 'POST',
                 dataType: "json",
-                data: { 'Parent': sParent, 'Name': sName, 'Code': sCode, 'Address': sAddress, 'Curr_code': scurr_code, 'sItemNo': sItemno, 'scope': sscope },
+                data: { 'Parent': sParent, 'Name': sName, 'Code': sCode, 'Address': sAddress, 'sItemNo': sItemno, 'scope': sscope },
                 success: function (result) {
                     bootbox.alert({
                         title: 'Branch',
@@ -979,8 +981,8 @@ function reset() {
     ssnMessage.hide();
     var ssnMessage = $('#owner-BranchAddress');
     ssnMessage.hide();
-    var ssnMessage = $('#owner-Curr_code');
-    ssnMessage.hide();
+    //var ssnMessage = $('#owner-Curr_code');
+    //ssnMessage.hide();
     var ssnMessage = $('#owner-scope');
     ssnMessage.hide();
     $('#parent_level').get(0).selectedIndex = 0;
@@ -990,8 +992,8 @@ function reset() {
     //$('#BranchAddress').val("");
     $('#BranchAddress').get(0).selectedIndex = 0;
     $('#BranchAddress').trigger('change');
-    $('#Curr_code').get(0).selectedIndex = 0;
-    $('#Curr_code').trigger('change');
+    //$('#Curr_code').get(0).selectedIndex = 0;
+    //$('#Curr_code').trigger('change');
     $('#scope').val("");
 }
 
@@ -1005,7 +1007,7 @@ function Validation() {
     var sName = $('#BranchName').val();
     var sCode = $('#BranchCode').val();
     var sAddress = $('#BranchAddress').val();
-    var scurr_code = $('#Curr_code').val();
+    //var scurr_code = $('#Curr_code').val();
     var sscope = $('#scope').val();
     if (sParent == "") {
 
@@ -1048,15 +1050,15 @@ function Validation() {
         ssnMessage.hide();
     }
 
-    if (scurr_code == "") {
-        ssnMessage = $('#owner-Curr_code');
-        ssnMessage.show();
-        validflg = false;
-    }
-    else {
-        var ssnMessage = $('#owner-Curr_code');
-        ssnMessage.hide();
-    }
+    //if (scurr_code == "") {
+    //    ssnMessage = $('#owner-Curr_code');
+    //    ssnMessage.show();
+    //    validflg = false;
+    //}
+    //else {
+    //    var ssnMessage = $('#owner-Curr_code');
+    //    ssnMessage.hide();
+    //}
 
     if (sscope == "") {
         ssnMessage = $('#owner-scope');
@@ -1077,7 +1079,7 @@ function SaveNewItem() {
     var sName = $('#BranchName').val();
     var sCode = $('#BranchCode').val();
     var sAddress = $('#BranchAddress').val();
-    var scurr_code = $('#Curr_code').val();
+    //var scurr_code = $('#Curr_code').val();
     var sscope = $('#scope').val();
 
     var sCompId = CompId;
@@ -1089,7 +1091,7 @@ function SaveNewItem() {
             url: '@Url.Action("AddNewBranch", "Company")',
                     type: 'POST',
                     dataType: "json",
-                    data: { 'parent_level': sParent, 'BranchName': sName,'BranchCode': sCode, 'BranchAddress': sAddress, 'Curr_code': scurr_code, 'CompId': sCompId, 'scope': sscope },
+                    data: { 'parent_level': sParent, 'BranchName': sName,'BranchCode': sCode, 'BranchAddress': sAddress,  'CompId': sCompId, 'scope': sscope },
                     success: function (result) {
                         //jAlert(result, "Message");
                         //alert(result);
@@ -1128,8 +1130,8 @@ function SaveNewItem() {
                                 //$('#BranchAddress').val("");
                                 $('#BranchAddress').get(0).selectedIndex = 0;
                                 $('#BranchAddress').trigger('change');
-                                $('#Curr_code').get(0).selectedIndex = 0;
-                                $('#Curr_code').trigger('change');
+                                //$('#Curr_code').get(0).selectedIndex = 0;
+                                //$('#Curr_code').trigger('change');
 
                                 $('#scope').val("");
                             }

@@ -36,7 +36,7 @@ namespace ISOStd.Models
         [Display(Name = "Report No.")]
         public string Report_No { get; set; }
 
-        [Display(Name = "Upload the Report")]
+        [Display(Name = "Document(s)")]
         public string Upload_Report { get; set; }
   
         [Display(Name = "Logged By")]
@@ -85,6 +85,12 @@ namespace ISOStd.Models
         //public string ApprovalRejector { get; set; }
         //public string Approvers { get; set; }
 
+        [Display(Name = "Details for voilation")]
+        public string voilation_detail { get; set; }
+
+        [Display(Name = "Issued To")]
+        public string issued_to { get; set; }
+
         internal bool FunDeleteSafetyVoilationLogDoc(string sViolationLog_Id)
         {
             try
@@ -107,13 +113,22 @@ namespace ISOStd.Models
                 string sBranch = objGlobalData.GetCurrentUserSession().division;
                 string user = "";
                 user = objGlobalData.GetCurrentUserSession().empid;
-
-                string[] name1 = objSafetyViolationLog.ApprovedBy.Split(',');
-                int appcount = name1.Length;
+                int appcount = 0;
+                if (ApprovedBy != null && ApprovedBy != "")
+                {
+                    string[] name1 = objSafetyViolationLog.ApprovedBy.Split(',');
+                    appcount = name1.Length;
+                }
+              
 
                 string sSqlstmt = "insert into t_safety_violationlog (UnsafeAct_ReportedBy, UnsafeAct_Personnel, UnsafeAct_Why, LoggedBy,VoilationType"
-                    + ",Action_taken,HSE_observation,Emp_statement,Violation_warning,Dept,Supervisor,branch,IssuedBy,Other_supervisor,ApprovedBy,ApproverCount,Location";
-               
+                    + ",Action_taken,HSE_observation,Emp_statement,Violation_warning,Dept,Supervisor,branch,IssuedBy,Other_supervisor,ApprovedBy,ApproverCount,Location,voilation_detail,issued_to";
+
+                if (ApprovedBy == "" || ApprovedBy == null)
+                {
+                    sColumn = sColumn + ", Approved_Status";
+                    sValues = sValues + ", '2'";
+                }
                 
                 if (objSafetyViolationLog.Reported_On > Convert.ToDateTime("01/01/0001"))
                 {
@@ -138,7 +153,7 @@ namespace ISOStd.Models
                  + "','" + user + "','" + objSafetyViolationLog.VoilationType + "','" + objSafetyViolationLog.Action_taken + "'"
                  + ",'" + objSafetyViolationLog.HSE_observation + "','" + objSafetyViolationLog.Emp_statement+ "','" + objSafetyViolationLog.Violation_warning 
                  + "','" + objSafetyViolationLog.Dept + "','" + objSafetyViolationLog.Supervisor + "','" + objSafetyViolationLog.branch + "','" + objSafetyViolationLog.IssuedBy 
-                 + "','" + objSafetyViolationLog.Other_supervisor + "','" + objSafetyViolationLog.ApprovedBy + "','" + appcount + "','" + objSafetyViolationLog.Location + "'";
+                 + "','" + objSafetyViolationLog.Other_supervisor + "','" + objSafetyViolationLog.ApprovedBy + "','" + appcount + "','" + objSafetyViolationLog.Location + "','" + objSafetyViolationLog.voilation_detail + "','" + objSafetyViolationLog.issued_to + "'";
 
                 sSqlstmt = sSqlstmt + sValues + ")";
 
@@ -168,6 +183,7 @@ namespace ISOStd.Models
                             //return objGlobalData.Sendmail(sEmailid, dicEmailContent["subject"], dicEmailContent["body"], "", sEmailCCList);
                             return objGlobalData.SendmailNew(sEmailid, dicEmailContent["subject"], dicEmailContent["body"], filepath, "", "");
                         }
+                        return true;
                     }
                 }
             }

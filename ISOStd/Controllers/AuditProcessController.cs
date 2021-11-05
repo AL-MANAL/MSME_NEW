@@ -794,7 +794,7 @@ namespace ISOStd.Controllers
 
             return new ViewAsPdf("AuditPlanPDF", "AuditProcess")
             {
-                FileName = "AuditPlan.pdf",
+                //FileName = "AuditPlan.pdf",
                 Cookies = cookieCollection,
                 PageSize = Rotativa.Options.Size.A3,
                 PageOrientation = Rotativa.Options.Orientation.Portrait,
@@ -2684,7 +2684,7 @@ namespace ISOStd.Controllers
 
             return new ViewAsPdf("AuditDetailsPDF")
             {
-                FileName = "AuditDetails.pdf",
+                //FileName = "AuditDetails.pdf",
                 Cookies = cookieCollection,
                 CustomSwitches = footer
             };
@@ -3650,7 +3650,7 @@ namespace ISOStd.Controllers
 
             return new ViewAsPdf("AuditNonConfirmityPDF")
             {
-                FileName = "AuditNC.pdf",
+                //FileName = "AuditNC.pdf",
                 Cookies = cookieCollection,
                 CustomSwitches = footer
             };

@@ -126,7 +126,7 @@
                         </td>
                         <td class="col">
                             <div class="editor-field">
-                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="CustomerName" name="CustomerName" @*onchange="GetDetails()"*@ required>
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="CustomerName" name="CustomerName" onchange="GetDetails()" required>
                                     <option value='' hidden>Select</option>
                                     @if (ViewBag.Customer != null)
                                     {
@@ -546,30 +546,7 @@
 
         function GetDetails() {
             var CustId = $("#CustomerName").val();
-            $.ajax({
-                url: '@Url.Action("GetCustomerDetails","CustComplaint")',
-                type: 'POST',
-                dataType: 'json',
-                data: { 'CustId': CustId},
-                success: function (result) {
-                    if (result != null && result != "") {
-                        document.getElementById('branch').value = result.branch;
-                        document.getElementById('Location').value = result.Location;
-                        document.getElementById('Department').value = result.Department;
-                        document.getElementById("reportedby_email").value = "";
-                        document.getElementById("reportedby_desig").value = "";
-                        document.getElementById("reportedby_no").value = "";
-                    }
-                    else {
-                        document.getElementById('branch').value = "";
-                        document.getElementById('Location').value = "";
-                        document.getElementById('Department').value = "";
-                        document.getElementById("reportedby_email").value = "";
-                        document.getElementById("reportedby_desig").value = "";
-                        document.getElementById("reportedby_no").value = "";
-                    }
-
-                    jQuery.ajax({
+         jQuery.ajax({
                     url: '@Url.Action("FunGetAllContactPersonList", "CustComplaint")',
                     type: 'POST',
                     dataType: "json",
@@ -587,8 +564,6 @@
                         }
                     }
                 });
-                }
-            })
         }
 
 
@@ -616,7 +591,7 @@
                 });
             }
         });
-        
+
 
         /*function GetNotifiedToDetails*/
         $('#ForwardTo').change(function () {

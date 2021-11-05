@@ -202,7 +202,7 @@ namespace ISOStd.Controllers
                 string sSqlstmt = "select SupplierId, SupplierCode, SupplierName, SupplyScope, ApprovalCriteria, SupportingDoc, ApprovedOn, ApprovedBy, Remarks, "
                     + " (case when ApprovedStatus='0' then 'Pending for Approval' when ApprovedStatus='1' then 'Approved' else 'Not Approved' end) as ApprovedStatus, Added_Updated_By, UpdatedOn,"
                     + " City,Country, ContactPerson, ContactNo, Address, FaxNo, PO_No,Email,VatNo,RefNo,Supplier_type,License_Expiry,Criticality,Supplier_Work_Nature," +
-                    "branch,Department,Location FROM t_supplier where Active=1";
+                    "branch,Department,Location FROM t_supplier where Active=1 and chk_valid='Valid'";
 
                 string sSearchtext = "";
                 ViewBag.Approvestatus = objGlobaldata.GetConstantValueKeyValuePair("DocStatus");
@@ -1433,6 +1433,40 @@ namespace ISOStd.Controllers
             }
             return Json("Success");
         }
+        [AllowAnonymous]
+        public JsonResult SuppliertInvalid(string SupplierID, string invalid_reason)
+        {
+            try
+            {
+                if (SupplierID != "" && SupplierID != "")
+                {
+                    SupplierModels Doc = new SupplierModels();
+                    string sSupplierID = SupplierID;
+                    if (Doc.FunInvalidSupplier(sSupplierID, invalid_reason))
+                    {
+                        TempData["Successdata"] = "Updated successfully";
+                        return Json("Success");
+                    }
+                    else
+                    {
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                        return Json("Failed");
+                    }
+                }
+                else
+                {
+                    TempData["alertdata"] = "Id cannot be Null or empty";
+                    return Json("Failed");
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in SuppliertInvalid: " + ex.ToString());
+                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+            }
+            return Json("Failed");
+        }
+
 
     }
 }

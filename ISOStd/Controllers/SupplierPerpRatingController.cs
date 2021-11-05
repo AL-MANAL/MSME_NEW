@@ -778,7 +778,7 @@ namespace ISOStd.Controllers
 
             return new ViewAsPdf("SuppPerformanceEvalPDF")
             {
-                FileName = "Performance.pdf",
+                //FileName = "Performance.pdf",
                 Cookies = cookieCollection,
                 CustomSwitches = footer
             };

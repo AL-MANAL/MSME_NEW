@@ -937,7 +937,7 @@ namespace ISOStd.Controllers
 
             return new ViewAsPdf("TrainingsDetailsToPDF", new { TrainingID = sTrainingID })
             {
-                FileName = "TrainingsDetailsToPDF.pdf",
+                //FileName = "TrainingsDetailsToPDF.pdf",
                 Cookies = cookieCollection,
                 CustomSwitches = footer
             };

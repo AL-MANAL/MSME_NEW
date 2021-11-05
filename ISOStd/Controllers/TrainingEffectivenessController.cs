@@ -705,7 +705,7 @@ namespace ISOStd.Controllers
 
             return new ViewAsPdf("TrainingEffectivenessPDF")
             {
-                FileName = "Evaluation.pdf",
+                //FileName = "Evaluation.pdf",
                 Cookies = cookieCollection,
                 CustomSwitches = footer
             };

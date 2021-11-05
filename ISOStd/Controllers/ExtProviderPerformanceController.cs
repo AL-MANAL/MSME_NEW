@@ -2203,7 +2203,7 @@ namespace ISOStd.Controllers
 
             return new ViewAsPdf("DiscrepancyLogReport", "ExtProviderPerformance")
             {
-                FileName = "DiscrepancyLogReport.pdf",
+                //FileName = "DiscrepancyLogReport.pdf",
                 Cookies = cookieCollection,
                 PageSize = Rotativa.Options.Size.A3,
                 PageOrientation = Rotativa.Options.Orientation.Portrait,

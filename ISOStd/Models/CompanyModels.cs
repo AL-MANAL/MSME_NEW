@@ -222,8 +222,8 @@ namespace ISOStd.Models
 
                         if (sAddressNCurrency.Length > 1)
                         {
-                            sSqlstmt = sSqlstmt + "insert into t_Company_Branch (CompId, BranchName, Address, curr_code, scope,parent_level,BranchCode) values('"
-                                + sCompId + "','" + entry.Key + "','" + sAddressNCurrency[0] + "','" + sAddressNCurrency[1] + "','" + sAddressNCurrency[2] + "','" + sAddressNCurrency[3] + "','" + sAddressNCurrency[4] + "'); ";
+                            sSqlstmt = sSqlstmt + "insert into t_Company_Branch (CompId, BranchName, Address, scope,parent_level,BranchCode) values('"
+                                + sCompId + "','" + entry.Key + "','" + sAddressNCurrency[0] + "','" + sAddressNCurrency[1] + "','" + sAddressNCurrency[2] + "','" + sAddressNCurrency[3] + "'); ";
                         }
                         else
                         {
@@ -261,11 +261,11 @@ namespace ISOStd.Models
             return false;
         }
 
-        internal bool FunUpdateBranch(string sId, string sParent, string sName, string sCode, string sAddress, string Curr_code, string scope)
+        internal bool FunUpdateBranch(string sId, string sParent, string sName, string sCode, string sAddress,  string scope)
         {
             try
             {
-                string sSqlstmt = "update t_Company_Branch set parent_level='" + sParent + "',BranchName='" + sName + "',BranchCode='" + sCode + "', Address='" + sAddress + "', curr_code='" + Curr_code + "', scope='" + scope + "' where id=" + sId;
+                string sSqlstmt = "update t_Company_Branch set parent_level='" + sParent + "',BranchName='" + sName + "',BranchCode='" + sCode + "', Address='" + sAddress + "', scope='" + scope + "' where id=" + sId;
 
                 if (objGlobalData.ExecuteQuery(sSqlstmt))
                 {

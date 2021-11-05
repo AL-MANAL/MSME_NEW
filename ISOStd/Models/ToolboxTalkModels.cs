@@ -34,7 +34,7 @@ namespace ISOStd.Models
         public string Report_No { get; set; }
 
         //[Required]
-        [Display(Name = "Upload  the Report")]
+        [Display(Name = "Document(s)")]
         public string Upload_Report { get; set; }
 
         [Required]
@@ -71,7 +71,7 @@ namespace ISOStd.Models
         [Display(Name = "Worker/Employee feedback")]
         public string feedback_tbt { get; set; }
 
-        [Display(Name = "Outcome of TBT")]
+        [Display(Name = "Details of explanation")]
         public string outcome_tbt { get; set; }
 
         [Display(Name = "Division")]

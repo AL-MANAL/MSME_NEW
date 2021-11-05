@@ -323,8 +323,10 @@ namespace ISOStd.Models
         [Display(Name = "To be Reviewed By")]
         public string reviewed_by { get; set; }
 
+        [Display(Name = "Review Status")]
         public string reviewed_status { get; set; }
 
+        [Display(Name = "Review Date")]
         public DateTime reviewed_date { get; set; }
 
         [Display(Name = "Comments")]
@@ -339,6 +341,7 @@ namespace ISOStd.Models
         [Display(Name = "Approval Status")]
         public string approved_status { get; set; }
 
+        [Display(Name = "Approved Date")]
         public DateTime approved_date { get; set; }
 
         [Display(Name = "Comments")]
@@ -411,6 +414,9 @@ namespace ISOStd.Models
 
         [Display(Name = "Document(s)")]
         public string upload { get; set; }
+
+        [Display(Name = "Notified To")]
+        public string notified_to { get; set; }
 
         internal bool FunAddInspectionQuestion(InspctionQuestionModels objInsp, InspctionQuestionList objInspList)
         {
@@ -1032,10 +1038,14 @@ namespace ISOStd.Models
                 user = objGlobalData.GetCurrentUserSession().empid;
                 string branch = objGlobalData.GetCurrentUserSession().division;
 
-                string sSqlstmt = "insert into t_inspection_plan (branch,checklist_ref,RevNo,insp_type,insp_detail,dept,Section,insp_area,location,insp_freq,project,logged_by,approved_by";
+                string sSqlstmt = "insert into t_inspection_plan (branch,checklist_ref,RevNo,insp_type,insp_detail,dept,Section,insp_area,location,insp_freq,project,logged_by,approved_by,notified_to";
 
                 string sFields = "", sFieldValue = "";
-
+                if(approved_by == "" || approved_by == null)
+                {
+                    sFields = sFields + ", approved_status";
+                    sFieldValue = sFieldValue + ", '2'";
+                }
                 if (objInsp.logged_date != null && objInsp.logged_date > Convert.ToDateTime("01/01/0001"))
                 {
                     sFields = sFields + ", logged_date";
@@ -1043,7 +1053,7 @@ namespace ISOStd.Models
                 }
 
                 sSqlstmt = sSqlstmt + sFields;
-                sSqlstmt = sSqlstmt + ") values('" + branch + "','" + checklist_ref + "','" + RevNo + "','" + insp_type + "','" + insp_detail + "','" + dept + "','" + Section + "','" + insp_area + "','" + location + "','" + insp_freq + "','" + project + "','" + user + "','" + approved_by + "'";
+                sSqlstmt = sSqlstmt + ") values('" + branch + "','" + checklist_ref + "','" + RevNo + "','" + insp_type + "','" + insp_detail + "','" + dept + "','" + Section + "','" + insp_area + "','" + location + "','" + insp_freq + "','" + project + "','" + user + "','" + approved_by + "','" + notified_to + "'";
 
                 sSqlstmt = sSqlstmt + sFieldValue + ")";
                 int id_inspection_plan = 0;
@@ -1053,7 +1063,15 @@ namespace ISOStd.Models
                     {
                         objInspList.InspectionQstList[0].id_inspection_plan = id_inspection_plan.ToString();
                         FunAddInspectionPlanDateList(objInspList);
-                        return SendInspplanmail(id_inspection_plan, "Inspections Plan");
+                        if (approved_by == "" || approved_by == null)
+                        {
+                            return true;
+                        }
+                        else
+                        {
+                            return SendInspplanmail(id_inspection_plan, "Inspections Plan");
+                        }
+                        
                     }
                 }
             }
@@ -1068,8 +1086,15 @@ namespace ISOStd.Models
             try
             {
               
-                string sSqlstmt = "update t_inspection_plan set insp_detail='" + insp_detail + "',Section='" + Section + "',insp_area='" + insp_area + "',location='" + location + "',insp_freq='" + insp_freq + "',project='" + project + "',approved_by='" + approved_by + "'";
-
+                string sSqlstmt = "update t_inspection_plan set insp_detail='" + insp_detail + "',Section='" + Section + "',insp_area='" + insp_area + "',location='" + location + "',insp_freq='" + insp_freq + "',project='" + project + "',approved_by='" + approved_by + "',notified_to='" + notified_to + "'";
+                if(approved_by == "" || approved_by ==null)
+                {
+                    sSqlstmt = sSqlstmt + ",approved_status='2'";
+                }
+                else
+                {
+                    sSqlstmt = sSqlstmt + ",approved_status='0',approved_date=NULL,approver_comments=''";
+                }
                 sSqlstmt = sSqlstmt + " where id_inspection_plan='" + objInsp.id_inspection_plan + "'";
                 if (objGlobalData.ExecuteQuery(sSqlstmt))
                 {
@@ -1135,7 +1160,7 @@ namespace ISOStd.Models
             try
             {
                 string sType = "email";
-                string sSqlstmt = "select id_inspection_plan,insp_type,dept,Section,insp_area,location,project,checklist_ref,approved_by,logged_by"
+                string sSqlstmt = "select id_inspection_plan,insp_type,dept,Section,insp_area,location,project,checklist_ref,approved_by,logged_by,notified_to"
                + " from t_inspection_plan  where id_inspection_plan = '" + id_inspection_plan + "'";
 
                 DataSet dsList = objGlobalData.Getdetails(sSqlstmt);
@@ -1159,7 +1184,7 @@ namespace ISOStd.Models
                     }
                     string sName = objGlobalData.GetMultiHrEmpNameById(dsList.Tables[0].Rows[0]["approved_by"].ToString());
                     string sToEmailIds = objGlobalData.GetMultiHrEmpEmailIdById(dsList.Tables[0].Rows[0]["approved_by"].ToString());
-                    string sCCEmailIds = objGlobalData.GetMultiHrEmpEmailIdById(dsList.Tables[0].Rows[0]["logged_by"].ToString());
+                    string sCCEmailIds = objGlobalData.GetMultiHrEmpEmailIdById(dsList.Tables[0].Rows[0]["logged_by"].ToString()) + "," + objGlobalData.GetMultiHrEmpEmailIdById(dsList.Tables[0].Rows[0]["notified_to"].ToString());
                     InspectionCategoryModels objInspModel = new InspectionCategoryModels();
 
                     sHeader = "<tr><td colspan=3><b>Type of inspection:<b></td> <td colspan=3>"

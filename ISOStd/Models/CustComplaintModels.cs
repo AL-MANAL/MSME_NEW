@@ -374,6 +374,8 @@ namespace ISOStd.Models
         [Display(Name = "Response Date")]
         public DateTime c_response_date { get; set; }
 
+        //t_custcomplaint
+        public string ForwarderAssignId { get; set; }
 
         internal bool FunDeleteCustComplaintDoc(string sid_complaint)
         {
@@ -433,7 +435,7 @@ namespace ISOStd.Models
                         }
 
                         string sql = "update t_custcomplaint set ComplaintNo='" + ComplaintNo + "' where id_complaint = '" + Id + "'";
-
+                       
                         return objGlobalData.ExecuteQuery(sql);
 
                     }
@@ -446,7 +448,79 @@ namespace ISOStd.Models
 
             return false;
         }
+        ////customer complaint
+        //internal bool SendCustomerComplaintmail(int id_complaint, string sMessage = "")
+        //{
+        //    try
+        //    {
+        //        string sType = "email";
+        //        string sSqlstmt = "select ReceivedDate,LoggedBy,ForwardTo,registered_on,CustomerName,ReportedBy,ComplaintNo,Details from t_custcomplaint where id_complaint = '" + id_complaint + "'; ";
 
+        //        DataSet dsList = objGlobalData.Getdetails(sSqlstmt);
+
+        //        if (dsList.Tables.Count > 0 && dsList.Tables[0].Rows.Count > 0)
+        //        {
+        //            string sHeader, sInformation = "", sTitle = "", sSubject = "", sContent = "", aAttachment = "", BccEmailIds = "";
+
+        //            DataSet dsEmailXML = new DataSet();
+        //            dsEmailXML.ReadXml(HttpContext.Current.Server.MapPath("~/EmailTemplates.xml"));
+
+        //            if (sType != "" && dsEmailXML.Tables.Count > 0 && dsEmailXML.Tables[sType] != null && dsEmailXML.Tables[sType].Rows.Count > 0)
+        //            {
+        //                sSubject = dsEmailXML.Tables[sType].Rows[0]["subject"].ToString();
+        //            }
+
+        //            using (StreamReader reader = new StreamReader(HttpContext.Current.Server.MapPath("~/Views/EmailTemplate/EmailTemplate.html")))
+        //            {
+        //                sContent = reader.ReadToEnd();
+        //            }
+        //            string sName = objGlobalData.GetMultiHrEmpNameById(dsList.Tables[0].Rows[0]["ForwardTo"].ToString());
+        //            string sToEmailIds = objGlobalData.GetMultiHrEmpEmailIdById(dsList.Tables[0].Rows[0]["ForwardTo"].ToString());
+        //            string sCCEmailIds = objGlobalData.GetMultiHrEmpEmailIdById(dsList.Tables[0].Rows[0]["LoggedBy"].ToString()) + "," + objGlobalData.GetMultiHrEmpEmailIdById(dsList.Tables[0].Rows[0]["ReportedBy"].ToString());
+
+        //            string ReceivedDate = "", registered_on="";
+        //            if (dsList.Tables[0].Rows[0]["ReceivedDate"].ToString() != null && dsList.Tables[0].Rows[0]["ReceivedDate"].ToString() != "")
+        //            {
+        //                ReceivedDate = Convert.ToDateTime(dsList.Tables[0].Rows[0]["ReceivedDate"].ToString()).ToString("dd/MM/yyyy");
+        //            }
+        //            if (dsList.Tables[0].Rows[0]["registered_on"].ToString() != null && dsList.Tables[0].Rows[0]["registered_on"].ToString() != "")
+        //            {
+        //                registered_on = Convert.ToDateTime(dsList.Tables[0].Rows[0]["registered_on"].ToString()).ToString("dd/MM/yyyy");
+        //            }
+
+        //            sHeader = "<tr><td colspan=3><b>Complaint Received Date:<b></td> <td colspan=3>"
+        //            + ReceivedDate + "</td></tr>"
+        //            + "<tr><td colspan=3><b>Complaint registered date:<b></td> <td colspan=3>" + registered_on + "</td></tr>"
+        //            + "<tr><td colspan=3><b>Customer Complaint Registered By:<b></td> <td colspan=3>" + objGlobalData.GetEmpHrNameById(dsList.Tables[0].Rows[0]["LoggedBy"].ToString()) + "</td></tr>"
+        //            + "<tr><td colspan=3><b>Customer Name:<b></td> <td colspan=3>" + objGlobalData.GetCustomerNameById(dsList.Tables[0].Rows[0]["CustomerName"].ToString()) + "</td></tr>"
+        //            + "<tr><td colspan=3><b>Details of Complaint:<b></td> <td colspan=3>" + (dsList.Tables[0].Rows[0]["Details"].ToString()) + "</td></tr>";
+
+        //            sContent = sContent.Replace("{FromMsg}", "");
+        //            sContent = sContent.Replace("{UserName}", sName);
+        //            sContent = sContent.Replace("{Title}", "Customer Complaint Details");
+        //            sContent = sContent.Replace("{content}", sHeader);
+        //            sContent = sContent.Replace("{message}", "");
+        //            sContent = sContent.Replace("{extramessage}", "");
+
+        //            sToEmailIds = Regex.Replace(sToEmailIds, ",+", ",");
+        //            sToEmailIds = sToEmailIds.Trim();
+        //            sToEmailIds = sToEmailIds.TrimEnd(',');
+        //            sToEmailIds = sToEmailIds.TrimStart(',');
+
+        //            sCCEmailIds = Regex.Replace(sCCEmailIds, ",+", ",");
+        //            sCCEmailIds = sCCEmailIds.Trim();
+        //            sCCEmailIds = sCCEmailIds.TrimEnd(',');
+        //            sCCEmailIds = sCCEmailIds.TrimStart(',');
+
+        //            return objGlobalData.Sendmail(sToEmailIds, sSubject + sMessage, sContent, aAttachment, sCCEmailIds, "");
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        objGlobalData.AddFunctionalLog("Exception in SendCustomerComplaintmail: " + ex.ToString());
+        //    }
+        //    return false;
+        //}
         internal bool FunUpdateCustomerComplaint(CustComplaintModels objCustomerCompliantModels)
         {
             try
@@ -981,10 +1055,10 @@ namespace ISOStd.Models
                     sCCEmailIds = sCCEmailIds.TrimEnd(',');
                     sCCEmailIds = sCCEmailIds.TrimStart(',');
 
-                    if (objGlobalData.GetMultiHrEmpEmailIdById(dsNCList.Tables[0].Rows[0]["ForwarderAssign"].ToString()) != "")
-                    {
-                        sCCEmailIds = sCCEmailIds + "," + objGlobalData.GetMultiHrEmpEmailIdById(dsNCList.Tables[0].Rows[0]["ForwarderAssign"].ToString());
-                    }
+                    //if (objGlobalData.GetMultiHrEmpEmailIdById(dsNCList.Tables[0].Rows[0]["ForwarderAssign"].ToString()) != "")
+                    //{
+                    //    sCCEmailIds = sCCEmailIds + "," + objGlobalData.GetMultiHrEmpEmailIdById(dsNCList.Tables[0].Rows[0]["ForwarderAssign"].ToString());
+                    //}
                     sCCEmailIds = Regex.Replace(sCCEmailIds, ",+", ",");
                     sCCEmailIds = sCCEmailIds.Trim();
                     sCCEmailIds = sCCEmailIds.TrimEnd(',');
@@ -1161,7 +1235,7 @@ namespace ISOStd.Models
 
                 string sSqlstmt = "update t_custcomplaint_nc set  rca_technique='" + objModels.rca_technique + "', "
                     + "rca_details  ='" + objModels.rca_details + "', rca_upload='" + objModels.rca_upload + "', rca_action='" + objModels.rca_action
-                    + "', rca_justify='" + objModels.rca_justify + "', rca_reportedby='" + objModels.rca_reportedby + "', rca_notifiedto='" + objModels.rca_notifiedto + "'";
+                    + "', rca_justify='" + objModels.rca_justify + "', rca_reportedby='" + objModels.rca_reportedby + "', rca_notifiedto='" + objModels.rca_notifiedto + "', ca_proposed_by='" + objModels.ca_proposed_by + "'";
 
                 if (objModels.rca_startdate != null && objModels.rca_startdate > Convert.ToDateTime("01/01/0001"))
                 {
@@ -1170,6 +1244,10 @@ namespace ISOStd.Models
                 if (objModels.rca_reporteddate != null && objModels.rca_reporteddate > Convert.ToDateTime("01/01/0001"))
                 {
                     sSqlstmt = sSqlstmt + ", rca_reporteddate ='" + objModels.rca_reporteddate.ToString("yyyy/MM/dd") + "'";
+                }
+                if (objModels.ca_verfiry_duedate != null && objModels.ca_verfiry_duedate > Convert.ToDateTime("01/01/0001"))
+                {
+                    sSqlstmt = sSqlstmt + ", ca_verfiry_duedate ='" + objModels.ca_verfiry_duedate.ToString("yyyy/MM/dd") + "'";
                 }
                 sSqlstmt = sSqlstmt + " where id_custcomplaint_nc='" + objModels.id_custcomplaint_nc + "'";
                 if (objGlobalData.ExecuteQuery(sSqlstmt))
@@ -1240,10 +1318,10 @@ namespace ISOStd.Models
                     sCCEmailIds = sCCEmailIds.TrimEnd(',');
                     sCCEmailIds = sCCEmailIds.TrimStart(',');
 
-                    if (objGlobalData.GetMultiHrEmpEmailIdById(dsNCList.Tables[0].Rows[0]["ForwarderAssign"].ToString()) != "")
-                    {
-                        sCCEmailIds = sCCEmailIds + "," + objGlobalData.GetMultiHrEmpEmailIdById(dsNCList.Tables[0].Rows[0]["ForwarderAssign"].ToString());
-                    }
+                    //if (objGlobalData.GetMultiHrEmpEmailIdById(dsNCList.Tables[0].Rows[0]["ForwarderAssign"].ToString()) != "")
+                    //{
+                    //    sCCEmailIds = sCCEmailIds + "," + objGlobalData.GetMultiHrEmpEmailIdById(dsNCList.Tables[0].Rows[0]["ForwarderAssign"].ToString());
+                    //}
                     sCCEmailIds = Regex.Replace(sCCEmailIds, ",+", ",");
                     sCCEmailIds = sCCEmailIds.Trim();
                     sCCEmailIds = sCCEmailIds.TrimEnd(',');
@@ -1435,10 +1513,10 @@ namespace ISOStd.Models
                     sCCEmailIds = sCCEmailIds.TrimEnd(',');
                     sCCEmailIds = sCCEmailIds.TrimStart(',');
 
-                    if (objGlobalData.GetMultiHrEmpEmailIdById(dsNCList.Tables[0].Rows[0]["ForwarderAssign"].ToString()) != "")
-                    {
-                        sCCEmailIds = sCCEmailIds + "," + objGlobalData.GetMultiHrEmpEmailIdById(dsNCList.Tables[0].Rows[0]["ForwarderAssign"].ToString());
-                    }
+                    //if (objGlobalData.GetMultiHrEmpEmailIdById(dsNCList.Tables[0].Rows[0]["ForwarderAssign"].ToString()) != "")
+                    //{
+                    //    sCCEmailIds = sCCEmailIds + "," + objGlobalData.GetMultiHrEmpEmailIdById(dsNCList.Tables[0].Rows[0]["ForwarderAssign"].ToString());
+                    //}
                     sCCEmailIds = Regex.Replace(sCCEmailIds, ",+", ",");
                     sCCEmailIds = sCCEmailIds.Trim();
                     sCCEmailIds = sCCEmailIds.TrimEnd(',');
@@ -1606,10 +1684,10 @@ namespace ISOStd.Models
                     sCCEmailIds = sCCEmailIds.TrimEnd(',');
                     sCCEmailIds = sCCEmailIds.TrimStart(',');
 
-                    if (objGlobalData.GetMultiHrEmpEmailIdById(dsNCList.Tables[0].Rows[0]["ForwarderAssign"].ToString()) != "")
-                    {
-                        sCCEmailIds = sCCEmailIds + "," + objGlobalData.GetMultiHrEmpEmailIdById(dsNCList.Tables[0].Rows[0]["ForwarderAssign"].ToString());
-                    }
+                    //if (objGlobalData.GetMultiHrEmpEmailIdById(dsNCList.Tables[0].Rows[0]["ForwarderAssign"].ToString()) != "")
+                    //{
+                    //    sCCEmailIds = sCCEmailIds + "," + objGlobalData.GetMultiHrEmpEmailIdById(dsNCList.Tables[0].Rows[0]["ForwarderAssign"].ToString());
+                    //}
                     sCCEmailIds = Regex.Replace(sCCEmailIds, ",+", ",");
                     sCCEmailIds = sCCEmailIds.Trim();
                     sCCEmailIds = sCCEmailIds.TrimEnd(',');

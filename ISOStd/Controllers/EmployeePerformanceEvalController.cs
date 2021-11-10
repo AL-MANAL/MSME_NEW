@@ -40,6 +40,7 @@ namespace ISOStd.Controllers
             try
             {
                 EmpPerformanceElementsModels objModel = new EmpPerformanceElementsModels();
+                
                 string sbranch = objGlobaldata.GetCurrentUserSession().division;
                 ViewBag.PeformanceQuestions = objModel.GetQuestionListBox();
                 ViewBag.PeformanceRating = objModel.PerformanceRating();

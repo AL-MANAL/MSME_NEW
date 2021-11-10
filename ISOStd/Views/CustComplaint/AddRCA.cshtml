@@ -264,7 +264,7 @@
                         </td>
                         <td class="col-xs-6 col-md-4">
                             <div class="editor-field">
-                                <select class="form-control-select3" data-fouc id="rca_action" name="rca_action" onchange="GetActionDetails()" required>
+                                <select class="form-control-select3" data-fouc id="rca_action" name="rca_action" onchange="verification()" required>
                                     <option value='' hidden>Select</option>
                                     @if (ViewBag.YesNo != null)
                                     {
@@ -296,7 +296,51 @@
 
                 </table>
 
+                <table id="verification" class="table table-lg" style="display:none">
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.ca_verfiry_duedate)
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @if (Model.ca_verfiry_duedate != null && Model.ca_verfiry_duedate > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    <input type="date" class="form-control" id="ca_verfiry_duedate" name="ca_verfiry_duedate" value="@Model.ca_verfiry_duedate.ToString("yyyy-MM-dd")" />
+                                }
+                                else
+                                {
+                                    <input type="date" class="form-control" id="ca_verfiry_duedate" name="ca_verfiry_duedate" />
+                                }
+                            </div>
+                        </td>
 
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.ca_proposed_by)
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control-select3" data-fouc id="ca_proposed_by" name="ca_proposed_by">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.EmpList != null)
+                                    {
+                                        foreach (var item in ViewBag.EmpList)
+                                        {
+                                            if (item.Value == Model.ca_proposed_by)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
                 @*Reported by*@
                 <table class="table table-lg">
                     <tr class="row">
@@ -505,10 +549,10 @@
         @:   }).show();
     }
 
-        GetActionDetails();
+        verification();
 
     });
-
+       
     var showClass = 'is-visible';
     var hideClass = 'invisible';
 
@@ -688,14 +732,24 @@
             var row = btn.parentNode.parentNode;
             row.parentNode.removeChild(row);
         }
+        function verification() {
+            var rca_action = $("#rca_action option:selected").text();
 
-        function GetActionDetails() {
-            var srca_action = $("#rca_action option:selected").text();
-            if (srca_action.toLowerCase() == "no") {
-               $('#rca_justify').prop('required', true);
+            if (rca_action == "No") {
+                $("#verification").show();
+                $('#ca_proposed_by').prop('required', true).trigger('change');
+                document.getElementById("ca_verfiry_duedate").required = true;
+                $('#rca_justify').prop('required', true);
             }
-            else {
+            else if (rca_action == "Yes") {
+                $("#verification").hide();
+
+                $('#ca_proposed_by').prop('required', false).trigger('change');
+                document.getElementById("ca_verfiry_duedate").required = false;
+                document.getElementById("ca_verfiry_duedate").value = "";
+                $("#ca_proposed_by").val('').trigger('change');
                 $('#rca_justify').removeAttr('required');
+
             }
         }
     </script>

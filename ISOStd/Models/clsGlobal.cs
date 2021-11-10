@@ -11860,7 +11860,7 @@ namespace ISOStd.Models
                 case "Freq_of_Eval": return new string[] { "Monthly", "Quarterly", "Semi Annually", "Annually","Ongoing"};
                 case "Status_Obj_Eval": return new string[] { "Not Achieved", "In Progress", "Achieved" };
                 case "Status": return new string[] { "Active", "In Active" };
-                case "calibration_status" : return new string[] { "Accepted", "Rejected" };
+                case "calibration_status" : return new string[] { "In progress", "Calibrated", "Not calibrated" };
                 case "AuditStatus": return new string[] { "In Progress","Closed" };
                 case "Findingcategory": return new string[] { "Major", "Minor", "Observation", "Area of Concern", "Opportunity for Improvment"/*,"No findings"*/};
                 case "CustType": return new string[] { "Customer", "Supplier" };

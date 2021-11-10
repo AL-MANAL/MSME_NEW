@@ -4,6 +4,7 @@
     ViewBag.Title = "AddEmployeeCompetenceEval";
     System.Data.DataSet dsrating = new System.Data.DataSet();
     ISOStd.Models.clsGlobal objGlobaldata = new ISOStd.Models.clsGlobal();
+    string login_user = objGlobaldata.GetCurrentUserSession().empid;
     if (ViewBag.PeformanceRating != null)
     {
         dsrating = ViewBag.PeformanceRating;
@@ -160,12 +161,20 @@
                                 <select class="form-control select-search select2-hidden-accessible" data-fouc id="Eval_DoneBy" name="Eval_DoneBy" required>
                                     <option value='' hidden>Select</option>
                                     @if (ViewBag.EmpHead != null)
-                            {
-                                foreach (var item in ViewBag.EmpHead)
-                                {
-                                    <option value='@item.Value'>@item.Text</option>
-                                }
-                            }
+                                    {
+                                        foreach (var item in ViewBag.EmpHead)
+                                        {
+                                            if (item.Value == login_user)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+
+                                        }
+                                    }
                                 </select>
                                 @Html.ValidationMessageFor(model => model.Eval_DoneBy)
                             </div>
@@ -256,7 +265,7 @@
                         <td class="col">
                             <div class="editor-field">
 
-                                <input type="file" name="fileUploader" id="fileUploader" onchange="FileFormatValidation(this)" accept=".pdf,.xlsx,.xls,.doc,.docx" class="bootstrap-uploader" data-fouc />
+                                <input type="file" name="fileUploader" id="fileUploader" onchange="FileFormatValidation(this)" accept=".pdf, .doc, .docx, .jpg, .jpeg,.png,.xls,.xlsx,image/*" class="bootstrap-uploader" data-fouc />
                             </div>
 
                         </td>
@@ -576,9 +585,12 @@
 
         function FileFormatValidation(file) {
             var ext = file.value.split(".").pop().toLowerCase();
-            if ($.inArray(ext, ["pdf"]) == -1) {
+            if ($.inArray(ext, ["pdf", "xlsx", "xls", "doc", "docx", "jpg", "jpeg", "gif", ".png"]) == -1) {
                 file.value = "";
-                jAlert("Invalid file format, please upload only pdf format");
+                bootbox.alert({
+                    title: 'File type',
+                    message: 'Invalid file format, please upload only doc, pdf, docx, xls, xls,jpg, jpeg, gif, png format'
+                });
             }
         }
         function GetNotifiedByDetails() {

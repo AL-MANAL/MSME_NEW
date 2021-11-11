@@ -204,7 +204,7 @@
                             </button>
                         </div>
                         <div class="modal-body">
-                            <form class="form-horizontal">
+                            <form class="form-horizontal" id="form1">
                                 <input type="hidden" id="hdEventID" value="0" />
                                 <div class="form-group row">
                                     <div class="col-sm-1">
@@ -397,93 +397,94 @@
    //----zzz
         $(document).ready(function () {
 
-              @if (TempData["alertdata"] != null)
+            @if (TempData["alertdata"] != null)
     {
 
         @: new Noty({
-        @:     text: '@TempData["alertdata"]',
-        @:     type: 'error'
-        @: }).show();
-    }
+                                                        @:     text: '@TempData["alertdata"]',
+                                                        @:     type: 'error'
+                                                        @: }).show();
+                                        }
 
-    @if (@TempData["Successdata"] != null)
+            @if (@TempData["Successdata"] != null)
     {
 
         @:    new Noty({
-        @:       text: '@TempData["Successdata"]',
-        @:       type: 'success'
-        @:   }).show();
-    }
-
-        if ('@HttpContext.Current.Session["login"]' >'@DateTime.Now' && '@HttpContext.Current.Session["login"]'< '@DateTime.Now.AddSeconds(10)') {
-
-            new Noty({
-                text: 'You Have Successfully Logged in. Welcome !',
-                type: 'success'
-            }).show();
-        }
-
-        $('#starttime').AnyTime_picker({
-            format: '%H:%i'
-        });
-        $('#endtime').AnyTime_picker({
-            format: '%H:%i'
+                                                        @:       text: '@TempData["Successdata"]',
+                                                        @:       type: 'success'
+                                                        @:   }).show();
+                                        }
         });
 
+            if ('@HttpContext.Current.Session["login"]' >'@DateTime.Now' && '@HttpContext.Current.Session["login"]'< '@DateTime.Now.AddSeconds(10)') {
+
+                new Noty({
+                    text: 'You Have Successfully Logged in. Welcome !',
+                    type: 'success'
+                }).show();
+            }
+
+            $('#starttime').AnyTime_picker({
+                format: '%H:%i'
+            });
+            $('#endtime').AnyTime_picker({
+                format: '%H:%i'
+            });
+        
         FetchEventAndRenderCalendar();
 
         $('#btnDelete').click(function () {
 
             var sDelete = selectedEvent.event.extendedProps.Logged_Id;
-            if (sDelete == @user) {
-            bootbox.confirm({
-                title: 'Confirm dialog',
-                message: 'Are you Sure you want to Delete?',
-                buttons: {
-                    confirm: {
-                        label: 'Yes',
-                        className: 'btn-primary'
+            if (sDelete) {
+                bootbox.confirm({
+                    title: 'Confirm dialog',
+                    message: 'Are you Sure you want to Delete?',
+                    buttons: {
+                        confirm: {
+                            label: 'Yes',
+                            className: 'btn-primary'
+                        },
+                        cancel: {
+                            label: 'Cancel',
+                            className: 'btn-link'
+                        }
                     },
-                    cancel: {
-                        label: 'Cancel',
-                        className: 'btn-link'
-                    }
-                },
-                callback: function (r) {
-                    if (r == true) {
-                        $.ajax({
-                            type: "POST",
-                            url: '@Url.Action("DeleteEvent", "Home")',
-                            data: { 'eventID': selectedEvent.event.id },
-                            success: function (data) {
-                                if (data.status) {
-                                    //Refresh the calender
-                                    FetchEventAndRenderCalendar();
-                                    $('#myModal').modal('hide');
+                    callback: function (r) {
+                        if (r == true) {
+                            $.ajax({
+                                type: "POST",
+                                url: '@Url.Action("DeleteEvent", "Home")',
+                                data: { 'eventID': selectedEvent.event.id },
+                                success: function (data) {
+                                    if (data.status) {
+                                        //Refresh the calender
+                                        FetchEventAndRenderCalendar();
+                                        $('#myModal').modal('hide');
+                                    }
+                                },
+                                error: function () {
+                                    bootbox.alert({
+                                        title: 'Event Calender',
+                                        message: 'Failed'
+                                    });
                                 }
-                            },
-                            error: function () {
-                                bootbox.alert({
-                                    title: 'Event Calender',
-                                    message: 'Failed'
-                                });
-                            }
-                        })
-                        return true;
+                            })
+                            return true;
+                        }
+                        else if (r == false) {
+                            bootbox.hideAll();
+                            return false;
+                        }
                     }
-                    else if (r == false) {
-                        bootbox.hideAll();
-                        return false;
-                    }
-                }
                 });
             }
-            else {
-                bootbox.alert({
-                    title: 'Access Denied',
-                    message: 'Event is not created by you.'
-                });
-            }            
+            //else {
+            //    bootbox.alert({
+            //        title: 'Access Denied',
+            //        message: 'Event is not created by you.'
+            //    });
+            //}
         });
         $('#btnEdit').click(function () {
             //Open modal dialog for edit event
@@ -569,8 +570,8 @@
             }
             SaveEvent(data);
             // call function for submit data to the server
-        })
-    });
+        });
+   
         var calendarBasicViewElement = document.querySelector('#fullcalendar-basic');
         var events = [];
         var selectedEvent = null;
@@ -927,7 +928,10 @@
             $('#myModal').modal('hide');
             $('#myModalSave').modal();
         }
-        function SaveEvent(data) {
+        function SaveEvent(data)
+        {
+            var form = document.getElementById("form1").value;
+           
             $.ajax({
                 type: "POST",
                 url: '@Url.Action("SaveEvent", "Home")',

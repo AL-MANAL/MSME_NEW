@@ -155,7 +155,7 @@ namespace ISOStd.Models
                 string user = "";               
                 user = objGlobalData.GetCurrentUserSession().empid;
                 string sBranch = objGlobalData.GetCurrentUserSession().division;
-                string VarJrMgr = objGlobalData.GetHrEmpEvaluatedById(user);
+                string VarJrMgr = objGlobalData.GetHrEmpEvaluatedById(Eval_DoneBy);
                 string VarSrMgr = "";
                 if (VarJrMgr != "")
                 {
@@ -201,10 +201,18 @@ namespace ISOStd.Models
                     {
                         EmpPerformanceElementsModels objElement = new EmpPerformanceElementsModels();
 
-                       objEmpPerformanceEeleList.lstEmpPerformanceElements[0].Performance_EvalId = iPerformance_EvalId.ToString();
-                        objModelList.lstEmpPerformanceEvalModels[0].Performance_EvalId = iPerformance_EvalId.ToString();
-                        objElement.FunAddEmpPerformanceEvaluation(objEmpPerformanceEeleList);
-                       FunAddTrainingList(objModelList);
+                      
+                        if (objEmpPerformanceEeleList.lstEmpPerformanceElements.Count > 0)
+                        {
+                            objEmpPerformanceEeleList.lstEmpPerformanceElements[0].Performance_EvalId = iPerformance_EvalId.ToString();
+
+                            objElement.FunAddEmpPerformanceEvaluation(objEmpPerformanceEeleList);
+                        }
+                        if (objModelList.lstEmpPerformanceEvalModels.Count > 0)
+                        {
+                            objModelList.lstEmpPerformanceEvalModels[0].Performance_EvalId = iPerformance_EvalId.ToString();
+                            FunAddTrainingList(objModelList);
+                        }
                     }
                     return true;
                 }

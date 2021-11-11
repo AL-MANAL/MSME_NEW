@@ -189,7 +189,7 @@
                                                                 <div class="dropdown-menu dropdown-menu-right">
                                                                     @*@if (ShowEdit)
                                                                     {*@
-                                                                        @if (order.ForwarderAssignId != "" && order.ForwarderAssignId.Contains(user))
+                                                                        @if ((order.ForwarderAssignId != "" && order.ForwarderAssignId.Contains(user)) || order.ca_proposed_by.Contains(user))
                                                                         {
                                                                             <a class="dropdown-item" href='@Url.Action("CustomerComplaintView", "CustComplaint", new { id_custcomplaint_nc = order.id_custcomplaint_nc.ToString(), id_complaint = item.id_complaint.ToString() })' title="View Complaint" onclick="HyperLinkProgressIconFunction()">
                                                                                 <i class="icon-history"></i>View Complaint
@@ -209,16 +209,16 @@
                                                                                 <i class="icon-history"></i>Corrective Action
                                                                             </a>
                                                                             }
+                                                                            
+                                                                            <a class="dropdown-item" href='@Url.Action("NCDetails", "CustComplaint", new { id_custcomplaint_nc = order.id_custcomplaint_nc.ToString(),id_complaint = item.id_complaint.ToString() })' title="Complaint Details" onclick="HyperLinkProgressIconFunction()">
+                                                                                <i class="icon-history"></i>Complaint Details
+                                                                            </a>
                                                                             if (order.ca_verfiry_duedate.ToString() != "" && order.ca_verfiry_duedate > Convert.ToDateTime("01/01/0001") && order.ca_proposed_by.Contains(user))
                                                                             {
                                                                                 <a class="dropdown-item" href='@Url.Action("AddVerification", "CustComplaint", new { id_custcomplaint_nc = order.id_custcomplaint_nc.ToString(), id_complaint = item.id_complaint.ToString() })' title="Verification" onclick="HyperLinkProgressIconFunction()">
                                                                                     <i class="icon-history"></i>Verification
                                                                                 </a>
                                                                             }
-                                                                            <a class="dropdown-item" href='@Url.Action("NCDetails", "CustComplaint", new { id_custcomplaint_nc = order.id_custcomplaint_nc.ToString(),id_complaint = item.id_complaint.ToString() })' title="Complaint Details" onclick="HyperLinkProgressIconFunction()">
-                                                                                <i class="icon-history"></i>Complaint Details
-                                                                            </a>
-
                                                                             using (Html.BeginForm("NCPDF", "CustComplaint", FormMethod.Post, new { id = "form22", name = "form22" }))
                                                                             {
                                                                                 @Html.AntiForgeryToken()
@@ -233,6 +233,7 @@
                                                                         {
                                                                             <text>  &nbsp;&nbsp;&nbsp;Access Denied </text>
                                                                         }
+                                                                   
                                                                     @*}*@
 
                                                                 </div>

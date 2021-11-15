@@ -393,7 +393,7 @@
                         </td>
                         <td class="col-xs-3 col-md-4">
                             <div class="editor-field">
-                                <input type="file" name="file" id="file" onchange="FileFormatValidation(this)" multiple accept=".pdf,.xlsx,.xls,.doc,.docx" class="bootstrap-uploader" data-fouc />
+                                <input type="file" name="file" id="file" onchange="FileFormatValidation(this)" multiple accept=".pdf,.xlsx,.xls,.jpeg,.jpg,.png,.doc,.docx,image/*" class="bootstrap-uploader" data-fouc />
                                 @if (Model.DocUploadPath != null && Model.DocUploadPath != "" && Model.DocUploadPath.Length > 0)
                                 {
                                     <div class="editor-label">
@@ -455,9 +455,12 @@
 
         function FileFormatValidation(file) {
             var ext = file.value.split(".").pop().toLowerCase();
-            if ($.inArray(ext, ["doc", "pdf", "docx", "jpg", "jpeg", "gif", "png"]) == -1) {
+            if ($.inArray(ext, ["pdf", "xlsx", "xls", "doc", "docx", "jpeg", "jpg", "png"]) == -1) {
                 file.value = "";
-                jAlert("Invalid file format, please upload only doc, pdf, docx, jpg, jpeg, gif, png format");
+                bootbox.alert({
+                    title: 'File type',
+                    message: 'Invalid file format, please upload only xlsx,xls,pdf,jpeg,jpg,png format.'
+                });
             }
         }
 

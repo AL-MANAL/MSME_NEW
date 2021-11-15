@@ -79,6 +79,7 @@ namespace ISOStd.Models
 
         [Display(Name = "NC Issued To")]
         public string nc_issueto { get; set; }
+        public string nc_issuetoID { get; set; }
         public string nc_issueto_dept { get; set; }
         public string nc_issuetoId { get; set; }
 

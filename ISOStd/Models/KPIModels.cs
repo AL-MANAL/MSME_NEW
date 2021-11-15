@@ -257,29 +257,29 @@ namespace ISOStd.Models
                             FunAddKPIMeasurableList(objMeasureList, kpi_ref_no);
                         }
 
-                        string sInformation = "", sHeader = "", REmail = "";
-                        string sEmailid = objGlobalData.GetMultiHrEmpEmailIdById(approved_by);
-                        REmail = objGlobalData.GetHrEmpEmailIdById(objGlobalData.GetCurrentUserSession().empid);
+                        //string sInformation = "", sHeader = "", REmail = "";
+                        //string sEmailid = objGlobalData.GetMultiHrEmpEmailIdById(approved_by);
+                        //REmail = objGlobalData.GetHrEmpEmailIdById(objGlobalData.GetCurrentUserSession().empid);
 
-                        if (sEmailid != null && sEmailid != "")
-                        {
-                            sHeader = "<tr><td ><b>KPI Ref:<b></td> <td >"
-                                  + kpi_ref_no + "</td></tr>"
-                                  + "<tr><td ><b>Process/Performance Indicator:<b></td> <td >" +objGlobalData.GetKPIPerformanceIndicatorById(process_indicator) + "</td></tr>"
-                                  + "<tr><td ><b>KPI Level:<b></td> <td >" +objGlobalData.GetKPILevelById(kpi_level) + "</td></tr>"
+                        //if (sEmailid != null && sEmailid != "")
+                        //{
+                        //    sHeader = "<tr><td ><b>KPI Ref:<b></td> <td >"
+                        //          + kpi_ref_no + "</td></tr>"
+                        //          + "<tr><td ><b>Process/Performance Indicator:<b></td> <td >" +objGlobalData.GetKPIPerformanceIndicatorById(process_indicator) + "</td></tr>"
+                        //          + "<tr><td ><b>KPI Level:<b></td> <td >" +objGlobalData.GetKPILevelById(kpi_level) + "</td></tr>"
 
-                                  + "<tr><td ><b>Process to be monitored:<b></td> <td >" + process_monitor + "</td></tr>";
+                        //          + "<tr><td ><b>Process to be monitored:<b></td> <td >" + process_monitor + "</td></tr>";
 
-                            Dictionary<string, string> dicEmailContent = objGlobalData.FormEmailBody(objGlobalData.GetMultiHrEmpNameById(approved_by), "kpi", sHeader, "", "KPI Details");
+                        //    Dictionary<string, string> dicEmailContent = objGlobalData.FormEmailBody(objGlobalData.GetMultiHrEmpNameById(approved_by), "kpi", sHeader, "", "KPI Details");
 
-                            // sEmailCCList = sEmailCCList.Trim(',');
-                            sEmailid = Regex.Replace(sEmailid, ",+", ",");
-                            sEmailid = sEmailid.Trim();
-                            sEmailid = sEmailid.TrimEnd(',');
-                            sEmailid = sEmailid.TrimStart(',');
-                            //return objGlobalData.Sendmail(sEmailid, dicEmailContent["subject"], dicEmailContent["body"], "", sEmailCCList);
-                            return objGlobalData.Sendmail(sEmailid, dicEmailContent["subject"], dicEmailContent["body"], "", REmail, "");
-                        }
+                        //    // sEmailCCList = sEmailCCList.Trim(',');
+                        //    sEmailid = Regex.Replace(sEmailid, ",+", ",");
+                        //    sEmailid = sEmailid.Trim();
+                        //    sEmailid = sEmailid.TrimEnd(',');
+                        //    sEmailid = sEmailid.TrimStart(',');
+                        //    //return objGlobalData.Sendmail(sEmailid, dicEmailContent["subject"], dicEmailContent["body"], "", sEmailCCList);
+                        //    return objGlobalData.Sendmail(sEmailid, dicEmailContent["subject"], dicEmailContent["body"], "", REmail, "");
+                        //}
 
                         return true;
                     }
@@ -439,7 +439,7 @@ namespace ISOStd.Models
                     {
                         FunUpdateKPIFailure(KPI_Id);
                     }
-                   
+                    sendKPIMail(KPI_Id,"KPI Evaluation");
                     return true;
                 
 
@@ -450,44 +450,21 @@ namespace ISOStd.Models
             }
             return false;
         }
-
-
-        internal bool FunUpdateApprove(KPIModels objManagement)
-        {
-            try
-            {
-                string sApprovedDate = DateTime.Now.ToString("yyyy-MM-dd HH':'mm':'ss");
-                string sSqlstmt = "update t_kpi set kpiapprv_status='" + kpiapprv_status + "',approvedby_comments='" + approvedby_comments + "',ApproveOrRejectOn='" + sApprovedDate + "' where KPI_Id='" + KPI_Id + "'";
-
-                if (objGlobalData.ExecuteQuery(sSqlstmt))
-                {
-                    return SendKPIApprovemail(KPI_Id, "KPI Approve Status");
-                }
-            }
-            catch (Exception ex)
-            {
-                objGlobalData.AddFunctionalLog("Exception in FunUpdateApprove: " + ex.ToString());
-            }
-            return false;
-        }
-        internal bool SendKPIApprovemail( string KPI_Id, string sMessage = "")
+        internal bool sendKPIMail(string  KPI_Id, string sMessage = "")
         {
             try
             {
                 string sType = "email";
 
-                string sSqlstmt = "select approved_by,logged_by,established_date,KPI_Id,kpi_ref_no,process_indicator,kpi_level,process_monitor,"
-                      + "(CASE WHEN kpiapprv_status='0' THEN 'Pending for Approval' WHEN kpiapprv_status='1' THEN 'Rejected' ELSE 'Approved' END) as kpiapprv_status"
-                    + " from t_kpi where KPI_Id='" + KPI_Id + "'";
+                string sSqlstmt = "select KPI_Id,kpi_ref_no,established_date,branch,group_name,process_indicator,kpi_level,process_monitor,pers_resp,approved_by,logged_by from  t_kpi where KPI_Id='"+ KPI_Id + "'";
 
                 DataSet dsData = objGlobalData.Getdetails(sSqlstmt);
-                KPIModels objType = new KPIModels();
 
                 if (dsData.Tables.Count > 0 && dsData.Tables[0].Rows.Count > 0)
                 {
                     //objGlobalData.AddFunctionalLog("Step");
                     //AddFunctionalLog("Step");
-                    string sName, sToEmailIds, sCCEmailIds, sHeader, sInformation = "", sTitle = "", sSubject = "", sContent = "", aAttachment = "", BccEmailIds = "";
+                    string sHeader, sInformation = "", sTitle = "", sSubject = "", sContent = "", aAttachment = "", BccEmailIds = "";
 
                     //using streamreader for reading my htmltemplate 
                     //Form the Email Subject and Body content
@@ -503,25 +480,149 @@ namespace ISOStd.Models
                     {
                         sContent = reader.ReadToEnd();
                     }
+                    string sName = objGlobalData.GetMultiHrEmpNameById(dsData.Tables[0].Rows[0]["approved_by"].ToString());
+                    string sToEmailIds = objGlobalData.GetMultiHrEmpEmailIdById(dsData.Tables[0].Rows[0]["approved_by"].ToString());
+                    string sCCEmailIds = objGlobalData.GetMultiHrEmpEmailIdById(dsData.Tables[0].Rows[0]["logged_by"].ToString());
 
-                    sName = objGlobalData.GetMultiHrEmpNameById(dsData.Tables[0].Rows[0]["logged_by"].ToString());
-                    sToEmailIds = objGlobalData.GetMultiHrEmpEmailIdById(dsData.Tables[0].Rows[0]["logged_by"].ToString());
-                    sCCEmailIds = objGlobalData.GetMultiHrEmpEmailIdById(dsData.Tables[0].Rows[0]["approved_by"].ToString());
+                    string established_date = "";
+                    if (dsData.Tables[0].Rows[0]["established_date"].ToString() != null && Convert.ToDateTime(dsData.Tables[0].Rows[0]["established_date"].ToString()) > Convert.ToDateTime("01/01/0001"))
+                    {
+                        established_date=Convert.ToDateTime(dsData.Tables[0].Rows[0]["established_date"].ToString()).ToString("yyyy-MM-dd");
+                    }
+                    sHeader = "<tr><td colspan=3><b>KPI Ref No:<b></td> <td colspan=3>" + dsData.Tables[0].Rows[0]["kpi_ref_no"].ToString() + "</td></tr>"
+                    + "<tr><td colspan=3><b>KPI Established On:<b></td> <td colspan=3>" + established_date + "</td></tr>"
+                    + "<tr><td colspan=3><b>Proposed By:<b></td> <td colspan=3>" +objGlobalData.GetCompanyBranchNameById(dsData.Tables[0].Rows[0]["branch"].ToString()) + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp"+objGlobalData.GetDeptNameById(dsData.Tables[0].Rows[0]["group_name"].ToString()) + "</td></tr>"
+
+                     + "<tr><td colspan=3><b>Process/Performance Indicator:<b></td> <td colspan=3>" + objGlobalData.GetKPIPerformanceIndicatorById(dsData.Tables[0].Rows[0]["process_indicator"].ToString()) + "</td></tr>"
+
+                    + "<tr><td colspan=3><b>KPI Level:<b></td> <td colspan=3>" + objGlobalData.GetKPILevelById(dsData.Tables[0].Rows[0]["kpi_level"].ToString()) + "</td></tr>"
+
+                    + "<tr><td colspan=3><b>Process to be monitored:<b></td> <td colspan=3>" + (dsData.Tables[0].Rows[0]["process_monitor"].ToString()) + "</td></tr>"
+
+                    + "<tr><td colspan=3><b>Personnel Responsible:<b></td> <td colspan=3>" + objGlobalData.GetMultiHrEmpNameById(dsData.Tables[0].Rows[0]["pers_resp"].ToString()) + "</td></tr>";
 
 
-                    sHeader = "<tr><td colspan=3><b>KPI Ref No:<b></td> <td colspan=3>"
-                       + (dsData.Tables[0].Rows[0]["kpi_ref_no"].ToString()) + "</td></tr>"
-                         + "<tr><td colspan=3><b>Established Date:<b></td> <td colspan=3>" + Convert.ToDateTime(dsData.Tables[0].Rows[0]["established_date"].ToString()).ToString("yyyy-MM-dd") + "</td></tr>"
-                       + "<tr><td colspan=3><b>Process/Performance Indicator:<b></td> <td colspan=3>" + objGlobalData.GetKPIPerformanceIndicatorById(dsData.Tables[0].Rows[0]["process_indicator"].ToString()) + "</td></tr>"
-                      + "<tr><td colspan=3><b>KPI Level:<b></td> <td colspan=3>" + objGlobalData.GetKPILevelById(dsData.Tables[0].Rows[0]["kpi_level"].ToString()) + "</td></tr>"
-                      + "<tr><td colspan=3><b>Process to be monitored:<b></td> <td colspan=3>" + (dsData.Tables[0].Rows[0]["process_monitor"].ToString()) + "</td></tr>"
-                       + "<tr><td colspan=3><b>Approval Status:<b></td> <td colspan=3>" + (dsData.Tables[0].Rows[0]["kpiapprv_status"].ToString()) + "</td></tr>";
+                    sSqlstmt = "select measurable_indicator,expected_value,expected_value_unit,monitoring_frm_date,monitoring_to_date,monitoring_mechanism,frequency_eval,risk from  t_kpi_measurable_indicator where KPI_Id = '"+KPI_Id+"'";
 
+                    DataSet dsItems = new DataSet();
+                    dsItems = objGlobalData.Getdetails(sSqlstmt);
+
+                    if (dsItems.Tables.Count > 0 && dsItems.Tables[0].Rows.Count > 0)
+                    {
+                        sInformation = "<br><tr> "
+                            + "<td colspan=8><label><b>Measurable Indicator</b></label> </td> </tr>"
+                            + "<tr style='background-color: #4cc4dd; width: 100%; color: white; padding-left: 5px;'>"
+                            + "<th>Sl. No.</th>"
+                            + "<th style='width:300px'>Measurable Indicator</th>"
+                            + "<th style='width:300px'>Expected value to be achieved</th>"
+                            + "<th style='width:300px'>Unit</th>"
+                            + "<th style='width:300px'>Monitoring Period From Date</th>"
+                            + "<th style='width:300px'>To Date</th>"
+                            + "<th style='width:300px'>Monitoring Mechanism</th>"
+                             + "<th style='width:300px'>Frequency of Evaluation</th>"
+                             + "<th style='width:300px'>Risk,if not achieved</th>"
+                            + "</tr>";
+
+
+                        for (int i = 0; i < dsItems.Tables[0].Rows.Count; i++)
+                        {
+
+                            string monitoring_frm_date = "", monitoring_to_date="";
+                            if (dsItems.Tables[0].Rows[i]["monitoring_frm_date"].ToString() != null && Convert.ToDateTime(dsItems.Tables[0].Rows[i]["monitoring_frm_date"].ToString()) > Convert.ToDateTime("01/01/0001"))
+                            {
+                                monitoring_frm_date = Convert.ToDateTime(dsItems.Tables[0].Rows[i]["monitoring_frm_date"].ToString()).ToString("yyyy-MM-dd");
+                            }
+                            if (dsItems.Tables[0].Rows[i]["monitoring_to_date"].ToString() != null && Convert.ToDateTime(dsItems.Tables[0].Rows[i]["monitoring_to_date"].ToString()) > Convert.ToDateTime("01/01/0001"))
+                            {
+                                monitoring_to_date = Convert.ToDateTime(dsItems.Tables[0].Rows[i]["monitoring_to_date"].ToString()).ToString("yyyy-MM-dd");
+                            }
+                            sInformation = sInformation + "<tr>"
+                                + " <td>" + (i + 1) + "</td>"
+                                + " <td style='width:300px'>" + (dsItems.Tables[0].Rows[i]["measurable_indicator"].ToString()) + "</td>"
+                                 + " <td style='width:300px'>" + (dsItems.Tables[0].Rows[i]["expected_value"].ToString()) + "</td>"
+                                 + " <td style='width:300px'>" + (dsItems.Tables[0].Rows[i]["expected_value_unit"].ToString()) + "</td>"
+                                  + " <td style='width:300px'>" + monitoring_frm_date + "</td>"
+                                     + " <td style='width:300px'>" + monitoring_to_date + "</td>"
+                                     + " <td style='width:300px'>" + (dsItems.Tables[0].Rows[i]["monitoring_mechanism"].ToString()) + "</td>"
+                                      + " <td style='width:300px'>" +objGlobalData.GetDropdownitemById(dsItems.Tables[0].Rows[i]["frequency_eval"].ToString()) + "</td>"
+                                           + " <td style='width:300px'>" + (dsItems.Tables[0].Rows[i]["risk"].ToString()) + "</td>"
+                                                       + " </tr>";
+                            //sCCEmailIds = sCCEmailIds + "," + objGlobalData.GetHrEmpEmailIdById(dsItems.Tables[0].Rows[i]["PersonResponsible"].ToString());
+
+                            //string sPersonEmail = objGlobaldata.GetMultiHrEmpEmailIdById(dsItems.Tables[0].Rows[i]["PersonResponsible"].ToString());
+                            //sPersonEmail = Regex.Replace(sPersonEmail, ",+", ",");
+                            //sPersonEmail = sPersonEmail.Trim();
+                            //sPersonEmail = sPersonEmail.TrimEnd(',');
+                            //sPersonEmail = sPersonEmail.TrimStart(',');
+                            //if (sPersonEmail != null && sPersonEmail != "")
+                            //{
+                            //    sCCEmailIds = sCCEmailIds + "," + sPersonEmail;
+                            //}
+
+                        }
+                    }
+
+
+                    sSqlstmt = "select causes_failure,impact,mitigation_measures,failure_status,target_date,status_updated_date from t_kpi_failure where KPI_Id = '" + KPI_Id + "'";
+
+                    dsItems = new DataSet();
+                    dsItems = objGlobalData.Getdetails(sSqlstmt);
+
+                    if (dsItems.Tables.Count > 0 && dsItems.Tables[0].Rows.Count > 0)
+                    {
+                        sInformation= sInformation +  "<br><br><tr> "
+                            + "<td colspan=8><label><b>Potential Causes for Failure to achieve KPI</b></label> </td> </tr>"
+                            + "<tr style='background-color: #4cc4dd; width: 100%; color: white; padding-left: 5px;'>"
+                            + "<th>Sl. No.</th>"
+                            + "<th style='width:300px'>Potential Causes for Failure</th>"
+                            + "<th style='width:300px'>Impact</th>"
+                            + "<th style='width:300px'>Mitigation Measure(s)</th>"
+                            + "<th style='width:300px'>Target Date to implement the measure</th>"
+                            + "<th style='width:300px'>Status</th>"
+                            + "<th style='width:300px'>Status Updated On</th>"                     
+                            + "</tr>";
+
+
+                        for (int i = 0; i < dsItems.Tables[0].Rows.Count; i++)
+                        {
+
+                            string target_date = "", status_updated_date = "";
+                            if (dsItems.Tables[0].Rows[i]["target_date"].ToString() != null && Convert.ToDateTime(dsItems.Tables[0].Rows[i]["target_date"].ToString()) > Convert.ToDateTime("01/01/0001"))
+                            {
+                                target_date = Convert.ToDateTime(dsItems.Tables[0].Rows[i]["target_date"].ToString()).ToString("yyyy-MM-dd");
+                            }
+                            if (dsItems.Tables[0].Rows[i]["status_updated_date"].ToString() != null && Convert.ToDateTime(dsItems.Tables[0].Rows[i]["status_updated_date"].ToString()) > Convert.ToDateTime("01/01/0001"))
+                            {
+                                status_updated_date = Convert.ToDateTime(dsItems.Tables[0].Rows[i]["status_updated_date"].ToString()).ToString("yyyy-MM-dd");
+                            }
+                            sInformation = sInformation + "<tr>"
+                                + " <td>" + (i + 1) + "</td>"
+                                + " <td style='width:300px'>" + (dsItems.Tables[0].Rows[i]["causes_failure"].ToString()) + "</td>"
+                                 + " <td style='width:300px'>" + (dsItems.Tables[0].Rows[i]["impact"].ToString()) + "</td>"
+                                 + " <td style='width:300px'>" + (dsItems.Tables[0].Rows[i]["mitigation_measures"].ToString()) + "</td>"
+                                  + " <td style='width:300px'>" + target_date + "</td>"
+                                     + " <td style='width:300px'>" +objGlobalData.GetDropdownitemById(dsItems.Tables[0].Rows[i]["failure_status"].ToString()) + "</td>"
+                                           + " <td style='width:300px'>" + status_updated_date + "</td>"
+                                                       + " </tr>";
+                            //sCCEmailIds = sCCEmailIds + "," + objGlobalData.GetHrEmpEmailIdById(dsItems.Tables[0].Rows[i]["PersonResponsible"].ToString());
+
+                            //string sPersonEmail = objGlobaldata.GetMultiHrEmpEmailIdById(dsItems.Tables[0].Rows[i]["PersonResponsible"].ToString());
+                            //sPersonEmail = Regex.Replace(sPersonEmail, ",+", ",");
+                            //sPersonEmail = sPersonEmail.Trim();
+                            //sPersonEmail = sPersonEmail.TrimEnd(',');
+                            //sPersonEmail = sPersonEmail.TrimStart(',');
+                            //if (sPersonEmail != null && sPersonEmail != "")
+                            //{
+                            //    sCCEmailIds = sCCEmailIds + "," + sPersonEmail;
+                            //}
+
+                        }
+                    }
 
 
                     sContent = sContent.Replace("{FromMsg}", "");
                     sContent = sContent.Replace("{UserName}", sName);
-                    sContent = sContent.Replace("{Title}", "KPI Details");
+                    sContent = sContent.Replace("{Title}", "KPI Evaluation Details");
                     sContent = sContent.Replace("{content}", sHeader + sInformation);
                     sContent = sContent.Replace("{message}", "");
                     sContent = sContent.Replace("{extramessage}", "");
@@ -536,6 +637,226 @@ namespace ISOStd.Models
                     sCCEmailIds = sCCEmailIds.TrimEnd(',');
                     sCCEmailIds = sCCEmailIds.TrimStart(',');
 
+                    return objGlobalData.Sendmail(sToEmailIds, sSubject + sMessage, sContent, aAttachment, sCCEmailIds, "");
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobalData.AddFunctionalLog("Exception in sendKPIMail: " + ex.ToString());
+            }
+            return false;
+        }
+
+        internal bool FunUpdateApprove(KPIModels objManagement)
+        {
+            try
+            {
+                string sApprovedDate = DateTime.Now.ToString("yyyy-MM-dd HH':'mm':'ss");
+                string sSqlstmt = "update t_kpi set kpiapprv_status='" + kpiapprv_status + "',approvedby_comments='" + approvedby_comments + "',ApproveOrRejectOn='" + sApprovedDate + "' where KPI_Id='" + KPI_Id + "'";
+
+                if (objGlobalData.ExecuteQuery(sSqlstmt))
+                {
+                    return SendKPIApprovemail(KPI_Id, "KPI Approval Status");
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobalData.AddFunctionalLog("Exception in FunUpdateApprove: " + ex.ToString());
+            }
+            return false;
+        }
+        internal bool SendKPIApprovemail(string KPI_Id, string sMessage = "")
+        {
+            try
+            {
+                string sType = "email";
+
+                string sSqlstmt = "select KPI_Id,kpi_ref_no,established_date,branch,group_name,process_indicator,kpi_level,process_monitor,pers_resp,approved_by,logged_by,"
+                      + "(CASE WHEN kpiapprv_status='0' THEN 'Pending for Approval' WHEN kpiapprv_status='1' THEN 'Rejected' ELSE 'Approved' END) as kpiapprv_status,approvedby_comments"
+                    + " from  t_kpi where KPI_Id='" + KPI_Id + "'";
+
+                DataSet dsData = objGlobalData.Getdetails(sSqlstmt);
+
+                if (dsData.Tables.Count > 0 && dsData.Tables[0].Rows.Count > 0)
+                {
+                    //objGlobalData.AddFunctionalLog("Step");
+                    //AddFunctionalLog("Step");
+                    string sHeader, sInformation = "", sTitle = "", sSubject = "", sContent = "", aAttachment = "", BccEmailIds = "";
+
+                    //using streamreader for reading my htmltemplate 
+                    //Form the Email Subject and Body content
+                    DataSet dsEmailXML = new DataSet();
+                    dsEmailXML.ReadXml(HttpContext.Current.Server.MapPath("~/EmailTemplates.xml"));
+
+                    if (sType != "" && dsEmailXML.Tables.Count > 0 && dsEmailXML.Tables[sType] != null && dsEmailXML.Tables[sType].Rows.Count > 0)
+                    {
+                        sSubject = dsEmailXML.Tables[sType].Rows[0]["subject"].ToString();
+                    }
+
+                    using (StreamReader reader = new StreamReader(HttpContext.Current.Server.MapPath("~/Views/EmailTemplate/EmailTemplate.html")))
+                    {
+                        sContent = reader.ReadToEnd();
+                    }
+                    string sName = objGlobalData.GetMultiHrEmpNameById(dsData.Tables[0].Rows[0]["approved_by"].ToString());
+                    string sToEmailIds = objGlobalData.GetMultiHrEmpEmailIdById(dsData.Tables[0].Rows[0]["logged_by"].ToString());
+                    string sCCEmailIds = objGlobalData.GetMultiHrEmpEmailIdById(dsData.Tables[0].Rows[0]["approved_by"].ToString());
+
+                    string established_date = "";
+                    if (dsData.Tables[0].Rows[0]["established_date"].ToString() != null && Convert.ToDateTime(dsData.Tables[0].Rows[0]["established_date"].ToString()) > Convert.ToDateTime("01/01/0001"))
+                    {
+                        established_date = Convert.ToDateTime(dsData.Tables[0].Rows[0]["established_date"].ToString()).ToString("yyyy-MM-dd");
+                    }
+                    sHeader = "<tr><td colspan=3><b>KPI Ref No:<b></td> <td colspan=3>" + dsData.Tables[0].Rows[0]["kpi_ref_no"].ToString() + "</td></tr>"
+                    + "<tr><td colspan=3><b>KPI Established On:<b></td> <td colspan=3>" + established_date + "</td></tr>"
+                    + "<tr><td colspan=3><b>Proposed By:<b></td> <td colspan=3>" + objGlobalData.GetCompanyBranchNameById(dsData.Tables[0].Rows[0]["branch"].ToString()) + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp" + objGlobalData.GetDeptNameById(dsData.Tables[0].Rows[0]["group_name"].ToString()) + "</td></tr>"
+
+                     + "<tr><td colspan=3><b>Process/Performance Indicator:<b></td> <td colspan=3>" + objGlobalData.GetKPIPerformanceIndicatorById(dsData.Tables[0].Rows[0]["process_indicator"].ToString()) + "</td></tr>"
+
+                    + "<tr><td colspan=3><b>KPI Level:<b></td> <td colspan=3>" + objGlobalData.GetKPILevelById(dsData.Tables[0].Rows[0]["kpi_level"].ToString()) + "</td></tr>"
+
+                    + "<tr><td colspan=3><b>Process to be monitored:<b></td> <td colspan=3>" + (dsData.Tables[0].Rows[0]["process_monitor"].ToString()) + "</td></tr>"
+
+                    + "<tr><td colspan=3><b>Personnel Responsible:<b></td> <td colspan=3>" + objGlobalData.GetMultiHrEmpNameById(dsData.Tables[0].Rows[0]["pers_resp"].ToString()) + "</td></tr>"
+
+                    +"<tr><td colspan=3><b>Approval Status:<b></td> <td colspan=3>" + (dsData.Tables[0].Rows[0]["kpiapprv_status"].ToString()) + "</td></tr>"
+
+                    +"<tr><td colspan=3><b>Comments:<b></td> <td colspan=3>" + (dsData.Tables[0].Rows[0]["approvedby_comments"].ToString()) + "</td></tr>";
+
+
+                    sSqlstmt = "select measurable_indicator,expected_value,expected_value_unit,monitoring_frm_date,monitoring_to_date,monitoring_mechanism,frequency_eval,risk from  t_kpi_measurable_indicator where KPI_Id = '" + KPI_Id + "'";
+
+                    DataSet dsItems = new DataSet();
+                    dsItems = objGlobalData.Getdetails(sSqlstmt);
+
+                    if (dsItems.Tables.Count > 0 && dsItems.Tables[0].Rows.Count > 0)
+                    {
+                        sInformation = "<tr> "
+                            + "<td colspan=8><label><b>Measurable Indicator</b></label> </td> </tr>"
+                            + "<tr style='background-color: #4cc4dd; width: 100%; color: white; padding-left: 5px;'>"
+                            + "<th>Sl. No.</th>"
+                            + "<th style='width:300px'>Measurable Indicator</th>"
+                            + "<th style='width:300px'>Expected value to be achieved</th>"
+                            + "<th style='width:300px'>Unit</th>"
+                            + "<th style='width:300px'>Monitoring Period From Date</th>"
+                            + "<th style='width:300px'>To Date</th>"
+                            + "<th style='width:300px'>Monitoring Mechanism</th>"
+                             + "<th style='width:300px'>Frequency of Evaluation</th>"
+                             + "<th style='width:300px'>Risk,if not achieved</th>"
+                            + "</tr>";
+
+
+                        for (int i = 0; i < dsItems.Tables[0].Rows.Count; i++)
+                        {
+
+                            string monitoring_frm_date = "", monitoring_to_date = "";
+                            if (dsItems.Tables[0].Rows[i]["monitoring_frm_date"].ToString() != null && Convert.ToDateTime(dsItems.Tables[0].Rows[i]["monitoring_frm_date"].ToString()) > Convert.ToDateTime("01/01/0001"))
+                            {
+                                monitoring_frm_date = Convert.ToDateTime(dsItems.Tables[0].Rows[i]["monitoring_frm_date"].ToString()).ToString("yyyy-MM-dd");
+                            }
+                            if (dsItems.Tables[0].Rows[i]["monitoring_to_date"].ToString() != null && Convert.ToDateTime(dsItems.Tables[0].Rows[i]["monitoring_to_date"].ToString()) > Convert.ToDateTime("01/01/0001"))
+                            {
+                                monitoring_to_date = Convert.ToDateTime(dsItems.Tables[0].Rows[i]["monitoring_to_date"].ToString()).ToString("yyyy-MM-dd");
+                            }
+                            sInformation = sInformation + "<tr>"
+                                + " <td>" + (i + 1) + "</td>"
+                                + " <td style='width:300px'>" + (dsItems.Tables[0].Rows[i]["measurable_indicator"].ToString()) + "</td>"
+                                 + " <td style='width:300px'>" + (dsItems.Tables[0].Rows[i]["expected_value"].ToString()) + "</td>"
+                                 + " <td style='width:300px'>" + (dsItems.Tables[0].Rows[i]["expected_value_unit"].ToString()) + "</td>"
+                                  + " <td style='width:300px'>" + monitoring_frm_date + "</td>"
+                                     + " <td style='width:300px'>" + monitoring_to_date + "</td>"
+                                     + " <td style='width:300px'>" + (dsItems.Tables[0].Rows[i]["monitoring_mechanism"].ToString()) + "</td>"
+                                      + " <td style='width:300px'>" + objGlobalData.GetDropdownitemById(dsItems.Tables[0].Rows[i]["frequency_eval"].ToString()) + "</td>"
+                                           + " <td style='width:300px'>" + (dsItems.Tables[0].Rows[i]["risk"].ToString()) + "</td>"
+                                                       + " </tr>";
+                            //sCCEmailIds = sCCEmailIds + "," + objGlobalData.GetHrEmpEmailIdById(dsItems.Tables[0].Rows[i]["PersonResponsible"].ToString());
+
+                            //string sPersonEmail = objGlobaldata.GetMultiHrEmpEmailIdById(dsItems.Tables[0].Rows[i]["PersonResponsible"].ToString());
+                            //sPersonEmail = Regex.Replace(sPersonEmail, ",+", ",");
+                            //sPersonEmail = sPersonEmail.Trim();
+                            //sPersonEmail = sPersonEmail.TrimEnd(',');
+                            //sPersonEmail = sPersonEmail.TrimStart(',');
+                            //if (sPersonEmail != null && sPersonEmail != "")
+                            //{
+                            //    sCCEmailIds = sCCEmailIds + "," + sPersonEmail;
+                            //}
+
+                        }
+                    }
+
+
+                    sSqlstmt = "select causes_failure,impact,mitigation_measures,failure_status,target_date,status_updated_date from t_kpi_failure where KPI_Id = '" + KPI_Id + "'";
+
+                    dsItems = new DataSet();
+                    dsItems = objGlobalData.Getdetails(sSqlstmt);
+
+                    if (dsItems.Tables.Count > 0 && dsItems.Tables[0].Rows.Count > 0)
+                    {
+                        sInformation = sInformation + "<tr> "
+                            + "<td colspan=8><label><b>Potential Causes for Failure to achieve KPI</b></label> </td> </tr>"
+                            + "<tr style='background-color: #4cc4dd; width: 100%; color: white; padding-left: 5px;'>"
+                            + "<th>Sl. No.</th>"
+                            + "<th style='width:300px'>Potential Causes for Failure</th>"
+                            + "<th style='width:300px'>Impact</th>"
+                            + "<th style='width:300px'>Mitigation Measure(s)</th>"
+                            + "<th style='width:300px'>Target Date to implement the measure</th>"
+                            + "<th style='width:300px'>Status</th>"
+                            + "<th style='width:300px'>Status Updated On</th>"
+                            + "</tr>";
+
+
+                        for (int i = 0; i < dsItems.Tables[0].Rows.Count; i++)
+                        {
+
+                            string target_date = "", status_updated_date = "";
+                            if (dsItems.Tables[0].Rows[i]["target_date"].ToString() != null && Convert.ToDateTime(dsItems.Tables[0].Rows[i]["target_date"].ToString()) > Convert.ToDateTime("01/01/0001"))
+                            {
+                                target_date = Convert.ToDateTime(dsItems.Tables[0].Rows[i]["target_date"].ToString()).ToString("yyyy-MM-dd");
+                            }
+                            if (dsItems.Tables[0].Rows[i]["status_updated_date"].ToString() != null && Convert.ToDateTime(dsItems.Tables[0].Rows[i]["status_updated_date"].ToString()) > Convert.ToDateTime("01/01/0001"))
+                            {
+                                status_updated_date = Convert.ToDateTime(dsItems.Tables[0].Rows[i]["status_updated_date"].ToString()).ToString("yyyy-MM-dd");
+                            }
+                            sInformation = sInformation + "<tr>"
+                                + " <td>" + (i + 1) + "</td>"
+                                + " <td style='width:300px'>" + (dsItems.Tables[0].Rows[i]["causes_failure"].ToString()) + "</td>"
+                                 + " <td style='width:300px'>" + (dsItems.Tables[0].Rows[i]["impact"].ToString()) + "</td>"
+                                 + " <td style='width:300px'>" + (dsItems.Tables[0].Rows[i]["mitigation_measures"].ToString()) + "</td>"
+                                  + " <td style='width:300px'>" + target_date + "</td>"
+                                     + " <td style='width:300px'>" + objGlobalData.GetDropdownitemById(dsItems.Tables[0].Rows[i]["failure_status"].ToString()) + "</td>"
+                                           + " <td style='width:300px'>" + status_updated_date + "</td>"
+                                                       + " </tr>";
+                            //sCCEmailIds = sCCEmailIds + "," + objGlobalData.GetHrEmpEmailIdById(dsItems.Tables[0].Rows[i]["PersonResponsible"].ToString());
+
+                            //string sPersonEmail = objGlobaldata.GetMultiHrEmpEmailIdById(dsItems.Tables[0].Rows[i]["PersonResponsible"].ToString());
+                            //sPersonEmail = Regex.Replace(sPersonEmail, ",+", ",");
+                            //sPersonEmail = sPersonEmail.Trim();
+                            //sPersonEmail = sPersonEmail.TrimEnd(',');
+                            //sPersonEmail = sPersonEmail.TrimStart(',');
+                            //if (sPersonEmail != null && sPersonEmail != "")
+                            //{
+                            //    sCCEmailIds = sCCEmailIds + "," + sPersonEmail;
+                            //}
+
+                        }
+                    }
+
+
+                    sContent = sContent.Replace("{FromMsg}", "");
+                    sContent = sContent.Replace("{UserName}", sName);
+                    sContent = sContent.Replace("{Title}", "KPI Evaluation Details");
+                    sContent = sContent.Replace("{content}", sHeader + sInformation);
+                    sContent = sContent.Replace("{message}", "");
+                    sContent = sContent.Replace("{extramessage}", "");
+
+                    sToEmailIds = Regex.Replace(sToEmailIds, ",+", ",");
+                    sToEmailIds = sToEmailIds.Trim();
+                    sToEmailIds = sToEmailIds.TrimEnd(',');
+                    sToEmailIds = sToEmailIds.TrimStart(',');
+
+                    sCCEmailIds = Regex.Replace(sCCEmailIds, ",+", ",");
+                    sCCEmailIds = sCCEmailIds.Trim();
+                    sCCEmailIds = sCCEmailIds.TrimEnd(',');
+                    sCCEmailIds = sCCEmailIds.TrimStart(',');
 
                     return objGlobalData.Sendmail(sToEmailIds, sSubject + sMessage, sContent, aAttachment, sCCEmailIds, "");
                 }
@@ -546,6 +867,82 @@ namespace ISOStd.Models
             }
             return false;
         }
+        //internal bool SendKPIApprovemail( string KPI_Id, string sMessage = "")
+        //{
+        //    try
+        //    {
+        //        string sType = "email";
+
+        //        string sSqlstmt = "select approved_by,logged_by,established_date,KPI_Id,kpi_ref_no,process_indicator,kpi_level,process_monitor,"
+        //              + "(CASE WHEN kpiapprv_status='0' THEN 'Pending for Approval' WHEN kpiapprv_status='1' THEN 'Rejected' ELSE 'Approved' END) as kpiapprv_status"
+        //            + " from t_kpi where KPI_Id='" + KPI_Id + "'";
+
+        //        DataSet dsData = objGlobalData.Getdetails(sSqlstmt);
+        //        KPIModels objType = new KPIModels();
+
+        //        if (dsData.Tables.Count > 0 && dsData.Tables[0].Rows.Count > 0)
+        //        {
+        //            //objGlobalData.AddFunctionalLog("Step");
+        //            //AddFunctionalLog("Step");
+        //            string sName, sToEmailIds, sCCEmailIds, sHeader, sInformation = "", sTitle = "", sSubject = "", sContent = "", aAttachment = "", BccEmailIds = "";
+
+        //            //using streamreader for reading my htmltemplate 
+        //            //Form the Email Subject and Body content
+        //            DataSet dsEmailXML = new DataSet();
+        //            dsEmailXML.ReadXml(HttpContext.Current.Server.MapPath("~/EmailTemplates.xml"));
+
+        //            if (sType != "" && dsEmailXML.Tables.Count > 0 && dsEmailXML.Tables[sType] != null && dsEmailXML.Tables[sType].Rows.Count > 0)
+        //            {
+        //                sSubject = dsEmailXML.Tables[sType].Rows[0]["subject"].ToString();
+        //            }
+
+        //            using (StreamReader reader = new StreamReader(HttpContext.Current.Server.MapPath("~/Views/EmailTemplate/EmailTemplate.html")))
+        //            {
+        //                sContent = reader.ReadToEnd();
+        //            }
+
+        //            sName = objGlobalData.GetMultiHrEmpNameById(dsData.Tables[0].Rows[0]["logged_by"].ToString());
+        //            sToEmailIds = objGlobalData.GetMultiHrEmpEmailIdById(dsData.Tables[0].Rows[0]["logged_by"].ToString());
+        //            sCCEmailIds = objGlobalData.GetMultiHrEmpEmailIdById(dsData.Tables[0].Rows[0]["approved_by"].ToString());
+
+
+        //            sHeader = "<tr><td colspan=3><b>KPI Ref No:<b></td> <td colspan=3>"
+        //               + (dsData.Tables[0].Rows[0]["kpi_ref_no"].ToString()) + "</td></tr>"
+        //                 + "<tr><td colspan=3><b>Established Date:<b></td> <td colspan=3>" + Convert.ToDateTime(dsData.Tables[0].Rows[0]["established_date"].ToString()).ToString("yyyy-MM-dd") + "</td></tr>"
+        //               + "<tr><td colspan=3><b>Process/Performance Indicator:<b></td> <td colspan=3>" + objGlobalData.GetKPIPerformanceIndicatorById(dsData.Tables[0].Rows[0]["process_indicator"].ToString()) + "</td></tr>"
+        //              + "<tr><td colspan=3><b>KPI Level:<b></td> <td colspan=3>" + objGlobalData.GetKPILevelById(dsData.Tables[0].Rows[0]["kpi_level"].ToString()) + "</td></tr>"
+        //              + "<tr><td colspan=3><b>Process to be monitored:<b></td> <td colspan=3>" + (dsData.Tables[0].Rows[0]["process_monitor"].ToString()) + "</td></tr>"
+        //               + "<tr><td colspan=3><b>Approval Status:<b></td> <td colspan=3>" + (dsData.Tables[0].Rows[0]["kpiapprv_status"].ToString()) + "</td></tr>";
+
+
+
+        //            sContent = sContent.Replace("{FromMsg}", "");
+        //            sContent = sContent.Replace("{UserName}", sName);
+        //            sContent = sContent.Replace("{Title}", "KPI Details");
+        //            sContent = sContent.Replace("{content}", sHeader + sInformation);
+        //            sContent = sContent.Replace("{message}", "");
+        //            sContent = sContent.Replace("{extramessage}", "");
+
+        //            sToEmailIds = Regex.Replace(sToEmailIds, ",+", ",");
+        //            sToEmailIds = sToEmailIds.Trim();
+        //            sToEmailIds = sToEmailIds.TrimEnd(',');
+        //            sToEmailIds = sToEmailIds.TrimStart(',');
+
+        //            sCCEmailIds = Regex.Replace(sCCEmailIds, ",+", ",");
+        //            sCCEmailIds = sCCEmailIds.Trim();
+        //            sCCEmailIds = sCCEmailIds.TrimEnd(',');
+        //            sCCEmailIds = sCCEmailIds.TrimStart(',');
+
+
+        //            return objGlobalData.Sendmail(sToEmailIds, sSubject + sMessage, sContent, aAttachment, sCCEmailIds, "");
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        objGlobalData.AddFunctionalLog("Exception in SendKPIApprovemail: " + ex.ToString());
+        //    }
+        //    return false;
+        //}
         //--------------------------Action Plan---------------------------------------------
 
         internal bool FunAddActionPlan(KPIModels objKPI, KPIModelsList objModelsList)

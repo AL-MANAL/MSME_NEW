@@ -694,7 +694,7 @@ namespace ISOStd.Models
             {
                 string sType = "email";
                 string sSqlstmt = "select id_question_master,checklist_ref,insp_type,reviewed_by,reviewer_comments,approved_by,approver_comments,logged_by"
-               + " from t_inspection_question_master  where id_question_master = '" + id_question_master + "'";
+                + " from t_inspection_question_master  where id_question_master = '" + id_question_master + "'";
 
                 DataSet dsList = objGlobalData.Getdetails(sSqlstmt);
 

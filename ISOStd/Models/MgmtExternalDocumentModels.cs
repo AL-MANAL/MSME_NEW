@@ -180,7 +180,7 @@ namespace ISOStd.Models
         {
             try
             {
-                DataSet dsDoc = objGlobalData.Getdetails("select DocName from t_mgmt_doc_external where DocName='" + sDocName + "'");
+                DataSet dsDoc = objGlobalData.Getdetails("select DocName from t_mgmt_doc_external where DocName='" + sDocName + "' and active=1");
 
                 if (dsDoc.Tables.Count > 0 && dsDoc.Tables[0].Rows.Count > 0)
                 {
@@ -198,7 +198,7 @@ namespace ISOStd.Models
         {
             try
             {
-                DataSet dsDoc = objGlobalData.Getdetails("select DocRef from t_mgmt_doc_external where DocRef='" + sDocRef + "'");
+                DataSet dsDoc = objGlobalData.Getdetails("select DocRef from t_mgmt_doc_external where DocRef='" + sDocRef + "' and Active=1");
 
                 if (dsDoc.Tables.Count > 0 && dsDoc.Tables[0].Rows.Count > 0)
                 {

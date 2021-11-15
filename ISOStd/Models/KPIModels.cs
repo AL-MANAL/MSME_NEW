@@ -456,7 +456,7 @@ namespace ISOStd.Models
             {
                 string sType = "email";
 
-                string sSqlstmt = "select KPI_Id,kpi_ref_no,established_date,branch,group_name,process_indicator,kpi_level,process_monitor,pers_resp,approved_by,logged_by from  t_kpi where KPI_Id='"+ KPI_Id + "'";
+                string sSqlstmt = "select KPI_Id,kpi_ref_no,established_date,branch,group_name,process_indicator,kpi_level,process_monitor,pers_resp,approved_by,logged_by,pers_resp from  t_kpi where KPI_Id='" + KPI_Id + "'";
 
                 DataSet dsData = objGlobalData.Getdetails(sSqlstmt);
 
@@ -482,7 +482,7 @@ namespace ISOStd.Models
                     }
                     string sName = objGlobalData.GetMultiHrEmpNameById(dsData.Tables[0].Rows[0]["approved_by"].ToString());
                     string sToEmailIds = objGlobalData.GetMultiHrEmpEmailIdById(dsData.Tables[0].Rows[0]["approved_by"].ToString());
-                    string sCCEmailIds = objGlobalData.GetMultiHrEmpEmailIdById(dsData.Tables[0].Rows[0]["logged_by"].ToString());
+                    string sCCEmailIds = objGlobalData.GetMultiHrEmpEmailIdById(dsData.Tables[0].Rows[0]["logged_by"].ToString()) + "," + objGlobalData.GetMultiHrEmpEmailIdById(dsData.Tables[0].Rows[0]["pers_resp"].ToString());
 
                     string established_date = "";
                     if (dsData.Tables[0].Rows[0]["established_date"].ToString() != null && Convert.ToDateTime(dsData.Tables[0].Rows[0]["established_date"].ToString()) > Convert.ToDateTime("01/01/0001"))
@@ -671,7 +671,7 @@ namespace ISOStd.Models
             {
                 string sType = "email";
 
-                string sSqlstmt = "select KPI_Id,kpi_ref_no,established_date,branch,group_name,process_indicator,kpi_level,process_monitor,pers_resp,approved_by,logged_by,"
+                string sSqlstmt = "select KPI_Id,kpi_ref_no,established_date,branch,group_name,process_indicator,kpi_level,process_monitor,pers_resp,approved_by,logged_by,pers_resp,"
                       + "(CASE WHEN kpiapprv_status='0' THEN 'Pending for Approval' WHEN kpiapprv_status='1' THEN 'Rejected' ELSE 'Approved' END) as kpiapprv_status,approvedby_comments"
                     + " from  t_kpi where KPI_Id='" + KPI_Id + "'";
 
@@ -699,7 +699,8 @@ namespace ISOStd.Models
                     }
                     string sName = objGlobalData.GetMultiHrEmpNameById(dsData.Tables[0].Rows[0]["approved_by"].ToString());
                     string sToEmailIds = objGlobalData.GetMultiHrEmpEmailIdById(dsData.Tables[0].Rows[0]["logged_by"].ToString());
-                    string sCCEmailIds = objGlobalData.GetMultiHrEmpEmailIdById(dsData.Tables[0].Rows[0]["approved_by"].ToString());
+
+                    string sCCEmailIds = objGlobalData.GetMultiHrEmpEmailIdById(dsData.Tables[0].Rows[0]["approved_by"].ToString()) + "," + objGlobalData.GetMultiHrEmpEmailIdById(dsData.Tables[0].Rows[0]["pers_resp"].ToString());
 
                     string established_date = "";
                     if (dsData.Tables[0].Rows[0]["established_date"].ToString() != null && Convert.ToDateTime(dsData.Tables[0].Rows[0]["established_date"].ToString()) > Convert.ToDateTime("01/01/0001"))

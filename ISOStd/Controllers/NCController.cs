@@ -265,6 +265,7 @@ namespace ISOStd.Controllers
                                 nc_initial_statusId = dsNCModels.Tables[0].Rows[i]["nc_initial_statusId"].ToString(),
 
                                 nc_issueto = objGlobaldata.GetMultiHrEmpNameById(dsNCModels.Tables[0].Rows[i]["nc_issueto"].ToString()),
+                                nc_issuetoID = (dsNCModels.Tables[0].Rows[i]["nc_issueto"].ToString()),
                                 nc_reportedby_dept = objGlobaldata.GetMultiDeptNameById(objGlobaldata.GetDeptIdByHrEmpId(dsNCModels.Tables[0].Rows[i]["nc_reportedby"].ToString())),
                                 nc_issueto_dept = objGlobaldata.GetMultiDeptNameById(objGlobaldata.GetDeptIdByHrEmpId(dsNCModels.Tables[0].Rows[i]["nc_issueto"].ToString()))
                             };

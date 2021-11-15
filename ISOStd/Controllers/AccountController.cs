@@ -26,7 +26,9 @@ namespace ISOStd.Controllers
         public ActionResult Login()
         {
             //ViewBag.ReturnUrl = returnUrl;
+
             ViewBag.VerNo = objGlobaldata.GetVersionNumber();
+           
             return View();
         }
 
@@ -39,6 +41,10 @@ namespace ISOStd.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Login(LoginModel model, FormCollection form)
         {
+            //if (!string.IsNullOrEmpty(ReturnUrl))
+            //{
+            //    return Redirect(ReturnUrl)
+            //}
             string sUsername = form["emailAddress"];
             string sPwd = form["Pwd"];
             if (model.LoginAuthenticate(sUsername, sPwd))

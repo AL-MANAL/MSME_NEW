@@ -63,57 +63,67 @@
             </div>
         </div>
 <div class="card-body">
-                <table class="table table-bordered table-striped table-hover datatable-responsive" id="cert">
-                    <thead>
+    <table class="table table-bordered table-striped table-hover datatable-responsive" id="cert">
+        <thead>
 
-                        <tr>
-                         <th>
-                            Sl.No
-                        </th>
-                        <th>
-                             Role
-                        </th>
-                       <th>
-                             Menu Access
-                        </th>
-                        <th>
-                             Division Access
-                        </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if (Model != null && Model.Count() > 0)
-                        {
-                            int i = 0;
-                           
-                            foreach (var item in Model)
-                            {
-                                
-                                i = i + 1;
-                                <tr>
-                                     <td>
-	                            @i
-                                    </td>
-                        <td>                          
-                                @Html.DisplayFor(modelItem => item.RoleName)                            
-                        </td>
-                       
+            <tr>
+                <th>
+                    Sl.No
+                </th>
+                <th>
+                    Role
+                </th>
+                <th>
+                    Menu Access
+                </th>
+                <th>
+                    Division Access
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Count() > 0)
+            {
+                int i = 0;
+
+                foreach (var item in Model)
+                {
+
+                    i = i + 1;
+                    <tr>
                         <td>
-  			<a href='@Url.Action("AccessList", "Access", new { RoleId= item.role_id,branch_id= item.branch_id,appl_branch= item.appl_branch })' title="Access" onclick="HyperLinkProgressIconFunction()">
-                          <span class="icon-users4"></span>
-                        </a>
-                            </td>
-                                      <td>
-  			<a href='@Url.Action("AddAccessTree", "AccessTree", new { RoleId= item.role_id,branch_id= item.branch_id,appl_branch= item.appl_branch })' title="Access" onclick="HyperLinkProgressIconFunction()">
-                          <span class="icon-users4"></span>
-                        </a>
-                            </td>
-              </tr>
-                            }
-                        }
+                            @i
+                        </td>
+                        <td>
+                            @if (item.appl_branch == "No")
+                            {
+                                @Html.DisplayFor(modelItem => item.RoleName)
 
-                    </tbody>
-                </table>
+                            }
+                            else if (item.appl_branch == "Yes")
+                            {
+                                @Html.DisplayFor(modelItem => item.Role)
+                            }
+
+                        </td>
+
+                        <td>
+                            <a href='@Url.Action("AccessList", "Access", new { RoleId= item.role_id,branch_id= item.branch_id,appl_branch= item.appl_branch })' title="Access" onclick="HyperLinkProgressIconFunction()">
+                                <span class="icon-users4"></span>
+                            </a>
+                        </td>
+                        <td>
+                            <a href='@Url.Action("AddAccessTree", "AccessTree", new { RoleId= item.role_id,branch_id= item.branch_id,appl_branch= item.appl_branch })' title="Access" onclick="HyperLinkProgressIconFunction()">
+                                <span class="icon-users4"></span>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            }
+
+        </tbody>
+    </table>
+
             </div>
 
 </div>

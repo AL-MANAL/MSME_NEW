@@ -211,9 +211,9 @@ namespace Role.Controllers
             RoleModels objstd = new RoleModels();
             try
             {
-                //string sSqlstmt = "select role_id,branch_id,concat(RoleName,' - ',BranchCode) as Role,RoleName,appl_branch from t_access t,t_company_branch b,roles r"
-                //+ " where t.role_id=r.Id and t.branch_id=b.id order by role_id , branch_id asc";
-                string sSqlstmt = " select role_id,branch_id,RoleName,appl_branch from t_access t,roles r  where t.role_id = r.Id and r.active=1 order by role_id asc";
+                string sSqlstmt = "select role_id,branch_id,concat(RoleName,' - ',BranchCode) as Role,RoleName,appl_branch from t_access t,t_company_branch b,roles r"
+                + " where t.role_id=r.Id and t.branch_id=b.id order by role_id , branch_id asc";
+               // string sSqlstmt = " select role_id,branch_id,RoleName,appl_branch from t_access t,roles r  where t.role_id = r.Id and r.active=1 order by role_id asc";
 
                 DataSet dsList = objGlobaldata.Getdetails(sSqlstmt);
 
@@ -224,16 +224,43 @@ namespace Role.Controllers
                         try
                         {
                             objstd = new RoleModels();
-                            { 
+                            if (i != 0)
+                            {
+                                if (dsList.Tables[0].Rows[i]["appl_branch"].ToString() == "No")
+                                {
+                                    if (dsList.Tables[0].Rows[i]["RoleName"].ToString() != dsList.Tables[0].Rows[i - 1]["RoleName"].ToString())
+                                    {
+                                        objstd.role_id = (dsList.Tables[0].Rows[i]["role_id"].ToString());
+                                        objstd.branch_id = (dsList.Tables[0].Rows[i]["branch_id"].ToString());
+                                        objstd.RoleName = (dsList.Tables[0].Rows[i]["RoleName"].ToString());
+
+                                        objstd.Role = (dsList.Tables[0].Rows[i]["Role"].ToString());
+                                        objstd.appl_branch = (dsList.Tables[0].Rows[i]["appl_branch"].ToString());
+                                        obj.RoleList.Add(objstd);
+                                    }
+                                }
+                                else
+                                {
+                                    objstd.role_id = (dsList.Tables[0].Rows[i]["role_id"].ToString());
+                                    objstd.branch_id = (dsList.Tables[0].Rows[i]["branch_id"].ToString());
+                                    objstd.RoleName = (dsList.Tables[0].Rows[i]["RoleName"].ToString());
+
+                                    objstd.Role = (dsList.Tables[0].Rows[i]["Role"].ToString());
+                                    objstd.appl_branch = (dsList.Tables[0].Rows[i]["appl_branch"].ToString());
+                                    obj.RoleList.Add(objstd);
+                                }
+
+                            }
+                            else
+                            {
                                 objstd.role_id = (dsList.Tables[0].Rows[i]["role_id"].ToString());
                                 objstd.branch_id = (dsList.Tables[0].Rows[i]["branch_id"].ToString());
                                 objstd.RoleName = (dsList.Tables[0].Rows[i]["RoleName"].ToString());
 
-                                //objstd.Role = (dsList.Tables[0].Rows[i]["Role"].ToString());
+                                objstd.Role = (dsList.Tables[0].Rows[i]["Role"].ToString());
                                 objstd.appl_branch = (dsList.Tables[0].Rows[i]["appl_branch"].ToString());
                                 obj.RoleList.Add(objstd);
-                            }                   
-                                                      
+                            }
                         }
                         catch (Exception ex)
                         {

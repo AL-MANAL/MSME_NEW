@@ -82,6 +82,7 @@ namespace ISOStd.Controllers
             {
                 if (objKPI != null)
                 {
+                    objKPI.pers_resp = form["pers_resp"];
                     IList<HttpPostedFileBase> upload_file = (IList<HttpPostedFileBase>)upload;
 
                     DateTime dateValue;
@@ -206,7 +207,7 @@ namespace ISOStd.Controllers
 
                 string sSqlstmt = "select KPI_Id,kpi_ref_no,established_date,branch,group_name,process_indicator,"
                        + "kpi_level,process_monitor,pers_resp,upload,"
-                       + "approved_by,kpi_status,status_reason  from t_kpi where Active=1";
+                       + "approved_by,kpi_status,status_reason,kpiapprv_status  from t_kpi where Active=1";
                 string sSearchtext = "";
                 if (branch_name != null && branch_name != "")
                 {
@@ -236,7 +237,8 @@ namespace ISOStd.Controllers
                                 process_indicator =objGlobaldata.GetKPIPerformanceIndicatorById(dsKPIModelsList.Tables[0].Rows[i]["process_indicator"].ToString()),
                                 kpi_level =objGlobaldata.GetKPILevelById(dsKPIModelsList.Tables[0].Rows[i]["kpi_level"].ToString()),
                                 process_monitor = (dsKPIModelsList.Tables[0].Rows[i]["process_monitor"].ToString()),
-                               
+                                kpiapprv_status = (dsKPIModelsList.Tables[0].Rows[i]["kpiapprv_status"].ToString()),
+
                             };
                             objKPIModelsList.KPIMList.Add(objKPIModels);
                         }
@@ -545,6 +547,7 @@ namespace ISOStd.Controllers
             {
                 if (objKPI != null)
                 {
+                    objKPI.pers_resp = form["pers_resp"];
                     HttpPostedFileBase files = Request.Files[0];
                     string QCDelete = Request.Form["QCDocsValselectall"];
 
@@ -1136,7 +1139,7 @@ namespace ISOStd.Controllers
                             //monitoring_mechanism = (dsKPIModelsList.Tables[0].Rows[0]["monitoring_mechanism"].ToString()),
                             //frequency_eval = (dsKPIModelsList.Tables[0].Rows[0]["frequency_eval"].ToString()),
                             //risk = (dsKPIModelsList.Tables[0].Rows[0]["risk"].ToString()),
-                            pers_resp =objGlobaldata.GetEmpHrNameById(dsKPIModelsList.Tables[0].Rows[0]["pers_resp"].ToString()),
+                            pers_resp =objGlobaldata.GetMultiHrEmpNameById(dsKPIModelsList.Tables[0].Rows[0]["pers_resp"].ToString()),
                             upload = (dsKPIModelsList.Tables[0].Rows[0]["upload"].ToString()),
                             approved_by = objGlobaldata.GetEmpHrNameById(dsKPIModelsList.Tables[0].Rows[0]["approved_by"].ToString()),
                             kpi_status =objGlobaldata.GetKPIStatusById(dsKPIModelsList.Tables[0].Rows[0]["kpi_status"].ToString()),
@@ -1515,7 +1518,7 @@ namespace ISOStd.Controllers
                             branch = objGlobaldata.GetCompanyBranchNameById(dsKPIModelsList.Tables[0].Rows[0]["branch"].ToString()),
                             group_name = objGlobaldata.GetDeptNameById(dsKPIModelsList.Tables[0].Rows[0]["group_name"].ToString()),
                             process_indicator = (dsKPIModelsList.Tables[0].Rows[0]["process_indicator"].ToString()),
-                            kpi_level = (dsKPIModelsList.Tables[0].Rows[0]["kpi_level"].ToString()),
+                            kpi_level =objGlobaldata.GetDropdownitemById(dsKPIModelsList.Tables[0].Rows[0]["kpi_level"].ToString()),
                             process_monitor = (dsKPIModelsList.Tables[0].Rows[0]["process_monitor"].ToString()),
                             //measurable_indicator = (dsKPIModelsList.Tables[0].Rows[0]["measurable_indicator"].ToString()),
                             //expected_value = (dsKPIModelsList.Tables[0].Rows[0]["expected_value"].ToString()),

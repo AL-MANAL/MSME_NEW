@@ -104,7 +104,7 @@ namespace ISOStd.Models
         {
             try
             {
-                string sSqlstmt = "insert into roles (RoleName,appl_branch) values('" + objModel.RoleName + "','" + objModel.appl_branch + "')";
+                string sSqlstmt = "insert into roles (RoleName) values('" + objModel.RoleName + "')";
 
                 return objGlobalData.ExecuteQuery(sSqlstmt);
             }
@@ -119,7 +119,7 @@ namespace ISOStd.Models
         {
             try
             {
-                string sSqlstmt = "update roles set RoleName = '" + objModel.RoleName + "',appl_branch = '" + objModel.appl_branch + "' where Id=" + Id;
+                string sSqlstmt = "update roles set RoleName = '" + objModel.RoleName + "'  where Id=" + Id;
                 return objGlobalData.ExecuteQuery(sSqlstmt);
             }
             catch (Exception ex)

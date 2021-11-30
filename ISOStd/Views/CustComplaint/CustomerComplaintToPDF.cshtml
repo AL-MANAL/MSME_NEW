@@ -131,41 +131,7 @@
                     </div>
                 </td>
             </tr>
-            <tr>
-                <td>
-                    <div class="display-label">
-                        Uploaded Document
-                    </div>
-                </td>
-                <td>
-                    <div class="display-field">
-                        @if (objComplaint.Document != "" && objComplaint.Document != null && objComplaint.Document.Length > 0)
-                        {
-                            foreach (var docs in objComplaint.Document.Trim(',').Split(','))
-                            {
-                                <span>
-                                    <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank">Preview</a>
-                                </span>
-                            }
-                        }
-                        else
-                        {
 
-                            <span>No File</span>
-                        }
-                    </div>
-                </td>
-                <td>
-                    <div class="display-label">
-                        Complaint Forwarded To
-                    </div>
-                </td>
-                <td colspan="3">
-                    <div class="display-field">
-                        @objComplaint.ForwardTo
-                    </div>
-                </td>
-            </tr>
 
             <tr>
                 <td>
@@ -402,29 +368,7 @@
                                 @objComplaint.rej_reason
                             </div>
                         </td>
-                        <td>
-                            <div class="display-label">
-                                Uploaded Document
-                            </div>
-                        </td>
-                        <td>
-                            <div class="display-field">
-                                @if (objComplaint.c_reponse_upload != "" && objComplaint.c_reponse_upload != null && objComplaint.c_reponse_upload.Length > 0)
-                                {
-                                    foreach (var docs in objComplaint.c_reponse_upload.Trim(',').Split(','))
-                                    {
-                                        <span class="bg-dark py-1 px-2 rounded">
-                                            <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank">Preview</a>
-                                        </span>
-                                    }
-                                }
-                                else
-                                {
-
-                                    <span>No File</span>
-                                }
-                            </div>
-                        </td>
+                     
                     </tr>
                 }
                 else if ((objComplaint.ForwarderAssign != null && objComplaint.ForwarderAssign != "") && objComplaint.complaint_valid.ToLower() == "yes")
@@ -531,27 +475,10 @@
                                                     </span>
                                                 </td>
                                             </tr>
-                                            <tr>
-                                                <td class="display-label">
-                                                    Uploaded Document
-                                                </td>
-                                                <td>
-                                                    @if (NcOverallList.CustComplaintList[inc].disp_upload.ToString() != null && NcOverallList.CustComplaintList[inc].disp_upload.ToString() != "" && NcOverallList.CustComplaintList[inc].disp_upload.ToString().Length > 0)
-                                                    {
-                                                        foreach (var docs in NcOverallList.CustComplaintList[inc].disp_upload.ToString().Trim(',').Split(','))
-                                                        {
-                                                            <p style="margin: 0px;">
-                                                                <span>
-                                                                    <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank">Preview</a>
-                                                                </span>
-                                                            </p>
-                                                        }
-                                                    }
-                                                </td>
-                                            </tr>
+                                          
 
                                     </table>
-                                    @if (NcOverallList.CustComplaintList[inc].CustList != null && NcOverallList.CustComplaintList[inc].CustList.Count > 0)
+                                    @if (NcOverallList.CustComplaintList[inc].DispList != null && NcOverallList.CustComplaintList[inc].DispList.Count > 0)
                                     {
                                         <table class="table table-lg table-bordered">
                                             <thead>
@@ -563,7 +490,7 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                @for (int index = 0, j = 1; index < NcOverallList.CustComplaintList[inc].CustList.Count; index++, j++)
+                                                @for (int index = 0, j = 1; index < NcOverallList.CustComplaintList[inc].DispList.Count; index++, j++)
                                                 {
                                                     <tr>
 
@@ -571,15 +498,15 @@
                                                             @j
                                                         </td>
                                                         <td>
-                                                            @(NcOverallList.CustComplaintList[inc].CustList[index].disp_action)
+                                                            @(NcOverallList.CustComplaintList[inc].DispList[index].disp_action)
                                                         </td>
                                                         <td>
-                                                            @(NcOverallList.CustComplaintList[inc].CustList[index].disp_resp_person)
+                                                            @(NcOverallList.CustComplaintList[inc].DispList[index].disp_resp_person)
                                                         </td>
                                                         <td>
-                                                            @if (NcOverallList.CustComplaintList[inc].CustList[index].disp_complete_date != null && NcOverallList.CustComplaintList[inc].CustList[index].disp_complete_date > Convert.ToDateTime("01/01/0001"))
+                                                            @if (NcOverallList.CustComplaintList[inc].DispList[index].disp_complete_date != null && NcOverallList.CustComplaintList[inc].DispList[index].disp_complete_date > Convert.ToDateTime("01/01/0001"))
                                                             {
-                                                                @Convert.ToDateTime(NcOverallList.CustComplaintList[inc].CustList[index].disp_complete_date.ToString()).ToString("dd/MM/yyyy")
+                                                                @Convert.ToDateTime(NcOverallList.CustComplaintList[inc].DispList[index].disp_complete_date.ToString()).ToString("dd/MM/yyyy")
                                                             }
                                                         </td>
                                                     </tr>
@@ -666,24 +593,7 @@
                                                         @NcOverallList.CustComplaintList[inc].rca_details
                                                     </td>
                                                 </tr>
-                                                <tr>
-                                                    <td class="display-label">
-                                                        Uploaded Document
-                                                    </td>
-                                                    <td>
-                                                        @if (NcOverallList.CustComplaintList[inc].rca_upload.ToString() != null && NcOverallList.CustComplaintList[inc].rca_upload.ToString() != "" && NcOverallList.CustComplaintList[inc].rca_upload.Length > 0)
-                                                        {
-                                                            foreach (var docs in NcOverallList.CustComplaintList[inc].rca_upload.ToString().Trim(',').Split(','))
-                                                            {
-                                                                <p class="bg-dark py-1 px-2 rounded" style="margin: 0px;">
-                                                                    <span class="bg-dark py-1 px-2 rounded">
-                                                                        <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank">Preview</a>
-                                                                    </span>
-                                                                </p>
-                                                            }
-                                                        }
-                                                    </td>
-                                                </tr>
+                                              
                                                 <tr>
                                                     <td class="display-label">
                                                         Need of corrective action
@@ -698,6 +608,30 @@
                                                         @NcOverallList.CustComplaintList[inc].rca_justify
                                                     </td>
                                                 </tr>
+                                                @if (NcOverallList.CustComplaintList[inc].rca_action == "No")
+                                                {
+                                                    <tr>
+                                                        <td class="display-label">
+                                                            Verification due date
+                                                        </td>
+                                                        <td>
+                                                           
+                                                                @if (NcOverallList.CustComplaintList[inc].ca_verfiry_duedate != null && NcOverallList.CustComplaintList[inc].ca_verfiry_duedate.ToString() != "" && Convert.ToDateTime(NcOverallList.CustComplaintList[inc].ca_verfiry_duedate.ToString()) > Convert.ToDateTime("01/01/0001"))
+                                                                {
+                                                                @Convert.ToDateTime(NcOverallList.CustComplaintList[inc].ca_verfiry_duedate).ToString("dd/MM/yyyy")
+                                                                }
+                                                            
+                                                        </td>
+                                                        <td class="display-label">
+                                                            To be verified by
+                                                        </td>
+                                                        <td>
+                                                          
+                                                                @NcOverallList.CustComplaintList[inc].ca_proposed_by
+                                                            
+                                                        </td>
+                                                    </tr>
+                                                }
                                                 <tr>
                                                     <td class="display-label">
                                                         RCA Completed By
@@ -781,7 +715,7 @@
                                     </div>
 
                                     <div class="page_break_inside_avoid">
-                                        @if (NcOverallList.CustComplaintList[inc].CustList != null && NcOverallList.CustComplaintList[inc].CustList.Count > 0)
+                                        @if (NcOverallList.CustComplaintList[inc].CAList != null && NcOverallList.CustComplaintList[inc].CAList.Count > 0)
                                         {
                                             <table class="table table-lg table-bordered">
                                                 <thead>
@@ -794,7 +728,7 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    @for (int index = 0, j = 1; index < NcOverallList.CustComplaintList[inc].CustList.Count; index++, j++)
+                                                    @for (int index = 0, j = 1; index < NcOverallList.CustComplaintList[inc].CAList.Count; index++, j++)
                                                     {
                                                         <tr>
 
@@ -802,19 +736,19 @@
                                                                 @j
                                                             </td>
                                                             <td>
-                                                                @(NcOverallList.CustComplaintList[inc].CustList[index].ca_ca)
+                                                                @(NcOverallList.CustComplaintList[inc].CAList[index].ca_ca)
                                                             </td>
                                                             <td>
-                                                                @(NcOverallList.CustComplaintList[inc].CustList[index].ca_resp_person)
+                                                                @(NcOverallList.CustComplaintList[inc].CAList[index].ca_resp_person)
                                                             </td>
                                                             <td>
-                                                                @if (NcOverallList.CustComplaintList[inc].CustList[index].ca_target_date.ToString() != null && NcOverallList.CustComplaintList[inc].CustList[index].ca_target_date > Convert.ToDateTime("01/01/0001"))
+                                                                @if (NcOverallList.CustComplaintList[inc].CAList[index].ca_target_date.ToString() != null && NcOverallList.CustComplaintList[inc].CAList[index].ca_target_date > Convert.ToDateTime("01/01/0001"))
                                                                 {
-                                                                    @Convert.ToDateTime(NcOverallList.CustComplaintList[inc].CustList[index].ca_target_date.ToString()).ToString("dd/MM/yyyy")
+                                                                    @Convert.ToDateTime(NcOverallList.CustComplaintList[inc].CAList[index].ca_target_date.ToString()).ToString("dd/MM/yyyy")
                                                                 }
                                                             </td>
                                                             <td>
-                                                                @(NcOverallList.CustComplaintList[inc].CustList[index].ca_resource)
+                                                                @(NcOverallList.CustComplaintList[inc].CAList[index].ca_resource)
                                                             </td>
                                                         </tr>
                                                     }
@@ -882,7 +816,7 @@
                                                     </td>
                                                 </tr>
                                                 <tr>
-                                                    <td class="display-label">
+                                                    @*<td class="display-label">
                                                         Uploaded Document
                                                     </td>
                                                     <td>
@@ -895,7 +829,7 @@
                                                                 </span>
                                                             }
                                                         }
-                                                    </td>
+                                                    </td>*@
 
                                                     <td class="display-label">
                                                         Complaint Status
@@ -1033,7 +967,7 @@
                             @objComplaint.c_response_details
                         </div>
                     </td>
-                    <td>
+                    @*<td>
                         <div class="display-label">
                             Uploaded Document
                         </div>
@@ -1054,7 +988,7 @@
                                 <span>No File</span>
                             }
                         </div>
-                    </td>
+                    </td>*@
                 </tr>
             </table>
         </div>

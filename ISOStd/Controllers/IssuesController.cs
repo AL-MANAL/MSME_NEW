@@ -53,6 +53,7 @@ namespace ISOStd.Controllers
                 ViewBag.Location = objGlobaldata.GetDivisionLocationList(objIssues.branch);
                 ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
                 ViewBag.Repet_Issue = objGlobaldata.GetAllIssueList(objIssues.Deptid);
+                ViewBag.IsoStd = objGlobaldata.GetIsoStdListbox();
             }
             catch (Exception ex)
             {
@@ -174,7 +175,7 @@ namespace ISOStd.Controllers
                 string sSearchtext = "";
                 ViewBag.IssueCategory = objGlobaldata.GetDropdownList("Issue Category Type");
                 string sSqlstmt = "select Issue_refno,id_issue,Issue,IssueType,Impact,Isostd,Evidence," +
-                    "ImpactDesc,Effect,Deptid,Issue_Category,branch,Location,issue_date,reporting_to,notified_to,issue_status from t_issues where Active=1";
+                    "ImpactDesc,Effect,Deptid,Issue_Category,branch,Location,issue_date,reporting_to,notified_to,issue_status,loggedby,ISOStds from t_issues where Active=1";
 
                 if (branch_name != null && branch_name != "")
                 {
@@ -213,6 +214,9 @@ namespace ISOStd.Controllers
                                 reporting_to = objGlobaldata.GetMultiHrEmpNameById(dsIssueList.Tables[0].Rows[i]["reporting_to"].ToString()),
                                 notified_to = objGlobaldata.GetMultiHrEmpNameById(dsIssueList.Tables[0].Rows[i]["notified_to"].ToString()),
                                 issue_status = objGlobaldata.GetDropdownitemById(dsIssueList.Tables[0].Rows[i]["issue_status"].ToString()),
+                                loggedby = dsIssueList.Tables[0].Rows[i]["loggedby"].ToString(),
+                                reporting_toId = (dsIssueList.Tables[0].Rows[i]["reporting_to"].ToString()),
+                                ISOStds =objGlobaldata.GetIsoStdNameById(dsIssueList.Tables[0].Rows[i]["ISOStds"].ToString()),
                             };
                             DateTime dtValue;
                             if (DateTime.TryParse(dsIssueList.Tables[0].Rows[i]["issue_date"].ToString(), out dtValue))
@@ -391,7 +395,7 @@ namespace ISOStd.Controllers
                 if (sid_issue != null && sid_issue != "") {
                     string sSqlstmt = "select Issue_refno,id_issue,Issue,IssueType,Impact,Isostd,Evidence," +
                         "ImpactDesc,Effect,Deptid,Issue_Category,branch,Location,issue_date,reporting_to,notified_to," +
-                        "Impact_detail,Repet_Issue,additional_details,issue_status,status_date,action_taken,status_notifiedto,status_upload  from t_issues where Active=1"
+                        "Impact_detail,Repet_Issue,additional_details,issue_status,status_date,action_taken,status_notifiedto,status_upload,ISOStds  from t_issues where Active=1"
                     + " and id_issue='" + sid_issue + "' order by id_issue desc";
                     DataSet dsIssueList = objGlobaldata.Getdetails(sSqlstmt);
 
@@ -424,7 +428,8 @@ namespace ISOStd.Controllers
                                 action_taken = dsIssueList.Tables[0].Rows[0]["action_taken"].ToString(),
                                 status_notifiedto = objGlobaldata.GetMultiHrEmpNameById(dsIssueList.Tables[0].Rows[0]["status_notifiedto"].ToString()),
                                 status_upload = dsIssueList.Tables[0].Rows[0]["status_upload"].ToString(),
-                            };
+                                ISOStds = objGlobaldata.GetIsoStdNameById(dsIssueList.Tables[0].Rows[0]["ISOStds"].ToString()),
+                             };
                             DateTime dtValue;
                             if (DateTime.TryParse(dsIssueList.Tables[0].Rows[0]["issue_date"].ToString(), out dtValue))
                             {
@@ -615,7 +620,7 @@ namespace ISOStd.Controllers
                 ViewBag.IssueCategory = objGlobaldata.GetDropdownList("Issue Category Type");
                 ViewBag.IssueEffect = objGlobaldata.GetDropdownList("Issue Effect Type");
                 ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
-                
+                ViewBag.IsoStd = objGlobaldata.GetIsoStdListbox();
 
                 if (Request.QueryString["id_issue"] != null && Request.QueryString["id_issue"] != "")
                 {
@@ -624,7 +629,7 @@ namespace ISOStd.Controllers
                     ViewBag.id_issue = id_issue;
 
                     string sSqlstmt = "select Issue_refno,id_issue,Issue,IssueType,Impact,Isostd,Evidence,ImpactDesc," +
-                        "Effect,Deptid,Issue_Category,branch,Location,issue_date,reporting_to,notified_to,Impact_detail,Repet_Issue,additional_details from t_issues where id_issue='" + id_issue + "'";
+                        "Effect,Deptid,Issue_Category,branch,Location,issue_date,reporting_to,notified_to,Impact_detail,Repet_Issue,additional_details,ISOStds from t_issues where id_issue='" + id_issue + "'";
 
                     DataSet dsIssueList = objGlobaldata.Getdetails(sSqlstmt);
                     if (dsIssueList.Tables.Count > 0 && dsIssueList.Tables[0].Rows.Count > 0)
@@ -650,7 +655,8 @@ namespace ISOStd.Controllers
                             notified_to = (dsIssueList.Tables[0].Rows[0]["notified_to"].ToString()),
                             Impact_detail= (dsIssueList.Tables[0].Rows[0]["Impact_detail"].ToString()),
                             Repet_Issue= (dsIssueList.Tables[0].Rows[0]["Repet_Issue"].ToString()),
-                            additional_details = (dsIssueList.Tables[0].Rows[0]["additional_details"].ToString())
+                            additional_details = (dsIssueList.Tables[0].Rows[0]["additional_details"].ToString()),
+                            ISOStds = (dsIssueList.Tables[0].Rows[0]["ISOStds"].ToString())
                         };
                         DateTime dtValue;
                         if (DateTime.TryParse(dsIssueList.Tables[0].Rows[0]["issue_date"].ToString(), out dtValue))

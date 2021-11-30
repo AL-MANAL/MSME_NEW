@@ -152,6 +152,8 @@ namespace ISOStd.Models
         [Display(Name = "Target Date")]
         public DateTime target_date { get; set; }
 
+        [Display(Name = "Risk due to")]
+        public string Issue { get; set; }
 
         internal Dictionary<string, string> GetRiskRatings(string sImp_id, string sLikeliId)
         {
@@ -246,7 +248,7 @@ namespace ISOStd.Models
             try
             {
 
-                string sSqlstmt = "insert into t_environment_risk(dept,branch_id,Location,source_id,activity,product,aspects,impact,area_affected,notified_to,reported_by,activity_type";
+                string sSqlstmt = "insert into t_environment_risk(dept,branch_id,Location,source_id,activity,product,aspects,impact,area_affected,notified_to,reported_by,activity_type,Issue";
                 string sFields = "", sFieldValue = "";
 
                 if (HazardModels.reported_date != null && HazardModels.reported_date > Convert.ToDateTime("01/01/0001 00:00:00"))
@@ -258,7 +260,7 @@ namespace ISOStd.Models
                 sSqlstmt = sSqlstmt + sFields;
 
                 sSqlstmt = sSqlstmt + ") values('" + HazardModels.dept + "','" + HazardModels.branch_id + "','" + HazardModels.Location + "','" + HazardModels.source_id + "','" + HazardModels.activity +
-                    "','" + HazardModels.product + "','" + HazardModels.aspects + "','" + HazardModels.impact + "','" + HazardModels.area_affected + "','" + HazardModels.notified_to + "','" + HazardModels.reported_by + "','" + HazardModels.activity_type + "'";
+                    "','" + HazardModels.product + "','" + HazardModels.aspects + "','" + HazardModels.impact + "','" + HazardModels.area_affected + "','" + HazardModels.notified_to + "','" + HazardModels.reported_by + "','" + HazardModels.activity_type + "','" + HazardModels.Issue + "'";
 
                 sSqlstmt = sSqlstmt + sFieldValue + ")";
                 int id_env_risk = 0;
@@ -603,7 +605,7 @@ namespace ISOStd.Models
             try
             {
                 string sSqlstmt = "update t_environment_risk set dept='" + objModel.dept + "',branch_id='" + objModel.branch_id + "',location='" + objModel.Location + "',source_id='" + objModel.source_id + "'"
-                    + ",activity_type='" + objModel.activity_type + "',product='" + objModel.product + "',aspects='" + objModel.aspects + "',activity='" + objModel.activity + "',impact='" + objModel.impact + "',reported_by='" + objModel.reported_by + "',notified_to='" + objModel.notified_to + "'";
+                    + ",activity_type='" + objModel.activity_type + "',product='" + objModel.product + "',aspects='" + objModel.aspects + "',activity='" + objModel.activity + "',impact='" + objModel.impact + "',reported_by='" + objModel.reported_by + "',notified_to='" + objModel.notified_to + "',Issue='" + objModel.Issue + "'";
 
                 if (objModel.reported_date != null && objModel.reported_date > Convert.ToDateTime("01/01/0001 00:00:00"))
                 {

@@ -43,7 +43,7 @@ namespace ISOStd.Controllers
 
                 if (Header_id != null && Header_id != "")
                 {
-                    ViewBag.dsItems = objGlobaldata.Getdetails("select item_id, header_id, item_desc, item_fulldesc from dropdownitems where header_id='" + Header_id + "' order by item_desc asc");
+                    ViewBag.dsItems = objGlobaldata.Getdetails("select item_id, header_id, item_desc, item_fulldesc,isDefault from dropdownitems where header_id='" + Header_id + "' order by item_desc asc");
                     ViewBag.Header_id = Header_id;
                 }
                 //else
@@ -82,6 +82,12 @@ namespace ISOStd.Controllers
         {
             try
             {
+                
+                if(form["isDefault"] != "" && form["isDefault"] != null)
+                {
+                    objDropDownItemsModels.isDefault = "yes";
+                }
+              
                 if (objDropDownItemsModels.FunAddItems(objDropDownItemsModels))
                     {
                         //objEmployeeModel.MailTempPassword(objEmployeeModel.emailAddress);
@@ -106,7 +112,7 @@ namespace ISOStd.Controllers
         // GET: /DropDownItems/UpdateItems
          
         [AllowAnonymous]
-        public JsonResult UpdateItems(string item_id, string header_id, string item_desc, string item_fulldesc)
+        public JsonResult UpdateItems(string item_id, string header_id, string item_desc, string item_fulldesc, string isDefault)
         {
             DropDownItemsModels objDropDownItemsModels = new DropDownItemsModels();
 
@@ -116,7 +122,15 @@ namespace ISOStd.Controllers
                 objDropDownItemsModels.item_desc = item_desc;
                 objDropDownItemsModels.item_fulldesc = item_fulldesc;
                 objDropDownItemsModels.header_id = header_id;
-
+                if (isDefault == "true")
+                {
+                    objDropDownItemsModels.isDefault = "yes";
+                }
+                else
+                {
+                    objDropDownItemsModels.isDefault = null;
+                }
+                
                 if (objDropDownItemsModels.FunUpdateItems(objDropDownItemsModels))
                 {
                     //objEmployeeModel.MailTempPassword(objEmployeeModel.emailAddress);

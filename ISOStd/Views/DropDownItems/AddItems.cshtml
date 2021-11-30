@@ -186,6 +186,19 @@
 
                                     </td>
                                 </tr>
+                                <tr>
+                                    <td>
+                                        Is Default
+                                    </td>
+                                    <td>
+                                        <div class="form-check">
+                                            <label class="form-check-label">
+                                                <input type="checkbox" id="isDefault" name="isDefault" class="form-check-input-styled" data-fouc />
+                                            </label>
+                                        </div>
+                                       
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
 
@@ -237,6 +250,7 @@
                                 <tr class="row" style="background-color: #e5eafe; color: #0099ff; font-weight: bold;">
                                     <th class="col col-xs-10">Name</th>
                                     <th class="col col-xs-10">Description</th>
+                                    <th class="col col-xs-10">Is Default</th>
                                     @if (Obj.GetCurrentUserSession().DropDown.Contains("3") || Obj.GetCurrentUserSession().DropDown.Contains("5"))
                                     {
                                         <th class="col col-xs-2">Action</th>
@@ -254,7 +268,23 @@
                                                    name="item_fulldesc @dsItems.Tables[0].Rows[item]["item_id"].ToString()"
                                                    value="@dsItems.Tables[0].Rows[item]["item_fulldesc"].ToString()" title="@dsItems.Tables[0].Rows[item]["item_fulldesc"].ToString()" />
                                         </td>
-                                        <td class="col col-xs-2">
+                                        <td class="col col-xs-10">
+                                            <div class="form-check">
+                                                <label class="form-check-label">
+                                                    @if (dsItems.Tables[0].Rows[item]["isDefault"].ToString() == "yes")
+                                                    {
+                                                        <input type="checkbox" id="isDefault @dsItems.Tables[0].Rows[item]["item_id"].ToString()" name="isDefault @dsItems.Tables[0].Rows[item]["item_id"].ToString()" class="form-check-input-styled" checked data-fouc value="@dsItems.Tables[0].Rows[item]["isDefault"].ToString()" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <input type="checkbox" id="isDefault @dsItems.Tables[0].Rows[item]["item_id"].ToString()" name="isDefault @dsItems.Tables[0].Rows[item]["item_id"].ToString()" class="form-check-input-styled" data-fouc />
+                                                    }
+
+                                                </label>
+                                            </div>
+
+                                            </td>
+                                         <td class="col col-xs-2">
 
 
                                             @if (Obj.GetCurrentUserSession().DropDown.Contains("3"))
@@ -305,20 +335,21 @@
     }
          });
 
-
+            $('.form-check-input-styled').uniform();
          
 
-
+           
 
          function UpdateItems(item_id, header_id) {
              var item_desc = document.getElementById("item_desc " + item_id).value;
              var item_fulldesc = document.getElementById("item_fulldesc " + item_id).value;
-          
+             var isDefault = document.getElementById("isDefault " + item_id).checked;
+
              jQuery.ajax({
                  url: '@Url.Action("UpdateItems", "DropDownItems")',
                  type: 'POST',
                  dataType: "json",
-                 data: { 'item_id': item_id, 'header_id': header_id, 'item_desc': item_desc, 'item_fulldesc' : item_fulldesc },
+                 data: { 'item_id': item_id, 'header_id': header_id, 'item_desc': item_desc, 'item_fulldesc': item_fulldesc, 'isDefault': isDefault },
                  success: function (result) {
                      var params = {
                          Header_id: header_id
@@ -447,13 +478,17 @@ function DeleteItems(item_id, header_id) {
                           cellth1.className = "col col-xs-10";
                           var cellth2 = theaderRow.insertCell(2);
                           cellth2.className = "col col-xs-2";
+                          var cellth3 = theaderRow.insertCell(3);
+                          cellth3.className = "col col-xs-2";
 
                          cellth0.innerHTML = "<th>Name</th>";
                          cellth1.innerHTML = "<th>Description</th>";
-                         cellth2.innerHTML = "<th>Action</th>";
+                         cellth2.innerHTML = "<th>Is Default</th>";
+                         cellth3.innerHTML = "<th>Action</th>";
                          table.rows[1].cells[0].style = "color:#0099ff";
                          table.rows[1].cells[1].style = "color:#0099ff";
                          table.rows[1].cells[2].style = "color:#0099ff;";
+                         table.rows[1].cells[3].style = "color:#0099ff;";
 
                          
                          var list = result;
@@ -470,7 +505,8 @@ function DeleteItems(item_id, header_id) {
                                 cell1.className = "col col-xs-10";
                                 var cell2 = row.insertCell(2);
                                 cell2.className = "col col-xs-2";
-
+                                var cell3 = row.insertCell(3);
+                                cell3.className = "col col-xs-2";
                      
 
                              var AgendaName = item.Text;
@@ -483,7 +519,15 @@ function DeleteItems(item_id, header_id) {
                              dataarray = data.split("__");
                              cell0.innerHTML = " <input class='form-control' type='text' id='item_desc " + Id + "' name='item_desc " + Id + "' value='" + dataarray[0] + "'/>";
                              cell1.innerHTML = " <input class='form-control' type='text' id='item_fulldesc " + Id + "' name='item_fulldesc " + Id + "' value='" + dataarray[1] + "' title='" + dataarray[1] + "'/>";
-                            });
+                             if (dataarray[2] == "yes") {
+                                 cell2.innerHTML = " <input class='form-control'  type='checkbox' id='isDefault " + Id + "' name='isDefault " + Id + "' checked value='" + dataarray[2] + "' title='" + dataarray[2] + "'/>";
+
+                             }
+                             else {
+                                 cell2.innerHTML = " <input class='form-control' type='checkbox' id='isDefault " + Id + "' name='isDefault " + Id + "'  />";
+
+                             }
+                         });
                         }
                         else {
                              bootbox.alert({
@@ -554,14 +598,18 @@ function DeleteItems(item_id, header_id) {
                           cellth1.className = "col col-xs-10";
                           var cellth2 = theaderRow.insertCell(2);
                           cellth2.className = "col col-xs-2";
+                          var cellth3 = theaderRow.insertCell(3);
+                          cellth3.className = "col col-xs-2";
 
                          cellth0.innerHTML = "<th>Name</th>";
                          cellth1.innerHTML = "<th>Description</th>";
-                         cellth2.innerHTML = "<th>Action</th>";
+                         cellth2.innerHTML = "<th>Is Default</th>";
+                         cellth3.innerHTML = "<th>Action</th>";
 
                          table.rows[2].cells[0].style = "color:#0099ff";
                          table.rows[2].cells[1].style = "color:#0099ff";
-                         table.rows[2].cells[2].style = "color:#0099ff";                        
+                         table.rows[2].cells[2].style = "color:#0099ff";
+                         table.rows[2].cells[3].style = "color:#0099ff";
 
                          var list = result;
                          $.each(list, function (index, item) {
@@ -577,6 +625,8 @@ function DeleteItems(item_id, header_id) {
                                 cell1.className = "col col-xs-10";
                                 var cell2 = row.insertCell(2);
                                 cell2.className = "col col-xs-2";
+                                var cell3 = row.insertCell(3);
+                                cell3.className = "col col-xs-2";
 
                              var AgendaName = item.Text;
                              var Id = item.Value;
@@ -591,11 +641,25 @@ function DeleteItems(item_id, header_id) {
 
                              cell0.innerHTML = " <input class='form-control' type='text' id='item_desc " + Id + "' name='item_desc " + Id + "' value='" + dataarray[0] + "'/>";
                              cell1.innerHTML = " <input class='form-control' type='text' id='item_fulldesc " + Id + "' name='item_fulldesc " + Id + "' value='" + dataarray[1] + "' title='" + dataarray[1] + "'/>";
-                             cell2.innerHTML = 
+                            
+                             if (dataarray[2] == "yes")
+                             {
+                                 cell2.innerHTML = " <input class='form-control'  type='checkbox' id='isDefault " + Id + "' name='isDefault " + Id + "' checked value='" + dataarray[2] + "' title='" + dataarray[2] + "'/>";
+
+                             }
+                             else
+                             {
+                                 cell2.innerHTML = " <input class='form-control' type='checkbox' id='isDefault " + Id + "' name='isDefault " + Id + "'  />";
+
+                             }
+
+
+
+                             cell3.innerHTML =
 
                              "<span class='badge badge-info' style='cursor: pointer;' title='Update Item'  onclick='UpdateItems(" + item.Value + ", " + header_id + ")'>Edit</span>"
                                     + " <span class='badge badge-danger' onclick='DeleteItems(" + item.Value + ", " + header_id + ")' style='cursor:pointer;' title='Delete Agenda'>Delete</span>";
-                            });
+            });
                         }
                         else {
                        
@@ -657,14 +721,18 @@ function DeleteItems(item_id, header_id) {
                           cellth1.className = "col col-xs-10";
                           var cellth2 = theaderRow.insertCell(2);
                           cellth2.className = "col col-xs-2";
+                          var cellth3 = theaderRow.insertCell(3);
+                          cellth3.className = "col col-xs-10";
 
                          cellth0.innerHTML = "<th>Name</th>";
                          cellth1.innerHTML = "<th>Description</th>";
-                         cellth2.innerHTML = "<th>Action</th>";
+                         cellth2.innerHTML = "<th>Is Default</th>";
+                         cellth3.innerHTML = "<th>Action</th>";
 
                          table.rows[1].cells[0].style = "color:#0099ff";
                          table.rows[1].cells[1].style = "color:#0099ff";
                          table.rows[1].cells[2].style = "color:#0099ff;";
+                         table.rows[1].cells[3].style = "color:#0099ff;";
 
                          var list = result;
                          $.each(list, function (index, item) {
@@ -680,7 +748,8 @@ function DeleteItems(item_id, header_id) {
                                 cell1.className = "col col-xs-10";
                                 var cell2 = row.insertCell(2);
                                 cell2.className = "col col-xs-2";
-
+                                var cell3 = row.insertCell(3);
+                                cell3.className = "col col-xs-2";
                      
 
                              var AgendaName = item.Text;
@@ -693,6 +762,14 @@ function DeleteItems(item_id, header_id) {
                              dataarray = data.split("__");
                              cell0.innerHTML = " <input class='form-control' type='text' id='item_desc " + Id + "' name='item_desc " + Id + "' value='" + dataarray[0] + "'/>";
                              cell1.innerHTML = " <input class='form-control' type='text' id='item_fulldesc " + Id + "' name='item_fulldesc " + Id + "' value='" + dataarray[1] + "' title='" + dataarray[1] + "'/>";
+                             if (dataarray[2] == "yes") {
+                                 cell2.innerHTML = " <input class='form-control'  type='checkbox' id='isDefault " + Id + "' name='isDefault " + Id + "' checked value='" + dataarray[2] + "' title='" + dataarray[2] + "'/>";
+
+                             }
+                             else {
+                                 cell2.innerHTML = " <input class='form-control' type='checkbox' id='isDefault " + Id + "' name='isDefault " + Id + "'  />";
+
+                             }
                             });
                         }
                         else {

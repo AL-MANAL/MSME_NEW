@@ -96,7 +96,11 @@ namespace ISOStd.Models
 
         [Display(Name = "Upload")]
         public string status_upload { get; set; }
+        public string loggedby { get; set; }
+        public string reporting_toId { get; set; }
 
+        [Display(Name = "Standards")]
+        public string ISOStds { get; set; }
 
         internal bool CheckForIssueRefNoExists(string sIssue_refno)
         {
@@ -169,7 +173,7 @@ namespace ISOStd.Models
                 string sFiledValue = "";
 
                 string sSqlstmt = "insert into t_issues (Issue,IssueType, Impact,Isostd, Evidence,ImpactDesc," +
-                    "Effect,Issue_refno,Deptid,Issue_Category,branch,Location,reporting_to,notified_to,loggedby,Impact_detail,Repet_Issue,additional_details";
+                    "Effect,Issue_refno,Deptid,Issue_Category,branch,Location,reporting_to,notified_to,loggedby,Impact_detail,Repet_Issue,additional_details,ISOStds";
                     
                     if(objissue.issue_date != null && objissue.issue_date > Convert.ToDateTime("01/01/0001"))
                     {
@@ -180,7 +184,7 @@ namespace ISOStd.Models
                 sSqlstmt = sSqlstmt + sFiled + " ) values('" + objissue.Issue + "','" + objissue.IssueType + "','" + objissue.Impact + "'"
                     + ",'" + objissue.Isostd + "','" + objissue.Evidence + "','" + objissue.ImpactDesc + "','" + objissue.Effect + "','" + objissue.Issue_refno + "','" + objissue.Deptid + "','"
                     + objissue.Issue_Category + "','" + objissue.branch + "','" + objissue.Location + "','" + objissue.reporting_to + "','" + objissue.notified_to 
-                    + "','" + objGlobalData.GetCurrentUserSession().empid + "','" + objissue.Impact_detail + "','" + objissue.Repet_Issue + "','" + objissue.additional_details + "'";
+                    + "','" + objGlobalData.GetCurrentUserSession().empid + "','" + objissue.Impact_detail + "','" + objissue.Repet_Issue + "','" + objissue.additional_details + "','" + objissue.ISOStds + "'";
                     
                 sSqlstmt = sSqlstmt + sFiledValue + ")";
                 int iid_issue = 0;
@@ -200,7 +204,7 @@ namespace ISOStd.Models
                     if (objGlobalData.ExecuteQuery(sql1))
 
 
-                    SendIssueEmail(iid_issue);
+                    SendIssueEmail(iid_issue,"Internal and External Issue");
                     return true;
                    }
                 }
@@ -211,23 +215,25 @@ namespace ISOStd.Models
             }
             return false;
         }
-
-        internal bool SendIssueEmail(int id_issue, string sMessage = "")
+        internal bool SendIssueEmail(int iid_issue, string sMessage = "")
         {
             try
             {
                 string sType = "email";
 
-                string sSqlstmt = "select Issue_refno,id_issue,Issue,IssueType,Impact,Isostd,Evidence," +
-                    "ImpactDesc,Effect,Deptid,Issue_Category,branch,Location,issue_date,reporting_to,notified_to,loggedby,Impact_detail from t_issues where id_issue ='" + id_issue + "'";
+                string sSqlstmt = "select Issue,IssueType,Impact,Effect,Issue_refno,Issue_Category,"
+                + "Deptid,branch,Location,issue_date,reporting_to,notified_to,loggedby,additional_details,"
+                + "Impact_detail,Repet_Issue,ISOStds from t_issues where id_issue = '" + iid_issue + "'";
 
-                DataSet dsIssueList = objGlobalData.Getdetails(sSqlstmt);
-                IssuesModels objType = new IssuesModels();
+                DataSet dsData = objGlobalData.Getdetails(sSqlstmt);
 
-                if (dsIssueList.Tables.Count > 0 && dsIssueList.Tables[0].Rows.Count > 0)
+                if (dsData.Tables.Count > 0 && dsData.Tables[0].Rows.Count > 0)
                 {
-                    string sHeader, sInformation = "", sTitle = "", sSubject = "", sContent = "", aAttachment = "";
+                    //objGlobalData.AddFunctionalLog("Step");
+                    //AddFunctionalLog("Step");
+                    string sHeader, sInformation = "", sTitle = "", sSubject = "", sContent = "", aAttachment = "", BccEmailIds = "";
 
+                    //using streamreader for reading my htmltemplate 
                     //Form the Email Subject and Body content
                     DataSet dsEmailXML = new DataSet();
                     dsEmailXML.ReadXml(HttpContext.Current.Server.MapPath("~/EmailTemplates.xml"));
@@ -241,92 +247,64 @@ namespace ISOStd.Models
                     {
                         sContent = reader.ReadToEnd();
                     }
-                    string sName = "All";
-                    string sToEmailIds = "";
-                    if (objGlobalData.GetMultiHrEmpEmailIdById(dsIssueList.Tables[0].Rows[0]["reporting_to"].ToString()) != "")
+                    //string sName = objGlobalData.GetMultiHrEmpNameById(dsData.Tables[0].Rows[0]["approved_by"].ToString());
+                    string sToEmailIds = objGlobalData.GetMultiHrEmpEmailIdById(dsData.Tables[0].Rows[0]["reporting_to"].ToString());
+                    string sCCEmailIds = objGlobalData.GetMultiHrEmpEmailIdById(dsData.Tables[0].Rows[0]["notified_to"].ToString()) + "," + objGlobalData.GetMultiHrEmpEmailIdById(dsData.Tables[0].Rows[0]["loggedby"].ToString());
+
+                    string issue_date = "";
+                    if (dsData.Tables[0].Rows[0]["issue_date"].ToString() != null && Convert.ToDateTime(dsData.Tables[0].Rows[0]["issue_date"].ToString()) > Convert.ToDateTime("01/01/0001"))
                     {
-                        sToEmailIds = objGlobalData.GetMultiHrEmpEmailIdById(dsIssueList.Tables[0].Rows[0]["reporting_to"].ToString()) + ",";
+                        issue_date = Convert.ToDateTime(dsData.Tables[0].Rows[0]["issue_date"].ToString()).ToString("yyyy-MM-dd");
                     }
-                    if (objGlobalData.GetMultiHrEmpEmailIdById(dsIssueList.Tables[0].Rows[0]["notified_to"].ToString()) != "")
-                    {
-                        sToEmailIds = sToEmailIds+","+objGlobalData.GetMultiHrEmpEmailIdById(dsIssueList.Tables[0].Rows[0]["notified_to"].ToString()) + ",";
-                    }
+                    sHeader = "<tr><td colspan=3><b>Issue Ref No:<b></td> <td colspan=3>" + dsData.Tables[0].Rows[0]["Issue_refno"].ToString() + "</td></tr>"
+                    + "<tr><td colspan=3><b>Division:<b></td> <td colspan=3>" + objGlobalData.GetCompanyBranchNameById(dsData.Tables[0].Rows[0]["branch"].ToString()) + "</td></tr>"
+                    + "<tr><td colspan=3><b>Department:<b></td> <td colspan=3>" + objGlobalData.GetDeptNameById(dsData.Tables[0].Rows[0]["Deptid"].ToString()) + "</td></tr>"
+
+                     + "<tr><td colspan=3><b>Location:<b></td> <td colspan=3>" + objGlobalData.GetLocationNameById(dsData.Tables[0].Rows[0]["Location"].ToString()) + "</td></tr>"
+
+                    + "<tr><td colspan=3><b>Issue Reporting Date:<b></td> <td colspan=3>" + issue_date + "</td></tr>"
+
+                    + "<tr><td colspan=3><b>Issue Reported To:<b></td> <td colspan=3>" +objGlobalData.GetMultiHrEmpNameById(dsData.Tables[0].Rows[0]["reporting_to"].ToString()) + "</td></tr>"
+
+                    + "<tr><td colspan=3><b>Standard:<b></td> <td colspan=3>" + objGlobalData.GetIsoStdNameById(dsData.Tables[0].Rows[0]["ISOStds"].ToString()) + "</td></tr>"
+
+                    + "<tr><td colspan=3><b>Issue:<b></td> <td colspan=3>" + (dsData.Tables[0].Rows[0]["Issue"].ToString()) + "</td></tr>"
+
+                    + "<tr><td colspan=3><b>Effect:<b></td> <td colspan=3>" + objGlobalData.GetDropdownitemById(dsData.Tables[0].Rows[0]["Effect"].ToString()) + "</td></tr>"
+
+                    + "<tr><td colspan=3><b>Repetitive Issue:<b></td> <td colspan=3>" + objGlobalData.GetIssueRefnobyId(dsData.Tables[0].Rows[0]["Repet_Issue"].ToString()) + "</td></tr>"
+
+                    + "<tr><td colspan=3><b>Additional Details:<b></td> <td colspan=3>" + (dsData.Tables[0].Rows[0]["additional_details"].ToString()) + "</td></tr>"
+
+                    + "<tr><td colspan=3><b>Issue Category:<b></td> <td colspan=3>" + objGlobalData.GetDropdownitemById(dsData.Tables[0].Rows[0]["Issue_Category"].ToString()) + "</td></tr>"
+
+                    + "<tr><td colspan=3><b>Issue Type:<b></td> <td colspan=3>" + (dsData.Tables[0].Rows[0]["IssueType"].ToString()) + "</td></tr>"
+
+                    + "<tr><td colspan=3><b>Impact Level:<b></td> <td colspan=3>" + (dsData.Tables[0].Rows[0]["Impact"].ToString()) + "</td></tr>"
+
+                    + "<tr><td colspan=3><b>Impact in detail:<b></td> <td colspan=3>" + objGlobalData.GetDropdownitemById(dsData.Tables[0].Rows[0]["Impact_detail"].ToString()) + "</td></tr>"
+
+                     + "<tr><td colspan=3><b>Notified To:<b></td> <td colspan=3>" + objGlobalData.GetMultiHrEmpNameById(dsData.Tables[0].Rows[0]["notified_to"].ToString()) + "</td></tr>"; 
+
+
+                    sContent = sContent.Replace("{FromMsg}", "");
+                    //sContent = sContent.Replace("{UserName}", sName);
+                    sContent = sContent.Replace("{Title}", "Internal and External Issue Details");
+                    sContent = sContent.Replace("{content}", sHeader + sInformation);
+                    sContent = sContent.Replace("{message}", "");
+                    sContent = sContent.Replace("{extramessage}", "");
 
                     sToEmailIds = Regex.Replace(sToEmailIds, ",+", ",");
                     sToEmailIds = sToEmailIds.Trim();
                     sToEmailIds = sToEmailIds.TrimEnd(',');
                     sToEmailIds = sToEmailIds.TrimStart(',');
 
-                    string sCCEmailIds = objGlobalData.GetMultiHrEmpEmailIdById(dsIssueList.Tables[0].Rows[0]["loggedby"].ToString());
-                                        
-                    //if (objGlobalData.GetMultiHrEmpEmailIdById(dsIssueList.Tables[0].Rows[0]["reporting_to"].ToString()) != "")
-                    //{
-                    //    sCCEmailIds = sCCEmailIds +","+ objGlobalData.GetMultiHrEmpEmailIdById(dsIssueList.Tables[0].Rows[0]["reporting_to"].ToString()) + ",";
-                    //}
-                    //sCCEmailIds = sCCEmailIds.Trim();
-                    //sCCEmailIds = sCCEmailIds.TrimEnd(',');
-                    //sCCEmailIds = sCCEmailIds.TrimStart(',');
-
-
                     sCCEmailIds = Regex.Replace(sCCEmailIds, ",+", ",");
                     sCCEmailIds = sCCEmailIds.Trim();
                     sCCEmailIds = sCCEmailIds.TrimEnd(',');
                     sCCEmailIds = sCCEmailIds.TrimStart(',');
 
-                    if (dsIssueList.Tables[0].Rows[0]["Evidence"].ToString() != "")
-                    {
-                        if (dsIssueList.Tables[0].Rows[0]["Evidence"].ToString().Contains(','))
-                        {
-                            string[] varfile = dsIssueList.Tables[0].Rows[0]["Evidence"].ToString().Split(',');
-
-                            for (int i = 0; i < varfile.Length; i++)
-                            {
-                                //if (System.IO.File.Exists(varfile[i]))
-                                //{
-                                    aAttachment = aAttachment + "," + HttpContext.Current.Server.MapPath(varfile[i]);
-                                //}
-                            }
-                        }
-                        else
-                        {
-                            //if (System.IO.File.Exists(dsIssueList.Tables[0].Rows[0]["Evidence"].ToString()))
-                            //{
-                                aAttachment = HttpContext.Current.Server.MapPath(dsIssueList.Tables[0].Rows[0]["Evidence"].ToString());
-                            //}
-                        }
-
-                    }
-                    aAttachment = aAttachment.Trim();
-                    aAttachment = aAttachment.TrimEnd(',');
-                    aAttachment = aAttachment.TrimStart(',');
-
-                    sHeader = "<tr><td colspan=3><b>Issue Number:<b></td> <td colspan=3>"
-                        + dsIssueList.Tables[0].Rows[0]["Issue_refno"].ToString() + "</td></tr>"
-                        + "<tr><td colspan=3><b>Issue Reported Date:<b></td> <td colspan=3>" + Convert.ToDateTime(dsIssueList.Tables[0].Rows[0]["issue_date"].ToString()).ToString("dd/MM/yyyy") + "</td></tr>"
-                        + "<tr><td colspan=3><b>Issue:<b></td> <td colspan=3>" + (dsIssueList.Tables[0].Rows[0]["Issue"].ToString()) + "</td></tr>"
-                        + "<tr><td colspan=3><b>Issue Category:<b></td> <td colspan=3>" + objGlobalData.GetDropdownitemById(dsIssueList.Tables[0].Rows[0]["Issue_Category"].ToString()) + "</td></tr>"
-                        + "<tr><td colspan=3><b>Issue Type:<b></td> <td colspan=3>" + (dsIssueList.Tables[0].Rows[0]["IssueType"].ToString()) + "</td></tr>"
-                        + "<tr><td colspan=3><b>Effect Due to Issue:<b></td> <td colspan=3>" + (dsIssueList.Tables[0].Rows[0]["Effect"].ToString()) + "</td></tr>"
-                        + "<tr><td colspan=3><b>Impact Level:<b></td> <td colspan=3>" + (dsIssueList.Tables[0].Rows[0]["Impact"].ToString()) + "</td></tr>"
-                         + "<tr><td colspan=3><b>Impact Details:<b></td> <td colspan=3>" + objGlobalData.GetDropdownitemById(dsIssueList.Tables[0].Rows[0]["Impact_detail"].ToString()) + "</td></tr>";
-
-                    if (File.Exists(aAttachment))
-                    {
-                        sHeader = sHeader + "<tr><td colspan=3><b>Document Uploaded:<b></td> <td colspan=3>Please find the attachment</td></tr>";
-                    }
-
-                    sContent = sContent.Replace("{FromMsg}", "");
-                    sContent = sContent.Replace("{UserName}", sName);
-                    sContent = sContent.Replace("{Title}", "Issue Details");
-                    sContent = sContent.Replace("{content}", sHeader);
-                    sContent = sContent.Replace("{message}", "");
-                    sContent = sContent.Replace("{extramessage}", "");
-
-                    sToEmailIds = sToEmailIds.Trim(',');
-
-
-                    objGlobalData.Sendmail(sToEmailIds, sSubject + sMessage, sContent, aAttachment, sCCEmailIds, "");
-                    return true;
+                    return objGlobalData.Sendmail(sToEmailIds, sSubject + sMessage, sContent, aAttachment, sCCEmailIds, "");
                 }
             }
             catch (Exception ex)
@@ -335,6 +313,129 @@ namespace ISOStd.Models
             }
             return false;
         }
+        //internal bool SendIssueEmail(int id_issue, string sMessage = "")
+        //{
+        //    try
+        //    {
+        //        string sType = "email";
+
+        //        string sSqlstmt = "select Issue_refno,id_issue,Issue,IssueType,Impact,Isostd,Evidence," +
+        //            "ImpactDesc,Effect,Deptid,Issue_Category,branch,Location,issue_date,reporting_to,notified_to,loggedby,Impact_detail from t_issues where id_issue ='" + id_issue + "'";
+
+        //        DataSet dsIssueList = objGlobalData.Getdetails(sSqlstmt);
+        //        IssuesModels objType = new IssuesModels();
+
+        //        if (dsIssueList.Tables.Count > 0 && dsIssueList.Tables[0].Rows.Count > 0)
+        //        {
+        //            string sHeader, sInformation = "", sTitle = "", sSubject = "", sContent = "", aAttachment = "";
+
+        //            //Form the Email Subject and Body content
+        //            DataSet dsEmailXML = new DataSet();
+        //            dsEmailXML.ReadXml(HttpContext.Current.Server.MapPath("~/EmailTemplates.xml"));
+
+        //            if (sType != "" && dsEmailXML.Tables.Count > 0 && dsEmailXML.Tables[sType] != null && dsEmailXML.Tables[sType].Rows.Count > 0)
+        //            {
+        //                sSubject = dsEmailXML.Tables[sType].Rows[0]["subject"].ToString();
+        //            }
+
+        //            using (StreamReader reader = new StreamReader(HttpContext.Current.Server.MapPath("~/Views/EmailTemplate/EmailTemplate.html")))
+        //            {
+        //                sContent = reader.ReadToEnd();
+        //            }
+        //            string sName = "All";
+        //            string sToEmailIds = "";
+        //            if (objGlobalData.GetMultiHrEmpEmailIdById(dsIssueList.Tables[0].Rows[0]["reporting_to"].ToString()) != "")
+        //            {
+        //                sToEmailIds = objGlobalData.GetMultiHrEmpEmailIdById(dsIssueList.Tables[0].Rows[0]["reporting_to"].ToString()) + ",";
+        //            }
+        //            if (objGlobalData.GetMultiHrEmpEmailIdById(dsIssueList.Tables[0].Rows[0]["notified_to"].ToString()) != "")
+        //            {
+        //                sToEmailIds = sToEmailIds+","+objGlobalData.GetMultiHrEmpEmailIdById(dsIssueList.Tables[0].Rows[0]["notified_to"].ToString()) + ",";
+        //            }
+
+        //            sToEmailIds = Regex.Replace(sToEmailIds, ",+", ",");
+        //            sToEmailIds = sToEmailIds.Trim();
+        //            sToEmailIds = sToEmailIds.TrimEnd(',');
+        //            sToEmailIds = sToEmailIds.TrimStart(',');
+
+        //            string sCCEmailIds = objGlobalData.GetMultiHrEmpEmailIdById(dsIssueList.Tables[0].Rows[0]["loggedby"].ToString());
+
+        //            //if (objGlobalData.GetMultiHrEmpEmailIdById(dsIssueList.Tables[0].Rows[0]["reporting_to"].ToString()) != "")
+        //            //{
+        //            //    sCCEmailIds = sCCEmailIds +","+ objGlobalData.GetMultiHrEmpEmailIdById(dsIssueList.Tables[0].Rows[0]["reporting_to"].ToString()) + ",";
+        //            //}
+        //            //sCCEmailIds = sCCEmailIds.Trim();
+        //            //sCCEmailIds = sCCEmailIds.TrimEnd(',');
+        //            //sCCEmailIds = sCCEmailIds.TrimStart(',');
+
+
+        //            sCCEmailIds = Regex.Replace(sCCEmailIds, ",+", ",");
+        //            sCCEmailIds = sCCEmailIds.Trim();
+        //            sCCEmailIds = sCCEmailIds.TrimEnd(',');
+        //            sCCEmailIds = sCCEmailIds.TrimStart(',');
+
+        //            if (dsIssueList.Tables[0].Rows[0]["Evidence"].ToString() != "")
+        //            {
+        //                if (dsIssueList.Tables[0].Rows[0]["Evidence"].ToString().Contains(','))
+        //                {
+        //                    string[] varfile = dsIssueList.Tables[0].Rows[0]["Evidence"].ToString().Split(',');
+
+        //                    for (int i = 0; i < varfile.Length; i++)
+        //                    {
+        //                        //if (System.IO.File.Exists(varfile[i]))
+        //                        //{
+        //                            aAttachment = aAttachment + "," + HttpContext.Current.Server.MapPath(varfile[i]);
+        //                        //}
+        //                    }
+        //                }
+        //                else
+        //                {
+        //                    //if (System.IO.File.Exists(dsIssueList.Tables[0].Rows[0]["Evidence"].ToString()))
+        //                    //{
+        //                        aAttachment = HttpContext.Current.Server.MapPath(dsIssueList.Tables[0].Rows[0]["Evidence"].ToString());
+        //                    //}
+        //                }
+
+        //            }
+        //            aAttachment = aAttachment.Trim();
+        //            aAttachment = aAttachment.TrimEnd(',');
+        //            aAttachment = aAttachment.TrimStart(',');
+
+        //            sHeader = "<tr><td colspan=3><b>Issue Number:<b></td> <td colspan=3>"
+        //                + dsIssueList.Tables[0].Rows[0]["Issue_refno"].ToString() + "</td></tr>"
+        //                + "<tr><td colspan=3><b>Issue Reported Date:<b></td> <td colspan=3>" + Convert.ToDateTime(dsIssueList.Tables[0].Rows[0]["issue_date"].ToString()).ToString("dd/MM/yyyy") + "</td></tr>"
+        //                + "<tr><td colspan=3><b>Issue:<b></td> <td colspan=3>" + (dsIssueList.Tables[0].Rows[0]["Issue"].ToString()) + "</td></tr>"
+        //                + "<tr><td colspan=3><b>Issue Category:<b></td> <td colspan=3>" + objGlobalData.GetDropdownitemById(dsIssueList.Tables[0].Rows[0]["Issue_Category"].ToString()) + "</td></tr>"
+        //                + "<tr><td colspan=3><b>Issue Type:<b></td> <td colspan=3>" + (dsIssueList.Tables[0].Rows[0]["IssueType"].ToString()) + "</td></tr>"
+        //                + "<tr><td colspan=3><b>Effect Due to Issue:<b></td> <td colspan=3>" + (dsIssueList.Tables[0].Rows[0]["Effect"].ToString()) + "</td></tr>"
+        //                + "<tr><td colspan=3><b>Impact Level:<b></td> <td colspan=3>" + (dsIssueList.Tables[0].Rows[0]["Impact"].ToString()) + "</td></tr>"
+        //                 + "<tr><td colspan=3><b>Impact Details:<b></td> <td colspan=3>" + objGlobalData.GetDropdownitemById(dsIssueList.Tables[0].Rows[0]["Impact_detail"].ToString()) + "</td></tr>";
+
+        //            if (File.Exists(aAttachment))
+        //            {
+        //                sHeader = sHeader + "<tr><td colspan=3><b>Document Uploaded:<b></td> <td colspan=3>Please find the attachment</td></tr>";
+        //            }
+
+        //            sContent = sContent.Replace("{FromMsg}", "");
+        //            sContent = sContent.Replace("{UserName}", sName);
+        //            sContent = sContent.Replace("{Title}", "Issue Details");
+        //            sContent = sContent.Replace("{content}", sHeader);
+        //            sContent = sContent.Replace("{message}", "");
+        //            sContent = sContent.Replace("{extramessage}", "");
+
+        //            sToEmailIds = sToEmailIds.Trim(',');
+
+
+        //            objGlobalData.Sendmail(sToEmailIds, sSubject + sMessage, sContent, aAttachment, sCCEmailIds, "");
+        //            return true;
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        objGlobalData.AddFunctionalLog("Exception in SendIssueEmail: " + ex.ToString());
+        //    }
+        //    return false;
+        //}
 
         internal bool FunUpdateIssues(IssuesModels objIssue)
         {
@@ -364,7 +465,7 @@ namespace ISOStd.Models
                     + "Impact='" + objIssue.Impact + "',Isostd='" + objIssue.Isostd + "',ImpactDesc='" + objIssue.ImpactDesc + "',Effect='" + objIssue.Effect
                 + "',branch='" + objIssue.branch + "',Issue_Category='" + objIssue.Issue_Category + "',reporting_to='" + objIssue.reporting_to 
                 + "',notified_to='" + objIssue.notified_to + "',Impact_detail='" + objIssue.Impact_detail + "',Repet_Issue='" + objIssue.Repet_Issue 
-                + "',additional_details='" + objIssue.additional_details + "', Evidence='" + objIssue.Evidence + "'";
+                + "',additional_details='" + objIssue.additional_details + "', Evidence='" + objIssue.Evidence + "', ISOStds='" + objIssue.ISOStds + "'";
 
               
                 if (objIssue.issue_date != null && objIssue.issue_date > Convert.ToDateTime("01/01/0001"))

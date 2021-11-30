@@ -236,22 +236,7 @@
                 </td>
             </tr>
             <tr class="row">
-                <td class="font-size-lg font-weight-bold">
-                    Uploaded Document
-                </td>
-                <td class="font-size-lg">
-                    @if (objModel.Document != null && objModel.Document != "" && objModel.Document.Length > 0)
-                    {
-                        foreach (var docs in objModel.Document.Trim(',').Split(','))
-                        {
-                            <p style="margin: 0px;">
-                                <span class="bg-dark py-1 px-2 rounded">
-                                    <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs})' target="_blank">Preview</a>
-                                </span>
-                            </p>
-                        }
-                    }                
-                </td>
+              
                 <td class="font-size-lg font-weight-bold">
                     Overall Complaint Status
                 </td>
@@ -321,7 +306,7 @@
                                     }
                                 </td>
                             </tr>
-                            <tr>
+                            @*<tr>
                                 <td class="font-size-lg font-weight-bold">
                                     Uploaded Document
                                 </td>
@@ -338,7 +323,7 @@
                                         }
                                     }
                                 </td>
-                            </tr>
+                            </tr>*@
                      </table>
                 </div>
                     @if (DispAction != null && DispAction.Tables.Count > 0 && DispAction.Tables[0].Rows.Count > 0)
@@ -460,7 +445,7 @@
                                     @RCA.Tables[0].Rows[0]["rca_details"].ToString()
                                 </td>
                             </tr>
-                            <tr>
+                            @*<tr>
                               
                                 <td class="font-size-lg font-weight-bold">
                                     Uploaded Document
@@ -478,7 +463,7 @@
                                         }
                                     }
                                 </td>
-                            </tr>
+                            </tr>*@
                             <tr class="row">
                                 <td class="font-size-lg font-weight-bold">
                                     Need of corrective action
@@ -493,6 +478,28 @@
                                     @RCA.Tables[0].Rows[0]["rca_justify"].ToString()
                                 </td>
                             </tr>
+                            @if (RCA.Tables[0].Rows[0]["rca_action"].ToString()== "No")
+                            {
+                                <tr>
+                                    <td class="font-size-lg font-weight-bold">
+                                        Verification due date
+                                    </td>
+                                    <td class="font-size-lg">
+                                        @if (RCA.Tables[0].Rows[0]["ca_verfiry_duedate"].ToString() != null && RCA.Tables[0].Rows[0]["ca_verfiry_duedate"].ToString() != "")
+                                        {
+                                            @Convert.ToDateTime(RCA.Tables[0].Rows[0]["ca_verfiry_duedate"].ToString()).ToString("dd/MM/yyyy")
+                                        }
+                                       
+                                    </td>
+                                    <td class="font-size-lg font-weight-bold">
+                                        To be verified by
+                                    </td>
+                                    <td class="font-size-lg">
+                                        @ObjGlobal.GetMultiHrEmpNameById(RCA.Tables[0].Rows[0]["ca_proposed_by"].ToString())
+                                       
+                                    </td>
+                                </tr>
+                            }
                             <tr>
                                 <td class="font-size-lg font-weight-bold">
                                     RCA Completed By
@@ -693,7 +700,7 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td class="font-size-lg font-weight-bold">
+                                @*<td class="font-size-lg font-weight-bold">
                                     Uploaded Document
                                 </td>
                                 <td class="font-size-lg">
@@ -706,7 +713,7 @@
                                             </span>
                                         }
                                     }
-                                </td>
+                                </td>*@
 
                                 <td class="font-size-lg font-weight-bold">
                                     Complaint Status

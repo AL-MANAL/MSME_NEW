@@ -41,7 +41,7 @@ namespace ISOStd.Controllers
             ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
             ViewBag.DeptHead = objGlobaldata.GetDeptHeadList();
             ViewBag.Acceptance = objGlobaldata.GetConstantValue("TrainingStaff");
-            ViewBag.TrainingType = objGlobaldata.GetDropdownList("Training Topic");
+            ViewBag.TrainingType = objGlobaldata.GetTrainingTopicList();
             ViewBag.Citicality = objGlobaldata.GetDropdownList("Training Criticality");
         }
 

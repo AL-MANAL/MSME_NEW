@@ -24,11 +24,21 @@ namespace ISOStd.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public ActionResult AddHazard()
+        public ActionResult AddHazard(string id_issue)
         {
+            RiskMgmtModels objRisk = new RiskMgmtModels();
             HealthSafetyModels objHazard = new HealthSafetyModels();
             try
             {
+                if (id_issue != "" && id_issue != null)
+                {
+                    ViewBag.Issue = objRisk.GetIsssuesNo(id_issue);
+                    objHazard.Issue = id_issue;
+                }
+                else
+                {
+                    ViewBag.Issue = objRisk.GetIsssuesNo();
+                }
                 objHazard.branch_id = objGlobaldata.GetCurrentUserSession().division;
                 objHazard.dept = objGlobaldata.GetCurrentUserSession().DeptID;
                 objHazard.Location = objGlobaldata.GetCurrentUserSession().Work_Location;
@@ -904,6 +914,7 @@ namespace ISOStd.Controllers
         [AllowAnonymous]
         public ActionResult HazardDetails()
         {
+            RiskMgmtModels objRisk = new RiskMgmtModels();
             HealthSafetyModels HazardModels = new HealthSafetyModels();
             HealthSafetyModels objSafety = new HealthSafetyModels();
             try
@@ -911,7 +922,7 @@ namespace ISOStd.Controllers
                 if (Request.QueryString["id_hazard"] != null)
                 {
                     string sid_hazard = Request.QueryString["id_hazard"];
-                    string sSqlstmt = "select id_hazard, hazard_refno, dept, branch_id, Location, source_id, activity_type, consequences, injury, activity, hazards, notified_to, reported_by, reported_date,further_consequences,impact_id,like_id,legal,legal_voilation from t_hazard where id_hazard = '" + sid_hazard + "'";
+                    string sSqlstmt = "select id_hazard, hazard_refno, dept, branch_id, Location, source_id, activity_type, consequences, injury, activity, hazards, notified_to, reported_by, reported_date,further_consequences,impact_id,like_id,legal,legal_voilation,Issue from t_hazard where id_hazard = '" + sid_hazard + "'";
                     DataSet dsHazardModels = objGlobaldata.Getdetails(sSqlstmt);
 
                     if (dsHazardModels.Tables.Count > 0 && dsHazardModels.Tables[0].Rows.Count > 0)
@@ -942,6 +953,7 @@ namespace ISOStd.Controllers
                             legal_voilation = (dsHazardModels.Tables[0].Rows[0]["legal_voilation"].ToString()),
                             impact_id = objGlobaldata.GetDropdownitemById(dsHazardModels.Tables[0].Rows[0]["impact_id"].ToString()),
                             like_id = objSafety.GetLikelihoodNameById(dsHazardModels.Tables[0].Rows[0]["like_id"].ToString()),
+                            Issue = objRisk.GetIssueNameById(dsHazardModels.Tables[0].Rows[0]["Issue"].ToString()),
                         };
                         DateTime dtValue;
                         if (DateTime.TryParse(dsHazardModels.Tables[0].Rows[0]["reported_date"].ToString(), out dtValue))
@@ -981,6 +993,7 @@ namespace ISOStd.Controllers
         [AllowAnonymous]
         public ActionResult EditHazard()
         {
+            RiskMgmtModels objRisk = new RiskMgmtModels();
             HealthSafetyModels HazardModels = new HealthSafetyModels();
             HealthSafetyModels objSafety = new HealthSafetyModels();
             try
@@ -998,9 +1011,9 @@ namespace ISOStd.Controllers
                 ViewBag.Consequences = objGlobaldata.GetDropdownList("HS_consequences");
                 ViewBag.Injury = objGlobaldata.GetDropdownList("HS_injury");
                 ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
-
+                ViewBag.Issue = objRisk.GetIsssuesNo();
                     string sid_hazard = Request.QueryString["id_hazard"];
-                    string sSqlstmt = "select id_hazard, hazard_refno, dept, branch_id, Location, source_id, activity_type, consequences, injury, activity, hazards, notified_to, reported_by, reported_date,further_consequences,impact_id,like_id,legal,legal_voilation from t_hazard where id_hazard = '" + sid_hazard + "'";
+                    string sSqlstmt = "select id_hazard, hazard_refno, dept, branch_id, Location, source_id, activity_type, consequences, injury, activity, hazards, notified_to, reported_by, reported_date,further_consequences,impact_id,like_id,legal,legal_voilation,Issue from t_hazard where id_hazard = '" + sid_hazard + "'";
                     DataSet dsHazardModels = objGlobaldata.Getdetails(sSqlstmt);
 
                     if (dsHazardModels.Tables.Count > 0 && dsHazardModels.Tables[0].Rows.Count > 0)
@@ -1031,6 +1044,7 @@ namespace ISOStd.Controllers
                             legal_voilation = (dsHazardModels.Tables[0].Rows[0]["legal_voilation"].ToString()),
                             impact_id = objGlobaldata.GetDropdownitemById(dsHazardModels.Tables[0].Rows[0]["impact_id"].ToString()),
                             like_id = objSafety.GetLikelihoodNameById(dsHazardModels.Tables[0].Rows[0]["like_id"].ToString()),
+                            Issue = (dsHazardModels.Tables[0].Rows[0]["Issue"].ToString()),
                         };
                         DateTime dtValue;
                         if (DateTime.TryParse(dsHazardModels.Tables[0].Rows[0]["reported_date"].ToString(), out dtValue))
@@ -1332,6 +1346,7 @@ namespace ISOStd.Controllers
         [AllowAnonymous]
         public ActionResult HazardHistoryDetails()
         {
+            RiskMgmtModels objRiskMgmtModels = new RiskMgmtModels();
             HealthSafetyModels HazardModels = new HealthSafetyModels();
             HealthSafetyModels objSafety = new HealthSafetyModels();
             try
@@ -1341,8 +1356,8 @@ namespace ISOStd.Controllers
                     string id_hazard_trans = Request.QueryString["id_hazard_trans"];
                     string sSqlstmt = "select tt.id_hazard, t.hazard_refno, t.dept, t.branch_id, t.Location, t.source_id, t.activity_type,"
                     +"t.consequences, t.injury, t.activity, t.hazards, t.notified_to, t.reported_by,"
-                    +" t.reported_date,t.further_consequences,tt.impact_id,tt.like_id,t.legal,t.legal_voilation"
-                    +" from t_hazard_trans tt, t_hazard t"
+                    + " t.reported_date,t.further_consequences,tt.impact_id,tt.like_id,t.legal,t.legal_voilation,t.Issue"
+                    + " from t_hazard_trans tt, t_hazard t"
                     +" where t.id_hazard = tt.id_hazard"
                     +" and id_hazard_trans = '"+ id_hazard_trans + "'";
                     DataSet dsHazardModels = objGlobaldata.Getdetails(sSqlstmt);
@@ -1375,6 +1390,7 @@ namespace ISOStd.Controllers
                             legal_voilation = (dsHazardModels.Tables[0].Rows[0]["legal_voilation"].ToString()),
                             impact_id = objGlobaldata.GetDropdownitemById(dsHazardModels.Tables[0].Rows[0]["impact_id"].ToString()),
                             like_id = objSafety.GetLikelihoodNameById(dsHazardModels.Tables[0].Rows[0]["like_id"].ToString()),
+                            Issue = objRiskMgmtModels.GetIssueNameById(dsHazardModels.Tables[0].Rows[0]["Issue"].ToString()),
                         };
                         DateTime dtValue;
                         if (DateTime.TryParse(dsHazardModels.Tables[0].Rows[0]["reported_date"].ToString(), out dtValue))

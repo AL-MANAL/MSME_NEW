@@ -169,6 +169,14 @@ namespace ISOStd.Models
 
         [Display(Name = "Approved Date")]
         public DateTime ApproveOrRejectOn { get; set; }
+
+        [Display(Name = "From Date")]
+        public DateTime FromPeriod { get; set; }
+
+        [Display(Name = "To Date")]
+        public DateTime ToPeriod { get; set; }
+
+        public string stat_display { get; set; }
         //--------------------------------------------------------------------------
         internal bool FunDeleteKPI(string KPI_Id)
         {
@@ -429,8 +437,11 @@ namespace ISOStd.Models
         {
             try
             {
-             
-                    if (Convert.ToInt32(objModelsList.KPIMList.Count) > 0)
+                string sSqlstmt = "update t_kpi set kpiapprv_status='0' where KPI_Id='" + KPI_Id + "'";
+                objGlobalData.ExecuteQuery(sSqlstmt);
+
+
+                if (Convert.ToInt32(objModelsList.KPIMList.Count) > 0)
                     {
                         objModelsList.KPIMList[0].KPI_Id = KPI_Id.ToString();
                         FunAddKPIFailureList(objModelsList);
@@ -820,7 +831,7 @@ namespace ISOStd.Models
                             sInformation = sInformation + "<tr>"
                                 + " <td>" + (i + 1) + "</td>"
                                 + " <td style='width:300px'>" + (dsItems.Tables[0].Rows[i]["causes_failure"].ToString()) + "</td>"
-                                 + " <td style='width:300px'>" + (dsItems.Tables[0].Rows[i]["impact"].ToString()) + "</td>"
+                                 + " <td style='width:300px'>" + objGlobalData.GetDropdownitemById(dsItems.Tables[0].Rows[i]["impact"].ToString()) + "</td>"
                                  + " <td style='width:300px'>" + (dsItems.Tables[0].Rows[i]["mitigation_measures"].ToString()) + "</td>"
                                   + " <td style='width:300px'>" + target_date + "</td>"
                                      + " <td style='width:300px'>" + objGlobalData.GetDropdownitemById(dsItems.Tables[0].Rows[i]["failure_status"].ToString()) + "</td>"

@@ -47,6 +47,9 @@ namespace ISOStd.Controllers
                 ViewBag.EvaluationOutput = objcomp.GetMultiEvaluationOutputList();
                 ViewBag.Evaluated_Freq = objcomp.GetMultiEvaluationFrequencyList();
                 ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
+                ViewBag.TrainingTopic = objGlobaldata.GetTrainingTopicList();
+                ViewBag.SourceTraining = objGlobaldata.GetDropdownList("Training Source");
+                ViewBag.Citicality = objGlobaldata.GetDropdownList("Training Criticality");
             }
             catch (Exception ex)
             {
@@ -77,7 +80,23 @@ namespace ISOStd.Controllers
                 }
 
 
-                if (objEmployeeCompetence.FunAddCompetenceEvaluation(objEmployeeCompetence))
+                EmployeeCompetenceEvalModelsList objModelList = new EmployeeCompetenceEvalModelsList();
+                objModelList.lstEmployeeCompetenceEval = new List<EmployeeCompetenceEvalModels>();
+
+                for (int i = 0; i < Convert.ToInt16(form["itemcnt"]); i++)
+                {
+                    EmployeeCompetenceEvalModels objModels = new EmployeeCompetenceEvalModels();
+
+                    if (form["training_topic " + i] != null && form["training_topic " + i] != "")
+                    {
+                        objModels.training_topic = form["training_topic " + i];
+                        objModels.source_training = form["source_training " + i];
+                        objModels.criticality = form["criticality " + i];
+                        objModelList.lstEmployeeCompetenceEval.Add(objModels);
+                    }
+                }
+
+                if (objEmployeeCompetence.FunAddCompetenceEvaluation(objEmployeeCompetence, objModelList))
                 {
                     TempData["Successdata"] = "Added Comptency details successfully";
                 }
@@ -338,6 +357,10 @@ namespace ISOStd.Controllers
                         {
                             objEmployeeCompetence.approved_date = dateValue;
                         }
+
+                        string sql = "select id_training,CompetenceId,training_topic,source_training,criticality from t_emp_competence_eval_training where CompetenceId='"+ sCompetenceId + "'";
+                        ViewBag.dsList = objGlobaldata.Getdetails(sql);
+
                         return View(objEmployeeCompetence);
                     }
                     else
@@ -611,11 +634,46 @@ namespace ISOStd.Controllers
                             Eval_ApprovedBy = dsCompetenceList.Tables[0].Rows[0]["Eval_ApprovedBy"].ToString(),
                             // LoggedBy = (dsCompetenceList.Tables[0].Rows[0]["LoggedBy"].ToString())
                         };
-
+                        if (dsCompetenceList.Tables[0].Rows[0]["Name"].ToString() != "")
+                        {
+                            ViewBag.EmpArray = (dsCompetenceList.Tables[0].Rows[0]["Name"].ToString()).Split(',');
+                        }
                         DateTime dateValue;
                         if (DateTime.TryParse(dsCompetenceList.Tables[0].Rows[0]["Evaluation_DoneOn"].ToString(), out dateValue))
                         {
                             objEmployeeCompetence.Evaluation_DoneOn = dateValue;
+                        }
+
+                        //training topic
+                        EmployeeCompetenceEvalModelsList objModelList = new EmployeeCompetenceEvalModelsList();
+                        objModelList.lstEmployeeCompetenceEval = new List<EmployeeCompetenceEvalModels>();
+
+                        sSqlstmt = "select id_training,CompetenceId,training_topic,source_training,criticality from t_emp_competence_eval_training where CompetenceId='" + objEmployeeCompetence.CompetenceId + "'";
+                        DataSet dsList = objGlobaldata.Getdetails(sSqlstmt);
+                        if (dsList.Tables.Count > 0 && dsList.Tables[0].Rows.Count > 0)
+                        {
+                            for (int i = 0; i < dsList.Tables[0].Rows.Count; i++)
+                            {
+                                try
+                                {
+                                    EmployeeCompetenceEvalModels objModel = new EmployeeCompetenceEvalModels
+                                    {
+                                        id_training = dsList.Tables[0].Rows[i]["id_training"].ToString(),
+                                        CompetenceId = dsList.Tables[0].Rows[i]["CompetenceId"].ToString(),
+                                        training_topic = dsList.Tables[0].Rows[i]["training_topic"].ToString(),
+                                        source_training = dsList.Tables[0].Rows[i]["source_training"].ToString(),
+                                        criticality = dsList.Tables[0].Rows[i]["criticality"].ToString(),
+                                    };
+                                    objModelList.lstEmployeeCompetenceEval.Add(objModel);
+                                }
+                                catch (Exception ex)
+                                {
+                                    objGlobaldata.AddFunctionalLog("Exception in EmployeeCompetenceEvalEdit: " + ex.ToString());
+                                    TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                                    return RedirectToAction("EmployeeCompetenceEvalList");
+                                }
+                            }
+                            ViewBag.objList = objModelList;
                         }
 
                         ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();//GetDepartmentList();
@@ -623,6 +681,10 @@ namespace ISOStd.Controllers
 
                         ViewBag.DeptList = objGlobaldata.GetDepartmentWithIdListbox();
                         ViewBag.Gender = objGlobaldata.GetConstantValue("Gender");
+
+                        ViewBag.TrainingTopic = objGlobaldata.GetTrainingTopicList();
+                        ViewBag.SourceTraining = objGlobaldata.GetDropdownList("Training Source");
+                        ViewBag.Citicality = objGlobaldata.GetDropdownList("Training Criticality");
 
                         return View(objEmployeeCompetence);
                     }
@@ -662,8 +724,23 @@ namespace ISOStd.Controllers
                     objEmployeeCompetence.Evaluation_DoneOn = dateValue;
                 }
 
+                EmployeeCompetenceEvalModelsList objModelList = new EmployeeCompetenceEvalModelsList();
+                objModelList.lstEmployeeCompetenceEval = new List<EmployeeCompetenceEvalModels>();
 
-                if (objEmployeeCompetence.FunUpdateCompetenceEvaluation(objEmployeeCompetence))
+                for (int i = 0; i < Convert.ToInt16(form["itemcnt"]); i++)
+                {
+                    EmployeeCompetenceEvalModels objModels = new EmployeeCompetenceEvalModels();
+
+                    if (form["training_topic " + i] != null && form["training_topic " + i] != "")
+                    {
+                        objModels.training_topic = form["training_topic " + i];
+                        objModels.source_training = form["source_training " + i];
+                        objModels.criticality = form["criticality " + i];
+                        objModelList.lstEmployeeCompetenceEval.Add(objModels);
+                    }
+                }
+
+                if (objEmployeeCompetence.FunUpdateCompetenceEvaluation(objEmployeeCompetence, objModelList))
                 {
                     TempData["Successdata"] = "Updated Comptency details successfully";
                 }

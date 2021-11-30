@@ -214,7 +214,7 @@ namespace ISOStd.Controllers
 
                 string sSqlstmt = "select id_nc, nc_no, nc_reported_date, nc_detected_date, nc_category, nc_description, nc_activity, nc_performed, nc_pnc, nc_upload,"
                     + "nc_impact, nc_risk, risklevel, nc_reportedby,  nc_notifiedto, nc_division, division, department, location,nc_audit,audit_no,nc_raise_dueto," +
-                    "(case when nc_issuedto_status=1 then 'Accepted' end) as nc_issuedto_status,nc_issuedto_status as nc_issuedto_statusId,nc_initial_status as nc_initial_statusId,ca_verfiry_duedate,nc_issueto from t_nc where Active=1";
+                    "(case when nc_issuedto_status=1 then 'Accepted' end) as nc_issuedto_status,nc_issuedto_status as nc_issuedto_statusId,nc_initial_status as nc_initial_statusId,ca_verfiry_duedate,nc_issueto,ca_proposed_by from t_nc where Active=1";
                 string sSearchtext = "";
                              
 
@@ -265,9 +265,12 @@ namespace ISOStd.Controllers
                                 nc_initial_statusId = dsNCModels.Tables[0].Rows[i]["nc_initial_statusId"].ToString(),
 
                                 nc_issueto = objGlobaldata.GetMultiHrEmpNameById(dsNCModels.Tables[0].Rows[i]["nc_issueto"].ToString()),
-                                nc_issuetoID = (dsNCModels.Tables[0].Rows[i]["nc_issueto"].ToString()),
+                                nc_issuetoId = (dsNCModels.Tables[0].Rows[i]["nc_issueto"].ToString()),
                                 nc_reportedby_dept = objGlobaldata.GetMultiDeptNameById(objGlobaldata.GetDeptIdByHrEmpId(dsNCModels.Tables[0].Rows[i]["nc_reportedby"].ToString())),
-                                nc_issueto_dept = objGlobaldata.GetMultiDeptNameById(objGlobaldata.GetDeptIdByHrEmpId(dsNCModels.Tables[0].Rows[i]["nc_issueto"].ToString()))
+                                nc_issueto_dept = objGlobaldata.GetMultiDeptNameById(objGlobaldata.GetDeptIdByHrEmpId(dsNCModels.Tables[0].Rows[i]["nc_issueto"].ToString())),
+                                  ca_proposed_by = dsNCModels.Tables[0].Rows[i]["ca_proposed_by"].ToString(),
+
+
                             };
 
                             DateTime dtValue;
@@ -2155,6 +2158,91 @@ namespace ISOStd.Controllers
                             dsNCModels = objGlobaldata.GetReportDetails(dsNCModels, objModel.nc_no, dsNCModels.Tables[0].Rows[0]["logged_by"].ToString(), "NON CONFORMANCE REPORT");
 
                             ViewBag.CompanyInfo = dsNCModels;
+
+
+                            NCModelsList NcRelatedList = new NCModelsList();
+                            NcRelatedList.lstNC = new List<NCModels>();
+
+                            string SSqlstmt2 = "Select id_nc_related,nc_related_aspect,nc_related_explain,nc_related_doc from t_nc_related where id_nc = '" + sid_nc + "'";
+                            DataSet dsNcRelatedLsit = objGlobaldata.Getdetails(SSqlstmt2);
+
+                            if (dsNcRelatedLsit.Tables.Count > 0 && dsNcRelatedLsit.Tables[0].Rows.Count > 0)
+                            {
+                                for (int i = 0; i < dsNcRelatedLsit.Tables[0].Rows.Count; i++)
+                                {
+                                    try
+                                    {
+                                        NCModels objNCModels = new NCModels
+                                        {
+                                            id_nc_related = (dsNcRelatedLsit.Tables[0].Rows[i]["id_nc_related"].ToString()),
+                                            nc_related_aspect = objGlobaldata.GetDropdownitemById(dsNcRelatedLsit.Tables[0].Rows[i]["nc_related_aspect"].ToString()),
+                                            nc_related_explain = (dsNcRelatedLsit.Tables[0].Rows[i]["nc_related_explain"].ToString()),
+                                            nc_related_doc = (dsNcRelatedLsit.Tables[0].Rows[i]["nc_related_doc"].ToString()),
+                                        };
+                                        NcRelatedList.lstNC.Add(objNCModels);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        objGlobaldata.AddFunctionalLog("Exception in NCEdit: " + ex.ToString());
+                                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                                    }
+                                }
+                            }
+                            ViewBag.NcRelatedList = NcRelatedList;
+
+                            //Disposition
+                            string sSqlstmt11 = "select id_nc,nc_no,nc_reported_date,nc_description,division,department,location," +
+                               "disp_action_taken,disp_explain,disp_notifiedto,disp_notifeddate,disp_upload from t_nc where id_nc='" + sid_nc + "'";
+                            DataSet dsDispModel = objGlobaldata.Getdetails(sSqlstmt11);
+                            ViewBag.Disposition = dsDispModel;
+
+                            string sSqlstmt12 = "select id_nc_disp_action,disp_action,disp_resp_person,disp_complete_date from t_nc_disp_action where id_nc='" + sid_nc + "'";
+                            DataSet dsDispModels = objGlobaldata.Getdetails(sSqlstmt12);
+                            ViewBag.DispAction = dsDispModels;
+
+                            //Team
+                            string sSqlstmt13 = "select nc_team,team_approvedby,team_notifiedto,team_targetdate from t_nc where id_nc='" + sid_nc + "'";
+                            DataSet dsTeamModel = objGlobaldata.Getdetails(sSqlstmt13);
+                            ViewBag.Team = dsTeamModel;
+
+                            //RCA
+                            string sSqlstmt14 = "select rca_technique,rca_details,rca_upload,rca_action,rca_justify,rca_reportedby,rca_notifiedto,rca_reporteddate,rca_startedon from t_nc where id_nc='" + sid_nc + "'";
+                            DataSet dsRCAModels = objGlobaldata.Getdetails(sSqlstmt14);
+                            ViewBag.RCA = dsRCAModels;
+
+                            //CA
+                            string sSqlstmt15 = "select ca_verfiry_duedate,ca_proposed_by,ca_notifiedto,ca_notifed_date from t_nc where id_nc='" + sid_nc + "'";
+                            DataSet dsCAModels = objGlobaldata.Getdetails(sSqlstmt15);
+                            ViewBag.CA = dsCAModels;
+
+                            string sSqlstmt16 = "select id_nc_corrective_action,ca_div,ca_loc,ca_dept,ca_rootcause,ca_ca,ca_resource," +
+                                "ca_target_date,ca_resp_person from t_nc_corrective_action where id_nc = '" + sid_nc + "' and ca_active=1";
+                            DataSet dsCAList = objGlobaldata.Getdetails(sSqlstmt16);
+                            ViewBag.CAList = dsCAList;
+
+                            //Verification
+                            string sSqlstmt17 = "select v_implement,v_implement_explain,v_rca,v_rca_explain,v_discrepancies,v_discrep_explain,v_upload," +
+                                "v_status,v_closed_date,v_verifiedto,v_verified_date,v_notifiedto from t_nc where id_nc='" + sid_nc + "'";
+                            DataSet dsVerifyModels = objGlobaldata.Getdetails(sSqlstmt17);
+                            ViewBag.Verification = dsVerifyModels;
+
+                            string sSqlstmt18 = "Select id_nc_corrective_action,ca_div,ca_loc,ca_dept,ca_rootcause,ca_ca,ca_resource," +
+                            "ca_target_date,ca_resp_person,implement_status,ca_effective,reason from t_nc_corrective_action where id_nc = '" + sid_nc + "' and ca_active=1";
+                            DataSet dsVerifyModel = objGlobaldata.Getdetails(sSqlstmt18);
+                            ViewBag.VerificationList = dsVerifyModel;
+
+                            //For PDF Report
+                            string sSqlstmtRpt = "select immediate_action,team,ca,rca,verification from t_pfd_report where report_name= 'Main Non Conformance' and active=1";
+                            DataSet RptPDF = objGlobaldata.Getdetails(sSqlstmtRpt);
+
+                            if (RptPDF.Tables.Count > 0 && RptPDF.Tables[0].Rows.Count > 0)
+                            {
+                                ViewBag.ncimmediate_action = RptPDF.Tables[0].Rows[0]["immediate_action"].ToString();
+                                ViewBag.ncteam = RptPDF.Tables[0].Rows[0]["team"].ToString();
+                                ViewBag.ncca = RptPDF.Tables[0].Rows[0]["ca"].ToString();
+                                ViewBag.ncrca = RptPDF.Tables[0].Rows[0]["rca"].ToString();
+                                ViewBag.ncverification = RptPDF.Tables[0].Rows[0]["verification"].ToString();
+                            }
                         }
                         catch (Exception ex)
                         {
@@ -2163,89 +2251,6 @@ namespace ISOStd.Controllers
                         }                        
                     }                   
 
-                    NCModelsList NcRelatedList = new NCModelsList();
-                    NcRelatedList.lstNC = new List<NCModels>();
-
-                    string SSqlstmt2 = "Select id_nc_related,nc_related_aspect,nc_related_explain,nc_related_doc from t_nc_related where id_nc = '" + sid_nc + "'";
-                    DataSet dsNcRelatedLsit = objGlobaldata.Getdetails(SSqlstmt2);
-                   
-                    if (dsNcRelatedLsit.Tables.Count > 0 && dsNcRelatedLsit.Tables[0].Rows.Count > 0)
-                    {
-                        for (int i = 0; i < dsNcRelatedLsit.Tables[0].Rows.Count; i++)
-                        {
-                            try
-                            {
-                                NCModels objNCModels = new NCModels
-                                {
-                                    id_nc_related = (dsNcRelatedLsit.Tables[0].Rows[i]["id_nc_related"].ToString()),
-                                    nc_related_aspect = objGlobaldata.GetDropdownitemById(dsNcRelatedLsit.Tables[0].Rows[i]["nc_related_aspect"].ToString()),
-                                    nc_related_explain = (dsNcRelatedLsit.Tables[0].Rows[i]["nc_related_explain"].ToString()),
-                                    nc_related_doc = (dsNcRelatedLsit.Tables[0].Rows[i]["nc_related_doc"].ToString()),
-                                };
-                                NcRelatedList.lstNC.Add(objNCModels);                                
-                            }
-                            catch (Exception ex)
-                            {
-                                objGlobaldata.AddFunctionalLog("Exception in NCEdit: " + ex.ToString());
-                                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                            }
-                        }
-                    }
-                    ViewBag.NcRelatedList = NcRelatedList;
-
-                    //Disposition
-                    string sSqlstmt11 = "select id_nc,nc_no,nc_reported_date,nc_description,division,department,location," +
-                       "disp_action_taken,disp_explain,disp_notifiedto,disp_notifeddate,disp_upload from t_nc where id_nc='" + sid_nc + "'";
-                    DataSet dsDispModel = objGlobaldata.Getdetails(sSqlstmt11);
-                    ViewBag.Disposition = dsDispModel;
-
-                    string sSqlstmt12 = "select id_nc_disp_action,disp_action,disp_resp_person,disp_complete_date from t_nc_disp_action where id_nc='" + sid_nc + "'";
-                    DataSet dsDispModels = objGlobaldata.Getdetails(sSqlstmt12);
-                    ViewBag.DispAction = dsDispModels;
-
-                    //Team
-                    string sSqlstmt13 = "select nc_team,team_approvedby,team_notifiedto,team_targetdate from t_nc where id_nc='" + sid_nc + "'";
-                    DataSet dsTeamModel = objGlobaldata.Getdetails(sSqlstmt13);
-                    ViewBag.Team = dsTeamModel;
-
-                    //RCA
-                    string sSqlstmt14 = "select rca_technique,rca_details,rca_upload,rca_action,rca_justify,rca_reportedby,rca_notifiedto,rca_reporteddate,rca_startedon from t_nc where id_nc='" + sid_nc + "'";
-                    DataSet dsRCAModels = objGlobaldata.Getdetails(sSqlstmt14);
-                    ViewBag.RCA = dsRCAModels;
-
-                    //CA
-                    string sSqlstmt15 = "select ca_verfiry_duedate,ca_proposed_by,ca_notifiedto,ca_notifed_date from t_nc where id_nc='" + sid_nc + "'";
-                    DataSet dsCAModels = objGlobaldata.Getdetails(sSqlstmt15);
-                    ViewBag.CA = dsCAModels;
-
-                    string sSqlstmt16 = "select id_nc_corrective_action,ca_div,ca_loc,ca_dept,ca_rootcause,ca_ca,ca_resource," +
-                        "ca_target_date,ca_resp_person from t_nc_corrective_action where id_nc = '" + sid_nc + "' and ca_active=1";
-                    DataSet dsCAList = objGlobaldata.Getdetails(sSqlstmt16);
-                    ViewBag.CAList = dsCAList;
-
-                    //Verification
-                    string sSqlstmt17 = "select v_implement,v_implement_explain,v_rca,v_rca_explain,v_discrepancies,v_discrep_explain,v_upload," +
-                        "v_status,v_closed_date,v_verifiedto,v_verified_date,v_notifiedto from t_nc where id_nc='" + sid_nc + "'";
-                    DataSet dsVerifyModels = objGlobaldata.Getdetails(sSqlstmt17);
-                    ViewBag.Verification = dsVerifyModels;
-
-                    string sSqlstmt18 = "Select id_nc_corrective_action,ca_div,ca_loc,ca_dept,ca_rootcause,ca_ca,ca_resource," +
-                    "ca_target_date,ca_resp_person,implement_status,ca_effective,reason from t_nc_corrective_action where id_nc = '" + sid_nc + "' and ca_active=1";
-                    DataSet dsVerifyModel = objGlobaldata.Getdetails(sSqlstmt18);
-                    ViewBag.VerificationList = dsVerifyModel;
-
-                    //For PDF Report
-                    string sSqlstmtRpt = "select immediate_action,team,ca,rca,verification from t_pfd_report where report_name= 'Main Non Conformance' and active=1";
-                    DataSet RptPDF = objGlobaldata.Getdetails(sSqlstmtRpt);
-
-                    if (RptPDF.Tables.Count > 0 && RptPDF.Tables[0].Rows.Count > 0)
-                    {
-                        ViewBag.ncimmediate_action = RptPDF.Tables[0].Rows[0]["immediate_action"].ToString();
-                        ViewBag.ncteam = RptPDF.Tables[0].Rows[0]["team"].ToString();
-                        ViewBag.ncca = RptPDF.Tables[0].Rows[0]["ca"].ToString();
-                        ViewBag.ncrca = RptPDF.Tables[0].Rows[0]["rca"].ToString();
-                        ViewBag.ncverification = RptPDF.Tables[0].Rows[0]["verification"].ToString();
-                    }
                 }
                 else
                 {

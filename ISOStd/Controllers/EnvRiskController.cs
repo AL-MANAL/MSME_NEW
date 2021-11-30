@@ -25,11 +25,21 @@ namespace ISOStd.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public ActionResult AddEnvRisk()
+        public ActionResult AddEnvRisk(string id_issue)
         {
+            RiskMgmtModels objRisk = new RiskMgmtModels();
             EnvRiskModels objHazard = new EnvRiskModels();
             try
             {
+                if (id_issue != "" && id_issue != null)
+                {
+                    ViewBag.Issue = objRisk.GetIsssuesNo(id_issue);
+                    objHazard.Issue = id_issue;
+                }
+                else
+                {
+                    ViewBag.Issue = objRisk.GetIsssuesNo();
+                }
                 objHazard.branch_id = objGlobaldata.GetCurrentUserSession().division;
                 objHazard.dept = objGlobaldata.GetCurrentUserSession().DeptID;
                 objHazard.Location = objGlobaldata.GetCurrentUserSession().Work_Location;
@@ -856,6 +866,7 @@ namespace ISOStd.Controllers
         [AllowAnonymous]
         public ActionResult HazardDetails()
         {
+            RiskMgmtModels objRisk = new RiskMgmtModels();
             EnvRiskModels HazardModels = new EnvRiskModels();
             RiskMgmtModels objSafety = new RiskMgmtModels();
             try
@@ -863,7 +874,7 @@ namespace ISOStd.Controllers
                 if (Request.QueryString["id_env_risk"] != null)
                 {
                     string sid_env_risk = Request.QueryString["id_env_risk"];
-                    string sSqlstmt = "select id_env_risk, env_refno, dept, branch_id, Location, source_id, activity_type, product, aspects, activity, impact,area_affected, notified_to, reported_by, reported_date,further_consequences,impact_id,like_id,legal,legal_voilation from t_environment_risk where id_env_risk = '" + sid_env_risk + "'";
+                    string sSqlstmt = "select id_env_risk, env_refno, dept, branch_id, Location, source_id, activity_type, product, aspects, activity, impact,area_affected, notified_to, reported_by, reported_date,further_consequences,impact_id,like_id,legal,legal_voilation,Issue from t_environment_risk where id_env_risk = '" + sid_env_risk + "'";
                     DataSet dsHazardModels = objGlobaldata.Getdetails(sSqlstmt);
 
                     if (dsHazardModels.Tables.Count > 0 && dsHazardModels.Tables[0].Rows.Count > 0)
@@ -895,6 +906,7 @@ namespace ISOStd.Controllers
                             legal_voilation = (dsHazardModels.Tables[0].Rows[0]["legal_voilation"].ToString()),
                             impact_id = objGlobaldata.GetDropdownitemById(dsHazardModels.Tables[0].Rows[0]["impact_id"].ToString()),
                             like_id = objGlobaldata.GetDropdownitemById(dsHazardModels.Tables[0].Rows[0]["like_id"].ToString()),
+                            Issue = objRisk.GetIssueNameById(dsHazardModels.Tables[0].Rows[0]["Issue"].ToString()),
                         };
                         DateTime dtValue;
                         if (DateTime.TryParse(dsHazardModels.Tables[0].Rows[0]["reported_date"].ToString(), out dtValue))
@@ -934,6 +946,7 @@ namespace ISOStd.Controllers
         [AllowAnonymous]
         public ActionResult EditHazard()
         {
+            RiskMgmtModels objRisk = new RiskMgmtModels();
             EnvRiskModels HazardModels = new EnvRiskModels();
             RiskMgmtModels objSafety = new RiskMgmtModels();
             try
@@ -952,10 +965,10 @@ namespace ISOStd.Controllers
                     
                     ViewBag.Impact = objGlobaldata.GetDropdownList("Environmental Impact");
                     ViewBag.Activity = objGlobaldata.GetDropdownList("HS_activity_type");
-
+                    ViewBag.Issue = objRisk.GetIsssuesNo();
                     string sid_env_risk = Request.QueryString["id_env_risk"];
                   
-                    string sSqlstmt = "select id_env_risk, env_refno, dept, branch_id, Location, source_id, activity_type, product, aspects, activity, impact,area_affected, notified_to, reported_by, reported_date,further_consequences,impact_id,like_id,legal,legal_voilation from t_environment_risk where id_env_risk = '" + sid_env_risk + "'";
+                    string sSqlstmt = "select id_env_risk, env_refno, dept, branch_id, Location, source_id, activity_type, product, aspects, activity, impact,area_affected, notified_to, reported_by, reported_date,further_consequences,impact_id,like_id,legal,legal_voilation,Issue from t_environment_risk where id_env_risk = '" + sid_env_risk + "'";
                     DataSet dsHazardModels = objGlobaldata.Getdetails(sSqlstmt);
 
                     if (dsHazardModels.Tables.Count > 0 && dsHazardModels.Tables[0].Rows.Count > 0)
@@ -987,6 +1000,7 @@ namespace ISOStd.Controllers
                             legal_voilation = (dsHazardModels.Tables[0].Rows[0]["legal_voilation"].ToString()),
                             impact_id = objGlobaldata.GetDropdownitemById(dsHazardModels.Tables[0].Rows[0]["impact_id"].ToString()),
                             like_id = objGlobaldata.GetDropdownitemById(dsHazardModels.Tables[0].Rows[0]["like_id"].ToString()),
+                            Issue = (dsHazardModels.Tables[0].Rows[0]["Issue"].ToString()),
                         };
                         DateTime dtValue;
                         if (DateTime.TryParse(dsHazardModels.Tables[0].Rows[0]["reported_date"].ToString(), out dtValue))
@@ -1290,6 +1304,7 @@ namespace ISOStd.Controllers
         [AllowAnonymous]
         public ActionResult HazardHistoryDetails()
         {
+            RiskMgmtModels objRiskMgmtModels = new RiskMgmtModels();
             EnvRiskModels HazardModels = new EnvRiskModels();
             RiskMgmtModels objSafety = new RiskMgmtModels();
             try
@@ -1299,7 +1314,7 @@ namespace ISOStd.Controllers
                     string id_env_risk_trans = Request.QueryString["id_env_risk_trans"];
                     string sSqlstmt = "select tt.id_env_risk, t.env_refno, t.dept, t.branch_id, t.Location, t.source_id, t.activity_type,"
                       + " t.product, t.aspects, t.activity, t.impact, t.area_affected, t.notified_to, t.reported_by,"
-                      + " t.reported_date,t.further_consequences,tt.impact_id,tt.like_id,t.legal,t.legal_voilation"
+                      + " t.reported_date,t.further_consequences,tt.impact_id,tt.like_id,t.legal,t.legal_voilation,t.Issue"
                       + " from t_environment_risk_trans tt, t_environment_risk t"
                       + " where t.id_env_risk = tt.id_env_risk"
                       + " and id_env_risk_trans = '"+ id_env_risk_trans + "'";
@@ -1334,6 +1349,7 @@ namespace ISOStd.Controllers
                             legal_voilation = (dsHazardModels.Tables[0].Rows[0]["legal_voilation"].ToString()),
                             impact_id = objGlobaldata.GetDropdownitemById(dsHazardModels.Tables[0].Rows[0]["impact_id"].ToString()),
                             like_id = objGlobaldata.GetDropdownitemById(dsHazardModels.Tables[0].Rows[0]["like_id"].ToString()),
+                            Issue = objRiskMgmtModels.GetIssueNameById(dsHazardModels.Tables[0].Rows[0]["Issue"].ToString()),
                         };
                         DateTime dtValue;
                         if (DateTime.TryParse(dsHazardModels.Tables[0].Rows[0]["reported_date"].ToString(), out dtValue))

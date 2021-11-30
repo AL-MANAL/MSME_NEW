@@ -156,6 +156,9 @@ namespace ISOStd.Models
         [Display(Name = "Mitigation Measures Proposed")]
         public string mitmeasure { get; set; }
 
+        [Display(Name = "Risk due to")]
+        public string Issue { get; set; }
+
         internal Dictionary<string, string> GetRiskRatings(string sImp_id, string sLikeliId)
         {
             Dictionary<string, string> lstRatings = new Dictionary<string, string>();
@@ -248,7 +251,7 @@ namespace ISOStd.Models
             try
             {
 
-                string sSqlstmt = "insert into t_hazard(dept,branch_id,Location,source_id,activity_type,consequences,injury,activity,hazards,notified_to,reported_by";
+                string sSqlstmt = "insert into t_hazard(dept,branch_id,Location,source_id,activity_type,consequences,injury,activity,hazards,notified_to,reported_by,Issue";
                 string sFields = "", sFieldValue = "";
 
                 if (HazardModels.reported_date != null && HazardModels.reported_date > Convert.ToDateTime("01/01/0001 00:00:00"))
@@ -260,7 +263,7 @@ namespace ISOStd.Models
                 sSqlstmt = sSqlstmt + sFields;
 
                 sSqlstmt = sSqlstmt + ") values('" + HazardModels.dept + "','" + HazardModels.branch_id + "','" + HazardModels.Location + "','" + HazardModels.source_id + "','" + HazardModels.activity_type +
-                    "','" + HazardModels.consequences + "','" + HazardModels.injury + "','" + HazardModels.activity + "','" + HazardModels.hazards + "','" + HazardModels.notified_to + "','" + HazardModels.reported_by + "'";
+                    "','" + HazardModels.consequences + "','" + HazardModels.injury + "','" + HazardModels.activity + "','" + HazardModels.hazards + "','" + HazardModels.notified_to + "','" + HazardModels.reported_by + "','" + HazardModels.Issue + "'";
 
                 sSqlstmt = sSqlstmt + sFieldValue + ")";
                 int id_hazard = 0;

@@ -178,6 +178,8 @@ namespace ISOStd.Models
         [Display(Name = "Complaint Copied to")]
         public string complaint_copiedto { get; set; }
         public List<CustComplaintModels> CustList { get; set; }
+        public List<CustComplaintModels> DispList { get; set; }
+        public List<CustComplaintModels> CAList { get; set; }
         //-------------t_custcomplaint_nc------------------
 
         [Display(Name = "Id")]
@@ -357,7 +359,7 @@ namespace ISOStd.Models
         [Display(Name = "Upload")]
         public string rej_upload { get; set; }
       
-        [Display(Name = "Complaint Status")]
+        [Display(Name = "Complaint Review Status")]
         public string complaint_review_status { get; set; }
        
    
@@ -627,11 +629,11 @@ namespace ISOStd.Models
                           + "<tr><td colspan=3><b>Logged By:<b></td> <td colspan=3>" + objGlobalData.GetEmpHrNameById(dsComplaintList.Tables[0].Rows[0]["LoggedBy"].ToString()) + "</td></tr>"
                         + "<tr><td colspan=3><b>Customer Name:<b></td> <td colspan=3>" + objGlobalData.GetCustomerNameById(dsComplaintList.Tables[0].Rows[0]["CustomerName"].ToString()) + "</td></tr>"
                          + "<tr><td colspan=3><b>Project Name:<b></td> <td colspan=3>" + dsComplaintList.Tables[0].Rows[0]["ProjectName"].ToString() + "</td></tr>"
-                          + "<tr><td colspan=3><b>Reported By:<b></td> <td colspan=3>" + dsComplaintList.Tables[0].Rows[0]["ReportedBy"].ToString() + "</td></tr>"
+                          + "<tr><td colspan=3><b>Reported By:<b></td> <td colspan=3>" +objGlobalData.GetMultiHrEmpNameById(dsComplaintList.Tables[0].Rows[0]["ReportedBy"].ToString()) + "</td></tr>"
                           + "<tr><td colspan=3><b>ModeOfComplaint:<b></td> <td colspan=3>" + objGlobalData.GetModeOfComplaintById(dsComplaintList.Tables[0].Rows[0]["ModeOfComplaint"].ToString()) + "</td></tr>"
                        + "<tr><td colspan=3><b>Details:<b></td> <td colspan=3>" + dsComplaintList.Tables[0].Rows[0]["Details"].ToString() + "</td></tr>"
                        + "<tr><td colspan=3><b>Initial Observation:<b></td> <td colspan=3>" + dsComplaintList.Tables[0].Rows[0]["initial_observation"].ToString() + "</td></tr>"
-                       + "<tr><td colspan=3><b>Complaint Related to:<b></td> <td colspan=3>" + dsComplaintList.Tables[0].Rows[0]["complaint_relatedto"].ToString() + "</td></tr>";
+                       + "<tr><td colspan=3><b>Complaint Related to:<b></td> <td colspan=3>" + objGlobalData.GetDropdownitemById(dsComplaintList.Tables[0].Rows[0]["complaint_relatedto"].ToString()) + "</td></tr>";
 
                     if (File.Exists(aAttachment))
                     {
@@ -739,7 +741,7 @@ namespace ISOStd.Models
                     }
                     string sName = "All";
                     string sToEmailIds = objGlobalData.GetMultiHrEmpEmailIdById(dsComplaintList.Tables[0].Rows[0]["LoggedBy"].ToString());
-                    string sCCEmailIds = objGlobalData.GetMultiHrEmpEmailIdById(dsComplaintList.Tables[0].Rows[0]["ForwardTo"].ToString());
+                    string sCCEmailIds = objGlobalData.GetMultiHrEmpEmailIdById(dsComplaintList.Tables[0].Rows[0]["ForwardTo"].ToString()) + "," + objGlobalData.GetMultiHrEmpEmailIdById(dsComplaintList.Tables[0].Rows[0]["ForwarderAssign"].ToString());
 
                //     Attachment = HttpContext.Current.Server.MapPath(dsComplaintList.Tables[0].Rows[0]["Document"].ToString());
                     if (dsComplaintList.Tables[0].Rows[0]["rej_upload"].ToString() != "")
@@ -754,7 +756,7 @@ namespace ISOStd.Models
                           + "<tr><td colspan=3><b>Logged By:<b></td> <td colspan=3>" + objGlobalData.GetEmpHrNameById(dsComplaintList.Tables[0].Rows[0]["LoggedBy"].ToString()) + "</td></tr>"
                         + "<tr><td colspan=3><b>Customer Name:<b></td> <td colspan=3>" + objGlobalData.GetCustomerNameById(dsComplaintList.Tables[0].Rows[0]["CustomerName"].ToString()) + "</td></tr>"
                          + "<tr><td colspan=3><b>Project Name:<b></td> <td colspan=3>" + dsComplaintList.Tables[0].Rows[0]["ProjectName"].ToString() + "</td></tr>"
-                          + "<tr><td colspan=3><b>Reported By:<b></td> <td colspan=3>" + dsComplaintList.Tables[0].Rows[0]["ReportedBy"].ToString() + "</td></tr>"
+                          + "<tr><td colspan=3><b>Reported By:<b></td> <td colspan=3>" + objGlobalData.GetMultiHrEmpNameById(dsComplaintList.Tables[0].Rows[0]["ReportedBy"].ToString()) + "</td></tr>"
                           + "<tr><td colspan=3><b>ModeOfComplaint:<b></td> <td colspan=3>" + objGlobalData.GetModeOfComplaintById(dsComplaintList.Tables[0].Rows[0]["ModeOfComplaint"].ToString()) + "</td></tr>"
                        + "<tr><td colspan=3><b>Details:<b></td> <td colspan=3>" + dsComplaintList.Tables[0].Rows[0]["Details"].ToString() + "</td></tr>"
                          + "<tr><td colspan=3><b>Is it valid complaint? :<b></td> <td colspan=3>" + (dsComplaintList.Tables[0].Rows[0]["complaint_valid"].ToString()) + "</td></tr>"
@@ -768,7 +770,7 @@ namespace ISOStd.Models
                     }
                     else if (dsComplaintList.Tables[0].Rows[0]["complaint_valid"].ToString() == "Yes")
                     {
-                        sHeader = sHeader + "<tr><td colspan=3><b>Target Date:<b></td> <td colspan=3>" + Convert.ToDateTime(dsComplaintList.Tables[0].Rows[0]["TargetDate"].ToString()).ToString("yyyy-MM-dd") + "</td></tr>" + "<tr><td colspan=3><b>Responsible Person :<b></td> <td colspan=3>" + (dsComplaintList.Tables[0].Rows[0]["ForwarderAssign"].ToString()) + "</td></tr>";
+                        sHeader = sHeader + "<tr><td colspan=3><b>Target Date:<b></td> <td colspan=3>" + Convert.ToDateTime(dsComplaintList.Tables[0].Rows[0]["TargetDate"].ToString()).ToString("yyyy-MM-dd") + "</td></tr>" + "<tr><td colspan=3><b>Responsible Person :<b></td> <td colspan=3>" +objGlobalData.GetMultiHrEmpNameById(dsComplaintList.Tables[0].Rows[0]["ForwarderAssign"].ToString()) + "</td></tr>";
                     }
 
                     if(RejectaAttachment.Contains(','))
@@ -1069,8 +1071,8 @@ namespace ISOStd.Models
 
                     sHeader = "<tr><td colspan=3><b>Complaint Number:<b></td> <td colspan=3>"
                         + dsNCList.Tables[0].Rows[0]["ComplaintNo"].ToString() + "</td></tr>"
-                        + "<tr><td colspan=3><b>Customer Name:<b></td> <td colspan=3>" + objGlobalData.GetDropdownitemById(dsNCList.Tables[0].Rows[0]["CustomerName"].ToString()) + "</td></tr>"
-                        + "<tr><td colspan=3><b>Complaint ReportedBy:<b></td> <td colspan=3>" + dsNCList.Tables[0].Rows[0]["ReportedBy"].ToString() + "</td></tr>"
+                        + "<tr><td colspan=3><b>Customer Name:<b></td> <td colspan=3>" + objGlobalData.GetCustomerNameById(dsNCList.Tables[0].Rows[0]["CustomerName"].ToString()) + "</td></tr>"
+                        + "<tr><td colspan=3><b>Complaint ReportedBy:<b></td> <td colspan=3>" +objGlobalData.GetMultiHrEmpNameById(dsNCList.Tables[0].Rows[0]["ReportedBy"].ToString()) + "</td></tr>"
                         + "<tr><td colspan=3><b>Complaint Received Date:<b></td> <td colspan=3>" + Convert.ToDateTime(dsNCList.Tables[0].Rows[0]["ReceivedDate"].ToString()).ToString("dd/MM/yyyy")
                         + "</td></tr>"
                         + "<tr><td colspan=3><b>Are action effective to resolve complaint?:<b></td> <td colspan=3>" + objGlobalData.GetDropdownitemById(dsNCList.Tables[0].Rows[0]["disp_action_taken"].ToString()) + "</td></tr>"
@@ -1332,8 +1334,8 @@ namespace ISOStd.Models
 
                     sHeader = "<tr><td colspan=3><b>Complaint Number:<b></td> <td colspan=3>"
                         + dsNCList.Tables[0].Rows[0]["ComplaintNo"].ToString() + "</td></tr>"
-                        + "<tr><td colspan=3><b>Customer Name:<b></td> <td colspan=3>" + objGlobalData.GetDropdownitemById(dsNCList.Tables[0].Rows[0]["CustomerName"].ToString()) + "</td></tr>"
-                        + "<tr><td colspan=3><b>Complaint ReportedBy:<b></td> <td colspan=3>" + dsNCList.Tables[0].Rows[0]["ReportedBy"].ToString() + "</td></tr>"
+                        + "<tr><td colspan=3><b>Customer Name:<b></td> <td colspan=3>" + objGlobalData.GetCustomerNameById(dsNCList.Tables[0].Rows[0]["CustomerName"].ToString()) + "</td></tr>"
+                        + "<tr><td colspan=3><b>Complaint ReportedBy:<b></td> <td colspan=3>" +objGlobalData.GetMultiHrEmpNameById(dsNCList.Tables[0].Rows[0]["ReportedBy"].ToString()) + "</td></tr>"
                         + "<tr><td colspan=3><b>Complaint Received Date:<b></td> <td colspan=3>" + Convert.ToDateTime(dsNCList.Tables[0].Rows[0]["ReceivedDate"].ToString()).ToString("dd/MM/yyyy")
                         + "</td></tr>"
                         + "<tr><td colspan=3><b>Techniques adopted:<b></td> <td colspan=3>" + objGlobalData.GetDropdownitemById(dsNCList.Tables[0].Rows[0]["rca_technique"].ToString()) + "</td></tr>"
@@ -1527,8 +1529,8 @@ namespace ISOStd.Models
 
                     sHeader = "<tr><td colspan=3><b>Complaint Number:<b></td> <td colspan=3>"
                         + dsNCList.Tables[0].Rows[0]["ComplaintNo"].ToString() + "</td></tr>"
-                        + "<tr><td colspan=3><b>Customer Name:<b></td> <td colspan=3>" + objGlobalData.GetDropdownitemById(dsNCList.Tables[0].Rows[0]["CustomerName"].ToString()) + "</td></tr>"
-                        + "<tr><td colspan=3><b>Complaint ReportedBy:<b></td> <td colspan=3>" + dsNCList.Tables[0].Rows[0]["ReportedBy"].ToString() + "</td></tr>"
+                        + "<tr><td colspan=3><b>Customer Name:<b></td> <td colspan=3>" + objGlobalData.GetCustomerNameById(dsNCList.Tables[0].Rows[0]["CustomerName"].ToString()) + "</td></tr>"
+                        + "<tr><td colspan=3><b>Complaint ReportedBy:<b></td> <td colspan=3>" + objGlobalData.GetMultiHrEmpNameById(dsNCList.Tables[0].Rows[0]["ReportedBy"].ToString()) + "</td></tr>"
                         + "<tr><td colspan=3><b>Complaint Received Date:<b></td> <td colspan=3>" + Convert.ToDateTime(dsNCList.Tables[0].Rows[0]["ReceivedDate"].ToString()).ToString("dd/MM/yyyy")
                         + "</td></tr>"
                         + "<tr><td colspan=3><b>Verification due date:<b></td> <td colspan=3>" + Convert.ToDateTime(dsNCList.Tables[0].Rows[0]["ca_verfiry_duedate"].ToString()).ToString("dd/MM/yyyy") + "</td></tr>"
@@ -1698,8 +1700,8 @@ namespace ISOStd.Models
 
                     sHeader = "<tr><td colspan=3><b>Complaint Number:<b></td> <td colspan=3>"
                         + dsNCList.Tables[0].Rows[0]["ComplaintNo"].ToString() + "</td></tr>"
-                        + "<tr><td colspan=3><b>Customer Name:<b></td> <td colspan=3>" + objGlobalData.GetDropdownitemById(dsNCList.Tables[0].Rows[0]["CustomerName"].ToString()) + "</td></tr>"
-                        + "<tr><td colspan=3><b>Complaint ReportedBy:<b></td> <td colspan=3>" + dsNCList.Tables[0].Rows[0]["ReportedBy"].ToString() + "</td></tr>"
+                        + "<tr><td colspan=3><b>Customer Name:<b></td> <td colspan=3>" + objGlobalData.GetCustomerNameById(dsNCList.Tables[0].Rows[0]["CustomerName"].ToString()) + "</td></tr>"
+                        + "<tr><td colspan=3><b>Complaint ReportedBy:<b></td> <td colspan=3>" +objGlobalData.GetMultiHrEmpNameById(dsNCList.Tables[0].Rows[0]["ReportedBy"].ToString()) + "</td></tr>"
                         + "<tr><td colspan=3><b>Complaint Received Date:<b></td> <td colspan=3>" + Convert.ToDateTime(dsNCList.Tables[0].Rows[0]["ReceivedDate"].ToString()).ToString("dd/MM/yyyy")
                         + "</td></tr>"
                         + "<tr><td colspan=3><b>Verification due date:<b></td> <td colspan=3>" + Convert.ToDateTime(dsNCList.Tables[0].Rows[0]["v_verified_date"].ToString()).ToString("dd/MM/yyyy") + "</td></tr>"

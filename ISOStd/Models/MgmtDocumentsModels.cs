@@ -209,18 +209,19 @@ namespace ISOStd.Models
                     + "', IssueNo='" + objMgmtDocuments.IssueNo + "', RevNo='" + objMgmtDocuments.RevNo
                     + "', PreparedBy='" + objMgmtDocuments.PreparedBy + "', ReviewedBy='" + objMgmtDocuments.ReviewedBy + "', DocDate='" + sDocDate + "', ApprovedBy='"
                     + objMgmtDocuments.ApprovedBy + "', UploadedBy='" + objMgmtDocuments.UploadedBy + "', view_by='" + objMgmtDocuments.view_by
-                    + "', ReviewerCount='" + revcount + "', ApproverCount='" + appcount + "', branch='" + objMgmtDocuments.branch + "', Location='" + objMgmtDocuments.Location + "', dcr_no='" + objMgmtDocuments.dcr_no + "'";
-
+                    + "', ReviewerCount='" + revcount + "', ApproverCount='" + appcount + "', branch='" + objMgmtDocuments.branch + "', Location='" + objMgmtDocuments.Location + "', dcr_no='" + objMgmtDocuments.dcr_no + "'"
+                    + ",Approved_Status='0',Reviewed_Status='0', ApprovedDate=NULL,ReviewedDate=NULL,Reviewers='0',ReviewRejector='0', Approvers='0',ApprovalRejector='0'";
 
                 if (objMgmtDocuments.DocUploadPath != null)
                 {
                     sSqlstmt = sSqlstmt + ", DocUploadPath='" + objMgmtDocuments.DocUploadPath + "', approved_status=0";
                 }
                 sSqlstmt = sSqlstmt + " where idMgmt='" + objMgmtDocuments.idMgmt + "'";
-                objGlobalData.ExecuteQuery(sSqlstmt);
+                if (objGlobalData.ExecuteQuery(sSqlstmt))
+                    {
 
-                if (objMgmtDocuments.ReviewRejector != "0" || objMgmtDocuments.ReviewRejector != null || objMgmtDocuments.ApprovalRejector != "0" || objMgmtDocuments.ApprovalRejector != null)
-                {
+                    //if (objMgmtDocuments.ReviewRejector != "0" || objMgmtDocuments.ReviewRejector != null || objMgmtDocuments.ApprovalRejector != "0" || objMgmtDocuments.ApprovalRejector != null)
+                    //{
                     string sSqlstmt1 = "update t_mgmt_documents set Approved_Status='0',Reviewed_Status='0', ApprovedDate=NULL,ReviewedDate=NULL,Reviewers='0',ReviewRejector='0', Approvers='0',ApprovalRejector='0'";
 
                     sSqlstmt1 = sSqlstmt1 + " where idMgmt='" + objMgmtDocuments.idMgmt + "'";
@@ -240,6 +241,7 @@ namespace ISOStd.Models
                             return objGlobalData.SendmailNew(sEmailid, dicEmailContent["subject"], dicEmailContent["body"], filepath, "", "");
                         }
                     }
+                    //}
                 }
                 //if (objMgmtDocuments.IssueNo != OldIssueNo || objMgmtDocuments.RevNo != OldRevNo)
                 //{

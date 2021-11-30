@@ -33,13 +33,14 @@ namespace ISOStd.Models
         [Display(Name = "ID")]
         public string item_fulldesc { get; set; }
 
+        public string isDefault { get; set; }
 
         internal bool FunAddItems(DropDownItemsModels objDropDownItemsModels)
         {
             try
             {
-                string sSqlstmt = "insert into dropdownitems ( header_id, item_desc, item_fulldesc) values('" 
-                    + objDropDownItemsModels.header_id + "','" + objDropDownItemsModels.item_desc + "','" + objDropDownItemsModels.item_fulldesc+ "')";
+                string sSqlstmt = "insert into dropdownitems ( header_id, item_desc, item_fulldesc,isDefault) values('"
+                    + objDropDownItemsModels.header_id + "','" + objDropDownItemsModels.item_desc + "','" + objDropDownItemsModels.item_fulldesc+ "','" + objDropDownItemsModels.isDefault + "')";
 
                 return objGlobalData.ExecuteQuery(sSqlstmt);
             }
@@ -55,7 +56,7 @@ namespace ISOStd.Models
             try
             {
                 string sSqlstmt = "update dropdownitems set item_desc='" + objDropDownItemsModels.item_desc + "', item_fulldesc='" + objDropDownItemsModels.item_fulldesc
-                    + "' where item_id='" + objDropDownItemsModels.item_id + "'";
+                    + "',isDefault='" + objDropDownItemsModels.isDefault + "' where item_id='" + objDropDownItemsModels.item_id + "'";
 
                 return objGlobalData.ExecuteQuery(sSqlstmt);
             }
@@ -108,7 +109,7 @@ namespace ISOStd.Models
             lstDropDownItemsList.lstDropDownItems = new List<DropDownItems>();
             try
             {
-                DataSet dsEmp = objGlobalData.Getdetails("select item_id, item_desc, item_fulldesc from dropdownitems where header_id='" + sheader_id + "' order by item_desc asc");
+                DataSet dsEmp = objGlobalData.Getdetails("select item_id, item_desc, item_fulldesc,isDefault from dropdownitems where header_id='" + sheader_id + "' order by item_desc asc");
 
                 if (dsEmp.Tables.Count > 0 && dsEmp.Tables[0].Rows.Count > 0)
                 {
@@ -117,7 +118,7 @@ namespace ISOStd.Models
                         DropDownItems items = new DropDownItems()
                         {
                             item_id = dsEmp.Tables[0].Rows[i]["item_id"].ToString(),
-                            item_desc = dsEmp.Tables[0].Rows[i]["item_desc"].ToString()+"__"+dsEmp.Tables[0].Rows[i]["item_fulldesc"].ToString()
+                            item_desc = dsEmp.Tables[0].Rows[i]["item_desc"].ToString()+"__"+dsEmp.Tables[0].Rows[i]["item_fulldesc"].ToString() + "__" + dsEmp.Tables[0].Rows[i]["isDefault"].ToString()
                         };
 
                         lstDropDownItemsList.lstDropDownItems.Add(items);

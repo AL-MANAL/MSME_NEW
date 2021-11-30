@@ -33,7 +33,7 @@ namespace ISOStd.Models
         public string Evaluated_Freq { get; set; }
 
 
-        [Display(Name = "Evaluation By")]
+        [Display(Name = "Evaluated By")]
         public string Evalaution_Done_By { get; set; }
 
 
@@ -148,6 +148,19 @@ namespace ISOStd.Models
         [Display(Name = "Document(s)")]
         public string approver_upload { get; set; }
 
+        //t_emp_competence_eval_training
+
+        public string id_training { get; set; }
+
+        [Display(Name = "Source of training")]
+        public string source_training { get; set; }
+
+        [Display(Name = "Training topic")]
+        public string training_topic { get; set; }
+
+        [Display(Name = "Criticality")]
+        public string criticality { get; set; }
+
         internal bool FunDeleteCompetenceDoc(string sCompetenceId)
         {
             try
@@ -163,7 +176,7 @@ namespace ISOStd.Models
             return false;
         }
 
-        internal bool FunAddCompetenceEvaluation(EmployeeCompetenceEvalModels objEmployeeCompetence)
+        internal bool FunAddCompetenceEvaluation(EmployeeCompetenceEvalModels objEmployeeCompetence, EmployeeCompetenceEvalModelsList objModelList)
         {
             try
             {
@@ -194,6 +207,11 @@ namespace ISOStd.Models
                 int CompetenceId = 0;
                 if (int.TryParse(objGlobalData.ExecuteQueryReturnId(sSqlstmt).ToString(), out CompetenceId))
                 {
+                    if (objModelList.lstEmployeeCompetenceEval.Count > 0)
+                    {
+                        objModelList.lstEmployeeCompetenceEval[0].CompetenceId = CompetenceId.ToString();
+                        FunAddTrainingList(objModelList);
+                    }
                     return SendEmpCompetencemail(CompetenceId, "Employee Completence Evaluation for review");
                 }
 
@@ -206,6 +224,31 @@ namespace ISOStd.Models
             return false;
 
 
+        }
+        internal bool FunAddTrainingList(EmployeeCompetenceEvalModelsList objModelsList)
+        {
+            try
+            {
+                string sSqlstmt = "delete from t_emp_competence_eval_training where CompetenceId='" + objModelsList.lstEmployeeCompetenceEval[0].CompetenceId + "'; ";
+
+                for (int i = 0; i < objModelsList.lstEmployeeCompetenceEval .Count; i++)
+                {
+                    sSqlstmt = sSqlstmt + "insert into t_emp_competence_eval_training(CompetenceId,training_topic,source_training,criticality";
+
+                    string sFieldValue = "", sFields = "";
+
+                    sSqlstmt = sSqlstmt + sFields;
+                    sSqlstmt = sSqlstmt + ") values('" + objModelsList.lstEmployeeCompetenceEval[0].CompetenceId + "', '" + objModelsList.lstEmployeeCompetenceEval[i].training_topic + "', '" + objModelsList.lstEmployeeCompetenceEval[i].source_training + "', '" + objModelsList.lstEmployeeCompetenceEval[i].criticality + "'";
+
+                    sSqlstmt = sSqlstmt + sFieldValue + ");";
+                }
+                return objGlobalData.ExecuteQuery(sSqlstmt);
+            }
+            catch (Exception ex)
+            {
+                objGlobalData.AddFunctionalLog("Exception in FunAddTrainingList: " + ex.ToString());
+            }
+            return false;
         }
         internal bool SendEmpCompetencemail(int  CompetenceId, string sMessage = "")
         {
@@ -459,7 +502,7 @@ namespace ISOStd.Models
             }
             return false;
         }
-        internal bool FunUpdateCompetenceEvaluation(EmployeeCompetenceEvalModels objEmployeeCompetence)
+        internal bool FunUpdateCompetenceEvaluation(EmployeeCompetenceEvalModels objEmployeeCompetence, EmployeeCompetenceEvalModelsList objModelList)
         {
             try
             {
@@ -483,7 +526,18 @@ namespace ISOStd.Models
 
                 sSqlstmt = sSqlstmt + " where CompetenceId='" + objEmployeeCompetence.CompetenceId + "'";
 
-                return objGlobalData.ExecuteQuery(sSqlstmt);
+                if(objGlobalData.ExecuteQuery(sSqlstmt))
+                {
+                    if (objModelList.lstEmployeeCompetenceEval.Count > 0)
+                    {
+                        objModelList.lstEmployeeCompetenceEval[0].CompetenceId = CompetenceId.ToString();
+
+                        return FunAddTrainingList(objModelList);
+                    }
+                    return true;
+                }
+
+                
             }
             catch (Exception ex)
             {

@@ -165,16 +165,16 @@ var FormWizard = function () {
 				return form.valid();
 			},
 			onFinished: function (event, currentIndex) {
-                event.preventDefault();
+				event.preventDefault();
 				//var model = $('#form1').serialize();
-                var model = new FormData(this);
+				var model = new FormData(this);
 				jQuery.ajax({
 					url: summary.summaryUrl,
 					type: 'POST',
 					dataType: "json",
-                    data: model,                    
-                    processData: false,
-                    contentType: false,
+					data: model,
+					processData: false,
+					contentType: false,
 					success: function (result) {
 						//window.location = window.location.protocol + "//" +
 						//                   window.location.host + "/TRA/TRAList";
@@ -271,15 +271,15 @@ var FormWizard = function () {
 				return forms.valid();
 			},
 			onFinished: function (event, currentIndex) {
-                event.preventDefault();
-                var model = new FormData(this); /*$('#form1').serialize();*/
+				event.preventDefault();
+				var model = new FormData(this); /*$('#form1').serialize();*/
 				jQuery.ajax({
 					url: summary.summaryUrl,
 					type: 'POST',
 					dataType: "json",
-                    data: model,
-                    processData: false,
-                    contentType: false,
+					data: model,
+					processData: false,
+					contentType: false,
 					success: function (result) {
 
 						window.location = window.location.protocol + "//" +
@@ -356,11 +356,11 @@ var FormWizard = function () {
 		}
 
 		// Initialize
-        var $select = $('.form-control-select3').select2({            
+		var $select = $('.form-control-select3').select2({
 			//minimumResultsForSearch: Infinity,
-            //width: '100%',
-          //  allowClear: true, 
-           
+			//width: '100%',
+			//  allowClear: true, 
+
 		});
 
 		// Trigger value change when selection is made

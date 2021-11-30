@@ -59,8 +59,9 @@ namespace ISOStd.Controllers
                 objUser = objGlobaldata.GetCurrentUserSession();
                 ViewBag.Name = objUser.firstname;
                 ViewBag.DeptName = objGlobaldata.GetDeptNameById(objUser.DeptID);
-                ViewBag.Designation = objUser.Designation;                
+                ViewBag.Designation = objUser.Designation;
 
+                ViewBag.ForwardTo=objGlobaldata.GetSceenNotificationEmpList("Customer Complaints", "Forward complaint to");
                 //try
                 //{
 
@@ -423,7 +424,7 @@ namespace ISOStd.Controllers
                 ViewBag.Name = objUser.firstname;
                 ViewBag.DeptName = objGlobaldata.GetDeptNameById(objUser.DeptID);
                 ViewBag.Designation = objUser.Designation;
-
+                ViewBag.ForwardTo = objGlobaldata.GetSceenNotificationEmpList("Customer Complaints", "Forward complaint to");
 
                 if (Request.QueryString["id_complaint"] != null && Request.QueryString["id_complaint"] != "")
                 {
@@ -901,7 +902,7 @@ namespace ISOStd.Controllers
                                                 objGlobaldata.AddFunctionalLog("Exception in AddDisposition: " + ex.ToString());
                                                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                                             }
-                                            objModel.CustList = objdispList.CustComplaintList;
+                                            objModel.DispList = objdispList.CustComplaintList;
                                         }
                                     }
 
@@ -944,7 +945,7 @@ namespace ISOStd.Controllers
                                             }
                                         }
                                     }
-                                    objModel.CustList = CAList.CustComplaintList;
+                                    objModel.CAList = CAList.CustComplaintList;
 
                                     //------------------End CA-----------
 
@@ -1385,7 +1386,7 @@ namespace ISOStd.Controllers
                                                 objGlobaldata.AddFunctionalLog("Exception in AddDisposition: " + ex.ToString());
                                                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                                             }
-                                            objModel.CustList = objdispList.CustComplaintList;
+                                            objModel.DispList = objdispList.CustComplaintList;
                                         }
                                     }
 
@@ -1428,7 +1429,7 @@ namespace ISOStd.Controllers
                                             }
                                         }
                                     }
-                                    objModel.CustList = CAList.CustComplaintList;
+                                    objModel.CAList = CAList.CustComplaintList;
 
                                     //------------------End CA-----------
 
@@ -1523,7 +1524,11 @@ namespace ISOStd.Controllers
             {
                 cookieCollection.Add(key, Request.Cookies.Get(key).Value);
             }
-            string footer = "--footer-right \"Date: [date] [time]\" " + "--footer-center \"Page: [page] of [toPage]\" --footer-line --footer-font-size \"9\" --footer-spacing 5 --footer-font-name \"calibri light\"";
+            //string footer = "--footer-right \"Date: [date] [time]\" " + "--footer-center \"Page: [page] of [toPage]\" --footer-line --footer-font-size \"9\" --footer-spacing 5 --footer-font-name \"calibri light\"";
+
+
+            string footer = string.Format("--footer-left \"" + objComplaintModels.ComplaintNo + "                                                             Rev. No: 1                                                                       Date: " + objComplaintModels.registered_on.ToString("dd/MM/yyyy") + "  Page: [page]/[toPage]\" --footer-font-size \"9\"");
+                                
 
             return new ViewAsPdf("CustomerComplaintToPDF")
             {
@@ -3357,7 +3362,7 @@ namespace ISOStd.Controllers
                     ViewBag.Team = dsTeamModel;
 
                     //RCA
-                    string sSqlstmt14 = "select rca_technique,rca_details,rca_upload,rca_action,rca_justify,rca_reportedby,rca_notifiedto,rca_reporteddate,rca_startdate from t_custcomplaint_nc where id_custcomplaint_nc='" + sid_custcomplaint_nc + "'";
+                    string sSqlstmt14 = "select rca_technique,rca_details,rca_upload,rca_action,rca_justify,rca_reportedby,rca_notifiedto,rca_reporteddate,rca_startdate,ca_verfiry_duedate,ca_proposed_by from t_custcomplaint_nc where id_custcomplaint_nc='" + sid_custcomplaint_nc + "'";
                     DataSet dsRCAModels = objGlobaldata.Getdetails(sSqlstmt14);
                     ViewBag.RCA = dsRCAModels;
 
@@ -3532,7 +3537,7 @@ namespace ISOStd.Controllers
                     ViewBag.Team = dsTeamModel;
 
                     //RCA
-                    string sSqlstmt14 = "select rca_technique,rca_details,rca_upload,rca_action,rca_justify,rca_reportedby,rca_notifiedto,rca_reporteddate,rca_startdate from t_custcomplaint_nc where id_custcomplaint_nc='" + sid_custcomplaint_nc + "'";
+                    string sSqlstmt14 = "select rca_technique,rca_details,rca_upload,rca_action,rca_justify,rca_reportedby,rca_notifiedto,rca_reporteddate,rca_startdate,ca_verfiry_duedate,ca_proposed_by from t_custcomplaint_nc where id_custcomplaint_nc='" + sid_custcomplaint_nc + "'";
                     DataSet dsRCAModels = objGlobaldata.Getdetails(sSqlstmt14);
                     ViewBag.RCA = dsRCAModels;
 

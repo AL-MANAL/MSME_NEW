@@ -177,13 +177,13 @@
                                 @Html.LabelFor(model => model.Cust_Code)
                             </div>
                         </td>
-                        <td class="col">
+                        <td class="col-xs-3 col-md-4">
                             <div class="editor-field">
                                 @Html.EditorFor(model => model.Cust_Code, new { htmlAttributes = new { @class = "form-control" } })
 
                             </div>
                         </td>
-                        <td class="col-xs-3 col-md-2">
+                        @*<td class="col-xs-3 col-md-2">
                             <div class="editor-label">
                                 @Html.LabelFor(model => model.FaxNumber)
                             </div>
@@ -192,7 +192,7 @@
                             <div class="editor-field">
                                 <input class="form-control" type="text" id="FaxNumber" name="FaxNumber" value="@Model.FaxNumber" />
                             </div>
-                        </td>
+                        </td>*@
                     </tr>
 
                     <tr class="row">
@@ -342,7 +342,55 @@
                 </table>
             </div>
         </div>
+        @if (@objCustomerContactsList.lstCustomerContacts != null && @objCustomerContactsList.lstCustomerContacts.Count > 0)
+        {
+            <div class="card">
+                <div class="card-header header-elements-inline bg-primary">
+                    <h5 class="card-title">Customer Contact Person Details</h5>
+                </div>
+                <div class="card-body">
+                    <div class="card card-table table-responsive shadow-0 mb-0">
+                        <table class="table">
+                            <tr>
+                                <th> Contact Person Name</th>
+                                @*<th> ContactPerson</th>*@
+                                <th> Designation </th>
+                                <th> Email </th>
+                                <th> Phone Number </th>
+                                <th> Mobile Number </th>
+                                <th>Action </th>
+                            </tr>
+                            @for (int index = 0; index < objCustomerContactsList.lstCustomerContacts.Count; index++)
+                            {
+                                string ContactsId = objCustomerContactsList.lstCustomerContacts[index].ContactsId;
+                                string ContactPerson = System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(objCustomerContactsList.lstCustomerContacts[index].ContactPerson);
+                                string EmailId = objCustomerContactsList.lstCustomerContacts[index].EmailId;
+                                string PhoneNumber = objCustomerContactsList.lstCustomerContacts[index].PhoneNumber;
+                                string MobileNumber = objCustomerContactsList.lstCustomerContacts[index].MobileNumber;
+                                string designation = objCustomerContactsList.lstCustomerContacts[index].designation;
 
+                                <tr>
+                                    <td> @ContactPerson</td>
+                                    <td> @designation</td>
+                                    <td> @EmailId</td>
+                                    <td> @PhoneNumber </td>
+                                    <td> @MobileNumber</td>
+                                    <td>
+                                        <span class="badge badge-info"
+                                              onclick="EditContacts('@ContactsId', '@ContactPerson', '@designation', '@EmailId', '@PhoneNumber', '@MobileNumber')" style="cursor:pointer;">Edit</span>
+                                        @* <img src="@Url.Content("~/Images/delete.png")" title="Delete User" onclick="DeleteItems(@ContactsId)" style="cursor:pointer;"/>*@
+                                        <span class='badge badge-danger' title='Update' onclick='DeleteItems(@ContactsId)' style='cursor:pointer;'>Delete</span>
+                                    </td>
+                                </tr>
+                            }
+                        </table>
+                    </div>
+
+                </div>
+
+
+            </div>
+        }
         <div class="card-footer bg-white d-flex justify-content-between align-items-center">
             @Html.ActionLink("Back to List", "CustomerList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
            
@@ -351,55 +399,7 @@
     </div>
         
 }
- @if (@objCustomerContactsList.lstCustomerContacts != null && @objCustomerContactsList.lstCustomerContacts.Count > 0)
- {
-      <div class="card">
-        <div class="card-header header-elements-inline bg-primary">
-            <h5 class="card-title">Customer Contact Person Details</h5>
-        </div>
-           <div class="card-body">
-            <div class="card card-table table-responsive shadow-0 mb-0">
-                <table class="table">
-                    <tr>
-                        <th> Contact Person Name</th>
-                        @*<th> ContactPerson</th>*@
-                        <th> Designation </th>
-                        <th> Email </th>
-                        <th> Phone Number </th>
-                        <th> Mobile Number </th>
-                        <th>Action </th>
-                    </tr>
- @for (int index = 0; index < objCustomerContactsList.lstCustomerContacts.Count; index++)
- {
-     string ContactsId = objCustomerContactsList.lstCustomerContacts[index].ContactsId;
-     string ContactPerson = System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(objCustomerContactsList.lstCustomerContacts[index].ContactPerson);
-     string EmailId = objCustomerContactsList.lstCustomerContacts[index].EmailId;
-     string PhoneNumber = objCustomerContactsList.lstCustomerContacts[index].PhoneNumber;
-     string MobileNumber = objCustomerContactsList.lstCustomerContacts[index].MobileNumber;
-     string designation = objCustomerContactsList.lstCustomerContacts[index].designation;
 
-                <tr>
-                    <td> @ContactPerson</td>
-                    <td> @designation</td>
-                    <td> @EmailId</td>
-                    <td> @PhoneNumber </td>
-                    <td> @MobileNumber</td>
-                    <td>
-                        <span class="badge badge-info"
-                              onclick="EditContacts('@ContactsId', '@ContactPerson', '@designation', '@EmailId', '@PhoneNumber', '@MobileNumber')" style="cursor:pointer;">Edit</span>
-                        @* <img src="@Url.Content("~/Images/delete.png")" title="Delete User" onclick="DeleteItems(@ContactsId)" style="cursor:pointer;"/>*@
-                        <span class='badge badge-danger' title='Update' onclick='DeleteItems(@ContactsId)' style='cursor:pointer;'>Delete</span>
-                    </td>
-                </tr>
- }
-</table>
-                </div>
-
-               </div>
-
-
-          </div>
- }
 
 
  @using (Html.BeginForm("CustomerContactEdit", "CustomerMgmt", FormMethod.Post, new { id = "form2", name = "form2" }))

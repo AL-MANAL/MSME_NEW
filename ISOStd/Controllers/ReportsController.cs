@@ -673,7 +673,7 @@ namespace ISOStd.Controllers
 
             dsDocReport.Tables[0].TableName = "MasterListDoc";
             ViewBag.dsMasterDocList = dsDocReport;// MasterListDocReport();
-            ViewBag.DocType = objGlobaldata.GetDropdownList("DocType");
+            ViewBag.DocType = objGlobaldata.GetDocTypeListbyDocLevels();
             ViewBag.lstDocLevels = dsDocReport.Tables[0].AsEnumerable().Select(x => x["Doctype"].ToString()).Distinct(StringComparer.CurrentCultureIgnoreCase).ToList();
             return View();
         }

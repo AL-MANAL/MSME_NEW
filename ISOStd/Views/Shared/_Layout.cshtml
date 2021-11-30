@@ -318,6 +318,7 @@
     @{
         ISOStd.Models.UserCredentials objUser = new ISOStd.Models.UserCredentials();
         ISOStd.Models.clsGlobal objGlobaldata = new ISOStd.Models.clsGlobal();
+        var CurrentUser = objGlobaldata.GetCurrentUserSession().empid;
         ViewBag.VerNo = objGlobaldata.GetVersionNumber();
         ViewBag.Changes = objGlobaldata.GetVersionChanges();
         string role = "";
@@ -362,6 +363,7 @@
         System.Data.DataSet dsWorkPermit = new System.Data.DataSet();
         System.Data.DataSet dsSafetyViolation = new System.Data.DataSet();
         System.Data.DataSet dsJD = new System.Data.DataSet();
+
         System.Data.DataSet dsSuppReevalation = new System.Data.DataSet();
         System.Data.DataSet dsPortalAuthorization = new System.Data.DataSet();
         System.Data.DataSet dsDCRequest = new System.Data.DataSet();
@@ -386,6 +388,7 @@
         System.Data.DataSet dsApproveInspPlan = new System.Data.DataSet();
 
         //Review Dataset
+        System.Data.DataSet dsJDReview = new System.Data.DataSet();
         System.Data.DataSet dsReviewSupPerf = new System.Data.DataSet();
         System.Data.DataSet dsReviewEmpCompetence = new System.Data.DataSet();
         System.Data.DataSet dsReviewMgmtDocuments = new System.Data.DataSet();
@@ -402,6 +405,8 @@
         int cnt2 = 0; //Review
 
         //Review
+        dsJDReview = objGlobaldata.getListPendingForReviewJD(objUser.empid);
+
         dsReviewSupPerf = objGlobaldata.getListPendingForSupplierPerfReview(objUser.empid);
 
         dsReviewEmpCompetence = objGlobaldata.getListPendingForReviewEmpCompetence(objUser.empid);
@@ -450,6 +455,8 @@
         dsSafetyViolation = objGlobaldata.getListPendingForApprovalSafetyViolation(objUser.empid);
 
         dsJD = objGlobaldata.getListPendingForApprovalJD(objUser.empid);
+
+
 
         dsSuppReevalation = objGlobaldata.getListPendingForApprovalSuppReevalution(objUser.empid);
 
@@ -565,6 +572,7 @@
         {
             cnt += dsJD.Tables[0].Rows.Count;
         }
+
         if (dsSuppReevalation != null)
         {
             cnt += dsSuppReevalation.Tables[0].Rows.Count;
@@ -657,6 +665,10 @@
 
 
         //Review
+        if (dsJDReview != null)
+        {
+            cnt2 += dsJDReview.Tables[0].Rows.Count;
+        }
         if (dsReviewSupPerf != null)
         {
             cnt2 += dsReviewSupPerf.Tables[0].Rows.Count;
@@ -1225,7 +1237,7 @@
                             {
                                 <a href='@Url.Action("ISOStdList", "Company")' class="dropdown-item" onclick="HyperLinkProgressIconFunction()" title="Audit Criteria"> Audit Criteria </a>
                             }
-                            @if (objGlobaldata.GetCurrentUserSession().EmpRole.Contains("1"))
+                            @if ((Array.IndexOf(objGlobaldata.GetHRDeptEmployees().Split(','), CurrentUser) >= 0) || (Array.IndexOf(objGlobaldata.GetDeptHeadbyDept().Split(','), CurrentUser) >= 0))
                             {
                                 <a href='@Url.Action("RoleList", "Role")' class="dropdown-item" onclick="HyperLinkProgressIconFunction()" title="Roles"> Roles</a>
                             }
@@ -1255,6 +1267,50 @@
                         </div>
 
                         <div class="dropdown-content-body dropdown-scrollable">
+                            @if (dsJDReview != null && dsJDReview.Tables.Count > 0 && dsJDReview.Tables[0].Rows.Count > 0)
+                            {
+                                <hr />
+                                <p class="font-weight-bold text-center">Job Description</p>
+                                <hr />
+                                <ul class="media-list">
+                                    @for (int i = 0; i < dsJDReview.Tables[0].Rows.Count; i++)
+                                    {
+
+                                        <li class="media" id="JD @dsJDReview.Tables[0].Rows[i]["id_role_jd"].ToString()">
+                                            <div class="mr-3 w-25">
+
+                                                <a href='@Url.Action("RoleJDDetail", "Role", new { RoleId= dsJDReview.Tables[0].Rows[i]["role_id"].ToString(), id_role_jd = dsJDReview.Tables[0].Rows[i]["id_role_jd"].ToString() })' title="Document Details" class="badge badge-flat badge-icon border-teal text-teal-600"><i class="icon-file-text2"></i></a>
+                                                <br /><span class="font-weight-semibold">Requestor <text class="text-blue">@objGlobaldata.GetEmpHrNameById(dsJDReview.Tables[0].Rows[i]["logged_by"].ToString())</text></span>
+                                            </div>
+                                            <div class="media-body">
+
+                                                <div class="media-title">
+                                                    <span class="font-weight-semibold">Role:<text class="text-blue">@objGlobaldata.GetRolesNameById(dsJDReview.Tables[0].Rows[i]["role_id"].ToString())</text></span>
+                                                    <br />
+                                                    <span class="font-weight-semibold">Department:<text class="text-blue">@objGlobaldata.GetDeptNameById(dsJDReview.Tables[0].Rows[i]["deptid"].ToString())</text></span>
+                                                    <br />
+                                                    <span class="font-weight-semibold">Reports To:<text class="text-blue">@objGlobaldata.GetRolesNameById(dsJDReview.Tables[0].Rows[i]["report_to"].ToString())</text></span>
+                                                    <br />
+                                                    <span class="font-weight-semibold">Supervises:<text class="text-blue">@dsJDReview.Tables[0].Rows[i]["supervises"].ToString()</text></span>
+                                                    <br />
+                                                    <span class="font-weight-semibold">
+                                                        Report:<text class="text-blue">
+                                                            @if (dsJDReview.Tables[0].Rows[i]["jd_report"].ToString() != "")
+                                                            {
+                                                                <a href='@Url.Action("DisplayDocument", "Reports", new { Document = dsJDReview.Tables[0].Rows[i]["jd_report"].ToString() })' target="_blank">Preview</a>
+                                                            }
+                                                        </text>
+                                                    </span>
+                                                    <br />
+                                                    <span class="font-weight-semibold">Date:<text class="text-blue"> @Convert.ToDateTime(dsJDReview.Tables[0].Rows[i]["jd_date"].ToString()).ToString("dd/MM/yyyy") </text></span>
+
+                                                </div>
+
+                                            </div>
+                                        </li>
+                                    }
+                                </ul>
+                            }
                             @if (dsReviewSupPerf != null && dsReviewSupPerf.Tables.Count > 0 && dsReviewSupPerf.Tables[0].Rows.Count > 0)
                             {
                                 <hr />
@@ -2335,16 +2391,11 @@
                                         <li class="media" id="JD @dsJD.Tables[0].Rows[i]["id_role_jd"].ToString()">
                                             <div class="mr-3 w-25">
 
-                                                <a href='@Url.Action("RoleJD", "Role", new { RoleId= dsJD.Tables[0].Rows[i]["role_id"].ToString() })' title="Document Details" class="badge badge-flat badge-icon border-teal text-teal-600"><i class="icon-file-text2"></i></a>
+                                                <a href='@Url.Action("RoleJDDetail", "Role", new { RoleId= dsJD.Tables[0].Rows[i]["role_id"].ToString(), id_role_jd = dsJD.Tables[0].Rows[i]["id_role_jd"].ToString() })' title="Document Details" class="badge badge-flat badge-icon border-teal text-teal-600"><i class="icon-file-text2"></i></a>
                                                 <br /><span class="font-weight-semibold">Requestor <text class="text-blue">@objGlobaldata.GetEmpHrNameById(dsJD.Tables[0].Rows[i]["logged_by"].ToString())</text></span>
                                             </div>
                                             <div class="media-body">
-                                                <div class="btn-group-vertical float-right">
-
-
-                                                    <span class="badge badge-info ripple" title="Approve" onclick="JDApproveRejectNoty(id_role_jd = '@dsJD.Tables[0].Rows[i]["id_role_jd"].ToString()', iStatus = '1', PendingFlg = 'true',Document = '@dsJD.Tables[0].Rows[i]["jd_report"].ToString()') " style="cursor:pointer;">Approve</span>
-                                                    <span class="badge badge-danger mt-1 mb-1 ripple" title="Reject" onclick="JDApproveRejectNoty(id_role_jd = '@dsJD.Tables[0].Rows[i]["id_role_jd"].ToString()', iStatus = '2', PendingFlg = 'true',Document = '@dsJD.Tables[0].Rows[i]["jd_report"].ToString()')" style="cursor:pointer;">Reject</span>
-                                                </div>
+                                     
                                                 <div class="media-title">
                                                     <span class="font-weight-semibold">Role:<text class="text-blue">@objGlobaldata.GetRolesNameById(dsJD.Tables[0].Rows[i]["role_id"].ToString())</text></span>
                                                     <br />
@@ -2366,17 +2417,13 @@
                                                     <span class="font-weight-semibold">Date:<text class="text-blue"> @Convert.ToDateTime(dsJD.Tables[0].Rows[i]["jd_date"].ToString()).ToString("dd/MM/yyyy") </text></span>
 
                                                 </div>
-                                                <div class="form-group">
-                                                    <span class="text-muted">Comments</span>
-                                                    <input type="text" class="form-control" placeholder="Enter comments here" id="JD_comment @dsJD.Tables[0].Rows[i]["id_role_jd"].ToString()" />
-
-                                                </div>
+                                               
                                             </div>
                                         </li>
                                     }
                                 </ul>
                             }
-
+                          
                             @if (dsSuppReevalation != null && dsSuppReevalation.Tables.Count > 0 && dsSuppReevalation.Tables[0].Rows.Count > 0)
                             {
                                 <hr />

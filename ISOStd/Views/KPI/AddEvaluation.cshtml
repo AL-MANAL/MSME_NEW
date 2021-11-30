@@ -10,6 +10,10 @@
         ISOStd.Models.KPIModels ObjModel = new ISOStd.Models.KPIModels();
         ISOStd.Models.KPIModels ObjKpi = new ISOStd.Models.KPIModels();
         ISOStd.Models.KPIModels ObjMI = new ISOStd.Models.KPIModels();
+
+        var currentmonth = DateTime.Now.Month;
+        var currentyear = DateTime.Now.Year;
+
         int icnt = 0;
         if (ViewBag.Eval != null)
         {
@@ -91,10 +95,10 @@
                             @Html.DisplayNameFor(model => model.First().kpi_type)
                         </th>*@
                         <th>
-                            @Html.DisplayNameFor(model => model.First().monitoring_frm_date)
+                            @Html.DisplayNameFor(model => model.First().FromPeriod)
                         </th>
                         <th>
-                            @Html.DisplayNameFor(model => model.First().monitoring_to_date)
+                            @Html.DisplayNameFor(model => model.First().ToPeriod)
                         </th>
                         <th>
                             @Html.DisplayNameFor(model => model.First().monitoring_mechanism)
@@ -136,15 +140,15 @@
                                     @Html.DisplayFor(model => item.kpi_type)
                                 </td>*@
                                 <td>
-                                    @if (item.monitoring_frm_date > Convert.ToDateTime("01/01/0001"))
+                                    @if (item.FromPeriod > Convert.ToDateTime("01/01/0001"))
                                     {
-                                        @item.monitoring_frm_date.ToString("dd/MM/yyyy")
+                                        @item.FromPeriod.ToString("dd/MM/yyyy")
                                     }
                                 </td>
                                 <td>
-                                    @if (item.monitoring_to_date > Convert.ToDateTime("01/01/0001"))
+                                    @if (item.ToPeriod > Convert.ToDateTime("01/01/0001"))
                                     {
-                                        @item.monitoring_to_date.ToString("dd/MM/yyyy")
+                                        @item.ToPeriod.ToString("dd/MM/yyyy")
                                     }
                                 </td>
                                 <td>
@@ -157,9 +161,12 @@
                                     @Html.DisplayFor(model => item.risk)
                                 </td>
                                 <td>
-                                    <a class="dropdown-item" href='@Url.Action("AddEvaluation", "KPI", new { KPI_Id = item.KPI_Id, id_measurable = item.id_measurable })' title="Evaluation" onclick="HyperLinkProgressIconFunction()">
+@if ((item.FromPeriod.Month <= currentmonth) && (item.ToPeriod.Month >= currentmonth) && (currentyear == item.FromPeriod.Year || currentyear == item.ToPeriod.Year))
+{
+                                    <a class="dropdown-item" href='@Url.Action("AddEvaluation", "KPI", new { Status = "Display",KPI_Id = item.KPI_Id, id_measurable = item.id_measurable, id_evaluation = item.id_evaluation })' title="Evaluation" onclick="HyperLinkProgressIconFunction()">
                                         <i class="icon-pencil7"></i>Evaluation
                                     </a>
+}
                                 </td>                         
                             </tr>
                         }
@@ -167,13 +174,15 @@
                 </tbody>
             </table>
         </div>
-@using (Html.BeginForm("AddEvaluation", "KPI", FormMethod.Post,
-new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+    @if (ObjModel.stat_display == "Display")
+    {
+using (Html.BeginForm("AddEvaluation", "KPI", FormMethod.Post,
+        new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
 {
     @Html.AntiForgeryToken()
     @Html.ValidationSummary(true)
 
-        <div class="card-body invisible" id="hidden card1">
+        <div class="card-body" id="hidden card1">
             <input type="hidden" id="id_evaluation" name="id_evaluation" value="@ObjModel.id_evaluation" />
             <input type="hidden" id="KPI_Id" name="KPI_Id" value="@ObjMI.KPI_Id" />
             <input type="hidden" id="id_measurable" name="id_measurable" value="@ObjMI.id_measurable" />
@@ -199,21 +208,21 @@ new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
                         </tr>
                         <tr class="row">
                             <td class="col-xs-3 col-md-2">
-                                Monitoring Period From Date
+                                From Date
                             </td>
                             <td class="col">
-                                @if (ObjMI.monitoring_frm_date != null && ObjMI.monitoring_frm_date > Convert.ToDateTime("01/01/0001"))
+                                @if (ObjMI.FromPeriod != null && ObjMI.FromPeriod > Convert.ToDateTime("01/01/0001"))
                                 {
-                                    @Html.Label(ObjMI.monitoring_frm_date.ToString("dd/MM/yyyy"))
+                                    @Html.Label(ObjMI.FromPeriod.ToString("dd/MM/yyyy"))
                                 }
                             </td>
                             <td class="col-xs-3 col-md-2">
                                 To Date
                             </td>
                             <td class="col">
-                                @if (ObjMI.monitoring_to_date != null && ObjMI.monitoring_to_date > Convert.ToDateTime("01/01/0001"))
+                                @if (ObjMI.ToPeriod != null && ObjMI.ToPeriod > Convert.ToDateTime("01/01/0001"))
                                 {
-                                    @Html.Label(ObjMI.monitoring_to_date.ToString("dd/MM/yyyy"))
+                                    @Html.Label(ObjMI.ToPeriod.ToString("dd/MM/yyyy"))
                                 }
                             </td>
                         </tr>
@@ -395,6 +404,7 @@ new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
 
         </div>
 }
+    }
     </div>
 
     @section scripts {
@@ -421,10 +431,10 @@ new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
         }
     });
             var hideClass = 'invisible';
-            if(document.getElementById("itemcnt").value == "1")
-            {
-                document.getElementById("hidden card1").classList.remove(hideClass);
-            }
+            //if(document.getElementById("itemcnt").value == "1")
+            //{
+            //    document.getElementById("hidden card1").classList.remove(hideClass);
+            //}
             $("#QCDocsVal").click(function () {
                 if ($("#QCDocsVal").prop('checked')) {
                     {

@@ -25,6 +25,39 @@ namespace ISOStd.Models
         private object fileUploader;
         private object mail;
 
+        //picking employees based on module name and field name
+        public MultiSelectList GetSceenNotificationEmpList(string screen_name, string field_name)
+        {
+            EmployeeList emplist = new EmployeeList();
+            emplist.EmpList = new List<Employee>();
+            try
+            {
+                string sSqlstmt = "select concat(emp_firstname,' ',ifnull(emp_middlename,' '),' ',ifnull(emp_lastname,' ')) as Empname,"
+                + " emp_no as Empid  from t_hr_employee t,t_screen_notification tt where screen_name = 'Customer Complaints' and field_name = 'Forward complaint to' and FIND_IN_SET(t.emp_no,tt.emp_id)";
+                DataSet dsEmp = Getdetails(sSqlstmt);// and CompanyId='" + sCompanyId+"'");
+                if (dsEmp.Tables.Count > 0 && dsEmp.Tables[0].Rows.Count > 0)
+                {
+                    for (int i = 0; i < dsEmp.Tables[0].Rows.Count; i++)
+                    {
+                        Employee emp = new Employee()
+                        {
+                            Empid = dsEmp.Tables[0].Rows[i]["Empid"].ToString(),
+                            Empname = Regex.Replace(dsEmp.Tables[0].Rows[i]["Empname"].ToString(), " +", " ")
+                        };
+                        emp.Empname = emp.Empname.Trim();
+                        emplist.EmpList.Add(emp);
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                AddFunctionalLog("Exception in GetSceenNotificationEmpList: " + ex.ToString());
+            }
+
+            return new MultiSelectList(emplist.EmpList, "Empid", "Empname");
+
+        }
         //-----------------------------------11/2/2021-----------------------------------------------
         public MultiSelectList GetIsoAndDescList()
         {
@@ -451,7 +484,7 @@ namespace ISOStd.Models
             {
                 string branch = GetCurrentUserSession().division;
                 DataSet dsEmp = Getdetails("select emp_no as Empid,concat(concat(emp_firstname,' ',ifnull(emp_middlename,' '),' ',ifnull(emp_lastname,' ')),' - ',EmailId) as Empname from t_hr_employee e,roles r where e.emp_status=1"
-               + " and FIND_IN_SET(id,Role) and RoleName='Top Management' and division='" + branch + "'");
+               + " and FIND_IN_SET(id,Role) and RoleName='Top Management'");
 
 
                 if (dsEmp.Tables.Count > 0 && dsEmp.Tables[0].Rows.Count > 0)
@@ -2767,13 +2800,23 @@ namespace ISOStd.Models
 
         }
 
-        public MultiSelectList GetDocTypeListbyDocLevels(string LevelId)
+        public MultiSelectList GetDocTypeListbyDocLevels(string LevelId="")
         {
             DropdownList objReportList = new DropdownList();
             objReportList.lstDropdown = new List<DropdownItems>();
+            string sSsqlstmt = "";
             try
             {
-                string sSsqlstmt = "select id_levels_details as Id,description as Name from t_document_levels_details where id_doc_level = '" + LevelId + "' and active=1";
+                if(LevelId != "" && LevelId != null)
+                {
+                     sSsqlstmt = "select id_levels_details as Id,description as Name from t_document_levels_details where id_doc_level = '" + LevelId + "' and active=1";
+
+                }
+                else
+                {
+                     sSsqlstmt = "select id_levels_details as Id,description as Name from t_document_levels_details where  active=1";
+
+                }
 
                 DataSet dsReportType = Getdetails(sSsqlstmt);
                 if (dsReportType.Tables.Count > 0 && dsReportType.Tables[0].Rows.Count > 0)
@@ -2931,17 +2974,24 @@ namespace ISOStd.Models
             return new MultiSelectList(objReportList.lstDropdown, "Id", "Name");
         }
 
-        public string GetDeptHeadbyDept(string dept_id)
+        public string GetDeptHeadbyDept(string dept_id="")
         {
             try
             {
+                DataSet dsEmp = new DataSet();
                 if (dept_id != "")
                 {
-                    DataSet dsEmp = Getdetails("select group_concat(emp_no) as depthead FROM t_hr_employee where find_in_set(Dept_Id,dept_id)>0 and DeptInCharge='Yes' and emp_status=1");
-                    if (dsEmp.Tables.Count > 0 && dsEmp.Tables[0].Rows.Count > 0)
-                    {
-                        return (dsEmp.Tables[0].Rows[0]["depthead"].ToString());
-                    }
+                     dsEmp = Getdetails("select group_concat(emp_no) as depthead FROM t_hr_employee where find_in_set(Dept_Id,'"+ dept_id + "')>0 and DeptInCharge='Yes' and emp_status=1");
+                   
+                }
+                else
+                {
+                     dsEmp = Getdetails("select group_concat(emp_no) as depthead FROM t_hr_employee where  DeptInCharge='Yes' and emp_status=1");
+
+                }
+                if (dsEmp.Tables.Count > 0 && dsEmp.Tables[0].Rows.Count > 0)
+                {
+                    return (dsEmp.Tables[0].Rows[0]["depthead"].ToString());
                 }
             }
             catch (Exception ex)
@@ -4066,8 +4116,7 @@ namespace ISOStd.Models
             }
             return "";
         }
-
-        public bool SendJDmail(string sToEmailid, string sSubject, string sBody, HttpPostedFileBase sFilename, string sCCList = "", string sBccList = "")
+        public bool SendJDmail(string sToEmailid, string sSubject, string sBody, string sFilename,HttpPostedFileBase aFilename, string sCCList = "", string sBccList = "")
         {
             try
             {
@@ -4078,7 +4127,7 @@ namespace ISOStd.Models
                 {
 
                 }//587;
-                //bool enableSSL = false;
+                 //bool enableSSL = false;
                 bool enableSSL = Convert.ToBoolean(ConfigurationManager.AppSettings["enableSSL"].ToString().Trim());
 
                 string sLoggedEmail = "";
@@ -4123,17 +4172,34 @@ namespace ISOStd.Models
 
                     // Can set to false, if you are sending pure text.
 
-                    //if (sFilename != null)
-                    //{
-                    //    string fileName = Path.GetFileName(sFilename.FileName);
-                    //    mail.Attachments.Add(new Attachment(sFilename.InputStream, fileName));
-                    //}
+                    if (sFilename != "")
+                    {
+                        if (sFilename.Contains(','))
+                        {
+                            string[] varfile = sFilename.Split(',');
 
-                    if (sFilename != null)
+                            for (int i = 0; i < varfile.Length; i++)
+                            {
+                                if (File.Exists(varfile[i]))
+                                {
+                                    mail.Attachments.Add(new Attachment(varfile[i]));
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (File.Exists(sFilename))
+                            {
+                                mail.Attachments.Add(new Attachment(sFilename));
+                            }
+                        }
+
+                    }
+                    if (aFilename != null)
                     {
 
-                        string fileName = Path.GetFileName(sFilename.FileName);
-                        mail.Attachments.Add(new Attachment(sFilename.InputStream, fileName));
+                        string fileName = Path.GetFileName(aFilename.FileName);
+                        mail.Attachments.Add(new Attachment(aFilename.InputStream, fileName));
 
                     }
                     SmtpClient smtp = new SmtpClient(smtpAddress, portNumber);
@@ -4178,6 +4244,118 @@ namespace ISOStd.Models
             }
             return true;
         }
+
+        //public bool SendJDmail(string sToEmailid, string sSubject, string sBody, HttpPostedFileBase sFilename, string sCCList = "", string sBccList = "")
+        //{
+        //    try
+        //    {
+        //        string smtpAddress = ConfigurationManager.AppSettings["smtpAddress"].ToString().Trim();//"mail.almanalmgt.com";
+        //        int portNumber = 0;
+
+        //        if (int.TryParse(ConfigurationManager.AppSettings["portNumber"].ToString().Trim(), out portNumber))
+        //        {
+
+        //        }//587;
+        //        //bool enableSSL = false;
+        //        bool enableSSL = Convert.ToBoolean(ConfigurationManager.AppSettings["enableSSL"].ToString().Trim());
+
+        //        string sLoggedEmail = "";
+
+        //        sLoggedEmail = GetHrEmpEmailIdById(GetCurrentUserSession().empid);
+
+        //        string emailFrom = ConfigurationManager.AppSettings["emailFrom"].ToString().Trim(); //"msmesupport@almanalmgt.com";//
+        //        string password = ConfigurationManager.AppSettings["Pwd"].ToString().Trim(); //"msme@123";//
+
+        //        //string smtpAddress = "mailv.emirates.net.ae";
+        //        //int portNumber = 25;
+        //        //bool enableSSL = false;
+
+        //        //string emailFrom = Properties.Settings.Default.EmailId.Trim();
+        //        //string password = "flexiflo2017";//Properties.Settings.Default.Pwd.Trim();
+
+
+        //        using (MailMessage mail = new MailMessage())
+        //        {
+        //            mail.From = new MailAddress(emailFrom);
+        //            if (sToEmailid != "")
+        //            {
+        //                mail.To.Add(sToEmailid);
+        //            }
+        //            else
+        //            {
+        //                mail.To.Add(sLoggedEmail);
+        //            }
+
+        //            mail.Subject = sSubject;
+        //            mail.Body = sBody;
+        //            mail.IsBodyHtml = true;
+        //            if (sCCList != "")
+        //            {
+        //                mail.CC.Add(sCCList);
+        //            }
+
+        //            if (sBccList != "")
+        //            {
+        //                mail.Bcc.Add(sBccList);
+        //            }
+
+        //            // Can set to false, if you are sending pure text.
+
+        //            //if (sFilename != null)
+        //            //{
+        //            //    string fileName = Path.GetFileName(sFilename.FileName);
+        //            //    mail.Attachments.Add(new Attachment(sFilename.InputStream, fileName));
+        //            //}
+
+        //            if (sFilename != null)
+        //            {
+
+        //                string fileName = Path.GetFileName(sFilename.FileName);
+        //                mail.Attachments.Add(new Attachment(sFilename.InputStream, fileName));
+
+        //            }
+        //            SmtpClient smtp = new SmtpClient(smtpAddress, portNumber);
+
+        //            smtp.Credentials = new System.Net.NetworkCredential(emailFrom, password);
+        //            smtp.EnableSsl = enableSSL;
+        //            //smtp.Send(mail);
+
+        //            try
+        //            {
+        //                smtp.Send(mail);
+        //            }
+        //            catch (SmtpFailedRecipientsException ex)
+        //            {
+        //                for (int i = 0; i < ex.InnerExceptions.Length; i++)
+        //                {
+        //                    SmtpStatusCode status = ex.InnerExceptions[i].StatusCode;
+        //                    if (status == SmtpStatusCode.MailboxBusy ||
+        //                        status == SmtpStatusCode.MailboxUnavailable)
+        //                    {
+        //                        AddFunctionalLog("Delivery failed - retrying in 5 seconds.");
+        //                        System.Threading.Thread.Sleep(5000);
+        //                        smtp.Send(mail);
+        //                    }
+        //                    else
+        //                    {
+        //                        AddFunctionalLog("Failed to deliver message to {0}",
+        //                            ex.InnerExceptions[i].FailedRecipient);
+        //                    }
+        //                }
+        //            }
+        //            catch (Exception ex)
+        //            {
+        //                AddFunctionalLog("Exception caught in RetryIfBusy(): {0}",
+        //                        ex.ToString());
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        AddFunctionalLog("Exception in SendJDmail: " + ex.ToString());
+        //    }
+        //    return true;
+        //}
 
         public MultiSelectList GetRolesForJD(string role_id)
         {
@@ -5720,10 +5898,28 @@ namespace ISOStd.Models
         }
 
         //==========================JD======================================
+        //Reviewer
+        public DataSet getListPendingForReviewJD(string sempid)
+        {
+            string sSqlstmt = "select id_role_jd,role_id,deptid,report_to,supervises,jd_date,logged_by,jd_report,approved_by"
+            + " from t_role_jd where approve_status = 0"
+            + " and (find_in_set('" + sempid + "', reviewed_by) and not find_in_set('" + sempid + "', Reviewers))"
+            + " and(find_in_set('" + sempid + "', reviewed_by) and not find_in_set('" + sempid + "', ReviewRejector))";
+
+            DataSet dsApprovalList = Getdetails(sSqlstmt);
+            if (dsApprovalList.Tables.Count > 0 && dsApprovalList.Tables[0].Rows.Count > 0)
+            {
+                return dsApprovalList;
+            }
+            return null;
+        }
+        //Approver
         public DataSet getListPendingForApprovalJD(string sempid)
         {
             string sSqlstmt = "select id_role_jd,role_id,deptid,report_to,supervises,jd_date,logged_by,jd_report,approved_by"
-                       + " from t_role_jd where approve_status=0 and approved_by ='" + sempid + "'";
+            +" from t_role_jd where approve_status = 2"
+            +" and (find_in_set('"+ sempid + "', approved_by) and not find_in_set('"+ sempid + "', Approvers))"
+            +" and(find_in_set('"+ sempid + "', approved_by) and not find_in_set('"+ sempid + "', ApprovalRejector))";
 
             DataSet dsApprovalList = Getdetails(sSqlstmt);
             if (dsApprovalList.Tables.Count > 0 && dsApprovalList.Tables[0].Rows.Count > 0)
@@ -8153,13 +8349,13 @@ namespace ISOStd.Models
             }
             return "";
         }
-        public string GetMultiEmpEmailIdByDivision(string Division)//trychem
+        public string GetMultiEmpEmailIdByRole(string Role)//trychem
         {
             try
             {
-                if (Division != "")
+                if (Role != "")
                 {
-                    DataSet dsEmp = Getdetails("SELEct  GROUP_CONCAT(m.EmailId) EmailId FROM t_hr_employee m  where find_in_set('" + Division + "',Role) and emp_status=1");
+                    DataSet dsEmp = Getdetails("SELEct  GROUP_CONCAT(m.EmailId) EmailId FROM t_hr_employee m  where find_in_set('" + Role + "',Role) and emp_status=1");
                     if (dsEmp.Tables.Count > 0 && dsEmp.Tables[0].Rows.Count > 0)
                     {
                         string sDesc = dsEmp.Tables[0].Rows[0]["EmailId"].ToString();

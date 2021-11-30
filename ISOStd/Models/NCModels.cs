@@ -77,9 +77,12 @@ namespace ISOStd.Models
         [Display(Name = "Location")]
         public string location { get; set; }
 
+        [Display(Name = "Designation")]
+        public string Designation { get; set; }
+
         [Display(Name = "NC Issued To")]
         public string nc_issueto { get; set; }
-        public string nc_issuetoID { get; set; }
+      
         public string nc_issueto_dept { get; set; }
         public string nc_issuetoId { get; set; }
 

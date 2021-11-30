@@ -313,6 +313,7 @@ namespace ISOStd.Controllers
                 ViewBag.YesNo = objGlobaldata.GetConstantValue("YesNo");                
                 ViewBag.Roles = objGlobaldata.GetRoles();
                 ViewBag.EmploymentType = objGlobaldata.GetDropdownList("Employment Type");
+                ViewBag.Qualification = objGlobaldata.GetDropdownList("Employee Qualification");
             }
             catch (Exception ex)
             {
@@ -368,6 +369,7 @@ namespace ISOStd.Controllers
         {
             try
             {
+                objEmployeeModel.qualification = form["qualification"];
                 DateTime dateValue;
 
                 if (DateTime.TryParse(form["Passport_expiry"], out dateValue) == true)
@@ -1111,7 +1113,7 @@ namespace ISOStd.Controllers
                             + " Emp_work_location, Emp_accomodation, Date_of_join, Date_of_exit, Basic_Salary, Acc_allow, Other_allow, Gratuity, Remarks, Custody_Documents,"
                             + " Date_of_Birth, dept_id, ProfilePic, JobDesc, EvaluatedBy, CompetancyFromDate, CompetancyToDate, CompetancyDoc, Basic_Salary, Acc_allow,"
                             + " Other_allow Food_allow, Transport_allow,visa_Exp_date,PassportUpload,EIDUpload,HealthCardUpload,HealthCardIssueDate,HealthCardExpDate,"
-                            + " Logged_date,Visa_upload,DeptInCharge,division,Role,employment_type from t_hr_employee where emp_status=1 and emp_no='" + sEmp_no + "'";
+                            + " Logged_date,Visa_upload,DeptInCharge,division,Role,employment_type,qualification,years_exp from t_hr_employee where emp_status=1 and emp_no='" + sEmp_no + "'";
 
                     DataSet dsEmployeeList = objGlobaldata.Getdetails(sSqlstmt);
                     if (dsEmployeeList.Tables.Count > 0 && dsEmployeeList.Tables[0].Rows.Count > 0)
@@ -1157,6 +1159,8 @@ namespace ISOStd.Controllers
                             division =objGlobaldata.GetCompanyBranchNameById(dsEmployeeList.Tables[0].Rows[0]["division"].ToString()),
                             Role = objGlobaldata.GetMultiRoleById(dsEmployeeList.Tables[0].Rows[0]["Role"].ToString()),
                             employment_type =objGlobaldata.GetDropdownitemById(dsEmployeeList.Tables[0].Rows[0]["employment_type"].ToString()),
+                            qualification = objGlobaldata.GetDropdownitemById(dsEmployeeList.Tables[0].Rows[0]["qualification"].ToString()),
+                            years_exp = dsEmployeeList.Tables[0].Rows[0]["years_exp"].ToString(),
                         };
 
                         decimal dValue;
@@ -1289,7 +1293,7 @@ namespace ISOStd.Controllers
                             + " Emp_work_location, Emp_accomodation, Date_of_join, Date_of_exit, Basic_Salary, Acc_allow, Other_allow, Gratuity, Remarks, Custody_Documents,"
                             + " Date_of_Birth, dept_id, ProfilePic, JobDesc, EvaluatedBy, CompetancyFromDate, CompetancyToDate, CompetancyDoc, Basic_Salary, Acc_allow,"
                             + " Other_allow Food_allow, Transport_allow,visa_Exp_date,PassportUpload,EIDUpload,HealthCardUpload,HealthCardIssueDate,HealthCardExpDate,"
-                            + " Visa_upload,DeptInCharge,division,Role,employment_type from t_hr_employee where emp_status=1 and emp_no='" + sEmp_no + "'";
+                            + " Visa_upload,DeptInCharge,division,Role,employment_type,qualification,years_exp from t_hr_employee where emp_status=1 and emp_no='" + sEmp_no + "'";
 
                     DataSet dsEmployeeList = objGlobaldata.Getdetails(sSqlstmt);
                     if (dsEmployeeList.Tables.Count > 0 && dsEmployeeList.Tables[0].Rows.Count > 0)
@@ -1337,7 +1341,9 @@ namespace ISOStd.Controllers
                             division = dsEmployeeList.Tables[0].Rows[0]["division"].ToString(),
                             Role = objGlobaldata.GetMultiRoleById(dsEmployeeList.Tables[0].Rows[0]["Role"].ToString()),
                             DeptId = dsEmployeeList.Tables[0].Rows[0]["dept_id"].ToString(),
-                            employment_type = dsEmployeeList.Tables[0].Rows[0]["employment_type"].ToString()
+                            employment_type = dsEmployeeList.Tables[0].Rows[0]["employment_type"].ToString(),
+                            qualification = dsEmployeeList.Tables[0].Rows[0]["qualification"].ToString(),
+                            years_exp = dsEmployeeList.Tables[0].Rows[0]["years_exp"].ToString()
                         };
 
                         decimal dValue;
@@ -1436,6 +1442,7 @@ namespace ISOStd.Controllers
                         ViewBag.Division = objGlobaldata.GetCompanyBranchListbox();
                         ViewBag.Roles = objGlobaldata.GetRoles();
                         ViewBag.EmploymentType = objGlobaldata.GetDropdownList("Employment Type");
+                        ViewBag.Qualification = objGlobaldata.GetDropdownList("Employee Qualification");
                         return View(objEmployee); 
                     }
                     else
@@ -1474,6 +1481,7 @@ namespace ISOStd.Controllers
                 objEmployeeModel.DeptInCharge = form["DeptInCharge"];
                 objEmployeeModel.emp_id = form["emp_id"];
                 objEmployeeModel.Role = form["Role"];
+                objEmployeeModel.qualification = form["qualification"];
                 DateTime dateValue;
 
                 if (DateTime.TryParse(form["Passport_expiry"], out dateValue) == true)
@@ -3170,7 +3178,7 @@ namespace ISOStd.Controllers
             NCModels objModels = new NCModels();
             try
             {
-                string sSqlstmt = "select emp_no,emp_id,division,Emp_work_location,Dept_Id,EmailId from t_hr_employee where emp_no = '" + semp_no + "'";
+                string sSqlstmt = "select emp_no,emp_id,division,Emp_work_location,Dept_Id,EmailId,Designation from t_hr_employee where emp_no = '" + semp_no + "'";
                 DataSet dsList = objGlobaldata.Getdetails(sSqlstmt);
                 if (dsList.Tables.Count > 0 && dsList.Tables[0].Rows.Count > 0)
                 {
@@ -3182,7 +3190,8 @@ namespace ISOStd.Controllers
                         division = objGlobaldata.GetCompanyBranchNameById(dsList.Tables[0].Rows[0]["division"].ToString()),
                         location = objGlobaldata.GetDivisionLocationById(dsList.Tables[0].Rows[0]["Emp_work_location"].ToString()),
                         department = objGlobaldata.GetDeptNameById(dsList.Tables[0].Rows[0]["Dept_Id"].ToString()),
-                        EmailId = (dsList.Tables[0].Rows[0]["EmailId"].ToString())
+                        EmailId = (dsList.Tables[0].Rows[0]["EmailId"].ToString()),
+                        Designation = (dsList.Tables[0].Rows[0]["Designation"].ToString())
                     };
                 }
                 return Json(objModels);

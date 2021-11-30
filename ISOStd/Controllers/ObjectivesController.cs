@@ -223,8 +223,8 @@ namespace ISOStd.Controllers
                 string sSqlstmt = "select a.Objectives_Id,ObjectivesTrans_Id, Obj_Ref, Dept, Audit_Criteria, Estld_by,"
                 + "CreatedBy,DocUploadPath,objective_level,branch,Location,Obj_Estld_On,Objectives_val,Obj_Target,Base_Line_Value," +
                 "Monitoring_Mechanism,Target_Date,Action_Plan,Freq_of_Eval,Accepted_Value,Risk_ifObjFails,baseline_data,unit,obj_inline," +
-                "Approved_By,ApprovedDate,Approved_Status as Approved_StatusId, (case when Approved_Status=1 " +
-                "then 'Approved' when Approved_Status=2 then 'Rejected' else 'Pending for Approval' end) as Approved_Status from t_objectives a, t_objectives_trans b"
+                "Approved_By,ApprovedDate,Approved_Status as Approved_StatusId, (case when  Approved_Status=0 then 'Pending for Approval'  when Approved_Status=1 " +
+                "then 'Approved' when Approved_Status=2 then 'Rejected' end) as Approved_Status from t_objectives a, t_objectives_trans b"
                 + " where Active=1 and a.Objectives_Id=b.Objectives_Id and trans_active=1";
 
                 ViewBag.Approvestatus = objGlobaldata.GetConstantValueKeyValuePair("DocStatus");
@@ -471,8 +471,8 @@ namespace ISOStd.Controllers
                     string sSqlstmt = "select a.Objectives_Id,ObjectivesTrans_Id, Obj_Ref, Dept, Audit_Criteria, Estld_by,"
                     + "CreatedBy,DocUploadPath,objective_level,branch,Location,Obj_Estld_On,Objectives_val,Obj_Target,Base_Line_Value," +
                     "Monitoring_Mechanism,Target_Date,Action_Plan,Freq_of_Eval,Accepted_Value,Risk_ifObjFails,baseline_data,unit,obj_inline,Approved_By," +
-                    "ApprovedDate,Approved_Status as Approved_StatusId, (case when Approved_Status=1 " +
-                    "then 'Approved' when Approved_Status=2 then 'Rejected' else 'Pending for Approval' end) as Approved_Status,obj_reject_comment,obj_reject_upload from t_objectives a, t_objectives_trans b"
+                    "ApprovedDate,Approved_Status as Approved_StatusId, (case when  Approved_Status=0 then 'Pending for Approval' when Approved_Status=1 " +
+                    "then 'Approved' when Approved_Status=2 then 'Rejected' end) as Approved_Status,obj_reject_comment,obj_reject_upload from t_objectives a, t_objectives_trans b"
                     + " where Active=1 and trans_active=1 and a.Objectives_Id=b.Objectives_Id and b.ObjectivesTrans_Id='" + sObjectivesTrans_Id + "'";
 
                     DataSet dsObjectivesModelsList = objGlobaldata.Getdetails(sSqlstmt);

@@ -3,8 +3,12 @@
 @{
     ViewBag.Title = "AddEmployeeCompetenceEval";
     ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
-
+    System.Data.DataSet dsList = new System.Data.DataSet();
     string login_user = Obj.GetCurrentUserSession().empid;
+    if (ViewBag.dsList != null)
+    {
+        dsList = ViewBag.dsList;
+    }
 }
 @section featured {
 
@@ -549,7 +553,46 @@
                 }
             </table>
 
+            @if (dsList != null && dsList.Tables.Count > 0 && dsList.Tables[0].Rows.Count > 0)
+            {
+                <br />
+                <h2 class="bg-dark pl-sm-2">Training Detail</h2>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped table-hover datatable-responsive" id="table1">
+                        <thead>
+                            <tr class="bg-brown">
+                                <th>Sl No</th>
+                                <th>Training topic</th>
+                                <th>Source of training</th>
+                                <th>Criticality</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0, j = 1; i < dsList.Tables[0].Rows.Count; i++, j++)
+                            {
+                                <tr>
 
+                                    <td>
+                                        @j
+                                    </td>
+                                    <td>
+                                       @Obj.GetTrainingTopicById(dsList.Tables[0].Rows[i]["training_topic"].ToString())
+                                    </td>
+                                    <td>
+                                        @Obj.GetDropdownitemById(dsList.Tables[0].Rows[i]["source_training"].ToString())
+                                    </td>
+                                    <td>
+                                        @Obj.GetDropdownitemById(dsList.Tables[0].Rows[i]["criticality"].ToString())
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+
+
+                </div>
+            }
 
         </div>
     </div>

@@ -5,7 +5,7 @@
     DataSet dsMitigat = new DataSet();
 
     ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
-
+    string user = Obj.GetCurrentUserSession().empid;
 
     if (ViewBag.Mit != null)
     {
@@ -256,28 +256,26 @@
 
                     </tr>
                     <tr class="row">
-
                         <td class="col-xs-3 col-md-2">
                             <p class="bg-brown py-1 px-2 rounded">
                                 @Html.DisplayNameFor(model => model.consequences)
                             </p>
                         </td>
-                        <td class="col">
+                        <td class="col-xs-3 col-md-4">
                             <p class="bg-dark py-1 px-2 rounded">
                                 @Html.DisplayFor(model => model.consequences)
                             </p>
                         </td>
                         <td class="col-xs-3 col-md-2">
                             <p class="bg-brown py-1 px-2 rounded">
-                                @Html.DisplayNameFor(model => model.approved_by)
+                                @Html.DisplayNameFor(model => model.apprv_status)
                             </p>
                         </td>
-                        <td class="col">
+                        <td class="col-xs-3 col-md-4">
                             <p class="bg-dark py-1 px-2 rounded">
-                                @Html.DisplayFor(model => model.approved_by)
+                                @Html.DisplayFor(model => model.apprv_status)
                             </p>
                         </td>
-
                     </tr>
                     <tr class="row">
                         <td class="col-xs-3 col-md-2">
@@ -308,6 +306,74 @@
                             </span>
                         </td>
                     </tr>
+
+                    @if(Model.apprv_status == "Pending for Approval")
+                    {
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.approved_by)
+                                </p>
+                            </td>
+                            <td class="col-xs-3 col-md-4">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @Html.DisplayFor(model => model.approved_by)
+                                </p>
+                            </td>
+
+                        </tr>
+                    }
+                    else if (Model.apprv_status == "Approved" || Model.apprv_status == "Rejected")
+                    {
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                   Approved By
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @Html.DisplayFor(model => model.approved_by)
+                                </p>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.approved_date)
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @if (Model.approved_date != null && Model.approved_date > Convert.ToDateTime("01/01/0001"))
+                                    {
+                                        @Html.Label(Model.approved_date.ToString("dd/MM/yyyy hh:mm:ss"))
+                                    }
+                                </p>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.apprv_status)
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @Html.DisplayFor(model => model.apprv_status)
+                                </p>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.apprv_comment)
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @Html.DisplayFor(model => model.apprv_comment)
+                                </p>
+                            </td>
+                        </tr>
+                    }
+                  
 </table>
             @if (dsMitigat != null && dsMitigat.Tables.Count > 0 && dsMitigat.Tables[0].Rows.Count > 0)
             {
@@ -354,7 +420,7 @@
 
                 </div>
             }
-        
+           
          </div>
 
    
@@ -391,7 +457,17 @@
 
 //zzz----
 
+        function RejectRequired() {
+            var doc_status = $("input[type='radio'][id='apprv_status']:checked").val();
+            if (doc_status == "1") {
+                $("#apprv_comment").attr('required', true);
 
+            }
+            else {
+                $("#apprv_comment").attr('required', false);
+
+            }
+        }
 
 var table1 = function () {
 

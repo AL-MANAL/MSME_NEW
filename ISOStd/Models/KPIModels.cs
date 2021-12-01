@@ -177,6 +177,8 @@ namespace ISOStd.Models
         public DateTime ToPeriod { get; set; }
 
         public string stat_display { get; set; }
+
+     
         //--------------------------------------------------------------------------
         internal bool FunDeleteKPI(string KPI_Id)
         {
@@ -749,8 +751,7 @@ namespace ISOStd.Models
                             + "<th style='width:300px'>Measurable Indicator</th>"
                             + "<th style='width:300px'>Expected value to be achieved</th>"
                             + "<th style='width:300px'>Unit</th>"
-                            + "<th style='width:300px'>Monitoring Period From Date</th>"
-                            + "<th style='width:300px'>To Date</th>"
+                          
                             + "<th style='width:300px'>Monitoring Mechanism</th>"
                              + "<th style='width:300px'>Frequency of Evaluation</th>"
                              + "<th style='width:300px'>Risk,if not achieved</th>"
@@ -761,21 +762,13 @@ namespace ISOStd.Models
                         {
 
                             string monitoring_frm_date = "", monitoring_to_date = "";
-                            if (dsItems.Tables[0].Rows[i]["monitoring_frm_date"].ToString() != null && Convert.ToDateTime(dsItems.Tables[0].Rows[i]["monitoring_frm_date"].ToString()) > Convert.ToDateTime("01/01/0001"))
-                            {
-                                monitoring_frm_date = Convert.ToDateTime(dsItems.Tables[0].Rows[i]["monitoring_frm_date"].ToString()).ToString("yyyy-MM-dd");
-                            }
-                            if (dsItems.Tables[0].Rows[i]["monitoring_to_date"].ToString() != null && Convert.ToDateTime(dsItems.Tables[0].Rows[i]["monitoring_to_date"].ToString()) > Convert.ToDateTime("01/01/0001"))
-                            {
-                                monitoring_to_date = Convert.ToDateTime(dsItems.Tables[0].Rows[i]["monitoring_to_date"].ToString()).ToString("yyyy-MM-dd");
-                            }
+                          
                             sInformation = sInformation + "<tr>"
                                 + " <td>" + (i + 1) + "</td>"
                                 + " <td style='width:300px'>" + (dsItems.Tables[0].Rows[i]["measurable_indicator"].ToString()) + "</td>"
                                  + " <td style='width:300px'>" + (dsItems.Tables[0].Rows[i]["expected_value"].ToString()) + "</td>"
                                  + " <td style='width:300px'>" + (dsItems.Tables[0].Rows[i]["expected_value_unit"].ToString()) + "</td>"
-                                  + " <td style='width:300px'>" + monitoring_frm_date + "</td>"
-                                     + " <td style='width:300px'>" + monitoring_to_date + "</td>"
+                              
                                      + " <td style='width:300px'>" + (dsItems.Tables[0].Rows[i]["monitoring_mechanism"].ToString()) + "</td>"
                                       + " <td style='width:300px'>" + objGlobalData.GetDropdownitemById(dsItems.Tables[0].Rows[i]["frequency_eval"].ToString()) + "</td>"
                                            + " <td style='width:300px'>" + (dsItems.Tables[0].Rows[i]["risk"].ToString()) + "</td>"

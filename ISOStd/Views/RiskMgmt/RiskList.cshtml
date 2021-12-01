@@ -227,22 +227,52 @@
                                                     </a>
 
                                                     <div class="dropdown-menu dropdown-menu-right">
-
+                                                        @if (item.init_apprv_status != "2" && item.init_apprv_status != "1")
+                                                        {
                                                         <a class="dropdown-item" href='@Url.Action("AddRiskEvaluation", "RiskMgmt", new { risk_id = item.risk_id.ToString() })' title="Initial Risk Evaluation" onclick="HyperLinkProgressIconFunction()">
                                                             <i class="icon-history"></i>Initial Risk Evaluation
                                                         </a>
                                                         <a class="dropdown-item" href='@Url.Action("AddRiskMitigations", "RiskMgmt", new { risk_id = item.risk_id.ToString() })' title="Risk Mitigation" onclick="HyperLinkProgressIconFunction()">
                                                             <i class="icon-history"></i>Mitigation Measures
                                                         </a>
-                                                        @if (item.reeval_due_date.ToString() != null && Convert.ToDateTime(item.reeval_due_date.ToString()) > Convert.ToDateTime("01/01/0001") && DateTime.Now >= Convert.ToDateTime(item.reeval_due_date.ToString()))
-                                                        {
-                                                            <a class="dropdown-item" href='@Url.Action("AddRiskReEvaluation", "RiskMgmt", new { risk_id = item.risk_id.ToString() })' title="Risk ReEvaluation" onclick="HyperLinkProgressIconFunction()">
-                                                                <i class="icon-history"></i>Risk ReEvaluation
-                                                            </a>
-                                                            <a class="dropdown-item" href='@Url.Action("FurtherRiskMitigations", "RiskMgmt", new { risk_id = item.risk_id.ToString() })' title="Risk Mitigation" onclick="HyperLinkProgressIconFunction()">
-                                                                <i class="icon-history"></i>Further Mitigation Measures
-                                                            </a>
                                                         }
+                                                       
+
+                                                        @if (item.reeval_due_date.ToString() == "01/01/0001 00:00:00")
+                                                        {
+                                                            if (item.init_reeval_due_date.ToString() != null && Convert.ToDateTime(item.init_reeval_due_date.ToString()) > Convert.ToDateTime("01/01/0001") && DateTime.Now >= Convert.ToDateTime(item.init_reeval_due_date.ToString()))
+                                                            {
+                                                                if (item.init_apprv_status == "2" || item.init_apprv_status == null || item.init_approved_by == null || item.init_approved_by == "")
+                                                                {
+                                                                    <a class="dropdown-item" href='@Url.Action("AddRiskReEvaluation", "RiskMgmt", new { risk_id = item.risk_id.ToString() })' title="Risk ReEvaluation" onclick="HyperLinkProgressIconFunction()">
+                                                                        <i class="icon-history"></i>Risk ReEvaluation
+                                                                    </a>
+                                                                   
+                                                                        <a class="dropdown-item" href='@Url.Action("FurtherRiskMitigations", "RiskMgmt", new { risk_id = item.risk_id.ToString() })' title="Risk Mitigation" onclick="HyperLinkProgressIconFunction()">
+                                                                            <i class="icon-history"></i>Further Mitigation Measures
+                                                                        </a>
+                                                                    
+                                                                }
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            if (item.reeval_due_date.ToString() != null && Convert.ToDateTime(item.reeval_due_date.ToString()) > Convert.ToDateTime("01/01/0001") && DateTime.Now >= Convert.ToDateTime(item.reeval_due_date.ToString()))
+                                                            {
+                                                                if (item.apprv_status == "2" || item.apprv_status == null || item.approved_by == null || item.approved_by == "")
+                                                                {
+                                                                    <a class="dropdown-item" href='@Url.Action("AddRiskReEvaluation", "RiskMgmt", new { risk_id = item.risk_id.ToString() })' title="Risk ReEvaluation" onclick="HyperLinkProgressIconFunction()">
+                                                                        <i class="icon-history"></i>Risk ReEvaluation
+                                                                    </a>
+                                                                    
+                                                                        <a class="dropdown-item" href='@Url.Action("FurtherRiskMitigations", "RiskMgmt", new { risk_id = item.risk_id.ToString() })' title="Risk Mitigation" onclick="HyperLinkProgressIconFunction()">
+                                                                            <i class="icon-history"></i>Further Mitigation Measures
+                                                                        </a>
+                                                                    
+                                                                }
+                                                            }
+                                                        }
+
                                                         <a class="dropdown-item" href='@Url.Action("RiskHistoryList", "RiskMgmt", new { risk_id = item.risk_id.ToString() })' title="Risk History" onclick="HyperLinkProgressIconFunction()">
                                                             <i class="icon-history"></i>Risk History
                                                         </a>
@@ -259,9 +289,13 @@
                                                         *@
                                                         @if (ShowEdit)
                                                         {
+                                                           if (item.init_apprv_status != "2" && item.init_apprv_status != "1")
+                                                           {
+
                                                             <a class="dropdown-item" href='@Url.Action("RiskEdit", "RiskMgmt", new { risk_id = item.risk_id })' title="Edit Risk details" onclick="HyperLinkProgressIconFunction()">
                                                                 <i class="icon-pencil7"></i>Edit
                                                             </a>
+                                                            }
                                                         }
                                                         @*   }*@
 

@@ -7,6 +7,8 @@ using System.ComponentModel.DataAnnotations;
 using ISOStd.Models;
 using System.Web.Mvc;
 using MySql.Data.MySqlClient;
+using System.IO;
+using System.Text.RegularExpressions;
 
 namespace ISOStd.Models
 {
@@ -156,6 +158,354 @@ namespace ISOStd.Models
         [Display(Name = "Notified To")]
         public string eval_notified_to { get; set; }
 
+        [Display(Name = "Approval Status")]
+        public string apprv_status { get; set; }
+
+        [Display(Name = "Comment")]
+        public string apprv_comment { get; set; }
+
+        [Display(Name = "Date")]
+        public DateTime approved_date { get; set; }
+
+        public string approved_by_Id { get; set; }
+
+        public string init_apprv_status { get; set; }
+
+        public string init_approved_by { get; set; }
+
+        public DateTime init_reeval_due_date { get; set; }
+
+        internal bool FunUpdateApprove(RiskMgmtModels objManagement)
+        {
+            try
+            {
+                string sApprovedDate = DateTime.Now.ToString("yyyy-MM-dd HH':'mm':'ss");
+
+                if (risk_id_trans != null && risk_id_trans != "")
+                {
+                    string sSqlstmt = "update risk_register_trans set apprv_comment ='" + apprv_comment + "',apprv_status ='" + apprv_status + "', approved_date='" + sApprovedDate + "' where risk_id_trans='" + risk_id_trans + "'";
+                    if (objGlobaldata.ExecuteQuery(sSqlstmt))
+                    {
+                        return SendRiskFurtherMitigationApprvmail(risk_id,"Risk approval status");
+
+                    }
+                }
+                else
+                {
+                    string sSqlstmt = "update risk_register set apprv_comment ='" + apprv_comment + "',apprv_status ='" + apprv_status + "', approved_date='" + sApprovedDate + "' where risk_id='" + risk_id + "'";
+                    if (objGlobaldata.ExecuteQuery(sSqlstmt))
+                    {
+                        return SendRiskApprovemail(risk_id,"Risk approval status");
+
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in FunUpdateObjectivesApproval: " + ex.ToString());
+            }
+            return false;
+        }
+
+        internal bool SendRiskFurtherMitigationApprvmail(string risk_id, string sMessage = "")
+        {
+            RiskMgmtModels objRiskMgmtModels = new RiskMgmtModels();
+            try
+            {
+                string sType = "email";
+
+                string sSqlstmt = "select tt.risk_id_trans,t.risk_id,t.risk_refno,t.risk_desc,t.dept,t.branch_id,t.source_id,t.risk_owner,t.risk_manager,t.submission_date,t.submitted_by,t.consequences,t.Location,tt.evaluation_date,tt.approved_by,tt.approved_date,tt.reeval_due_date,tt.impact_id,tt.like_id,t.Issue,t.Risk_Type,tt.eval_notified_to,tt.evaluation_date,tt.mit_notified_to,"
+                          + "(CASE WHEN tt.apprv_status='0' THEN 'Pending for Approval' WHEN tt.apprv_status='1' THEN 'Rejected' WHEN tt.apprv_status='2' THEN 'Approved' END) as apprv_status,tt.apprv_comment"
+                       + " from risk_register t left join  risk_register_trans tt on t.risk_id = tt.risk_id  where t.risk_id = '" + risk_id + "' order by risk_id_trans desc limit 1";
+
+
+
+                DataSet dsData = objGlobaldata.Getdetails(sSqlstmt);
+                KPIModels objType = new KPIModels();
+
+                if (dsData.Tables.Count > 0 && dsData.Tables[0].Rows.Count > 0)
+                {
+                    //objGlobalData.AddFunctionalLog("Step");
+                    //AddFunctionalLog("Step");
+                    string sName, sToEmailIds, sCCEmailIds, sHeader, sInformation = "", sTitle = "", sSubject = "", sContent = "", aAttachment = "", BccEmailIds = "";
+
+                    //using streamreader for reading my htmltemplate 
+                    //Form the Email Subject and Body content
+                    DataSet dsEmailXML = new DataSet();
+                    dsEmailXML.ReadXml(HttpContext.Current.Server.MapPath("~/EmailTemplates.xml"));
+
+                    if (sType != "" && dsEmailXML.Tables.Count > 0 && dsEmailXML.Tables[sType] != null && dsEmailXML.Tables[sType].Rows.Count > 0)
+                    {
+                        sSubject = dsEmailXML.Tables[sType].Rows[0]["subject"].ToString();
+                    }
+
+                    using (StreamReader reader = new StreamReader(HttpContext.Current.Server.MapPath("~/Views/EmailTemplate/EmailTemplate.html")))
+                    {
+                        sContent = reader.ReadToEnd();
+                    }
+
+                    //sName = objGlobaldata.GetMultiHrEmpNameById(dsData.Tables[0].Rows[0]["notified_to"].ToString());
+                    sToEmailIds = objGlobaldata.GetMultiHrEmpEmailIdById(dsData.Tables[0].Rows[0]["mit_notified_to"].ToString());
+                    sCCEmailIds = objGlobaldata.GetMultiHrEmpEmailIdById(dsData.Tables[0].Rows[0]["approved_by"].ToString()) + "," + objGlobaldata.GetMultiHrEmpEmailIdById(dsData.Tables[0].Rows[0]["submitted_by"].ToString());
+
+                    Dictionary<string, string> dicRatings = new Dictionary<string, string>();
+                    if (dsData.Tables[0].Rows[0]["impact_id"].ToString() != "" && dsData.Tables[0].Rows[0]["like_id"].ToString() != "")
+                    {
+                        dicRatings = objRiskMgmtModels.GetRiskRatings(dsData.Tables[0].Rows[0]["impact_id"].ToString(),
+                            dsData.Tables[0].Rows[0]["like_id"].ToString());
+                    }
+                    if (dicRatings != null && dicRatings.Count > 0)
+                    {
+                        objRiskMgmtModels.RiskRating = dicRatings.FirstOrDefault().Key;
+
+                    }
+                    string evaluation_date = "", reeval_due_date = "";
+                    if (dsData.Tables[0].Rows[0]["evaluation_date"].ToString() != null && Convert.ToDateTime(dsData.Tables[0].Rows[0]["evaluation_date"].ToString()) > Convert.ToDateTime("01/01/0001"))
+                    {
+                        evaluation_date = Convert.ToDateTime(dsData.Tables[0].Rows[0]["evaluation_date"].ToString()).ToString("yyyy-MM-dd");
+                    }
+                    if (dsData.Tables[0].Rows[0]["reeval_due_date"].ToString() != null && Convert.ToDateTime(dsData.Tables[0].Rows[0]["reeval_due_date"].ToString()) > Convert.ToDateTime("01/01/0001"))
+                    {
+                        reeval_due_date = Convert.ToDateTime(dsData.Tables[0].Rows[0]["reeval_due_date"].ToString()).ToString("yyyy-MM-dd");
+                    }
+                    sHeader = "<tr><td colspan=3><b>Ref No:<b></td> <td colspan=3>" + (dsData.Tables[0].Rows[0]["risk_refno"].ToString()) + "</td></tr>"
+                     + "<tr><td colspan=3><b>Severity:<b></td> <td colspan=3>"
+                      + objGlobaldata.GetDropdownitemById(dsData.Tables[0].Rows[0]["impact_id"].ToString()) + "</td></tr>"
+                      + "<tr><td colspan=3><b>Probability:<b></td> <td colspan=3>" + objGlobaldata.GetDropdownitemById(dsData.Tables[0].Rows[0]["like_id"].ToString()) + "</td></tr>"
+                      + "<tr><td colspan=3><b>Risk Rating:<b></td> <td colspan=3>" + objRiskMgmtModels.RiskRating + "</td></tr>"
+                       + "<tr><td colspan=3><b>Evaluation Date:<b></td> <td colspan=3>" + evaluation_date + "</td></tr>"
+                    + "<tr><td colspan=3><b>Evaluated By:<b></td> <td colspan=3>" + objGlobaldata.GetMultiHrEmpNameById(dsData.Tables[0].Rows[0]["risk_manager"].ToString()) + "</td></tr>"
+                    + "<tr><td colspan=3><b>To Be Approved By:<b></td> <td colspan=3>" + objGlobaldata.GetMultiHrEmpNameById(dsData.Tables[0].Rows[0]["approved_by"].ToString()) + "</td></tr>"
+                    + "<tr><td colspan=3><b>Risk Reevaluation Due Date:<b></td> <td colspan=3>" + reeval_due_date + "</td></tr>"
+                    +"<tr><td colspan=3><b>Approval Status:<b></td> <td colspan=3>" + (dsData.Tables[0].Rows[0]["apprv_status"].ToString()) + "</td></tr>"
+                    + "<tr><td colspan=3><b>Comment:<b></td> <td colspan=3>" + (dsData.Tables[0].Rows[0]["apprv_comment"].ToString()) + "</td></tr>";
+
+
+                    sSqlstmt = "select measure,pers_resp,target_date from risk_mitigations_trans where risk_id_trans = '" + dsData.Tables[0].Rows[0]["risk_id_trans"].ToString() + "'";
+
+                    DataSet dsItems = new DataSet();
+                    dsItems = objGlobaldata.Getdetails(sSqlstmt);
+
+                    if (dsItems.Tables.Count > 0 && dsItems.Tables[0].Rows.Count > 0)
+                    {
+                        sInformation = "<br><tr> "
+                            + "<td colspan=8><label><b>Mitigation</b></label> </td> </tr>"
+                            + "<tr style='background-color: #4cc4dd; width: 100%; color: white; padding-left: 5px;'>"
+                            + "<th>Sl. No.</th>"
+                            + "<th style='width:300px'>Mitigation Measure</th>"
+                            + "<th style='width:300px'>Person Responsible</th>"
+                            + "<th style='width:300px'>Target Date</th>"
+                            + "</tr>";
+
+
+                        for (int i = 0; i < dsItems.Tables[0].Rows.Count; i++)
+                        {
+
+                            string target_date = "";
+                            if (dsItems.Tables[0].Rows[i]["target_date"].ToString() != null && Convert.ToDateTime(dsItems.Tables[0].Rows[i]["target_date"].ToString()) > Convert.ToDateTime("01/01/0001"))
+                            {
+                                target_date = Convert.ToDateTime(dsItems.Tables[0].Rows[i]["target_date"].ToString()).ToString("yyyy-MM-dd");
+                            }
+
+                            sInformation = sInformation + "<tr>"
+                                + " <td>" + (i + 1) + "</td>"
+                                + " <td style='width:300px'>" + (dsItems.Tables[0].Rows[i]["measure"].ToString()) + "</td>"
+                                 + " <td style='width:300px'>" + objGlobaldata.GetMultiHrEmpNameById(dsItems.Tables[0].Rows[i]["pers_resp"].ToString()) + "</td>"
+                                 + " <td style='width:300px'>" + target_date + "</td>"
+                                 + " </tr>";
+                            //sCCEmailIds = sCCEmailIds + "," + objGlobalData.GetHrEmpEmailIdById(dsItems.Tables[0].Rows[i]["PersonResponsible"].ToString());
+
+                            //string sPersonEmail = objGlobaldata.GetMultiHrEmpEmailIdById(dsItems.Tables[0].Rows[i]["PersonResponsible"].ToString());
+                            //sPersonEmail = Regex.Replace(sPersonEmail, ",+", ",");
+                            //sPersonEmail = sPersonEmail.Trim();
+                            //sPersonEmail = sPersonEmail.TrimEnd(',');
+                            //sPersonEmail = sPersonEmail.TrimStart(',');
+                            //if (sPersonEmail != null && sPersonEmail != "")
+                            //{
+                            //    sCCEmailIds = sCCEmailIds + "," + sPersonEmail;
+                            //}
+
+                        }
+                    }
+
+                    sContent = sContent.Replace("{FromMsg}", "");
+                    //sContent = sContent.Replace("{UserName}", sName);
+                    sContent = sContent.Replace("{Title}", "Risk Further Mitigation");
+                    sContent = sContent.Replace("{content}", sHeader + sInformation);
+                    sContent = sContent.Replace("{message}", "");
+                    sContent = sContent.Replace("{extramessage}", "");
+
+                    sToEmailIds = Regex.Replace(sToEmailIds, ",+", ",");
+                    sToEmailIds = sToEmailIds.Trim();
+                    sToEmailIds = sToEmailIds.TrimEnd(',');
+                    sToEmailIds = sToEmailIds.TrimStart(',');
+
+                    sCCEmailIds = Regex.Replace(sCCEmailIds, ",+", ",");
+                    sCCEmailIds = sCCEmailIds.Trim();
+                    sCCEmailIds = sCCEmailIds.TrimEnd(',');
+                    sCCEmailIds = sCCEmailIds.TrimStart(',');
+
+                    return objGlobaldata.Sendmail(sToEmailIds, sSubject + sMessage, sContent, aAttachment, sCCEmailIds, "");
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in SendRiskFurtherMitigationApprvmail: " + ex.ToString());
+            }
+            return false;
+        }
+
+
+        internal bool SendRiskApprovemail(string risk_id, string sMessage = "")
+        {
+            RiskMgmtModels objRiskMgmtModels = new RiskMgmtModels();
+            try
+            {
+                string sType = "email";
+
+                string sSqlstmt = "select risk_refno,submitted_by,impact_id,like_id,risk_manager,eval_notified_to,evaluation_date,approved_by,reeval_due_date,mit_notified_to,"
+                  + "(CASE WHEN apprv_status='0' THEN 'Pending for Approval' WHEN apprv_status='1' THEN 'Rejected' WHEN apprv_status='2' THEN 'Approved' END) as apprv_status,apprv_comment from risk_register"
+                + " where risk_id='" + risk_id + "'";
+
+                DataSet dsData = objGlobaldata.Getdetails(sSqlstmt);
+                KPIModels objType = new KPIModels();
+
+                if (dsData.Tables.Count > 0 && dsData.Tables[0].Rows.Count > 0)
+                {
+                    //objGlobalData.AddFunctionalLog("Step");
+                    //AddFunctionalLog("Step");
+                    string sName, sToEmailIds, sCCEmailIds, sHeader, sInformation = "", sTitle = "", sSubject = "", sContent = "", aAttachment = "", BccEmailIds = "";
+
+                    //using streamreader for reading my htmltemplate 
+                    //Form the Email Subject and Body content
+                    DataSet dsEmailXML = new DataSet();
+                    dsEmailXML.ReadXml(HttpContext.Current.Server.MapPath("~/EmailTemplates.xml"));
+
+                    if (sType != "" && dsEmailXML.Tables.Count > 0 && dsEmailXML.Tables[sType] != null && dsEmailXML.Tables[sType].Rows.Count > 0)
+                    {
+                        sSubject = dsEmailXML.Tables[sType].Rows[0]["subject"].ToString();
+                    }
+
+                    using (StreamReader reader = new StreamReader(HttpContext.Current.Server.MapPath("~/Views/EmailTemplate/EmailTemplate.html")))
+                    {
+                        sContent = reader.ReadToEnd();
+                    }
+
+                    //sName = objGlobaldata.GetMultiHrEmpNameById(dsData.Tables[0].Rows[0]["notified_to"].ToString());
+                    sToEmailIds = objGlobaldata.GetMultiHrEmpEmailIdById(dsData.Tables[0].Rows[0]["mit_notified_to"].ToString());
+                    sCCEmailIds = objGlobaldata.GetMultiHrEmpEmailIdById(dsData.Tables[0].Rows[0]["approved_by"].ToString()) + "," + objGlobaldata.GetMultiHrEmpEmailIdById(dsData.Tables[0].Rows[0]["submitted_by"].ToString());
+
+                    Dictionary<string, string> dicRatings = new Dictionary<string, string>();
+                    if (dsData.Tables[0].Rows[0]["impact_id"].ToString() != "" && dsData.Tables[0].Rows[0]["like_id"].ToString() != "")
+                    {
+                        dicRatings = objRiskMgmtModels.GetRiskRatings(dsData.Tables[0].Rows[0]["impact_id"].ToString(),
+                            dsData.Tables[0].Rows[0]["like_id"].ToString());
+                    }
+                    if (dicRatings != null && dicRatings.Count > 0)
+                    {
+                        objRiskMgmtModels.RiskRating = dicRatings.FirstOrDefault().Key;
+
+                    }
+                    string evaluation_date = "", reeval_due_date = "";
+                    if (dsData.Tables[0].Rows[0]["evaluation_date"].ToString() != null && Convert.ToDateTime(dsData.Tables[0].Rows[0]["evaluation_date"].ToString()) > Convert.ToDateTime("01/01/0001"))
+                    {
+                        evaluation_date = Convert.ToDateTime(dsData.Tables[0].Rows[0]["evaluation_date"].ToString()).ToString("yyyy-MM-dd");
+                    }
+                    if (dsData.Tables[0].Rows[0]["reeval_due_date"].ToString() != null && Convert.ToDateTime(dsData.Tables[0].Rows[0]["reeval_due_date"].ToString()) > Convert.ToDateTime("01/01/0001"))
+                    {
+                        reeval_due_date = Convert.ToDateTime(dsData.Tables[0].Rows[0]["reeval_due_date"].ToString()).ToString("yyyy-MM-dd");
+                    }
+                    sHeader = "<tr><td colspan=3><b>Ref No:<b></td> <td colspan=3>" + (dsData.Tables[0].Rows[0]["risk_refno"].ToString()) + "</td></tr>"
+                     + "<tr><td colspan=3><b>Severity:<b></td> <td colspan=3>"
+                      + objGlobaldata.GetDropdownitemById(dsData.Tables[0].Rows[0]["impact_id"].ToString()) + "</td></tr>"
+                      + "<tr><td colspan=3><b>Probability:<b></td> <td colspan=3>" + objGlobaldata.GetDropdownitemById(dsData.Tables[0].Rows[0]["like_id"].ToString()) + "</td></tr>"
+                      + "<tr><td colspan=3><b>Risk Rating:<b></td> <td colspan=3>" + objRiskMgmtModels.RiskRating + "</td></tr>"
+                       + "<tr><td colspan=3><b>Evaluation Date:<b></td> <td colspan=3>" + evaluation_date + "</td></tr>"
+                    + "<tr><td colspan=3><b>Evaluated By:<b></td> <td colspan=3>" + objGlobaldata.GetMultiHrEmpNameById(dsData.Tables[0].Rows[0]["risk_manager"].ToString()) + "</td></tr>"
+                    + "<tr><td colspan=3><b>To Be Approved By:<b></td> <td colspan=3>" + objGlobaldata.GetMultiHrEmpNameById(dsData.Tables[0].Rows[0]["approved_by"].ToString()) + "</td></tr>"
+                    + "<tr><td colspan=3><b>Risk Reevaluation Due Date:<b></td> <td colspan=3>" + reeval_due_date + "</td></tr>"
+
+                      + "<tr><td colspan=3><b>Approval Status:<b></td> <td colspan=3>" + (dsData.Tables[0].Rows[0]["apprv_status"].ToString()) + "</td></tr>"
+                      + "<tr><td colspan=3><b>Comment:<b></td> <td colspan=3>" + (dsData.Tables[0].Rows[0]["apprv_comment"].ToString()) + "</td></tr>";
+
+
+                    sSqlstmt = "select measure,pers_resp,target_date from risk_mitigations where risk_id = '" + risk_id + "'";
+
+                    DataSet dsItems = new DataSet();
+                    dsItems = objGlobaldata.Getdetails(sSqlstmt);
+
+                    if (dsItems.Tables.Count > 0 && dsItems.Tables[0].Rows.Count > 0)
+                    {
+                        sInformation = "<br><tr> "
+                            + "<td colspan=8><label><b>Mitigation</b></label> </td> </tr>"
+                            + "<tr style='background-color: #4cc4dd; width: 100%; color: white; padding-left: 5px;'>"
+                            + "<th>Sl. No.</th>"
+                            + "<th style='width:300px'>Mitigation Measure</th>"
+                            + "<th style='width:300px'>Person Responsible</th>"
+                            + "<th style='width:300px'>Target Date</th>"
+                            + "</tr>";
+
+
+                        for (int i = 0; i < dsItems.Tables[0].Rows.Count; i++)
+                        {
+
+                            string target_date = "";
+                            if (dsItems.Tables[0].Rows[i]["target_date"].ToString() != null && Convert.ToDateTime(dsItems.Tables[0].Rows[i]["target_date"].ToString()) > Convert.ToDateTime("01/01/0001"))
+                            {
+                                target_date = Convert.ToDateTime(dsItems.Tables[0].Rows[i]["target_date"].ToString()).ToString("yyyy-MM-dd");
+                            }
+
+                            sInformation = sInformation + "<tr>"
+                                + " <td>" + (i + 1) + "</td>"
+                                + " <td style='width:300px'>" + (dsItems.Tables[0].Rows[i]["measure"].ToString()) + "</td>"
+                                 + " <td style='width:300px'>" + objGlobaldata.GetMultiHrEmpNameById(dsItems.Tables[0].Rows[i]["pers_resp"].ToString()) + "</td>"
+                                 + " <td style='width:300px'>" + target_date + "</td>"
+                                 + " </tr>";
+                            //sCCEmailIds = sCCEmailIds + "," + objGlobalData.GetHrEmpEmailIdById(dsItems.Tables[0].Rows[i]["PersonResponsible"].ToString());
+
+                            //string sPersonEmail = objGlobaldata.GetMultiHrEmpEmailIdById(dsItems.Tables[0].Rows[i]["PersonResponsible"].ToString());
+                            //sPersonEmail = Regex.Replace(sPersonEmail, ",+", ",");
+                            //sPersonEmail = sPersonEmail.Trim();
+                            //sPersonEmail = sPersonEmail.TrimEnd(',');
+                            //sPersonEmail = sPersonEmail.TrimStart(',');
+                            //if (sPersonEmail != null && sPersonEmail != "")
+                            //{
+                            //    sCCEmailIds = sCCEmailIds + "," + sPersonEmail;
+                            //}
+
+                        }
+                    }
+
+                    sContent = sContent.Replace("{FromMsg}", "");
+                    //sContent = sContent.Replace("{UserName}", sName);
+                    sContent = sContent.Replace("{Title}", "Risk Mitigation");
+                    sContent = sContent.Replace("{content}", sHeader + sInformation);
+                    sContent = sContent.Replace("{message}", "");
+                    sContent = sContent.Replace("{extramessage}", "");
+
+                    sToEmailIds = Regex.Replace(sToEmailIds, ",+", ",");
+                    sToEmailIds = sToEmailIds.Trim();
+                    sToEmailIds = sToEmailIds.TrimEnd(',');
+                    sToEmailIds = sToEmailIds.TrimStart(',');
+
+                    sCCEmailIds = Regex.Replace(sCCEmailIds, ",+", ",");
+                    sCCEmailIds = sCCEmailIds.Trim();
+                    sCCEmailIds = sCCEmailIds.TrimEnd(',');
+                    sCCEmailIds = sCCEmailIds.TrimStart(',');
+
+                    return objGlobaldata.Sendmail(sToEmailIds, sSubject + sMessage, sContent, aAttachment, sCCEmailIds, "");
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in SendRiskApprovemail: " + ex.ToString());
+            }
+            return false;
+        }
+
+
+
         public DataSet GetMatrixColordetails()
         {
             DataSet dsData = new DataSet();
@@ -226,12 +576,96 @@ namespace ISOStd.Models
                         risk_refno = dsData.Tables[0].Rows[0]["ReportNO"].ToString();
                     }
                     string sql1 = "update risk_register set risk_refno='" + risk_refno + "' where risk_id='" + risk_id + "'";
-                    return (objGlobaldata.ExecuteQuery(sql1));
+                    objGlobaldata.ExecuteQuery(sql1);
+                    return SendRiskmail(risk_id, "Risk Reporting");
                 }
             }
             catch (Exception ex)
             {
                 objGlobaldata.AddFunctionalLog("Exception in FunAddRisk: " + ex.ToString());
+            }
+            return false;
+        }
+
+        internal bool SendRiskmail(int risk_id, string sMessage = "")
+        {
+            RiskMgmtModels objRiskMgmtModels = new RiskMgmtModels();
+            try
+            {
+                string sType = "email";
+
+                string sSqlstmt = "select risk_refno,risk_desc, dept, branch_id, source_id,risk_owner,submission_date, submitted_by,"
+                + "consequences,Issue,Location,notified_to,Risk_Type from risk_register where risk_id='" + risk_id + "'";
+
+                DataSet dsData = objGlobaldata.Getdetails(sSqlstmt);
+                KPIModels objType = new KPIModels();
+
+                if (dsData.Tables.Count > 0 && dsData.Tables[0].Rows.Count > 0)
+                {
+                    //objGlobalData.AddFunctionalLog("Step");
+                    //AddFunctionalLog("Step");
+                    string sName, sToEmailIds, sCCEmailIds, sHeader, sInformation = "", sTitle = "", sSubject = "", sContent = "", aAttachment = "", BccEmailIds = "";
+
+                    //using streamreader for reading my htmltemplate 
+                    //Form the Email Subject and Body content
+                    DataSet dsEmailXML = new DataSet();
+                    dsEmailXML.ReadXml(HttpContext.Current.Server.MapPath("~/EmailTemplates.xml"));
+
+                    if (sType != "" && dsEmailXML.Tables.Count > 0 && dsEmailXML.Tables[sType] != null && dsEmailXML.Tables[sType].Rows.Count > 0)
+                    {
+                        sSubject = dsEmailXML.Tables[sType].Rows[0]["subject"].ToString();
+                    }
+
+                    using (StreamReader reader = new StreamReader(HttpContext.Current.Server.MapPath("~/Views/EmailTemplate/EmailTemplate.html")))
+                    {
+                        sContent = reader.ReadToEnd();
+                    }
+
+                    //sName = objGlobaldata.GetMultiHrEmpNameById(dsData.Tables[0].Rows[0]["notified_to"].ToString());
+                    sToEmailIds = objGlobaldata.GetMultiHrEmpEmailIdById(dsData.Tables[0].Rows[0]["notified_to"].ToString());
+                    sCCEmailIds = objGlobaldata.GetMultiHrEmpEmailIdById(dsData.Tables[0].Rows[0]["risk_owner"].ToString()) + "," + objGlobaldata.GetMultiHrEmpEmailIdById(dsData.Tables[0].Rows[0]["submitted_by"].ToString());
+
+                    sHeader = "<tr><td colspan=3><b>Ref No:<b></td> <td colspan=3>" + (dsData.Tables[0].Rows[0]["risk_refno"].ToString()) + "</td></tr>"
+                     +"<tr><td colspan=3><b>Division:<b></td> <td colspan=3>"
+                      + objGlobaldata.GetMultiCompanyBranchNameById(dsData.Tables[0].Rows[0]["branch_id"].ToString()) + "</td></tr>"
+                      + "<tr><td colspan=3><b>Related Department:<b></td> <td colspan=3>" + objGlobaldata.GetMultiDeptNameById(dsData.Tables[0].Rows[0]["dept"].ToString()) + "</td></tr>"
+                      + "<tr><td colspan=3><b>Location:<b></td> <td colspan=3>" + objGlobaldata.GetDivisionLocationById(dsData.Tables[0].Rows[0]["Location"].ToString()) + "</td></tr>"
+                       + "<tr><td colspan=3><b>Source of the Risk:<b></td> <td colspan=3>" + objGlobaldata.GetDropdownitemById(dsData.Tables[0].Rows[0]["source_id"].ToString()) + "</td></tr>"
+
+                    + "<tr><td colspan=3><b>Risk due to:<b></td> <td colspan=3>" + objRiskMgmtModels.GetIssueNameById(dsData.Tables[0].Rows[0]["Issue"].ToString()) + "</td></tr>"
+
+                    + "<tr><td colspan=3><b>Risk Type:<b></td> <td colspan=3>" + (dsData.Tables[0].Rows[0]["Risk_Type"].ToString()) + "</td></tr>"
+
+                    + "<tr><td colspan=3><b>Risk Description:<b></td> <td colspan=3>" + (dsData.Tables[0].Rows[0]["risk_desc"].ToString()) + "</td></tr>"
+
+                     + "<tr><td colspan=3><b>Consequences:<b></td> <td colspan=3>" + (dsData.Tables[0].Rows[0]["consequences"].ToString()) + "</td></tr>"
+
+                    + "<tr><td colspan=3><b>Risk Reported By:<b></td> <td colspan=3>" +objGlobaldata.GetMultiHrEmpNameById(dsData.Tables[0].Rows[0]["risk_owner"].ToString()) + "</td></tr>";
+
+
+                    sContent = sContent.Replace("{FromMsg}", "");
+                    //sContent = sContent.Replace("{UserName}", sName);
+                    sContent = sContent.Replace("{Title}", "Risk Reporting");
+                    sContent = sContent.Replace("{content}", sHeader + sInformation);
+                    sContent = sContent.Replace("{message}", "");
+                    sContent = sContent.Replace("{extramessage}", "");
+
+                    sToEmailIds = Regex.Replace(sToEmailIds, ",+", ",");
+                    sToEmailIds = sToEmailIds.Trim();
+                    sToEmailIds = sToEmailIds.TrimEnd(',');
+                    sToEmailIds = sToEmailIds.TrimStart(',');
+
+                    sCCEmailIds = Regex.Replace(sCCEmailIds, ",+", ",");
+                    sCCEmailIds = sCCEmailIds.Trim();
+                    sCCEmailIds = sCCEmailIds.TrimEnd(',');
+                    sCCEmailIds = sCCEmailIds.TrimStart(',');
+
+                    return objGlobaldata.Sendmail(sToEmailIds, sSubject + sMessage, sContent, aAttachment, sCCEmailIds, "");
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in SendRiskmail: " + ex.ToString());
             }
             return false;
         }
@@ -474,7 +908,7 @@ namespace ISOStd.Models
 
                 if (objGlobaldata.ExecuteQuery(sSqlstmt))
                 {
-                    return true;
+                    return SendInitialRiskEvalmail(risk_id, "Initial Risk Evaluation");
                 }
                
             }
@@ -485,12 +919,104 @@ namespace ISOStd.Models
 
             return false;
         }
+
+        internal bool SendInitialRiskEvalmail(string risk_id, string sMessage = "")
+        {
+            RiskMgmtModels objRiskMgmtModels = new RiskMgmtModels();
+            try
+            {
+                string sType = "email";
+
+                string sSqlstmt = "select risk_refno,submitted_by,impact_id,like_id,risk_manager,eval_notified_to,evaluation_date from risk_register"
+                + " where risk_id='" + risk_id + "'";
+
+                DataSet dsData = objGlobaldata.Getdetails(sSqlstmt);
+                KPIModels objType = new KPIModels();
+
+                if (dsData.Tables.Count > 0 && dsData.Tables[0].Rows.Count > 0)
+                {
+                    //objGlobalData.AddFunctionalLog("Step");
+                    //AddFunctionalLog("Step");
+                    string sName, sToEmailIds, sCCEmailIds, sHeader, sInformation = "", sTitle = "", sSubject = "", sContent = "", aAttachment = "", BccEmailIds = "";
+
+                    //using streamreader for reading my htmltemplate 
+                    //Form the Email Subject and Body content
+                    DataSet dsEmailXML = new DataSet();
+                    dsEmailXML.ReadXml(HttpContext.Current.Server.MapPath("~/EmailTemplates.xml"));
+
+                    if (sType != "" && dsEmailXML.Tables.Count > 0 && dsEmailXML.Tables[sType] != null && dsEmailXML.Tables[sType].Rows.Count > 0)
+                    {
+                        sSubject = dsEmailXML.Tables[sType].Rows[0]["subject"].ToString();
+                    }
+
+                    using (StreamReader reader = new StreamReader(HttpContext.Current.Server.MapPath("~/Views/EmailTemplate/EmailTemplate.html")))
+                    {
+                        sContent = reader.ReadToEnd();
+                    }
+
+                    //sName = objGlobaldata.GetMultiHrEmpNameById(dsData.Tables[0].Rows[0]["notified_to"].ToString());
+                    sToEmailIds = objGlobaldata.GetMultiHrEmpEmailIdById(dsData.Tables[0].Rows[0]["eval_notified_to"].ToString());
+                    sCCEmailIds = objGlobaldata.GetMultiHrEmpEmailIdById(dsData.Tables[0].Rows[0]["risk_manager"].ToString()) + "," + objGlobaldata.GetMultiHrEmpEmailIdById(dsData.Tables[0].Rows[0]["submitted_by"].ToString());
+
+                    Dictionary<string, string> dicRatings = new Dictionary<string, string>();
+                    if (dsData.Tables[0].Rows[0]["impact_id"].ToString() != "" && dsData.Tables[0].Rows[0]["like_id"].ToString() != "")
+                    {
+                        dicRatings = objRiskMgmtModels.GetRiskRatings(dsData.Tables[0].Rows[0]["impact_id"].ToString(),
+                            dsData.Tables[0].Rows[0]["like_id"].ToString());
+                    }
+                    if (dicRatings != null && dicRatings.Count > 0)
+                    {
+                        objRiskMgmtModels.RiskRating = dicRatings.FirstOrDefault().Key;
+                       
+                    }
+                    string evaluation_date = "";
+                    if (dsData.Tables[0].Rows[0]["evaluation_date"].ToString() != null && Convert.ToDateTime(dsData.Tables[0].Rows[0]["evaluation_date"].ToString()) > Convert.ToDateTime("01/01/0001"))
+                    {
+                        evaluation_date = Convert.ToDateTime(dsData.Tables[0].Rows[0]["evaluation_date"].ToString()).ToString("yyyy-MM-dd");
+                    }
+                    sHeader = "<tr><td colspan=3><b>Ref No:<b></td> <td colspan=3>" + (dsData.Tables[0].Rows[0]["risk_refno"].ToString()) + "</td></tr>"
+                     + "<tr><td colspan=3><b>Severity:<b></td> <td colspan=3>"
+                      + objGlobaldata.GetDropdownitemById(dsData.Tables[0].Rows[0]["impact_id"].ToString()) + "</td></tr>"
+                      + "<tr><td colspan=3><b>Probability:<b></td> <td colspan=3>" + objGlobaldata.GetDropdownitemById(dsData.Tables[0].Rows[0]["like_id"].ToString()) + "</td></tr>"
+                      + "<tr><td colspan=3><b>Risk Rating:<b></td> <td colspan=3>" + objRiskMgmtModels.RiskRating + "</td></tr>"
+                       + "<tr><td colspan=3><b>Evaluation Date:<b></td> <td colspan=3>" + evaluation_date + "</td></tr>"
+                    + "<tr><td colspan=3><b>Evaluated By:<b></td> <td colspan=3>" + objGlobaldata.GetMultiHrEmpNameById(dsData.Tables[0].Rows[0]["risk_manager"].ToString()) + "</td></tr>";
+
+                    
+                  
+                    sContent = sContent.Replace("{FromMsg}", "");
+                    //sContent = sContent.Replace("{UserName}", sName);
+                    sContent = sContent.Replace("{Title}", "Initial Risk Evaluation");
+                    sContent = sContent.Replace("{content}", sHeader + sInformation);
+                    sContent = sContent.Replace("{message}", "");
+                    sContent = sContent.Replace("{extramessage}", "");
+
+                    sToEmailIds = Regex.Replace(sToEmailIds, ",+", ",");
+                    sToEmailIds = sToEmailIds.Trim();
+                    sToEmailIds = sToEmailIds.TrimEnd(',');
+                    sToEmailIds = sToEmailIds.TrimStart(',');
+
+                    sCCEmailIds = Regex.Replace(sCCEmailIds, ",+", ",");
+                    sCCEmailIds = sCCEmailIds.Trim();
+                    sCCEmailIds = sCCEmailIds.TrimEnd(',');
+                    sCCEmailIds = sCCEmailIds.TrimStart(',');
+
+                    return objGlobaldata.Sendmail(sToEmailIds, sSubject + sMessage, sContent, aAttachment, sCCEmailIds, "");
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in SendInitialRiskEvalmail: " + ex.ToString());
+            }
+            return false;
+        }
+
         internal bool FunUpdateRiskMitigation(RiskMgmtModels objModel, RiskMgmtModelsList objRiskList)
         {
             try
             {
                 string approved_date = DateTime.Now.ToString("yyyy/MM/dd");
-                string sSqlstmt = "update risk_register set approved_by='" + objModel.approved_by + "',approved_date='" + approved_date + "',mit_notified_to='" + objModel.mit_notified_to + "'";
+                string sSqlstmt = "update risk_register set approved_by='" + objModel.approved_by + "',mit_notified_to='" + objModel.mit_notified_to + "',apprv_status='0'";
                 if (objModel.reeval_due_date != null && objModel.reeval_due_date > Convert.ToDateTime("01/01/0001 00:00:00"))
                 {
                     sSqlstmt = sSqlstmt + ",reeval_due_date='" + objModel.reeval_due_date.ToString("yyyy/MM/dd") + "'";
@@ -508,7 +1034,7 @@ namespace ISOStd.Models
                     {
                         FunUpdateMitigation(risk_id);
                     }
-                    return true;
+                    return SendRiskMitigationmail(risk_id, "Risk mitigation for approval");
                 }
                 
             }
@@ -518,6 +1044,149 @@ namespace ISOStd.Models
             }
             return false;
         }
+        internal bool SendRiskMitigationmail(string risk_id, string sMessage = "")
+        {
+            RiskMgmtModels objRiskMgmtModels = new RiskMgmtModels();
+            try
+            {
+                string sType = "email";
+
+                string sSqlstmt = "select risk_refno,submitted_by,impact_id,like_id,risk_manager,eval_notified_to,evaluation_date,approved_by,reeval_due_date,mit_notified_to from risk_register"
+                + " where risk_id='" + risk_id + "'";
+
+                DataSet dsData = objGlobaldata.Getdetails(sSqlstmt);
+                KPIModels objType = new KPIModels();
+
+                if (dsData.Tables.Count > 0 && dsData.Tables[0].Rows.Count > 0)
+                {
+                    //objGlobalData.AddFunctionalLog("Step");
+                    //AddFunctionalLog("Step");
+                    string sName, sToEmailIds, sCCEmailIds, sHeader, sInformation = "", sTitle = "", sSubject = "", sContent = "", aAttachment = "", BccEmailIds = "";
+
+                    //using streamreader for reading my htmltemplate 
+                    //Form the Email Subject and Body content
+                    DataSet dsEmailXML = new DataSet();
+                    dsEmailXML.ReadXml(HttpContext.Current.Server.MapPath("~/EmailTemplates.xml"));
+
+                    if (sType != "" && dsEmailXML.Tables.Count > 0 && dsEmailXML.Tables[sType] != null && dsEmailXML.Tables[sType].Rows.Count > 0)
+                    {
+                        sSubject = dsEmailXML.Tables[sType].Rows[0]["subject"].ToString();
+                    }
+
+                    using (StreamReader reader = new StreamReader(HttpContext.Current.Server.MapPath("~/Views/EmailTemplate/EmailTemplate.html")))
+                    {
+                        sContent = reader.ReadToEnd();
+                    }
+
+                    //sName = objGlobaldata.GetMultiHrEmpNameById(dsData.Tables[0].Rows[0]["notified_to"].ToString());
+                    sToEmailIds = objGlobaldata.GetMultiHrEmpEmailIdById(dsData.Tables[0].Rows[0]["mit_notified_to"].ToString());
+                    sCCEmailIds = objGlobaldata.GetMultiHrEmpEmailIdById(dsData.Tables[0].Rows[0]["approved_by"].ToString()) + "," + objGlobaldata.GetMultiHrEmpEmailIdById(dsData.Tables[0].Rows[0]["submitted_by"].ToString());
+
+                    Dictionary<string, string> dicRatings = new Dictionary<string, string>();
+                    if (dsData.Tables[0].Rows[0]["impact_id"].ToString() != "" && dsData.Tables[0].Rows[0]["like_id"].ToString() != "")
+                    {
+                        dicRatings = objRiskMgmtModels.GetRiskRatings(dsData.Tables[0].Rows[0]["impact_id"].ToString(),
+                            dsData.Tables[0].Rows[0]["like_id"].ToString());
+                    }
+                    if (dicRatings != null && dicRatings.Count > 0)
+                    {
+                        objRiskMgmtModels.RiskRating = dicRatings.FirstOrDefault().Key;
+
+                    }
+                    string evaluation_date = "", reeval_due_date="";
+                    if (dsData.Tables[0].Rows[0]["evaluation_date"].ToString() != null && Convert.ToDateTime(dsData.Tables[0].Rows[0]["evaluation_date"].ToString()) > Convert.ToDateTime("01/01/0001"))
+                    {
+                        evaluation_date = Convert.ToDateTime(dsData.Tables[0].Rows[0]["evaluation_date"].ToString()).ToString("yyyy-MM-dd");
+                    }
+                    if (dsData.Tables[0].Rows[0]["reeval_due_date"].ToString() != null && Convert.ToDateTime(dsData.Tables[0].Rows[0]["reeval_due_date"].ToString()) > Convert.ToDateTime("01/01/0001"))
+                    {
+                        reeval_due_date = Convert.ToDateTime(dsData.Tables[0].Rows[0]["reeval_due_date"].ToString()).ToString("yyyy-MM-dd");
+                    }
+                    sHeader = "<tr><td colspan=3><b>Ref No:<b></td> <td colspan=3>" + (dsData.Tables[0].Rows[0]["risk_refno"].ToString()) + "</td></tr>"
+                     + "<tr><td colspan=3><b>Severity:<b></td> <td colspan=3>"
+                      + objGlobaldata.GetDropdownitemById(dsData.Tables[0].Rows[0]["impact_id"].ToString()) + "</td></tr>"
+                      + "<tr><td colspan=3><b>Probability:<b></td> <td colspan=3>" + objGlobaldata.GetDropdownitemById(dsData.Tables[0].Rows[0]["like_id"].ToString()) + "</td></tr>"
+                      + "<tr><td colspan=3><b>Risk Rating:<b></td> <td colspan=3>" + objRiskMgmtModels.RiskRating + "</td></tr>"
+                       + "<tr><td colspan=3><b>Evaluation Date:<b></td> <td colspan=3>" + evaluation_date + "</td></tr>"
+                    + "<tr><td colspan=3><b>Evaluated By:<b></td> <td colspan=3>" + objGlobaldata.GetMultiHrEmpNameById(dsData.Tables[0].Rows[0]["risk_manager"].ToString()) + "</td></tr>"
+                    + "<tr><td colspan=3><b>To Be Approved By:<b></td> <td colspan=3>" + objGlobaldata.GetMultiHrEmpNameById(dsData.Tables[0].Rows[0]["approved_by"].ToString()) + "</td></tr>"
+                    + "<tr><td colspan=3><b>Risk Reevaluation Due Date:<b></td> <td colspan=3>" + reeval_due_date + "</td></tr>";
+
+
+                    sSqlstmt = "select measure,pers_resp,target_date from risk_mitigations where risk_id = '" + risk_id + "'";
+
+                    DataSet dsItems = new DataSet();
+                    dsItems = objGlobaldata.Getdetails(sSqlstmt);
+
+                    if (dsItems.Tables.Count > 0 && dsItems.Tables[0].Rows.Count > 0)
+                    {
+                        sInformation = "<br><tr> "
+                            + "<td colspan=8><label><b>Mitigation</b></label> </td> </tr>"
+                            + "<tr style='background-color: #4cc4dd; width: 100%; color: white; padding-left: 5px;'>"
+                            + "<th>Sl. No.</th>"
+                            + "<th style='width:300px'>Mitigation Measure</th>"
+                            + "<th style='width:300px'>Person Responsible</th>"
+                            + "<th style='width:300px'>Target Date</th>"
+                            + "</tr>";
+
+
+                        for (int i = 0; i < dsItems.Tables[0].Rows.Count; i++)
+                        {
+
+                            string target_date = "";
+                            if (dsItems.Tables[0].Rows[i]["target_date"].ToString() != null && Convert.ToDateTime(dsItems.Tables[0].Rows[i]["target_date"].ToString()) > Convert.ToDateTime("01/01/0001"))
+                            {
+                                target_date = Convert.ToDateTime(dsItems.Tables[0].Rows[i]["target_date"].ToString()).ToString("yyyy-MM-dd");
+                            }
+                          
+                            sInformation = sInformation + "<tr>"
+                                + " <td>" + (i + 1) + "</td>"
+                                + " <td style='width:300px'>" + (dsItems.Tables[0].Rows[i]["measure"].ToString()) + "</td>"
+                                 + " <td style='width:300px'>" + objGlobaldata.GetMultiHrEmpNameById(dsItems.Tables[0].Rows[i]["pers_resp"].ToString()) + "</td>"
+                                 + " <td style='width:300px'>" + target_date + "</td>"
+                                 + " </tr>";
+                            //sCCEmailIds = sCCEmailIds + "," + objGlobalData.GetHrEmpEmailIdById(dsItems.Tables[0].Rows[i]["PersonResponsible"].ToString());
+
+                            //string sPersonEmail = objGlobaldata.GetMultiHrEmpEmailIdById(dsItems.Tables[0].Rows[i]["PersonResponsible"].ToString());
+                            //sPersonEmail = Regex.Replace(sPersonEmail, ",+", ",");
+                            //sPersonEmail = sPersonEmail.Trim();
+                            //sPersonEmail = sPersonEmail.TrimEnd(',');
+                            //sPersonEmail = sPersonEmail.TrimStart(',');
+                            //if (sPersonEmail != null && sPersonEmail != "")
+                            //{
+                            //    sCCEmailIds = sCCEmailIds + "," + sPersonEmail;
+                            //}
+
+                        }
+                    }
+
+                    sContent = sContent.Replace("{FromMsg}", "");
+                    //sContent = sContent.Replace("{UserName}", sName);
+                    sContent = sContent.Replace("{Title}", "Risk Mitigation");
+                    sContent = sContent.Replace("{content}", sHeader + sInformation);
+                    sContent = sContent.Replace("{message}", "");
+                    sContent = sContent.Replace("{extramessage}", "");
+
+                    sToEmailIds = Regex.Replace(sToEmailIds, ",+", ",");
+                    sToEmailIds = sToEmailIds.Trim();
+                    sToEmailIds = sToEmailIds.TrimEnd(',');
+                    sToEmailIds = sToEmailIds.TrimStart(',');
+
+                    sCCEmailIds = Regex.Replace(sCCEmailIds, ",+", ",");
+                    sCCEmailIds = sCCEmailIds.Trim();
+                    sCCEmailIds = sCCEmailIds.TrimEnd(',');
+                    sCCEmailIds = sCCEmailIds.TrimStart(',');
+
+                    return objGlobaldata.Sendmail(sToEmailIds, sSubject + sMessage, sContent, aAttachment, sCCEmailIds, "");
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in SendRiskMitigationmail: " + ex.ToString());
+            }
+            return false;
+        }
+
         internal bool FunUpdateMitigation(string risk_id)
         {
             try
@@ -632,9 +1301,12 @@ namespace ISOStd.Models
                                         sSqlstmt = sSqlstmt + ") values('" + srisk_id_trans + "','" + dsMitList.Tables[0].Rows[i]["mit_id"].ToString() + "', '" + dsMitList.Tables[0].Rows[i]["risk_id"].ToString() + "', '" + dsMitList.Tables[0].Rows[i]["measure"].ToString() + "', '" + dsMitList.Tables[0].Rows[i]["pers_resp"].ToString() + "'";
                                         sSqlstmt = sSqlstmt + sFieldValues + ");";
                                     }
-                                    return objGlobaldata.ExecuteQuery(sSqlstmt);
+                                    if(objGlobaldata.ExecuteQuery(sSqlstmt))
+                                    {
+                                        return SendRiskReEvalmail(objModel,risk_id, "Risk Re-Evaluation");
+                                    }
+                                   
                                 }
-
                             }
                         }
                         else
@@ -648,7 +1320,7 @@ namespace ISOStd.Models
                             sSqlstmt = sSqlstmt + " where risk_id_trans='" + objModel.risk_id_trans + "'";
                             if (objGlobaldata.ExecuteQuery(sSqlstmt))
                             {
-                                return true;
+                                return SendRiskReEvalmail(objModel,risk_id, "Risk Re-Evaluation");
                             }
                         }
 
@@ -664,7 +1336,7 @@ namespace ISOStd.Models
                         sSqlstmt = sSqlstmt + " where risk_id_trans='" + objModel.risk_id_trans + "'";
                         if (objGlobaldata.ExecuteQuery(sSqlstmt))
                         {
-                            return true;
+                            return SendRiskReEvalmail(objModel,risk_id, "Risk Re-Evaluation");
                         }
                     }
                    
@@ -706,7 +1378,10 @@ namespace ISOStd.Models
                                 sSqlstmt = sSqlstmt + ") values('" + risk_id_trans + "','" + dsMitList.Tables[0].Rows[i]["mit_id"].ToString() + "', '" + dsMitList.Tables[0].Rows[i]["risk_id"].ToString() + "', '" + dsMitList.Tables[0].Rows[i]["measure"].ToString() + "', '" + dsMitList.Tables[0].Rows[i]["pers_resp"].ToString() + "'";
                                 sSqlstmt = sSqlstmt + sFieldValues + ");";
                             }
-                            return objGlobaldata.ExecuteQuery(sSqlstmt);
+                            if (objGlobaldata.ExecuteQuery(sSqlstmt))
+                            {
+                                return SendRiskReEvalmail(objModel,risk_id, "Risk Re-Evaluation");
+                            }
                         }
                             
                     }
@@ -719,12 +1394,104 @@ namespace ISOStd.Models
 
             return false;
         }
+
+        internal bool SendRiskReEvalmail(RiskMgmtModels objModel,string risk_id, string sMessage = "")
+        {
+            RiskMgmtModels objRiskMgmtModels = new RiskMgmtModels();
+            try
+            {
+                string sType = "email";
+
+                string sSqlstmt = "select risk_refno,submitted_by,impact_id,like_id,risk_manager,eval_notified_to,evaluation_date from risk_register"
+                + " where risk_id='" + risk_id + "'";
+
+                DataSet dsData = objGlobaldata.Getdetails(sSqlstmt);
+                KPIModels objType = new KPIModels();
+
+                if (dsData.Tables.Count > 0 && dsData.Tables[0].Rows.Count > 0)
+                {
+                    //objGlobalData.AddFunctionalLog("Step");
+                    //AddFunctionalLog("Step");
+                    string sName, sToEmailIds, sCCEmailIds, sHeader, sInformation = "", sTitle = "", sSubject = "", sContent = "", aAttachment = "", BccEmailIds = "";
+
+                    //using streamreader for reading my htmltemplate 
+                    //Form the Email Subject and Body content
+                    DataSet dsEmailXML = new DataSet();
+                    dsEmailXML.ReadXml(HttpContext.Current.Server.MapPath("~/EmailTemplates.xml"));
+
+                    if (sType != "" && dsEmailXML.Tables.Count > 0 && dsEmailXML.Tables[sType] != null && dsEmailXML.Tables[sType].Rows.Count > 0)
+                    {
+                        sSubject = dsEmailXML.Tables[sType].Rows[0]["subject"].ToString();
+                    }
+
+                    using (StreamReader reader = new StreamReader(HttpContext.Current.Server.MapPath("~/Views/EmailTemplate/EmailTemplate.html")))
+                    {
+                        sContent = reader.ReadToEnd();
+                    }
+
+                    //sName = objGlobaldata.GetMultiHrEmpNameById(dsData.Tables[0].Rows[0]["notified_to"].ToString());
+                    sToEmailIds = objGlobaldata.GetMultiHrEmpEmailIdById(objModel.eval_notified_to);
+                    sCCEmailIds = objGlobaldata.GetMultiHrEmpEmailIdById(objModel.risk_manager) + "," + objGlobaldata.GetMultiHrEmpEmailIdById(dsData.Tables[0].Rows[0]["submitted_by"].ToString());
+
+                    Dictionary<string, string> dicRatings = new Dictionary<string, string>();
+                    if ((objModel.impact_id) != "" && (objModel.like_id) != "")
+                    {
+                        dicRatings = objRiskMgmtModels.GetRiskRatings(objModel.impact_id,
+                            objModel.like_id);
+                    }
+                    if (dicRatings != null && dicRatings.Count > 0)
+                    {
+                        objRiskMgmtModels.RiskRating = dicRatings.FirstOrDefault().Key;
+
+                    }
+                    string evaluation_date = "";
+                    if (objModel.evaluation_date != null && Convert.ToDateTime(objModel.evaluation_date) > Convert.ToDateTime("01/01/0001"))
+                    {
+                        evaluation_date = Convert.ToDateTime(objModel.evaluation_date).ToString("yyyy-MM-dd");
+                    }
+                    sHeader = "<tr><td colspan=3><b>Ref No:<b></td> <td colspan=3>" + (dsData.Tables[0].Rows[0]["risk_refno"].ToString()) + "</td></tr>"
+                     + "<tr><td colspan=3><b>Severity:<b></td> <td colspan=3>"
+                      + objGlobaldata.GetDropdownitemById(objModel.impact_id) + "</td></tr>"
+                      + "<tr><td colspan=3><b>Probability:<b></td> <td colspan=3>" + objGlobaldata.GetDropdownitemById(objModel.like_id) + "</td></tr>"
+                      + "<tr><td colspan=3><b>Risk Rating:<b></td> <td colspan=3>" + objRiskMgmtModels.RiskRating + "</td></tr>"
+                       + "<tr><td colspan=3><b>Evaluation Date:<b></td> <td colspan=3>" + evaluation_date + "</td></tr>"
+                    + "<tr><td colspan=3><b>Evaluated By:<b></td> <td colspan=3>" + objGlobaldata.GetMultiHrEmpNameById(objModel.risk_manager) + "</td></tr>";
+
+
+
+                    sContent = sContent.Replace("{FromMsg}", "");
+                    //sContent = sContent.Replace("{UserName}", sName);
+                    sContent = sContent.Replace("{Title}", "Risk Re-Evaluation");
+                    sContent = sContent.Replace("{content}", sHeader + sInformation);
+                    sContent = sContent.Replace("{message}", "");
+                    sContent = sContent.Replace("{extramessage}", "");
+
+                    sToEmailIds = Regex.Replace(sToEmailIds, ",+", ",");
+                    sToEmailIds = sToEmailIds.Trim();
+                    sToEmailIds = sToEmailIds.TrimEnd(',');
+                    sToEmailIds = sToEmailIds.TrimStart(',');
+
+                    sCCEmailIds = Regex.Replace(sCCEmailIds, ",+", ",");
+                    sCCEmailIds = sCCEmailIds.Trim();
+                    sCCEmailIds = sCCEmailIds.TrimEnd(',');
+                    sCCEmailIds = sCCEmailIds.TrimStart(',');
+
+                    return objGlobaldata.Sendmail(sToEmailIds, sSubject + sMessage, sContent, aAttachment, sCCEmailIds, "");
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in SendRiskReEvalmail: " + ex.ToString());
+            }
+            return false;
+        }
+
         internal bool FunUpdateFurtherRiskMitigation(RiskMgmtModels objModel, RiskMgmtModelsList objRiskList)
         {
             try
             {
                 string approved_date = DateTime.Now.ToString("yyyy/MM/dd");
-                string sSqlstmt = "update risk_register_trans set approved_by='" + objModel.approved_by + "',approved_date='" + approved_date + "',mit_notified_to='" + objModel.mit_notified_to + "'";
+                string sSqlstmt = "update risk_register_trans set approved_by='" + objModel.approved_by + "',mit_notified_to='" + objModel.mit_notified_to + "',apprv_status='0'";
                 if (objModel.reeval_due_date != null && objModel.reeval_due_date > Convert.ToDateTime("01/01/0001 00:00:00"))
                 {
                     sSqlstmt = sSqlstmt + ",reeval_due_date='" + objModel.reeval_due_date.ToString("yyyy/MM/dd") + "'";
@@ -743,7 +1510,7 @@ namespace ISOStd.Models
                     {
                         FunUpdateMitigation(risk_id);
                     }
-                    return true;
+                    return SendRiskFurtherMitigationmail(risk_id, "Risk further mitigation for approval");
                 }
 
             }
@@ -803,6 +1570,153 @@ namespace ISOStd.Models
             }
             return false;
         }
+
+        internal bool SendRiskFurtherMitigationmail(string risk_id, string sMessage = "")
+        {
+            RiskMgmtModels objRiskMgmtModels = new RiskMgmtModels();
+            try
+            {
+                string sType = "email";
+
+                string sSqlstmt = "select tt.risk_id_trans,t.risk_id,t.risk_refno,t.risk_desc,t.dept,t.branch_id,t.source_id,t.risk_owner,t.risk_manager,t.submission_date,t.submitted_by,t.consequences,t.Location,tt.evaluation_date,tt.approved_by,tt.approved_date,tt.reeval_due_date,tt.impact_id,tt.like_id,t.Issue,t.Risk_Type,tt.eval_notified_to,tt.evaluation_date,tt.mit_notified_to,"
+                          + "(CASE WHEN tt.apprv_status='0' THEN 'Pending for Approval' WHEN tt.apprv_status='1' THEN 'Rejected' WHEN tt.apprv_status='2' THEN 'Approved' END) as apprv_status,tt.apprv_comment"
+                       + " from risk_register t left join  risk_register_trans tt on t.risk_id = tt.risk_id  where t.risk_id = '" + risk_id + "' order by risk_id_trans desc limit 1";
+
+               
+
+                DataSet dsData = objGlobaldata.Getdetails(sSqlstmt);
+                KPIModels objType = new KPIModels();
+
+                if (dsData.Tables.Count > 0 && dsData.Tables[0].Rows.Count > 0)
+                {
+                    //objGlobalData.AddFunctionalLog("Step");
+                    //AddFunctionalLog("Step");
+                    string sName, sToEmailIds, sCCEmailIds, sHeader, sInformation = "", sTitle = "", sSubject = "", sContent = "", aAttachment = "", BccEmailIds = "";
+
+                    //using streamreader for reading my htmltemplate 
+                    //Form the Email Subject and Body content
+                    DataSet dsEmailXML = new DataSet();
+                    dsEmailXML.ReadXml(HttpContext.Current.Server.MapPath("~/EmailTemplates.xml"));
+
+                    if (sType != "" && dsEmailXML.Tables.Count > 0 && dsEmailXML.Tables[sType] != null && dsEmailXML.Tables[sType].Rows.Count > 0)
+                    {
+                        sSubject = dsEmailXML.Tables[sType].Rows[0]["subject"].ToString();
+                    }
+
+                    using (StreamReader reader = new StreamReader(HttpContext.Current.Server.MapPath("~/Views/EmailTemplate/EmailTemplate.html")))
+                    {
+                        sContent = reader.ReadToEnd();
+                    }
+
+                    //sName = objGlobaldata.GetMultiHrEmpNameById(dsData.Tables[0].Rows[0]["notified_to"].ToString());
+                    sToEmailIds = objGlobaldata.GetMultiHrEmpEmailIdById(dsData.Tables[0].Rows[0]["mit_notified_to"].ToString());
+                    sCCEmailIds = objGlobaldata.GetMultiHrEmpEmailIdById(dsData.Tables[0].Rows[0]["approved_by"].ToString()) + "," + objGlobaldata.GetMultiHrEmpEmailIdById(dsData.Tables[0].Rows[0]["submitted_by"].ToString());
+
+                    Dictionary<string, string> dicRatings = new Dictionary<string, string>();
+                    if (dsData.Tables[0].Rows[0]["impact_id"].ToString() != "" && dsData.Tables[0].Rows[0]["like_id"].ToString() != "")
+                    {
+                        dicRatings = objRiskMgmtModels.GetRiskRatings(dsData.Tables[0].Rows[0]["impact_id"].ToString(),
+                            dsData.Tables[0].Rows[0]["like_id"].ToString());
+                    }
+                    if (dicRatings != null && dicRatings.Count > 0)
+                    {
+                        objRiskMgmtModels.RiskRating = dicRatings.FirstOrDefault().Key;
+
+                    }
+                    string evaluation_date = "", reeval_due_date = "";
+                    if (dsData.Tables[0].Rows[0]["evaluation_date"].ToString() != null && Convert.ToDateTime(dsData.Tables[0].Rows[0]["evaluation_date"].ToString()) > Convert.ToDateTime("01/01/0001"))
+                    {
+                        evaluation_date = Convert.ToDateTime(dsData.Tables[0].Rows[0]["evaluation_date"].ToString()).ToString("yyyy-MM-dd");
+                    }
+                    if (dsData.Tables[0].Rows[0]["reeval_due_date"].ToString() != null && Convert.ToDateTime(dsData.Tables[0].Rows[0]["reeval_due_date"].ToString()) > Convert.ToDateTime("01/01/0001"))
+                    {
+                        reeval_due_date = Convert.ToDateTime(dsData.Tables[0].Rows[0]["reeval_due_date"].ToString()).ToString("yyyy-MM-dd");
+                    }
+                    sHeader = "<tr><td colspan=3><b>Ref No:<b></td> <td colspan=3>" + (dsData.Tables[0].Rows[0]["risk_refno"].ToString()) + "</td></tr>"
+                     + "<tr><td colspan=3><b>Severity:<b></td> <td colspan=3>"
+                      + objGlobaldata.GetDropdownitemById(dsData.Tables[0].Rows[0]["impact_id"].ToString()) + "</td></tr>"
+                      + "<tr><td colspan=3><b>Probability:<b></td> <td colspan=3>" + objGlobaldata.GetDropdownitemById(dsData.Tables[0].Rows[0]["like_id"].ToString()) + "</td></tr>"
+                      + "<tr><td colspan=3><b>Risk Rating:<b></td> <td colspan=3>" + objRiskMgmtModels.RiskRating + "</td></tr>"
+                       + "<tr><td colspan=3><b>Evaluation Date:<b></td> <td colspan=3>" + evaluation_date + "</td></tr>"
+                    + "<tr><td colspan=3><b>Evaluated By:<b></td> <td colspan=3>" + objGlobaldata.GetMultiHrEmpNameById(dsData.Tables[0].Rows[0]["risk_manager"].ToString()) + "</td></tr>"
+                    + "<tr><td colspan=3><b>To Be Approved By:<b></td> <td colspan=3>" + objGlobaldata.GetMultiHrEmpNameById(dsData.Tables[0].Rows[0]["approved_by"].ToString()) + "</td></tr>"
+                    + "<tr><td colspan=3><b>Risk Reevaluation Due Date:<b></td> <td colspan=3>" + reeval_due_date + "</td></tr>";
+
+
+                    sSqlstmt = "select measure,pers_resp,target_date from risk_mitigations_trans where risk_id_trans = '" + dsData.Tables[0].Rows[0]["risk_id_trans"].ToString() + "'";
+
+                    DataSet dsItems = new DataSet();
+                    dsItems = objGlobaldata.Getdetails(sSqlstmt);
+
+                    if (dsItems.Tables.Count > 0 && dsItems.Tables[0].Rows.Count > 0)
+                    {
+                        sInformation = "<br><tr> "
+                            + "<td colspan=8><label><b>Mitigation</b></label> </td> </tr>"
+                            + "<tr style='background-color: #4cc4dd; width: 100%; color: white; padding-left: 5px;'>"
+                            + "<th>Sl. No.</th>"
+                            + "<th style='width:300px'>Mitigation Measure</th>"
+                            + "<th style='width:300px'>Person Responsible</th>"
+                            + "<th style='width:300px'>Target Date</th>"
+                            + "</tr>";
+
+
+                        for (int i = 0; i < dsItems.Tables[0].Rows.Count; i++)
+                        {
+
+                            string target_date = "";
+                            if (dsItems.Tables[0].Rows[i]["target_date"].ToString() != null && Convert.ToDateTime(dsItems.Tables[0].Rows[i]["target_date"].ToString()) > Convert.ToDateTime("01/01/0001"))
+                            {
+                                target_date = Convert.ToDateTime(dsItems.Tables[0].Rows[i]["target_date"].ToString()).ToString("yyyy-MM-dd");
+                            }
+
+                            sInformation = sInformation + "<tr>"
+                                + " <td>" + (i + 1) + "</td>"
+                                + " <td style='width:300px'>" + (dsItems.Tables[0].Rows[i]["measure"].ToString()) + "</td>"
+                                 + " <td style='width:300px'>" + objGlobaldata.GetMultiHrEmpNameById(dsItems.Tables[0].Rows[i]["pers_resp"].ToString()) + "</td>"
+                                 + " <td style='width:300px'>" + target_date + "</td>"
+                                 + " </tr>";
+                            //sCCEmailIds = sCCEmailIds + "," + objGlobalData.GetHrEmpEmailIdById(dsItems.Tables[0].Rows[i]["PersonResponsible"].ToString());
+
+                            //string sPersonEmail = objGlobaldata.GetMultiHrEmpEmailIdById(dsItems.Tables[0].Rows[i]["PersonResponsible"].ToString());
+                            //sPersonEmail = Regex.Replace(sPersonEmail, ",+", ",");
+                            //sPersonEmail = sPersonEmail.Trim();
+                            //sPersonEmail = sPersonEmail.TrimEnd(',');
+                            //sPersonEmail = sPersonEmail.TrimStart(',');
+                            //if (sPersonEmail != null && sPersonEmail != "")
+                            //{
+                            //    sCCEmailIds = sCCEmailIds + "," + sPersonEmail;
+                            //}
+
+                        }
+                    }
+
+                    sContent = sContent.Replace("{FromMsg}", "");
+                    //sContent = sContent.Replace("{UserName}", sName);
+                    sContent = sContent.Replace("{Title}", "Risk Further Mitigation");
+                    sContent = sContent.Replace("{content}", sHeader + sInformation);
+                    sContent = sContent.Replace("{message}", "");
+                    sContent = sContent.Replace("{extramessage}", "");
+
+                    sToEmailIds = Regex.Replace(sToEmailIds, ",+", ",");
+                    sToEmailIds = sToEmailIds.Trim();
+                    sToEmailIds = sToEmailIds.TrimEnd(',');
+                    sToEmailIds = sToEmailIds.TrimStart(',');
+
+                    sCCEmailIds = Regex.Replace(sCCEmailIds, ",+", ",");
+                    sCCEmailIds = sCCEmailIds.Trim();
+                    sCCEmailIds = sCCEmailIds.TrimEnd(',');
+                    sCCEmailIds = sCCEmailIds.TrimStart(',');
+
+                    return objGlobaldata.Sendmail(sToEmailIds, sSubject + sMessage, sContent, aAttachment, sCCEmailIds, "");
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in SendRiskFurtherMitigationmail: " + ex.ToString());
+            }
+            return false;
+        }
+
     }
 
     public class RiskMitigationModels

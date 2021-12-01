@@ -346,6 +346,7 @@
         ViewBag.Chairman = objGlobaldata.GetChairman();
 
         //Approve Dataset
+        System.Data.DataSet dsQRisk = new System.Data.DataSet();
         System.Data.DataSet dsApproveEmpCompetence = new System.Data.DataSet();
         System.Data.DataSet dsDocReviewFreq = new System.Data.DataSet();
         System.Data.DataSet dsKPI = new System.Data.DataSet();
@@ -430,6 +431,8 @@
 
         dsKPI = objGlobaldata.getListPendingForApprovalKPI(objUser.empid);
 
+        dsQRisk = objGlobaldata.getListPendingForApprovalRisk(objUser.empid);
+
         dsMgmtDocument = objGlobaldata.getListPendingForApprovalSystemDocuments(objUser.empid);
 
         dsTraining = objGlobaldata.getListPendingForApprovalTRAINING(objUser.empid);
@@ -510,6 +513,10 @@
         //{
         //    cnt += dsAudit.Tables[0].Rows.Count;
         //}
+        if (dsQRisk != null)
+        {
+            cnt += dsQRisk.Tables[0].Rows.Count;
+        }
         if (dsApproveEmpCompetence != null)
         {
             cnt += dsApproveEmpCompetence.Tables[0].Rows.Count;
@@ -1599,6 +1606,36 @@
 
                         </div>
                         <div class="dropdown-content-body dropdown-scrollable">
+                            @if (dsQRisk != null && dsQRisk.Tables.Count > 0 && dsQRisk.Tables[0].Rows.Count > 0)
+                            {
+                                <hr />
+                                <p class="font-weight-bold text-center">Quality Related Risk </p>
+                                <hr />
+                                <ul class="media-list">
+                                    @for (int i = 0; i < dsQRisk.Tables[0].Rows.Count; i++)
+                                    {
+
+                                        <li class="media" id="@dsQRisk.Tables[0].Rows[i]["risk_id"].ToString()">
+                                            <div class="mr-3 w-25">
+                                                @*@<img src="../../../../global_assets/images/placeholders/placeholder.jpg" width="36" height="36" class="rounded-circle" alt="">@*@
+                                                <a href='@Url.Action("RiskApprovalDetails", "RiskMgmt", new { risk_id = dsQRisk.Tables[0].Rows[i]["risk_id"].ToString()})' title="Document Details" class="badge badge-flat badge-icon border-teal text-teal-600"><i class="icon-file-text2"></i></a>
+                                                <br /><span class="font-weight-semibold"> Risk <text class="text-blue">@(dsQRisk.Tables[0].Rows[i]["risk_desc"].ToString())</text></span>
+                                            </div>
+                                            <div class="media-body">
+                                                <div class="btn-group-vertical float-right">
+                                                </div>
+                                                <div class="media-title">
+                                                    <span class="font-weight-semibold">Risk RefNo:<text class="text-blue">   @dsQRisk.Tables[0].Rows[i]["risk_refno"].ToString() </text></span>
+                                                    <br />
+                                                    <span class="font-weight-semibold">Risk Evaluated By:<text class="text-blue">@objGlobaldata.GetMultiHrEmpNameById(dsQRisk.Tables[0].Rows[i]["risk_manager"].ToString()) </text></span>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    }
+                                </ul>
+                            }
+
+
                             @if (dsApproveEmpCompetence != null && dsApproveEmpCompetence.Tables.Count > 0 && dsApproveEmpCompetence.Tables[0].Rows.Count > 0)
                             {
                                 <hr />

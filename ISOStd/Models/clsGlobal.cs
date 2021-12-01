@@ -6138,6 +6138,21 @@ namespace ISOStd.Models
             //}
             return null;
         }
+        //-----------------------------------RISK----------------------------------------------------
+        public DataSet getListPendingForApprovalRisk(string sempid)
+        {
+           
+            string sSqlstmt = "select t1.risk_id,t1.risk_refno,t1.risk_desc,t1.risk_manager from risk_register t2 left join risk_register_trans t1"
+               + " on t1.risk_id = t2.risk_id where t2.Active = 1 and t1.apprv_status = 0 and(find_in_set('" + sempid + "', t1.approved_by)) UNION select risk_id,risk_refno,risk_desc,risk_manager from risk_register"
+               + " where  Active = 1 and apprv_status = 0 and(find_in_set('" + sempid + "', approved_by)) and risk_id not in (select risk_id from risk_register_trans)";
+
+            DataSet dsApprovalList = Getdetails(sSqlstmt);
+            if (dsApprovalList.Tables.Count > 0 && dsApprovalList.Tables[0].Rows.Count > 0)
+            {
+                return dsApprovalList;
+            }
+            return null;
+        }
         //-----------------------------------KPI----------------------------------------------------
         public DataSet getListPendingForApprovalKPI(string sempid)
         {

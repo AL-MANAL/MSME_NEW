@@ -1189,7 +1189,7 @@ namespace ISOStd.Controllers
                         ViewBag.objList = objGlobaldata.Getdetails(sSqlstmt);
 
                         string sql2 = "select kpi_ref_no,measurable_indicator,expected_value,expected_value_unit,kpi_type,monitoring_frm_date,monitoring_to_date,monitoring_mechanism," +
-                        "frequency_eval,risk,evaluation_date,source_evaluate,upload,method_evaluation,value_achieved,unit,kpi_status,remarks,raise_need "+
+                        "frequency_eval,risk,evaluation_date,source_evaluate,upload,method_evaluation,value_achieved,unit,kpi_status,remarks,raise_need,FromPeriod,ToPeriod " +
                         "from t_kpi_measurable_indicator t left join t_kpi_evaluation tt on t.id_measurable = tt.id_measurable where t.KPI_Id ='"+ objKPIModels.KPI_Id + "'";
                         ViewBag.MIList = objGlobaldata.Getdetails(sql2);
 
@@ -1257,10 +1257,9 @@ namespace ISOStd.Controllers
                         sSqlstmt = "select id_kpi_failure,KPI_Id,causes_failure from t_kpi_failure where KPI_Id='" + objKPIModels.KPI_Id + "'";
                         ViewBag.objList = objGlobaldata.Getdetails(sSqlstmt);
 
-                        string sql2 = "select kpi_ref_no,measurable_indicator,expected_value,expected_value_unit,kpi_type,monitoring_frm_date,monitoring_to_date,monitoring_mechanism," +
-                        "frequency_eval,risk,evaluation_date,source_evaluate,upload,method_evaluation,value_achieved,unit,kpi_status,remarks,raise_need " +
-                        "from t_kpi_measurable_indicator t left join t_kpi_evaluation tt on t.id_measurable = tt.id_measurable where t.KPI_Id ='" + objKPIModels.KPI_Id + "'";
-                        ViewBag.MIList = objGlobaldata.Getdetails(sql2);
+                        string sql2 = "select kpi_ref_no,measurable_indicator,expected_value,expected_value_unit,kpi_type,monitoring_frm_date,monitoring_to_date,monitoring_mechanism,FromPeriod,ToPeriod" +
+                       "frequency_eval,risk" +
+                       " from t_kpi_measurable_indicator   where KPI_Id ='" + objKPIModels.KPI_Id + "'";
 
                         string sql3 = "select Action,TargetDate,PersonResponsible,remarks from t_kpi_actions where KPI_Id='" + objKPIModels.KPI_Id + "'";
                         ViewBag.ActionList = objGlobaldata.Getdetails(sql3);
@@ -1574,8 +1573,8 @@ namespace ISOStd.Controllers
                         //Mitigation measures
 
                         string sql2 = "select kpi_ref_no,measurable_indicator,expected_value,expected_value_unit,kpi_type,monitoring_frm_date,monitoring_to_date,monitoring_mechanism," +
-                        "frequency_eval,risk,evaluation_date,source_evaluate,upload,method_evaluation,value_achieved,unit,kpi_status,remarks,raise_need " +
-                        "from t_kpi_measurable_indicator t left join t_kpi_evaluation tt on t.id_measurable = tt.id_measurable where t.KPI_Id ='" + objKPIModels.KPI_Id + "'";
+                        "frequency_eval,risk" +
+                        " from t_kpi_measurable_indicator   where KPI_Id ='" + objKPIModels.KPI_Id + "'";
                         ViewBag.MIList = objGlobaldata.Getdetails(sql2);
 
                         KPIModelsList objModelsList = new KPIModelsList();

@@ -317,8 +317,16 @@ namespace ISOStd.Controllers
 
          //       }
 
-                string sSqlstmt = "select risk_id, risk_status_id,risk_refno, risk_desc, dept, reg_id, branch_id, source_id, cat_id, tech_id, risk_owner, risk_manager,"
-                    + "assessment, notes, submission_date, close_date,  close_by, submitted_by, impact_id, like_id,opp_desc,Location,reeval_due_date,Risk_Type from risk_register where Active=1";
+                //string sSqlstmt = "select risk_id, risk_status_id,risk_refno, risk_desc, dept, reg_id, branch_id, source_id, cat_id, tech_id, risk_owner, risk_manager,"
+                //    + "assessment, notes, submission_date, close_date,  close_by, submitted_by, impact_id, like_id,opp_desc,Location,reeval_due_date,Risk_Type,apprv_status from risk_register where Active=1";
+
+                string sSqlstmt = "select T1.risk_id, T1.risk_status_id,T1.risk_refno, T1.risk_desc, T1.dept, T1.reg_id, T1.branch_id,T1.source_id, T1.cat_id, T1.tech_id, T1.risk_owner, T1.risk_manager,T1.assessment, T1.notes, T1.submission_date,"
+              + "T1.close_date,  T1.close_by, T1.submitted_by, T1.impact_id, T1.like_id,T1.opp_desc,T1.Location,T1.Risk_Type,"
+              + "(select impact_id from risk_register_trans T2 where  T1.risk_id = T2.risk_id order by risk_id_trans desc limit 1) as curr_impact_id,T1.apprv_status  as init_apprv_status,"
+              + "(select like_id from risk_register_trans T2 where T1.risk_id = T2.risk_id order by risk_id_trans desc limit 1) as curr_like_id,(select apprv_status from risk_register_trans T2 where T1.risk_id = T2.risk_id order by risk_id_trans desc limit 1) as apprv_status,"
+              + "T1.reeval_due_date as init_reeval_due_date,(select reeval_due_date from risk_register_trans T2 where T1.risk_id = T2.risk_id order by risk_id_trans desc limit 1) as reeval_due_date,T1.approved_by as init_approved_by,(select approved_by from risk_register_trans T2 where T1.risk_id = T2.risk_id order by risk_id_trans desc limit 1) as approved_by "
+              + " from risk_register T1 where T1.Active = 1";
+
                 string sSearchtext = "";
 
                 if (SearchText != null && SearchText != "")
@@ -393,9 +401,21 @@ namespace ISOStd.Controllers
                                 submitted_by = objGlobaldata.GetEmpHrNameById(dsRiskModels.Tables[0].Rows[i]["submitted_by"].ToString()),
                                 opp_desc = (dsRiskModels.Tables[0].Rows[i]["opp_desc"].ToString()),
                                 Location = objGlobaldata.GetDivisionLocationById(dsRiskModels.Tables[0].Rows[i]["Location"].ToString()),
-                                Risk_Type = dsRiskModels.Tables[0].Rows[i]["Risk_Type"].ToString()
+                                Risk_Type = dsRiskModels.Tables[0].Rows[i]["Risk_Type"].ToString(),
+                                apprv_status = dsRiskModels.Tables[0].Rows[i]["apprv_status"].ToString(),
+                                init_apprv_status = dsRiskModels.Tables[0].Rows[i]["init_apprv_status"].ToString(),
+                                init_approved_by = dsRiskModels.Tables[0].Rows[i]["init_approved_by"].ToString()
                             };
                             DateTime dtValue;
+
+                            if (DateTime.TryParse(dsRiskModels.Tables[0].Rows[i]["reeval_due_date"].ToString(), out dtValue))
+                            {
+                                objRiskMgmtModels.reeval_due_date = dtValue;
+                            }
+                            if (DateTime.TryParse(dsRiskModels.Tables[0].Rows[i]["init_reeval_due_date"].ToString(), out dtValue))
+                            {
+                                objRiskMgmtModels.init_reeval_due_date = dtValue;
+                            }
                             if (DateTime.TryParse(dsRiskModels.Tables[0].Rows[i]["reeval_due_date"].ToString(), out dtValue))
                             {
                                 objRiskMgmtModels.reeval_due_date = dtValue;
@@ -2129,73 +2149,148 @@ namespace ISOStd.Controllers
                     string sSqlstmt1 = "select risk_id_trans from risk_register_trans where risk_id='" + srisk_id + "'";
                     DataSet dsRiskModels1 = objGlobaldata.Getdetails(sSqlstmt1);
                     int count = dsRiskModels1.Tables[0].Rows.Count;
-                    if(count > 1)
+                    if(count >= 1)
                     {
-                        sSqlstmt= "select tt.risk_id_trans,t.risk_id,risk_refno,t.risk_desc,t.dept,t.branch_id,t.source_id,t.risk_owner,t.risk_manager,t.submission_date,t.submitted_by,t.consequences,t.Location,tt.evaluation_date,tt.approved_by,tt.approved_date,tt.reeval_due_date,tt.impact_id,tt.like_id,t.Issue,t.Risk_Type from risk_register t"
-                        + " left join  risk_register_trans tt on t.risk_id = tt.risk_id  where t.risk_id = '"+srisk_id+"' order by risk_id_trans desc limit 1";
+                        sSqlstmt= "select risk_id_trans,tt.risk_id_trans,t.risk_id,t.risk_refno,t.risk_desc,t.dept,t.branch_id,t.source_id,t.risk_owner,t.risk_manager,t.submission_date,t.submitted_by,t.consequences,t.Location,tt.evaluation_date,tt.approved_by,tt.approved_date,tt.reeval_due_date,tt.impact_id,tt.like_id,t.Issue,t.Risk_Type,"
+                           + "(CASE WHEN tt.apprv_status='0' THEN 'Pending for Approval' WHEN tt.apprv_status='1' THEN 'Rejected' WHEN tt.apprv_status='2' THEN 'Approved' END) as apprv_status,tt.apprv_comment"
+                        + " from risk_register t left join  risk_register_trans tt on t.risk_id = tt.risk_id  where t.risk_id = '" + srisk_id+"' order by risk_id_trans desc limit 1";
+
+                        DataSet dsRiskModels = objGlobaldata.Getdetails(sSqlstmt);
+                        if (dsRiskModels.Tables.Count > 0 && dsRiskModels.Tables[0].Rows.Count > 0)
+                        {
+                            Dictionary<string, string> dicRatings = new Dictionary<string, string>();
+                            if (dsRiskModels.Tables[0].Rows[0]["impact_id"].ToString() != "" && dsRiskModels.Tables[0].Rows[0]["like_id"].ToString() != "")
+                            {
+                                dicRatings = objRiskMgmtModels.GetRiskRatings(dsRiskModels.Tables[0].Rows[0]["impact_id"].ToString(),
+                                    dsRiskModels.Tables[0].Rows[0]["like_id"].ToString());
+                            }
+                            objRiskMgmtModels = new RiskMgmtModels
+                            {
+                                risk_id_trans = (dsRiskModels.Tables[0].Rows[0]["risk_id_trans"].ToString()),
+                                risk_id = (dsRiskModels.Tables[0].Rows[0]["risk_id"].ToString()),
+                                risk_desc = (dsRiskModels.Tables[0].Rows[0]["risk_desc"].ToString()),
+                                dept = objGlobaldata.GetMultiDeptNameById(dsRiskModels.Tables[0].Rows[0]["dept"].ToString()),
+                                branch_id = objGlobaldata.GetMultiCompanyBranchNameById(dsRiskModels.Tables[0].Rows[0]["branch_id"].ToString()),
+                                source_id = objGlobaldata.GetDropdownitemById(dsRiskModels.Tables[0].Rows[0]["source_id"].ToString()),
+                                risk_owner = objGlobaldata.GetMultiHrEmpNameById(dsRiskModels.Tables[0].Rows[0]["risk_owner"].ToString()),
+                                risk_manager = objGlobaldata.GetMultiHrEmpNameById(dsRiskModels.Tables[0].Rows[0]["risk_manager"].ToString()),
+                                submitted_by = objGlobaldata.GetEmpHrNameById(dsRiskModels.Tables[0].Rows[0]["submitted_by"].ToString()),
+                                impact_id = objGlobaldata.GetDropdownitemById(dsRiskModels.Tables[0].Rows[0]["impact_id"].ToString()),
+                                like_id = objGlobaldata.GetDropdownitemById(dsRiskModels.Tables[0].Rows[0]["like_id"].ToString()),
+                                Location = objGlobaldata.GetDivisionLocationById(dsRiskModels.Tables[0].Rows[0]["Location"].ToString()),
+                                consequences = dsRiskModels.Tables[0].Rows[0]["consequences"].ToString(),
+                                Issue = objRiskMgmtModels.GetIssueNameById(dsRiskModels.Tables[0].Rows[0]["Issue"].ToString()),
+                                approved_by = objGlobaldata.GetEmpHrNameById(dsRiskModels.Tables[0].Rows[0]["approved_by"].ToString()),
+                                risk_refno = (dsRiskModels.Tables[0].Rows[0]["risk_refno"].ToString()),
+                                Risk_Type = dsRiskModels.Tables[0].Rows[0]["Risk_Type"].ToString(),
+
+                                apprv_status = dsRiskModels.Tables[0].Rows[0]["apprv_status"].ToString(),
+                                apprv_comment = dsRiskModels.Tables[0].Rows[0]["apprv_comment"].ToString(),
+                                approved_by_Id = (dsRiskModels.Tables[0].Rows[0]["approved_by"].ToString()),
+                            };
+                            DateTime dtValue;
+                            if (DateTime.TryParse(dsRiskModels.Tables[0].Rows[0]["evaluation_date"].ToString(), out dtValue))
+                            {
+                                objRiskMgmtModels.evaluation_date = dtValue;
+                            }
+                            if (DateTime.TryParse(dsRiskModels.Tables[0].Rows[0]["reeval_due_date"].ToString(), out dtValue))
+                            {
+                                objRiskMgmtModels.reeval_due_date = dtValue;
+                            }
+                            if (DateTime.TryParse(dsRiskModels.Tables[0].Rows[0]["approved_date"].ToString(), out dtValue))
+                            {
+                                objRiskMgmtModels.approved_date = dtValue;
+                            }
+                            if (dicRatings != null && dicRatings.Count > 0)
+                            {
+                                objRiskMgmtModels.RiskRating = dicRatings.FirstOrDefault().Key;
+                                objRiskMgmtModels.color_code = dicRatings.FirstOrDefault().Value;
+                            }
+
+                            sSqlstmt = "select mit_id,risk_id,measure,pers_resp,target_date from risk_mitigations where risk_id='" + srisk_id + "'";
+                            ViewBag.Mit = objGlobaldata.Getdetails(sSqlstmt);
+
+                            return View(objRiskMgmtModels);
+                        }
+                        else
+                        {
+                            TempData["alertdata"] = "No Data exists";
+                            return RedirectToAction("RiskList");
+                        }
                     }
                     else
                     {
-                        sSqlstmt = "select risk_id,risk_refno,risk_desc,dept,branch_id,source_id,risk_owner,risk_manager,submission_date,submitted_by,consequences,Location,evaluation_date,approved_by,approved_date,reeval_due_date,impact_id,like_id,Issue,Risk_Type from risk_register"
-             + " where risk_id='" + srisk_id + "' ";
+                        sSqlstmt = "select risk_id,risk_refno,risk_desc,dept,branch_id,source_id,risk_owner,risk_manager,submission_date,submitted_by,"
+                        + "(CASE WHEN apprv_status='0' THEN 'Pending for Approval' WHEN apprv_status='1' THEN 'Rejected' WHEN apprv_status='2' THEN 'Approved' END) as apprv_status,apprv_comment,"
+                        + "consequences,Location,evaluation_date,approved_by,approved_date,reeval_due_date,impact_id,like_id,Issue,Risk_Type from risk_register"
+                        + " where risk_id='" + srisk_id + "' ";
 
+                        DataSet dsRiskModels = objGlobaldata.Getdetails(sSqlstmt);
+                        if (dsRiskModels.Tables.Count > 0 && dsRiskModels.Tables[0].Rows.Count > 0)
+                        {
+                            Dictionary<string, string> dicRatings = new Dictionary<string, string>();
+                            if (dsRiskModels.Tables[0].Rows[0]["impact_id"].ToString() != "" && dsRiskModels.Tables[0].Rows[0]["like_id"].ToString() != "")
+                            {
+                                dicRatings = objRiskMgmtModels.GetRiskRatings(dsRiskModels.Tables[0].Rows[0]["impact_id"].ToString(),
+                                    dsRiskModels.Tables[0].Rows[0]["like_id"].ToString());
+                            }
+                            objRiskMgmtModels = new RiskMgmtModels
+                            {
+                              
+                                risk_id = (dsRiskModels.Tables[0].Rows[0]["risk_id"].ToString()),
+                                risk_desc = (dsRiskModels.Tables[0].Rows[0]["risk_desc"].ToString()),
+                                dept = objGlobaldata.GetMultiDeptNameById(dsRiskModels.Tables[0].Rows[0]["dept"].ToString()),
+                                branch_id = objGlobaldata.GetMultiCompanyBranchNameById(dsRiskModels.Tables[0].Rows[0]["branch_id"].ToString()),
+                                source_id = objGlobaldata.GetDropdownitemById(dsRiskModels.Tables[0].Rows[0]["source_id"].ToString()),
+                                risk_owner = objGlobaldata.GetMultiHrEmpNameById(dsRiskModels.Tables[0].Rows[0]["risk_owner"].ToString()),
+                                risk_manager = objGlobaldata.GetMultiHrEmpNameById(dsRiskModels.Tables[0].Rows[0]["risk_manager"].ToString()),
+                                submitted_by = objGlobaldata.GetEmpHrNameById(dsRiskModels.Tables[0].Rows[0]["submitted_by"].ToString()),
+                                impact_id = objGlobaldata.GetDropdownitemById(dsRiskModels.Tables[0].Rows[0]["impact_id"].ToString()),
+                                like_id = objGlobaldata.GetDropdownitemById(dsRiskModels.Tables[0].Rows[0]["like_id"].ToString()),
+                                Location = objGlobaldata.GetDivisionLocationById(dsRiskModels.Tables[0].Rows[0]["Location"].ToString()),
+                                consequences = dsRiskModels.Tables[0].Rows[0]["consequences"].ToString(),
+                                Issue = objRiskMgmtModels.GetIssueNameById(dsRiskModels.Tables[0].Rows[0]["Issue"].ToString()),
+                                approved_by = objGlobaldata.GetEmpHrNameById(dsRiskModels.Tables[0].Rows[0]["approved_by"].ToString()),
+                                risk_refno = (dsRiskModels.Tables[0].Rows[0]["risk_refno"].ToString()),
+                                Risk_Type = dsRiskModels.Tables[0].Rows[0]["Risk_Type"].ToString(),
+
+                                apprv_status = dsRiskModels.Tables[0].Rows[0]["apprv_status"].ToString(),
+                                apprv_comment = dsRiskModels.Tables[0].Rows[0]["apprv_comment"].ToString(),
+                                approved_by_Id = (dsRiskModels.Tables[0].Rows[0]["approved_by"].ToString()),
+                            };
+                            DateTime dtValue;
+                            if (DateTime.TryParse(dsRiskModels.Tables[0].Rows[0]["evaluation_date"].ToString(), out dtValue))
+                            {
+                                objRiskMgmtModels.evaluation_date = dtValue;
+                            }
+                            if (DateTime.TryParse(dsRiskModels.Tables[0].Rows[0]["reeval_due_date"].ToString(), out dtValue))
+                            {
+                                objRiskMgmtModels.reeval_due_date = dtValue;
+                            }
+                            if (DateTime.TryParse(dsRiskModels.Tables[0].Rows[0]["approved_date"].ToString(), out dtValue))
+                            {
+                                objRiskMgmtModels.approved_date = dtValue;
+                            }
+                            if (dicRatings != null && dicRatings.Count > 0)
+                            {
+                                objRiskMgmtModels.RiskRating = dicRatings.FirstOrDefault().Key;
+                                objRiskMgmtModels.color_code = dicRatings.FirstOrDefault().Value;
+                            }
+
+                            sSqlstmt = "select mit_id,risk_id,measure,pers_resp,target_date from risk_mitigations where risk_id='" + srisk_id + "'";
+                            ViewBag.Mit = objGlobaldata.Getdetails(sSqlstmt);
+
+                            return View(objRiskMgmtModels);
+                        }
+                        else
+                        {
+                            TempData["alertdata"] = "No Data exists";
+                            return RedirectToAction("RiskList");
+                        }
                     }
 
-                    DataSet dsRiskModels = objGlobaldata.Getdetails(sSqlstmt);
+                   
 
-                    if (dsRiskModels.Tables.Count > 0 && dsRiskModels.Tables[0].Rows.Count > 0)
-                    {
-                        Dictionary<string, string> dicRatings = new Dictionary<string, string>();
-                        if (dsRiskModels.Tables[0].Rows[0]["impact_id"].ToString() != "" && dsRiskModels.Tables[0].Rows[0]["like_id"].ToString() != "")
-                        {
-                            dicRatings = objRiskMgmtModels.GetRiskRatings(dsRiskModels.Tables[0].Rows[0]["impact_id"].ToString(),
-                                dsRiskModels.Tables[0].Rows[0]["like_id"].ToString());
-                        }
-                        objRiskMgmtModels = new RiskMgmtModels
-                        {
-                            risk_id = (dsRiskModels.Tables[0].Rows[0]["risk_id"].ToString()),                
-                            risk_desc = (dsRiskModels.Tables[0].Rows[0]["risk_desc"].ToString()),
-                            dept = objGlobaldata.GetMultiDeptNameById(dsRiskModels.Tables[0].Rows[0]["dept"].ToString()),                   
-                            branch_id = objGlobaldata.GetMultiCompanyBranchNameById(dsRiskModels.Tables[0].Rows[0]["branch_id"].ToString()),
-                            source_id = objGlobaldata.GetDropdownitemById(dsRiskModels.Tables[0].Rows[0]["source_id"].ToString()),                       
-                            risk_owner = objGlobaldata.GetMultiHrEmpNameById(dsRiskModels.Tables[0].Rows[0]["risk_owner"].ToString()),
-                            risk_manager = objGlobaldata.GetMultiHrEmpNameById(dsRiskModels.Tables[0].Rows[0]["risk_manager"].ToString()),                         
-                            submitted_by = objGlobaldata.GetEmpHrNameById(dsRiskModels.Tables[0].Rows[0]["submitted_by"].ToString()),
-                            impact_id = objGlobaldata.GetDropdownitemById(dsRiskModels.Tables[0].Rows[0]["impact_id"].ToString()),
-                            like_id = objGlobaldata.GetDropdownitemById(dsRiskModels.Tables[0].Rows[0]["like_id"].ToString()),
-                            Location = objGlobaldata.GetDivisionLocationById(dsRiskModels.Tables[0].Rows[0]["Location"].ToString()),
-                            consequences = dsRiskModels.Tables[0].Rows[0]["consequences"].ToString(),                         
-                            Issue = objRiskMgmtModels.GetIssueNameById(dsRiskModels.Tables[0].Rows[0]["Issue"].ToString()),
-                            approved_by = objGlobaldata.GetEmpHrNameById(dsRiskModels.Tables[0].Rows[0]["approved_by"].ToString()),
-                            risk_refno = (dsRiskModels.Tables[0].Rows[0]["risk_refno"].ToString()),
-                            Risk_Type= dsRiskModels.Tables[0].Rows[0]["Risk_Type"].ToString()
-                        };
-                        DateTime dtValue;
-                        if (DateTime.TryParse(dsRiskModels.Tables[0].Rows[0]["evaluation_date"].ToString(), out dtValue))
-                        {
-                            objRiskMgmtModels.evaluation_date = dtValue;
-                        }
-                        if (DateTime.TryParse(dsRiskModels.Tables[0].Rows[0]["reeval_due_date"].ToString(), out dtValue))
-                        {
-                            objRiskMgmtModels.reeval_due_date = dtValue;
-                        }
-
-                        if (dicRatings != null && dicRatings.Count > 0)
-                        {
-                            objRiskMgmtModels.RiskRating = dicRatings.FirstOrDefault().Key;
-                            objRiskMgmtModels.color_code = dicRatings.FirstOrDefault().Value;
-                        }
-
-                        sSqlstmt = "select mit_id,risk_id,measure,pers_resp,target_date from risk_mitigations where risk_id='" + srisk_id + "'";
-                        ViewBag.Mit = objGlobaldata.Getdetails(sSqlstmt);
-
-                        return View(objRiskMgmtModels);
-                    }
-                else
-                {
-                    TempData["alertdata"] = "No Data exists";
-                    return RedirectToAction("RiskList");
-                }
                 }
                 else
                 {
@@ -2210,6 +2305,199 @@ namespace ISOStd.Controllers
             }
             return RedirectToAction("RiskList");
         }
+
+        [AllowAnonymous]
+        public ActionResult RiskApprovalDetails()
+        {
+            RiskMgmtModels objRiskMgmtModels = new RiskMgmtModels();
+            try
+            {
+                if (Request.QueryString["risk_id"] != null)
+                {
+
+                    string srisk_id = Request.QueryString["risk_id"];
+                    string sSqlstmt = "";
+                    string sSqlstmt1 = "select risk_id_trans from risk_register_trans where risk_id='" + srisk_id + "'";
+                    DataSet dsRiskModels1 = objGlobaldata.Getdetails(sSqlstmt1);
+                    int count = dsRiskModels1.Tables[0].Rows.Count;
+                    if (count >= 1)
+                    {
+                        sSqlstmt = "select risk_id_trans,tt.risk_id_trans,t.risk_id,t.risk_refno,t.risk_desc,t.dept,t.branch_id,t.source_id,t.risk_owner,t.risk_manager,t.submission_date,t.submitted_by,t.consequences,t.Location,tt.evaluation_date,tt.approved_by,tt.approved_date,tt.reeval_due_date,tt.impact_id,tt.like_id,t.Issue,t.Risk_Type,"
+                           + "(CASE WHEN tt.apprv_status='0' THEN 'Pending for Approval' WHEN tt.apprv_status='1' THEN 'Rejected' WHEN tt.apprv_status='2' THEN 'Approved' END) as apprv_status,tt.apprv_comment"
+                        + " from risk_register t left join  risk_register_trans tt on t.risk_id = tt.risk_id  where t.risk_id = '" + srisk_id + "' order by risk_id_trans desc limit 1";
+
+                        DataSet dsRiskModels = objGlobaldata.Getdetails(sSqlstmt);
+                        if (dsRiskModels.Tables.Count > 0 && dsRiskModels.Tables[0].Rows.Count > 0)
+                        {
+                            Dictionary<string, string> dicRatings = new Dictionary<string, string>();
+                            if (dsRiskModels.Tables[0].Rows[0]["impact_id"].ToString() != "" && dsRiskModels.Tables[0].Rows[0]["like_id"].ToString() != "")
+                            {
+                                dicRatings = objRiskMgmtModels.GetRiskRatings(dsRiskModels.Tables[0].Rows[0]["impact_id"].ToString(),
+                                    dsRiskModels.Tables[0].Rows[0]["like_id"].ToString());
+                            }
+                            objRiskMgmtModels = new RiskMgmtModels
+                            {
+                                risk_id_trans = (dsRiskModels.Tables[0].Rows[0]["risk_id_trans"].ToString()),
+                                risk_id = (dsRiskModels.Tables[0].Rows[0]["risk_id"].ToString()),
+                                risk_desc = (dsRiskModels.Tables[0].Rows[0]["risk_desc"].ToString()),
+                                dept = objGlobaldata.GetMultiDeptNameById(dsRiskModels.Tables[0].Rows[0]["dept"].ToString()),
+                                branch_id = objGlobaldata.GetMultiCompanyBranchNameById(dsRiskModels.Tables[0].Rows[0]["branch_id"].ToString()),
+                                source_id = objGlobaldata.GetDropdownitemById(dsRiskModels.Tables[0].Rows[0]["source_id"].ToString()),
+                                risk_owner = objGlobaldata.GetMultiHrEmpNameById(dsRiskModels.Tables[0].Rows[0]["risk_owner"].ToString()),
+                                risk_manager = objGlobaldata.GetMultiHrEmpNameById(dsRiskModels.Tables[0].Rows[0]["risk_manager"].ToString()),
+                                submitted_by = objGlobaldata.GetEmpHrNameById(dsRiskModels.Tables[0].Rows[0]["submitted_by"].ToString()),
+                                impact_id = objGlobaldata.GetDropdownitemById(dsRiskModels.Tables[0].Rows[0]["impact_id"].ToString()),
+                                like_id = objGlobaldata.GetDropdownitemById(dsRiskModels.Tables[0].Rows[0]["like_id"].ToString()),
+                                Location = objGlobaldata.GetDivisionLocationById(dsRiskModels.Tables[0].Rows[0]["Location"].ToString()),
+                                consequences = dsRiskModels.Tables[0].Rows[0]["consequences"].ToString(),
+                                Issue = objRiskMgmtModels.GetIssueNameById(dsRiskModels.Tables[0].Rows[0]["Issue"].ToString()),
+                                approved_by = objGlobaldata.GetEmpHrNameById(dsRiskModels.Tables[0].Rows[0]["approved_by"].ToString()),
+                                risk_refno = (dsRiskModels.Tables[0].Rows[0]["risk_refno"].ToString()),
+                                Risk_Type = dsRiskModels.Tables[0].Rows[0]["Risk_Type"].ToString(),
+
+                                apprv_status = dsRiskModels.Tables[0].Rows[0]["apprv_status"].ToString(),
+                                apprv_comment = dsRiskModels.Tables[0].Rows[0]["apprv_comment"].ToString(),
+                                approved_by_Id = (dsRiskModels.Tables[0].Rows[0]["approved_by"].ToString()),
+                            };
+                            DateTime dtValue;
+                            if (DateTime.TryParse(dsRiskModels.Tables[0].Rows[0]["evaluation_date"].ToString(), out dtValue))
+                            {
+                                objRiskMgmtModels.evaluation_date = dtValue;
+                            }
+                            if (DateTime.TryParse(dsRiskModels.Tables[0].Rows[0]["reeval_due_date"].ToString(), out dtValue))
+                            {
+                                objRiskMgmtModels.reeval_due_date = dtValue;
+                            }
+                            if (DateTime.TryParse(dsRiskModels.Tables[0].Rows[0]["approved_date"].ToString(), out dtValue))
+                            {
+                                objRiskMgmtModels.approved_date = dtValue;
+                            }
+                            if (dicRatings != null && dicRatings.Count > 0)
+                            {
+                                objRiskMgmtModels.RiskRating = dicRatings.FirstOrDefault().Key;
+                                objRiskMgmtModels.color_code = dicRatings.FirstOrDefault().Value;
+                            }
+
+                            sSqlstmt = "select mit_id,risk_id,measure,pers_resp,target_date from risk_mitigations_trans where risk_id_trans='" + objRiskMgmtModels.risk_id_trans + "'";
+                            ViewBag.Mit = objGlobaldata.Getdetails(sSqlstmt);
+
+                            return View(objRiskMgmtModels);
+                        }
+                        else
+                        {
+                            TempData["alertdata"] = "No Data exists";
+                            return RedirectToAction("RiskList");
+                        }
+                    }
+                    else
+                    {
+                        sSqlstmt = "select risk_id,risk_refno,risk_desc,dept,branch_id,source_id,risk_owner,risk_manager,submission_date,submitted_by,"
+                        + "(CASE WHEN apprv_status='0' THEN 'Pending for Approval' WHEN apprv_status='1' THEN 'Rejected' WHEN apprv_status='2' THEN 'Approved' END) as apprv_status,apprv_comment,"
+                        + "consequences,Location,evaluation_date,approved_by,approved_date,reeval_due_date,impact_id,like_id,Issue,Risk_Type from risk_register"
+                        + " where risk_id='" + srisk_id + "' ";
+
+                        DataSet dsRiskModels = objGlobaldata.Getdetails(sSqlstmt);
+                        if (dsRiskModels.Tables.Count > 0 && dsRiskModels.Tables[0].Rows.Count > 0)
+                        {
+                            Dictionary<string, string> dicRatings = new Dictionary<string, string>();
+                            if (dsRiskModels.Tables[0].Rows[0]["impact_id"].ToString() != "" && dsRiskModels.Tables[0].Rows[0]["like_id"].ToString() != "")
+                            {
+                                dicRatings = objRiskMgmtModels.GetRiskRatings(dsRiskModels.Tables[0].Rows[0]["impact_id"].ToString(),
+                                    dsRiskModels.Tables[0].Rows[0]["like_id"].ToString());
+                            }
+                            objRiskMgmtModels = new RiskMgmtModels
+                            {
+
+                                risk_id = (dsRiskModels.Tables[0].Rows[0]["risk_id"].ToString()),
+                                risk_desc = (dsRiskModels.Tables[0].Rows[0]["risk_desc"].ToString()),
+                                dept = objGlobaldata.GetMultiDeptNameById(dsRiskModels.Tables[0].Rows[0]["dept"].ToString()),
+                                branch_id = objGlobaldata.GetMultiCompanyBranchNameById(dsRiskModels.Tables[0].Rows[0]["branch_id"].ToString()),
+                                source_id = objGlobaldata.GetDropdownitemById(dsRiskModels.Tables[0].Rows[0]["source_id"].ToString()),
+                                risk_owner = objGlobaldata.GetMultiHrEmpNameById(dsRiskModels.Tables[0].Rows[0]["risk_owner"].ToString()),
+                                risk_manager = objGlobaldata.GetMultiHrEmpNameById(dsRiskModels.Tables[0].Rows[0]["risk_manager"].ToString()),
+                                submitted_by = objGlobaldata.GetEmpHrNameById(dsRiskModels.Tables[0].Rows[0]["submitted_by"].ToString()),
+                                impact_id = objGlobaldata.GetDropdownitemById(dsRiskModels.Tables[0].Rows[0]["impact_id"].ToString()),
+                                like_id = objGlobaldata.GetDropdownitemById(dsRiskModels.Tables[0].Rows[0]["like_id"].ToString()),
+                                Location = objGlobaldata.GetDivisionLocationById(dsRiskModels.Tables[0].Rows[0]["Location"].ToString()),
+                                consequences = dsRiskModels.Tables[0].Rows[0]["consequences"].ToString(),
+                                Issue = objRiskMgmtModels.GetIssueNameById(dsRiskModels.Tables[0].Rows[0]["Issue"].ToString()),
+                                approved_by = objGlobaldata.GetEmpHrNameById(dsRiskModels.Tables[0].Rows[0]["approved_by"].ToString()),
+                                risk_refno = (dsRiskModels.Tables[0].Rows[0]["risk_refno"].ToString()),
+                                Risk_Type = dsRiskModels.Tables[0].Rows[0]["Risk_Type"].ToString(),
+
+                                apprv_status = dsRiskModels.Tables[0].Rows[0]["apprv_status"].ToString(),
+                                apprv_comment = dsRiskModels.Tables[0].Rows[0]["apprv_comment"].ToString(),
+                                approved_by_Id = (dsRiskModels.Tables[0].Rows[0]["approved_by"].ToString()),
+                            };
+                            DateTime dtValue;
+                            if (DateTime.TryParse(dsRiskModels.Tables[0].Rows[0]["evaluation_date"].ToString(), out dtValue))
+                            {
+                                objRiskMgmtModels.evaluation_date = dtValue;
+                            }
+                            if (DateTime.TryParse(dsRiskModels.Tables[0].Rows[0]["reeval_due_date"].ToString(), out dtValue))
+                            {
+                                objRiskMgmtModels.reeval_due_date = dtValue;
+                            }
+                            if (DateTime.TryParse(dsRiskModels.Tables[0].Rows[0]["approved_date"].ToString(), out dtValue))
+                            {
+                                objRiskMgmtModels.approved_date = dtValue;
+                            }
+                            if (dicRatings != null && dicRatings.Count > 0)
+                            {
+                                objRiskMgmtModels.RiskRating = dicRatings.FirstOrDefault().Key;
+                                objRiskMgmtModels.color_code = dicRatings.FirstOrDefault().Value;
+                            }
+
+                            sSqlstmt = "select mit_id,risk_id,measure,pers_resp,target_date from risk_mitigations where risk_id='" + srisk_id + "'";
+                            ViewBag.Mit = objGlobaldata.Getdetails(sSqlstmt);
+
+                            return View(objRiskMgmtModels);
+                        }
+                        else
+                        {
+                            TempData["alertdata"] = "No Data exists";
+                            return RedirectToAction("RiskList");
+                        }
+                    }
+
+
+
+                }
+                else
+                {
+                    TempData["alertdata"] = "Id cannot be Null or empty";
+                    return RedirectToAction("RiskList");
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in RiskApprovalDetails: " + ex.ToString());
+                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+            }
+            return RedirectToAction("RiskList");
+        }
+
+        public ActionResult RiskApprove(RiskMgmtModels objRisk, FormCollection form)
+        {
+            try
+            {
+                if (objRisk.FunUpdateApprove(objRisk))
+                {
+                    TempData["Successdata"] = "Status updated successfully";
+                }
+                else
+                {
+                    TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in RiskApprove: " + ex.ToString());
+                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+            }
+            return RedirectToAction("Index", "Home");
+        }
+
         [AllowAnonymous]
         public ActionResult RiskHistoryList()
         {

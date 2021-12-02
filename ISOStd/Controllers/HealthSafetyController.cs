@@ -202,6 +202,7 @@ namespace ISOStd.Controllers
                     ViewBag.like_id = objGlobaldata.GetDropdownList("Risk-likelihood");
                     ViewBag.Legal = objGlobaldata.GetLawNo();
                     ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
+                    ViewBag.EvaluatedBy = objGlobaldata.GetDeptHeadbyDivisionList();
                     ViewBag.id_hazard = id_hazard;
                     ViewBag.OP = objGlobaldata.GetConstantValue("HazardOP");
                     string sSqlstmt = "select id_hazard,hazard_refno,dept,branch_id,Location,activity,hazards,consequences,"
@@ -361,7 +362,7 @@ namespace ISOStd.Controllers
                     ViewBag.Approver = objGlobaldata.GetApprover();
                     ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
                     ViewBag.Control = objGlobaldata.GetConstantValue("HazardOP");
-                    string sSqlstmt = "select id_hazard,dept,branch_id,Location,hazard_refno,impact_id,like_id,mit_evaluated_by,mit_notified_to,proposed_date,reeval_due_date from t_hazard where id_hazard='"
+                    string sSqlstmt = "select id_hazard,dept,branch_id,Location,hazard_refno,impact_id,like_id,mit_evaluated_by,mit_notified_to,proposed_date,reeval_due_date,source_id,Issue,activity_type,consequences,injury,activity,hazards,reported_date,reported_by from t_hazard where id_hazard='"
                         + id_hazard + "'";
 
                     DataSet dsRiskModels = objGlobaldata.Getdetails(sSqlstmt);
@@ -377,6 +378,21 @@ namespace ISOStd.Controllers
                             hazard_refno = (dsRiskModels.Tables[0].Rows[0]["hazard_refno"].ToString()),
                             mit_evaluated_by = (dsRiskModels.Tables[0].Rows[0]["mit_evaluated_by"].ToString()),
                             mit_notified_to = (dsRiskModels.Tables[0].Rows[0]["mit_notified_to"].ToString()),
+
+                            dept = objGlobaldata.GetMultiDeptNameById(dsRiskModels.Tables[0].Rows[0]["dept"].ToString()),
+                            branch_id = objGlobaldata.GetMultiCompanyBranchNameById(dsRiskModels.Tables[0].Rows[0]["branch_id"].ToString()),
+                            source_id = objRiskMgmtModels.GetRiskSourceNameById(dsRiskModels.Tables[0].Rows[0]["source_id"].ToString()),
+                            Location = objGlobaldata.GetDivisionLocationById(dsRiskModels.Tables[0].Rows[0]["Location"].ToString()),
+                            
+                            activity_type = objGlobaldata.GetDropdownitemById(dsRiskModels.Tables[0].Rows[0]["activity_type"].ToString()),
+                            consequences = objGlobaldata.GetDropdownitemById(dsRiskModels.Tables[0].Rows[0]["consequences"].ToString()),
+                            injury = objGlobaldata.GetDropdownitemById(dsRiskModels.Tables[0].Rows[0]["injury"].ToString()),
+                            activity = (dsRiskModels.Tables[0].Rows[0]["activity"].ToString()),
+                            hazards = (dsRiskModels.Tables[0].Rows[0]["hazards"].ToString()),
+                         
+                            reported_by = objGlobaldata.GetEmpHrNameById(dsRiskModels.Tables[0].Rows[0]["reported_by"].ToString()),
+                            
+                           
                         };
                         DateTime dtValue;
                         if (DateTime.TryParse(dsRiskModels.Tables[0].Rows[0]["proposed_date"].ToString(), out dtValue))
@@ -386,6 +402,10 @@ namespace ISOStd.Controllers
                         if (DateTime.TryParse(dsRiskModels.Tables[0].Rows[0]["reeval_due_date"].ToString(), out dtValue))
                         {
                             objRiskMgmtModels.reeval_due_date = dtValue;
+                        }
+                        if (DateTime.TryParse(dsRiskModels.Tables[0].Rows[0]["reported_date"].ToString(), out dtValue))
+                        {
+                            objRiskMgmtModels.reported_date = dtValue;
                         }
                         if (dsRiskModels.Tables[0].Rows[0]["impact_id"].ToString() == null || dsRiskModels.Tables[0].Rows[0]["impact_id"].ToString() == "")
                         {
@@ -515,6 +535,7 @@ namespace ISOStd.Controllers
                     ViewBag.like_id = objGlobaldata.GetDropdownList("Risk-likelihood");
                     ViewBag.Legal = objGlobaldata.GetLawNo();
                     ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
+                    ViewBag.EvaluatedBy = objGlobaldata.GetDeptHeadbyDivisionList();
                     ViewBag.id_hazard = id_hazard;
                     ViewBag.OP = objGlobaldata.GetConstantValue("HazardOP");
                     DateTime today_date = DateTime.Now;
@@ -748,7 +769,7 @@ namespace ISOStd.Controllers
                     ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
                     ViewBag.Control = objGlobaldata.GetConstantValue("HazardOP");
                     DateTime today_date = DateTime.Now;
-                    string sSqlstmt = "select id_hazard_trans,tt.id_hazard,t.branch_id,t.dept,t.Location,tt.hazard_refno,tt.impact_id,tt.like_id,tt.mit_evaluated_by,tt.mit_notified_to,tt.proposed_date,tt.reeval_due_date,tt.evaluation_date from t_hazard t,t_hazard_trans tt where tt.id_hazard='"
+                    string sSqlstmt = "select id_hazard_trans,tt.id_hazard,t.branch_id,t.dept,t.Location,tt.hazard_refno,tt.impact_id,tt.like_id,tt.mit_evaluated_by,tt.mit_notified_to,tt.proposed_date,tt.reeval_due_date,tt.evaluation_date,t.source_id,t.Issue,t.activity_type,t.consequences,t.injury,t.activity,t.hazards,t.reported_date,t.reported_by from t_hazard t,t_hazard_trans tt where tt.id_hazard='"
                         + id_hazard + "' and t.id_hazard = tt.id_hazard order by id_hazard_trans desc limit 1";
 
                     DataSet dsRiskModels = objGlobaldata.Getdetails(sSqlstmt);
@@ -765,9 +786,27 @@ namespace ISOStd.Controllers
                             hazard_refno = (dsRiskModels.Tables[0].Rows[0]["hazard_refno"].ToString()),
                             mit_evaluated_by = (dsRiskModels.Tables[0].Rows[0]["mit_evaluated_by"].ToString()),
                             mit_notified_to = (dsRiskModels.Tables[0].Rows[0]["mit_notified_to"].ToString()),
+
+                            dept = objGlobaldata.GetMultiDeptNameById(dsRiskModels.Tables[0].Rows[0]["dept"].ToString()),
+                            branch_id = objGlobaldata.GetMultiCompanyBranchNameById(dsRiskModels.Tables[0].Rows[0]["branch_id"].ToString()),
+                            source_id = objRiskMgmtModels.GetRiskSourceNameById(dsRiskModels.Tables[0].Rows[0]["source_id"].ToString()),
+                            Location = objGlobaldata.GetDivisionLocationById(dsRiskModels.Tables[0].Rows[0]["Location"].ToString()),
+
+                            activity_type = objGlobaldata.GetDropdownitemById(dsRiskModels.Tables[0].Rows[0]["activity_type"].ToString()),
+                            consequences = objGlobaldata.GetDropdownitemById(dsRiskModels.Tables[0].Rows[0]["consequences"].ToString()),
+                            injury = objGlobaldata.GetDropdownitemById(dsRiskModels.Tables[0].Rows[0]["injury"].ToString()),
+                            activity = (dsRiskModels.Tables[0].Rows[0]["activity"].ToString()),
+                            hazards = (dsRiskModels.Tables[0].Rows[0]["hazards"].ToString()),
+
+                            reported_by = objGlobaldata.GetEmpHrNameById(dsRiskModels.Tables[0].Rows[0]["reported_by"].ToString()),
+
                         };
                      
                         DateTime dtValue, dtEval;
+                        if (DateTime.TryParse(dsRiskModels.Tables[0].Rows[0]["reported_date"].ToString(), out dtValue))
+                        {
+                            objRiskMgmtModels.reported_date = dtValue;
+                        }
                         if (DateTime.TryParse(dsRiskModels.Tables[0].Rows[0]["proposed_date"].ToString(), out dtValue))
                         {
                             objRiskMgmtModels.proposed_date = dtValue;

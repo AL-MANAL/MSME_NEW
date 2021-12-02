@@ -65,6 +65,7 @@ namespace ISOStd.Controllers
                     objModel.department = form["department"];
                     objModel.identified_in = form["identified_in"];
                     objModel.risk_no = form["risk_no"];
+                    objModel.pers_resp = form["pers_resp"];
                     objModel.ofi_status = objModel.GetOFIStatusIdByName("Pending");
                     if (objGlobaldata.GetRiskRefByRiskId(form["risk_no"]) != null && objGlobaldata.GetRiskRefByRiskId(form["risk_no"]) != "")
                     {
@@ -1321,7 +1322,7 @@ namespace ISOStd.Controllers
                             CompanyModels objCompany = new CompanyModels();
 
                             dsOFIModels = objCompany.GetCompanyDetailsForReport(dsOFIModels);
-                            dsOFIModels = objGlobaldata.GetReportDetails(dsOFIModels, objModel.ofi_no, objGlobaldata.GetCurrentUserSession().empid, "OFI REPORT");
+                            dsOFIModels = objGlobaldata.GetReportDetails(dsOFIModels, objModel.ofi_no, objGlobaldata.GetCurrentUserSession().empid, "IO REPORT");
 
                             ViewBag.CompanyInfo = dsOFIModels;
                             //----------------- OFI Action Starts----------------

@@ -1275,7 +1275,7 @@ namespace ISOStd.Models
                                 sFieldValue = sFieldValue + ", '" + objModel.evaluation_date.ToString("yyyy/MM/dd") + "'";
                             }
                             sSqlstmt = sSqlstmt + sFields;
-                            sSqlstmt = sSqlstmt + ") values('" + objModel.risk_id + "','" + objModel.impact_id + "','" + objModel.like_id + "','" + objModel.risk_manager + "','" + objModel.risk_desc + "','" + objModel.risk_refno + "'";
+                            sSqlstmt = sSqlstmt + ") values('" + objModel.risk_id + "','" + objModel.impact_id + "','" + objModel.like_id + "','" + objModel.risk_manager + "','" + objModel.risk_desc + "','" + objModel.risk_refno + "','" + objModel.eval_notified_to + "'";
 
                             sSqlstmt = sSqlstmt + sFieldValue + ")";
                             int srisk_id_trans = 0;

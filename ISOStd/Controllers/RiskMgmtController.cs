@@ -1625,7 +1625,7 @@ namespace ISOStd.Controllers
                             objRiskMgmtModels.evaluation_date = dtValue;
                         }
 
-                        ViewBag.Approver = objGlobaldata.GetApprover();
+                        ViewBag.EvaluatedBy = objGlobaldata.GetDeptHeadbyDivisionList();
                         ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
                         //ViewBag.Approver = objGlobaldata.GetGRoleList(dsRiskModels.Tables[0].Rows[0]["branch_id"].ToString(), dsRiskModels.Tables[0].Rows[0]["dept"].ToString(), dsRiskModels.Tables[0].Rows[0]["Location"].ToString(), "Approver");
                         //ViewBag.EmpList = objGlobaldata.GetGEmpListBymulitBDL(dsRiskModels.Tables[0].Rows[0]["branch_id"].ToString(), dsRiskModels.Tables[0].Rows[0]["dept"].ToString(), dsRiskModels.Tables[0].Rows[0]["Location"].ToString());
@@ -1684,7 +1684,7 @@ namespace ISOStd.Controllers
                     string risk_id = Request.QueryString["risk_id"];
                     ViewBag.risk_id = risk_id;
                    
-                    string sSqlstmt = "select dept,branch_id,Location,risk_id,risk_refno,impact_id,like_id,risk_desc,approved_by,reeval_due_date,mit_notified_to from risk_register where risk_id='"
+                    string sSqlstmt = "select dept,branch_id,Location,risk_id,risk_refno,impact_id,like_id,risk_desc,approved_by,reeval_due_date,mit_notified_to,branch_id,dept,Location,source_id,Issue,Risk_Type,consequences,risk_owner from risk_register where risk_id='"
                         + risk_id + "'";
 
                     DataSet dsRiskModels = objGlobaldata.Getdetails(sSqlstmt);
@@ -1701,9 +1701,15 @@ namespace ISOStd.Controllers
                             approved_by = (dsRiskModels.Tables[0].Rows[0]["approved_by"].ToString()),
                             risk_refno = (dsRiskModels.Tables[0].Rows[0]["risk_refno"].ToString()),
                             mit_notified_to = (dsRiskModels.Tables[0].Rows[0]["mit_notified_to"].ToString()),
-                            branch_id = (dsRiskModels.Tables[0].Rows[0]["branch_id"].ToString()),
-                            dept = (dsRiskModels.Tables[0].Rows[0]["dept"].ToString()),
-                            Location = (dsRiskModels.Tables[0].Rows[0]["Location"].ToString()),
+                           
+                            branch_id = objGlobaldata.GetMultiCompanyBranchNameById(dsRiskModels.Tables[0].Rows[0]["branch_id"].ToString()),
+                            dept = objGlobaldata.GetMultiDeptNameById(dsRiskModels.Tables[0].Rows[0]["dept"].ToString()),
+                            Location = objGlobaldata.GetDivisionLocationById(dsRiskModels.Tables[0].Rows[0]["Location"].ToString()),
+                            source_id = objGlobaldata.GetDropdownitemById(dsRiskModels.Tables[0].Rows[0]["source_id"].ToString()),
+                            Issue = objRiskMgmtModels.GetIssueNameById(dsRiskModels.Tables[0].Rows[0]["Issue"].ToString()),
+                            Risk_Type = dsRiskModels.Tables[0].Rows[0]["Risk_Type"].ToString(),
+                            consequences = dsRiskModels.Tables[0].Rows[0]["consequences"].ToString(),
+                            risk_owner = objGlobaldata.GetMultiHrEmpNameById(dsRiskModels.Tables[0].Rows[0]["risk_owner"].ToString()),
                         };
                         DateTime dtValue;
                         if (DateTime.TryParse(dsRiskModels.Tables[0].Rows[0]["reeval_due_date"].ToString(), out dtValue))
@@ -1865,7 +1871,7 @@ namespace ISOStd.Controllers
                         };
                         //ViewBag.Approver = objGlobaldata.GetGRoleList(dsRiskModels.Tables[0].Rows[0]["branch_id"].ToString(), dsRiskModels.Tables[0].Rows[0]["dept"].ToString(), dsRiskModels.Tables[0].Rows[0]["Location"].ToString(), "Approver");
                         //ViewBag.EmpList = objGlobaldata.GetGEmpListBymulitBDL(dsRiskModels.Tables[0].Rows[0]["branch_id"].ToString(), dsRiskModels.Tables[0].Rows[0]["dept"].ToString(), dsRiskModels.Tables[0].Rows[0]["Location"].ToString());
-                        ViewBag.Approver = objGlobaldata.GetApprover();
+                        ViewBag.EvaluatedBy = objGlobaldata.GetDeptHeadbyDivisionList();
                         ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
                         DateTime dtValue;
                         if (DateTime.TryParse(dsRiskModels.Tables[0].Rows[0]["initevaluation_date"].ToString(), out dtValue))
@@ -1977,7 +1983,7 @@ namespace ISOStd.Controllers
                     ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
                     DateTime today_date = DateTime.Now;
                     string sSqlstmt = "select t.dept,t.branch_id,t.Location,risk_id_trans,tt.risk_id,tt.risk_refno,tt.impact_id," +
-                        "tt.like_id,tt.risk_desc,tt.approved_by,tt.reeval_due_date,tt.evaluation_date,tt.mit_notified_to from risk_register_trans tt,risk_register t where tt.risk_id='"
+                        "tt.like_id,tt.risk_desc,tt.approved_by,tt.reeval_due_date,tt.evaluation_date,tt.mit_notified_to,t.branch_id,t.dept,t.Location,t.source_id,t.Issue,t.Risk_Type,t.consequences,t.risk_owner from risk_register_trans tt,risk_register t where tt.risk_id='"
                         + risk_id + "' and t.risk_id = tt.risk_id order by risk_id_trans desc limit 1";
 
                     DataSet dsRiskModels = objGlobaldata.Getdetails(sSqlstmt);
@@ -1994,9 +2000,14 @@ namespace ISOStd.Controllers
                             approved_by = (dsRiskModels.Tables[0].Rows[0]["approved_by"].ToString()),
                             risk_refno = (dsRiskModels.Tables[0].Rows[0]["risk_refno"].ToString()),
                             mit_notified_to = (dsRiskModels.Tables[0].Rows[0]["mit_notified_to"].ToString()),
-                            branch_id = (dsRiskModels.Tables[0].Rows[0]["branch_id"].ToString()),
-                            dept = (dsRiskModels.Tables[0].Rows[0]["dept"].ToString()),
-                            Location = (dsRiskModels.Tables[0].Rows[0]["Location"].ToString()),
+                            branch_id = objGlobaldata.GetMultiCompanyBranchNameById(dsRiskModels.Tables[0].Rows[0]["branch_id"].ToString()),
+                            dept = objGlobaldata.GetMultiDeptNameById(dsRiskModels.Tables[0].Rows[0]["dept"].ToString()),
+                            Location = objGlobaldata.GetDivisionLocationById(dsRiskModels.Tables[0].Rows[0]["Location"].ToString()),
+                            source_id = objGlobaldata.GetDropdownitemById(dsRiskModels.Tables[0].Rows[0]["source_id"].ToString()),
+                            Issue = objRiskMgmtModels.GetIssueNameById(dsRiskModels.Tables[0].Rows[0]["Issue"].ToString()),
+                            Risk_Type = dsRiskModels.Tables[0].Rows[0]["Risk_Type"].ToString(),
+                            consequences = dsRiskModels.Tables[0].Rows[0]["consequences"].ToString(),
+                            risk_owner = objGlobaldata.GetMultiHrEmpNameById(dsRiskModels.Tables[0].Rows[0]["risk_owner"].ToString()),
                         };
 
                         DateTime dtValue, dtEval;
@@ -2595,7 +2606,8 @@ namespace ISOStd.Controllers
                    
                     sSqlstmt = "select t.risk_id,tt.risk_desc,t.dept,t.branch_id,t.source_id,t.risk_owner,t.risk_manager,t.submission_date,"
                     +"t.submitted_by,t.consequences,t.Location,tt.evaluation_date,tt.approved_by,tt.approved_date,tt.reeval_due_date,"
-                    +" tt.impact_id,tt.like_id,t.Issue from risk_register t, risk_register_trans tt where t.risk_id = tt.risk_id"
+                    + "(CASE WHEN tt.apprv_status='0' THEN 'Pending for Approval' WHEN tt.apprv_status='1' THEN 'Rejected' WHEN tt.apprv_status='2' THEN 'Approved' END) as apprv_status,tt.apprv_comment,"
+                    + " tt.impact_id,tt.like_id,t.Issue from risk_register t, risk_register_trans tt where t.risk_id = tt.risk_id"
                     +" and risk_id_trans = '"+ srisk_id_trans + "'";
 
                     DataSet dsRiskModels = objGlobaldata.Getdetails(sSqlstmt);
@@ -2624,6 +2636,9 @@ namespace ISOStd.Controllers
                             consequences = dsRiskModels.Tables[0].Rows[0]["consequences"].ToString(),
                             Issue = objRiskMgmtModels.GetIssueNameById(dsRiskModels.Tables[0].Rows[0]["Issue"].ToString()),
                             approved_by = objGlobaldata.GetEmpHrNameById(dsRiskModels.Tables[0].Rows[0]["approved_by"].ToString()),
+                           
+                            apprv_status = dsRiskModels.Tables[0].Rows[0]["apprv_status"].ToString(),
+                            apprv_comment = dsRiskModels.Tables[0].Rows[0]["apprv_comment"].ToString(),
                         };
                         DateTime dtValue;
                         if (DateTime.TryParse(dsRiskModels.Tables[0].Rows[0]["evaluation_date"].ToString(), out dtValue))
@@ -2634,7 +2649,10 @@ namespace ISOStd.Controllers
                         {
                             objRiskMgmtModels.reeval_due_date = dtValue;
                         }
-
+                        if (DateTime.TryParse(dsRiskModels.Tables[0].Rows[0]["approved_date"].ToString(), out dtValue))
+                        {
+                            objRiskMgmtModels.approved_date = dtValue;
+                        }
                         if (dicRatings != null && dicRatings.Count > 0)
                         {
                             objRiskMgmtModels.RiskRating = dicRatings.FirstOrDefault().Key;

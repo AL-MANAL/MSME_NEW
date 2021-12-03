@@ -355,15 +355,16 @@ namespace ISOStd.Models
         [Display(Name = "NC qty")]
         public string nc_qty { get; set; }
 
-        
+        [Display(Name = "Impact in detail")]
+        public string Impact_detail { get; set; }
 
 
         //NC
         internal bool FunAddNC(NCModels objModels, NCModelsList objRelatedList)
         {
             try
-            {             
-                
+            {
+                string stime = DateTime.Now.ToString("HH':'mm':'ss");
                 string sFields = "", sFieldValue = "";
                 string sdivision = objGlobaldata.GetCurrentUserSession().division;
                 int issuecount = 0;
@@ -386,12 +387,12 @@ namespace ISOStd.Models
                 }
                 string sSqlstmt = "insert into t_nc ( nc_category, nc_description, nc_activity, nc_performed, nc_pnc, nc_upload,"
                     + "nc_impact, nc_risk, risklevel, nc_reportedby, nc_notifiedto, nc_division, department,location,logged_by,nc_issueto,nc_audit,audit_no,division,nc_raise_dueto,nc_issuedtocount"
-                    + ",oa_no,model_code,part_name,stage,nc_resp_pers,supplier_name,supplier_dc,dc_po,batch_qty,nc_qty";
+                    + ",oa_no,model_code,part_name,stage,nc_resp_pers,supplier_name,supplier_dc,dc_po,batch_qty,nc_qty,Impact_detail";
 
                 if (objModels.nc_reported_date != null && objModels.nc_reported_date > Convert.ToDateTime("01/01/0001"))
                 {
                     sFields = sFields + ", nc_reported_date";
-                    sFieldValue = sFieldValue + ", '" + objModels.nc_reported_date.ToString("yyyy/MM/dd") + "'";
+                    sFieldValue = sFieldValue + ", '" + objModels.nc_reported_date.ToString("yyyy/MM/dd")+ " "+ stime + "'";
                 }
                 if (objModels.nc_detected_date != null && objModels.nc_detected_date > Convert.ToDateTime("01/01/0001"))
                 {
@@ -404,7 +405,7 @@ namespace ISOStd.Models
                 + "','" + objModels.nc_notifiedto + "','" + objModels.nc_division + "','" + objModels.department + "','" + objModels.location
                 + "','" + objGlobaldata.GetCurrentUserSession().empid + "','" + objModels.nc_issueto + "','" + objModels.nc_audit + "','" + objModels.audit_no
                 + "','" + sdivision + "','" + objModels.nc_raise_dueto + "','" + issuecount + "',"
-                + "'" + oa_no + "','" + model_code + "','" + part_name + "','" + stage + "','" + nc_resp_pers + "','" + supplier_name + "','" + supplier_dc + "','" + dc_po + "','" + batch_qty + "','" + nc_qty + "'";
+                + "'" + oa_no + "','" + model_code + "','" + part_name + "','" + stage + "','" + nc_resp_pers + "','" + supplier_name + "','" + supplier_dc + "','" + dc_po + "','" + batch_qty + "','" + nc_qty + "','" + Impact_detail + "'";
 
                 sSqlstmt = sSqlstmt + sFieldValue + ")";
 
@@ -522,10 +523,10 @@ namespace ISOStd.Models
                         + "<tr><td colspan=3><b>NC Category:<b></td> <td colspan=3>" + objGlobaldata.GetDropdownitemById(dsNCList.Tables[0].Rows[0]["nc_category"].ToString()) + "</td></tr>"
                        + "<tr><td colspan=3><b>NC Description:<b></td> <td colspan=3>" + dsNCList.Tables[0].Rows[0]["nc_description"].ToString() + "</td></tr>"
 
-                       + "<tr><td colspan=3><b>Reported Date:<b></td> <td colspan=3>" + Convert.ToDateTime(dsNCList.Tables[0].Rows[0]["nc_reported_date"].ToString()).ToString("dd/MM/yyyy")
+                       + "<tr><td colspan=3><b>Reported Date:<b></td> <td colspan=3>" + Convert.ToDateTime(dsNCList.Tables[0].Rows[0]["nc_reported_date"].ToString()).ToString("dd/MM/yyyy hh:mm:ss")
                        + "</td></tr>"
                     + "<tr><td colspan=3><b>NC Activity:<b></td> <td colspan=3>" +(dsNCList.Tables[0].Rows[0]["nc_activity"].ToString()) + "</td></tr>"
-                    + "<tr><td colspan=3><b>NC Risk:<b></td> <td colspan=3>" + (dsNCList.Tables[0].Rows[0]["nc_risk"].ToString()) + "</td></tr>";
+                    + "<tr><td colspan=3><b>RISK DUE TO NC :<b></td> <td colspan=3>" + (dsNCList.Tables[0].Rows[0]["nc_risk"].ToString()) + "</td></tr>";
 
                     if (File.Exists(aAttachment))
                     {
@@ -570,17 +571,17 @@ namespace ISOStd.Models
                 //    sdivision = string.Join(",", uniques);
                 //    sdivision = sdivision.Trim();
                 //}
-
+                string stime = DateTime.Now.ToString("HH':'mm':'ss");
                 string sSqlstmt = "update t_nc set  nc_category='" + objModels.nc_category + "', " + "nc_description='" + objModels.nc_description + "', nc_activity='" + objModels.nc_activity
                      + "', nc_performed='" + objModels.nc_performed + "', nc_pnc='" + objModels.nc_pnc + "', nc_upload='" + objModels.nc_upload + "', nc_impact='" + objModels.nc_impact
                      + "', nc_risk='" + objModels.nc_risk + "', risklevel='" + objModels.risklevel + "', nc_reportedby='" + objModels.nc_reportedby + "', nc_notifiedto='" + objModels.nc_notifiedto
                      + "', nc_division='" + objModels.nc_division + "', department='" + objModels.department + "', location='" + objModels.location/* + "', nc_issueto='" + objModels.nc_issueto*/
                      + "', nc_audit='" + objModels.nc_audit + "', audit_no='" + objModels.audit_no + "', nc_raise_dueto='" + objModels.nc_raise_dueto + "'"
-                     + ", oa_no='" + objModels.oa_no + "', model_code='" + objModels.model_code + "', part_name='" + objModels.part_name + "', stage='" + objModels.stage + "', nc_resp_pers='" + objModels.nc_resp_pers + "', supplier_name='" + objModels.supplier_name + "', supplier_dc='" + objModels.supplier_dc + "', dc_po='" + objModels.dc_po + "', batch_qty='" + objModels.batch_qty + "', nc_qty='" + objModels.nc_qty + "'";
+                     + ", oa_no='" + objModels.oa_no + "', model_code='" + objModels.model_code + "', part_name='" + objModels.part_name + "', stage='" + objModels.stage + "', nc_resp_pers='" + objModels.nc_resp_pers + "', supplier_name='" + objModels.supplier_name + "', supplier_dc='" + objModels.supplier_dc + "', dc_po='" + objModels.dc_po + "', batch_qty='" + objModels.batch_qty + "', nc_qty='" + objModels.nc_qty + "', Impact_detail='" + objModels.Impact_detail + "'";
 
                 if (objModels.nc_reported_date != null && objModels.nc_reported_date > Convert.ToDateTime("01/01/0001"))
                 {
-                    sSqlstmt = sSqlstmt + ", nc_reported_date ='" + objModels.nc_reported_date.ToString("yyyy/MM/dd") + "'";
+                    sSqlstmt = sSqlstmt + ", nc_reported_date ='" + objModels.nc_reported_date.ToString("yyyy/MM/dd")+ " " + stime + "'";
                 }
 
                 if (objModels.nc_detected_date != null && objModels.nc_detected_date > Convert.ToDateTime("01/01/0001"))
@@ -880,7 +881,7 @@ namespace ISOStd.Models
                         + "<tr><td colspan=3><b>NC Detected Date:<b></td> <td colspan=3>" + Convert.ToDateTime(dsNCList.Tables[0].Rows[0]["nc_detected_date"].ToString()).ToString("dd/MM/yyyy")
                         + "</td></tr>"
                         + "<tr><td colspan=3><b>NC Activity:<b></td> <td colspan=3>" + (dsNCList.Tables[0].Rows[0]["nc_activity"].ToString()) + "</td></tr>"
-                        + "<tr><td colspan=3><b>NC Risk:<b></td> <td colspan=3>" + (dsNCList.Tables[0].Rows[0]["nc_risk"].ToString()) + "</td></tr>"
+                        + "<tr><td colspan=3><b>RISK DUE TO NC :<b></td> <td colspan=3>" + (dsNCList.Tables[0].Rows[0]["nc_risk"].ToString()) + "</td></tr>"
                         + "<tr><td colspan=3><b>Target date to complete the Root Cause Analysis:<b></td> <td colspan=3>" + Convert.ToDateTime(dsNCList.Tables[0].Rows[0]["team_targetdate"].ToString()).ToString("dd/MM/yyyy")
                         + "</td></tr>";
 

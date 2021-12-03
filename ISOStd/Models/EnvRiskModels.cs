@@ -7,6 +7,8 @@ using System.ComponentModel.DataAnnotations;
 using ISOStd.Models;
 using System.Web.Mvc;
 using MySql.Data.MySqlClient;
+using System.Text.RegularExpressions;
+using System.IO;
 
 namespace ISOStd.Models
 {
@@ -273,12 +275,110 @@ namespace ISOStd.Models
                         env_refno = dsData.Tables[0].Rows[0]["ReportNO"].ToString();
                     }
                     string sql1 = "update t_environment_risk set env_refno='" + env_refno + "' where id_env_risk='" + id_env_risk + "'";
-                    return (objGlobaldata.ExecuteQuery(sql1));
+                    objGlobaldata.ExecuteQuery(sql1);
+                    return SendEnvRiskmail(id_env_risk, "Environmental Risk Assessment Reporting");
                 }
             }
             catch (Exception ex)
             {
                 objGlobaldata.AddFunctionalLog("Exception in FunAddHazard: " + ex.ToString());
+            }
+            return false;
+        }
+
+        internal bool SendEnvRiskmail(int id_env_risk, string sMessage = "")
+        {
+            RiskMgmtModels objRisk = new RiskMgmtModels();
+            try
+            {
+                string sType = "email";
+
+                string sSqlstmt = "select env_refno,branch_id,dept,Location,source_id,Issue,impact,area_affected,activity,product,aspects,reported_date,reported_by,notified_to,activity_type"
+                + " from t_environment_risk where id_env_risk='" + id_env_risk + "'";
+
+                DataSet dsData = objGlobaldata.Getdetails(sSqlstmt);
+                KPIModels objType = new KPIModels();
+
+                if (dsData.Tables.Count > 0 && dsData.Tables[0].Rows.Count > 0)
+                {
+                    //objGlobalData.AddFunctionalLog("Step");
+                    //AddFunctionalLog("Step");
+                    string sName, sToEmailIds, sCCEmailIds, sHeader, sInformation = "", sTitle = "", sSubject = "", sContent = "", aAttachment = "", BccEmailIds = "";
+
+                    //using streamreader for reading my htmltemplate 
+                    //Form the Email Subject and Body content
+                    DataSet dsEmailXML = new DataSet();
+                    dsEmailXML.ReadXml(HttpContext.Current.Server.MapPath("~/EmailTemplates.xml"));
+
+                    if (sType != "" && dsEmailXML.Tables.Count > 0 && dsEmailXML.Tables[sType] != null && dsEmailXML.Tables[sType].Rows.Count > 0)
+                    {
+                        sSubject = dsEmailXML.Tables[sType].Rows[0]["subject"].ToString();
+                    }
+
+                    using (StreamReader reader = new StreamReader(HttpContext.Current.Server.MapPath("~/Views/EmailTemplate/EmailTemplate.html")))
+                    {
+                        sContent = reader.ReadToEnd();
+                    }
+
+                    //sName = objGlobaldata.GetMultiHrEmpNameById(dsData.Tables[0].Rows[0]["notified_to"].ToString());
+                    sToEmailIds = objGlobaldata.GetMultiHrEmpEmailIdById(dsData.Tables[0].Rows[0]["notified_to"].ToString());
+                    sCCEmailIds = objGlobaldata.GetMultiHrEmpEmailIdById(dsData.Tables[0].Rows[0]["reported_by"].ToString());
+
+                    string reported_date = "";
+                    if (dsData.Tables[0].Rows[0]["reported_date"].ToString() != null && Convert.ToDateTime(dsData.Tables[0].Rows[0]["reported_date"].ToString()) > Convert.ToDateTime("01/01/0001"))
+                    {
+                        reported_date = Convert.ToDateTime(dsData.Tables[0].Rows[0]["reported_date"].ToString()).ToString("yyyy-MM-dd");
+                    }
+
+                    sHeader = "<tr><td colspan=3><b>Ref No:<b></td> <td colspan=3>" + (dsData.Tables[0].Rows[0]["env_refno"].ToString()) + "</td></tr>"
+                     + "<tr><td colspan=3><b>Division:<b></td> <td colspan=3>"
+                      + objGlobaldata.GetMultiCompanyBranchNameById(dsData.Tables[0].Rows[0]["branch_id"].ToString()) + "</td></tr>"
+                      + "<tr><td colspan=3><b>Department:<b></td> <td colspan=3>" + objGlobaldata.GetMultiDeptNameById(dsData.Tables[0].Rows[0]["dept"].ToString()) + "</td></tr>"
+                      + "<tr><td colspan=3><b>Location where activity performed:<b></td> <td colspan=3>" + objGlobaldata.GetDivisionLocationById(dsData.Tables[0].Rows[0]["Location"].ToString()) + "</td></tr>"
+                       + "<tr><td colspan=3><b>Source of the Environmental Aspect:<b></td> <td colspan=3>" + objGlobaldata.GetDropdownitemById(dsData.Tables[0].Rows[0]["source_id"].ToString()) + "</td></tr>"
+
+                    + "<tr><td colspan=3><b>Risk due to:<b></td> <td colspan=3>" + objRisk.GetIssueNameById(dsData.Tables[0].Rows[0]["Issue"].ToString()) + "</td></tr>"
+
+                    + "<tr><td colspan=3><b>Environmental Impact:<b></td> <td colspan=3>" + objGlobaldata.GetDropdownitemById(dsData.Tables[0].Rows[0]["impact"].ToString()) + "</td></tr>"
+
+                    + "<tr><td colspan=3><b>Area affected:<b></td> <td colspan=3>" + (dsData.Tables[0].Rows[0]["area_affected"].ToString()) + "</td></tr>"
+
+                    + "<tr><td colspan=3><b>Activity:<b></td> <td colspan=3>" + (dsData.Tables[0].Rows[0]["activity"].ToString()) + "</td></tr>"
+
+                    + "<tr><td colspan=3><b>Products/machines associated:<b></td> <td colspan=3>" + (dsData.Tables[0].Rows[0]["product"].ToString()) + "</td></tr>"
+
+                    + "<tr><td colspan=3><b>E.Aspects Identified:<b></td> <td colspan=3>" + (dsData.Tables[0].Rows[0]["aspects"].ToString()) + "</td></tr>"
+
+                     + "<tr><td colspan=3><b>Reported Date:<b></td> <td colspan=3>" + reported_date + "</td></tr>"
+
+                      + "<tr><td colspan=3><b>Reported By:<b></td> <td colspan=3>" + objGlobaldata.GetMultiHrEmpNameById(dsData.Tables[0].Rows[0]["reported_by"].ToString()) + "</td></tr>"
+
+                    + "<tr><td colspan=3><b>Activity type:<b></td> <td colspan=3>" + objGlobaldata.GetDropdownitemById(dsData.Tables[0].Rows[0]["activity_type"].ToString()) + "</td></tr>";
+
+
+                    sContent = sContent.Replace("{FromMsg}", "");
+                    //sContent = sContent.Replace("{UserName}", sName);
+                    sContent = sContent.Replace("{Title}", "Environmental Risk Assessment");
+                    sContent = sContent.Replace("{content}", sHeader + sInformation);
+                    sContent = sContent.Replace("{message}", "");
+                    sContent = sContent.Replace("{extramessage}", "");
+
+                    sToEmailIds = Regex.Replace(sToEmailIds, ",+", ",");
+                    sToEmailIds = sToEmailIds.Trim();
+                    sToEmailIds = sToEmailIds.TrimEnd(',');
+                    sToEmailIds = sToEmailIds.TrimStart(',');
+
+                    sCCEmailIds = Regex.Replace(sCCEmailIds, ",+", ",");
+                    sCCEmailIds = sCCEmailIds.Trim();
+                    sCCEmailIds = sCCEmailIds.TrimEnd(',');
+                    sCCEmailIds = sCCEmailIds.TrimStart(',');
+
+                    return objGlobaldata.Sendmail(sToEmailIds, sSubject + sMessage, sContent, aAttachment, sCCEmailIds, "");
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in SendEnvRiskmail: " + ex.ToString());
             }
             return false;
         }
@@ -297,7 +397,7 @@ namespace ISOStd.Models
 
                 if (objGlobaldata.ExecuteQuery(sSqlstmt))
                 {
-                    return true;
+                    return SendEnvInitialRiskEvalmail(id_env_risk, "Initial Environmental Risk Assessment Risk Evaluation") ;
                 }
 
             }
@@ -308,6 +408,114 @@ namespace ISOStd.Models
 
             return false;
         }
+
+        internal bool SendEnvInitialRiskEvalmail(string id_env_risk, string sMessage = "")
+        {
+            EnvRiskModels objModels = new EnvRiskModels();
+            try
+            {
+                string sType = "email";
+
+                string sSqlstmt = "select env_refno,impact,further_consequences,impact_id,like_id,legal,legal_voilation,evaluated_by,eval_notified_to,evaluation_date"
+                + " from t_environment_risk where id_env_risk='" + id_env_risk + "'";
+
+                DataSet dsData = objGlobaldata.Getdetails(sSqlstmt);
+                KPIModels objType = new KPIModels();
+
+                if (dsData.Tables.Count > 0 && dsData.Tables[0].Rows.Count > 0)
+                {
+                    //objGlobalData.AddFunctionalLog("Step");
+                    //AddFunctionalLog("Step");
+                    string sName, sToEmailIds, sCCEmailIds, sHeader, sInformation = "", sTitle = "", sSubject = "", sContent = "", aAttachment = "", BccEmailIds = "";
+
+                    //using streamreader for reading my htmltemplate 
+                    //Form the Email Subject and Body content
+                    DataSet dsEmailXML = new DataSet();
+                    dsEmailXML.ReadXml(HttpContext.Current.Server.MapPath("~/EmailTemplates.xml"));
+
+                    if (sType != "" && dsEmailXML.Tables.Count > 0 && dsEmailXML.Tables[sType] != null && dsEmailXML.Tables[sType].Rows.Count > 0)
+                    {
+                        sSubject = dsEmailXML.Tables[sType].Rows[0]["subject"].ToString();
+                    }
+
+                    using (StreamReader reader = new StreamReader(HttpContext.Current.Server.MapPath("~/Views/EmailTemplate/EmailTemplate.html")))
+                    {
+                        sContent = reader.ReadToEnd();
+                    }
+
+                    //sName = objGlobaldata.GetMultiHrEmpNameById(dsData.Tables[0].Rows[0]["notified_to"].ToString());
+                    sToEmailIds = objGlobaldata.GetMultiHrEmpEmailIdById(dsData.Tables[0].Rows[0]["eval_notified_to"].ToString());
+                    sCCEmailIds = objGlobaldata.GetMultiHrEmpEmailIdById(dsData.Tables[0].Rows[0]["evaluated_by"].ToString());
+
+                    string evaluation_date = "";
+                    if (dsData.Tables[0].Rows[0]["evaluation_date"].ToString() != null && Convert.ToDateTime(dsData.Tables[0].Rows[0]["evaluation_date"].ToString()) > Convert.ToDateTime("01/01/0001"))
+                    {
+                        evaluation_date = Convert.ToDateTime(dsData.Tables[0].Rows[0]["evaluation_date"].ToString()).ToString("yyyy-MM-dd");
+                    }
+
+
+                    Dictionary<string, string> dicRatings = new Dictionary<string, string>();
+                    if (dsData.Tables[0].Rows[0]["impact_id"].ToString() != "" && dsData.Tables[0].Rows[0]["like_id"].ToString() != "")
+                    {
+                        dicRatings = objModels.GetRiskRatings(dsData.Tables[0].Rows[0]["impact_id"].ToString(),
+                            dsData.Tables[0].Rows[0]["like_id"].ToString());
+                    }
+                    if (dicRatings != null && dicRatings.Count > 0)
+                    {
+                        objModels.RiskRating = dicRatings.FirstOrDefault().Key;
+
+                    }
+
+                    sHeader = "<tr><td colspan=3><b>Ref No:<b></td> <td colspan=3>" + (dsData.Tables[0].Rows[0]["env_refno"].ToString()) + "</td></tr>"
+
+                    + "<tr><td colspan=3><b>Environmental Impact:<b></td> <td colspan=3>" + objGlobaldata.GetDropdownitemById(dsData.Tables[0].Rows[0]["impact"].ToString()) + "</td></tr>"
+
+                     + "<tr><td colspan=3><b>Further consequences identified:<b></td> <td colspan=3>" + (dsData.Tables[0].Rows[0]["further_consequences"].ToString()) + "</td></tr>"
+
+                     + "<tr><td colspan=3><b>Severity (Extent of Impact):<b></td> <td colspan=3>" + objGlobaldata.GetDropdownitemById(dsData.Tables[0].Rows[0]["impact_id"].ToString()) + "</td></tr>"
+
+                      + "<tr><td colspan=3><b>Likelihood of occurrence:<b></td> <td colspan=3>" + objGlobaldata.GetDropdownitemById(dsData.Tables[0].Rows[0]["like_id"].ToString()) + "</td></tr>"
+
+                       + "<tr><td colspan=3><b>Risk Rating:<b></td> <td colspan=3>" + objModels.RiskRating + "</td></tr>"
+
+                       + "<tr><td colspan=3><b>Applicable legal requirement(s):<b></td> <td colspan=3>" + objGlobaldata.GetLawNoById(dsData.Tables[0].Rows[0]["legal"].ToString()) + "</td></tr>"
+
+                       + "<tr><td colspan=3><b>Legal violation, if any:<b></td> <td colspan=3>" + (dsData.Tables[0].Rows[0]["legal_voilation"].ToString()) + "</td></tr>"
+
+                        + "<tr><td colspan=3><b>Evaluated By:<b></td> <td colspan=3>" + objGlobaldata.GetMultiHrEmpNameById(dsData.Tables[0].Rows[0]["evaluated_by"].ToString()) + "</td></tr>"
+
+                    + "<tr><td colspan=3><b>Evaluation  Date:<b></td> <td colspan=3>" + evaluation_date + "</td></tr>";
+
+
+
+                    sContent = sContent.Replace("{FromMsg}", "");
+                    //sContent = sContent.Replace("{UserName}", sName);
+                    sContent = sContent.Replace("{Title}", "Environmental Risk Assessment");
+                    sContent = sContent.Replace("{content}", sHeader + sInformation);
+                    sContent = sContent.Replace("{message}", "");
+                    sContent = sContent.Replace("{extramessage}", "");
+
+                    sToEmailIds = Regex.Replace(sToEmailIds, ",+", ",");
+                    sToEmailIds = sToEmailIds.Trim();
+                    sToEmailIds = sToEmailIds.TrimEnd(',');
+                    sToEmailIds = sToEmailIds.TrimStart(',');
+
+                    sCCEmailIds = Regex.Replace(sCCEmailIds, ",+", ",");
+                    sCCEmailIds = sCCEmailIds.Trim();
+                    sCCEmailIds = sCCEmailIds.TrimEnd(',');
+                    sCCEmailIds = sCCEmailIds.TrimStart(',');
+
+                    return objGlobaldata.Sendmail(sToEmailIds, sSubject + sMessage, sContent, aAttachment, sCCEmailIds, "");
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in SendEnvInitialRiskEvalmail: " + ex.ToString());
+            }
+            return false;
+        }
+
+
 
         internal bool FunUpdateRiskMitigation(EnvRiskModels objModel, EnvRiskModelsList objRiskList)
         {
@@ -331,7 +539,7 @@ namespace ISOStd.Models
                         objRiskList.lstHazard[0].id_env_risk = id_env_risk.ToString();
                         FunAddMitigationList(objRiskList);
                     }
-                    return true;
+                    return SendEnvMitigationmail(id_env_risk, " Environmental Risk Assessment Risk Mitigation Measures");
                 }
 
             }
@@ -341,6 +549,162 @@ namespace ISOStd.Models
             }
             return false;
         }
+
+        internal bool SendEnvMitigationmail(string id_env_risk, string sMessage = "")
+        {
+            EnvRiskModels objModels = new EnvRiskModels();
+            try
+            {
+                string sType = "email";
+
+                string sSqlstmt = "select env_refno,branch_id,dept,Location,source_id,Issue,impact,area_affected,activity,product,aspects,reported_date,reported_by,activity_type,"
+                +"impact_id,like_id,mit_evaluated_by,proposed_date,reeval_due_date,mit_notified_to from t_environment_risk where id_env_risk = '"+ id_env_risk + "'";
+
+                DataSet dsData = objGlobaldata.Getdetails(sSqlstmt);
+                KPIModels objType = new KPIModels();
+
+                if (dsData.Tables.Count > 0 && dsData.Tables[0].Rows.Count > 0)
+                {
+                    //objGlobalData.AddFunctionalLog("Step");
+                    //AddFunctionalLog("Step");
+                    string sName, sToEmailIds, sCCEmailIds, sHeader, sInformation = "", sTitle = "", sSubject = "", sContent = "", aAttachment = "", BccEmailIds = "";
+
+                    //using streamreader for reading my htmltemplate 
+                    //Form the Email Subject and Body content
+                    DataSet dsEmailXML = new DataSet();
+                    dsEmailXML.ReadXml(HttpContext.Current.Server.MapPath("~/EmailTemplates.xml"));
+
+                    if (sType != "" && dsEmailXML.Tables.Count > 0 && dsEmailXML.Tables[sType] != null && dsEmailXML.Tables[sType].Rows.Count > 0)
+                    {
+                        sSubject = dsEmailXML.Tables[sType].Rows[0]["subject"].ToString();
+                    }
+
+                    using (StreamReader reader = new StreamReader(HttpContext.Current.Server.MapPath("~/Views/EmailTemplate/EmailTemplate.html")))
+                    {
+                        sContent = reader.ReadToEnd();
+                    }
+
+                    //sName = objGlobaldata.GetMultiHrEmpNameById(dsData.Tables[0].Rows[0]["notified_to"].ToString());
+                    sToEmailIds = objGlobaldata.GetMultiHrEmpEmailIdById(dsData.Tables[0].Rows[0]["mit_notified_to"].ToString());
+                    sCCEmailIds = objGlobaldata.GetMultiHrEmpEmailIdById(dsData.Tables[0].Rows[0]["mit_evaluated_by"].ToString());
+
+                    Dictionary<string, string> dicRatings = new Dictionary<string, string>();
+                    if (dsData.Tables[0].Rows[0]["impact_id"].ToString() != "" && dsData.Tables[0].Rows[0]["like_id"].ToString() != "")
+                    {
+                        dicRatings = objModels.GetRiskRatings(dsData.Tables[0].Rows[0]["impact_id"].ToString(),
+                            dsData.Tables[0].Rows[0]["like_id"].ToString());
+                    }
+                    if (dicRatings != null && dicRatings.Count > 0)
+                    {
+                        objModels.RiskRating = dicRatings.FirstOrDefault().Key;
+
+                    }
+
+                    string proposed_date = "", reeval_due_date = "";
+                    if (dsData.Tables[0].Rows[0]["proposed_date"].ToString() != null && Convert.ToDateTime(dsData.Tables[0].Rows[0]["proposed_date"].ToString()) > Convert.ToDateTime("01/01/0001"))
+                    {
+                        proposed_date = Convert.ToDateTime(dsData.Tables[0].Rows[0]["proposed_date"].ToString()).ToString("yyyy-MM-dd");
+                    }
+                    if (dsData.Tables[0].Rows[0]["reeval_due_date"].ToString() != null && Convert.ToDateTime(dsData.Tables[0].Rows[0]["reeval_due_date"].ToString()) > Convert.ToDateTime("01/01/0001"))
+                    {
+                        reeval_due_date = Convert.ToDateTime(dsData.Tables[0].Rows[0]["reeval_due_date"].ToString()).ToString("yyyy-MM-dd");
+                    }
+                    sHeader = "<tr><td colspan=3><b>Ref No:<b></td> <td colspan=3>" + (dsData.Tables[0].Rows[0]["env_refno"].ToString()) + "</td></tr>"
+
+                  + "<tr><td colspan=3><b>Environmental Impact:<b></td> <td colspan=3>" + objGlobaldata.GetDropdownitemById(dsData.Tables[0].Rows[0]["impact"].ToString()) + "</td></tr>"
+
+                      + "<tr><td colspan=3><b>Severity:<b></td> <td colspan=3>"
+                      + objGlobaldata.GetDropdownitemById(dsData.Tables[0].Rows[0]["impact_id"].ToString()) + "</td></tr>"
+
+                      + "<tr><td colspan=3><b>Probability:<b></td> <td colspan=3>" + objGlobaldata.GetDropdownitemById(dsData.Tables[0].Rows[0]["like_id"].ToString()) + "</td></tr>"
+
+                      + "<tr><td colspan=3><b>Risk Rating:<b></td> <td colspan=3>" + objModels.RiskRating + "</td></tr>"
+
+                      + "<tr><td colspan=3><b>Risk evaluated by:<b></td> <td colspan=3>" + objGlobaldata.GetMultiHrEmpNameById(dsData.Tables[0].Rows[0]["mit_evaluated_by"].ToString()) + "</td></tr>"
+
+                      + "<tr><td colspan=3><b>Proposed Date:<b></td> <td colspan=3>" + proposed_date + "</td></tr>"
+
+
+                    + "<tr><td colspan=3><b>Risk Reevaluation Due Date:<b></td> <td colspan=3>" + reeval_due_date + "</td></tr>";
+
+
+                    sSqlstmt = "select cnt_type,cnt_desc,pers_resp,target_date from t_environment_risk_mitigations where id_env_risk = '" + id_env_risk + "'";
+
+                    DataSet dsItems = new DataSet();
+                    dsItems = objGlobaldata.Getdetails(sSqlstmt);
+
+                    if (dsItems.Tables.Count > 0 && dsItems.Tables[0].Rows.Count > 0)
+                    {
+                        sInformation = "<br><tr> "
+                            + "<td colspan=8><label><b>Mitigation Measures</b></label> </td> </tr>"
+                            + "<tr style='background-color: #4cc4dd; width: 100%; color: white; padding-left: 5px;'>"
+                            + "<th>Sl. No.</th>"
+                            + "<th style='width:300px'>Control Type</th>"
+                              + "<th style='width:300px'>Control Description</th>"
+                            + "<th style='width:300px'>Person Responsible</th>"
+                            + "<th style='width:300px'>Target Date</th>"
+                            + "</tr>";
+
+
+                        for (int i = 0; i < dsItems.Tables[0].Rows.Count; i++)
+                        {
+
+                            string target_date = "";
+                            if (dsItems.Tables[0].Rows[i]["target_date"].ToString() != null && Convert.ToDateTime(dsItems.Tables[0].Rows[i]["target_date"].ToString()) > Convert.ToDateTime("01/01/0001"))
+                            {
+                                target_date = Convert.ToDateTime(dsItems.Tables[0].Rows[i]["target_date"].ToString()).ToString("yyyy-MM-dd");
+                            }
+
+                            sInformation = sInformation + "<tr>"
+                                + " <td>" + (i + 1) + "</td>"
+                                + " <td style='width:300px'>" + (dsItems.Tables[0].Rows[i]["cnt_type"].ToString()) + "</td>"
+                                + " <td style='width:300px'>" + (dsItems.Tables[0].Rows[i]["cnt_desc"].ToString()) + "</td>"
+                                 + " <td style='width:300px'>" + objGlobaldata.GetMultiHrEmpNameById(dsItems.Tables[0].Rows[i]["pers_resp"].ToString()) + "</td>"
+                                 + " <td style='width:300px'>" + target_date + "</td>"
+                                 + " </tr>";
+                            //sCCEmailIds = sCCEmailIds + "," + objGlobalData.GetHrEmpEmailIdById(dsItems.Tables[0].Rows[i]["PersonResponsible"].ToString());
+
+                            //string sPersonEmail = objGlobaldata.GetMultiHrEmpEmailIdById(dsItems.Tables[0].Rows[i]["PersonResponsible"].ToString());
+                            //sPersonEmail = Regex.Replace(sPersonEmail, ",+", ",");
+                            //sPersonEmail = sPersonEmail.Trim();
+                            //sPersonEmail = sPersonEmail.TrimEnd(',');
+                            //sPersonEmail = sPersonEmail.TrimStart(',');
+                            //if (sPersonEmail != null && sPersonEmail != "")
+                            //{
+                            //    sCCEmailIds = sCCEmailIds + "," + sPersonEmail;
+                            //}
+
+                        }
+                    }
+
+                    sContent = sContent.Replace("{FromMsg}", "");
+                    //sContent = sContent.Replace("{UserName}", sName);
+                    sContent = sContent.Replace("{Title}", "Environmental Risk Assessment");
+                    sContent = sContent.Replace("{content}", sHeader + sInformation);
+                    sContent = sContent.Replace("{message}", "");
+                    sContent = sContent.Replace("{extramessage}", "");
+
+                    sToEmailIds = Regex.Replace(sToEmailIds, ",+", ",");
+                    sToEmailIds = sToEmailIds.Trim();
+                    sToEmailIds = sToEmailIds.TrimEnd(',');
+                    sToEmailIds = sToEmailIds.TrimStart(',');
+
+                    sCCEmailIds = Regex.Replace(sCCEmailIds, ",+", ",");
+                    sCCEmailIds = sCCEmailIds.Trim();
+                    sCCEmailIds = sCCEmailIds.TrimEnd(',');
+                    sCCEmailIds = sCCEmailIds.TrimStart(',');
+
+                    return objGlobaldata.Sendmail(sToEmailIds, sSubject + sMessage, sContent, aAttachment, sCCEmailIds, "");
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in SendEnvMitigationmail: " + ex.ToString());
+            }
+            return false;
+        }
+
+
         internal bool FunAddMitigationList(EnvRiskModelsList objRiskList)
         {
             try
@@ -434,7 +798,10 @@ namespace ISOStd.Models
                                         sSqlstmt = sSqlstmt + ") values('" + sid_env_risk_trans + "','" + dsMitList.Tables[0].Rows[i]["mit_id"].ToString() + "', '" + dsMitList.Tables[0].Rows[i]["id_env_risk"].ToString() + "', '" + dsMitList.Tables[0].Rows[i]["cnt_type"].ToString() + "', '" + dsMitList.Tables[0].Rows[i]["cnt_desc"].ToString() + "', '" + dsMitList.Tables[0].Rows[i]["pers_resp"].ToString() + "'";
                                         sSqlstmt = sSqlstmt + sFieldValues + ");";
                                     }
-                                    return objGlobaldata.ExecuteQuery(sSqlstmt);
+                                    if (objGlobaldata.ExecuteQuery(sSqlstmt))
+                                    {
+                                        return SendEnvRiskReEvalmail(id_env_risk, " Environmental Risk Assessment ReEvaluation");
+                                    }
                                 }
 
                             }
@@ -452,7 +819,7 @@ namespace ISOStd.Models
 
                             if (objGlobaldata.ExecuteQuery(sSqlstmt))
                             {
-                                return true;
+                                return SendEnvRiskReEvalmail(id_env_risk, " Environmental Risk Assessment ReEvaluation");
                             }
                         }
 
@@ -469,7 +836,7 @@ namespace ISOStd.Models
 
                         if (objGlobaldata.ExecuteQuery(sSqlstmt))
                         {
-                            return true;
+                            return SendEnvRiskReEvalmail(id_env_risk, " Environmental Risk Assessment ReEvaluation");
                         }
                     }
 
@@ -513,7 +880,10 @@ namespace ISOStd.Models
                                 sSqlstmt = sSqlstmt + ") values('" + sid_env_risk_trans + "','" + dsMitList.Tables[0].Rows[i]["mit_id"].ToString() + "', '" + dsMitList.Tables[0].Rows[i]["id_env_risk"].ToString() + "', '" + dsMitList.Tables[0].Rows[i]["cnt_type"].ToString() + "', '" + dsMitList.Tables[0].Rows[i]["cnt_desc"].ToString() + "', '" + dsMitList.Tables[0].Rows[i]["pers_resp"].ToString() + "'";
                                 sSqlstmt = sSqlstmt + sFieldValues + ");";
                             }
-                            return objGlobaldata.ExecuteQuery(sSqlstmt);
+                            if (objGlobaldata.ExecuteQuery(sSqlstmt))
+                            {
+                                return SendEnvRiskReEvalmail(id_env_risk, " Environmental Risk Assessment ReEvaluation");
+                            }
                         }
 
                     }
@@ -524,6 +894,112 @@ namespace ISOStd.Models
                 objGlobaldata.AddFunctionalLog("Exception in FunUpdateRiskReEvaluation: " + ex.ToString());
             }
 
+            return false;
+        }
+
+        internal bool SendEnvRiskReEvalmail(string id_env_risk, string sMessage = "")
+        {
+            EnvRiskModels objModels = new EnvRiskModels();
+            try
+            {
+                string sType = "email";
+
+                string sSqlstmt = "select t.env_refno,t.impact,tt.further_consequences,tt.impact_id,tt.like_id,tt.legal,tt.legal_voilation,tt.evaluated_by,tt.eval_notified_to,tt.evaluation_date"
+               + " from t_environment_risk t left join  t_environment_risk_trans tt on t.id_env_risk = tt.id_env_risk where t.id_env_risk = '" + id_env_risk + "' order by id_env_risk_trans desc limit 1";
+
+                DataSet dsData = objGlobaldata.Getdetails(sSqlstmt);
+                KPIModels objType = new KPIModels();
+
+                if (dsData.Tables.Count > 0 && dsData.Tables[0].Rows.Count > 0)
+                {
+                    //objGlobalData.AddFunctionalLog("Step");
+                    //AddFunctionalLog("Step");
+                    string sName, sToEmailIds, sCCEmailIds, sHeader, sInformation = "", sTitle = "", sSubject = "", sContent = "", aAttachment = "", BccEmailIds = "";
+
+                    //using streamreader for reading my htmltemplate 
+                    //Form the Email Subject and Body content
+                    DataSet dsEmailXML = new DataSet();
+                    dsEmailXML.ReadXml(HttpContext.Current.Server.MapPath("~/EmailTemplates.xml"));
+
+                    if (sType != "" && dsEmailXML.Tables.Count > 0 && dsEmailXML.Tables[sType] != null && dsEmailXML.Tables[sType].Rows.Count > 0)
+                    {
+                        sSubject = dsEmailXML.Tables[sType].Rows[0]["subject"].ToString();
+                    }
+
+                    using (StreamReader reader = new StreamReader(HttpContext.Current.Server.MapPath("~/Views/EmailTemplate/EmailTemplate.html")))
+                    {
+                        sContent = reader.ReadToEnd();
+                    }
+
+                    //sName = objGlobaldata.GetMultiHrEmpNameById(dsData.Tables[0].Rows[0]["notified_to"].ToString());
+                    sToEmailIds = objGlobaldata.GetMultiHrEmpEmailIdById(dsData.Tables[0].Rows[0]["eval_notified_to"].ToString());
+                    sCCEmailIds = objGlobaldata.GetMultiHrEmpEmailIdById(dsData.Tables[0].Rows[0]["evaluated_by"].ToString());
+
+                    string evaluation_date = "";
+                    if (dsData.Tables[0].Rows[0]["evaluation_date"].ToString() != null && Convert.ToDateTime(dsData.Tables[0].Rows[0]["evaluation_date"].ToString()) > Convert.ToDateTime("01/01/0001"))
+                    {
+                        evaluation_date = Convert.ToDateTime(dsData.Tables[0].Rows[0]["evaluation_date"].ToString()).ToString("yyyy-MM-dd");
+                    }
+
+
+                    Dictionary<string, string> dicRatings = new Dictionary<string, string>();
+                    if (dsData.Tables[0].Rows[0]["impact_id"].ToString() != "" && dsData.Tables[0].Rows[0]["like_id"].ToString() != "")
+                    {
+                        dicRatings = objModels.GetRiskRatings(dsData.Tables[0].Rows[0]["impact_id"].ToString(),
+                            dsData.Tables[0].Rows[0]["like_id"].ToString());
+                    }
+                    if (dicRatings != null && dicRatings.Count > 0)
+                    {
+                        objModels.RiskRating = dicRatings.FirstOrDefault().Key;
+
+                    }
+
+                    sHeader = "<tr><td colspan=3><b>Ref No:<b></td> <td colspan=3>" + (dsData.Tables[0].Rows[0]["env_refno"].ToString()) + "</td></tr>"
+
+                    + "<tr><td colspan=3><b>Environmental Impact:<b></td> <td colspan=3>" + objGlobaldata.GetDropdownitemById(dsData.Tables[0].Rows[0]["impact"].ToString()) + "</td></tr>"
+
+                     + "<tr><td colspan=3><b>Further consequences identified:<b></td> <td colspan=3>" + (dsData.Tables[0].Rows[0]["further_consequences"].ToString()) + "</td></tr>"
+
+                     + "<tr><td colspan=3><b>Severity (Extent of Impact):<b></td> <td colspan=3>" + objGlobaldata.GetDropdownitemById(dsData.Tables[0].Rows[0]["impact_id"].ToString()) + "</td></tr>"
+
+                      + "<tr><td colspan=3><b>Likelihood of occurrence:<b></td> <td colspan=3>" + objGlobaldata.GetDropdownitemById(dsData.Tables[0].Rows[0]["like_id"].ToString()) + "</td></tr>"
+
+                       + "<tr><td colspan=3><b>Risk Rating:<b></td> <td colspan=3>" + objModels.RiskRating + "</td></tr>"
+
+                       + "<tr><td colspan=3><b>Applicable legal requirement(s):<b></td> <td colspan=3>" + objGlobaldata.GetLawNoById(dsData.Tables[0].Rows[0]["legal"].ToString()) + "</td></tr>"
+
+                       + "<tr><td colspan=3><b>Legal violation, if any:<b></td> <td colspan=3>" + (dsData.Tables[0].Rows[0]["legal_voilation"].ToString()) + "</td></tr>"
+
+                        + "<tr><td colspan=3><b>Evaluated By:<b></td> <td colspan=3>" + objGlobaldata.GetMultiHrEmpNameById(dsData.Tables[0].Rows[0]["evaluated_by"].ToString()) + "</td></tr>"
+
+                    + "<tr><td colspan=3><b>Evaluation  Date:<b></td> <td colspan=3>" + evaluation_date + "</td></tr>";
+
+
+
+                    sContent = sContent.Replace("{FromMsg}", "");
+                    //sContent = sContent.Replace("{UserName}", sName);
+                    sContent = sContent.Replace("{Title}", "Environmental Risk Assessment");
+                    sContent = sContent.Replace("{content}", sHeader + sInformation);
+                    sContent = sContent.Replace("{message}", "");
+                    sContent = sContent.Replace("{extramessage}", "");
+
+                    sToEmailIds = Regex.Replace(sToEmailIds, ",+", ",");
+                    sToEmailIds = sToEmailIds.Trim();
+                    sToEmailIds = sToEmailIds.TrimEnd(',');
+                    sToEmailIds = sToEmailIds.TrimStart(',');
+
+                    sCCEmailIds = Regex.Replace(sCCEmailIds, ",+", ",");
+                    sCCEmailIds = sCCEmailIds.Trim();
+                    sCCEmailIds = sCCEmailIds.TrimEnd(',');
+                    sCCEmailIds = sCCEmailIds.TrimStart(',');
+
+                    return objGlobaldata.Sendmail(sToEmailIds, sSubject + sMessage, sContent, aAttachment, sCCEmailIds, "");
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in SendEnvRiskReEvalmail: " + ex.ToString());
+            }
             return false;
         }
 
@@ -548,6 +1024,7 @@ namespace ISOStd.Models
                         objRiskList.lstHazard[0].id_env_risk_trans = id_env_risk_trans.ToString();
                         objRiskList.lstHazard[0].id_env_risk = id_env_risk.ToString();
                         FunAddFurtherMitigationList(objRiskList);
+                        return SendEnvFurtherMitigationmail(id_env_risk, "Environmental Risk Assessment Further Mitigation Measures");
                     }
 
                     return true;
@@ -560,6 +1037,163 @@ namespace ISOStd.Models
             }
             return false;
         }
+
+        internal bool SendEnvFurtherMitigationmail(string id_env_risk, string sMessage = "")
+        {
+            EnvRiskModels objModels = new EnvRiskModels();
+            try
+            {
+                string sType = "email";
+
+                string sSqlstmt = "select id_env_risk_trans,t.env_refno,t.impact,tt.impact_id,tt.like_id,tt.mit_evaluated_by,tt.proposed_date,tt.reeval_due_date,tt.mit_notified_to"
+                 + " from t_environment_risk t left join  t_environment_risk_trans tt on t.id_env_risk = tt.id_env_risk where t.id_env_risk = '" + id_env_risk + "' order by id_env_risk_trans desc limit 1";
+
+                DataSet dsData = objGlobaldata.Getdetails(sSqlstmt);
+                KPIModels objType = new KPIModels();
+
+                if (dsData.Tables.Count > 0 && dsData.Tables[0].Rows.Count > 0)
+                {
+                    //objGlobalData.AddFunctionalLog("Step");
+                    //AddFunctionalLog("Step");
+                    string sName, sToEmailIds, sCCEmailIds, sHeader, sInformation = "", sTitle = "", sSubject = "", sContent = "", aAttachment = "", BccEmailIds = "";
+
+                    //using streamreader for reading my htmltemplate 
+                    //Form the Email Subject and Body content
+                    DataSet dsEmailXML = new DataSet();
+                    dsEmailXML.ReadXml(HttpContext.Current.Server.MapPath("~/EmailTemplates.xml"));
+
+                    if (sType != "" && dsEmailXML.Tables.Count > 0 && dsEmailXML.Tables[sType] != null && dsEmailXML.Tables[sType].Rows.Count > 0)
+                    {
+                        sSubject = dsEmailXML.Tables[sType].Rows[0]["subject"].ToString();
+                    }
+
+                    using (StreamReader reader = new StreamReader(HttpContext.Current.Server.MapPath("~/Views/EmailTemplate/EmailTemplate.html")))
+                    {
+                        sContent = reader.ReadToEnd();
+                    }
+
+                    //sName = objGlobaldata.GetMultiHrEmpNameById(dsData.Tables[0].Rows[0]["notified_to"].ToString());
+                    sToEmailIds = objGlobaldata.GetMultiHrEmpEmailIdById(dsData.Tables[0].Rows[0]["mit_notified_to"].ToString());
+                    sCCEmailIds = objGlobaldata.GetMultiHrEmpEmailIdById(dsData.Tables[0].Rows[0]["mit_evaluated_by"].ToString());
+
+                    Dictionary<string, string> dicRatings = new Dictionary<string, string>();
+                    if (dsData.Tables[0].Rows[0]["impact_id"].ToString() != "" && dsData.Tables[0].Rows[0]["like_id"].ToString() != "")
+                    {
+                        dicRatings = objModels.GetRiskRatings(dsData.Tables[0].Rows[0]["impact_id"].ToString(),
+                            dsData.Tables[0].Rows[0]["like_id"].ToString());
+                    }
+                    if (dicRatings != null && dicRatings.Count > 0)
+                    {
+                        objModels.RiskRating = dicRatings.FirstOrDefault().Key;
+
+                    }
+
+                    string proposed_date = "", reeval_due_date = "";
+                    if (dsData.Tables[0].Rows[0]["proposed_date"].ToString() != null && Convert.ToDateTime(dsData.Tables[0].Rows[0]["proposed_date"].ToString()) > Convert.ToDateTime("01/01/0001"))
+                    {
+                        proposed_date = Convert.ToDateTime(dsData.Tables[0].Rows[0]["proposed_date"].ToString()).ToString("yyyy-MM-dd");
+                    }
+                    if (dsData.Tables[0].Rows[0]["reeval_due_date"].ToString() != null && Convert.ToDateTime(dsData.Tables[0].Rows[0]["reeval_due_date"].ToString()) > Convert.ToDateTime("01/01/0001"))
+                    {
+                        reeval_due_date = Convert.ToDateTime(dsData.Tables[0].Rows[0]["reeval_due_date"].ToString()).ToString("yyyy-MM-dd");
+                    }
+                    sHeader = "<tr><td colspan=3><b>Ref No:<b></td> <td colspan=3>" + (dsData.Tables[0].Rows[0]["env_refno"].ToString()) + "</td></tr>"
+
+                  + "<tr><td colspan=3><b>Environmental Impact:<b></td> <td colspan=3>" + objGlobaldata.GetDropdownitemById(dsData.Tables[0].Rows[0]["impact"].ToString()) + "</td></tr>"
+
+                      + "<tr><td colspan=3><b>Severity:<b></td> <td colspan=3>"
+                      + objGlobaldata.GetDropdownitemById(dsData.Tables[0].Rows[0]["impact_id"].ToString()) + "</td></tr>"
+
+                      + "<tr><td colspan=3><b>Probability:<b></td> <td colspan=3>" + objGlobaldata.GetDropdownitemById(dsData.Tables[0].Rows[0]["like_id"].ToString()) + "</td></tr>"
+
+                      + "<tr><td colspan=3><b>Risk Rating:<b></td> <td colspan=3>" + objModels.RiskRating + "</td></tr>"
+
+                      + "<tr><td colspan=3><b>Risk evaluated by:<b></td> <td colspan=3>" + objGlobaldata.GetMultiHrEmpNameById(dsData.Tables[0].Rows[0]["mit_evaluated_by"].ToString()) + "</td></tr>"
+
+                      + "<tr><td colspan=3><b>Proposed Date:<b></td> <td colspan=3>" + proposed_date + "</td></tr>"
+
+
+                    + "<tr><td colspan=3><b>Risk Reevaluation Due Date:<b></td> <td colspan=3>" + reeval_due_date + "</td></tr>";
+
+
+                    sSqlstmt = "select cnt_type,cnt_desc,pers_resp,target_date from t_environment_risk_mitigations_trans where id_env_risk_trans = '" + dsData.Tables[0].Rows[0]["id_env_risk_trans"].ToString() + "'";
+
+                    DataSet dsItems = new DataSet();
+                    dsItems = objGlobaldata.Getdetails(sSqlstmt);
+
+                    if (dsItems.Tables.Count > 0 && dsItems.Tables[0].Rows.Count > 0)
+                    {
+                        sInformation = "<br><tr> "
+                            + "<td colspan=8><label><b>Mitigation Measures</b></label> </td> </tr>"
+                            + "<tr style='background-color: #4cc4dd; width: 100%; color: white; padding-left: 5px;'>"
+                            + "<th>Sl. No.</th>"
+                            + "<th style='width:300px'>Control Type</th>"
+                              + "<th style='width:300px'>Control Description</th>"
+                            + "<th style='width:300px'>Person Responsible</th>"
+                            + "<th style='width:300px'>Target Date</th>"
+                            + "</tr>";
+
+
+                        for (int i = 0; i < dsItems.Tables[0].Rows.Count; i++)
+                        {
+
+                            string target_date = "";
+                            if (dsItems.Tables[0].Rows[i]["target_date"].ToString() != null && Convert.ToDateTime(dsItems.Tables[0].Rows[i]["target_date"].ToString()) > Convert.ToDateTime("01/01/0001"))
+                            {
+                                target_date = Convert.ToDateTime(dsItems.Tables[0].Rows[i]["target_date"].ToString()).ToString("yyyy-MM-dd");
+                            }
+
+                            sInformation = sInformation + "<tr>"
+                                + " <td>" + (i + 1) + "</td>"
+                                + " <td style='width:300px'>" + (dsItems.Tables[0].Rows[i]["cnt_type"].ToString()) + "</td>"
+                                + " <td style='width:300px'>" + (dsItems.Tables[0].Rows[i]["cnt_desc"].ToString()) + "</td>"
+                                 + " <td style='width:300px'>" + objGlobaldata.GetMultiHrEmpNameById(dsItems.Tables[0].Rows[i]["pers_resp"].ToString()) + "</td>"
+                                 + " <td style='width:300px'>" + target_date + "</td>"
+                                 + " </tr>";
+                            //sCCEmailIds = sCCEmailIds + "," + objGlobalData.GetHrEmpEmailIdById(dsItems.Tables[0].Rows[i]["PersonResponsible"].ToString());
+
+                            //string sPersonEmail = objGlobaldata.GetMultiHrEmpEmailIdById(dsItems.Tables[0].Rows[i]["PersonResponsible"].ToString());
+                            //sPersonEmail = Regex.Replace(sPersonEmail, ",+", ",");
+                            //sPersonEmail = sPersonEmail.Trim();
+                            //sPersonEmail = sPersonEmail.TrimEnd(',');
+                            //sPersonEmail = sPersonEmail.TrimStart(',');
+                            //if (sPersonEmail != null && sPersonEmail != "")
+                            //{
+                            //    sCCEmailIds = sCCEmailIds + "," + sPersonEmail;
+                            //}
+
+                        }
+                    }
+
+                    sContent = sContent.Replace("{FromMsg}", "");
+                    //sContent = sContent.Replace("{UserName}", sName);
+                    sContent = sContent.Replace("{Title}", "Environmental Risk Assessment");
+                    sContent = sContent.Replace("{content}", sHeader + sInformation);
+                    sContent = sContent.Replace("{message}", "");
+                    sContent = sContent.Replace("{extramessage}", "");
+
+                    sToEmailIds = Regex.Replace(sToEmailIds, ",+", ",");
+                    sToEmailIds = sToEmailIds.Trim();
+                    sToEmailIds = sToEmailIds.TrimEnd(',');
+                    sToEmailIds = sToEmailIds.TrimStart(',');
+
+                    sCCEmailIds = Regex.Replace(sCCEmailIds, ",+", ",");
+                    sCCEmailIds = sCCEmailIds.Trim();
+                    sCCEmailIds = sCCEmailIds.TrimEnd(',');
+                    sCCEmailIds = sCCEmailIds.TrimStart(',');
+
+                    return objGlobaldata.Sendmail(sToEmailIds, sSubject + sMessage, sContent, aAttachment, sCCEmailIds, "");
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in SendEnvFurtherMitigationmail: " + ex.ToString());
+            }
+            return false;
+        }
+
+
+
         internal bool FunAddFurtherMitigationList(EnvRiskModelsList objRiskList)
         {
             try

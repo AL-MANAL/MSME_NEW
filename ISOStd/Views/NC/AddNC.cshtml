@@ -73,9 +73,9 @@
                                     <div class="editor-field">
                                         <select class="form-control-select3" @*class="form-control select-fixed-multiple"*@ data-fouc id="nc_reportedby" name="nc_reportedby" onchange="GetReportedByDetails()">
                                             <option value='' hidden>Select</option>
-                                            @if (ViewBag.EmpList != null)
+                                            @if (ViewBag.ReportedBy != null)
                                             {
-                                                foreach (var item in ViewBag.EmpList)
+                                                foreach (var item in ViewBag.ReportedBy)
                                                 {
                                                     if (item.Value == Model.nc_reportedby)
                                                     {
@@ -298,8 +298,8 @@
                                 </td>
                                 <td class="col">
                                     <div class="editor-field">
-                                        <select class="form-control-select3" data-fouc id="nc_raise_dueto" name="nc_raise_dueto" required>
-                                            <option value='' hidden>Select</option>
+                                        <select class="form-control-select3" data-fouc id="nc_raise_dueto" name="nc_raise_dueto" required multiple>
+                                            @*<option value='' hidden>Select</option>*@
                                             @if (ViewBag.RaisedDueto != null)
                                             {
                                                 foreach (var item in ViewBag.RaisedDueto)
@@ -555,18 +555,49 @@
                             </tr>
                             <tr class="row">
                                 <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.LabelFor(model => model.nc_impact)<text style="color: red;">*</text>
+                                    </div>
+                                </td>
+                                <td class="col">
+                                    <div class="editor-field">
+                                        <select class="form-control-select3" data-fouc id="nc_impact" name="nc_impact" onchange="GetImpactType()" required>
+                                            <option value='' hidden>Select</option>
+                                            @if (ViewBag.Impact != null)
+                                            {
+                                                foreach (var item in ViewBag.Impact)
+                                                {
+                                                    <option value='@item'>@item</option>
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.LabelFor(model => model.Impact_detail)<text style="color: red;">*</text>
+                                    </div>
+                                </td>
+                                <td class="col">
+                                    <div class="editor-field">
+                                        <select class="form-control-select3" data-fouc id="Impact_detail" name="Impact_detail" multiple required></select>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
                                     @*@Html.DisplayNameFor(model => model.nc_pnc)*@
                                     <label title="NC-> NonConformance &#013;PNC-> Potential NonConformance">Why it is NC or PNC?</label>
                                 </td>
-                                <td class="col">
+                                <td class="col-xs-3 col-md-4">
                                     <input type="text" class="form-control" name="nc_pnc" id="nc_pnc" />
                                 </td>
-                                <td class="col-xs-3 col-md-2">
+                                @*<td class="col-xs-3 col-md-2">
                                     @Html.DisplayNameFor(model => model.nc_impact)
                                 </td>
                                 <td class="col">
                                     <input type="text" class="form-control" name="nc_impact" id="nc_impact" />
-                                </td>
+                                </td>*@
                             </tr>
 
                             <tr class="row">
@@ -677,6 +708,29 @@
         
 
      });
+        function GetImpactType() {
+            var Impact = $('#nc_impact option:selected').text();
+            if (Impact != null && Impact != "") {
+                jQuery.ajax({
+                    url: '@Url.Action("FunGetNCImpactTypeList", "NC")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'Impact_type': Impact },
+                    success: function (result) {
+                        $("#Impact_detail").children('option').remove();
+                        $("#Impact_detail").trigger('change');
+                        if (result != null && result.length > 0) {
+                            $.each(result, function (index, item) {
+                                $("#Impact_detail").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                            });
+                            $("#Impact_detail").trigger('change');
+                            return;
+                        }
+                    }
+                });
+            }
+        }
+
         GetReportedByDetails();
 
         function DisplayData() {

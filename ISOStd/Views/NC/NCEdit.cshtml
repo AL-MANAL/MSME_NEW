@@ -120,9 +120,9 @@
                                 <div class="editor-field">
                                     <select class="form-control-select3" data-fouc id="nc_reportedby" name="nc_reportedby" onchange="GetReportedByDetails()">
                                         <option value='' hidden>Select</option>
-                                        @if (ViewBag.EmpList != null)
+                                        @if (ViewBag.ReportedBy != null)
                                         {
-                                            foreach (var item in ViewBag.EmpList)
+                                            foreach (var item in ViewBag.ReportedBy)
                                             {
                                                 <option value='@item.Value'>@item.Text</option>
                                             }
@@ -383,7 +383,7 @@
                                         {
                                             foreach (var item in ViewBag.RaisedDueto)
                                             {
-                                                if (item.Value == Model.nc_raise_dueto)
+                                                if (Array.IndexOf(Model.nc_raise_dueto.ToString().Split(','), item.Value) >= 0)
                                                 {
                                                     <option value='@item.Value' selected>@item.Text</option>
                                                 }
@@ -391,6 +391,7 @@
                                                 {
                                                     <option value='@item.Value'>@item.Text</option>
                                                 }
+                                                
                                             }
                                         }
                                     </select>
@@ -698,18 +699,67 @@
                         </tr>
                         <tr class="row">
                             <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.nc_impact)<text style="color: red;">*</text>
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <select class="form-control-select3" data-fouc id="nc_impact" name="nc_impact" onchange="GetImpactType()" required>
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.Impact != null)
+                                        {
+                                            foreach (var item in ViewBag.Impact)
+                                            {
+                                                if (item == Model.nc_impact)
+                                                {
+                                                    <option value='@item' selected>@item</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@item'>@item</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.Impact_detail)<text style="color: red;">*</text>
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <select class="form-control-select3" data-fouc id="Impact_detail" name="Impact_detail" multiple="multiple" required>
+                                        @*<option value='' hidden>Select</option>*@
+                                        @if (ViewBag.ImpactDetails != null)
+                                        {
+                                            foreach (var item in ViewBag.ImpactDetails)
+                                            {
+                                                if (Array.IndexOf(Model.Impact_detail.ToString().Split(','), item.Value) >= 0)
+                                                {
+                                                    <option value='@item.Value' selected>@item.Text</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
                                 @*@Html.DisplayNameFor(model => model.nc_pnc)*@
                                 <label title="NC-> NonConformance &#013;PNC-> Potential NonConformance">Why it is NC or PNC?</label>
                             </td>
-                            <td class="col">
+                            <td class="col-xs-3 col-md-4">
                                 <input type="text" class="form-control" name="nc_pnc" id="nc_pnc" value="@Model.nc_pnc" />
                             </td>
-                            <td class="col-xs-3 col-md-2">
-                                @Html.DisplayNameFor(model => model.nc_impact)
-                            </td>
-                            <td class="col">
-                                <input type="text" class="form-control" name="nc_impact" id="nc_impact" value="@Model.nc_impact" />
-                            </td>
+                         
                         </tr>
 
                         <tr class="row">
@@ -877,10 +927,10 @@
               @*url: '@Url.Action("AccidentReportInfo", "AccidentReport")',*@
                  method: "post",
                  async: false,
-                 data: { id: id },                  
+                 data: { id: id },
                  success: function (data) {
                      set_data = data;
-                     bootbox.alert({                              
+                     bootbox.alert({
                               message: data
                            });
                  }
@@ -893,9 +943,30 @@
              //});
          }
 
-            
-     });
 
+     });
+       function GetImpactType() {
+            var Impact = $('#nc_impact option:selected').text();
+            if (Impact != null && Impact != "") {
+                jQuery.ajax({
+                    url: '@Url.Action("FunGetNCImpactTypeList", "NC")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'Impact_type': Impact },
+                    success: function (result) {
+                        $("#Impact_detail").children('option').remove();
+                        $("#Impact_detail").trigger('change');
+                        if (result != null && result.length > 0) {
+                            $.each(result, function (index, item) {
+                                $("#Impact_detail").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                            });
+                            $("#Impact_detail").trigger('change');
+                            return;
+                        }
+                    }
+                });
+            }
+        }
         var cnt_nc = document.getElementById("nc_cnt").value;
         if (cnt_nc == "1")
         {
@@ -907,7 +978,7 @@
         }
         var showClass = 'is-visible';
         var hideClass = 'invisible';
-        
+
         function FileFormatValidation(file) {
             var ext = file.value.split(".").pop().toLowerCase();
             if ($.inArray(ext, ["pdf", "xlsx", "xls", "doc", "docx", "jpg","jpeg","gif",".png"]) == -1) {
@@ -917,7 +988,7 @@
                     message: 'Invalid file format, please upload only doc, pdf, docx, xls, xls,jpg, jpeg, gif, png format'
                 });
             }
-        }      
+        }
 
         $("#QCDocsVal").click(function () {
             if ($("#QCDocsVal").prop('checked')) {
@@ -933,7 +1004,7 @@
 
            function GetIssuedToDetails() {
                var nc_issueto = $('#nc_issueto').val();
-                              
+
                if (nc_issueto != "" && nc_issueto != null) {
                 jQuery.ajax({
                     url: '@Url.Action("FunGetEmpDetails", "NC")',
@@ -974,7 +1045,7 @@
                                 var cell5 = row.insertCell(5);
                                 var cell6 = row.insertCell(6);
 
-                                
+
                                 cell0.innerHTML = "<span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span> <input type='hidden' id='iempno " + cnt + "' name='iempno " + cnt + "' value='" + nc_issueto + "'>";
                                 cell1.innerHTML = "<input type='hidden' id='iempid " + cnt + "' name='iempid " + cnt + "' value='" + empid + "'>" + empid;
                                 cell2.innerHTML = "<input type='hidden' id='iempname " + cnt + "' name='iempname " + cnt + "' value='" + empname + "'>" + empname;
@@ -1000,7 +1071,7 @@
 
 
         function GetReportedByDetails() {
-            var nc_reportedby = $('#nc_reportedby').val();            
+            var nc_reportedby = $('#nc_reportedby').val();
 
             if (nc_reportedby != "" && nc_reportedby != null) {
                 jQuery.ajax({
@@ -1043,7 +1114,7 @@
                                 var cell5 = row.insertCell(5);
                                 var cell6 = row.insertCell(6);
 
-                                
+
                                 cell0.innerHTML = "<span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span> <input type='hidden' id='empno " + cnt + "' name='empno " + cnt + "' value='" + nc_reportedby + "'>";
                                 cell1.innerHTML = "<input type='hidden' id='empid " + cnt + "' name='empid " + cnt + "' value='" + empid + "'>" + empid;
                                 cell2.innerHTML = "<input type='hidden' id='empname " + cnt + "' name='empname " + cnt + "' value='" + empname + "'>" + empname;
@@ -1110,7 +1181,7 @@
                                 var cell5 = row.insertCell(5);
                                 var cell6 = row.insertCell(6);
 
-                              
+
                                 cell0.innerHTML = "<span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span> <input type = 'hidden' id = 'nempno " + cnt + "' name = 'nempno " + cnt + "' value = '" + nempno + "'>";
                                 cell1.innerHTML = "<input type='hidden' id='nempid " + cnt + "' name='nempid " + cnt + "' value='" + nempid + "'>" + nempid;
                                 cell2.innerHTML = "<input type='hidden' id='nempname " + cnt + "' name='nempname " + cnt + "' value='" + nempname + "'>" + nempname;

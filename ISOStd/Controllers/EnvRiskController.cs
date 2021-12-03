@@ -202,6 +202,7 @@ namespace ISOStd.Controllers
                     ViewBag.like_id = objGlobaldata.GetDropdownList("Risk-likelihood");                    
                     ViewBag.Legal = objGlobaldata.GetLawNo();
                     ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
+                    ViewBag.EvaluatedBy = objGlobaldata.GetDeptHeadbyDivisionList();
                     ViewBag.id_env_risk = id_env_risk;
                     ViewBag.OP = objGlobaldata.GetConstantValue("HazardOP");
                     string sSqlstmt = "select id_env_risk,env_refno,dept,branch_id,Location,activity,activity_type,aspects,impact,"
@@ -338,7 +339,7 @@ namespace ISOStd.Controllers
                     ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
                     ViewBag.Control = objGlobaldata.GetConstantValue("HazardOP");
                     string sSqlstmt = "select id_env_risk,branch_id,dept,Location,env_refno,impact_id,like_id,mit_evaluated_by,mit_notified_to," +
-                        "proposed_date,reeval_due_date from t_environment_risk where id_env_risk='"
+                        "proposed_date,reeval_due_date,source_id,Issue,impact,area_affected,activity,product,aspects,reported_date,reported_by,notified_to,activity_type from t_environment_risk where id_env_risk='"
                         + id_env_risk + "'";
 
                     DataSet dsRiskModels = objGlobaldata.Getdetails(sSqlstmt);
@@ -354,6 +355,20 @@ namespace ISOStd.Controllers
                             env_refno = (dsRiskModels.Tables[0].Rows[0]["env_refno"].ToString()),
                             mit_evaluated_by = (dsRiskModels.Tables[0].Rows[0]["mit_evaluated_by"].ToString()),
                             mit_notified_to = (dsRiskModels.Tables[0].Rows[0]["mit_notified_to"].ToString()),
+
+                            dept = objGlobaldata.GetMultiDeptNameById(dsRiskModels.Tables[0].Rows[0]["dept"].ToString()),
+                            branch_id = objGlobaldata.GetMultiCompanyBranchNameById(dsRiskModels.Tables[0].Rows[0]["branch_id"].ToString()),
+                            source_id = objRiskMgmtModels.GetRiskSourceNameById(dsRiskModels.Tables[0].Rows[0]["source_id"].ToString()),
+                            Location = objGlobaldata.GetDivisionLocationById(dsRiskModels.Tables[0].Rows[0]["Location"].ToString()),
+
+                            activity_type = objGlobaldata.GetDropdownitemById(dsRiskModels.Tables[0].Rows[0]["activity_type"].ToString()),
+                            activity = (dsRiskModels.Tables[0].Rows[0]["activity"].ToString()),
+                            product = (dsRiskModels.Tables[0].Rows[0]["product"].ToString()),
+                            aspects = (dsRiskModels.Tables[0].Rows[0]["aspects"].ToString()),
+                            impact = objGlobaldata.GetDropdownitemById(dsRiskModels.Tables[0].Rows[0]["impact"].ToString()),
+                            area_affected = (dsRiskModels.Tables[0].Rows[0]["area_affected"].ToString()),
+                            reported_by = objGlobaldata.GetEmpHrNameById(dsRiskModels.Tables[0].Rows[0]["reported_by"].ToString()),
+                           
                         };
                         DateTime dtValue;
                         if (DateTime.TryParse(dsRiskModels.Tables[0].Rows[0]["proposed_date"].ToString(), out dtValue))
@@ -363,6 +378,10 @@ namespace ISOStd.Controllers
                         if (DateTime.TryParse(dsRiskModels.Tables[0].Rows[0]["reeval_due_date"].ToString(), out dtValue))
                         {
                             objRiskMgmtModels.reeval_due_date = dtValue;
+                        }
+                        if (DateTime.TryParse(dsRiskModels.Tables[0].Rows[0]["reported_date"].ToString(), out dtValue))
+                        {
+                            objRiskMgmtModels.reported_date = dtValue;
                         }
                         if (dsRiskModels.Tables[0].Rows[0]["impact_id"].ToString() == null || dsRiskModels.Tables[0].Rows[0]["impact_id"].ToString() == "")
                         {
@@ -491,6 +510,7 @@ namespace ISOStd.Controllers
                     ViewBag.like_id = objGlobaldata.GetDropdownList("Risk-likelihood");
                     ViewBag.Legal = objGlobaldata.GetLawNo();
                     ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
+                    ViewBag.EvaluatedBy = objGlobaldata.GetDeptHeadbyDivisionList();
                     ViewBag.id_env_risk = id_env_risk;
                     ViewBag.OP = objGlobaldata.GetConstantValue("HazardOP");
                     DateTime today_date = DateTime.Now;
@@ -698,7 +718,7 @@ namespace ISOStd.Controllers
                     ViewBag.Control = objGlobaldata.GetConstantValue("HazardOP");
                     DateTime today_date = DateTime.Now;
                     string sSqlstmt = "select id_env_risk_trans,t.branch_id,t.dept,t.Location,tt.id_env_risk,tt.env_refno,tt.impact_id,tt.like_id,tt.mit_evaluated_by," +
-                        "tt.mit_notified_to,tt.proposed_date,tt.reeval_due_date,tt.evaluation_date from t_environment_risk t,t_environment_risk_trans tt where tt.id_env_risk='"
+                        "tt.mit_notified_to,tt.proposed_date,tt.reeval_due_date,tt.evaluation_date,t.source_id,t.Issue,t.impact,t.area_affected,t.activity,t.product,t.aspects,t.reported_date,t.reported_by,t.notified_to,t.activity_type from t_environment_risk t,t_environment_risk_trans tt where tt.id_env_risk='"
                         + id_env_risk + "' and t.id_env_risk=tt.id_env_risk order by id_env_risk_trans desc limit 1";
 
                     DataSet dsRiskModels = objGlobaldata.Getdetails(sSqlstmt);
@@ -715,6 +735,19 @@ namespace ISOStd.Controllers
                             env_refno = (dsRiskModels.Tables[0].Rows[0]["env_refno"].ToString()),
                             mit_evaluated_by = (dsRiskModels.Tables[0].Rows[0]["mit_evaluated_by"].ToString()),
                             mit_notified_to = (dsRiskModels.Tables[0].Rows[0]["mit_notified_to"].ToString()),
+
+                            dept = objGlobaldata.GetMultiDeptNameById(dsRiskModels.Tables[0].Rows[0]["dept"].ToString()),
+                            branch_id = objGlobaldata.GetMultiCompanyBranchNameById(dsRiskModels.Tables[0].Rows[0]["branch_id"].ToString()),
+                            source_id = objRiskMgmtModels.GetRiskSourceNameById(dsRiskModels.Tables[0].Rows[0]["source_id"].ToString()),
+                            Location = objGlobaldata.GetDivisionLocationById(dsRiskModels.Tables[0].Rows[0]["Location"].ToString()),
+
+                            activity_type = objGlobaldata.GetDropdownitemById(dsRiskModels.Tables[0].Rows[0]["activity_type"].ToString()),
+                            activity = (dsRiskModels.Tables[0].Rows[0]["activity"].ToString()),
+                            product = (dsRiskModels.Tables[0].Rows[0]["product"].ToString()),
+                            aspects = (dsRiskModels.Tables[0].Rows[0]["aspects"].ToString()),
+                            impact = objGlobaldata.GetDropdownitemById(dsRiskModels.Tables[0].Rows[0]["impact"].ToString()),
+                            area_affected = (dsRiskModels.Tables[0].Rows[0]["area_affected"].ToString()),
+                            reported_by = objGlobaldata.GetEmpHrNameById(dsRiskModels.Tables[0].Rows[0]["reported_by"].ToString()),
                         };
 
                         DateTime dtValue, dtEval;
@@ -725,6 +758,10 @@ namespace ISOStd.Controllers
                         if (DateTime.TryParse(dsRiskModels.Tables[0].Rows[0]["evaluation_date"].ToString(), out dtEval))
                         {
                             objRiskMgmtModels.evaluation_date = dtEval;
+                        }
+                        if (DateTime.TryParse(dsRiskModels.Tables[0].Rows[0]["reported_date"].ToString(), out dtEval))
+                        {
+                            objRiskMgmtModels.reported_date = dtEval;
                         }
                         if (DateTime.TryParse(dsRiskModels.Tables[0].Rows[0]["reeval_due_date"].ToString(), out dtValue))
                         {

@@ -38,12 +38,14 @@ namespace ISOStd.Controllers
                 objModel.nc_reportedby = objGlobaldata.GetCurrentUserSession().empid;
 
                 ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
+                ViewBag.ReportedBy = objGlobaldata.GetQADeptEmployeeList();
                 ViewBag.RiskLevel = objGlobaldata.GetDropdownList("NC Risklevel");
                 ViewBag.Category = objGlobaldata.GetDropdownList("NC Category");
                 ViewBag.RelatedAspect = objGlobaldata.GetDropdownList("NC Related Aspect");
                 ViewBag.YesNo = objGlobaldata.GetConstantValue("YesNo");
                 ViewBag.AuditNo = objGlobaldata.GetAuditNoFromAuditProcessList();
                 ViewBag.RaisedDueto = objGlobaldata.GetDropdownList("NC Raised Due to");
+                ViewBag.Impact = objGlobaldata.GetConstantValue("NCImpact");
                 if (Request.QueryString["objective_Id"] != null && Request.QueryString["objective_Id"] != "")
                 { 
                    ViewBag.objective_Id = Request.QueryString["objective_Id"];
@@ -69,11 +71,13 @@ namespace ISOStd.Controllers
                     objModel.nc_division = form["nc_division"];
                     objModel.location = form["location"];
                     objModel.department = form["department"];
+                    objModel.nc_raise_dueto = form["nc_raise_dueto"];
+                    objModel.Impact_detail = form["Impact_detail"];
                     //objModel.nc_reportedby = form["nc_reportedby"];
                     //objModel.nc_notifiedto = form["nc_notifiedto"];
 
                     //if (Request.Files.Count > 0)
-                    if(nc_upload != null)
+                    if (nc_upload != null)
                     {
                     HttpPostedFileBase files = Request.Files[0];
                     if (nc_upload != null && files.ContentLength > 0)
@@ -223,10 +227,10 @@ namespace ISOStd.Controllers
                     sSearchtext = sSearchtext + " and find_in_set('" + branch_name + "', division)";
                     ViewBag.Branch_name = branch_name;
                 }
-                else
-                {
-                    sSearchtext = sSearchtext + " and find_in_set('" + sBranch_name + "', division)";
-                }
+                //else
+                //{
+                //    sSearchtext = sSearchtext + " and find_in_set('" + sBranch_name + "', division)";
+                //}
 
                 sSqlstmt = sSqlstmt + sSearchtext + " order by id_nc desc";
                 DataSet dsNCModels = objGlobaldata.Getdetails(sSqlstmt);
@@ -342,19 +346,20 @@ namespace ISOStd.Controllers
             {
                
                 ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
+                ViewBag.ReportedBy = objGlobaldata.GetQADeptEmployeeList();
                 ViewBag.RiskLevel = objGlobaldata.GetDropdownList("NC Risklevel");
                 ViewBag.Category = objGlobaldata.GetDropdownList("NC Category");
                 ViewBag.RelatedAspect = objGlobaldata.GetDropdownList("NC Related Aspect");
                 ViewBag.YesNo = objGlobaldata.GetConstantValue("YesNo");
                 ViewBag.AuditNo = objGlobaldata.GetAuditNoFromAuditProcessList();
                 ViewBag.RaisedDueto = objGlobaldata.GetDropdownList("NC Raised Due to");
-
+                ViewBag.Impact = objGlobaldata.GetConstantValue("NCImpact");
                 if (Request.QueryString["id_nc"] != null && Request.QueryString["id_nc"] != "")
                 {
                     string sid_nc = Request.QueryString["id_nc"];
                     string sSqlstmt = "select id_nc, nc_no, nc_reported_date, nc_detected_date, nc_category, nc_description, nc_activity, nc_performed,  nc_pnc, nc_upload,"
                     + "nc_impact, nc_risk, risklevel, nc_reportedby,  nc_notifiedto, nc_division,division, department, location,nc_issueto,nc_audit,audit_no,nc_raise_dueto,"
-                    + "oa_no,model_code,part_name,stage,nc_resp_pers,supplier_name,supplier_dc,dc_po,batch_qty,nc_qty from t_nc where id_nc ='" + sid_nc + "'";
+                    + "oa_no,model_code,part_name,stage,nc_resp_pers,supplier_name,supplier_dc,dc_po,batch_qty,nc_qty,Impact_detail from t_nc where id_nc ='" + sid_nc + "'";
 
                     DataSet dsNCModels = objGlobaldata.Getdetails(sSqlstmt);
 
@@ -397,6 +402,7 @@ namespace ISOStd.Controllers
                                     dc_po = (dsNCModels.Tables[0].Rows[0]["dc_po"].ToString()),
                                     batch_qty = (dsNCModels.Tables[0].Rows[0]["batch_qty"].ToString()),
                                     nc_qty = (dsNCModels.Tables[0].Rows[0]["nc_qty"].ToString()),
+                                    Impact_detail = (dsNCModels.Tables[0].Rows[0]["Impact_detail"].ToString()),
                                 };
                                 if (dsNCModels.Tables[0].Rows[0]["nc_issueto"].ToString() != "")
                                 {
@@ -425,7 +431,24 @@ namespace ISOStd.Controllers
                                 ViewBag.Department = objGlobaldata.GetDepartmentList1(dsNCModels.Tables[0].Rows[0]["nc_division"].ToString());
                                 ViewBag.Location = objGlobaldata.GetLocationbyMultiDivision(dsNCModels.Tables[0].Rows[0]["nc_division"].ToString());
 
-                                NcList.lstNC.Add(objModel);
+                            if (dsNCModels.Tables[0].Rows[0]["nc_impact"].ToString().ToLower() == "low")
+                            {
+                                ViewBag.ImpactDetails = objGlobaldata.GetDropdownList("NC Impact Low");
+                            }
+                            else if (dsNCModels.Tables[0].Rows[0]["nc_impact"].ToString().ToLower() == "moderate")
+                            {
+                                ViewBag.ImpactDetails = objGlobaldata.GetDropdownList("NC Impact Moderate");
+                            }
+                            else if (dsNCModels.Tables[0].Rows[0]["nc_impact"].ToString().ToLower() == "high")
+                            {
+                                ViewBag.ImpactDetails = objGlobaldata.GetDropdownList("NC Impact High");
+                            }
+                            else if (dsNCModels.Tables[0].Rows[0]["nc_impact"].ToString().ToLower() == "extreme")
+                            {
+                                ViewBag.ImpactDetails = objGlobaldata.GetDropdownList("NC Impact Extreme");
+                            }
+
+                            NcList.lstNC.Add(objModel);
                             }
                             catch (Exception ex)
                             {
@@ -524,7 +547,8 @@ namespace ISOStd.Controllers
                     objModel.location = form["location"];
                     objModel.department = form["department"];
                     objModel.division = form["division"]; //Can access
-
+                    objModel.nc_raise_dueto = form["nc_raise_dueto"];
+                    objModel.Impact_detail = form["Impact_detail"];
                     IList<HttpPostedFileBase> nc_uploadList = (IList<HttpPostedFileBase>)nc_upload;
                     string QCDelete = Request.Form["QCDocsValselectall"];
 
@@ -1911,7 +1935,7 @@ namespace ISOStd.Controllers
                     string sSqlstmt = "select id_nc, nc_no, nc_reported_date, nc_detected_date, nc_category, nc_description, nc_activity, nc_performed, nc_pnc, nc_upload,"
                    + "nc_impact, nc_risk, risklevel, nc_reportedby,  nc_notifiedto, nc_division, division, department, location,nc_audit,audit_no,nc_raise_dueto,nc_issueto," 
                    +"(case when nc_issuedto_status=1 then 'Accepted' end) as nc_issuedto_status,nc_issuedto_status as nc_issuedto_statusId,nc_initial_status as nc_initial_statusId,nc_issuer_rejector,nc_issuers,"
-                    +"oa_no,model_code,part_name,stage,nc_resp_pers,supplier_name,supplier_dc,dc_po,batch_qty,nc_qty from t_nc where id_nc ='" + sid_nc + "'";
+                    + "oa_no,model_code,part_name,stage,nc_resp_pers,supplier_name,supplier_dc,dc_po,batch_qty,nc_qty,Impact_detail from t_nc where id_nc ='" + sid_nc + "'";
 
 
                     DataSet dsNCModels = objGlobaldata.Getdetails(sSqlstmt);
@@ -1962,6 +1986,7 @@ namespace ISOStd.Controllers
                                     dc_po = (dsNCModels.Tables[0].Rows[0]["dc_po"].ToString()),
                                     batch_qty = (dsNCModels.Tables[0].Rows[0]["batch_qty"].ToString()),
                                     nc_qty = (dsNCModels.Tables[0].Rows[0]["nc_qty"].ToString()),
+                                    Impact_detail =objGlobaldata.GetDropdownitemById(dsNCModels.Tables[0].Rows[0]["Impact_detail"].ToString()),
                                 };
 
                                DateTime dtValue;
@@ -2091,7 +2116,7 @@ namespace ISOStd.Controllers
                    
                     string sSqlstmt = "select id_nc, nc_no, nc_reported_date, nc_detected_date, nc_category, nc_description, nc_activity, nc_performed,  nc_pnc, nc_upload,"
                     + "nc_impact, nc_risk, risklevel, nc_reportedby,  nc_notifiedto, nc_division,division, department, location,nc_issueto,logged_by,nc_audit,audit_no,nc_raise_dueto,"
-                    +"oa_no,model_code,part_name,stage,nc_resp_pers,supplier_name,supplier_dc,dc_po,batch_qty,nc_qty from t_nc where id_nc ='" + sid_nc + "'";
+                    + "oa_no,model_code,part_name,stage,nc_resp_pers,supplier_name,supplier_dc,dc_po,batch_qty,nc_qty,Impact_detail from t_nc where id_nc ='" + sid_nc + "'";
 
                     DataSet dsNCModels = objGlobaldata.Getdetails(sSqlstmt);
 
@@ -2137,6 +2162,7 @@ namespace ISOStd.Controllers
                                 dc_po = (dsNCModels.Tables[0].Rows[0]["dc_po"].ToString()),
                                 batch_qty = (dsNCModels.Tables[0].Rows[0]["batch_qty"].ToString()),
                                 nc_qty = (dsNCModels.Tables[0].Rows[0]["nc_qty"].ToString()),
+                                Impact_detail = objGlobaldata.GetDropdownitemById(dsNCModels.Tables[0].Rows[0]["Impact_detail"].ToString()),
                             };                          
 
                             DateTime dtValue;
@@ -2155,7 +2181,7 @@ namespace ISOStd.Controllers
                             //DataSet dsData = objGlobaldata.Getdetails(sql);
 
                             dsNCModels = objCompany.GetCompanyDetailsForReport(dsNCModels);
-                            dsNCModels = objGlobaldata.GetReportDetails(dsNCModels, objModel.nc_no, dsNCModels.Tables[0].Rows[0]["logged_by"].ToString(), "NON CONFORMANCE REPORT");
+                            dsNCModels = objGlobaldata.GetReportDetails(dsNCModels, objModel.nc_no, dsNCModels.Tables[0].Rows[0]["logged_by"].ToString(), "NON CONFORMANCE AND CORRECTIVE ACTION REPORT");
 
                             ViewBag.CompanyInfo = dsNCModels;
 
@@ -2531,6 +2557,34 @@ namespace ISOStd.Controllers
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
             return RedirectToAction("NCPDF", new { id_nc = objModel.id_nc });
+        }
+        public JsonResult FunGetNCImpactTypeList(string Impact_type)
+        {
+            if (Impact_type != null && Impact_type != "")
+            {
+                if (Impact_type.ToLower() == "low")
+                {
+                    MultiSelectList ImpactList = objGlobaldata.GetDropdownList("NC Impact Low");
+                    return Json(ImpactList);
+                }
+                else if (Impact_type.ToLower() == "moderate")
+                {
+                    MultiSelectList ImpactList = objGlobaldata.GetDropdownList("NC Impact Moderate");
+                    return Json(ImpactList);
+                }
+                else if (Impact_type.ToLower() == "high")
+                {
+                    MultiSelectList ImpactList = objGlobaldata.GetDropdownList("NC Impact High");
+                    return Json(ImpactList);
+                }
+                else if (Impact_type.ToLower() == "extreme")
+                {
+                    MultiSelectList ImpactList = objGlobaldata.GetDropdownList("NC Impact Extreme");
+                    return Json(ImpactList);
+                }
+            }
+            return Json("");
+
         }
 
     }

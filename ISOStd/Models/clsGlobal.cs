@@ -25,6 +25,42 @@ namespace ISOStd.Models
         private object fileUploader;
         private object mail;
 
+        //q&a department employees
+        public MultiSelectList GetQADeptEmployeeList()
+        {
+            EmployeeList emplist = new EmployeeList();
+            emplist.EmpList = new List<Employee>();
+            try
+            {
+                string Emp_Id = GetCurrentUserSession().empid;
+                string sSqlstmt = "select concat(emp_firstname,' ',ifnull(emp_middlename,' '),' ',ifnull(emp_lastname,' ')) as Empname, emp_no as Empid"
+                + " from t_hr_employee t,t_departments tt where emp_status = 1 and t.Dept_Id = tt.DeptId and DeptName like '%q&a' or '%q&a%' or 'q&a%' or '%q&a' or '%q&a%' or 'q&a%'";
+
+                DataSet dsEmp = Getdetails(sSqlstmt);// and CompanyId='" + sCompanyId+"'");
+                if (dsEmp.Tables.Count > 0 && dsEmp.Tables[0].Rows.Count > 0)
+                {
+                    for (int i = 0; i < dsEmp.Tables[0].Rows.Count; i++)
+                    {
+                        Employee emp = new Employee()
+                        {
+                            Empid = dsEmp.Tables[0].Rows[i]["Empid"].ToString(),
+                            Empname = Regex.Replace(dsEmp.Tables[0].Rows[i]["Empname"].ToString(), " +", " ")
+                        };
+                        emp.Empname = emp.Empname.Trim();
+                        emplist.EmpList.Add(emp);
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                AddFunctionalLog("Exception in GetQADeptEmployeeList: " + ex.ToString());
+            }
+
+            return new MultiSelectList(emplist.EmpList, "Empid", "Empname");
+
+        }
+
         //picking employees based on module name and field name
         public MultiSelectList GetSceenNotificationEmpList(string screen_name, string field_name)
         {
@@ -12024,6 +12060,7 @@ namespace ISOStd.Models
             
             switch(sType)
             {
+                case "NCImpact": return new string[] { "Low", "Moderate", "High", "Extreme" };
                 case "Issue Frequency Evaluation": return new string[] { "Quarterly", "Semi Annually", "Yearly" };
                 case "IssueImpact": return new string[] { "Low", "Moderate", "High","Extreme" };
                 case "KPIUnit": return new string[] { "Number", "Each", "%" };

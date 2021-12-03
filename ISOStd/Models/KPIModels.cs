@@ -387,6 +387,53 @@ namespace ISOStd.Models
             return false;
         }
 
+        //internal bool FunAddKPIMeasurableList(KPIModelsList objModelsList, string kpi_ref_no)
+        //{
+        //    try
+        //    {
+        //        string sSqlstmt = "delete from t_kpi_measurable_indicator where KPI_Id='" + objModelsList.KPIMList[0].KPI_Id + "'; ";
+
+        //        for (int i = 0; i < objModelsList.KPIMList.Count; i++)
+        //        {
+        //            string ref_no = kpi_ref_no + " - " + (i+1);
+        //            string sid_measurable = "null";
+        //            sSqlstmt = sSqlstmt + "insert into t_kpi_measurable_indicator(id_measurable,KPI_Id,kpi_ref_no,measurable_indicator,expected_value,expected_value_unit,kpi_type,monitoring_mechanism,frequency_eval,risk";
+
+        //            string sFieldValue = "", sFields = "", sValue = "",sStatement = ""; ;
+        //            if (objModelsList.KPIMList[i].id_measurable != null)
+        //            {
+        //                sid_measurable = objModelsList.KPIMList[i].id_measurable;
+        //            }
+        //            if (objModelsList.KPIMList[i].monitoring_frm_date != null && objModelsList.KPIMList[i].monitoring_frm_date > Convert.ToDateTime("01/01/0001 00:00:00"))
+        //            {
+        //                sStatement = sStatement + ", monitoring_frm_date= values(monitoring_frm_date)";
+        //                sFields = sFields + ", monitoring_frm_date";
+        //                sFieldValue = sFieldValue + ", '" + objModelsList.KPIMList[i].monitoring_frm_date.ToString("yyyy/MM/dd") + "'";
+        //            }
+        //            if (objModelsList.KPIMList[i].monitoring_to_date != null && objModelsList.KPIMList[i].monitoring_to_date > Convert.ToDateTime("01/01/0001 00:00:00"))
+        //            {
+        //                sStatement = sStatement + ", monitoring_to_date= values(monitoring_to_date)";
+        //                sFields = sFields + ", monitoring_to_date";
+        //                sFieldValue = sFieldValue + ", '" + objModelsList.KPIMList[i].monitoring_to_date.ToString("yyyy/MM/dd") + "'";
+        //            }
+        //            sSqlstmt = sSqlstmt + sFields;
+        //            sSqlstmt = sSqlstmt + ") values("+ sid_measurable + ",'" + objModelsList.KPIMList[0].KPI_Id + "','" + ref_no + "','" + objModelsList.KPIMList[i].measurable_indicator + "','" + objModelsList.KPIMList[i].expected_value + "','" + objModelsList.KPIMList[i].expected_value_unit + "','" + objModelsList.KPIMList[i].kpi_type + "','" + objModelsList.KPIMList[i].monitoring_mechanism + "','" + objModelsList.KPIMList[i].frequency_eval + "','" + objModelsList.KPIMList[i].risk + "'";
+        //            sSqlstmt = sSqlstmt + sFieldValue + ")";
+        //            sValue = " ON DUPLICATE KEY UPDATE "
+        //            + " id_measurable= values(id_measurable), KPI_Id= values(KPI_Id), kpi_ref_no = values(kpi_ref_no), measurable_indicator= values(measurable_indicator), expected_value= values(expected_value)"
+        //            + ", expected_value_unit= values(expected_value_unit), kpi_type= values(kpi_type), monitoring_mechanism= values(monitoring_mechanism), frequency_eval= values(frequency_eval), risk= values(risk)";
+        //            sSqlstmt = sSqlstmt + sValue;
+        //            sSqlstmt = sSqlstmt + sStatement + ";";
+        //        }
+        //        return objGlobalData.ExecuteQuery(sSqlstmt);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        objGlobalData.AddFunctionalLog("Exception in FunAddKPIMeasurableList: " + ex.ToString());
+        //    }
+        //    return false;
+        //}
+
         internal bool FunAddKPIMeasurableList(KPIModelsList objModelsList, string kpi_ref_no)
         {
             try
@@ -395,35 +442,32 @@ namespace ISOStd.Models
 
                 for (int i = 0; i < objModelsList.KPIMList.Count; i++)
                 {
-                    string ref_no = kpi_ref_no + " - " + (i+1);
+                    string ref_no = kpi_ref_no + " - " + (i + 1);
                     string sid_measurable = "null";
                     sSqlstmt = sSqlstmt + "insert into t_kpi_measurable_indicator(id_measurable,KPI_Id,kpi_ref_no,measurable_indicator,expected_value,expected_value_unit,kpi_type,monitoring_mechanism,frequency_eval,risk";
 
-                    string sFieldValue = "", sFields = "", sValue = "",sStatement = ""; ;
+                    string sFieldValue = "", sFields = "" ;
                     if (objModelsList.KPIMList[i].id_measurable != null)
                     {
                         sid_measurable = objModelsList.KPIMList[i].id_measurable;
                     }
                     if (objModelsList.KPIMList[i].monitoring_frm_date != null && objModelsList.KPIMList[i].monitoring_frm_date > Convert.ToDateTime("01/01/0001 00:00:00"))
                     {
-                        sStatement = sStatement + ", monitoring_frm_date= values(monitoring_frm_date)";
+
                         sFields = sFields + ", monitoring_frm_date";
                         sFieldValue = sFieldValue + ", '" + objModelsList.KPIMList[i].monitoring_frm_date.ToString("yyyy/MM/dd") + "'";
                     }
                     if (objModelsList.KPIMList[i].monitoring_to_date != null && objModelsList.KPIMList[i].monitoring_to_date > Convert.ToDateTime("01/01/0001 00:00:00"))
                     {
-                        sStatement = sStatement + ", monitoring_to_date= values(monitoring_to_date)";
+                        
                         sFields = sFields + ", monitoring_to_date";
                         sFieldValue = sFieldValue + ", '" + objModelsList.KPIMList[i].monitoring_to_date.ToString("yyyy/MM/dd") + "'";
                     }
                     sSqlstmt = sSqlstmt + sFields;
-                    sSqlstmt = sSqlstmt + ") values("+ sid_measurable + ",'" + objModelsList.KPIMList[0].KPI_Id + "','" + ref_no + "','" + objModelsList.KPIMList[i].measurable_indicator + "','" + objModelsList.KPIMList[i].expected_value + "','" + objModelsList.KPIMList[i].expected_value_unit + "','" + objModelsList.KPIMList[i].kpi_type + "','" + objModelsList.KPIMList[i].monitoring_mechanism + "','" + objModelsList.KPIMList[i].frequency_eval + "','" + objModelsList.KPIMList[i].risk + "'";
-                    sSqlstmt = sSqlstmt + sFieldValue + ")";
-                    sValue = " ON DUPLICATE KEY UPDATE "
-                    + " id_measurable= values(id_measurable), KPI_Id= values(KPI_Id), kpi_ref_no = values(kpi_ref_no), measurable_indicator= values(measurable_indicator), expected_value= values(expected_value)"
-                    + ", expected_value_unit= values(expected_value_unit), kpi_type= values(kpi_type), monitoring_mechanism= values(monitoring_mechanism), frequency_eval= values(frequency_eval), risk= values(risk)";
-                    sSqlstmt = sSqlstmt + sValue;
-                    sSqlstmt = sSqlstmt + sStatement + ";";
+                    sSqlstmt = sSqlstmt + ") values(" + sid_measurable + ",'" + objModelsList.KPIMList[0].KPI_Id + "','" + ref_no + "','" + objModelsList.KPIMList[i].measurable_indicator + "','" + objModelsList.KPIMList[i].expected_value + "','" + objModelsList.KPIMList[i].expected_value_unit + "','" + objModelsList.KPIMList[i].kpi_type + "','" + objModelsList.KPIMList[i].monitoring_mechanism + "','" + objModelsList.KPIMList[i].frequency_eval + "','" + objModelsList.KPIMList[i].risk + "'";
+                    sSqlstmt = sSqlstmt + sFieldValue + ");";
+                 
+                    
                 }
                 return objGlobalData.ExecuteQuery(sSqlstmt);
             }

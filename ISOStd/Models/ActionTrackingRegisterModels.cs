@@ -1,18 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using MySql.Data.MySqlClient;
-using System.Data;
-using System.Web.Mvc;
-using System.IO;
 using System.ComponentModel.DataAnnotations;
 
 namespace ISOStd.Models
 {
     public class ActionTrackingRegisterModels
     {
-        clsGlobal objGlobalData = new clsGlobal();
+        private clsGlobal objGlobalData = new clsGlobal();
 
         [Display(Name = "Id")]
         public int id_action { get; set; }
@@ -72,6 +66,7 @@ namespace ISOStd.Models
             }
             return false;
         }
+
         internal bool FunAddActionTrackingRegister(ActionTrackingRegisterModels objTrack)
         {
             try
@@ -106,17 +101,16 @@ namespace ISOStd.Models
                 sSqlstmt = sSqlstmt + sFieldValue + ")";
                 if (objGlobalData.ExecuteQuery(sSqlstmt))
                 {
-
                     return true;
                 }
             }
             catch (Exception ex)
             {
                 objGlobalData.AddFunctionalLog("Exception in FunAddActionTrackingRegister: " + ex.ToString());
-
             }
             return false;
         }
+
         internal bool FunUpdateActionTrackingRegister(ActionTrackingRegisterModels objTrack)
         {
             try
@@ -140,12 +134,10 @@ namespace ISOStd.Models
 
                 sSqlstmt = sSqlstmt + " where id_action='" + objTrack.id_action + "'";
                 return objGlobalData.ExecuteQuery(sSqlstmt);
-
             }
             catch (Exception ex)
             {
                 objGlobalData.AddFunctionalLog("Exception in FunUpdateActionTrackingRegister: " + ex.ToString());
-
             }
             return false;
         }

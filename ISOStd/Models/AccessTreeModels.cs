@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Web;
 
 namespace ISOStd.Models
 {
     public class AccessTreeModels
     {
-        clsGlobal objGlobalData = new clsGlobal();
+        private clsGlobal objGlobalData = new clsGlobal();
 
         [Display(Name = "Id")]
         public string id { get; set; }
@@ -23,7 +21,7 @@ namespace ISOStd.Models
         public string child_level { get; set; }
 
         [Display(Name = "Branch")]
-        public string BranchName { get; set; }        
+        public string BranchName { get; set; }
 
         [Display(Name = "Branchtree")]
         public string BranchTree { get; set; }
@@ -37,13 +35,13 @@ namespace ISOStd.Models
                 if (selected != "")
                 {
                     selected = selected.Substring(0, (selected.Length - 1));
-                } 
-                    string sqlstmt = "update t_access set BranchTree ='" + selected + "' where Id_access='" + Id + "'";
-                    objGlobalData.ExecuteQuery(sqlstmt);
-                    //}
+                }
+                string sqlstmt = "update t_access set BranchTree ='" + selected + "' where Id_access='" + Id + "'";
+                objGlobalData.ExecuteQuery(sqlstmt);
+                //}
 
-                    return objGlobalData.UpdateBranchdetails(role_id);
-                   
+                return objGlobalData.UpdateBranchdetails(role_id);
+
                 //}
             }
             catch (Exception ex)
@@ -58,5 +56,4 @@ namespace ISOStd.Models
     {
         public List<AccessTreeModels> TreeList { get; set; }
     }
-
 }

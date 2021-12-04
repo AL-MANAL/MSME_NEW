@@ -1,23 +1,20 @@
-﻿using System;
+﻿using ISOStd.Filters;
+using ISOStd.Models;
+using Rotativa;
+using System;
 using System.Collections.Generic;
+using System.Data;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using ISOStd.Models;
-using System.Data;
-using System.Net;
-using System.IO;
-using PagedList;
-using PagedList.Mvc;
-using Rotativa;
-using ISOStd.Filters;
 
 namespace ISOStd.Controllers
 {
     [PreventFromUrl]
     public class MeetingController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
+        private clsGlobal objGlobaldata = new clsGlobal();
 
         public MeetingController()
         {
@@ -26,7 +23,7 @@ namespace ISOStd.Controllers
 
         //
         // GET: /Meeting/
-        
+
         public ActionResult Index()
         {
             return View();
@@ -34,7 +31,7 @@ namespace ISOStd.Controllers
 
         //
         // GET: /Meeting/AddMeetingType
-        
+
         [AllowAnonymous]
         public ActionResult AddMeetingType(string sMeetingId)
         {
@@ -53,8 +50,7 @@ namespace ISOStd.Controllers
             return View();
         }
 
-         
-        public ActionResult InitializeAddMeetingType(string sMeetingId="")
+        public ActionResult InitializeAddMeetingType(string sMeetingId = "")
         {
             MeetingTypeModels objMeetingType = new MeetingTypeModels();
             ViewBag.dsMeeting = objMeetingType.GetmeetingtypeListbox();
@@ -71,7 +67,6 @@ namespace ISOStd.Controllers
             return View();
         }
 
-         
         [HttpPost]
         public JsonResult doesMeetingTypeExist(string MeetingName)
         {
@@ -84,7 +79,7 @@ namespace ISOStd.Controllers
 
         //
         // POST: /Meeting/AddMeetingType
-         
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult AddMeetingType(MeetingTypeModels objMeetingTypeModels, FormCollection form)
@@ -96,17 +91,16 @@ namespace ISOStd.Controllers
                 if (Request["button"].Equals("Save"))
                 {
                     objMeetingTypeModels.MeetingName = form["MeetingName"];
-                        if (objMeetingTypeModels.FunAddMeetingType(objMeetingTypeModels))
-                        {
-                            TempData["Successdata"] = "Added Meeting type details successfully";
-                        }
-                        else
-                        {
-                            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                        }
+                    if (objMeetingTypeModels.FunAddMeetingType(objMeetingTypeModels))
+                    {
+                        TempData["Successdata"] = "Added Meeting type details successfully";
+                    }
+                    else
+                    {
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                    }
 
                     return InitializeAddMeetingType();
-
                 }
                 else if (Request["button"].Equals("Save Agenda"))
                 {
@@ -124,9 +118,7 @@ namespace ISOStd.Controllers
                         TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                     }
                     return InitializeAddMeetingType(objMeetingAgenda.MeetingType);
-                  
                 }
-                
             }
             catch (Exception ex)
             {
@@ -137,13 +129,11 @@ namespace ISOStd.Controllers
             return InitializeAddMeetingType();
         }
 
-
         //
         // GET: /Meeting/MeetingTypeDelete
         [AllowAnonymous]
         public ActionResult MeetingTypeDelete(string Id)
         {
-            
             ViewBag.SubMenutype = "MeetingType";
             MeetingTypeModels objMeetingModels = new MeetingTypeModels();
             try
@@ -151,12 +141,10 @@ namespace ISOStd.Controllers
                 if (objMeetingModels.FunDeleteMeetingType(Id))
                 {
                     TempData["Successdata"] = "Deleted Meeting type details successfully";
-                   
                 }
                 else
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                  
                 }
             }
             catch (Exception ex)
@@ -192,12 +180,12 @@ namespace ISOStd.Controllers
             //    TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             //}
 
-           // return Json("Success");
+            // return Json("Success");
         }
-               
+
         //
         // GET: /Meeting/AddMeetingAgenda
-         
+
         [AllowAnonymous]
         public ActionResult AddMeetingAgenda()
         {
@@ -205,7 +193,6 @@ namespace ISOStd.Controllers
             return InitializeAddMeetingAgenda();
         }
 
-         
         public ActionResult InitializeAddMeetingAgenda()
         {
             //MeetingAgendaModels objAgenda = new MeetingAgendaModels();
@@ -218,14 +205,14 @@ namespace ISOStd.Controllers
 
         //
         // POST: /Company/AddMeetingAgenda
-         
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult AddMeetingAgenda(MeetingAgendaModels objMeetingAgenda,  FormCollection form)
+        public ActionResult AddMeetingAgenda(MeetingAgendaModels objMeetingAgenda, FormCollection form)
         {
             ViewBag.SubMenutype = "Meeting";
 
-            objMeetingAgenda.MeetingType = form["MeetingType"];            
+            objMeetingAgenda.MeetingType = form["MeetingType"];
 
             try
             {
@@ -247,11 +234,11 @@ namespace ISOStd.Controllers
             }
 
             return InitializeAddMeetingAgenda();
-        }     
-                     
+        }
+
         //
         // GET: /Meeting/AddMeeting
-         
+
         [AllowAnonymous]
         public ActionResult AddMeeting()
         {
@@ -259,7 +246,7 @@ namespace ISOStd.Controllers
         }
 
         // GET: /Meeting/InitilizeAddNCRLog
-         
+
         private ActionResult InitilizeAddMeeting()
         {
             try
@@ -282,7 +269,6 @@ namespace ISOStd.Controllers
             return View();
         }
 
-         
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult AddMeeting(MeetingModels objMeeting, FormCollection form)
@@ -315,14 +301,14 @@ namespace ISOStd.Controllers
                 }
                 else if (objMeeting.NotificationPeriod == "Minutes" && decimal.TryParse(objMeeting.NotificationValue, out Notificationval))
                 {
-                    Notificationval = Notificationval/1440 ;
+                    Notificationval = Notificationval / 1440;
                 }
                 objMeeting.NotificationDays = Convert.ToDecimal(Notificationval);
 
                 //objMeeting.meeting_ref = form["meeting_ref"];
-               
-                    objMeeting.MeetingCreatedBy = objGlobaldata.GetCurrentUserSession().empid;
-                
+
+                objMeeting.MeetingCreatedBy = objGlobaldata.GetCurrentUserSession().empid;
+
                 objMeeting.AttendeesUser = form["AttendeesUser"];
                 DateTime dateValue;
 
@@ -337,7 +323,6 @@ namespace ISOStd.Controllers
                     }
                 }
 
-                
                 List<string> lstAgendaId = new List<string>();
                 if (form["Agendas"] != null && form["Agendas"] != "")
                 {
@@ -353,7 +338,6 @@ namespace ISOStd.Controllers
 
                     if (form["company_name" + i] != null && form["company_name" + i] != "")
                     {
-
                         objModels.company_name = form["company_name" + i];
                         objModels.attendee_name = form["attendee_name" + i];
                         objModels.designation = form["designation" + i];
@@ -364,7 +348,7 @@ namespace ISOStd.Controllers
 
                 if (objMeeting.FunAddMeetingSchedule(objMeeting, objModelsList))
                 {
-                    TempData["Successdata"] = "Added Meeting details successfully  with Reference Number '" + objMeeting.meeting_ref + "'"; 
+                    TempData["Successdata"] = "Added Meeting details successfully  with Reference Number '" + objMeeting.meeting_ref + "'";
                     //Send MOM email
                     MeetingItemModels MeetingItem = new MeetingItemModels();
                     MeetingItem.SendMOMEmail(objMeeting.meeting_ref, "Meeting Request");
@@ -383,10 +367,9 @@ namespace ISOStd.Controllers
             return RedirectToAction("MeetingList");
         }
 
-
         //
         // GET: /Meeting/AddMeeting
-         
+
         [AllowAnonymous]
         public ActionResult AddMeetingNow()
         {
@@ -394,7 +377,7 @@ namespace ISOStd.Controllers
         }
 
         // GET: /Meeting/InitilizeAddNCRLog
-         
+
         private ActionResult InitilizeAddMeetingNow()
         {
             ViewBag.SubMenutype = "AddMeetingNow";
@@ -403,7 +386,7 @@ namespace ISOStd.Controllers
                 MeetingTypeModels objMeetingType = new MeetingTypeModels();
                 ViewBag.MeetingType = objMeetingType.GetmeetingtypeListbox();
                 ViewBag.item_status = objGlobaldata.GetDropdownList("Meeting Item Status");
-               // ViewBag.item_status = objGlobaldata.GetConstantValue("AuditStatus");
+                // ViewBag.item_status = objGlobaldata.GetConstantValue("AuditStatus");
                 ViewBag.EmpLists = objGlobaldata.GetHrEmployeeListbox();
                 ViewBag.NotificationPeriod = objGlobaldata.GetConstantValueKeyValuePair("NotificationPeriodMeeting");
             }
@@ -415,7 +398,6 @@ namespace ISOStd.Controllers
             return View();
         }
 
-         
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult AddMeetingNow(MeetingModels objMeeting, FormCollection form, MeetingItemModels MeetingItem, HttpPostedFileBase Attendees)
@@ -424,14 +406,13 @@ namespace ISOStd.Controllers
 
             try
             {
-
                 //Code to get Meeting details
                 objMeeting.meeting_type_desc = form["meeting_type_desc"];
                 objMeeting.last_meeting_id = form["last_meeting_id"];
                 objMeeting.meeting_ref = form["meeting_ref"];
-              
+
                 objMeeting.MeetingCreatedBy = objGlobaldata.GetCurrentUserSession().empid;
-                
+
                 objMeeting.NotificationPeriod = form["NotificationPeriod"];
                 objMeeting.NotificationValue = form["NotificationValue"];
 
@@ -455,7 +436,7 @@ namespace ISOStd.Controllers
                     Notificationval = Notificationval / 1440;
                 }
                 objMeeting.NotificationDays = Convert.ToDecimal(Notificationval);
-                
+
                 //objMeeting.meeting_ref = form["meeting_ref"];
                 //objMeeting.MeetingCreatedBy = objGlobaldata.GetCurrentUserSession().empid;
 
@@ -508,7 +489,7 @@ namespace ISOStd.Controllers
 
                 if (form["itemcnt"] != null && Convert.ToInt16(form["itemcnt"]) > 0)
                 {
-                    string sitem_discussed = "", saction_agreed = "", saction_owner = "", sitem_status = "", sAgendaId = "", sremarks="";
+                    string sitem_discussed = "", saction_agreed = "", saction_owner = "", sitem_status = "", sAgendaId = "", sremarks = "";
 
                     for (int i = 1; i <= Convert.ToInt16(form["itemcnt"]); i++)
                     {
@@ -563,7 +544,6 @@ namespace ISOStd.Controllers
                 }
                 //end
 
-
                 if (objMeeting.FunAddUnplanMeetingSchedule(objMeeting) && objMeeting.FunAddMeeting(objMeeting, objMeetingItemList, lstAgendaId))
                 {
                     TempData["Successdata"] = "Added Meeting details successfully";
@@ -574,7 +554,7 @@ namespace ISOStd.Controllers
                 else
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                }   
+                }
 
                 //if ()
                 //{
@@ -599,39 +579,33 @@ namespace ISOStd.Controllers
         }
 
         // GET: /Meeting/MeetingList
-         
+
         [AllowAnonymous]
         public JsonResult MeetingDelete(FormCollection form)
         {
             try
             {
-              
-                   
-                        if (form["meeting_id"] != null && form["meeting_id"] != "")
-                        {
+                if (form["meeting_id"] != null && form["meeting_id"] != "")
+                {
+                    MeetingModels Doc = new MeetingModels();
+                    string smeeting_id = form["meeting_id"];
 
-                            MeetingModels Doc = new MeetingModels();
-                            string smeeting_id = form["meeting_id"];
-
-
-                            if (Doc.FunDeleteMeetingDoc(smeeting_id))
-                            {
-                                TempData["Successdata"] = "Meeting deleted successfully";
-                                return Json("Success");
-                            }
-                            else
-                            {
-                                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                                return Json("Failed");
-                            }
-                        }
-                        else
-                        {
-                            TempData["alertdata"] = "Meeting Id cannot be Null or empty";
-                            return Json("Failed");
-                        }
-                    
-                
+                    if (Doc.FunDeleteMeetingDoc(smeeting_id))
+                    {
+                        TempData["Successdata"] = "Meeting deleted successfully";
+                        return Json("Success");
+                    }
+                    else
+                    {
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                        return Json("Failed");
+                    }
+                }
+                else
+                {
+                    TempData["alertdata"] = "Meeting Id cannot be Null or empty";
+                    return Json("Failed");
+                }
             }
             catch (Exception ex)
             {
@@ -641,7 +615,6 @@ namespace ISOStd.Controllers
             return Json("Failed");
         }
 
-         
         [AllowAnonymous]
         public ActionResult MeetingList(string branch_name)
         {
@@ -650,8 +623,8 @@ namespace ISOStd.Controllers
             MeetingModelsList objMeetingModelsList = new MeetingModelsList();
             objMeetingModelsList.MeetingMList = new List<MeetingModels>();
 
-            MeetingTypeModels objType = new MeetingTypeModels();           
-            
+            MeetingTypeModels objType = new MeetingTypeModels();
+
             try
             {
                 UserCredentials objUserInfo = (UserCredentials)Session["UserCredentials"];
@@ -664,7 +637,7 @@ namespace ISOStd.Controllers
                 string sSqlstmt = "SELECT distinct (MeetingName) as meeting_type,meeting_id, last_meeting_id, meeting_date,  meeting_ref,  Attendees, AttendeesUser, Venue"
                     + ", NotificationPeriod, NotificationValue,ext_attendees,ext_email  from t_meeting, t_meetingtype  where meeting_type_desc= t_meetingtype.Id and Active='1'";
 
-                //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS  
+                //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS
 
                 if (branch_name != null && branch_name != "")
                 {
@@ -681,9 +654,7 @@ namespace ISOStd.Controllers
                 DataSet dsMeetingList = objGlobaldata.Getdetails(sSqlstmt);
 
                 if (dsMeetingList.Tables.Count > 0)
-                {            
-                        
-                    
+                {
                     for (int i = 0; i < dsMeetingList.Tables[0].Rows.Count; i++)
                     {
                         DateTime dtMeetingDate = Convert.ToDateTime(dsMeetingList.Tables[0].Rows[i]["meeting_date"].ToString());
@@ -746,7 +717,7 @@ namespace ISOStd.Controllers
                 string sSqlstmt = "SELECT distinct (MeetingName) as meeting_type,meeting_id, last_meeting_id, meeting_date,  meeting_ref,  Attendees, AttendeesUser, Venue"
                     + ", NotificationPeriod, NotificationValue,ext_attendees,ext_email  from t_meeting, t_meetingtype  where meeting_type_desc= t_meetingtype.Id and Active='1'";
 
-                //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS  
+                //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS
 
                 if (branch_name != null && branch_name != "")
                 {
@@ -763,8 +734,7 @@ namespace ISOStd.Controllers
                 DataSet dsMeetingList = objGlobaldata.Getdetails(sSqlstmt);
 
                 if (dsMeetingList.Tables.Count > 0)
-                {                                       
-
+                {
                     for (int i = 0; i < dsMeetingList.Tables[0].Rows.Count; i++)
                     {
                         DateTime dtMeetingDate = Convert.ToDateTime(dsMeetingList.Tables[0].Rows[i]["meeting_date"].ToString());
@@ -803,6 +773,7 @@ namespace ISOStd.Controllers
             }
             return Json("Success");
         }
+
         // GET: /Meeting/MeetingScheduleEdit
 
         [AllowAnonymous]
@@ -814,13 +785,12 @@ namespace ISOStd.Controllers
 
                 if (Request.QueryString["meeting_id"] != null && Request.QueryString["meeting_id"] != "")
                 {
-
                     string smeeting_id = Request.QueryString["meeting_id"];
 
                     MeetingTypeModels objType = new MeetingTypeModels();
                     MeetingAgendaModels objMeetingAgendaModels = new MeetingAgendaModels();
 
-                    //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS  
+                    //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS
                     string sSqlstmt = "SELECT agenda_id, meeting_id, last_meeting_id, meeting_date, meeting_type_desc, meeting_ref,  Attendees, AttendeesUser, Venue"
                         + ", NotificationPeriod, NotificationValue,ext_attendees,ext_email,remarks from t_meeting where meeting_id='" + smeeting_id + "'";
 
@@ -840,7 +810,7 @@ namespace ISOStd.Controllers
                             // Attendees = (dsMeetingList.Tables[0].Rows[0]["Attendees"].ToString()),
                             agenda_id = dsMeetingList.Tables[0].Rows[0]["agenda_id"].ToString(),
                             Venue = dsMeetingList.Tables[0].Rows[0]["Venue"].ToString(),
-                            AttendeesUser =(dsMeetingList.Tables[0].Rows[0]["AttendeesUser"].ToString()),
+                            AttendeesUser = (dsMeetingList.Tables[0].Rows[0]["AttendeesUser"].ToString()),
                             NotificationPeriod = dsMeetingList.Tables[0].Rows[0]["NotificationPeriod"].ToString(),
                             NotificationValue = dsMeetingList.Tables[0].Rows[0]["NotificationValue"].ToString(),
                             ext_attendees = dsMeetingList.Tables[0].Rows[0]["ext_attendees"].ToString(),
@@ -914,12 +884,11 @@ namespace ISOStd.Controllers
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
 
-
             return RedirectToAction("MeetingList");
         }
 
         //POST: /Meeting/MeetingEdit
-         
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult MeetingScheduleEdit(MeetingModels objMeetingModels, FormCollection form, HttpPostedFileBase fileAttendees)
@@ -941,11 +910,11 @@ namespace ISOStd.Controllers
                         objMeetingModels.meeting_date = DateTime.Parse(dateValue.ToString("dd/MM/yyyy") + " " + iHr + ":" + iMin + ":00");
                     }
                 }
-               
+
                 objMeetingModels.meeting_ref = smeeting_ref;
-             
-                    objMeetingModels.MeetingCreatedBy = objGlobaldata.GetCurrentUserSession().empid;
-                
+
+                objMeetingModels.MeetingCreatedBy = objGlobaldata.GetCurrentUserSession().empid;
+
                 objMeetingModels.agenda_id = form["Agendas"];
                 objMeetingModels.meeting_type_desc = form["meeting_type_desc"];
                 objMeetingModels.meeting_id = form["meeting_id"];
@@ -975,7 +944,7 @@ namespace ISOStd.Controllers
                     Notificationval = Notificationval / 1440;
                 }
                 objMeetingModels.NotificationDays = Convert.ToDecimal(Notificationval);
-               
+
                 objMeetingModels.AttendeesUser = form["AttendeesUser"];
                 MeetingModelsList objModelsList = new MeetingModelsList();
                 objModelsList.MeetingMList = new List<MeetingModels>();
@@ -1017,7 +986,7 @@ namespace ISOStd.Controllers
         }
 
         // GET: /Meeting/MeetingDetails
-         
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult MeetingDetails(FormCollection form)
@@ -1034,10 +1003,9 @@ namespace ISOStd.Controllers
             {
                 if (smeeting_ref != "")
                 {
-
                     //string smeeting_ref = Request.QueryString["meeting_ref"];
 
-                    //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS  
+                    //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS
                     string sSqlstmt = "SELECT agenda_id, meeting_id, last_meeting_id, meeting_date, meeting_type_desc, meeting_ref,  Attendees, AttendeesUser, Venue ,ext_attendees,ext_email "
                         + "from t_meeting where meeting_ref='" + smeeting_ref + "' order by agenda_id desc limit 1";
 
@@ -1081,7 +1049,6 @@ namespace ISOStd.Controllers
                         DataSet dsItems = new DataSet();
                         dsItems = objGlobaldata.Getdetails(sSqlstmt);
                         ViewBag.Itemlist = dsItems;
-                 
                     }
                     else
                     {
@@ -1090,7 +1057,7 @@ namespace ISOStd.Controllers
                 }
                 else
                 {
-                   // TempData["alertdata"] = "Meeting Ref cannot be Null or empty";
+                    // TempData["alertdata"] = "Meeting Ref cannot be Null or empty";
                     return View();
                 }
             }
@@ -1108,16 +1075,14 @@ namespace ISOStd.Controllers
             string customSwitches = string.Format("--header-html  \"{0}\" " +
                                  "--header-spacing \"0\" ", header);
 
-            return new ViewAsPdf("MeetingDetailsToPDF","Meeting")
+            return new ViewAsPdf("MeetingDetailsToPDF", "Meeting")
             {
                 //FileName = "MeetingDetails.pdf",
                 Cookies = cookieCollection,
                 CustomSwitches = customSwitches
             };
-           
         }
 
-         
         //[AllowAnonymous]
         //public ActionResult MeetingDetailsToPDF(string smeeting_ref)
         //{
@@ -1134,10 +1099,9 @@ namespace ISOStd.Controllers
 
         //        if (smeeting_ref!="")
         //        {
-
         //            //string smeeting_ref = Request.QueryString["meeting_ref"];
 
-        //            //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS  
+        //            //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS
         //            string sSqlstmt = "SELECT agenda_id, meeting_id, last_meeting_id, meeting_date, meeting_type_desc, meeting_ref,  Attendees, AttendeesUser, Venue "
         //                + "from t_meeting where meeting_ref='" + smeeting_ref + "' order by agenda_id desc limit 1";
 
@@ -1190,7 +1154,6 @@ namespace ISOStd.Controllers
 
         //}
 
-         
         [AllowAnonymous]
         public ActionResult MeetingDetails()
         {
@@ -1207,10 +1170,9 @@ namespace ISOStd.Controllers
 
                 if (Request.QueryString["meeting_ref"] != null && Request.QueryString["meeting_ref"] != "")
                 {
+                    string smeeting_ref = Request.QueryString["meeting_ref"];
 
-                    string smeeting_ref = Request.QueryString["meeting_ref"];                    
-
-                    //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS  
+                    //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS
                     string sSqlstmt = "SELECT agenda_id, meeting_id, last_meeting_id, meeting_date, meeting_type_desc, meeting_ref,  Attendees, AttendeesUser, Venue,ext_attendees,ext_email,remarks,action_status,status_update_on "
                         + "from t_meeting where meeting_ref='" + smeeting_ref + "' order by agenda_id desc limit 1";
 
@@ -1234,7 +1196,7 @@ namespace ISOStd.Controllers
                             ext_attendees = dsMeetingList.Tables[0].Rows[0]["ext_attendees"].ToString(),
                             ext_email = dsMeetingList.Tables[0].Rows[0]["ext_email"].ToString(),
                             remarks = dsMeetingList.Tables[0].Rows[0]["remarks"].ToString(),
-                            action_status =objGlobaldata.GetDropdownitemById(dsMeetingList.Tables[0].Rows[0]["action_status"].ToString()),
+                            action_status = objGlobaldata.GetDropdownitemById(dsMeetingList.Tables[0].Rows[0]["action_status"].ToString()),
                         };
                         DateTime dtValue;
                         if (dsMeetingList.Tables[0].Rows[0]["status_update_on"].ToString() != ""
@@ -1246,7 +1208,7 @@ namespace ISOStd.Controllers
                         //{
                         //    ViewBag.attendee = dsMeetingList.Tables[0].Rows[0]["AttendeesUser"].ToString().Split(',');
                         //}
-                        
+
                         ViewBag.meeting_id = dsMeetingList.Tables[0].Rows[0]["meeting_id"].ToString();
                         ViewBag.Agenda_Id = dsMeetingList.Tables[0].Rows[0]["agenda_id"].ToString();
 
@@ -1278,10 +1240,8 @@ namespace ISOStd.Controllers
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
             return RedirectToAction("MeetingList");
-            
         }
 
-         
         [AllowAnonymous]
         public ActionResult MeetingInfo(int id)
         {
@@ -1294,39 +1254,38 @@ namespace ISOStd.Controllers
 
             try
             {
-                    string sSqlstmt = "SELECT agenda_id, meeting_id, last_meeting_id, meeting_date, meeting_type_desc, meeting_ref,  Attendees, AttendeesUser, Venue,ext_attendees,ext_email "
-                        + "from t_meeting where meeting_id='" + id + "' order by agenda_id desc limit 1";
+                string sSqlstmt = "SELECT agenda_id, meeting_id, last_meeting_id, meeting_date, meeting_type_desc, meeting_ref,  Attendees, AttendeesUser, Venue,ext_attendees,ext_email "
+                    + "from t_meeting where meeting_id='" + id + "' order by agenda_id desc limit 1";
 
-                    DataSet dsMeetingList = objGlobaldata.Getdetails(sSqlstmt);
+                DataSet dsMeetingList = objGlobaldata.Getdetails(sSqlstmt);
 
-                    if (dsMeetingList.Tables.Count > 0 && dsMeetingList.Tables[0].Rows.Count > 0)
+                if (dsMeetingList.Tables.Count > 0 && dsMeetingList.Tables[0].Rows.Count > 0)
+                {
+                    DateTime dtMeetingDate = Convert.ToDateTime(dsMeetingList.Tables[0].Rows[0]["meeting_date"].ToString());
+
+                    objMeetingModels = new MeetingModels
                     {
-                        DateTime dtMeetingDate = Convert.ToDateTime(dsMeetingList.Tables[0].Rows[0]["meeting_date"].ToString());
+                        meeting_id = dsMeetingList.Tables[0].Rows[0]["meeting_id"].ToString(),
+                        last_meeting_id = dsMeetingList.Tables[0].Rows[0]["last_meeting_id"].ToString(),
+                        meeting_type_desc = objType.GetMeetingTypeNameById(dsMeetingList.Tables[0].Rows[0]["meeting_type_desc"].ToString()),
+                        meeting_date = dtMeetingDate,
+                        meeting_ref = dsMeetingList.Tables[0].Rows[0]["meeting_ref"].ToString(),
+                        Attendees = (dsMeetingList.Tables[0].Rows[0]["Attendees"].ToString()),
+                        agenda_id = objMeetingAgendaModels.GetMeetingAgendaNameById(dsMeetingList.Tables[0].Rows[0]["agenda_id"].ToString()),
+                        Venue = dsMeetingList.Tables[0].Rows[0]["Venue"].ToString(),
+                        AttendeesUser = objGlobaldata.GetMultiHrEmpNameById(dsMeetingList.Tables[0].Rows[0]["AttendeesUser"].ToString()),
+                        ext_attendees = dsMeetingList.Tables[0].Rows[0]["ext_attendees"].ToString(),
+                        ext_email = dsMeetingList.Tables[0].Rows[0]["ext_email"].ToString(),
+                    };
 
-                        objMeetingModels = new MeetingModels
-                        {
-                            meeting_id = dsMeetingList.Tables[0].Rows[0]["meeting_id"].ToString(),
-                            last_meeting_id = dsMeetingList.Tables[0].Rows[0]["last_meeting_id"].ToString(),
-                            meeting_type_desc = objType.GetMeetingTypeNameById(dsMeetingList.Tables[0].Rows[0]["meeting_type_desc"].ToString()),
-                            meeting_date = dtMeetingDate,
-                            meeting_ref = dsMeetingList.Tables[0].Rows[0]["meeting_ref"].ToString(),
-                            Attendees = (dsMeetingList.Tables[0].Rows[0]["Attendees"].ToString()),
-                            agenda_id = objMeetingAgendaModels.GetMeetingAgendaNameById(dsMeetingList.Tables[0].Rows[0]["agenda_id"].ToString()),
-                            Venue = dsMeetingList.Tables[0].Rows[0]["Venue"].ToString(),
-                            AttendeesUser = objGlobaldata.GetMultiHrEmpNameById(dsMeetingList.Tables[0].Rows[0]["AttendeesUser"].ToString()),
-                            ext_attendees = dsMeetingList.Tables[0].Rows[0]["ext_attendees"].ToString(),
-                            ext_email = dsMeetingList.Tables[0].Rows[0]["ext_email"].ToString(),
-                        };
-                   
-                        sSqlstmt = "select item_no, t_meeting_items.Agenda_Id, item_discussed, action_agreed, due_date, action_owner,"
-                        + "item_status, completiondate,t_meeting_items.remarks,upload from t_meeting_items, t_meeting where t_meeting_items.meeting_ref=t_meeting.meeting_ref and"
-                        + " t_meeting.meeting_ref='" + dsMeetingList.Tables[0].Rows[0]["meeting_ref"].ToString() + "' order by item_no desc";
-                        DataSet dsItems = new DataSet();
-                        dsItems = objGlobaldata.Getdetails(sSqlstmt);
-                        ViewBag.Itemlist = dsItems;
-                        return View(objMeetingModels);
-                    }
-                    
+                    sSqlstmt = "select item_no, t_meeting_items.Agenda_Id, item_discussed, action_agreed, due_date, action_owner,"
+                    + "item_status, completiondate,t_meeting_items.remarks,upload from t_meeting_items, t_meeting where t_meeting_items.meeting_ref=t_meeting.meeting_ref and"
+                    + " t_meeting.meeting_ref='" + dsMeetingList.Tables[0].Rows[0]["meeting_ref"].ToString() + "' order by item_no desc";
+                    DataSet dsItems = new DataSet();
+                    dsItems = objGlobaldata.Getdetails(sSqlstmt);
+                    ViewBag.Itemlist = dsItems;
+                    return View(objMeetingModels);
+                }
             }
             catch (Exception ex)
             {
@@ -1334,15 +1293,14 @@ namespace ISOStd.Controllers
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
             return RedirectToAction("MeetingList");
-
         }
+
         // GET: /Meeting/MeetingEdit
 
-         
         [AllowAnonymous]
         public ActionResult MeetingEdit()
         {
-            ViewBag.SubMenutype = "MOM";           
+            ViewBag.SubMenutype = "MOM";
 
             MeetingTypeModels objType = new MeetingTypeModels();
             MeetingAgendaModels objMeetingAgendaModels = new MeetingAgendaModels();
@@ -1354,13 +1312,12 @@ namespace ISOStd.Controllers
 
                 if (Request.QueryString["meeting_ref"] != null && Request.QueryString["meeting_ref"] != "")
                 {
-
                     string sMeeting_ref = Request.QueryString["meeting_ref"];
                     ViewBag.meeting_ref = sMeeting_ref;
-                                                          
-                    //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS  
-                     string sSqlstmt = "SELECT agenda_id, meeting_id, last_meeting_id, meeting_date, meeting_type_desc, meeting_ref,  Attendees, AttendeesUser, Venue"
-                        +" from t_meeting where meeting_ref='" + sMeeting_ref + "' order by meeting_id desc";
+
+                    //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS
+                    string sSqlstmt = "SELECT agenda_id, meeting_id, last_meeting_id, meeting_date, meeting_type_desc, meeting_ref,  Attendees, AttendeesUser, Venue"
+                       + " from t_meeting where meeting_ref='" + sMeeting_ref + "' order by meeting_id desc";
 
                     DataSet dsMeetingList = objGlobaldata.Getdetails(sSqlstmt);
 
@@ -1381,10 +1338,9 @@ namespace ISOStd.Controllers
                             AttendeesUser = objGlobaldata.GetMultiHrEmpNameById(dsMeetingList.Tables[0].Rows[0]["AttendeesUser"].ToString())
                         };
 
-
                         ViewBag.agenda_id = dsMeetingList.Tables[0].Rows[0]["agenda_id"].ToString();
 
-                        //ViewBag.MeetingType = objGlobaldata.GetMeetingTypeListbox();                      
+                        //ViewBag.MeetingType = objGlobaldata.GetMeetingTypeListbox();
 
                         ViewBag.AgendaList = objMeetingAgendaModels.GetOnlyMeetingAgendasListbox(sMeeting_ref, dsMeetingList.Tables[0].Rows[0]["agenda_id"].ToString());
                         ViewBag.EmpLists = objGlobaldata.GetHrEmployeeListbox();
@@ -1422,12 +1378,12 @@ namespace ISOStd.Controllers
             {
                 objGlobaldata.AddFunctionalLog("Exception in MeetingEdit: " + ex.ToString());
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-            }           
+            }
             return RedirectToAction("MeetingList");
         }
 
         //POST: /Meeting/MeetingEdit
-         
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult MeetingEdit(MeetingModels objMeetingModels, FormCollection form, HttpPostedFileBase fileAttendees, HttpPostedFileBase upload)
@@ -1440,18 +1396,17 @@ namespace ISOStd.Controllers
                 if (Request["button"].Equals("Meeting Update"))
                 {
                     objMeetingModels.meeting_ref = smeeting_ref;
-                    
-                        objMeetingModels.MeetingCreatedBy = objGlobaldata.GetCurrentUserSession().empid;
-                    
+
+                    objMeetingModels.MeetingCreatedBy = objGlobaldata.GetCurrentUserSession().empid;
 
                     if (fileAttendees != null && fileAttendees.ContentLength > 0)
                     {
                         try
                         {
                             string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/Meeting"), Path.GetFileName(fileAttendees.FileName));
-                            string sFilename = objMeetingModels.meeting_type_desc + "Attendees_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath), 
+                            string sFilename = objMeetingModels.meeting_type_desc + "Attendees_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath),
                                 sFilepath = Path.GetDirectoryName(spath);
-                            fileAttendees.SaveAs(sFilepath + "/" +  sFilename);
+                            fileAttendees.SaveAs(sFilepath + "/" + sFilename);
                             objMeetingModels.Attendees = "~/DataUpload/MgmtDocs/Meeting/" + sFilename;
                             ViewBag.Message = "File uploaded successfully";
                         }
@@ -1543,7 +1498,7 @@ namespace ISOStd.Controllers
                 MeetingItemModels objItem = new MeetingItemModels();
                 //if (sendmail != null && sendmail != "")
                 //{
-                    objItem.SendMOMEmail(smeeting_ref, "Update on Minutes of Meeting");
+                objItem.SendMOMEmail(smeeting_ref, "Update on Minutes of Meeting");
                 //}
             }
             catch (Exception ex)
@@ -1555,9 +1510,8 @@ namespace ISOStd.Controllers
             return RedirectToAction("MeetingEdit", new { meeting_ref = smeeting_ref });//View();
         }
 
-
         //POST: /Meeting/MeetingItemUpdate
-         
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public bool MeetingItemUpdate(MeetingModels objMeetingModels, FormCollection form)
@@ -1569,7 +1523,7 @@ namespace ISOStd.Controllers
                 objMeetingModels.item_discussed = form["item_discussed"];
                 objMeetingModels.action_agreed = form["action_agreed"];
                 objMeetingModels.remarks = form["remarks"];
-                objMeetingModels.action_owner = form["action_owner"] ;
+                objMeetingModels.action_owner = form["action_owner"];
                 objMeetingModels.item_status = form["item_status"];
                 objMeetingModels.item_no = form["item_no"];
 
@@ -1578,7 +1532,7 @@ namespace ISOStd.Controllers
                 if (DateTime.TryParse(form["due_date"], out dateValue) == true)
                 {
                     objMeetingModels.due_date = dateValue;
-                }               
+                }
 
                 //ExternalAuditModels objExternalAuditModels = new ExternalAuditModels();
                 return objMeetingModels.FunUpdateMeetingItem(objMeetingModels);
@@ -1591,9 +1545,8 @@ namespace ISOStd.Controllers
             }
         }
 
-
         //POST: /Meeting/MeetingItemAdd
-         
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public bool MeetingItemAdd(MeetingModels objMeetingModels, FormCollection form)
@@ -1618,7 +1571,6 @@ namespace ISOStd.Controllers
                 {
                     objMeetingModels.due_date = dateValue;
                 }
-                
 
                 objMeetingModelsList.MeetingMList.Add(objMeetingModels);
                 //ExternalAuditModels objExternalAuditModels = new ExternalAuditModels();
@@ -1632,12 +1584,11 @@ namespace ISOStd.Controllers
             }
         }
 
-
         //POST: /Meeting/MeetingItemEdit
-         
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public string MeetingItemEdit(string sitem_discussed, string saction_agreed, string sdue_date, string sitem_status, string saction_owner, string sItemNo,string sremarks)
+        public string MeetingItemEdit(string sitem_discussed, string saction_agreed, string sdue_date, string sitem_status, string saction_owner, string sItemNo, string sremarks)
         {
             try
             {
@@ -1652,14 +1603,13 @@ namespace ISOStd.Controllers
                     action_owner = saction_owner.TrimEnd(','),
                     item_no = sItemNo
                 };
-               
+
                 DateTime dateValue;
 
                 if (DateTime.TryParse(sdue_date, out dateValue) == true)
                 {
                     objItem.due_date = dateValue;
                 }
-
 
                 if (objItem.FunUpdateMeetingItem(objItem))
                 {
@@ -1669,7 +1619,6 @@ namespace ISOStd.Controllers
                 else
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                    
                 }
             }
             catch (Exception ex)
@@ -1679,19 +1628,18 @@ namespace ISOStd.Controllers
             }
             return "Failed";
         }
-        
 
         //
         // GET: /Meeting/AddMeetingItemLog
-        
+
         [AllowAnonymous]
-        public  ActionResult AddMeetingItemLog()
+        public ActionResult AddMeetingItemLog()
         {
             return InitilizeAddMeetingItemLog();
         }
 
         // GET: /Meeting/InitilizeAddNCRLog
-        
+
         private ActionResult InitilizeAddMeetingItemLog()
         {
             try
@@ -1702,7 +1650,6 @@ namespace ISOStd.Controllers
                 ViewBag.EmpLists = objGlobaldata.GetHrEmployeeListbox();
                 //ViewBag.LogStatus = objGlobaldata.GetConstantValue("AuditStatus");
                 ViewBag.LogStatus = objGlobaldata.GetDropdownList("Meeting Item Status");
-
 
                 DataSet dsMeeting = objGlobaldata.Getdetails("select item_no, meeting_ref, item_discussed from t_meeting_items where item_no='"
                     + Request.QueryString["Item_no"] + "' order by item_no desc");
@@ -1723,9 +1670,9 @@ namespace ISOStd.Controllers
             return View("");
         }
 
-         //
+        //
         // POST: /Meeting/AddMeetingItemLog
-        
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult AddMeetingItemLog(MeetingItemLogModels objLog, FormCollection form)
@@ -1733,7 +1680,7 @@ namespace ISOStd.Controllers
             objLog.action_completed_by = form["action_completed_by"];
             objLog.item_no = form["Item_no"];
             objLog.LogStatus = form["LogStatus"];
-           
+
             if (objLog.FunAddItemLog(objLog))
             {
                 TempData["Successdata"] = "Added Meeting Item log details successfully";
@@ -1748,12 +1695,12 @@ namespace ISOStd.Controllers
 
         //
         // GET: /Meeting/MeetingItemLogList
-        
+
         [AllowAnonymous]
         public ActionResult MeetingItemLogList(string item_no, string meeting_ref)
         {
             ViewBag.SubMenutype = "MOM";
-           
+
             //objGlobaldata.CreateUserSession();
             MeetingItemLogModelsList objMeetingItemLogList = new MeetingItemLogModelsList();
             objMeetingItemLogList.MeetingItemLogMList = new List<MeetingItemLogModels>();
@@ -1791,14 +1738,13 @@ namespace ISOStd.Controllers
             {
                 objGlobaldata.AddFunctionalLog("Exception in MeetingItemLogList: " + ex.ToString());
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-            }     
+            }
             return View(objMeetingItemLogList.MeetingItemLogMList.ToList());
         }
 
         //POST: /Meeting/MeetingItemLogEdit
-        
+
         [HttpPost]
-        // [AllowAnonymous]
         public JsonResult MeetingItemLogEdit(FormCollection form)
         {
             try
@@ -1808,7 +1754,6 @@ namespace ISOStd.Controllers
 
                 ViewBag.SubMenutype = "MOM";
 
-                
                 MeetingItemLogModels objLog = new MeetingItemLogModels();
                 DateTime dateValue;
 
@@ -1831,55 +1776,52 @@ namespace ISOStd.Controllers
                 }
                 else
                 {
-                 
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                     return Json("Update Failed");
                 }
 
                 //DataSet dsItem = objGlobaldata.Getdetails("select item_no from t_meeting_items_log where meeting_log_id='" + smeeting_log_id + "'");
-
             }
             catch (Exception ex)
             {
                 objGlobaldata.AddFunctionalLog("Exception in KPIEvaluationEdit: " + ex.ToString());
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 return Json("Update Failed");
-            }            
+            }
         }
+
         //
         // GET: /Meeting/AddMOM
-        
+
         [AllowAnonymous]
-         public ActionResult AddMOM(string sMeeting_ref)
+        public ActionResult AddMOM(string sMeeting_ref)
         {
             ViewBag.SubMenutype = "MOM";
             return InitializeAddMOM();
         }
-                       
+
         public ActionResult InitializeAddMOM()
         {
             MeetingTypeModels objType = new MeetingTypeModels();
             MeetingAgendaModels objMeetingAgendaModels = new MeetingAgendaModels();
             MeetingModels objMeetingModels = new MeetingModels();
 
-            
             try
             {
                 ViewBag.MeetingType = objType.GetmeetingtypeListbox();
                 ViewBag.item_status = objGlobaldata.GetDropdownList("Meeting Item Status");
 
-              //  ViewBag.item_status = objGlobaldata.GetConstantValue("AuditStatus");
+                //  ViewBag.item_status = objGlobaldata.GetConstantValue("AuditStatus");
                 ViewBag.EmpLists = objGlobaldata.GetHrEmployeeListbox();
 
                 UserCredentials objUserInfo = (UserCredentials)Session["UserCredentials"];
 
                 if (Request.QueryString["meeting_ref"] != null && Request.QueryString["meeting_ref"] != "")
                 {
-
                     string sMeeting_ref = Request.QueryString["meeting_ref"];
                     ViewBag.meeting_ref = sMeeting_ref;
 
-                    //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS  
+                    //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS
                     string sSqlstmt = "SELECT agenda_id, meeting_id, last_meeting_id, meeting_date, meeting_type_desc, meeting_ref,  Attendees, AttendeesUser, Venue,ext_attendees,ext_email"
                         + " from t_meeting where meeting_ref='" + sMeeting_ref + "' order by meeting_id desc";
 
@@ -1924,13 +1866,12 @@ namespace ISOStd.Controllers
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
 
-
             return RedirectToAction("MeetingList");
         }
 
         //
         // GET: /Meeting/AddMOM
-        
+
         [AllowAnonymous]
         public JsonResult GetAgendaList(string sMeetingTypeId)
         {
@@ -1940,7 +1881,7 @@ namespace ISOStd.Controllers
 
         //
         // GET: /Meeting/AddMOM
-        
+
         [AllowAnonymous]
         public JsonResult GetPreviousMeetingRef(string sMeetingTypeId)
         {
@@ -1949,13 +1890,12 @@ namespace ISOStd.Controllers
             DataSet dsAgenda = objGlobaldata.Getdetails(sqlstmt);
             if (dsAgenda.Tables[0].Rows.Count > 0)
             {
-                return Json( dsAgenda.Tables[0].Rows[0]["meeting_ref"].ToString());
+                return Json(dsAgenda.Tables[0].Rows[0]["meeting_ref"].ToString());
             }
 
             return Json("");
         }
 
-        
         [HttpPost]
         public JsonResult doesMeetingRefExist(string meeting_ref)
         {
@@ -1966,8 +1906,6 @@ namespace ISOStd.Controllers
             return Json(user);
         }
 
-
-        
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult AddMOM(MeetingModels objMeeting, FormCollection form, MeetingItemModels MeetingItem, HttpPostedFileBase Attendees)
@@ -1979,9 +1917,9 @@ namespace ISOStd.Controllers
                 objMeeting.meeting_type_desc = form["meeting_type_desc"];
                 objMeeting.last_meeting_id = form["last_meeting_id"];
                 objMeeting.meeting_ref = form["meeting_ref"];
-              
+
                 objMeeting.MeetingCreatedBy = objGlobaldata.GetCurrentUserSession().empid;
-                
+
                 //objMeeting.agenda_id = form["agenda_id"];
 
                 if (Attendees != null && Attendees.ContentLength > 0)
@@ -2019,7 +1957,7 @@ namespace ISOStd.Controllers
 
                 if (form["itemcnt"] != null && Convert.ToInt16(form["itemcnt"]) > 0)
                 {
-                    string sitem_discussed = "", saction_agreed = "", saction_owner = "", sitem_status = "", sAgendaId = "",sremarks ="",supload="";
+                    string sitem_discussed = "", saction_agreed = "", saction_owner = "", sitem_status = "", sAgendaId = "", sremarks = "", supload = "";
 
                     for (int i = 1; i <= Convert.ToInt16(form["itemcnt"]); i++)
                     {
@@ -2065,7 +2003,7 @@ namespace ISOStd.Controllers
                             item_status = sitem_status,
                             agenda_id = sAgendaId,
                             Meeting_Ref = objMeeting.meeting_ref,
-                            upload=supload
+                            upload = supload
                         };
 
                         if (form["due_date" + i] != null && DateTime.TryParse(form["due_date" + i].Replace("'/", ""), out dateValue) == true)
@@ -2073,25 +2011,25 @@ namespace ISOStd.Controllers
                             objItem.due_date = dateValue;
                         }
 
-                        objMeetingItemList.MeetingItemMList.Add(objItem);                       
+                        objMeetingItemList.MeetingItemMList.Add(objItem);
                     }
                 }
 
                 //if (objMeeting.FunAddMeeting(objMeeting, objMeetingItemList, lstAgendaId))
                 if (objMeeting.FunAddMeeting(objMeeting, objMeetingItemList, lstAgendaId))
-                
+
                 {
                     TempData["Successdata"] = "Added Meeting details successfully";
                     //if (sendmail != null && sendmail != "")
                     //{
-                        //Send MOM email
-                        MeetingItem.SendMOMEmail(objMeeting.meeting_ref, "Minutes of Meeting");
+                    //Send MOM email
+                    MeetingItem.SendMOMEmail(objMeeting.meeting_ref, "Minutes of Meeting");
                     //}
                 }
                 else
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                }                
+                }
             }
             catch (Exception ex)
             {
@@ -2101,27 +2039,24 @@ namespace ISOStd.Controllers
 
             return RedirectToAction("MeetingList");
         }
-                              
+
         [AllowAnonymous]
         public JsonResult MeetingElementUpdate(string id_element, string Agenda_Desc, string Agenda_Details)
         {
-
             MeetingAgendaModels objMeetingAgenda = new MeetingAgendaModels();
             objMeetingAgenda.Agenda_Id = id_element;
             objMeetingAgenda.Agenda_Desc = Agenda_Desc;
             objMeetingAgenda.Agenda_Details = Agenda_Details;
             try
             {
-
-           
-            if (objMeetingAgenda.FunUpdateMeetingAgenda(objMeetingAgenda))
-            {
-                TempData["Successdata"] = "Updated Agenda details successfully";
-            }
-            else
-            {
-                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-            }
+                if (objMeetingAgenda.FunUpdateMeetingAgenda(objMeetingAgenda))
+                {
+                    TempData["Successdata"] = "Updated Agenda details successfully";
+                }
+                else
+                {
+                    TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                }
             }
             catch (Exception ex)
             {
@@ -2131,23 +2066,18 @@ namespace ISOStd.Controllers
 
             return Json("Failed");
         }
-                          
+
         [AllowAnonymous]
         public JsonResult MeetingElementDelete(string id_element, string MeetingType)
         {
-
             MeetingAgendaModels objMeetingAgenda = new MeetingAgendaModels();
             objMeetingAgenda.Agenda_Id = id_element;
             objMeetingAgenda.MeetingType = MeetingType;
             try
             {
-
-
                 if (objMeetingAgenda.FunDeleteMeetingAgenda(objMeetingAgenda))
                 {
                     TempData["Successdata"] = "Updated Agenda deleted successfully";
-
-                   
 
                     //AddMeetingType(objMeetingAgenda.MeetingType);
                 }
@@ -2178,7 +2108,6 @@ namespace ISOStd.Controllers
                 string sFilename = Path.GetFileName(spath), sFilepath = Path.GetDirectoryName(spath);
                 file.SaveAs(sFilepath + "/" + DateTime.Now.ToString("ddMMyyyyHHmm") + sFilename);
                 return Json("~/DataUpload/MgmtDocs/Meeting/" + DateTime.Now.ToString("ddMMyyyyHHmm") + sFilename);
-
             }
             return Json("");//Failed return null value
         }
@@ -2191,7 +2120,6 @@ namespace ISOStd.Controllers
             MeetingAgendaModels objMeetingAgendaModels = new MeetingAgendaModels();
             try
             {
-
                 if (Request.QueryString["meeting_id"] != null && Request.QueryString["meeting_id"] != "")
                 {
                     string meeting_id = Request.QueryString["meeting_id"];
@@ -2202,7 +2130,6 @@ namespace ISOStd.Controllers
 
                     if (dsModelsList.Tables.Count > 0 && dsModelsList.Tables[0].Rows.Count > 0)
                     {
-
                         objModel = new MeetingModels
                         {
                             meeting_id = (dsModelsList.Tables[0].Rows[0]["meeting_id"].ToString()),
@@ -2210,7 +2137,7 @@ namespace ISOStd.Controllers
                             agenda_id = objMeetingAgendaModels.GetOnlyMeetingAgendaById(dsModelsList.Tables[0].Rows[0]["Agenda_Id"].ToString()),
                             action_status = dsModelsList.Tables[0].Rows[0]["action_status"].ToString(),
                         };
-                      
+
                         DateTime dtValue;
                         if (DateTime.TryParse(dsModelsList.Tables[0].Rows[0]["status_update_on"].ToString(), out dtValue))
                         {
@@ -2238,7 +2165,6 @@ namespace ISOStd.Controllers
             try
             {
                 DateTime dateValue;
-            
 
                 if (DateTime.TryParse(form["status_update_on"], out dateValue) == true)
                 {

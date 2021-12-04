@@ -1,19 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+﻿using ISOStd.Filters;
 using ISOStd.Models;
-using System.IO;
-using System.Data;
-using ISOStd.Filters;
+using System;
+using System.Web.Mvc;
 
 namespace ISOStd.Controllers
 {
     [PreventFromUrl]
     public class DropDownItemsController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
+        private clsGlobal objGlobaldata = new clsGlobal();
 
         public DropDownItemsController()
         {
@@ -22,7 +17,7 @@ namespace ISOStd.Controllers
 
         //
         // GET: /DropDownItems/
-         
+
         public ActionResult Index()
         {
             return View();
@@ -30,7 +25,7 @@ namespace ISOStd.Controllers
 
         //
         // GET: /DropDownItems/AddItems
-         
+
         [AllowAnonymous]
         public ActionResult AddItems(string Header_id = "")
         {
@@ -64,7 +59,6 @@ namespace ISOStd.Controllers
             return View(objDropDown);
         }
 
-         
         [HttpPost]
         public JsonResult GetDropdownItems(string header_id)
         {
@@ -73,31 +67,29 @@ namespace ISOStd.Controllers
             return Json(objDropDown.GetDropDownItemsListbox(header_id));
         }
 
-         //
+        //
         // POST: /DropDownItems/AddItems
-         
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult AddItems(DropDownItemsModels objDropDownItemsModels, FormCollection form)
         {
             try
             {
-                
-                if(form["isDefault"] != "" && form["isDefault"] != null)
+                if (form["isDefault"] != "" && form["isDefault"] != null)
                 {
                     objDropDownItemsModels.isDefault = "yes";
                 }
-              
+
                 if (objDropDownItemsModels.FunAddItems(objDropDownItemsModels))
-                    {
-                        //objEmployeeModel.MailTempPassword(objEmployeeModel.emailAddress);
-                        TempData["Successdata"] = "Added Item details successfully";
-                    }
-                    else
-                    {
-                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                    }
-                
+                {
+                    //objEmployeeModel.MailTempPassword(objEmployeeModel.emailAddress);
+                    TempData["Successdata"] = "Added Item details successfully";
+                }
+                else
+                {
+                    TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                }
             }
             catch (Exception ex)
             {
@@ -110,7 +102,7 @@ namespace ISOStd.Controllers
 
         //
         // GET: /DropDownItems/UpdateItems
-         
+
         [AllowAnonymous]
         public JsonResult UpdateItems(string item_id, string header_id, string item_desc, string item_fulldesc, string isDefault)
         {
@@ -130,7 +122,7 @@ namespace ISOStd.Controllers
                 {
                     objDropDownItemsModels.isDefault = null;
                 }
-                
+
                 if (objDropDownItemsModels.FunUpdateItems(objDropDownItemsModels))
                 {
                     //objEmployeeModel.MailTempPassword(objEmployeeModel.emailAddress);
@@ -141,7 +133,6 @@ namespace ISOStd.Controllers
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 }
-
             }
             catch (Exception ex)
             {
@@ -151,14 +142,13 @@ namespace ISOStd.Controllers
 
             return Json("Update Failed");
 
-           // return RedirectToAction("AddItems", new { Header_id = header_id });
+            // return RedirectToAction("AddItems", new { Header_id = header_id });
         }
 
         //
         // GET: /DropDownItems/DeleteItems
-         
-         [HttpPost]
-        //[AllowAnonymous]
+
+        [HttpPost]
         public JsonResult DeleteItems(FormCollection form)
         {
             string item_id = form["item_id"];
@@ -178,7 +168,6 @@ namespace ISOStd.Controllers
                     {
                         TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                     }
-
                 }
                 catch (Exception ex)
                 {
@@ -191,7 +180,6 @@ namespace ISOStd.Controllers
             return Json("Delete Failed, Null Id");
         }
 
-         
         [HttpPost]
         public JsonResult GetHeaderItems(string Header_id)
         {
@@ -206,10 +194,8 @@ namespace ISOStd.Controllers
         {
             try
             {
-
                 if (form["header_id"] != null && form["header_id"] != "")
                 {
-
                     DropDownItemsModels Doc = new DropDownItemsModels();
                     string sheader_id = form["header_id"];
 

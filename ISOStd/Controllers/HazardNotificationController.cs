@@ -14,7 +14,7 @@ namespace ISOStd.Controllers
     [PreventFromUrl]
     public class HazardNotificationController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
+        private clsGlobal objGlobaldata = new clsGlobal();
         //HazardNotificationModels objHazard = new HazardNotificationModels();
 
         public HazardNotificationController()
@@ -62,7 +62,7 @@ namespace ISOStd.Controllers
 
                 if (form["notify_date"] != null && DateTime.TryParse(form["notify_date"], out dateValue) == true)
                 {
-                    objHazard.notify_date = dateValue;                   
+                    objHazard.notify_date = dateValue;
                 }
                 objHazard.activity_type = form["activity_type"];
                 objHazard.branch = form["branch"];
@@ -87,7 +87,6 @@ namespace ISOStd.Controllers
                     objHazard.upload = "";
                     foreach (var file in upload)
                     {
-
                         try
                         {
                             string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/HSE"), Path.GetFileName(file.FileName));
@@ -162,7 +161,7 @@ namespace ISOStd.Controllers
                 {
                     for (int i = 0; i < dsHazardList.Tables[0].Rows.Count; i++)
                     {
-                         try
+                        try
                         {
                             objHazard = new HazardNotificationModels
                             {
@@ -174,7 +173,7 @@ namespace ISOStd.Controllers
                                 dept = objGlobaldata.GetMultiDeptNameById(dsHazardList.Tables[0].Rows[i]["dept"].ToString()),
                                 location = objGlobaldata.GetDivisionLocationById(dsHazardList.Tables[0].Rows[i]["location"].ToString()),
                                 activity_type = objGlobaldata.GetDropdownitemById(dsHazardList.Tables[0].Rows[i]["activity_type"].ToString()),
-                                description =dsHazardList.Tables[0].Rows[i]["description"].ToString(),
+                                description = dsHazardList.Tables[0].Rows[i]["description"].ToString(),
                                 hazard_aspect = dsHazardList.Tables[0].Rows[i]["hazard_aspect"].ToString(),
                                 condition_impact = dsHazardList.Tables[0].Rows[i]["condition_impact"].ToString(),
                                 affected_env = dsHazardList.Tables[0].Rows[i]["affected_env"].ToString(),
@@ -193,7 +192,7 @@ namespace ISOStd.Controllers
                             {
                                 objHazard.notify_date = dtValue;
                             }
-                           
+
                             objList.NofifyList.Add(objHazard);
                         }
                         catch (Exception ex)
@@ -392,7 +391,7 @@ namespace ISOStd.Controllers
 
                 if (form["notify_date"] != null && DateTime.TryParse(form["notify_date"], out dateValue) == true)
                 {
-                    objHazard.notify_date = dateValue;                   
+                    objHazard.notify_date = dateValue;
                 }
 
                 objHazard.activity_type = form["activity_type"];
@@ -456,12 +455,12 @@ namespace ISOStd.Controllers
 
         public ActionResult HazardNotificationDMREdit()
         {
-           // ViewBag.Location = objGlobaldata.GetCompanyBranchListbox();
-           // ViewBag.Department = objGlobaldata.GetDepartmentListbox();
-           // ViewBag.Division = objGlobaldata.GetDivision();
+            // ViewBag.Location = objGlobaldata.GetCompanyBranchListbox();
+            // ViewBag.Department = objGlobaldata.GetDepartmentListbox();
+            // ViewBag.Division = objGlobaldata.GetDivision();
             ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
-          //  ViewBag.CMR = objGlobaldata.GetCMR();
-          //  ViewBag.DMR = objGlobaldata.GetDMR();
+            //  ViewBag.CMR = objGlobaldata.GetCMR();
+            //  ViewBag.DMR = objGlobaldata.GetDMR();
             ViewBag.YesNo = objGlobaldata.GetConstantValue("YesNo");
             ViewBag.RiskLevel = objGlobaldata.GetDropdownList("Hazard Notification Risk Level");
 
@@ -536,14 +535,14 @@ namespace ISOStd.Controllers
         public ActionResult HazardNotificationDMREdit(HazardNotificationModels objHazard, FormCollection form)
         {
             try
-            {               
+            {
                 DateTime dateValue;
 
                 if (form["incorporated_date"] != null && DateTime.TryParse(form["incorporated_date"], out dateValue) == true)
                 {
                     objHazard.incorporated_date = dateValue;
-                }                
-                
+                }
+
                 if (objHazard.FunUpdateHazardNotifyDMR(objHazard))
                 {
                     objHazard.SendHazardNotifyEmailFromDMR(objHazard.id_notification, "Hazard Notification");
@@ -646,7 +645,7 @@ namespace ISOStd.Controllers
             {
                 if (form["id_notification"] != null && form["id_notification"] != "")
                 {
-                    string sid_notification = form ["id_notification"];
+                    string sid_notification = form["id_notification"];
 
                     string sSqlstmt = "SELECT id_notification,control_no, observed_by, reported_by,notify_date, dept,branch,location,activity_type,description, " +
                     "hazard_aspect, condition_impact, affected_env,upload,reviewed_by,level_risk,work_stopped,control_measure,incorporated_HIRA," +
@@ -738,57 +737,57 @@ namespace ISOStd.Controllers
         {
             HazardNotificationModels objHazard = new HazardNotificationModels();
             try
-            {                
-                    string sSqlstmt = "SELECT id_notification,control_no, observed_by, reported_by,notify_date, dept,branch,location,activity_type,description, " +
-                    "hazard_aspect, condition_impact, affected_env,upload,reviewed_by,level_risk,work_stopped,control_measure,incorporated_HIRA," +
-                    "incorporated_by,incorporated_date,Hazard_loc from t_hazard_notification " +
-                    "where id_notification = '" + id + "'";
+            {
+                string sSqlstmt = "SELECT id_notification,control_no, observed_by, reported_by,notify_date, dept,branch,location,activity_type,description, " +
+                "hazard_aspect, condition_impact, affected_env,upload,reviewed_by,level_risk,work_stopped,control_measure,incorporated_HIRA," +
+                "incorporated_by,incorporated_date,Hazard_loc from t_hazard_notification " +
+                "where id_notification = '" + id + "'";
 
-                    DataSet dsHazardList = objGlobaldata.Getdetails(sSqlstmt);
+                DataSet dsHazardList = objGlobaldata.Getdetails(sSqlstmt);
 
-                    if (dsHazardList.Tables.Count > 0 && dsHazardList.Tables[0].Rows.Count > 0)
+                if (dsHazardList.Tables.Count > 0 && dsHazardList.Tables[0].Rows.Count > 0)
+                {
+                    // DateTime dtDailyDate = Convert.ToDateTime(dsHazardList.Tables[0].Rows[0]["observation_date"].ToString());
+                    DateTime dtValue;
+
+                    objHazard = new HazardNotificationModels
                     {
-                        // DateTime dtDailyDate = Convert.ToDateTime(dsHazardList.Tables[0].Rows[0]["observation_date"].ToString());
-                        DateTime dtValue;
-
-                        objHazard = new HazardNotificationModels
-                        {
-                            id_notification = dsHazardList.Tables[0].Rows[0]["id_notification"].ToString(),
-                            control_no = dsHazardList.Tables[0].Rows[0]["control_no"].ToString(),
-                            observed_by = objGlobaldata.GetMultiHrEmpNameById(dsHazardList.Tables[0].Rows[0]["observed_by"].ToString()),
-                            reported_by = objGlobaldata.GetMultiHrEmpNameById(dsHazardList.Tables[0].Rows[0]["reported_by"].ToString()),
-                            branch = objGlobaldata.GetMultiCompanyBranchNameById(dsHazardList.Tables[0].Rows[0]["branch"].ToString()),
-                            dept = objGlobaldata.GetMultiDeptNameById(dsHazardList.Tables[0].Rows[0]["dept"].ToString()),
-                            location = objGlobaldata.GetDivisionLocationById(dsHazardList.Tables[0].Rows[0]["location"].ToString()),
-                            activity_type = objGlobaldata.GetDropdownitemById(dsHazardList.Tables[0].Rows[0]["activity_type"].ToString()),
-                            description = dsHazardList.Tables[0].Rows[0]["description"].ToString(),
-                            hazard_aspect = dsHazardList.Tables[0].Rows[0]["hazard_aspect"].ToString(),
-                            condition_impact = dsHazardList.Tables[0].Rows[0]["condition_impact"].ToString(),
-                            affected_env = dsHazardList.Tables[0].Rows[0]["affected_env"].ToString(),
-                            upload = dsHazardList.Tables[0].Rows[0]["upload"].ToString(),
-                            reviewed_by = objGlobaldata.GetMultiHrEmpNameById(dsHazardList.Tables[0].Rows[0]["reviewed_by"].ToString()),
-                            level_risk = dsHazardList.Tables[0].Rows[0]["level_risk"].ToString(),
-                            work_stopped = dsHazardList.Tables[0].Rows[0]["work_stopped"].ToString(),
-                            control_measure = dsHazardList.Tables[0].Rows[0]["control_measure"].ToString(),
-                            incorporated_HIRA = dsHazardList.Tables[0].Rows[0]["incorporated_HIRA"].ToString(),
-                            incorporated_by = dsHazardList.Tables[0].Rows[0]["incorporated_by"].ToString(),
-                            Hazard_loc = dsHazardList.Tables[0].Rows[0]["Hazard_loc"].ToString(),
-                        };
-                        if (DateTime.TryParse(dsHazardList.Tables[0].Rows[0]["notify_date"].ToString(), out dtValue))
-                        {
-                            objHazard.notify_date = dtValue;
-                        }
-                        if (DateTime.TryParse(dsHazardList.Tables[0].Rows[0]["incorporated_date"].ToString(), out dtValue))
-                        {
-                            objHazard.incorporated_date = dtValue;
-                        }
-                        return View(objHazard);
+                        id_notification = dsHazardList.Tables[0].Rows[0]["id_notification"].ToString(),
+                        control_no = dsHazardList.Tables[0].Rows[0]["control_no"].ToString(),
+                        observed_by = objGlobaldata.GetMultiHrEmpNameById(dsHazardList.Tables[0].Rows[0]["observed_by"].ToString()),
+                        reported_by = objGlobaldata.GetMultiHrEmpNameById(dsHazardList.Tables[0].Rows[0]["reported_by"].ToString()),
+                        branch = objGlobaldata.GetMultiCompanyBranchNameById(dsHazardList.Tables[0].Rows[0]["branch"].ToString()),
+                        dept = objGlobaldata.GetMultiDeptNameById(dsHazardList.Tables[0].Rows[0]["dept"].ToString()),
+                        location = objGlobaldata.GetDivisionLocationById(dsHazardList.Tables[0].Rows[0]["location"].ToString()),
+                        activity_type = objGlobaldata.GetDropdownitemById(dsHazardList.Tables[0].Rows[0]["activity_type"].ToString()),
+                        description = dsHazardList.Tables[0].Rows[0]["description"].ToString(),
+                        hazard_aspect = dsHazardList.Tables[0].Rows[0]["hazard_aspect"].ToString(),
+                        condition_impact = dsHazardList.Tables[0].Rows[0]["condition_impact"].ToString(),
+                        affected_env = dsHazardList.Tables[0].Rows[0]["affected_env"].ToString(),
+                        upload = dsHazardList.Tables[0].Rows[0]["upload"].ToString(),
+                        reviewed_by = objGlobaldata.GetMultiHrEmpNameById(dsHazardList.Tables[0].Rows[0]["reviewed_by"].ToString()),
+                        level_risk = dsHazardList.Tables[0].Rows[0]["level_risk"].ToString(),
+                        work_stopped = dsHazardList.Tables[0].Rows[0]["work_stopped"].ToString(),
+                        control_measure = dsHazardList.Tables[0].Rows[0]["control_measure"].ToString(),
+                        incorporated_HIRA = dsHazardList.Tables[0].Rows[0]["incorporated_HIRA"].ToString(),
+                        incorporated_by = dsHazardList.Tables[0].Rows[0]["incorporated_by"].ToString(),
+                        Hazard_loc = dsHazardList.Tables[0].Rows[0]["Hazard_loc"].ToString(),
+                    };
+                    if (DateTime.TryParse(dsHazardList.Tables[0].Rows[0]["notify_date"].ToString(), out dtValue))
+                    {
+                        objHazard.notify_date = dtValue;
                     }
-                    else
+                    if (DateTime.TryParse(dsHazardList.Tables[0].Rows[0]["incorporated_date"].ToString(), out dtValue))
                     {
-                        TempData["alertdata"] = "No data exists";
-                        return RedirectToAction("HazardNotificationList");
-                    }                
+                        objHazard.incorporated_date = dtValue;
+                    }
+                    return View(objHazard);
+                }
+                else
+                {
+                    TempData["alertdata"] = "No data exists";
+                    return RedirectToAction("HazardNotificationList");
+                }
             }
             catch (Exception ex)
             {
@@ -805,7 +804,6 @@ namespace ISOStd.Controllers
             {
                 if (form["id_notification"] != null && form["id_notification"] != "")
                 {
-
                     HazardNotificationModels Doc = new HazardNotificationModels();
                     string sid_notification = form["id_notification"];
 
@@ -833,6 +831,5 @@ namespace ISOStd.Controllers
             }
             return Json("Failed");
         }
-
     }
 }

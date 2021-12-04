@@ -1,23 +1,19 @@
-﻿using System;
+﻿using ISOStd.Filters;
+using ISOStd.Models;
+using System;
 using System.Collections.Generic;
+using System.Data;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using ISOStd.Models;
-using System.Data;
-using System.Net;
-using System.IO;
-using PagedList;
-using PagedList.Mvc;
-using ISOStd.Filters;
 
 namespace ISOStd.Controllers
 {
-
     [PreventFromUrl]
     public class SupplierController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
+        private clsGlobal objGlobaldata = new clsGlobal();
 
         public SupplierController()
         {
@@ -27,14 +23,14 @@ namespace ISOStd.Controllers
         public ActionResult Index()
         {
             return View();
-        }       
+        }
 
         [AllowAnonymous]
         public ActionResult AddSupplier()
         {
             SupplierModels objSuppModel = new SupplierModels();
             try
-            {                
+            {
                 ViewBag.SubMenutype = "SupplierList";
 
                 objSuppModel.branch = objGlobaldata.GetCurrentUserSession().division;
@@ -62,7 +58,7 @@ namespace ISOStd.Controllers
             }
             return View(objSuppModel);
         }
-        
+
         [HttpPost]
         public JsonResult doesSupplierNameExist(string SupplierName)
         {
@@ -75,7 +71,7 @@ namespace ISOStd.Controllers
 
             return Json(Valid);
         }
-        
+
         [HttpPost]
         public JsonResult doesSupplierCodeExist(string SupplierCode)
         {
@@ -88,14 +84,13 @@ namespace ISOStd.Controllers
 
             return Json(Valid);
         }
-        
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult AddSupplier(SupplierModels objSupplierModels, FormCollection form, IEnumerable<HttpPostedFileBase> SupportingDoc)
         {
             try
             {
-
                 objSupplierModels.ApprovalCriteria = form["ApprovalCriteria"];
                 objSupplierModels.Added_Updated_By = objGlobaldata.GetCurrentUserSession().empid;
                 objSupplierModels.Supplier_type = form["Supplier_type"];
@@ -129,33 +124,33 @@ namespace ISOStd.Controllers
                 }
 
                 if (Request.Files.Count > 0)
-                {                     
-                HttpPostedFileBase files = Request.Files[0];
-                if (SupportingDoc != null && files.ContentLength > 0)
                 {
-                    objSupplierModels.SupportingDoc = "";
-                    foreach (var file in SupportingDoc)
+                    HttpPostedFileBase files = Request.Files[0];
+                    if (SupportingDoc != null && files.ContentLength > 0)
                     {
-                        try
+                        objSupplierModels.SupportingDoc = "";
+                        foreach (var file in SupportingDoc)
                         {
-                            string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/Supplier"), Path.GetFileName(file.FileName));
-                            string sFilename = objSupplierModels.SupplierName + "_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath), sFilepath = Path.GetDirectoryName(spath);
-                            file.SaveAs(sFilepath + "/" + sFilename);
-                            objSupplierModels.SupportingDoc = objSupplierModels.SupportingDoc + "," + "~/DataUpload/MgmtDocs/Supplier/" + sFilename;
+                            try
+                            {
+                                string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/Supplier"), Path.GetFileName(file.FileName));
+                                string sFilename = objSupplierModels.SupplierName + "_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath), sFilepath = Path.GetDirectoryName(spath);
+                                file.SaveAs(sFilepath + "/" + sFilename);
+                                objSupplierModels.SupportingDoc = objSupplierModels.SupportingDoc + "," + "~/DataUpload/MgmtDocs/Supplier/" + sFilename;
+                            }
+                            catch (Exception ex)
+                            {
+                                objGlobaldata.AddFunctionalLog("Exception in AddSupplier-uploaddocument: " + ex.ToString());
+                                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                            }
                         }
-                        catch (Exception ex)
-                        {
-                            objGlobaldata.AddFunctionalLog("Exception in AddSupplier-uploaddocument: " + ex.ToString());
-                            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                        }
+                        objSupplierModels.SupportingDoc = objSupplierModels.SupportingDoc.Trim(',');
                     }
-                    objSupplierModels.SupportingDoc = objSupplierModels.SupportingDoc.Trim(',');
+                    else
+                    {
+                        ViewBag.Message = "You have not specified a file.";
+                    }
                 }
-                else
-                {
-                    ViewBag.Message = "You have not specified a file.";
-                }
-               }
 
                 if (objSupplierModels.FunAddSupplier(objSupplierModels))
                 {
@@ -184,7 +179,7 @@ namespace ISOStd.Controllers
 
             return Json(lstFilteredList);
         }
-        
+
         [AllowAnonymous]
         public ActionResult SupplierList(string SearchText, string Approvestatus, int? page, string chkAll, string branch_name)
         {
@@ -239,7 +234,7 @@ namespace ISOStd.Controllers
                 DataSet dsSupplier = objGlobaldata.Getdetails(sSqlstmt);
 
                 for (int i = 0; dsSupplier.Tables.Count > 0 && i < dsSupplier.Tables[0].Rows.Count; i++)
-                {                    
+                {
                     try
                     {
                         SupplierModels objSupplierModels = new SupplierModels
@@ -270,7 +265,6 @@ namespace ISOStd.Controllers
                             branch = objGlobaldata.GetMultiCompanyBranchNameById(dsSupplier.Tables[0].Rows[i]["branch"].ToString()),
                             Department = objGlobaldata.GetMultiDeptNameById(dsSupplier.Tables[0].Rows[i]["Department"].ToString()),
                             Location = objGlobaldata.GetDivisionLocationById(dsSupplier.Tables[0].Rows[i]["Location"].ToString()),
-
                         };
 
                         DateTime dateValue;
@@ -358,7 +352,7 @@ namespace ISOStd.Controllers
                 DataSet dsSupplier = objGlobaldata.Getdetails(sSqlstmt);
 
                 for (int i = 0; dsSupplier.Tables.Count > 0 && i < dsSupplier.Tables[0].Rows.Count; i++)
-                { 
+                {
                     try
                     {
                         SupplierModels objSupplierModels = new SupplierModels
@@ -423,7 +417,7 @@ namespace ISOStd.Controllers
 
             return Json("Success");
         }
-                
+
         [AllowAnonymous]
         public ActionResult SupplierApprove(string SupplierID, int iStatus)
         {
@@ -435,7 +429,6 @@ namespace ISOStd.Controllers
                 if (iStatus == 1)
                 {
                     sStatus = "Approved";
-
                 }
 
                 if (objSupModels.FunApproveSupplier(SupplierID, iStatus))
@@ -453,8 +446,8 @@ namespace ISOStd.Controllers
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
             return RedirectToAction("ListPendingForApproval", "Dashboard");
-        }                           
-        
+        }
+
         [AllowAnonymous]
         public ActionResult SupplierDetails()
         {
@@ -546,7 +539,7 @@ namespace ISOStd.Controllers
 
             return RedirectToAction("SupplierList");
         }
-        
+
         [AllowAnonymous]
         public ActionResult SupplierInfo(int id)
         {
@@ -593,7 +586,6 @@ namespace ISOStd.Controllers
                         branch = objGlobaldata.GetMultiCompanyBranchNameById(dsSupplier.Tables[0].Rows[0]["branch"].ToString()),
                         Department = objGlobaldata.GetMultiDeptNameById(dsSupplier.Tables[0].Rows[0]["Department"].ToString()),
                         Location = objGlobaldata.GetDivisionLocationById(dsSupplier.Tables[0].Rows[0]["Location"].ToString()),
-
                     };
 
                     DateTime dateValue;
@@ -601,7 +593,6 @@ namespace ISOStd.Controllers
                     {
                         objSupplierModels.UpdatedOn = dateValue;
                     }
-
 
                     if (DateTime.TryParse(dsSupplier.Tables[0].Rows[0]["License_Expiry"].ToString(), out dateValue))
                     {
@@ -628,7 +619,7 @@ namespace ISOStd.Controllers
 
             return RedirectToAction("SupplierList");
         }
-        
+
         [AllowAnonymous]
         public ActionResult SupplierEdit()
         {
@@ -660,7 +651,6 @@ namespace ISOStd.Controllers
                         //if (objUser.empid == dsSupplier.Tables[0].Rows[0]["Added_Updated_By"].ToString()
                         //    && dsSupplier.Tables[0].Rows[0]["ApprovedStatus"].ToString() == "0")
                         //{
-
                         objSupplierModels = new SupplierModels
                         {
                             SupplierId = dsSupplier.Tables[0].Rows[0]["SupplierId"].ToString(),
@@ -688,7 +678,7 @@ namespace ISOStd.Controllers
                             NotificationValue = dsSupplier.Tables[0].Rows[0]["NotificationValue"].ToString(),
                             Criticality = dsSupplier.Tables[0].Rows[0]["Criticality"].ToString(),
                             Supplier_Work_Nature = (dsSupplier.Tables[0].Rows[0]["Supplier_Work_Nature"].ToString()),
-                            branch =(dsSupplier.Tables[0].Rows[0]["branch"].ToString()),
+                            branch = (dsSupplier.Tables[0].Rows[0]["branch"].ToString()),
                             Department = (dsSupplier.Tables[0].Rows[0]["Department"].ToString()),
                             Location = (dsSupplier.Tables[0].Rows[0]["Location"].ToString()),
                             pan_no = (dsSupplier.Tables[0].Rows[0]["pan_no"].ToString()),
@@ -750,14 +740,12 @@ namespace ISOStd.Controllers
         {
             try
             {
-
                 string QCDelete = Request.Form["QCDocsValselectall"];
                 objSupplierModels.ApprovalCriteria = form["ApprovalCriteria"];
                 objSupplierModels.Payment_term = form["Payment_term"];
                 objSupplierModels.branch = form["branch"];
                 objSupplierModels.Department = form["Department"];
                 objSupplierModels.Location = form["Location"];
-
 
                 DateTime dateValue;
                 if (DateTime.TryParse(form["License_Expires"], out dateValue) == true)
@@ -840,35 +828,33 @@ namespace ISOStd.Controllers
             }
             return RedirectToAction("SupplierList");
         }
-        
+
         [HttpPost]
-        //Get: /CustomerMgmt/SupplierDelete
         public JsonResult SupplierDelete(FormCollection form)
         {
             try
-            {                
-                    if (form["SupplierId"] != null && form["SupplierId"] != "")
-                    {
-                        SupplierModels Doc = new SupplierModels();
-                        string SupplierId = form["SupplierId"];
+            {
+                if (form["SupplierId"] != null && form["SupplierId"] != "")
+                {
+                    SupplierModels Doc = new SupplierModels();
+                    string SupplierId = form["SupplierId"];
 
-                        if (Doc.FunDeleteSupplier(SupplierId))
-                        {
-                            TempData["Successdata"] = "Deleted successfully";
-                            return Json("Success");
-                        }
-                        else
-                        {
-                            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                            return Json("Failed");
-                        }
+                    if (Doc.FunDeleteSupplier(SupplierId))
+                    {
+                        TempData["Successdata"] = "Deleted successfully";
+                        return Json("Success");
                     }
                     else
                     {
-                        TempData["alertdata"] = "Supplier Id cannot be Null or empty";
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                         return Json("Failed");
-                    }               
-
+                    }
+                }
+                else
+                {
+                    TempData["alertdata"] = "Supplier Id cannot be Null or empty";
+                    return Json("Failed");
+                }
             }
             catch (Exception ex)
             {
@@ -877,7 +863,7 @@ namespace ISOStd.Controllers
             }
             return Json("Failed");
         }
-        
+
         [AllowAnonymous]
         public ActionResult AddDiscrepancyLog()
         {
@@ -954,37 +940,33 @@ namespace ISOStd.Controllers
             }
             return RedirectToAction("DiscrepancyLogList");
         }
-        
+
         [AllowAnonymous]
         public JsonResult DiscrepancyLogDelete(FormCollection form)
         {
             try
             {
-                  if (form["SupplierDiscreLogId"] != null && form["SupplierDiscreLogId"] != "")
+                if (form["SupplierDiscreLogId"] != null && form["SupplierDiscreLogId"] != "")
+                {
+                    SupplierDiscrepencyLogModels Doc = new SupplierDiscrepencyLogModels();
+                    string sSupplierDiscreLogId = form["SupplierDiscreLogId"];
+
+                    if (Doc.FunDeleteDiscrepencyLogDoc(sSupplierDiscreLogId))
                     {
-
-                        SupplierDiscrepencyLogModels Doc = new SupplierDiscrepencyLogModels();
-                        string sSupplierDiscreLogId = form["SupplierDiscreLogId"];
-
-
-                        if (Doc.FunDeleteDiscrepencyLogDoc(sSupplierDiscreLogId))
-                        {
-                            TempData["Successdata"] = "Document deleted successfully";
-                            return Json("Success");
-                        }
-                        else
-                        {
-                            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                            return Json("Failed");
-                        }
+                        TempData["Successdata"] = "Document deleted successfully";
+                        return Json("Success");
                     }
                     else
                     {
-                        TempData["alertdata"] = "Discrepency Log Id cannot be Null or empty";
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                         return Json("Failed");
                     }
-               
-
+                }
+                else
+                {
+                    TempData["alertdata"] = "Discrepency Log Id cannot be Null or empty";
+                    return Json("Failed");
+                }
             }
             catch (Exception ex)
             {
@@ -1063,9 +1045,6 @@ namespace ISOStd.Controllers
 
                 if (dsSupplier.Tables.Count > 0 && dsSupplier.Tables[0].Rows.Count > 0)
                 {
-
-                    
-
                     for (int i = 0; i < dsSupplier.Tables[0].Rows.Count; i++)
                     {
                         try
@@ -1180,9 +1159,6 @@ namespace ISOStd.Controllers
 
                 if (dsSupplier.Tables.Count > 0 && dsSupplier.Tables[0].Rows.Count > 0)
                 {
-
-                  
-
                     for (int i = 0; i < dsSupplier.Tables[0].Rows.Count; i++)
                     {
                         try
@@ -1230,7 +1206,7 @@ namespace ISOStd.Controllers
 
             return Json("Success");
         }
-        
+
         [AllowAnonymous]
         public ActionResult DiscrepancyLogInfo(int id)
         {
@@ -1384,7 +1360,6 @@ namespace ISOStd.Controllers
                     ViewBag.Message = "You have not specified a file.";
                 }
 
-
                 if (objDiscrepencyLogModels.FunUpdateSupplierDiscrepencyLog(objDiscrepencyLogModels))
                 {
                     TempData["Successdata"] = "Supplier Discrepency Log details updated successfully";
@@ -1433,6 +1408,7 @@ namespace ISOStd.Controllers
             }
             return Json("Success");
         }
+
         [AllowAnonymous]
         public JsonResult SuppliertInvalid(string SupplierID, string invalid_reason)
         {
@@ -1466,7 +1442,5 @@ namespace ISOStd.Controllers
             }
             return Json("Failed");
         }
-
-
     }
 }

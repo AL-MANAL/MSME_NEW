@@ -1,47 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Transactions;
-using System.Web;
+﻿using ISOStd.Filters;
+using ISOStd.Models;
 using System.Web.Mvc;
 using System.Web.Security;
-using DotNetOpenAuth.AspNet;
-using Microsoft.Web.WebPages.OAuth;
-using WebMatrix.WebData;
-using ISOStd.Filters;
-using ISOStd.Models;
+
 namespace ISOStd.Controllers
 {
-
     [Authorize]
     [InitializeSimpleMembership]
     public class AccountController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
+        private clsGlobal objGlobaldata = new clsGlobal();
         //
         // GET: /Account/Login
 
-      
         [AllowAnonymous]
         public ActionResult Login()
         {
             //ViewBag.ReturnUrl = returnUrl;
 
             ViewBag.VerNo = objGlobaldata.GetVersionNumber();
-           
+
             return View();
         }
 
         //
         // POST: /Account/Login
 
-
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public ActionResult Login(LoginModel model, FormCollection form)
         {
-           
             string sUsername = form["emailAddress"];
             string sPwd = form["Pwd"];
             if (model.LoginAuthenticate(sUsername, sPwd))
@@ -51,14 +40,12 @@ namespace ISOStd.Controllers
                     System.Data.DataSet dscust = objGlobaldata.Getdetails("select * from t_CompanyInfo ");
                     if (dscust.Tables.Count > 0 && dscust.Tables[0].Rows.Count > 0 && dscust.Tables[0].Rows[0]["address"].ToString() != "")
                     {
-
                         return RedirectToAction("QHSE", "Home");
-                       
+
                         //return RedirectToRoute("LocationDefault", new { controller="Home", action = "QHSE"});
                     }
                     else if (dscust.Tables.Count > 0 && dscust.Tables[0].Rows.Count > 0 && dscust.Tables[0].Rows[0]["address"].ToString() == "")
                     {
-
                         return RedirectToAction("CompanyEdit", "Company", new { CompanyID = dscust.Tables[0].Rows[0]["CompanyID"].ToString() });
                     }
                 }
@@ -69,7 +56,7 @@ namespace ISOStd.Controllers
             }
             // If we got this far, something failed, redisplay form
             TempData["alertdata"] = "The Email Id or password provided is incorrect.";
-            
+
             return View(model);
         }
 
@@ -104,11 +91,9 @@ namespace ISOStd.Controllers
         //    return View();
         //}
 
-
         //
         // POST: /Account/LogOff
 
-        
         [AllowAnonymous]
         public ActionResult LogOff()
         {

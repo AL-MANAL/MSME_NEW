@@ -1,4 +1,5 @@
-﻿using ISOStd.Models;
+﻿using ISOStd.Filters;
+using ISOStd.Models;
 using PagedList;
 using Rotativa;
 using System;
@@ -8,14 +9,13 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using ISOStd.Filters;
 
 namespace ISOStd.Controllers
 {
     [PreventFromUrl]
-    public class CustEnquiryController:Controller
+    public class CustEnquiryController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
+        private clsGlobal objGlobaldata = new clsGlobal();
 
         public CustEnquiryController()
         {
@@ -53,9 +53,7 @@ namespace ISOStd.Controllers
         {
             try
             {
-
-               // objEnquiry.CustomerName = form["CustomerName"];             
-
+                // objEnquiry.CustomerName = form["CustomerName"];
 
                 DateTime dateValue;
 
@@ -102,9 +100,9 @@ namespace ISOStd.Controllers
                 if (objEnquiry.FunAddCustEnquiry(objEnquiry))
                 {
                     TempData["Successdata"] = "Customer Enquiry registered successfully";
-                    int Id=0;
-                    DataSet ds= objGlobaldata.Getdetails("Select max(id_enquiry) as Id from t_custenquiry where active =1");
-                    if(ds.Tables[0].Rows.Count>0)
+                    int Id = 0;
+                    DataSet ds = objGlobaldata.Getdetails("Select max(id_enquiry) as Id from t_custenquiry where active =1");
+                    if (ds.Tables[0].Rows.Count > 0)
                     {
                         Id = Convert.ToInt32(ds.Tables[0].Rows[0]["Id"].ToString());
                     }
@@ -115,7 +113,6 @@ namespace ISOStd.Controllers
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 }
-
             }
             catch (Exception ex)
             {
@@ -125,17 +122,16 @@ namespace ISOStd.Controllers
 
             return RedirectToAction("CustEnquiryList");
         }
-        
+
         [AllowAnonymous]
         public ActionResult CustEnquiryList(string SearchText, string Approvestatus, int? page, string Company)
         {
             CustEnquiryModels objcust = new CustEnquiryModels();
             CustEnquiryModelsList objList = new CustEnquiryModelsList();
             objList.EnquiryList = new List<CustEnquiryModels>();
-           
+
             try
             {
-
                 UserCredentials objUser = new UserCredentials();
                 objUser = objGlobaldata.GetCurrentUserSession();
 
@@ -151,24 +147,20 @@ namespace ISOStd.Controllers
                     ViewBag.SearchText = SearchText;
                     sSearchtext = sSearchtext + "  and (projectname ='" + SearchText + "' or projectname like '" + SearchText + "%' or projectname like '%" + SearchText + "%')";
                 }
-              
+
                 if (Company != "" && Company != null && Company != "Select")
                 {
                     ViewBag.CompanyNameval = (Company);
                     sSearchtext = sSearchtext + " and companyname = '" + Company + "'";
-                }               
+                }
 
                 sSqlstmt = sSqlstmt + sSearchtext + " order by date_enquiry desc";
                 DataSet dsList = objGlobaldata.Getdetails(sSqlstmt);
 
                 if (dsList.Tables.Count > 0 && dsList.Tables[0].Rows.Count > 0)
                 {
-
-                   
-
                     for (int i = 0; i < dsList.Tables[0].Rows.Count; i++)
                     {
-
                         try
                         {
                             CustEnquiryModels objenquiry = new CustEnquiryModels
@@ -250,52 +242,50 @@ namespace ISOStd.Controllers
 
                     if (dsList.Tables.Count > 0 && dsList.Tables[0].Rows.Count > 0)
                     {
-                           objcust = new CustEnquiryModels
-                                {
-                                    id_enquiry = Convert.ToInt16(dsList.Tables[0].Rows[0]["id_enquiry"].ToString()),
-                                    mode_enquiry = objcust.GetModeofEnquiryById(dsList.Tables[0].Rows[0]["mode_enquiry"].ToString()),
-                                    companyname = (dsList.Tables[0].Rows[0]["companyname"].ToString()),
-                                    description = dsList.Tables[0].Rows[0]["description"].ToString(),
-                                    projectname = dsList.Tables[0].Rows[0]["projectname"].ToString(),
-                                    contactperson = dsList.Tables[0].Rows[0]["contactperson"].ToString(),
-                                    location = dsList.Tables[0].Rows[0]["location"].ToString(),
-                                    sales_incharge = dsList.Tables[0].Rows[0]["sales_incharge"].ToString(),
-                                    incharge = objGlobaldata.GetEmpHrNameById(dsList.Tables[0].Rows[0]["incharge"].ToString()),
-                                    amt = Convert.ToDecimal(dsList.Tables[0].Rows[0]["amt"].ToString()),
-                                    ref_no = dsList.Tables[0].Rows[0]["ref_no"].ToString(),
-                                    lpo_no = dsList.Tables[0].Rows[0]["lpo_no"].ToString(),
-                                    lpo_amt = Convert.ToDecimal(dsList.Tables[0].Rows[0]["lpo_amt"].ToString()),
-                                    status = objcust.GetEnquiryStatusById(dsList.Tables[0].Rows[0]["status"].ToString()),
-                                    upload = dsList.Tables[0].Rows[0]["upload"].ToString(),
-                                    telno = dsList.Tables[0].Rows[0]["telno"].ToString(),
-                                    faxno = dsList.Tables[0].Rows[0]["faxno"].ToString(),
-                                };
+                        objcust = new CustEnquiryModels
+                        {
+                            id_enquiry = Convert.ToInt16(dsList.Tables[0].Rows[0]["id_enquiry"].ToString()),
+                            mode_enquiry = objcust.GetModeofEnquiryById(dsList.Tables[0].Rows[0]["mode_enquiry"].ToString()),
+                            companyname = (dsList.Tables[0].Rows[0]["companyname"].ToString()),
+                            description = dsList.Tables[0].Rows[0]["description"].ToString(),
+                            projectname = dsList.Tables[0].Rows[0]["projectname"].ToString(),
+                            contactperson = dsList.Tables[0].Rows[0]["contactperson"].ToString(),
+                            location = dsList.Tables[0].Rows[0]["location"].ToString(),
+                            sales_incharge = dsList.Tables[0].Rows[0]["sales_incharge"].ToString(),
+                            incharge = objGlobaldata.GetEmpHrNameById(dsList.Tables[0].Rows[0]["incharge"].ToString()),
+                            amt = Convert.ToDecimal(dsList.Tables[0].Rows[0]["amt"].ToString()),
+                            ref_no = dsList.Tables[0].Rows[0]["ref_no"].ToString(),
+                            lpo_no = dsList.Tables[0].Rows[0]["lpo_no"].ToString(),
+                            lpo_amt = Convert.ToDecimal(dsList.Tables[0].Rows[0]["lpo_amt"].ToString()),
+                            status = objcust.GetEnquiryStatusById(dsList.Tables[0].Rows[0]["status"].ToString()),
+                            upload = dsList.Tables[0].Rows[0]["upload"].ToString(),
+                            telno = dsList.Tables[0].Rows[0]["telno"].ToString(),
+                            faxno = dsList.Tables[0].Rows[0]["faxno"].ToString(),
+                        };
 
-                                DateTime dtDocDate = new DateTime();
-                                if (dsList.Tables[0].Rows[0]["date_enquiry"].ToString() != ""
-                                    && DateTime.TryParse(dsList.Tables[0].Rows[0]["date_enquiry"].ToString(), out dtDocDate))
-                                {
-                                     objcust.date_enquiry = dtDocDate;
-                                }
+                        DateTime dtDocDate = new DateTime();
+                        if (dsList.Tables[0].Rows[0]["date_enquiry"].ToString() != ""
+                            && DateTime.TryParse(dsList.Tables[0].Rows[0]["date_enquiry"].ToString(), out dtDocDate))
+                        {
+                            objcust.date_enquiry = dtDocDate;
+                        }
 
-                                if (dsList.Tables[0].Rows[0]["date_fax"].ToString() != ""
-                                   && DateTime.TryParse(dsList.Tables[0].Rows[0]["date_fax"].ToString(), out dtDocDate))
-                                {
-                                      objcust.date_fax = dtDocDate;
-                                }
+                        if (dsList.Tables[0].Rows[0]["date_fax"].ToString() != ""
+                           && DateTime.TryParse(dsList.Tables[0].Rows[0]["date_fax"].ToString(), out dtDocDate))
+                        {
+                            objcust.date_fax = dtDocDate;
+                        }
 
-                                if (dsList.Tables[0].Rows[0]["date_lpo"].ToString() != ""
-                                   && DateTime.TryParse(dsList.Tables[0].Rows[0]["date_lpo"].ToString(), out dtDocDate))
-                                {
-                                   objcust.date_lpo = dtDocDate;
-                                }
-                            
+                        if (dsList.Tables[0].Rows[0]["date_lpo"].ToString() != ""
+                           && DateTime.TryParse(dsList.Tables[0].Rows[0]["date_lpo"].ToString(), out dtDocDate))
+                        {
+                            objcust.date_lpo = dtDocDate;
+                        }
                         else
-                        {                          
+                        {
                             TempData["alertdata"] = "Access Denied";
                             return RedirectToAction("CustEnquiryList");
                         }
-
                     }
                     else
                     {
@@ -326,7 +316,7 @@ namespace ISOStd.Controllers
         public ActionResult CustEnquiryEdit(CustEnquiryModels objEnquiry, FormCollection form, IEnumerable<HttpPostedFileBase> file)
         {
             try
-            {                              
+            {
                 HttpPostedFileBase files = Request.Files[0];
                 string QCDelete = Request.Form["QCDocsValselectall"];
 
@@ -344,7 +334,7 @@ namespace ISOStd.Controllers
                         try
                         {
                             string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/CustEnquiry"), Path.GetFileName(document.FileName));
-                            string sFilename =  objEnquiry.id_enquiry + "_"+Path.GetFileName(spath);
+                            string sFilename = objEnquiry.id_enquiry + "_" + Path.GetFileName(spath);
                             string sFilepath = Path.GetDirectoryName(spath);
 
                             document.SaveAs(sFilepath + "/" + sFilename);
@@ -373,7 +363,7 @@ namespace ISOStd.Controllers
                 }
                 else if (form["QCDocsVal"] == null && files.ContentLength == 0)
                 {
-                     objEnquiry.upload = null;
+                    objEnquiry.upload = null;
                 }
 
                 if (objEnquiry.FunUpdateCustEnquiry(objEnquiry))
@@ -385,7 +375,6 @@ namespace ISOStd.Controllers
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 }
-
             }
             catch (Exception ex)
             {
@@ -403,11 +392,9 @@ namespace ISOStd.Controllers
             CustEnquiryModels objcust = new CustEnquiryModels();
 
             try
-            {              
-
-                if (Id != null && Id!= "")
+            {
+                if (Id != null && Id != "")
                 {
-                   
                     string sSqlstmt = "select id_enquiry,mode_enquiry,date_enquiry,companyname,description,projectname,contactperson,location,sales_incharge,"
                     + "incharge,date_fax,amt,ref_no,date_lpo,lpo_no,lpo_amt,status,upload,telno,faxno from t_custenquiry where id_enquiry='" + Id + "'";
 
@@ -454,13 +441,11 @@ namespace ISOStd.Controllers
                         {
                             objcust.date_lpo = dtDocDate;
                         }
-
                         else
                         {
                             TempData["alertdata"] = "Access Denied";
                             return RedirectToAction("CustEnquiryList");
                         }
-
                     }
                     else
                     {
@@ -544,13 +529,11 @@ namespace ISOStd.Controllers
                         {
                             objcust.date_lpo = dtDocDate;
                         }
-
                         else
                         {
                             TempData["alertdata"] = "Access Denied";
                             return RedirectToAction("CustEnquiryList");
                         }
-
                     }
                     else
                     {
@@ -574,37 +557,32 @@ namespace ISOStd.Controllers
             return View(objcust);
         }
 
-
         [AllowAnonymous]
         public JsonResult CustEnquiryDelete(FormCollection form)
         {
             try
             {
-                
-                    if (form["id_enquiry"] != null && form["id_enquiry"] != "")
+                if (form["id_enquiry"] != null && form["id_enquiry"] != "")
+                {
+                    CustEnquiryModels Doc = new CustEnquiryModels();
+                    string sid_enquiry = form["id_enquiry"];
+
+                    if (Doc.FunDeleteCustEnquiry(sid_enquiry))
                     {
-                        CustEnquiryModels Doc = new CustEnquiryModels();
-                        string sid_enquiry = form["id_enquiry"];
-
-
-                        if (Doc.FunDeleteCustEnquiry(sid_enquiry))
-                        {
-                            TempData["Successdata"] = "Enquiry deleted successfully";
-                            return Json("Success");
-                        }
-                        else
-                        {
-                            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                            return Json("Failed");
-                        }
+                        TempData["Successdata"] = "Enquiry deleted successfully";
+                        return Json("Success");
                     }
                     else
                     {
-                        TempData["alertdata"] = "Customer Enquiry Id cannot be Null or empty";
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                         return Json("Failed");
                     }
-               
-
+                }
+                else
+                {
+                    TempData["alertdata"] = "Customer Enquiry Id cannot be Null or empty";
+                    return Json("Failed");
+                }
             }
             catch (Exception ex)
             {
@@ -619,7 +597,7 @@ namespace ISOStd.Controllers
         {
             try
             {
-                ViewBag.Approver = objGlobaldata.GetHrEmployeeListbox();              
+                ViewBag.Approver = objGlobaldata.GetHrEmployeeListbox();
             }
             catch (Exception ex)
             {
@@ -635,7 +613,6 @@ namespace ISOStd.Controllers
         {
             try
             {
-
                 objModel.sum = Convert.ToDecimal(form["Tot"]);
 
                 HttpPostedFileBase files = Request.Files[0];
@@ -648,7 +625,7 @@ namespace ISOStd.Controllers
                 {
                     objModel.date_quotation = dateValue;
                 }
-                              
+
                 if (upload != null && files.ContentLength > 0)
                 {
                     objModel.upload = "";
@@ -707,11 +684,10 @@ namespace ISOStd.Controllers
             }
             return RedirectToAction("QuotationList");
         }
-        
+
         [AllowAnonymous]
         public ActionResult QuotationList(FormCollection form, int? page, string chkAll, string ToQuotation, string DateToQuot, string DateFromQuot, string command)
         {
-
             QuotationModelsList objdisp = new QuotationModelsList();
             objdisp.QuotList = new List<QuotationModels>();
 
@@ -719,8 +695,8 @@ namespace ISOStd.Controllers
 
             try
             {
-                ViewBag.Approver = objGlobaldata.GetHrEmployeeListbox(); 
-              
+                ViewBag.Approver = objGlobaldata.GetHrEmployeeListbox();
+
                 string sSqlstmt = "select id_quotation,date_quotation,ref_no,to_quotation,telephone,email,pro_ref,approved_by,logged_by,upload,sum,vat from t_quotation where active=1";
                 string sSearchtext = "";
                 if (chkAll == null && chkAll != "All")
@@ -754,21 +730,19 @@ namespace ISOStd.Controllers
 
                 if (dsList.Tables.Count > 0 && dsList.Tables[0].Rows.Count > 0)
                 {
-                 
                     for (int i = 0; i < dsList.Tables[0].Rows.Count; i++)
                     {
                         try
                         {
                             QuotationModels objMdl = new QuotationModels
                             {
-
                                 id_quotation = dsList.Tables[0].Rows[i]["id_quotation"].ToString(),
                                 ref_no = dsList.Tables[0].Rows[i]["ref_no"].ToString(),
                                 to_quotation = dsList.Tables[0].Rows[i]["to_quotation"].ToString(),
                                 telephone = dsList.Tables[0].Rows[i]["telephone"].ToString(),
                                 email = dsList.Tables[0].Rows[i]["email"].ToString(),
                                 pro_ref = dsList.Tables[0].Rows[i]["pro_ref"].ToString(),
-                                approved_by =objGlobaldata.GetEmpHrNameById(dsList.Tables[0].Rows[i]["approved_by"].ToString()),
+                                approved_by = objGlobaldata.GetEmpHrNameById(dsList.Tables[0].Rows[i]["approved_by"].ToString()),
                                 logged_by = objGlobaldata.GetEmpHrNameById(dsList.Tables[0].Rows[i]["logged_by"].ToString()),
                                 upload = dsList.Tables[0].Rows[i]["upload"].ToString(),
                                 sum = Convert.ToDecimal(dsList.Tables[0].Rows[i]["sum"].ToString()),
@@ -801,7 +775,6 @@ namespace ISOStd.Controllers
 
             return View(objdisp.QuotList.ToList().ToPagedList(page ?? 1, 1000));
         }
-
 
         [AllowAnonymous]
         public ActionResult QuotationEdit()
@@ -844,7 +817,6 @@ namespace ISOStd.Controllers
                         {
                             objMdl.date_quotation = dtDocDate;
                         }
-
                     }
                     else
                     {
@@ -868,7 +840,7 @@ namespace ISOStd.Controllers
                                 QuotationModels objModel = new QuotationModels
                                 {
                                     id_quo_trans = dsQuotList.Tables[0].Rows[i]["id_quo_trans"].ToString(),
-                                    id_quotation = dsQuotList.Tables[0].Rows[i]["id_quotation"].ToString(),                                   
+                                    id_quotation = dsQuotList.Tables[0].Rows[i]["id_quotation"].ToString(),
                                     description = dsQuotList.Tables[0].Rows[i]["description"].ToString(),
                                     qty = Convert.ToDecimal(dsQuotList.Tables[0].Rows[i]["qty"].ToString()),
                                     price = Convert.ToDecimal(dsQuotList.Tables[0].Rows[i]["price"].ToString()),
@@ -906,7 +878,6 @@ namespace ISOStd.Controllers
         [AllowAnonymous]
         public ActionResult QuotationEdit(QuotationModels objQuot, FormCollection form, IEnumerable<HttpPostedFileBase> upload)
         {
-
             QuotationModelsList objList = new QuotationModelsList();
             objList.QuotList = new List<QuotationModels>();
             try
@@ -921,7 +892,6 @@ namespace ISOStd.Controllers
                 {
                     objQuot.date_quotation = dateValue;
                 }
-
 
                 if (upload != null && files.ContentLength > 0)
                 {
@@ -980,7 +950,7 @@ namespace ISOStd.Controllers
                         objList.QuotList.Add(objModel);
                     }
                 }
-                
+
                 if (objQuot.FunUpdateQuotation(objQuot, objList))
                 {
                     TempData["Successdata"] = "Uploaded successfully";
@@ -1007,7 +977,7 @@ namespace ISOStd.Controllers
                 ViewBag.Approver = objGlobaldata.GetHrEmployeeListbox();
 
                 if (Id != null && Id != "")
-                {                   
+                {
                     string sSqlstmt = "select id_quotation,date_quotation,ref_no,to_quotation,telephone,email,pro_ref,approved_by,logged_by,upload,sum,vat from t_quotation where id_quotation='" + Id + "'";
 
                     DataSet dsList = objGlobaldata.Getdetails(sSqlstmt);
@@ -1036,7 +1006,6 @@ namespace ISOStd.Controllers
                         {
                             objMdl.date_quotation = dtDocDate;
                         }
-
                     }
                     else
                     {
@@ -1108,7 +1077,6 @@ namespace ISOStd.Controllers
                         {
                             objMdl.date_quotation = dtDocDate;
                         }
-
                     }
                     else
                     {
@@ -1151,7 +1119,7 @@ namespace ISOStd.Controllers
                 string sid_quotation = form["id_quotation"];
 
                 if (sid_quotation != null && sid_quotation != "")
-                { 
+                {
                     string sSqlstmt = "select id_quotation,date_quotation,ref_no,to_quotation,telephone,email,pro_ref,approved_by,logged_by,upload,sum,vat from t_quotation where id_quotation='" + sid_quotation + "'";
 
                     DataSet dsList = objGlobaldata.Getdetails(sSqlstmt);
@@ -1180,7 +1148,6 @@ namespace ISOStd.Controllers
                         {
                             objMdl.date_quotation = dtDocDate;
                         }
-
                     }
                     else
                     {
@@ -1257,31 +1224,27 @@ namespace ISOStd.Controllers
         {
             try
             {
-               
-                    if (form["id_quotation"] != null && form["id_quotation"] != "")
+                if (form["id_quotation"] != null && form["id_quotation"] != "")
+                {
+                    QuotationModels Doc = new QuotationModels();
+                    string sid_quotation = form["id_quotation"];
+
+                    if (Doc.FunDeleteQuotation(sid_quotation))
                     {
-                        QuotationModels Doc = new QuotationModels();
-                        string sid_quotation = form["id_quotation"];
-
-
-                        if (Doc.FunDeleteQuotation(sid_quotation))
-                        {
-                            TempData["Successdata"] = "Quotation deleted successfully";
-                            return Json("Success");
-                        }
-                        else
-                        {
-                            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                            return Json("Failed");
-                        }
+                        TempData["Successdata"] = "Quotation deleted successfully";
+                        return Json("Success");
                     }
                     else
                     {
-                        TempData["alertdata"] = "Quotation Id cannot be Null or empty";
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                         return Json("Failed");
                     }
-                
-
+                }
+                else
+                {
+                    TempData["alertdata"] = "Quotation Id cannot be Null or empty";
+                    return Json("Failed");
+                }
             }
             catch (Exception ex)
             {
@@ -1292,7 +1255,7 @@ namespace ISOStd.Controllers
         }
 
         public JsonResult FungetTotal(decimal price, decimal qty)
-        {            
+        {
             decimal Total = 0;
 
             if (price != 0 && qty != 0)
@@ -1312,30 +1275,28 @@ namespace ISOStd.Controllers
                 DataSet dsList = objGlobaldata.Getdetails("Select ContactPerson,FaxNo from t_supplier where SupplierName='" + companyname + "' and active =1");
                 if (dsList.Tables.Count > 0 && dsList.Tables[0].Rows.Count > 0)
                 {
-                      try
+                    try
+                    {
+                        objModel = new CustEnquiryModels
                         {
-                           objModel = new CustEnquiryModels
-                           {
-                               contactperson = dsList.Tables[0].Rows[0]["ContactPerson"].ToString(),
-                               faxno = dsList.Tables[0].Rows[0]["FaxNo"].ToString()                           
-                           };
-                            objList.EnquiryList.Add(objModel);
-
-                        }
-                        catch (Exception ex)
-                        {
-                            objGlobaldata.AddFunctionalLog("Exception in FunGetCompanyDetails: " + ex.ToString());
-                            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                        }                    
+                            contactperson = dsList.Tables[0].Rows[0]["ContactPerson"].ToString(),
+                            faxno = dsList.Tables[0].Rows[0]["FaxNo"].ToString()
+                        };
+                        objList.EnquiryList.Add(objModel);
+                    }
+                    catch (Exception ex)
+                    {
+                        objGlobaldata.AddFunctionalLog("Exception in FunGetCompanyDetails: " + ex.ToString());
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                    }
                 }
-
             }
             catch (Exception ex)
             {
                 objGlobaldata.AddFunctionalLog("Exception in FunGetCompanyDetails: " + ex.ToString());
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
-            
+
             return Json(objModel);
         }
 
@@ -1349,7 +1310,7 @@ namespace ISOStd.Controllers
             }
 
             return Json(Sum);
-        }        
+        }
 
         public JsonResult FungetSum(decimal total, decimal Tot)
         {
@@ -1362,6 +1323,5 @@ namespace ISOStd.Controllers
 
             return Json(Sum);
         }
-
     }
 }

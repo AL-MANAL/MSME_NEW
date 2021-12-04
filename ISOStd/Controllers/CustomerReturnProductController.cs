@@ -1,27 +1,26 @@
-﻿using ISOStd.Models;
+﻿using ISOStd.Filters;
+using ISOStd.Models;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using System.Net;
-using System.IO;
-using PagedList;
-using PagedList.Mvc;
-using ISOStd.Filters;
 
 namespace ISOStd.Controllers
 {
     [PreventFromUrl]
     public class CustomerReturnProductController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
+        private clsGlobal objGlobaldata = new clsGlobal();
+
         public CustomerReturnProductController()
         {
             ViewBag.Menutype = "CustomerMgmt";
             ViewBag.SubMenutype = "CustomerReturnProduct";
         }
+
         public ActionResult AddCustReturnProduct()
         {
             try
@@ -40,7 +39,7 @@ namespace ISOStd.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public ActionResult AddCustReturnProduct(CustomerReturnProductModels objProp, FormCollection form,IEnumerable<HttpPostedFileBase> upload)
+        public ActionResult AddCustReturnProduct(CustomerReturnProductModels objProp, FormCollection form, IEnumerable<HttpPostedFileBase> upload)
         {
             try
             {
@@ -77,9 +76,9 @@ namespace ISOStd.Controllers
                 {
                     ViewBag.Message = "You have not specified a file.";
                 }
-                if (objProp.FunAddCustReturnProduct(objProp,upload))
+                if (objProp.FunAddCustReturnProduct(objProp, upload))
                 {
-                    TempData["Successdata"] = "Customer Return Product Added successfully with Reference No : '"+ objProp.refno+ "'";
+                    TempData["Successdata"] = "Customer Return Product Added successfully with Reference No : '" + objProp.refno + "'";
                 }
                 else
                 {
@@ -101,7 +100,6 @@ namespace ISOStd.Controllers
             objPropList.PropList = new List<CustomerReturnProductModels>();
             try
             {
-
                 string sBranch_name = objGlobaldata.GetCurrentUserSession().division;
                 string sBranchtree = objGlobaldata.GetCurrentUserSession().BranchTree;
                 ViewBag.Branch = objGlobaldata.GetMultiBranchListByID(sBranchtree);
@@ -126,8 +124,6 @@ namespace ISOStd.Controllers
                 DataSet dsPropList = objGlobaldata.Getdetails(sSqlstmt);
                 if (dsPropList.Tables.Count > 0 && dsPropList.Tables[0].Rows.Count > 0)
                 {
-
-                   
                     for (int i = 0; i < dsPropList.Tables[0].Rows.Count; i++)
                     {
                         try
@@ -135,11 +131,11 @@ namespace ISOStd.Controllers
                             CustomerReturnProductModels objCustModels = new CustomerReturnProductModels
                             {
                                 id_return_product = dsPropList.Tables[0].Rows[i]["id_return_product"].ToString(),
-                                CustID =objGlobaldata.GetCustomerNameById(dsPropList.Tables[0].Rows[i]["CustID"].ToString()),
+                                CustID = objGlobaldata.GetCustomerNameById(dsPropList.Tables[0].Rows[i]["CustID"].ToString()),
                                 refno = dsPropList.Tables[0].Rows[i]["refno"].ToString(),
                                 retun_deliverynote = dsPropList.Tables[0].Rows[i]["retun_deliverynote"].ToString(),
                                 product_details = dsPropList.Tables[0].Rows[i]["product_details"].ToString(),
-                                reason = dsPropList.Tables[0].Rows[i]["reason"].ToString(),                               
+                                reason = dsPropList.Tables[0].Rows[i]["reason"].ToString(),
                                 action_taken = dsPropList.Tables[0].Rows[i]["action_taken"].ToString(),
                                 remarks = dsPropList.Tables[0].Rows[i]["remarks"].ToString(),
                                 Ncn_ref = dsPropList.Tables[0].Rows[i]["Ncn_ref"].ToString(),
@@ -167,7 +163,6 @@ namespace ISOStd.Controllers
                         }
                     }
                 }
-
             }
             catch (Exception ex)
             {
@@ -185,7 +180,6 @@ namespace ISOStd.Controllers
             objPropList.PropList = new List<CustomerReturnProductModels>();
             try
             {
-
                 string sBranch_name = objGlobaldata.GetCurrentUserSession().division;
                 string sBranchtree = objGlobaldata.GetCurrentUserSession().BranchTree;
                 ViewBag.Branch = objGlobaldata.GetMultiBranchListByID(sBranchtree);
@@ -210,7 +204,6 @@ namespace ISOStd.Controllers
                 DataSet dsPropList = objGlobaldata.Getdetails(sSqlstmt);
                 if (dsPropList.Tables.Count > 0 && dsPropList.Tables[0].Rows.Count > 0)
                 {
-
                     for (int i = 0; i < dsPropList.Tables[0].Rows.Count; i++)
                     {
                         try
@@ -250,7 +243,6 @@ namespace ISOStd.Controllers
                         }
                     }
                 }
-
             }
             catch (Exception ex)
             {
@@ -260,7 +252,7 @@ namespace ISOStd.Controllers
 
             return Json("Success");
         }
-        
+
         [AllowAnonymous]
         public ActionResult CustReturnProductEdit()
         {
@@ -309,14 +301,12 @@ namespace ISOStd.Controllers
                     }
                     else
                     {
-
                         TempData["alertdata"] = "Id cannot be Null or empty";
                         return RedirectToAction("CustReturnProductList");
                     }
                 }
                 else
                 {
-
                     TempData["alertdata"] = "Id cannot be Null or empty";
                     return RedirectToAction("CustReturnProductList");
                 }
@@ -454,14 +444,12 @@ namespace ISOStd.Controllers
                     }
                     else
                     {
-
                         TempData["alertdata"] = "Id cannot be Null or empty";
                         return RedirectToAction("CustReturnProductList");
                     }
                 }
                 else
                 {
-
                     TempData["alertdata"] = "Id cannot be Null or empty";
                     return RedirectToAction("CustReturnProductList");
                 }
@@ -480,27 +468,26 @@ namespace ISOStd.Controllers
         {
             try
             {
-
-                 if (form["id_return_product"] != null && form["id_return_product"] != "")
+                if (form["id_return_product"] != null && form["id_return_product"] != "")
+                {
+                    CustomerReturnProductModels Doc = new CustomerReturnProductModels();
+                    string sid_return_product = form["id_return_product"];
+                    if (Doc.FunDelCustReturnProduct(sid_return_product))
                     {
-                        CustomerReturnProductModels Doc = new CustomerReturnProductModels();
-                        string sid_return_product = form["id_return_product"];
-                        if (Doc.FunDelCustReturnProduct(sid_return_product))
-                        {
-                            TempData["Successdata"] = "Document deleted successfully";
-                            return Json("Success");
-                        }
-                        else
-                        {
-                            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                            return Json("Failed");
-                        }
+                        TempData["Successdata"] = "Document deleted successfully";
+                        return Json("Success");
                     }
                     else
                     {
-                        TempData["alertdata"] = "Id cannot be Null or empty";
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                         return Json("Failed");
-                    }                             
+                    }
+                }
+                else
+                {
+                    TempData["alertdata"] = "Id cannot be Null or empty";
+                    return Json("Failed");
+                }
             }
             catch (Exception ex)
             {
@@ -526,6 +513,5 @@ namespace ISOStd.Controllers
             }
             return Json(objCust);
         }
-
     }
 }

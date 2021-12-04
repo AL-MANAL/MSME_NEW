@@ -1,23 +1,20 @@
-﻿using System.Collections.Generic;
+﻿using ISOStd.Filters;
+using ISOStd.Models;
+using Rotativa;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using ISOStd.Models;
-using System.Data;
-using System.Net;
-using System.IO;
-using PagedList;
-using PagedList.Mvc;
-using ISOStd.Filters;
-using System;
-using Rotativa;
 
 namespace ISOStd.Controllers
 {
     [PreventFromUrl]
     public class SupplierPerpRatingController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
+        private clsGlobal objGlobaldata = new clsGlobal();
 
         public SupplierPerpRatingController()
         {
@@ -38,7 +35,7 @@ namespace ISOStd.Controllers
                 ViewBag.Branch = objGlobaldata.GetCompanyBranchListbox();
                 ViewBag.Department = objGlobaldata.GetDepartmentListbox(objModel.branch);
                 ViewBag.Location = objGlobaldata.GetDivisionLocationList(objModel.branch);
-               // ViewBag.EmpList = objGlobaldata.GetGRolelikeList(objModel.branch, objModel.Department, objModel.Location, "%Auditor%");
+                // ViewBag.EmpList = objGlobaldata.GetGRolelikeList(objModel.branch, objModel.Department, objModel.Location, "%Auditor%");
 
                 SurveyModels objSurvey = new SurveyModels();
                 ViewBag.SurveyQuestions = objSurvey.GetSurveyTypeListbox("Supplier Performance Survey");
@@ -62,7 +59,6 @@ namespace ISOStd.Controllers
         {
             try
             {
-
                 objModel.loggedby = objGlobaldata.GetCurrentUserSession().empid;
                 objModel.na = form["N/A"];
                 objModel.branch = form["branch"];
@@ -75,7 +71,7 @@ namespace ISOStd.Controllers
                 {
                     objModel.evalu_date = dateValue;
                 }
-                
+
                 if (fileUploader != null && fileUploader.ContentLength > 0)
                 {
                     try
@@ -132,7 +128,7 @@ namespace ISOStd.Controllers
 
             return RedirectToAction("SuppPerformanceEvalList");
         }
-        
+
         [AllowAnonymous]
         public ActionResult SuppPerformanceEvalList(string SearchText, int? page, string branch_name)
         {
@@ -164,8 +160,7 @@ namespace ISOStd.Controllers
                 DataSet dsSupplier = objGlobaldata.Getdetails(sSqlstmt);
 
                 for (int i = 0; dsSupplier.Tables.Count > 0 && i < dsSupplier.Tables[0].Rows.Count; i++)
-                {                  
-
+                {
                     try
                     {
                         SupplierPerpRatingModels objSupplier = new SupplierPerpRatingModels
@@ -187,7 +182,7 @@ namespace ISOStd.Controllers
                         {
                             objSupplier.evalu_date = dtValue;
                         }
-                      
+
                         ObjList.PerpList.Add(objSupplier);
                     }
                     catch (Exception ex)
@@ -237,7 +232,7 @@ namespace ISOStd.Controllers
                 DataSet dsSupplier = objGlobaldata.Getdetails(sSqlstmt);
 
                 for (int i = 0; dsSupplier.Tables.Count > 0 && i < dsSupplier.Tables[0].Rows.Count; i++)
-                {                   
+                {
                     try
                     {
                         SupplierPerpRatingModels objSupplier = new SupplierPerpRatingModels
@@ -252,7 +247,6 @@ namespace ISOStd.Controllers
                             branch = objGlobaldata.GetMultiCompanyBranchNameById(dsSupplier.Tables[0].Rows[i]["branch"].ToString()),
                             Department = objGlobaldata.GetMultiDeptNameById(dsSupplier.Tables[0].Rows[i]["Department"].ToString()),
                             Location = objGlobaldata.GetDivisionLocationById(dsSupplier.Tables[0].Rows[i]["Location"].ToString()),
-
                         };
 
                         DateTime dtValue;
@@ -291,7 +285,6 @@ namespace ISOStd.Controllers
 
                     string sSqlstmt = "select id_sup_rating, supplier_name, evalu_date, auditee, auditor, upload," +
                         " loggedby,overall_perf,exceptional,satisfactory,unsatisfactory,na,insufficient,branch,Department,Location,evaluated_by  from t_supplier_perf_rating where id_sup_rating='" + sid_sup_rating + "'";
-
 
                     DataSet dsSupplier = objGlobaldata.Getdetails(sSqlstmt);
 
@@ -383,14 +376,13 @@ namespace ISOStd.Controllers
 
             return RedirectToAction("SuppPerformanceEvalList");
         }
-        
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult SuppPerformanceEvalEdit(SupplierPerpRatingModels objModel, FormCollection form, HttpPostedFileBase fileUploader)
         {
             try
             {
-
                 //objModel.LoggedBy = objGlobaldata.GetCurrentUserSession().empid;
                 //objModel.Eval_ReviewedBy_DeptId = objGlobaldata.GetDeptIdByHrEmpId(objModel.Eval_ReviewedBy);
                 objModel.na = form["N/A"];
@@ -402,7 +394,7 @@ namespace ISOStd.Controllers
                 if (DateTime.TryParse(form["evalu_date"], out dateValue) == true)
                 {
                     objModel.evalu_date = dateValue;
-                }               
+                }
 
                 if (fileUploader != null && fileUploader.ContentLength > 0)
                 {
@@ -465,36 +457,33 @@ namespace ISOStd.Controllers
 
             return RedirectToAction("SuppPerformanceEvalList");
         }
-        
+
         [AllowAnonymous]
         public JsonResult SupplierPerformanceDel(FormCollection form)
         {
             try
             {
-                    if (form["id_sup_rating"] != null && form["id_sup_rating"] != "")
+                if (form["id_sup_rating"] != null && form["id_sup_rating"] != "")
+                {
+                    SupplierPerpRatingModels Doc = new SupplierPerpRatingModels();
+                    string sid_sup_rating = form["id_sup_rating"];
+
+                    if (Doc.FunDeleteSupPerformance(sid_sup_rating))
                     {
-
-                        SupplierPerpRatingModels Doc = new SupplierPerpRatingModels();
-                        string sid_sup_rating = form["id_sup_rating"];
-
-
-                        if (Doc.FunDeleteSupPerformance(sid_sup_rating))
-                        {
-                            TempData["Successdata"] = "Document deleted successfully";
-                            return Json("Success");
-                        }
-                        else
-                        {
-                            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                            return Json("Failed");
-                        }
+                        TempData["Successdata"] = "Document deleted successfully";
+                        return Json("Success");
                     }
                     else
                     {
-                        TempData["alertdata"] = "Id cannot be Null or empty";
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                         return Json("Failed");
-                    } 
-
+                    }
+                }
+                else
+                {
+                    TempData["alertdata"] = "Id cannot be Null or empty";
+                    return Json("Failed");
+                }
             }
             catch (Exception ex)
             {
@@ -503,7 +492,7 @@ namespace ISOStd.Controllers
             }
             return Json("Failed");
         }
-        
+
         [AllowAnonymous]
         public ActionResult SuppPerformanceEvalDetails()
         {
@@ -517,7 +506,6 @@ namespace ISOStd.Controllers
 
                     string sSqlstmt = "select id_sup_rating, supplier_name, evalu_date, auditee, auditor, upload, loggedby,overall_perf,overall_perf,exceptional,satisfactory,unsatisfactory,na,insufficient,branch,Department,Location,evaluated_by " +
                         " from t_supplier_perf_rating where id_sup_rating='" + sid_sup_rating + "'";
-
 
                     DataSet dsSupplier = objGlobaldata.Getdetails(sSqlstmt);
 
@@ -567,14 +555,14 @@ namespace ISOStd.Controllers
                                 //supplier_trans_id = dsPerformanceElement.Tables[0].Rows[i]["supplier_trans_id"].ToString(),
                                 SQId = objSurvey.GetSurveyQuestionNameById(dsPerformanceElement.Tables[0].Rows[i]["SQId"].ToString()),
                                 SQ_OptionsId = objSurvey.GetSurveyRatingNameById(dsPerformanceElement.Tables[0].Rows[i]["SQ_OptionsId"].ToString()),
-                                SQ_Weightage = objSurvey.GetSurveyRatingWeightageById(dsPerformanceElement.Tables[0].Rows[i]["SQ_OptionsId"].ToString()),                               
+                                SQ_Weightage = objSurvey.GetSurveyRatingWeightageById(dsPerformanceElement.Tables[0].Rows[i]["SQ_OptionsId"].ToString()),
                             };
 
                             dicPerformanceElements.Add(dsPerformanceElement.Tables[0].Rows[i]["SQId"].ToString(), dsPerformanceElement.Tables[0].Rows[i]["SQ_OptionsId"].ToString());
                             objList.PerpList.Add(objElements);
                         }
 
-                        ViewBag.PerformanceElement = objList; 
+                        ViewBag.PerformanceElement = objList;
                         return View(objSupplier);
                     }
                     else
@@ -597,7 +585,7 @@ namespace ISOStd.Controllers
 
             return RedirectToAction("SuppPerformanceEvalList");
         }
-        
+
         [AllowAnonymous]
         public ActionResult SuppPerformanceEvalInfo(int Id)
         {
@@ -607,12 +595,11 @@ namespace ISOStd.Controllers
 
                 string sId = Request.QueryString["Id"];
                 if (sId != null && sId != "")
-                {                   
-
+                {
                     string sSqlstmt = "select id_sup_rating, supplier_name, evalu_date, auditee," +
                         " auditor, upload, loggedby,overall_perf,overall_perf,exceptional,satisfactory,unsatisfactory,na,insufficient,branch,Department,Location " +
                         " from t_supplier_perf_rating where id_sup_rating='" + sId + "'";
-                    
+
                     DataSet dsSupplier = objGlobaldata.Getdetails(sSqlstmt);
 
                     if (dsSupplier.Tables.Count > 0 && dsSupplier.Tables[0].Rows.Count > 0)
@@ -702,7 +689,6 @@ namespace ISOStd.Controllers
 
                 if (id_sup_rating != null && id_sup_rating != "")
                 {
-                    
                     string sSqlstmt = "select id_sup_rating, supplier_name, evalu_date, auditee, auditor, upload, loggedby,overall_perf,overall_perf,exceptional,satisfactory,unsatisfactory,na,insufficient" +
                         ",branch,Department,Location  from t_supplier_perf_rating where id_sup_rating='" + id_sup_rating + "'";
 
@@ -742,13 +728,11 @@ namespace ISOStd.Controllers
                         dsSupplier = objGlobaldata.GetReportDetails(dsSupplier, objSupplier.id_sup_rating, loggedby, "SUPPLIER PERFORMANCE RATING REPORT");
                         ViewBag.CompanyInfo = dsSupplier;
 
-
                         sSqlstmt = "SELECT supplier_trans_id, id_sup_rating, SQId, SQ_OptionsId FROM t_supplier_perf_rating_trans where id_sup_rating='"
                              + objSupplier.id_sup_rating + "'";
                         ViewBag.PerformanceElement = objGlobaldata.Getdetails(sSqlstmt);
 
                         ViewBag.Supplier = objSupplier;
-
                     }
                     else
                     {
@@ -788,8 +772,8 @@ namespace ISOStd.Controllers
         {
             try
             {
-               // SupplierPerpRatingModels objRisk = new SupplierPerpRatingModels();
-             
+                // SupplierPerpRatingModels objRisk = new SupplierPerpRatingModels();
+
                 string sql = "select RatingOptions,Weightage from t_survey_type a,t_surveyquestion_options b where a.Survey_TypeId=b.Survey_TypeId and a.TypeName='Supplier Performance Survey'";
                 DataSet dsRating = objGlobaldata.Getdetails(sql);
                 ViewBag.dsRating = dsRating;
@@ -803,7 +787,7 @@ namespace ISOStd.Controllers
         }
 
         //Supplier Performance Questions
-        
+
         [AllowAnonymous]
         public ActionResult AddSuppPerfQuestions()
         {
@@ -813,7 +797,7 @@ namespace ISOStd.Controllers
                 ViewBag.SubMenutype = "SupplierReportWithRate";
                 //ViewBag.dsSurvey = objSurvey.GetSurveyTypeListbox();
                 ViewBag.Survey_Type = objSurvey.getSurveyIDByName("Supplier Performance Survey");
-               
+
                 //if (Request.QueryString["Survey_TypeId"] != null && Request.QueryString["Survey_TypeId"] != "")
                 //{
                 //    ViewBag.Survey_TypeId = Request.QueryString["Survey_TypeId"];
@@ -845,14 +829,11 @@ namespace ISOStd.Controllers
                 SurveyModels objSurvey = new SurveyModels();
                 ViewBag.dsSurvey = objSurvey.GetSurveyTypeListbox();
 
-
-               
                 ViewBag.Survey_Type = objSurveyModels.Survey_TypeId;
                 ViewBag.Survey_TypeId = objSurvey.getSurveyIDByName(objSurveyModels.Survey_TypeId);
                 objSurveyModels.Survey_TypeId1 = objSurvey.getSurveyIDByName(objSurveyModels.Survey_TypeId);
                 if (objSurveyModels.Questions != "")
                 {
-
                     if (objSurveyModels.FunAddSurvey(objSurveyModels))
                     {
                         TempData["Successdata"] = "Added Supplier Performance Questions successfully";
@@ -875,14 +856,12 @@ namespace ISOStd.Controllers
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
 
-
             return View(objSurveyModels);
         }
 
         [AllowAnonymous]
         public ActionResult SuppPerfQuestionsDelete(string SQId)
         {
-
             ViewBag.SubMenutype = "SupplierReportWithRate";
             SurveyModels objSurveyModels = new SurveyModels();
             try
@@ -900,7 +879,7 @@ namespace ISOStd.Controllers
             {
                 objGlobaldata.AddFunctionalLog("Exception in SuppPerfQuestionsDelete: " + ex.ToString());
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-            }                       
+            }
 
             return RedirectToAction("AddSuppPerfQuestions", new { Survey_TypeId = objSurveyModels.GetSurveyTypeIdByQuestionId(SQId) });
         }
@@ -908,7 +887,6 @@ namespace ISOStd.Controllers
         [AllowAnonymous]
         public ActionResult SuppPerfQuestionsDelete1(string SQId)
         {
-
             ViewBag.SubMenutype = "SupplierReportWithRate";
             SurveyModels objSurveyModels = new SurveyModels();
             try
@@ -917,7 +895,6 @@ namespace ISOStd.Controllers
                 {
                     TempData["Successdata"] = "Survey details deleted successfully";
                     return Json("Success");
-
                 }
                 else
                 {
@@ -928,14 +905,13 @@ namespace ISOStd.Controllers
             {
                 objGlobaldata.AddFunctionalLog("Exception in SuppPerfQuestionsDelete1: " + ex.ToString());
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-            }          
+            }
             return Json("Failed");
         }
 
         [AllowAnonymous]
         public JsonResult SuppPerfQuestionUpdate(string SQId, string Questions)
         {
-
             ViewBag.SubMenutype = "SupplierReportWithRate";
             SurveyModels objSurveyModels = new SurveyModels();
             try
@@ -957,8 +933,6 @@ namespace ISOStd.Controllers
             }
 
             return Json("Failed");
-            
         }
-
     }
 }

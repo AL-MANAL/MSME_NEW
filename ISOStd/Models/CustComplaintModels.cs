@@ -598,9 +598,12 @@ namespace ISOStd.Models
                     string sName = "All";
                     string sToEmailIds = objGlobalData.GetMultiHrEmpEmailIdById(dsComplaintList.Tables[0].Rows[0]["ForwardTo"].ToString());
                     string sCCEmailIds = objGlobalData.GetHrEmpEmailIdById(dsComplaintList.Tables[0].Rows[0]["LoggedBy"].ToString());
-                    if(dsComplaintList.Tables[0].Rows[0]["complaint_copiedto"].ToString() != "")
+                    if(dsComplaintList.Tables[0].Rows[0]["complaint_copiedto"].ToString() != "" && dsComplaintList.Tables[0].Rows[0]["complaint_copiedto"] != null)
                     {
-                        sCCEmailIds = sCCEmailIds + "," + objGlobalData.GetHrEmpEmailIdById(dsComplaintList.Tables[0].Rows[0]["complaint_copiedto"].ToString());
+                        foreach (var item in dsComplaintList.Tables[0].Rows[0]["complaint_copiedto"].ToString().Split(','))
+                        {
+                            sCCEmailIds = sCCEmailIds + "," + objGlobalData.GetHrEmpEmailIdById(item);
+                        }
                     }
 
                     sToEmailIds = sToEmailIds.Trim(',');

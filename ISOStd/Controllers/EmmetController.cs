@@ -1,24 +1,21 @@
-﻿using System;
+﻿using ISOStd.Filters;
+using ISOStd.Models;
+using Newtonsoft.Json;
+using PagedList;
+using System;
 using System.Collections.Generic;
+using System.Data;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using ISOStd.Models;
-using System.Data;
-using System.Net;
-using System.IO;
-using PagedList;
-using PagedList.Mvc;
-using System.Web.Script.Serialization;
-using Newtonsoft.Json;
-using ISOStd.Filters;
 
 namespace ISOStd.Controllers
 {
     [PreventFromUrl]
     public class EmmetController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
+        private clsGlobal objGlobaldata = new clsGlobal();
 
         [HttpGet]
         [AllowAnonymous]
@@ -28,7 +25,6 @@ namespace ISOStd.Controllers
             {
                 ViewBag.CatList = objGlobaldata.getMaterialCategoryRoundbarList();
                 ViewBag.Suppplier = objGlobaldata.GetSupplierList();
-               
             }
             catch (Exception ex)
             {
@@ -48,7 +44,6 @@ namespace ISOStd.Controllers
                 EmmetModelsList objList = new EmmetModelsList();
                 objList.EmmetList = new List<EmmetModels>();
 
-              
                 DateTime dateValue;
                 if (DateTime.TryParse(form["added_date"], out dateValue) == true)
                 {
@@ -103,12 +98,12 @@ namespace ISOStd.Controllers
 
                 for (int i = 0; i < Convert.ToInt16(form["itemcnts"]); i++)
                 {
-                    if (form["heatno" + i] != null && form["length" + i] != null  && form["price" + i] != null)
+                    if (form["heatno" + i] != null && form["length" + i] != null && form["price" + i] != null)
                     {
                         EmmetModels objEmmet = new EmmetModels();
 
                         objEmmet.heatno = form["heatno" + i];
-                        objEmmet.length =Convert.ToDecimal(form["length" + i]);
+                        objEmmet.length = Convert.ToDecimal(form["length" + i]);
                         objEmmet.material = (form["material" + i]);
                         objEmmet.category = (form["category" + i]);
                         objEmmet.qty = Convert.ToInt32(form["qty" + i]);
@@ -117,7 +112,6 @@ namespace ISOStd.Controllers
                         objList.EmmetList.Add(objEmmet);
                     }
                 }
-
 
                 if (objModel.FunAddRoundBar(objModel, objList))
                 {
@@ -139,7 +133,6 @@ namespace ISOStd.Controllers
         [AllowAnonymous]
         public ActionResult RoundbarList(FormCollection form, int? page)
         {
-
             EmmetModelsList objList = new EmmetModelsList();
             objList.EmmetList = new List<EmmetModels>();
 
@@ -154,19 +147,17 @@ namespace ISOStd.Controllers
 
                 if (dsEmmetList.Tables.Count > 0 && dsEmmetList.Tables[0].Rows.Count > 0)
                 {
-                   
                     for (int i = 0; i < dsEmmetList.Tables[0].Rows.Count; i++)
                     {
                         try
                         {
                             EmmetModels objModel = new EmmetModels
                             {
-
                                 id_roundbar = dsEmmetList.Tables[0].Rows[i]["id_roundbar"].ToString(),
                                 //material =objGlobaldata.getRoundbarMaterialById(dsEmmetList.Tables[0].Rows[i]["material"].ToString()),
                                 //diameter =objGlobaldata.getRoundbarDiamterById(dsEmmetList.Tables[0].Rows[i]["diameter"].ToString()),
                                 po = dsEmmetList.Tables[0].Rows[i]["po"].ToString(),
-                                supplier =objGlobaldata.GetSupplierNameById(dsEmmetList.Tables[0].Rows[i]["supplier"].ToString()), 
+                                supplier = objGlobaldata.GetSupplierNameById(dsEmmetList.Tables[0].Rows[i]["supplier"].ToString()),
                             };
 
                             DateTime dtDocDate;
@@ -193,7 +184,6 @@ namespace ISOStd.Controllers
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
 
-
             return View(objList.EmmetList.ToList().ToPagedList(page ?? 1, 1000));
         }
 
@@ -203,7 +193,6 @@ namespace ISOStd.Controllers
             EmmetModels objModel = new EmmetModels();
             try
             {
-
                 ViewBag.CatList = objGlobaldata.getMaterialCategoryRoundbarList();
                 ViewBag.Suppplier = objGlobaldata.GetSupplierList();
                 if (Request.QueryString["id_roundbar"] != null && Request.QueryString["id_roundbar"] != "")
@@ -223,8 +212,7 @@ namespace ISOStd.Controllers
                             po = dsEmmetList.Tables[0].Rows[0]["po"].ToString(),
                             supplier = (dsEmmetList.Tables[0].Rows[0]["supplier"].ToString()),
                             po_upload = (dsEmmetList.Tables[0].Rows[0]["po_upload"].ToString()),
-                            mtc_upload = (dsEmmetList.Tables[0].Rows[0]["mtc_upload"].ToString()), 
-                          
+                            mtc_upload = (dsEmmetList.Tables[0].Rows[0]["mtc_upload"].ToString()),
                         };
 
                         DateTime dtDocDate;
@@ -259,10 +247,10 @@ namespace ISOStd.Controllers
                                     id_roundbar_trans = dsTranList.Tables[0].Rows[i]["id_roundbar_trans"].ToString(),
                                     id_roundbar = dsTranList.Tables[0].Rows[i]["id_roundbar"].ToString(),
                                     heatno = dsTranList.Tables[0].Rows[i]["heatno"].ToString(),
-                                    length =Convert.ToDecimal(dsTranList.Tables[0].Rows[i]["length"].ToString()),
+                                    length = Convert.ToDecimal(dsTranList.Tables[0].Rows[i]["length"].ToString()),
                                     //diameter = dsTranList.Tables[0].Rows[i]["diameter"].ToString(),
-                                    qty =Convert.ToInt32(dsTranList.Tables[0].Rows[i]["qty"].ToString()),
-                                    price =Convert.ToDecimal(dsTranList.Tables[0].Rows[i]["price"].ToString()),
+                                    qty = Convert.ToInt32(dsTranList.Tables[0].Rows[i]["qty"].ToString()),
+                                    price = Convert.ToDecimal(dsTranList.Tables[0].Rows[i]["price"].ToString()),
                                     category = dsTranList.Tables[0].Rows[i]["category"].ToString(),
                                     material = dsTranList.Tables[0].Rows[i]["material"].ToString(),
                                 };
@@ -391,7 +379,7 @@ namespace ISOStd.Controllers
                         EmmetModels objEmmet = new EmmetModels();
 
                         objEmmet.heatno = form["heatno" + i];
-                        objEmmet.length = Convert.ToDecimal(form["length" + i]);                  
+                        objEmmet.length = Convert.ToDecimal(form["length" + i]);
                         objEmmet.qty = Convert.ToInt32(form["qty" + i]);
                         objEmmet.price = Convert.ToDecimal(form["price" + i]);
                         objEmmet.category = form["category" + i];
@@ -400,12 +388,12 @@ namespace ISOStd.Controllers
                     }
                 }
 
-                if (objModel.heatno != null  && objModel.category != null && objModel.material != null)
+                if (objModel.heatno != null && objModel.category != null && objModel.material != null)
                 {
                     EmmetModels objEmmet = new EmmetModels();
 
                     objEmmet.heatno = form["heatno"];
-                    objEmmet.length = Convert.ToDecimal(form["length"]);            
+                    objEmmet.length = Convert.ToDecimal(form["length"]);
                     objEmmet.qty = Convert.ToInt32(form["qty"]);
                     objEmmet.price = Convert.ToDecimal(form["price"]);
                     objEmmet.category = form["category"];
@@ -436,8 +424,6 @@ namespace ISOStd.Controllers
             EmmetModels objModel = new EmmetModels();
             try
             {
-
-               
                 if (Request.QueryString["id_roundbar"] != null && Request.QueryString["id_roundbar"] != "")
                 {
                     string id_roundbar = Request.QueryString["id_roundbar"];
@@ -451,12 +437,11 @@ namespace ISOStd.Controllers
                         {
                             id_roundbar = dsEmmetList.Tables[0].Rows[0]["id_roundbar"].ToString(),
                             //material =objGlobaldata.getRoundbarMaterialById(dsEmmetList.Tables[0].Rows[0]["material"].ToString()),
-                         
+
                             po = dsEmmetList.Tables[0].Rows[0]["po"].ToString(),
-                            supplier =objGlobaldata.GetSupplierNameById(dsEmmetList.Tables[0].Rows[0]["supplier"].ToString()),
+                            supplier = objGlobaldata.GetSupplierNameById(dsEmmetList.Tables[0].Rows[0]["supplier"].ToString()),
                             po_upload = (dsEmmetList.Tables[0].Rows[0]["po_upload"].ToString()),
                             mtc_upload = (dsEmmetList.Tables[0].Rows[0]["mtc_upload"].ToString()),
-
                         };
 
                         DateTime dtDocDate;
@@ -496,8 +481,6 @@ namespace ISOStd.Controllers
                                     price = Convert.ToDecimal(dsTranList.Tables[0].Rows[i]["price"].ToString()),
                                     category = dsTranList.Tables[0].Rows[i]["category"].ToString(),
                                     material = dsTranList.Tables[0].Rows[i]["material"].ToString(),
-                                   
-                                  
                                 };
                                 if (dsTranList.Tables[0].Rows[i]["tprice"].ToString() != "")
                                 {
@@ -605,7 +588,6 @@ namespace ISOStd.Controllers
             EmmetModels objModel = new EmmetModels();
             try
             {
-
                 ViewBag.category = objGlobaldata.getMaterialCategoryRoundbarList();
                 string sql = "update t_stock_master set dummy_bal='0' where dummy_bal != '0'";
                 objGlobaldata.ExecuteQuery(sql);
@@ -625,21 +607,19 @@ namespace ISOStd.Controllers
             EmmetModels objModel = new EmmetModels();
             try
             {
-               
                 ViewBag.MaterialList = objGlobaldata.getRoundbarMaterialList();
                 ViewBag.LengthList = objGlobaldata.getRoundbarLengthList(material);
                 if (material != null && material != "")
                 {
                     ViewBag.MaterialListval = material;
                 }
-             
+
                 objModel.material = material;
-            
+
                 string sqlStmt = "select id_stock,material,length,qty,bal_qty from t_stock_master where material='" + material + "'";
                 ViewBag.dsStock = objGlobaldata.Getdetails(sqlStmt);
                 string sql = "update t_stock_master set dummy_bal='0' where dummy_bal != '0'";
                 objGlobaldata.ExecuteQuery(sql);
-
             }
             catch (Exception ex)
             {
@@ -700,7 +680,6 @@ namespace ISOStd.Controllers
         [AllowAnonymous]
         public ActionResult RoundbarIssueList(FormCollection form, int? page)
         {
-
             EmmetModelsList objList = new EmmetModelsList();
             objList.EmmetList = new List<EmmetModels>();
 
@@ -715,19 +694,17 @@ namespace ISOStd.Controllers
 
                 if (dsEmmetList.Tables.Count > 0 && dsEmmetList.Tables[0].Rows.Count > 0)
                 {
-                   
                     for (int i = 0; i < dsEmmetList.Tables[0].Rows.Count; i++)
                     {
                         try
                         {
                             EmmetModels objModel = new EmmetModels
                             {
-
                                 id_roundbar_issue = dsEmmetList.Tables[0].Rows[i]["id_roundbar_issue"].ToString(),
-                            
+
                                 //material = objGlobaldata.getMaterialById(dsEmmetList.Tables[0].Rows[i]["material"].ToString()),
                                 //diameter = objGlobaldata.getRoundbarDiamterById(dsEmmetList.Tables[0].Rows[i]["diameter"].ToString()),
-                           
+
                                 jobno = (dsEmmetList.Tables[0].Rows[i]["jobno"].ToString()),
                                 po = (dsEmmetList.Tables[0].Rows[i]["po"].ToString()),
                             };
@@ -756,28 +733,23 @@ namespace ISOStd.Controllers
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
 
-
             return View(objList.EmmetList.ToList().ToPagedList(page ?? 1, 1000));
         }
 
         [AllowAnonymous]
         public ActionResult RoundbarMasterList(FormCollection form, int? page, string material, string category, string chkAll)
         {
-
             EmmetModelsList objList = new EmmetModelsList();
             objList.EmmetList = new List<EmmetModels>();
 
             try
             {
-              
                 ViewBag.CategoryList = objGlobaldata.GetDropdownList("Material Category");
                 string sSearchtext = "";
                 string sSqlstmt = "select id_stock,category,material,bal_qty,length,qty,expiry_date from t_stock_master";
 
-              
                 if (chkAll == null && chkAll != "All")
                 {
-
                     if (material != "" && material != null)
                     {
                         ViewBag.MaterialList = objGlobaldata.getMaterialList(category);
@@ -809,19 +781,16 @@ namespace ISOStd.Controllers
 
                 if (dsEmmetList.Tables.Count > 0 && dsEmmetList.Tables[0].Rows.Count > 0)
                 {
-                  
                     for (int i = 0; i < dsEmmetList.Tables[0].Rows.Count; i++)
                     {
                         try
                         {
                             EmmetModels objModel = new EmmetModels
                             {
-
-                              
                                 id_stock = dsEmmetList.Tables[0].Rows[i]["id_stock"].ToString(),
                                 material = objGlobaldata.getMaterialById(dsEmmetList.Tables[0].Rows[i]["material"].ToString()),
                                 category = objGlobaldata.GetDropdownitemById(dsEmmetList.Tables[0].Rows[i]["category"].ToString()),
-                                //diameter = objGlobaldata.getRoundbarDiamterById(dsEmmetList.Tables[0].Rows[i]["diameter"].ToString()),                   
+                                //diameter = objGlobaldata.getRoundbarDiamterById(dsEmmetList.Tables[0].Rows[i]["diameter"].ToString()),
                             };
                             if (dsEmmetList.Tables[0].Rows[i]["length"].ToString() != null && dsEmmetList.Tables[0].Rows[i]["length"].ToString() != "")
                             {
@@ -833,7 +802,7 @@ namespace ISOStd.Controllers
                             }
                             if (dsEmmetList.Tables[0].Rows[i]["bal_qty"].ToString() != null && dsEmmetList.Tables[0].Rows[i]["bal_qty"].ToString() != "")
                             {
-                                objModel.bal_qty = Convert.ToDecimal(dsEmmetList.Tables[0].Rows[i]["bal_qty"].ToString());  
+                                objModel.bal_qty = Convert.ToDecimal(dsEmmetList.Tables[0].Rows[i]["bal_qty"].ToString());
                             }
 
                             DateTime dtDocDate;
@@ -860,7 +829,6 @@ namespace ISOStd.Controllers
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
 
-
             return View(objList.EmmetList.ToList().ToPagedList(page ?? 1, 1000));
         }
 
@@ -870,28 +838,26 @@ namespace ISOStd.Controllers
             if (id_stock != "")
             {
                 sId = objGlobaldata.GetStockQtyByLength(id_stock);
-
             }
             return Json(sId);
         }
+
         public JsonResult FunGetStockQtyByExpiryDate(string id_stock)
         {
             string sId = "";
             if (id_stock != "")
             {
                 sId = objGlobaldata.GetStockQtyByExpiryDate(id_stock);
-
             }
             return Json(sId);
         }
+
         [AllowAnonymous]
         public ActionResult RoundbarIssueDetail()
         {
             EmmetModels objModel = new EmmetModels();
             try
             {
-
-
                 if (Request.QueryString["id_roundbar_issue"] != null && Request.QueryString["id_roundbar_issue"] != "")
                 {
                     string id_roundbar_issue = Request.QueryString["id_roundbar_issue"];
@@ -939,11 +905,11 @@ namespace ISOStd.Controllers
                             {
                                 EmmetModels objTranModels = new EmmetModels
                                 {
-                                    issue_qty =Convert.ToInt32(dsTranList.Tables[0].Rows[i]["issue_qty"].ToString()),
-                                    issue_length =Convert.ToDecimal(dsTranList.Tables[0].Rows[i]["issue_length"].ToString()),
+                                    issue_qty = Convert.ToInt32(dsTranList.Tables[0].Rows[i]["issue_qty"].ToString()),
+                                    issue_length = Convert.ToDecimal(dsTranList.Tables[0].Rows[i]["issue_length"].ToString()),
                                     category = (dsTranList.Tables[0].Rows[i]["category"].ToString()),
                                     material = (dsTranList.Tables[0].Rows[i]["material"].ToString()),
-                                    heatno = (dsTranList.Tables[0].Rows[i]["heatno"].ToString()),   
+                                    heatno = (dsTranList.Tables[0].Rows[i]["heatno"].ToString()),
                                 };
 
                                 objList.EmmetList.Add(objTranModels);
@@ -1018,7 +984,6 @@ namespace ISOStd.Controllers
                     TempData["Successdata"] = "Material Already exists";
                     return RedirectToAction("AddMaterial");
                 }
-             
             }
             catch (Exception ex)
             {
@@ -1030,9 +995,8 @@ namespace ISOStd.Controllers
         }
 
         [AllowAnonymous]
-        public ActionResult MaterialList(FormCollection form, int? page,string chkAll, string category)
+        public ActionResult MaterialList(FormCollection form, int? page, string chkAll, string category)
         {
-
             EmmetModelsList objList = new EmmetModelsList();
             objList.EmmetList = new List<EmmetModels>();
 
@@ -1044,13 +1008,11 @@ namespace ISOStd.Controllers
 
                 if (chkAll == null && chkAll != "All")
                 {
-
                     if (category != "" && category != null)
                     {
                         ViewBag.CatListval = category;
                         sSearchtext = sSearchtext + " and category ='" + category + "'";
                     }
-                  
                 }
                 else
                 {
@@ -1063,25 +1025,23 @@ namespace ISOStd.Controllers
 
                 if (dsEmmetList.Tables.Count > 0 && dsEmmetList.Tables[0].Rows.Count > 0)
                 {
-                 
                     for (int i = 0; i < dsEmmetList.Tables[0].Rows.Count; i++)
                     {
                         try
                         {
                             EmmetModels objModel = new EmmetModels
                             {
-
                                 id_material_master = dsEmmetList.Tables[0].Rows[i]["id_material_master"].ToString(),
                                 category = objGlobaldata.GetDropdownitemById(dsEmmetList.Tables[0].Rows[i]["category"].ToString()),
                                 subcategory = objGlobaldata.GetDropdownitemById(dsEmmetList.Tables[0].Rows[i]["subcategory"].ToString()),
                                 spec = (dsEmmetList.Tables[0].Rows[i]["spec"].ToString()),
                                 material_id = (dsEmmetList.Tables[0].Rows[i]["material_id"].ToString()),
                                 diameter = (dsEmmetList.Tables[0].Rows[i]["diameter"].ToString()),
-                                mlength =(dsEmmetList.Tables[0].Rows[i]["mlength"].ToString()),
-                                material_type =objGlobaldata.GetDropdownitemById(dsEmmetList.Tables[0].Rows[i]["material_type"].ToString()),
-                                material = (dsEmmetList.Tables[0].Rows[i]["material"].ToString()),                               
+                                mlength = (dsEmmetList.Tables[0].Rows[i]["mlength"].ToString()),
+                                material_type = objGlobaldata.GetDropdownitemById(dsEmmetList.Tables[0].Rows[i]["material_type"].ToString()),
+                                material = (dsEmmetList.Tables[0].Rows[i]["material"].ToString()),
                             };
-                            if(dsEmmetList.Tables[0].Rows[i]["min_qty"].ToString() != null && dsEmmetList.Tables[0].Rows[i]["min_qty"].ToString() !="")
+                            if (dsEmmetList.Tables[0].Rows[i]["min_qty"].ToString() != null && dsEmmetList.Tables[0].Rows[i]["min_qty"].ToString() != "")
                             {
                                 objModel.min_qty = Convert.ToInt32(dsEmmetList.Tables[0].Rows[i]["min_qty"].ToString());
                             }
@@ -1101,7 +1061,6 @@ namespace ISOStd.Controllers
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
 
-
             return View(objList.EmmetList.ToList().ToPagedList(page ?? 1, 1000));
         }
 
@@ -1111,7 +1070,6 @@ namespace ISOStd.Controllers
             EmmetModels objModel = new EmmetModels();
             try
             {
-
                 ViewBag.CatList = objGlobaldata.GetDropdownList("Material Category");
                 ViewBag.SubList = objGlobaldata.GetDropdownList("Material Sub-Category");
                 ViewBag.TypeList = objGlobaldata.GetDropdownList("Material Type");
@@ -1136,7 +1094,6 @@ namespace ISOStd.Controllers
                             mlength = (dsEmmetList.Tables[0].Rows[0]["mlength"].ToString()),
                             material_type = (dsEmmetList.Tables[0].Rows[0]["material_type"].ToString()),
                             material = (dsEmmetList.Tables[0].Rows[0]["material"].ToString()),
-                           
                         };
                         if (dsEmmetList.Tables[0].Rows[0]["min_qty"].ToString() != null && dsEmmetList.Tables[0].Rows[0]["min_qty"].ToString() != "")
                         {
@@ -1147,7 +1104,7 @@ namespace ISOStd.Controllers
                     {
                         TempData["alertdata"] = "Id cannot be Null or empty";
                         return RedirectToAction("MaterialList");/*Change*/
-                    }        
+                    }
                 }
                 else
                 {
@@ -1201,7 +1158,6 @@ namespace ISOStd.Controllers
             {
                 ViewBag.CatList = objGlobaldata.getMaterialCategoryStockList();
                 ViewBag.Suppplier = objGlobaldata.GetSupplierList();
-               
             }
             catch (Exception ex)
             {
@@ -1221,7 +1177,6 @@ namespace ISOStd.Controllers
                 EmmetModelsList objList = new EmmetModelsList();
                 objList.EmmetList = new List<EmmetModels>();
 
-
                 DateTime dateValue;
                 if (DateTime.TryParse(form["added_date"], out dateValue) == true)
                 {
@@ -1237,7 +1192,7 @@ namespace ISOStd.Controllers
 
                         upload.SaveAs(sFilepath + "/" + sFilename);
                         objModel.upload = "~/DataUpload/MgmtDocs/Emmet/" + sFilename;
-                    
+
                         ViewBag.Message = "File uploaded successfully";
                     }
                     catch (Exception ex)
@@ -1287,8 +1242,7 @@ namespace ISOStd.Controllers
                     }
                 }
 
-              
-                if (objModel.FunAddStock(objModel,objList))
+                if (objModel.FunAddStock(objModel, objList))
                 {
                     TempData["Successdata"] = "Added successfully";
                 }
@@ -1308,7 +1262,6 @@ namespace ISOStd.Controllers
         [AllowAnonymous]
         public ActionResult StockReceiveList(FormCollection form, int? page, string chkAll, string category)
         {
-
             EmmetModelsList objList = new EmmetModelsList();
             objList.EmmetList = new List<EmmetModels>();
 
@@ -1319,13 +1272,11 @@ namespace ISOStd.Controllers
                 string sSqlstmt = "select id_stock_receive,po,po_upload,supplier,added_date from t_stock_receive where active=1";
                 if (chkAll == null && chkAll != "All")
                 {
-
                     if (category != "" && category != null)
                     {
                         ViewBag.CatListval = category;
                         sSearchtext = sSearchtext + " and category ='" + category + "'";
                     }
-
                 }
                 else
                 {
@@ -1338,19 +1289,16 @@ namespace ISOStd.Controllers
 
                 if (dsEmmetList.Tables.Count > 0 && dsEmmetList.Tables[0].Rows.Count > 0)
                 {
-                  
                     for (int i = 0; i < dsEmmetList.Tables[0].Rows.Count; i++)
                     {
                         try
                         {
                             EmmetModels objModel = new EmmetModels
                             {
-
                                 id_stock_receive = dsEmmetList.Tables[0].Rows[i]["id_stock_receive"].ToString(),
-                              
+
                                 po = dsEmmetList.Tables[0].Rows[i]["po"].ToString(),
                                 supplier = objGlobaldata.GetSupplierNameById(dsEmmetList.Tables[0].Rows[i]["supplier"].ToString()),
-                            
                             };
 
                             DateTime dtDocDate;
@@ -1377,7 +1325,6 @@ namespace ISOStd.Controllers
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
 
-
             return View(objList.EmmetList.ToList().ToPagedList(page ?? 1, 1000));
         }
 
@@ -1387,7 +1334,6 @@ namespace ISOStd.Controllers
             EmmetModels objModel = new EmmetModels();
             try
             {
-
                 ViewBag.CatList = objGlobaldata.getMaterialCategoryStockList();
                 ViewBag.Suppplier = objGlobaldata.GetSupplierList();
 
@@ -1435,7 +1381,6 @@ namespace ISOStd.Controllers
                                         material = dsTranList.Tables[0].Rows[i]["material"].ToString(),
                                         qty = Convert.ToInt32(dsTranList.Tables[0].Rows[i]["qty"].ToString()),
                                         price = Convert.ToDecimal(dsTranList.Tables[0].Rows[i]["price"].ToString()),
-
                                     };
                                     if (dsTranList.Tables[0].Rows[i]["expiry_date"].ToString() != ""
                                     && DateTime.TryParse(dsTranList.Tables[0].Rows[i]["expiry_date"].ToString(), out dtDocDate))
@@ -1545,7 +1490,7 @@ namespace ISOStd.Controllers
                     }
                 }
 
-                if (objModel.category != null && objModel.material != null && objModel.qty != null && objModel.price != null)
+                if (objModel.category != null && objModel.material != null && objModel.price != null)
                 {
                     EmmetModels objEmmet = new EmmetModels();
                     objEmmet.category = form["category"];
@@ -1558,7 +1503,6 @@ namespace ISOStd.Controllers
                     }
                     objList.EmmetList.Add(objEmmet);
                 }
-
 
                 if (objModel.FunEditAddStock(objModel, objList))
                 {
@@ -1583,8 +1527,6 @@ namespace ISOStd.Controllers
             EmmetModels objModel = new EmmetModels();
             try
             {
-
-               
                 if (Request.QueryString["id_stock_receive"] != null && Request.QueryString["id_stock_receive"] != "")
                 {
                     string id_stock_receive = Request.QueryString["id_stock_receive"];
@@ -1595,10 +1537,10 @@ namespace ISOStd.Controllers
                     {
                         objModel = new EmmetModels
                         {
-                            id_stock_receive = dsEmmetList.Tables[0].Rows[0]["id_stock_receive"].ToString(),  
+                            id_stock_receive = dsEmmetList.Tables[0].Rows[0]["id_stock_receive"].ToString(),
                             po = dsEmmetList.Tables[0].Rows[0]["po"].ToString(),
-                            supplier =objGlobaldata.GetSupplierNameById(dsEmmetList.Tables[0].Rows[0]["supplier"].ToString()),
-                            po_upload = (dsEmmetList.Tables[0].Rows[0]["po_upload"].ToString()),                     
+                            supplier = objGlobaldata.GetSupplierNameById(dsEmmetList.Tables[0].Rows[0]["supplier"].ToString()),
+                            po_upload = (dsEmmetList.Tables[0].Rows[0]["po_upload"].ToString()),
                         };
                         DateTime dtDocDate;
 
@@ -1666,7 +1608,6 @@ namespace ISOStd.Controllers
             }
             return View(objModel);
         }
-
 
         [AllowAnonymous]
         public JsonResult MaterialDelete(FormCollection form)
@@ -1738,28 +1679,28 @@ namespace ISOStd.Controllers
 
         public ActionResult FunGetMaterialList(string category)
         {
-
             MultiSelectList lstMaterial = objGlobaldata.getMaterialList(category);
             return Json(lstMaterial);
         }
+
         public ActionResult FunGetMaterialLengthList(string material)
         {
-
             MultiSelectList lstMaterial = objGlobaldata.getRoundbarLengthList(material);
             return Json(lstMaterial);
         }
+
         public ActionResult FunGetHeatNoList(string material)
         {
-
             MultiSelectList lstMaterial = objGlobaldata.getHeatNoList(material);
             return Json(lstMaterial);
         }
+
         public ActionResult FunGetMaterialExpiryDateList(string material)
         {
-
             MultiSelectList lstMaterial = objGlobaldata.getChemicalExpiryList(material);
             return Json(lstMaterial);
         }
+
         [HttpGet]
         [AllowAnonymous]
         public ActionResult IssueStock()
@@ -1771,7 +1712,6 @@ namespace ISOStd.Controllers
 
                 string sql = "update t_stock_master set dummy_bal='0' where dummy_bal != '0'";
                 objGlobaldata.ExecuteQuery(sql);
-
             }
             catch (Exception ex)
             {
@@ -1781,24 +1721,21 @@ namespace ISOStd.Controllers
             return View();
         }
 
-
         [HttpPost]
         [AllowAnonymous]
         public ActionResult IssueStock(EmmetModels objModel, FormCollection form)
         {
             try
             {
-          
                 EmmetModelsList objList = new EmmetModelsList();
                 objList.EmmetList = new List<EmmetModels>();
-
 
                 DateTime dateValue;
                 if (DateTime.TryParse(form["issue_date"], out dateValue) == true)
                 {
                     objModel.issue_date = dateValue;
                 }
-             
+
                 for (int i = 0; i < Convert.ToInt16(form["itemcnts"]); i++)
                 {
                     if (form["empid" + i] != null && form["category" + i] != null && form["material" + i] != null && form["issue_qty" + i] != null)
@@ -1812,7 +1749,6 @@ namespace ISOStd.Controllers
                         objList.EmmetList.Add(objEmmet);
                     }
                 }
-
 
                 if (objModel.FunIssueStock(objModel, objList))
                 {
@@ -1834,7 +1770,6 @@ namespace ISOStd.Controllers
         [AllowAnonymous]
         public ActionResult IssueStockList(FormCollection form, int? page)
         {
-
             EmmetModelsList objList = new EmmetModelsList();
             objList.EmmetList = new List<EmmetModels>();
 
@@ -1844,21 +1779,18 @@ namespace ISOStd.Controllers
                 string sSearchtext = "";
                 string sSqlstmt = "select id_stock_issue,jobno,issue_date from t_stock_issue where active=1";
 
-
                 sSqlstmt = sSqlstmt + sSearchtext + " order by id_stock_issue asc";
 
                 DataSet dsEmmetList = objGlobaldata.Getdetails(sSqlstmt);
 
                 if (dsEmmetList.Tables.Count > 0 && dsEmmetList.Tables[0].Rows.Count > 0)
                 {
-                    
                     for (int i = 0; i < dsEmmetList.Tables[0].Rows.Count; i++)
                     {
                         try
                         {
                             EmmetModels objModel = new EmmetModels
                             {
-
                                 id_stock_issue = dsEmmetList.Tables[0].Rows[i]["id_stock_issue"].ToString(),
                                 jobno = (dsEmmetList.Tables[0].Rows[i]["jobno"].ToString()),
                             };
@@ -1887,14 +1819,12 @@ namespace ISOStd.Controllers
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
 
-
             return View(objList.EmmetList.ToList().ToPagedList(page ?? 1, 1000));
         }
 
         [AllowAnonymous]
         public ActionResult ReturnList(FormCollection form, int? page, string chkAll, string empid)
         {
-
             EmmetModelsList objList = new EmmetModelsList();
             objList.EmmetList = new List<EmmetModels>();
 
@@ -1903,17 +1833,15 @@ namespace ISOStd.Controllers
                 ViewBag.Emplist = objGlobaldata.GetHrEmployeeListbox();
                 string sSearchtext = "";
                 string sSqlstmt = "select t.id_stock_issue,id_stock_issue_trans,jobno,issue_date,empid,category,material,issue_qty,return_qty,balance_qty"
-                +" from t_stock_issue t,t_stock_issue_trans tt where t.id_stock_issue=tt.id_stock_issue and active=1";
+                + " from t_stock_issue t,t_stock_issue_trans tt where t.id_stock_issue=tt.id_stock_issue and active=1";
 
                 if (chkAll == null && chkAll != "All")
                 {
-
                     if (empid != "" && empid != null)
                     {
                         ViewBag.EmmetListval = empid;
                         sSearchtext = sSearchtext + " and empid ='" + empid + "'";
                     }
-
                 }
                 else
                 {
@@ -1926,23 +1854,21 @@ namespace ISOStd.Controllers
 
                 if (dsEmmetList.Tables.Count > 0 && dsEmmetList.Tables[0].Rows.Count > 0)
                 {
-                    
                     for (int i = 0; i < dsEmmetList.Tables[0].Rows.Count; i++)
                     {
                         try
                         {
                             EmmetModels objModel = new EmmetModels
                             {
-                                
                                 id_stock_issue = dsEmmetList.Tables[0].Rows[i]["id_stock_issue"].ToString(),
                                 id_stock_issue_trans = dsEmmetList.Tables[0].Rows[i]["id_stock_issue_trans"].ToString(),
                                 jobno = (dsEmmetList.Tables[0].Rows[i]["jobno"].ToString()),
-                                empid =objGlobaldata.GetEmpHrNameById(dsEmmetList.Tables[0].Rows[i]["empid"].ToString()),
+                                empid = objGlobaldata.GetEmpHrNameById(dsEmmetList.Tables[0].Rows[i]["empid"].ToString()),
                                 category = objGlobaldata.GetDropdownitemById(dsEmmetList.Tables[0].Rows[i]["category"].ToString()),
-                                material =objGlobaldata.getMaterialById(dsEmmetList.Tables[0].Rows[i]["material"].ToString()),
-                                issue_qty =Convert.ToInt32(dsEmmetList.Tables[0].Rows[i]["issue_qty"].ToString()),
-                                return_qty =Convert.ToInt32(dsEmmetList.Tables[0].Rows[i]["return_qty"].ToString()),
-                                balance_qty =Convert.ToInt32(dsEmmetList.Tables[0].Rows[i]["balance_qty"].ToString()),
+                                material = objGlobaldata.getMaterialById(dsEmmetList.Tables[0].Rows[i]["material"].ToString()),
+                                issue_qty = Convert.ToInt32(dsEmmetList.Tables[0].Rows[i]["issue_qty"].ToString()),
+                                return_qty = Convert.ToInt32(dsEmmetList.Tables[0].Rows[i]["return_qty"].ToString()),
+                                balance_qty = Convert.ToInt32(dsEmmetList.Tables[0].Rows[i]["balance_qty"].ToString()),
                             };
 
                             DateTime dtDocDate;
@@ -1969,27 +1895,23 @@ namespace ISOStd.Controllers
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
 
-
             return View(objList.EmmetList.ToList().ToPagedList(page ?? 1, 1000));
         }
 
         [AllowAnonymous]
         public ActionResult ReturnChemicalList(FormCollection form, int? page, string chkAll)
         {
-
             EmmetModelsList objList = new EmmetModelsList();
             objList.EmmetList = new List<EmmetModels>();
 
             try
             {
-              
                 string sSearchtext = "";
                 string sSqlstmt = "select t.id_chemical_issue,id_chemical_issue_trans,jobno,po,empid,issue_date,category,material,issue_qty,return_qty,balance_qty"
                 + " from t_chemical_issue t,t_chemical_issue_trans tt where t.id_chemical_issue=tt.id_chemical_issue and active=1";
 
                 //if (chkAll == null && chkAll != "All")
                 //{
-
                 //    if (empid != "" && empid != null)
                 //    {
                 //        ViewBag.EmmetListval = empid;
@@ -2008,14 +1930,12 @@ namespace ISOStd.Controllers
 
                 if (dsEmmetList.Tables.Count > 0 && dsEmmetList.Tables[0].Rows.Count > 0)
                 {
-                  
                     for (int i = 0; i < dsEmmetList.Tables[0].Rows.Count; i++)
                     {
                         try
                         {
                             EmmetModels objModel = new EmmetModels
                             {
-
                                 id_chemical_issue = dsEmmetList.Tables[0].Rows[i]["id_chemical_issue"].ToString(),
                                 id_chemical_issue_trans = dsEmmetList.Tables[0].Rows[i]["id_chemical_issue_trans"].ToString(),
                                 jobno = (dsEmmetList.Tables[0].Rows[i]["jobno"].ToString()),
@@ -2055,9 +1975,8 @@ namespace ISOStd.Controllers
         }
 
         [AllowAnonymous]
-        public ActionResult LogList(FormCollection form, int? page, string material, string category,string op_type, string chkAll)
+        public ActionResult LogList(FormCollection form, int? page, string material, string category, string op_type, string chkAll)
         {
-
             EmmetModelsList objList = new EmmetModelsList();
             objList.EmmetList = new List<EmmetModels>();
 
@@ -2072,7 +1991,6 @@ namespace ISOStd.Controllers
                 {
                     if (op_type != "" && op_type != null)
                     {
-
                         ViewBag.Typeval = op_type;
                         if (sSearchtext != "")
                         {
@@ -2121,14 +2039,12 @@ namespace ISOStd.Controllers
 
                 if (dsEmmetList.Tables.Count > 0 && dsEmmetList.Tables[0].Rows.Count > 0)
                 {
-                   
                     for (int i = 0; i < dsEmmetList.Tables[0].Rows.Count; i++)
                     {
                         try
                         {
                             EmmetModels objModel = new EmmetModels
                             {
-
                                 id_stock_log = dsEmmetList.Tables[0].Rows[i]["id_stock_log"].ToString(),
                                 category = objGlobaldata.GetDropdownitemById(dsEmmetList.Tables[0].Rows[i]["category"].ToString()),
                                 material = objGlobaldata.getMaterialById(dsEmmetList.Tables[0].Rows[i]["material"].ToString()),
@@ -2136,7 +2052,7 @@ namespace ISOStd.Controllers
                                 op_type = (dsEmmetList.Tables[0].Rows[i]["op_type"].ToString()),
                                 jobno = (dsEmmetList.Tables[0].Rows[i]["jobno"].ToString()),
                                 po = (dsEmmetList.Tables[0].Rows[i]["po"].ToString()),
-                                empid =objGlobaldata.GetEmpHrNameById(dsEmmetList.Tables[0].Rows[i]["empid"].ToString()),
+                                empid = objGlobaldata.GetEmpHrNameById(dsEmmetList.Tables[0].Rows[i]["empid"].ToString()),
                                 po_upload = (dsEmmetList.Tables[0].Rows[i]["po_upload"].ToString()),
                                 mtc_upload = (dsEmmetList.Tables[0].Rows[i]["mtc_upload"].ToString()),
                             };
@@ -2176,6 +2092,7 @@ namespace ISOStd.Controllers
             }
             return Json(Qty);
         }
+
         public JsonResult FunSetStockQty(string category, string material, int issue_qty)
         {
             bool Qty = true;
@@ -2185,24 +2102,26 @@ namespace ISOStd.Controllers
             }
             return Json(Qty);
         }
+
         public JsonResult FunSetRoundbarQty(string material, string length, int issue_qty)
         {
             bool Qty = true;
             if (material != "")
             {
-                Qty = objGlobaldata.SetRoundbarQty(material,length, issue_qty);
+                Qty = objGlobaldata.SetRoundbarQty(material, length, issue_qty);
             }
             return Json(Qty);
         }
+
         public JsonResult FunSetChemicalQty(string material, string expiry_date, int issue_qty)
         {
             bool Qty = true;
             string sexpdate = "";
-            DateTime dateValue=new DateTime();
+            DateTime dateValue = new DateTime();
 
             if (expiry_date != null && DateTime.TryParse(expiry_date, out dateValue) == true)
             {
-              sexpdate=dateValue.ToString("yyyy-MM-dd");
+                sexpdate = dateValue.ToString("yyyy-MM-dd");
             }
             if (material != "")
             {
@@ -2210,6 +2129,7 @@ namespace ISOStd.Controllers
             }
             return Json(Qty);
         }
+
         public JsonResult FunUpdateStockQty(string category, string material, int issue_qty)
         {
             bool Qty = true;
@@ -2219,15 +2139,17 @@ namespace ISOStd.Controllers
             }
             return Json(Qty);
         }
-        public JsonResult FunUpdateRoundbarQty(string material,string length, int issue_qty)
+
+        public JsonResult FunUpdateRoundbarQty(string material, string length, int issue_qty)
         {
             bool Qty = true;
             if (material != "")
             {
-                Qty = objGlobaldata.UpdateRoundbarQty(material,length, issue_qty);
+                Qty = objGlobaldata.UpdateRoundbarQty(material, length, issue_qty);
             }
             return Json(Qty);
         }
+
         public JsonResult FunUpdateChemicalQty(string material, string expiry_date, int issue_qty)
         {
             bool Qty = true;
@@ -2242,13 +2164,13 @@ namespace ISOStd.Controllers
             }
             return Json(Qty);
         }
+
         [AllowAnonymous]
         public ActionResult IssueStockEdit()
         {
             EmmetModels objModel = new EmmetModels();
             try
             {
-
                 ViewBag.category = objGlobaldata.getMaterialCategoryStockList();
                 ViewBag.Emplist = objGlobaldata.GetHrEmployeeListbox();
                 if (Request.QueryString["id_stock_issue"] != null && Request.QueryString["id_stock_issue"] != "")
@@ -2264,7 +2186,6 @@ namespace ISOStd.Controllers
                         {
                             id_stock_issue = dsEmmetList.Tables[0].Rows[0]["id_stock_issue"].ToString(),
                             jobno = (dsEmmetList.Tables[0].Rows[0]["jobno"].ToString()),
-
                         };
 
                         DateTime dtDocDate;
@@ -2274,7 +2195,6 @@ namespace ISOStd.Controllers
                         {
                             objModel.issue_date = dtDocDate;
                         }
-
                     }
                     else
                     {
@@ -2303,7 +2223,6 @@ namespace ISOStd.Controllers
                                     category = dsTranList.Tables[0].Rows[i]["category"].ToString(),
                                     material = dsTranList.Tables[0].Rows[i]["material"].ToString(),
                                     issue_qty = Convert.ToInt32(dsTranList.Tables[0].Rows[i]["issue_qty"].ToString()),
-                                 
                                 };
 
                                 objList.EmmetList.Add(objTranModels);
@@ -2339,17 +2258,14 @@ namespace ISOStd.Controllers
         {
             try
             {
-             
                 EmmetModelsList objList = new EmmetModelsList();
                 objList.EmmetList = new List<EmmetModels>();
 
-             
                 DateTime dateValue;
                 if (DateTime.TryParse(form["issue_date"], out dateValue) == true)
                 {
                     objModel.issue_date = dateValue;
                 }
-
 
                 for (int i = 0; i < Convert.ToInt16(form["itemcnts"]); i++)
                 {
@@ -2364,7 +2280,6 @@ namespace ISOStd.Controllers
                         objList.EmmetList.Add(objEmmet);
                     }
                 }
-
 
                 if (objModel.empid != null && objModel.category != null && objModel.material != null && objModel.issue_qty != null)
                 {
@@ -2400,8 +2315,6 @@ namespace ISOStd.Controllers
             EmmetModels objModel = new EmmetModels();
             try
             {
-
-               
                 if (Request.QueryString["id_stock_issue"] != null && Request.QueryString["id_stock_issue"] != "")
                 {
                     string id_stock_issue = Request.QueryString["id_stock_issue"];
@@ -2415,7 +2328,6 @@ namespace ISOStd.Controllers
                         {
                             id_stock_issue = dsEmmetList.Tables[0].Rows[0]["id_stock_issue"].ToString(),
                             jobno = (dsEmmetList.Tables[0].Rows[0]["jobno"].ToString()),
-
                         };
 
                         DateTime dtDocDate;
@@ -2425,7 +2337,6 @@ namespace ISOStd.Controllers
                         {
                             objModel.issue_date = dtDocDate;
                         }
-
                     }
                     else
                     {
@@ -2501,7 +2412,7 @@ namespace ISOStd.Controllers
                     DataSet dsData = objGlobaldata.Getdetails(sql);
                     if (dsData.Tables.Count > 0 && dsData.Tables[0].Rows.Count > 0)
                     {
-                        objModel.balance_qty =Convert.ToInt32(dsData.Tables[0].Rows[0]["balance_qty"].ToString());
+                        objModel.balance_qty = Convert.ToInt32(dsData.Tables[0].Rows[0]["balance_qty"].ToString());
                     }
                 }
                 else
@@ -2523,7 +2434,7 @@ namespace ISOStd.Controllers
         public ActionResult ReturnStock(EmmetModels objModel, FormCollection form)
         {
             try
-            {       
+            {
                 DateTime dateValue;
                 if (DateTime.TryParse(form["return_date"], out dateValue) == true)
                 {
@@ -2610,12 +2521,9 @@ namespace ISOStd.Controllers
             return RedirectToAction("ReturnChemicalList");
         }
 
-       
-
         [AllowAnonymous]
         public ActionResult ReturnStockList(FormCollection form, int? page)
         {
-
             EmmetModelsList objList = new EmmetModelsList();
             objList.EmmetList = new List<EmmetModels>();
 
@@ -2629,25 +2537,22 @@ namespace ISOStd.Controllers
                     string sSearchtext = "";
                     string sSqlstmt = "select id_stock_return,id_stock_issue_trans,return_date,return_qty,return_status from t_stock_return where active=1 and id_stock_issue_trans='" + id_stock_issue_trans + "'";
 
-
                     sSqlstmt = sSqlstmt + sSearchtext + " order by id_stock_return asc";
 
                     DataSet dsEmmetList = objGlobaldata.Getdetails(sSqlstmt);
 
                     if (dsEmmetList.Tables.Count > 0 && dsEmmetList.Tables[0].Rows.Count > 0)
                     {
-                      
                         for (int i = 0; i < dsEmmetList.Tables[0].Rows.Count; i++)
                         {
                             try
                             {
                                 EmmetModels objModel = new EmmetModels
                                 {
-
                                     id_stock_return = dsEmmetList.Tables[0].Rows[i]["id_stock_return"].ToString(),
                                     id_stock_issue_trans = (dsEmmetList.Tables[0].Rows[i]["id_stock_issue_trans"].ToString()),
-                                    return_qty =Convert.ToInt32(dsEmmetList.Tables[0].Rows[i]["return_qty"].ToString()),
-                                    return_status =objGlobaldata.GetDropdownitemById(dsEmmetList.Tables[0].Rows[i]["return_status"].ToString()),
+                                    return_qty = Convert.ToInt32(dsEmmetList.Tables[0].Rows[i]["return_qty"].ToString()),
+                                    return_status = objGlobaldata.GetDropdownitemById(dsEmmetList.Tables[0].Rows[i]["return_status"].ToString()),
                                 };
 
                                 DateTime dtDocDate;
@@ -2678,7 +2583,6 @@ namespace ISOStd.Controllers
                     TempData["alertdata"] = "Id cannot be Null or empty";
                     return RedirectToAction("IssueStockList");/*Change*/
                 }
-     
             }
             catch (Exception ex)
             {
@@ -2686,14 +2590,12 @@ namespace ISOStd.Controllers
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
 
-
             return View(objList.EmmetList.ToList().ToPagedList(page ?? 1, 1000));
         }
 
         [AllowAnonymous]
         public ActionResult ReturnChemicalTransList(FormCollection form, int? page)
         {
-
             EmmetModelsList objList = new EmmetModelsList();
             objList.EmmetList = new List<EmmetModels>();
 
@@ -2707,21 +2609,18 @@ namespace ISOStd.Controllers
                     string sSearchtext = "";
                     string sSqlstmt = "select id_chemical_return,id_chemical_issue_trans,return_date,return_qty,return_status from t_chemical_return where active=1 and id_chemical_issue_trans='" + id_chemical_issue_trans + "'";
 
-
                     sSqlstmt = sSqlstmt + sSearchtext + " order by id_chemical_return asc";
 
                     DataSet dsEmmetList = objGlobaldata.Getdetails(sSqlstmt);
 
                     if (dsEmmetList.Tables.Count > 0 && dsEmmetList.Tables[0].Rows.Count > 0)
                     {
-                      
                         for (int i = 0; i < dsEmmetList.Tables[0].Rows.Count; i++)
                         {
                             try
                             {
                                 EmmetModels objModel = new EmmetModels
                                 {
-
                                     id_chemical_return = dsEmmetList.Tables[0].Rows[i]["id_chemical_return"].ToString(),
                                     id_chemical_issue_trans = (dsEmmetList.Tables[0].Rows[i]["id_chemical_issue_trans"].ToString()),
                                     return_qty = Convert.ToInt32(dsEmmetList.Tables[0].Rows[i]["return_qty"].ToString()),
@@ -2756,14 +2655,12 @@ namespace ISOStd.Controllers
                     TempData["alertdata"] = "Id cannot be Null or empty";
                     return RedirectToAction("ReturnChemicalList");/*Change*/
                 }
-
             }
             catch (Exception ex)
             {
                 objGlobaldata.AddFunctionalLog("Exception in ReturnChemicalReturnList: " + ex.ToString());
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
-
 
             return View(objList.EmmetList.ToList().ToPagedList(page ?? 1, 1000));
         }
@@ -2774,7 +2671,6 @@ namespace ISOStd.Controllers
             EmmetModels objModel = new EmmetModels();
             try
             {
-
                 ViewBag.Status = objGlobaldata.GetDropdownList("Material Status");
                 if (Request.QueryString["id_stock_return"] != null && Request.QueryString["id_stock_return"] != "")
                 {
@@ -2800,14 +2696,12 @@ namespace ISOStd.Controllers
                         {
                             objModel.return_date = dtDocDate;
                         }
-
                     }
                     else
                     {
                         TempData["alertdata"] = "Id cannot be Null or empty";
                         return RedirectToAction("IssueStockList");/*Change*/
                     }
-
                 }
                 else
                 {
@@ -2929,7 +2823,6 @@ namespace ISOStd.Controllers
             {
                 ViewBag.CatList = objGlobaldata.getMaterialCategoryChemicalList();
                 ViewBag.Suppplier = objGlobaldata.GetSupplierList();
-
             }
             catch (Exception ex)
             {
@@ -2948,7 +2841,6 @@ namespace ISOStd.Controllers
                 HttpPostedFileBase files = Request.Files[0];
                 EmmetModelsList objList = new EmmetModelsList();
                 objList.EmmetList = new List<EmmetModels>();
-
 
                 DateTime dateValue;
                 if (DateTime.TryParse(form["added_date"], out dateValue) == true)
@@ -3019,7 +2911,6 @@ namespace ISOStd.Controllers
                     }
                 }
 
-
                 if (objModel.FunAddChemical(objModel, objList))
                 {
                     TempData["Successdata"] = "Added successfully";
@@ -3036,8 +2927,6 @@ namespace ISOStd.Controllers
             }
             return RedirectToAction("AddChemical");
         }
-
-
 
         [HttpGet]
         [AllowAnonymous]
@@ -3108,10 +2997,9 @@ namespace ISOStd.Controllers
             return RedirectToAction("ChemicalIssue");
         }
 
-
         [AllowAnonymous]
         public ActionResult YearEndStockReport()
-        {     
+        {
             return View();
         }
 
@@ -3141,7 +3029,6 @@ namespace ISOStd.Controllers
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
             return View();
-          
         }
 
         [AllowAnonymous]
@@ -3176,7 +3063,6 @@ namespace ISOStd.Controllers
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
             return View();
-
         }
 
         [AllowAnonymous]
@@ -3186,7 +3072,7 @@ namespace ISOStd.Controllers
             {
                 ViewBag.Supplier = objGlobaldata.GetSupplierList();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 objGlobaldata.AddFunctionalLog("Exception in SupplierAnalysisReport: " + ex.ToString());
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
@@ -3194,11 +3080,10 @@ namespace ISOStd.Controllers
             return View();
         }
 
-
         public JsonResult getSupplierReport(string FromDate, string ToDate, string[] supplier)
         {
             DataSet dsStockReport = new DataSet();
-           
+
             try
             {
                 string sup = string.Join(",", supplier);
@@ -3235,7 +3120,6 @@ namespace ISOStd.Controllers
 
             try
             {
-              
                 DateTime fromdateValue = new DateTime();
                 DateTime toDateValue = new DateTime();
                 if (DateTime.TryParse(FromDate, out fromdateValue) == true)
@@ -3269,7 +3153,6 @@ namespace ISOStd.Controllers
 
             try
             {
-
                 DateTime fromdateValue = new DateTime();
                 DateTime toDateValue = new DateTime();
                 if (DateTime.TryParse(FromDate, out fromdateValue) == true)
@@ -3286,7 +3169,7 @@ namespace ISOStd.Controllers
                 objGlobaldata.AddFunctionalLog("Exception in GetOutOfStockReport: " + ex.ToString());
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
-           
+
             var json = JsonConvert.SerializeObject(dsStockReport, Formatting.Indented);
             return Json(json);
         }
@@ -3307,7 +3190,7 @@ namespace ISOStd.Controllers
             return View();
         }
 
-        public JsonResult getPriceCompReport(string FromDate, string ToDate, string[] supplier,string material)
+        public JsonResult getPriceCompReport(string FromDate, string ToDate, string[] supplier, string material)
         {
             DataSet dsStockReport = new DataSet();
 
@@ -3321,7 +3204,6 @@ namespace ISOStd.Controllers
                 }
                 if (DateTime.TryParse(ToDate, out toDateValue) == true)
                 {
-
                 }
                 dsStockReport = objGlobaldata.PriceComparisonReportdetails(fromdateValue.ToString("yyyy/MM/dd"), toDateValue.ToString("yyyy/MM/dd"), sup, material);
             }

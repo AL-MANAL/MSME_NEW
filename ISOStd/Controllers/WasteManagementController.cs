@@ -1,24 +1,19 @@
-﻿using System;
+﻿using ISOStd.Filters;
+using ISOStd.Models;
+using System;
 using System.Collections.Generic;
+using System.Data;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using ISOStd.Models;
-using System.Data;
-using System.Net;
-using System.IO;
-using PagedList;
-using PagedList.Mvc;
-using Microsoft.Reporting.WebForms;
-using ISOStd.Filters;
 
 namespace ISOStd.Controllers
 {
     [PreventFromUrl]
     public class WasteManagementController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
-
+        private clsGlobal objGlobaldata = new clsGlobal();
 
         public WasteManagementController()
         {
@@ -26,12 +21,11 @@ namespace ISOStd.Controllers
             ViewBag.SubMenutype = "WasteManagement";
         }
 
-
         public ActionResult Index()
         {
             return View();
         }
-        
+
         public ActionResult AddWasteManagement()
         {
             try
@@ -55,7 +49,6 @@ namespace ISOStd.Controllers
         {
             try
             {
-                
                 HttpPostedFileBase files = Request.Files[0];
                 if (Upload_doc != null && files.ContentLength > 0)
                 {
@@ -72,7 +65,6 @@ namespace ISOStd.Controllers
                         catch (Exception ex)
                         {
                             objGlobaldata.AddFunctionalLog("Exception in AddWasteManagement-upload: " + ex.ToString());
-
                         }
                     }
                     objComp.Upload_doc = objComp.Upload_doc.Trim(',');
@@ -127,14 +119,11 @@ namespace ISOStd.Controllers
                 {
                     sSearchtext = sSearchtext + " and branch='" + sBranch_name + "' ";
                 }
-                sSqlstmt= sSqlstmt + sSearchtext + " order by Id_waste";
+                sSqlstmt = sSqlstmt + sSearchtext + " order by Id_waste";
                 DataSet dsComplList = objGlobaldata.Getdetails(sSqlstmt);
 
                 if (dsComplList.Tables.Count > 0 && dsComplList.Tables[0].Rows.Count > 0)
                 {
-
-                    
-
                     for (int i = 0; i < dsComplList.Tables[0].Rows.Count; i++)
                     {
                         try
@@ -211,8 +200,6 @@ namespace ISOStd.Controllers
 
                 if (dsComplList.Tables.Count > 0 && dsComplList.Tables[0].Rows.Count > 0)
                 {
-
-                   
                     for (int i = 0; i < dsComplList.Tables[0].Rows.Count; i++)
                     {
                         try
@@ -261,31 +248,27 @@ namespace ISOStd.Controllers
         {
             try
             {
-                
-                    if (form["Id_waste"] != null && form["Id_waste"] != "")
+                if (form["Id_waste"] != null && form["Id_waste"] != "")
+                {
+                    WasteManagementModels Doc = new WasteManagementModels();
+                    string sId_waste = form["Id_waste"];
+
+                    if (Doc.FunDeleteWaste(sId_waste))
                     {
-
-                        WasteManagementModels Doc = new WasteManagementModels();
-                        string sId_waste = form["Id_waste"];
-
-
-                        if (Doc.FunDeleteWaste(sId_waste))
-                        {
-                            TempData["Successdata"] = "Document deleted successfully";
-                            return Json("Success");
-                        }
-                        else
-                        {
-                            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                            return Json("Failed");
-                        }
+                        TempData["Successdata"] = "Document deleted successfully";
+                        return Json("Success");
                     }
                     else
                     {
-                        TempData["alertdata"] = "Id_waste  cannot be Null or empty";
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                         return Json("Failed");
                     }
-               
+                }
+                else
+                {
+                    TempData["alertdata"] = "Id_waste  cannot be Null or empty";
+                    return Json("Failed");
+                }
             }
             catch (Exception ex)
             {
@@ -306,7 +289,6 @@ namespace ISOStd.Controllers
 
             try
             {
-
                 if (Request.QueryString["Id_waste"] != null && Request.QueryString["Id_waste"] != "")
                 {
                     string sId_waste = Request.QueryString["Id_waste"];
@@ -316,24 +298,22 @@ namespace ISOStd.Controllers
 
                     DataSet dsComplList = objGlobaldata.Getdetails(sSqlstmt);
 
-
                     if (dsComplList.Tables.Count > 0 && dsComplList.Tables[0].Rows.Count > 0)
                     {
-
                         objComp = new WasteManagementModels
                         {
-                                Id_waste = dsComplList.Tables[0].Rows[0]["Id_waste"].ToString(),
-                                Wate_type = dsComplList.Tables[0].Rows[0]["Wate_type"].ToString(),
-                                Quantity = Convert.ToDecimal(dsComplList.Tables[0].Rows[0]["Quantity"].ToString()),
-                                Units = objGlobaldata.GetDropdownitemById(dsComplList.Tables[0].Rows[0]["Units"].ToString()),
-                                Collection_Method = dsComplList.Tables[0].Rows[0]["Collection_Method"].ToString(),
-                                Location = /*objGlobaldata.GetCompanyBranchNameById*/(dsComplList.Tables[0].Rows[0]["Location"].ToString()),
-                                Destination = dsComplList.Tables[0].Rows[0]["Destination"].ToString(),
-                                Recv_facility = dsComplList.Tables[0].Rows[0]["Recv_facility"].ToString(),
-                                Collected_by = dsComplList.Tables[0].Rows[0]["Collected_by"].ToString(),
-                                Upload_doc = dsComplList.Tables[0].Rows[0]["Upload_doc"].ToString(),
-                                Remarks = dsComplList.Tables[0].Rows[0]["Remarks"].ToString(),
-                                DisposalBy = /*objGlobaldata.GetSupplierNameById*/(dsComplList.Tables[0].Rows[0]["DisposalBy"].ToString()),
+                            Id_waste = dsComplList.Tables[0].Rows[0]["Id_waste"].ToString(),
+                            Wate_type = dsComplList.Tables[0].Rows[0]["Wate_type"].ToString(),
+                            Quantity = Convert.ToDecimal(dsComplList.Tables[0].Rows[0]["Quantity"].ToString()),
+                            Units = objGlobaldata.GetDropdownitemById(dsComplList.Tables[0].Rows[0]["Units"].ToString()),
+                            Collection_Method = dsComplList.Tables[0].Rows[0]["Collection_Method"].ToString(),
+                            Location = /*objGlobaldata.GetCompanyBranchNameById*/(dsComplList.Tables[0].Rows[0]["Location"].ToString()),
+                            Destination = dsComplList.Tables[0].Rows[0]["Destination"].ToString(),
+                            Recv_facility = dsComplList.Tables[0].Rows[0]["Recv_facility"].ToString(),
+                            Collected_by = dsComplList.Tables[0].Rows[0]["Collected_by"].ToString(),
+                            Upload_doc = dsComplList.Tables[0].Rows[0]["Upload_doc"].ToString(),
+                            Remarks = dsComplList.Tables[0].Rows[0]["Remarks"].ToString(),
+                            DisposalBy = /*objGlobaldata.GetSupplierNameById*/(dsComplList.Tables[0].Rows[0]["DisposalBy"].ToString()),
                         };
                         ViewBag.Units = objGlobaldata.GetDropdownList("Waste Units");
                         ViewBag.Location = objGlobaldata.GetCompanyBranchListbox();
@@ -344,7 +324,6 @@ namespace ISOStd.Controllers
                         {
                             objComp.Disposal_date = dateValue;
                         }
-
                     }
                     else
                     {
@@ -397,7 +376,6 @@ namespace ISOStd.Controllers
                         catch (Exception ex)
                         {
                             objGlobaldata.AddFunctionalLog("Exception in WasteEdit-upload: " + ex.ToString());
-
                         }
                     }
                     objComp.Upload_doc = objComp.Upload_doc.Trim(',');
@@ -453,10 +431,8 @@ namespace ISOStd.Controllers
 
                     DataSet dsComplList = objGlobaldata.Getdetails(sSqlstmt);
 
-
                     if (dsComplList.Tables.Count > 0 && dsComplList.Tables[0].Rows.Count > 0)
                     {
-
                         objComp = new WasteManagementModels
                         {
                             Id_waste = dsComplList.Tables[0].Rows[0]["Id_waste"].ToString(),
@@ -478,7 +454,6 @@ namespace ISOStd.Controllers
                         {
                             objComp.Disposal_date = dateValue;
                         }
-
                     }
                     else
                     {
@@ -500,37 +475,35 @@ namespace ISOStd.Controllers
             }
             return View(objComp);
         }
-        
+
         public ActionResult WasteInfo(int id)
         {
             WasteManagementModels objComp = new WasteManagementModels();
 
             try
             {
-            string sSqlstmt = "select Id_waste,Wate_type,Quantity,Units,Collection_Method,Location,Destination,Recv_facility,Collected_by,Upload_doc,Remarks,Disposal_date,DisposalBy from t_waste_management"
-        + " where Id_waste='" + id + "'";
+                string sSqlstmt = "select Id_waste,Wate_type,Quantity,Units,Collection_Method,Location,Destination,Recv_facility,Collected_by,Upload_doc,Remarks,Disposal_date,DisposalBy from t_waste_management"
+            + " where Id_waste='" + id + "'";
 
-            DataSet dsComplList = objGlobaldata.Getdetails(sSqlstmt);
+                DataSet dsComplList = objGlobaldata.Getdetails(sSqlstmt);
 
-
-            if (dsComplList.Tables.Count > 0 && dsComplList.Tables[0].Rows.Count > 0)
-            {
-
-                objComp = new WasteManagementModels
+                if (dsComplList.Tables.Count > 0 && dsComplList.Tables[0].Rows.Count > 0)
                 {
-                    Id_waste = dsComplList.Tables[0].Rows[0]["Id_waste"].ToString(),
-                    Wate_type = dsComplList.Tables[0].Rows[0]["Wate_type"].ToString(),
-                    Quantity = Convert.ToDecimal(dsComplList.Tables[0].Rows[0]["Quantity"].ToString()),
-                    Units = objGlobaldata.GetDropdownitemById(dsComplList.Tables[0].Rows[0]["Units"].ToString()),
-                    Collection_Method = dsComplList.Tables[0].Rows[0]["Collection_Method"].ToString(),
-                    Location =/* objGlobaldata.GetCompanyBranchNameById*/(dsComplList.Tables[0].Rows[0]["Location"].ToString()),
-                    Destination = dsComplList.Tables[0].Rows[0]["Destination"].ToString(),
-                    Recv_facility = dsComplList.Tables[0].Rows[0]["Recv_facility"].ToString(),
-                    Collected_by = dsComplList.Tables[0].Rows[0]["Collected_by"].ToString(),
-                    Upload_doc = dsComplList.Tables[0].Rows[0]["Upload_doc"].ToString(),
-                    Remarks = dsComplList.Tables[0].Rows[0]["Remarks"].ToString(),
-                    DisposalBy = objGlobaldata.GetSupplierNameById(dsComplList.Tables[0].Rows[0]["DisposalBy"].ToString()),
-                };
+                    objComp = new WasteManagementModels
+                    {
+                        Id_waste = dsComplList.Tables[0].Rows[0]["Id_waste"].ToString(),
+                        Wate_type = dsComplList.Tables[0].Rows[0]["Wate_type"].ToString(),
+                        Quantity = Convert.ToDecimal(dsComplList.Tables[0].Rows[0]["Quantity"].ToString()),
+                        Units = objGlobaldata.GetDropdownitemById(dsComplList.Tables[0].Rows[0]["Units"].ToString()),
+                        Collection_Method = dsComplList.Tables[0].Rows[0]["Collection_Method"].ToString(),
+                        Location =/* objGlobaldata.GetCompanyBranchNameById*/(dsComplList.Tables[0].Rows[0]["Location"].ToString()),
+                        Destination = dsComplList.Tables[0].Rows[0]["Destination"].ToString(),
+                        Recv_facility = dsComplList.Tables[0].Rows[0]["Recv_facility"].ToString(),
+                        Collected_by = dsComplList.Tables[0].Rows[0]["Collected_by"].ToString(),
+                        Upload_doc = dsComplList.Tables[0].Rows[0]["Upload_doc"].ToString(),
+                        Remarks = dsComplList.Tables[0].Rows[0]["Remarks"].ToString(),
+                        DisposalBy = objGlobaldata.GetSupplierNameById(dsComplList.Tables[0].Rows[0]["DisposalBy"].ToString()),
+                    };
                     DateTime dateValue;
                     if (DateTime.TryParse(dsComplList.Tables[0].Rows[0]["Disposal_date"].ToString(), out dateValue))
                     {
@@ -549,9 +522,6 @@ namespace ISOStd.Controllers
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
             return View(objComp);
-
         }
-
     }
 }
-

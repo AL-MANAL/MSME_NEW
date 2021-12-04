@@ -1,22 +1,19 @@
-﻿using System;
+﻿using ISOStd.Filters;
+using ISOStd.Models;
+using System;
 using System.Collections.Generic;
+using System.Data;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using ISOStd.Models;
-using System.Data;
-using System.Net;
-using System.IO;
-using PagedList;
-using PagedList.Mvc;
-using ISOStd.Filters;
 
 namespace ISOStd.Controllers
 {
     [PreventFromUrl]
     public class SafetyViolationLogController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
+        private clsGlobal objGlobaldata = new clsGlobal();
 
         public SafetyViolationLogController()
         {
@@ -26,14 +23,14 @@ namespace ISOStd.Controllers
 
         //
         // GET: /SafetyViolationLog/
-         
+
         public ActionResult Index()
         {
             return View();
         }
 
         // GET: /SafetyViolationLog/AddSafetyViolationLog
-         
+
         [AllowAnonymous]
         public ActionResult AddSafetyViolationLog()
         {
@@ -62,14 +59,12 @@ namespace ISOStd.Controllers
             return View(objSafety);
         }
 
-                
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult AddSafetyViolationLog(SafetyViolationLogModels objSafetyViolationLog, FormCollection form, HttpPostedFileBase Upload_Report)
         {
             try
             {
-                
                 objSafetyViolationLog.LoggedBy = objGlobaldata.GetCurrentUserSession().empid;
                 objSafetyViolationLog.VoilationType = form["VoilationType"];
                 objSafetyViolationLog.Violation_warning = form["Violation_warning"];
@@ -122,7 +117,7 @@ namespace ISOStd.Controllers
                 }
                 if (objSafetyViolationLog.FunAddSafetyViolationLog(objSafetyViolationLog, Upload_Report))
                 {
-                    TempData["Successdata"] = "Added Safety Violation Log details successfully  with Reference Number '" + objSafetyViolationLog.Report_No + "'"; 
+                    TempData["Successdata"] = "Added Safety Violation Log details successfully  with Reference Number '" + objSafetyViolationLog.Report_No + "'";
                 }
                 else
                 {
@@ -137,38 +132,33 @@ namespace ISOStd.Controllers
 
             return RedirectToAction("SafetyViolationLogList");
         }
-                 
+
         [AllowAnonymous]
         public JsonResult SafetyLogDocDelete(FormCollection form)
         {
             try
             {
-               
-                       if (form["ViolationLog_Id"] != null && form["ViolationLog_Id"] != "")
-                        {
+                if (form["ViolationLog_Id"] != null && form["ViolationLog_Id"] != "")
+                {
+                    SafetyViolationLogModels Doc = new SafetyViolationLogModels();
+                    string sViolationLog_Id = form["ViolationLog_Id"];
 
-                            SafetyViolationLogModels Doc = new SafetyViolationLogModels();
-                            string sViolationLog_Id = form["ViolationLog_Id"];
-
-
-                            if (Doc.FunDeleteSafetyVoilationLogDoc(sViolationLog_Id))
-                            {
-                                TempData["Successdata"] = "Document deleted successfully";
-                                return Json("Success");
-                            }
-                            else
-                            {
-                                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                                return Json("Failed");
-                            }
-                        }
-                        else
-                        {
-                            TempData["alertdata"] = "Safety Log Id cannot be Null or empty";
-                            return Json("Failed");
-                        }
-                   
-                
+                    if (Doc.FunDeleteSafetyVoilationLogDoc(sViolationLog_Id))
+                    {
+                        TempData["Successdata"] = "Document deleted successfully";
+                        return Json("Success");
+                    }
+                    else
+                    {
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                        return Json("Failed");
+                    }
+                }
+                else
+                {
+                    TempData["alertdata"] = "Safety Log Id cannot be Null or empty";
+                    return Json("Failed");
+                }
             }
             catch (Exception ex)
             {
@@ -177,7 +167,7 @@ namespace ISOStd.Controllers
             }
             return Json("Failed");
         }
-         
+
         [AllowAnonymous]
         public ActionResult SafetyViolationLogList(string branch_name)
         {
@@ -207,7 +197,7 @@ namespace ISOStd.Controllers
                 sSqlstmt = sSqlstmt + sSearchtext + " order by UnasafeAct_OccurredOn desc";
                 DataSet dsToolboxTalk = objGlobaldata.Getdetails(sSqlstmt);
                 if (dsToolboxTalk.Tables.Count > 0)
-                {  
+                {
                     for (int i = 0; i < dsToolboxTalk.Tables[0].Rows.Count; i++)
                     {
                         try
@@ -242,7 +232,7 @@ namespace ISOStd.Controllers
                             if (DateTime.TryParse(dsToolboxTalk.Tables[0].Rows[i]["UnasafeAct_OccurredOn"].ToString(), out dateValue))
                             {
                                 objSafetyViolationLog.UnasafeAct_OccurredOn = dateValue;
-                            }                            
+                            }
 
                             objSafetyViolationLogList.lstSafetyViolationLog.Add(objSafetyViolationLog);
                         }
@@ -291,7 +281,7 @@ namespace ISOStd.Controllers
                 sSqlstmt = sSqlstmt + sSearchtext + " order by UnasafeAct_OccurredOn desc";
                 DataSet dsToolboxTalk = objGlobaldata.Getdetails(sSqlstmt);
                 if (dsToolboxTalk.Tables.Count > 0)
-                { 
+                {
                     for (int i = 0; i < dsToolboxTalk.Tables[0].Rows.Count; i++)
                     {
                         try
@@ -314,7 +304,6 @@ namespace ISOStd.Controllers
                                 branch = objGlobaldata.GetMultiCompanyBranchNameById(dsToolboxTalk.Tables[0].Rows[i]["branch"].ToString()),
                                 Dept = objGlobaldata.GetMultiDeptNameById(dsToolboxTalk.Tables[0].Rows[i]["Dept"].ToString()),
                                 Location = objGlobaldata.GetDivisionLocationById(dsToolboxTalk.Tables[0].Rows[i]["Location"].ToString()),
-
                             };
 
                             DateTime dateValue;
@@ -346,7 +335,7 @@ namespace ISOStd.Controllers
 
             return Json("Success");
         }
-               
+
         [AllowAnonymous]
         public ActionResult SafetyViolationLogDetails()
         {
@@ -362,7 +351,6 @@ namespace ISOStd.Controllers
                     DataSet dsToolboxTalk = objGlobaldata.Getdetails(sSqlstmt);
                     if (dsToolboxTalk.Tables.Count > 0)
                     {
-
                         SafetyViolationLogModels objSafetyViolationLog = new SafetyViolationLogModels
                         {
                             ViolationLog_Id = dsToolboxTalk.Tables[0].Rows[0]["ViolationLog_Id"].ToString(),
@@ -421,61 +409,60 @@ namespace ISOStd.Controllers
 
             return RedirectToAction("SafetyViolationLogList");
         }
-                 
+
         [AllowAnonymous]
         public ActionResult SafetyViolationLogInfo(int id)
         {
             try
             {
-                    string sSqlstmt = "select ViolationLog_Id, Reported_On, UnasafeAct_OccurredOn, UnsafeAct_ReportedBy, UnsafeAct_Personnel, UnsafeAct_Why, Report_No,"
-                        + " Upload_Report, LoggedBy,VoilationType,Action_taken,HSE_observation,Emp_statement,Violation_warning,Dept,Supervisor,IssuedBy,Other_supervisor," +
-                        "ApprovedBy,branch,Location from t_safety_violationlog where ViolationLog_Id='" + id + "'";
+                string sSqlstmt = "select ViolationLog_Id, Reported_On, UnasafeAct_OccurredOn, UnsafeAct_ReportedBy, UnsafeAct_Personnel, UnsafeAct_Why, Report_No,"
+                    + " Upload_Report, LoggedBy,VoilationType,Action_taken,HSE_observation,Emp_statement,Violation_warning,Dept,Supervisor,IssuedBy,Other_supervisor," +
+                    "ApprovedBy,branch,Location from t_safety_violationlog where ViolationLog_Id='" + id + "'";
 
-                    DataSet dsToolboxTalk = objGlobaldata.Getdetails(sSqlstmt);
-                    if (dsToolboxTalk.Tables.Count > 0)
+                DataSet dsToolboxTalk = objGlobaldata.Getdetails(sSqlstmt);
+                if (dsToolboxTalk.Tables.Count > 0)
+                {
+                    SafetyViolationLogModels objSafetyViolationLog = new SafetyViolationLogModels
                     {
+                        ViolationLog_Id = dsToolboxTalk.Tables[0].Rows[0]["ViolationLog_Id"].ToString(),
+                        UnsafeAct_ReportedBy = objGlobaldata.GetEmpHrNameById(dsToolboxTalk.Tables[0].Rows[0]["UnsafeAct_ReportedBy"].ToString()),
+                        UnsafeAct_Personnel = objGlobaldata.GetMultiHrEmpNameById(dsToolboxTalk.Tables[0].Rows[0]["UnsafeAct_Personnel"].ToString()),
+                        UnsafeAct_Why = dsToolboxTalk.Tables[0].Rows[0]["UnsafeAct_Why"].ToString(),
+                        Report_No = dsToolboxTalk.Tables[0].Rows[0]["Report_No"].ToString(),
+                        Upload_Report = (dsToolboxTalk.Tables[0].Rows[0]["Upload_Report"].ToString()),
+                        LoggedBy = objGlobaldata.GetEmpHrNameById(dsToolboxTalk.Tables[0].Rows[0]["LoggedBy"].ToString()),
+                        VoilationType = objGlobaldata.GetDropdownitemById(dsToolboxTalk.Tables[0].Rows[0]["VoilationType"].ToString()),
+                        Action_taken = objGlobaldata.GetDropdownitemById(dsToolboxTalk.Tables[0].Rows[0]["Action_taken"].ToString()),
+                        HSE_observation = (dsToolboxTalk.Tables[0].Rows[0]["HSE_observation"].ToString()),
+                        Emp_statement = dsToolboxTalk.Tables[0].Rows[0]["Emp_statement"].ToString(),
+                        Violation_warning = objGlobaldata.GetDropdownitemById(dsToolboxTalk.Tables[0].Rows[0]["Violation_warning"].ToString()),
+                        Supervisor = objGlobaldata.GetEmpHrNameById(dsToolboxTalk.Tables[0].Rows[0]["Supervisor"].ToString()),
+                        IssuedBy = objGlobaldata.GetEmpHrNameById(dsToolboxTalk.Tables[0].Rows[0]["IssuedBy"].ToString()),
+                        Other_supervisor = dsToolboxTalk.Tables[0].Rows[0]["Other_supervisor"].ToString(),
+                        ApprovedBy = objGlobaldata.GetMultiHrEmpNameById(dsToolboxTalk.Tables[0].Rows[0]["ApprovedBy"].ToString()),
+                        branch = objGlobaldata.GetMultiCompanyBranchNameById(dsToolboxTalk.Tables[0].Rows[0]["branch"].ToString()),
+                        Dept = objGlobaldata.GetMultiDeptNameById(dsToolboxTalk.Tables[0].Rows[0]["Dept"].ToString()),
+                        Location = objGlobaldata.GetDivisionLocationById(dsToolboxTalk.Tables[0].Rows[0]["Location"].ToString()),
+                    };
 
-                        SafetyViolationLogModels objSafetyViolationLog = new SafetyViolationLogModels
-                        {
-                            ViolationLog_Id = dsToolboxTalk.Tables[0].Rows[0]["ViolationLog_Id"].ToString(),
-                            UnsafeAct_ReportedBy = objGlobaldata.GetEmpHrNameById(dsToolboxTalk.Tables[0].Rows[0]["UnsafeAct_ReportedBy"].ToString()),
-                            UnsafeAct_Personnel = objGlobaldata.GetMultiHrEmpNameById(dsToolboxTalk.Tables[0].Rows[0]["UnsafeAct_Personnel"].ToString()),
-                            UnsafeAct_Why = dsToolboxTalk.Tables[0].Rows[0]["UnsafeAct_Why"].ToString(),
-                            Report_No = dsToolboxTalk.Tables[0].Rows[0]["Report_No"].ToString(),
-                            Upload_Report = (dsToolboxTalk.Tables[0].Rows[0]["Upload_Report"].ToString()),
-                            LoggedBy = objGlobaldata.GetEmpHrNameById(dsToolboxTalk.Tables[0].Rows[0]["LoggedBy"].ToString()),
-                            VoilationType = objGlobaldata.GetDropdownitemById(dsToolboxTalk.Tables[0].Rows[0]["VoilationType"].ToString()),
-                            Action_taken = objGlobaldata.GetDropdownitemById(dsToolboxTalk.Tables[0].Rows[0]["Action_taken"].ToString()),
-                            HSE_observation = (dsToolboxTalk.Tables[0].Rows[0]["HSE_observation"].ToString()),
-                            Emp_statement = dsToolboxTalk.Tables[0].Rows[0]["Emp_statement"].ToString(),
-                            Violation_warning = objGlobaldata.GetDropdownitemById(dsToolboxTalk.Tables[0].Rows[0]["Violation_warning"].ToString()),
-                            Supervisor = objGlobaldata.GetEmpHrNameById(dsToolboxTalk.Tables[0].Rows[0]["Supervisor"].ToString()),
-                            IssuedBy = objGlobaldata.GetEmpHrNameById(dsToolboxTalk.Tables[0].Rows[0]["IssuedBy"].ToString()),
-                            Other_supervisor = dsToolboxTalk.Tables[0].Rows[0]["Other_supervisor"].ToString(),
-                            ApprovedBy = objGlobaldata.GetMultiHrEmpNameById(dsToolboxTalk.Tables[0].Rows[0]["ApprovedBy"].ToString()),
-                            branch = objGlobaldata.GetMultiCompanyBranchNameById(dsToolboxTalk.Tables[0].Rows[0]["branch"].ToString()),
-                            Dept = objGlobaldata.GetMultiDeptNameById(dsToolboxTalk.Tables[0].Rows[0]["Dept"].ToString()),
-                            Location = objGlobaldata.GetDivisionLocationById(dsToolboxTalk.Tables[0].Rows[0]["Location"].ToString()),
-                        };
-
-                        DateTime dateValue;
-                        if (DateTime.TryParse(dsToolboxTalk.Tables[0].Rows[0]["Reported_On"].ToString(), out dateValue))
-                        {
-                            objSafetyViolationLog.Reported_On = dateValue;
-                        }
-
-                        if (DateTime.TryParse(dsToolboxTalk.Tables[0].Rows[0]["UnasafeAct_OccurredOn"].ToString(), out dateValue))
-                        {
-                            objSafetyViolationLog.UnasafeAct_OccurredOn = dateValue;
-                        }
-
-                        return View(objSafetyViolationLog);
-                    }
-                    else
+                    DateTime dateValue;
+                    if (DateTime.TryParse(dsToolboxTalk.Tables[0].Rows[0]["Reported_On"].ToString(), out dateValue))
                     {
-                        TempData["alertdata"] = "No data exists";
-                        return RedirectToAction("SafetyViolationLogList");
+                        objSafetyViolationLog.Reported_On = dateValue;
                     }
+
+                    if (DateTime.TryParse(dsToolboxTalk.Tables[0].Rows[0]["UnasafeAct_OccurredOn"].ToString(), out dateValue))
+                    {
+                        objSafetyViolationLog.UnasafeAct_OccurredOn = dateValue;
+                    }
+
+                    return View(objSafetyViolationLog);
+                }
+                else
+                {
+                    TempData["alertdata"] = "No data exists";
+                    return RedirectToAction("SafetyViolationLogList");
+                }
             }
             catch (Exception ex)
             {
@@ -485,7 +472,7 @@ namespace ISOStd.Controllers
 
             return RedirectToAction("SafetyViolationLogList");
         }
-          
+
         [AllowAnonymous]
         public ActionResult SafetyViolationLogEdit()
         {
@@ -502,7 +489,6 @@ namespace ISOStd.Controllers
                     DataSet dsToolboxTalk = objGlobaldata.Getdetails(sSqlstmt);
                     if (dsToolboxTalk.Tables.Count > 0)
                     {
-
                         SafetyViolationLogModels objSafetyViolationLog = new SafetyViolationLogModels
                         {
                             ViolationLog_Id = dsToolboxTalk.Tables[0].Rows[0]["ViolationLog_Id"].ToString(),
@@ -570,7 +556,6 @@ namespace ISOStd.Controllers
             return RedirectToAction("SafetyViolationLogList");
         }
 
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult SafetyViolationLogEdit(SafetyViolationLogModels objSafetyViolationLog, FormCollection form, HttpPostedFileBase Upload_Report)
@@ -585,7 +570,6 @@ namespace ISOStd.Controllers
                 objSafetyViolationLog.ApprovedBy = form["ApprovedBy"];
                 objSafetyViolationLog.Location = form["Location"];
                 objSafetyViolationLog.branch = form["branch"];
-              
 
                 DateTime dateValue;
                 if (form["Reported_On"] != null && DateTime.TryParse(form["Reported_On"], out dateValue) == true)
@@ -653,7 +637,7 @@ namespace ISOStd.Controllers
                 SafetyViolationLogModels objMgmtDocuments = new SafetyViolationLogModels();
                 string filename = Path.GetFileName(Document);
                 FileStream fsSource = new FileStream(Server.MapPath(Document), FileMode.Open, FileAccess.Read);
-               
+
                 string sStatus = "";
                 if (iStatus == 0)
                 {
@@ -662,12 +646,10 @@ namespace ISOStd.Controllers
                 else if (iStatus == 1)
                 {
                     sStatus = "Approved";
-
                 }
                 else if (iStatus == 2)
                 {
                     sStatus = "Rejected";
-
                 }
                 if (objMgmtDocuments.FunSViolationApproveOrReject(ViolationLog_Id, iStatus, fsSource, filename))
                 {
@@ -700,10 +682,10 @@ namespace ISOStd.Controllers
                 SafetyViolationLogModels objMgmtDocuments = new SafetyViolationLogModels();
                 string filename = Path.GetFileName(Document);
                 FileStream fsSource = new FileStream(Server.MapPath(Document), FileMode.Open, FileAccess.Read);
-                                
+
                 if (objMgmtDocuments.FunSViolationApproveOrReject(ViolationLog_Id, iStatus, fsSource, filename))
                 {
-                    return Json("Success"+ iStatus);
+                    return Json("Success" + iStatus);
                 }
                 else
                 {
@@ -724,6 +706,5 @@ namespace ISOStd.Controllers
                 return Json("Failed");
             }
         }
-
     }
 }

@@ -1,31 +1,27 @@
-﻿using System;
+﻿using ISOStd.Filters;
+using ISOStd.Models;
+using System;
 using System.Collections.Generic;
+using System.Data;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using ISOStd.Models;
-using System.Data;
-using System.Net;
-using System.IO;
-using PagedList;
-using PagedList.Mvc;
-using Rotativa;
-using ISOStd.Filters;
 
 namespace ISOStd.Controllers
 {
     [PreventFromUrl]
     public class FireEquipInspectionController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
-        FireEquipInspectionModels objFireEquip = new FireEquipInspectionModels();
-
+        private clsGlobal objGlobaldata = new clsGlobal();
+        private FireEquipInspectionModels objFireEquip = new FireEquipInspectionModels();
 
         public FireEquipInspectionController()
         {
             ViewBag.Menutype = "HSE";
             ViewBag.SubMenutype = "FireEquipInspection";
         }
+
         public ActionResult FireEquipInspectionAdd()
         {
             return InitilizeFireEquip();
@@ -49,7 +45,7 @@ namespace ISOStd.Controllers
             }
             return View();
         }
-        
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult FireEquipInspectionAdd(FireEquipInspectionModels objFireEquip, FormCollection form, IEnumerable<HttpPostedFileBase> upload)
@@ -118,7 +114,7 @@ namespace ISOStd.Controllers
             }
             return RedirectToAction("FireEquipInspectionList");
         }
-        
+
         public ActionResult FireEquipInspectionList(string branch_name)
         {
             ViewBag.SubMenutype = "FireEquipInspection";
@@ -128,7 +124,7 @@ namespace ISOStd.Controllers
             objFireEquipList.FireEquipList = new List<FireEquipInspectionModels>();
 
             FireEquipInspectionModels objType = new FireEquipInspectionModels();
-                                 
+
             try
             {
                 UserCredentials objUserInfo = (UserCredentials)Session["UserCredentials"];
@@ -136,7 +132,7 @@ namespace ISOStd.Controllers
                 string sBranchtree = objGlobaldata.GetCurrentUserSession().BranchTree;
                 ViewBag.Branch = objGlobaldata.GetMultiBranchListByID(sBranchtree);
                 string sSearchtext = "";
-                    
+
                 string sSqlstmt = "SELECT id_FireEquip,Fire_DateTime, Location, FireNext_DateTime,Smoke_Detector, Smoke_Detector_Remarks, " +
                     "Fire_Alarm, Fire_Alarm_Remarks, Fire_Water_Pumps,Fire_Water_Pumps_Remarks,Fire_Box_No,Fire_Box_No_Location,Fire_Box_No_Type_Remarks,Fire_Box_No_Type,Fire_Box_No_Remarks," +
                     "Fire_Hydrants,Fire_Hydrants_Remarks,Project,ReportNo,upload from t_fireequip_inspection where Active='1'";
@@ -150,19 +146,17 @@ namespace ISOStd.Controllers
                 {
                     sSearchtext = sSearchtext + " and branch='" + sBranch_name + "' ";
                 }
-                sSqlstmt= sSqlstmt + sSearchtext + "";
+                sSqlstmt = sSqlstmt + sSearchtext + "";
 
                 DataSet dsFireEquipInspectionList = objGlobaldata.Getdetails(sSqlstmt);
 
                 if (dsFireEquipInspectionList.Tables.Count > 0)
                 {
-                  
-
                     for (int i = 0; i < dsFireEquipInspectionList.Tables[0].Rows.Count; i++)
                     {
                         DateTime dtDailyDate = Convert.ToDateTime(dsFireEquipInspectionList.Tables[0].Rows[i]["Fire_DateTime"].ToString());
                         DateTime dtValue;
-                       
+
                         try
                         {
                             FireEquipInspectionModels objFireInspectionModels = new FireEquipInspectionModels
@@ -247,8 +241,6 @@ namespace ISOStd.Controllers
 
                 if (dsFireEquipInspectionList.Tables.Count > 0)
                 {
-                   
-
                     for (int i = 0; i < dsFireEquipInspectionList.Tables[0].Rows.Count; i++)
                     {
                         DateTime dtDailyDate = Convert.ToDateTime(dsFireEquipInspectionList.Tables[0].Rows[i]["Fire_DateTime"].ToString());
@@ -315,42 +307,41 @@ namespace ISOStd.Controllers
                     string sSqlstmt = "SELECT id_FireEquip,Fire_DateTime, Location, FireNext_DateTime,Smoke_Detector, Smoke_Detector_Remarks, Fire_Alarm, Fire_Alarm_Remarks," +
                         " Fire_Water_Pumps,Fire_Water_Pumps_Remarks,Fire_Box_No,Fire_Box_No_Location,Fire_Box_No_Type_Remarks,Fire_Box_No_Type,Fire_Box_No_Remarks,Fire_Hydrants," +
                         "Fire_Hydrants_Remarks,Project,ReportNo,upload from t_fireequip_inspection where id_FireEquip=" + sid_FireEquip;
-                    
+
                     DataSet dsFireEquipInspectionList = objGlobaldata.Getdetails(sSqlstmt);
 
                     if (dsFireEquipInspectionList.Tables.Count > 0 && dsFireEquipInspectionList.Tables[0].Rows.Count > 0)
                     {
-                            DateTime dtDailyDate = Convert.ToDateTime(dsFireEquipInspectionList.Tables[0].Rows[0]["Fire_DateTime"].ToString());
-                            DateTime dtValue;
-                                               
-                                objComp =  new FireEquipInspectionModels
-                                {
-                                    id_FireEquip = dsFireEquipInspectionList.Tables[0].Rows[0]["id_FireEquip"].ToString(),
-                                    Location = objGlobaldata.GetCompanyBranchNameById(dsFireEquipInspectionList.Tables[0].Rows[0]["Location"].ToString()),
-                                    Fire_DateTime = dtDailyDate,
-                                    Smoke_Detector = dsFireEquipInspectionList.Tables[0].Rows[0]["Smoke_Detector"].ToString(),
-                                    Smoke_Detector_Remarks = dsFireEquipInspectionList.Tables[0].Rows[0]["Smoke_Detector_Remarks"].ToString(),
-                                    Fire_Alarm = dsFireEquipInspectionList.Tables[0].Rows[0]["Fire_Alarm"].ToString(),
-                                    Fire_Alarm_Remarks = dsFireEquipInspectionList.Tables[0].Rows[0]["Fire_Alarm_Remarks"].ToString(),
-                                    Fire_Water_Pumps = dsFireEquipInspectionList.Tables[0].Rows[0]["Fire_Water_Pumps"].ToString(),
-                                    Fire_Water_Pumps_Remarks = dsFireEquipInspectionList.Tables[0].Rows[0]["Fire_Water_Pumps_Remarks"].ToString(),
-                                    Fire_Box_No_Location = objGlobaldata.GetDropdownitemById(dsFireEquipInspectionList.Tables[0].Rows[0]["Fire_Box_No_Location"].ToString()),
-                                    Fire_Box_No_Type = objFireEquip.GetFireEquipTypeById(dsFireEquipInspectionList.Tables[0].Rows[0]["Fire_Box_No_Type"].ToString()),
-                                    Fire_Box_No = dsFireEquipInspectionList.Tables[0].Rows[0]["Fire_Box_No"].ToString(),
-                                    Fire_Box_No_Type_Remarks = dsFireEquipInspectionList.Tables[0].Rows[0]["Fire_Box_No_Type_Remarks"].ToString(),
-                                    Fire_Box_No_Remarks = dsFireEquipInspectionList.Tables[0].Rows[0]["Fire_Box_No_Remarks"].ToString(),
-                                    Fire_Hydrants = dsFireEquipInspectionList.Tables[0].Rows[0]["Fire_Hydrants"].ToString(),
-                                    Fire_Hydrants_Remarks = dsFireEquipInspectionList.Tables[0].Rows[0]["Fire_Hydrants_Remarks"].ToString(),
-                                    Project = objGlobaldata.GetDropdownitemById(dsFireEquipInspectionList.Tables[0].Rows[0]["Project"].ToString()),
-                                    ReportNo = dsFireEquipInspectionList.Tables[0].Rows[0]["ReportNo"].ToString(),
-                                    upload = dsFireEquipInspectionList.Tables[0].Rows[0]["upload"].ToString(),
-                                };
-                                if (DateTime.TryParse(dsFireEquipInspectionList.Tables[0].Rows[0]["FireNext_DateTime"].ToString(), out dtValue))
-                                {
-                                    objComp.FireNext_DateTime = dtValue;
-                                }
+                        DateTime dtDailyDate = Convert.ToDateTime(dsFireEquipInspectionList.Tables[0].Rows[0]["Fire_DateTime"].ToString());
+                        DateTime dtValue;
 
-                            }
+                        objComp = new FireEquipInspectionModels
+                        {
+                            id_FireEquip = dsFireEquipInspectionList.Tables[0].Rows[0]["id_FireEquip"].ToString(),
+                            Location = objGlobaldata.GetCompanyBranchNameById(dsFireEquipInspectionList.Tables[0].Rows[0]["Location"].ToString()),
+                            Fire_DateTime = dtDailyDate,
+                            Smoke_Detector = dsFireEquipInspectionList.Tables[0].Rows[0]["Smoke_Detector"].ToString(),
+                            Smoke_Detector_Remarks = dsFireEquipInspectionList.Tables[0].Rows[0]["Smoke_Detector_Remarks"].ToString(),
+                            Fire_Alarm = dsFireEquipInspectionList.Tables[0].Rows[0]["Fire_Alarm"].ToString(),
+                            Fire_Alarm_Remarks = dsFireEquipInspectionList.Tables[0].Rows[0]["Fire_Alarm_Remarks"].ToString(),
+                            Fire_Water_Pumps = dsFireEquipInspectionList.Tables[0].Rows[0]["Fire_Water_Pumps"].ToString(),
+                            Fire_Water_Pumps_Remarks = dsFireEquipInspectionList.Tables[0].Rows[0]["Fire_Water_Pumps_Remarks"].ToString(),
+                            Fire_Box_No_Location = objGlobaldata.GetDropdownitemById(dsFireEquipInspectionList.Tables[0].Rows[0]["Fire_Box_No_Location"].ToString()),
+                            Fire_Box_No_Type = objFireEquip.GetFireEquipTypeById(dsFireEquipInspectionList.Tables[0].Rows[0]["Fire_Box_No_Type"].ToString()),
+                            Fire_Box_No = dsFireEquipInspectionList.Tables[0].Rows[0]["Fire_Box_No"].ToString(),
+                            Fire_Box_No_Type_Remarks = dsFireEquipInspectionList.Tables[0].Rows[0]["Fire_Box_No_Type_Remarks"].ToString(),
+                            Fire_Box_No_Remarks = dsFireEquipInspectionList.Tables[0].Rows[0]["Fire_Box_No_Remarks"].ToString(),
+                            Fire_Hydrants = dsFireEquipInspectionList.Tables[0].Rows[0]["Fire_Hydrants"].ToString(),
+                            Fire_Hydrants_Remarks = dsFireEquipInspectionList.Tables[0].Rows[0]["Fire_Hydrants_Remarks"].ToString(),
+                            Project = objGlobaldata.GetDropdownitemById(dsFireEquipInspectionList.Tables[0].Rows[0]["Project"].ToString()),
+                            ReportNo = dsFireEquipInspectionList.Tables[0].Rows[0]["ReportNo"].ToString(),
+                            upload = dsFireEquipInspectionList.Tables[0].Rows[0]["upload"].ToString(),
+                        };
+                        if (DateTime.TryParse(dsFireEquipInspectionList.Tables[0].Rows[0]["FireNext_DateTime"].ToString(), out dtValue))
+                        {
+                            objComp.FireNext_DateTime = dtValue;
+                        }
+                    }
                     else
                     {
                         TempData["alertdata"] = "ID cannot be Null or empty";
@@ -371,7 +362,7 @@ namespace ISOStd.Controllers
             }
             return View(objComp);
         }
-               
+
         public ActionResult FireEquipInspectionInfo(int id)
         {
             FireEquipInspectionModels objComp = new FireEquipInspectionModels();
@@ -387,7 +378,7 @@ namespace ISOStd.Controllers
                 {
                     DateTime dtDailyDate = Convert.ToDateTime(dsFireEquipInspectionList.Tables[0].Rows[0]["Fire_DateTime"].ToString());
                     DateTime dtValue;
-                    
+
                     objComp = new FireEquipInspectionModels
                     {
                         id_FireEquip = dsFireEquipInspectionList.Tables[0].Rows[0]["id_FireEquip"].ToString(),
@@ -428,37 +419,33 @@ namespace ISOStd.Controllers
             }
             return View(objComp);
         }
-        
+
         [AllowAnonymous]
         public JsonResult FireEquipInspectionDelete(FormCollection form)
         {
             try
             {
-               
-                    if (form["id_FireEquip"] != null && form["id_FireEquip"] != "")
-                    {
+                if (form["id_FireEquip"] != null && form["id_FireEquip"] != "")
+                {
+                    FireEquipInspectionModels Doc = new FireEquipInspectionModels();
+                    string sid_FireEquip = form["id_FireEquip"];
 
-                        FireEquipInspectionModels Doc = new FireEquipInspectionModels();
-                        string sid_FireEquip = form["id_FireEquip"];
-                        
-                        if (Doc.FunDeleteFireEquipInspection(sid_FireEquip))
-                        {
-                            TempData["Successdata"] = "Document deleted successfully";
-                            return Json("Success");
-                        }
-                        else
-                        {
-                            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                            return Json("Failed");
-                        }
+                    if (Doc.FunDeleteFireEquipInspection(sid_FireEquip))
+                    {
+                        TempData["Successdata"] = "Document deleted successfully";
+                        return Json("Success");
                     }
                     else
                     {
-                        TempData["alertdata"] = "Fire Equip inspection Id cannot be Null or empty";
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                         return Json("Failed");
                     }
-               
-
+                }
+                else
+                {
+                    TempData["alertdata"] = "Fire Equip inspection Id cannot be Null or empty";
+                    return Json("Failed");
+                }
             }
             catch (Exception ex)
             {
@@ -467,7 +454,7 @@ namespace ISOStd.Controllers
             }
             return Json("Failed");
         }
-        
+
         public ActionResult FireEquipInspectionEdit()
         {
             ViewBag.SubMenutype = "FireEquipInspection";
@@ -482,14 +469,14 @@ namespace ISOStd.Controllers
                     string sSqlstmt = "SELECT id_FireEquip,Fire_DateTime, Location, FireNext_DateTime,Smoke_Detector, Smoke_Detector_Remarks, Fire_Alarm, Fire_Alarm_Remarks," +
                         " Fire_Water_Pumps,Fire_Water_Pumps_Remarks,Fire_Box_No,Fire_Box_No_Location,Fire_Box_No_Type_Remarks,Fire_Box_No_Type,Fire_Box_No_Remarks,Fire_Hydrants,Fire_Hydrants_Remarks,Project,ReportNo,upload" +
                         " from t_fireequip_inspection where id_FireEquip=" + sid_FireEquip;
-                    
+
                     DataSet dsFireEquipInspectionList = objGlobaldata.Getdetails(sSqlstmt);
 
                     if (dsFireEquipInspectionList.Tables.Count > 0 && dsFireEquipInspectionList.Tables[0].Rows.Count > 0)
                     {
                         DateTime dtDailyDate = Convert.ToDateTime(dsFireEquipInspectionList.Tables[0].Rows[0]["Fire_DateTime"].ToString());
                         DateTime dtValue;
-                                               
+
                         objComp = new FireEquipInspectionModels
                         {
                             id_FireEquip = dsFireEquipInspectionList.Tables[0].Rows[0]["id_FireEquip"].ToString(),
@@ -518,7 +505,7 @@ namespace ISOStd.Controllers
                         }
 
                         InitilizeFireEquip();
-                        
+
                         return View(objComp);
                     }
                     else
@@ -629,16 +616,14 @@ namespace ISOStd.Controllers
         [HttpPost]
         public JsonResult FunGetReportNo(string Location)
         {
-
             DataSet dsData; string RepNo = "";
 
-            dsData = objGlobaldata.GetReportNo("FIRE","", Location);
+            dsData = objGlobaldata.GetReportNo("FIRE", "", Location);
             if (dsData != null && dsData.Tables.Count > 0)
             {
                 RepNo = dsData.Tables[0].Rows[0]["ReportNO"].ToString();
             }
             return Json(RepNo);
-
         }
     }
- }
+}

@@ -1,30 +1,26 @@
-﻿using System;
+﻿using ISOStd.Filters;
+using ISOStd.Models;
+using System;
 using System.Collections.Generic;
+using System.Data;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using ISOStd.Models;
-using System.Data;
-using System.Net;
-using System.IO;
-using PagedList;
-using PagedList.Mvc;
-using Rotativa;
-using ISOStd.Filters;
 
 namespace ISOStd.Controllers
 {
     [PreventFromUrl]
     public class NearMissController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
-
+        private clsGlobal objGlobaldata = new clsGlobal();
 
         public NearMissController()
         {
             ViewBag.Menutype = "HSE";
             ViewBag.SubMenutype = "NearMiss";
         }
+
         [AllowAnonymous]
         public ActionResult AddNearMiss()
         {
@@ -45,7 +41,7 @@ namespace ISOStd.Controllers
             }
             return View();
         }
-         
+
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -73,7 +69,6 @@ namespace ISOStd.Controllers
                 {
                     objNearMiss.reported_date = dateValue;
                 }
-
 
                 if (upload != null && files.ContentLength > 0)
                 {
@@ -115,13 +110,13 @@ namespace ISOStd.Controllers
             }
             return RedirectToAction("NearMissList");
         }
-         
+
         [AllowAnonymous]
         public ActionResult NearMissList(string branch_name)
         {
             NearMissModelsList objNearMiss = new NearMissModelsList();
             objNearMiss.lstNearMiss = new List<NearMissModels>();
-           
+
             try
             {
                 string sBranch_name = objGlobaldata.GetCurrentUserSession().division;
@@ -146,9 +141,6 @@ namespace ISOStd.Controllers
 
                 if (dsNearMissList.Tables.Count > 0 && dsNearMissList.Tables[0].Rows.Count > 0)
                 {
-                   
-                        
-                    
                     for (int i = 0; i < dsNearMissList.Tables[0].Rows.Count; i++)
                     {
                         try
@@ -157,7 +149,7 @@ namespace ISOStd.Controllers
                             {
                                 id_nearmiss = Convert.ToInt16(dsNearMissList.Tables[0].Rows[i]["id_nearmiss"].ToString()),
                                 report_no = (dsNearMissList.Tables[0].Rows[i]["report_no"].ToString()),
-                                reported_by =objGlobaldata.GetEmpHrNameById(dsNearMissList.Tables[0].Rows[i]["reported_by"].ToString()),
+                                reported_by = objGlobaldata.GetEmpHrNameById(dsNearMissList.Tables[0].Rows[i]["reported_by"].ToString()),
                                 reported_by_position = (dsNearMissList.Tables[0].Rows[i]["reported_by_position"].ToString()),
                                 reported_by_dept = (dsNearMissList.Tables[0].Rows[i]["reported_by_dept"].ToString()),
                                 location = objGlobaldata.GetCompanyBranchNameById(dsNearMissList.Tables[0].Rows[i]["location"].ToString()),
@@ -167,7 +159,6 @@ namespace ISOStd.Controllers
                                 reviewed_by = objGlobaldata.GetEmpHrNameById(dsNearMissList.Tables[0].Rows[i]["reviewed_by"].ToString()),
                                 causes = objGlobaldata.GetDropdownitemById(dsNearMissList.Tables[0].Rows[i]["causes"].ToString()),
                                 project = objGlobaldata.GetDropdownitemById(dsNearMissList.Tables[0].Rows[i]["project"].ToString()),
-
                             };
 
                             DateTime dtValue;
@@ -227,9 +218,6 @@ namespace ISOStd.Controllers
 
                 if (dsNearMissList.Tables.Count > 0 && dsNearMissList.Tables[0].Rows.Count > 0)
                 {
-
-                  
-
                     for (int i = 0; i < dsNearMissList.Tables[0].Rows.Count; i++)
                     {
                         try
@@ -248,7 +236,6 @@ namespace ISOStd.Controllers
                                 reviewed_by = objGlobaldata.GetEmpHrNameById(dsNearMissList.Tables[0].Rows[i]["reviewed_by"].ToString()),
                                 causes = objGlobaldata.GetDropdownitemById(dsNearMissList.Tables[0].Rows[i]["causes"].ToString()),
                                 project = objGlobaldata.GetDropdownitemById(dsNearMissList.Tables[0].Rows[i]["project"].ToString()),
-
                             };
 
                             DateTime dtValue;
@@ -282,7 +269,7 @@ namespace ISOStd.Controllers
         public ActionResult NearMissEdit()
         {
             NearMissModels objNearMiss = new NearMissModels();
-            
+
             try
             {
                 ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
@@ -303,14 +290,13 @@ namespace ISOStd.Controllers
                     DataSet dsNearMissList = objGlobaldata.Getdetails(sSqlstmt);
                     if (dsNearMissList.Tables.Count > 0 && dsNearMissList.Tables[0].Rows.Count > 0)
                     {
-
                         objNearMiss = new NearMissModels
                         {
                             id_nearmiss = Convert.ToInt16(dsNearMissList.Tables[0].Rows[0]["id_nearmiss"].ToString()),
                             report_no = (dsNearMissList.Tables[0].Rows[0]["report_no"].ToString()),
                             reported_by = objGlobaldata.GetEmpHrNameById(dsNearMissList.Tables[0].Rows[0]["reported_by"].ToString()),
                             reported_by_position = (dsNearMissList.Tables[0].Rows[0]["reported_by_position"].ToString()),
-                            reported_by_dept =(dsNearMissList.Tables[0].Rows[0]["reported_by_dept"].ToString()),
+                            reported_by_dept = (dsNearMissList.Tables[0].Rows[0]["reported_by_dept"].ToString()),
                             location = objGlobaldata.GetCompanyBranchNameById(dsNearMissList.Tables[0].Rows[0]["location"].ToString()),
                             description = (dsNearMissList.Tables[0].Rows[0]["description"].ToString()),
                             upload = (dsNearMissList.Tables[0].Rows[0]["upload"].ToString()),
@@ -337,7 +323,6 @@ namespace ISOStd.Controllers
                 }
                 else
                 {
-
                     TempData["alertdata"] = "Naermiss ID cannot be Null or empty";
                     return RedirectToAction("NearMissList");
                 }
@@ -350,7 +335,7 @@ namespace ISOStd.Controllers
             }
             return View(objNearMiss);
         }
-         
+
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -361,7 +346,7 @@ namespace ISOStd.Controllers
                 objNearMiss.reported_by = form["reported_by"];
                 objNearMiss.reviewed_by = form["reviewed_by"];
                 objNearMiss.causes = form["causes"];
-                string QCDelete = Request.Form["QCDocsValselectall"]; 
+                string QCDelete = Request.Form["QCDocsValselectall"];
                 HttpPostedFileBase files = Request.Files[0];
                 DateTime dateValue;
                 if (form["incident_date"] != null && DateTime.TryParse(form["incident_date"], out dateValue) == true)
@@ -378,7 +363,6 @@ namespace ISOStd.Controllers
                 {
                     objNearMiss.reported_date = dateValue;
                 }
-
 
                 if (upload != null && files.ContentLength > 0)
                 {
@@ -432,36 +416,33 @@ namespace ISOStd.Controllers
             }
             return RedirectToAction("NearMissList");
         }
-         
+
         [AllowAnonymous]
         public JsonResult NearMissDelete(FormCollection form)
         {
             try
             {
-                 if (form["id_nearmiss"] != null && form["id_nearmiss"] != "")
-                        {
+                if (form["id_nearmiss"] != null && form["id_nearmiss"] != "")
+                {
+                    NearMissModels Doc = new NearMissModels();
+                    string sid_nearmiss = form["id_nearmiss"];
 
-                            NearMissModels Doc = new NearMissModels();
-                            string sid_nearmiss = form["id_nearmiss"];
-
-                            if (Doc.FunDeleteNearMiss(sid_nearmiss))
-                            {
-                                TempData["Successdata"] = "Document deleted successfully";
-                                return Json("Success");
-                            }
-                            else
-                            {
-                                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                                return Json("Failed");
-                            }
-                        }
-                        else
-                        {
-                            TempData["alertdata"] = "Near Miss Id cannot be Null or empty";
-                            return Json("Failed");
-                        }
-                    
-                
+                    if (Doc.FunDeleteNearMiss(sid_nearmiss))
+                    {
+                        TempData["Successdata"] = "Document deleted successfully";
+                        return Json("Success");
+                    }
+                    else
+                    {
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                        return Json("Failed");
+                    }
+                }
+                else
+                {
+                    TempData["alertdata"] = "Near Miss Id cannot be Null or empty";
+                    return Json("Failed");
+                }
             }
             catch (Exception ex)
             {
@@ -471,7 +452,6 @@ namespace ISOStd.Controllers
             return Json("Failed");
         }
 
-         
         [HttpPost]
         public JsonResult GetEmpDetail(string empid)
         {
@@ -487,12 +467,9 @@ namespace ISOStd.Controllers
                     {
                         objEmpModels = new EmployeeModels
                         {
-
                             Designation = dsEmp.Tables[0].Rows[0]["Designation"].ToString(),
-                            DeptID =objGlobaldata.GetDeptNameById(dsEmp.Tables[0].Rows[0]["DeptID"].ToString()),
-
+                            DeptID = objGlobaldata.GetDeptNameById(dsEmp.Tables[0].Rows[0]["DeptID"].ToString()),
                         };
-                        
                     }
                     catch (Exception ex)
                     {
@@ -508,7 +485,7 @@ namespace ISOStd.Controllers
             }
             return Json(objEmpModels);
         }
-         
+
         [AllowAnonymous]
         public ActionResult ActionNearMiss()
         {
@@ -529,7 +506,7 @@ namespace ISOStd.Controllers
                     {
                         objNearMiss = new NearMissModels
                         {
-                            id_nearmiss =Convert.ToInt32(dsNearMissList.Tables[0].Rows[0]["id_nearmiss"].ToString()),
+                            id_nearmiss = Convert.ToInt32(dsNearMissList.Tables[0].Rows[0]["id_nearmiss"].ToString()),
                         };
                     }
                 }
@@ -538,7 +515,6 @@ namespace ISOStd.Controllers
                     TempData["Successdata"] = "ID cannot be null";
                     return RedirectToAction("NearMissList");
                 }
-
             }
             catch (Exception ex)
             {
@@ -547,7 +523,7 @@ namespace ISOStd.Controllers
             }
             return View(objNearMiss);
         }
-         
+
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -574,7 +550,7 @@ namespace ISOStd.Controllers
             }
             return RedirectToAction("NearMissActionList", new { objNearMiss.id_nearmiss });
         }
-         
+
         [AllowAnonymous]
         public ActionResult NearMissActionList()
         {
@@ -591,9 +567,6 @@ namespace ISOStd.Controllers
 
                     if (dsNearMissList.Tables.Count > 0 && dsNearMissList.Tables[0].Rows.Count > 0)
                     {
-                      
-                         
-                        
                         for (int i = 0; i < dsNearMissList.Tables[0].Rows.Count; i++)
                         {
                             try
@@ -631,37 +604,33 @@ namespace ISOStd.Controllers
             }
             return View(objNearMiss.lstNearMiss.ToList());
         }
-         
+
         [AllowAnonymous]
         public JsonResult NearMissActionDelete(FormCollection form)
         {
             try
             {
-               
-                       if (form["id_nearmiss_action"] != null && form["id_nearmiss_action"] != "")
-                        {
+                if (form["id_nearmiss_action"] != null && form["id_nearmiss_action"] != "")
+                {
+                    NearMissModels Doc = new NearMissModels();
+                    string sid_nearmiss_action = form["id_nearmiss_action"];
 
-                            NearMissModels Doc = new NearMissModels();
-                            string sid_nearmiss_action = form["id_nearmiss_action"];
-
-                            if (Doc.FunDeleteNearMissAction(sid_nearmiss_action))
-                            {
-                                TempData["Successdata"] = "Document deleted successfully";
-                                return Json("Success");
-                            }
-                            else
-                            {
-                                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                                return Json("Failed");
-                            }
-                        }
-                        else
-                        {
-                            TempData["alertdata"] = "Near Miss Action Id cannot be Null or empty";
-                            return Json("Failed");
-                        }
-                  
-                
+                    if (Doc.FunDeleteNearMissAction(sid_nearmiss_action))
+                    {
+                        TempData["Successdata"] = "Document deleted successfully";
+                        return Json("Success");
+                    }
+                    else
+                    {
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                        return Json("Failed");
+                    }
+                }
+                else
+                {
+                    TempData["alertdata"] = "Near Miss Action Id cannot be Null or empty";
+                    return Json("Failed");
+                }
             }
             catch (Exception ex)
             {
@@ -670,7 +639,7 @@ namespace ISOStd.Controllers
             }
             return Json("Failed");
         }
-         
+
         [AllowAnonymous]
         public ActionResult NearMissActionEdit()
         {
@@ -691,7 +660,6 @@ namespace ISOStd.Controllers
                     DataSet dsNearMissList = objGlobaldata.Getdetails(sSqlstmt);
                     if (dsNearMissList.Tables.Count > 0 && dsNearMissList.Tables[0].Rows.Count > 0)
                     {
-
                         objNearMiss = new NearMissModels
                         {
                             id_nearmiss_action = Convert.ToInt16(dsNearMissList.Tables[0].Rows[0]["id_nearmiss_action"].ToString()),
@@ -702,7 +670,6 @@ namespace ISOStd.Controllers
                             verified_by = objGlobaldata.GetEmpHrNameById(dsNearMissList.Tables[0].Rows[0]["verified_by"].ToString()),
                             reviewed_by = objGlobaldata.GetEmpHrNameById(dsNearMissList.Tables[0].Rows[0]["reviewed_by"].ToString()),
                         };
-                        
                     }
                     else
                     {
@@ -712,7 +679,6 @@ namespace ISOStd.Controllers
                 }
                 else
                 {
-
                     TempData["alertdata"] = "Naermiss ID cannot be Null or empty";
                     return RedirectToAction("NearMissList");
                 }
@@ -725,7 +691,7 @@ namespace ISOStd.Controllers
             }
             return View(objNearMiss);
         }
-         
+
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -752,7 +718,7 @@ namespace ISOStd.Controllers
             }
             return RedirectToAction("NearMissActionList", new { objNearMiss.id_nearmiss });
         }
-         
+
         [AllowAnonymous]
         public ActionResult NearMissDetails()
         {
@@ -760,7 +726,6 @@ namespace ISOStd.Controllers
 
             try
             {
-
                 if (Request.QueryString["id_nearmiss"] != null && Request.QueryString["id_nearmiss"] != "")
                 {
                     string sid_nearmiss = Request.QueryString["id_nearmiss"];
@@ -770,7 +735,6 @@ namespace ISOStd.Controllers
                     DataSet dsNearMissList = objGlobaldata.Getdetails(sSqlstmt);
                     if (dsNearMissList.Tables.Count > 0 && dsNearMissList.Tables[0].Rows.Count > 0)
                     {
-
                         objNearMiss = new NearMissModels
                         {
                             id_nearmiss = Convert.ToInt16(dsNearMissList.Tables[0].Rows[0]["id_nearmiss"].ToString()),
@@ -798,7 +762,7 @@ namespace ISOStd.Controllers
                     }
 
                     string SqlStmt = "select correction,action,hazard,verified_by,tt.reviewed_by from t_nearmiss t,t_nearmiss_action tt"
-                    +" where t.id_nearmiss=tt.id_nearmiss and t.id_nearmiss='" + sid_nearmiss + "' and tt.Active=1";
+                    + " where t.id_nearmiss=tt.id_nearmiss and t.id_nearmiss='" + sid_nearmiss + "' and tt.Active=1";
                     DataSet dsNearMiss = objGlobaldata.Getdetails(SqlStmt);
                     ViewBag.ActionDetails = dsNearMiss;
                 }
@@ -807,7 +771,6 @@ namespace ISOStd.Controllers
                     TempData["alertdata"] = "NearMiss Id cannot be Null or empty";
                     return RedirectToAction("NearMissList");
                 }
-
             }
             catch (Exception ex)
             {
@@ -815,9 +778,8 @@ namespace ISOStd.Controllers
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
             return View(objNearMiss);
-
         }
-         
+
         [AllowAnonymous]
         public ActionResult NearMissInfo(int id)
         {
@@ -825,45 +787,42 @@ namespace ISOStd.Controllers
 
             try
             {
-                    string sSqlstmt = "select id_nearmiss,incident_date,reported_date,report_no,reported_by,reported_by_position,reported_by_dept,"
-                     + "location,description,upload,effect_incident,reviewed_by,causes,project from t_nearmiss where id_nearmiss='" + id + "'";
+                string sSqlstmt = "select id_nearmiss,incident_date,reported_date,report_no,reported_by,reported_by_position,reported_by_dept,"
+                 + "location,description,upload,effect_incident,reviewed_by,causes,project from t_nearmiss where id_nearmiss='" + id + "'";
 
-                    DataSet dsNearMissList = objGlobaldata.Getdetails(sSqlstmt);
-                    if (dsNearMissList.Tables.Count > 0 && dsNearMissList.Tables[0].Rows.Count > 0)
+                DataSet dsNearMissList = objGlobaldata.Getdetails(sSqlstmt);
+                if (dsNearMissList.Tables.Count > 0 && dsNearMissList.Tables[0].Rows.Count > 0)
+                {
+                    objNearMiss = new NearMissModels
                     {
-
-                        objNearMiss = new NearMissModels
-                        {
-                            id_nearmiss = Convert.ToInt16(dsNearMissList.Tables[0].Rows[0]["id_nearmiss"].ToString()),
-                            report_no = (dsNearMissList.Tables[0].Rows[0]["report_no"].ToString()),
-                            reported_by = objGlobaldata.GetEmpHrNameById(dsNearMissList.Tables[0].Rows[0]["reported_by"].ToString()),
-                            reported_by_position = (dsNearMissList.Tables[0].Rows[0]["reported_by_position"].ToString()),
-                            reported_by_dept = (dsNearMissList.Tables[0].Rows[0]["reported_by_dept"].ToString()),
-                            location = objGlobaldata.GetCompanyBranchNameById(dsNearMissList.Tables[0].Rows[0]["location"].ToString()),
-                            description = (dsNearMissList.Tables[0].Rows[0]["description"].ToString()),
-                            upload = (dsNearMissList.Tables[0].Rows[0]["upload"].ToString()),
-                            effect_incident = (dsNearMissList.Tables[0].Rows[0]["effect_incident"].ToString()),
-                            reviewed_by = objGlobaldata.GetEmpHrNameById(dsNearMissList.Tables[0].Rows[0]["reviewed_by"].ToString()),
-                            causes = objGlobaldata.GetDropdownitemById(dsNearMissList.Tables[0].Rows[0]["causes"].ToString()),
-                            project = objGlobaldata.GetDropdownitemById(dsNearMissList.Tables[0].Rows[0]["project"].ToString()),
-                        };
-                        DateTime dtValue;
-                        if (DateTime.TryParse(dsNearMissList.Tables[0].Rows[0]["incident_date"].ToString(), out dtValue))
-                        {
-                            objNearMiss.incident_date = dtValue;
-                        }
-                        if (DateTime.TryParse(dsNearMissList.Tables[0].Rows[0]["reported_date"].ToString(), out dtValue))
-                        {
-                            objNearMiss.reported_date = dtValue;
-                        }
+                        id_nearmiss = Convert.ToInt16(dsNearMissList.Tables[0].Rows[0]["id_nearmiss"].ToString()),
+                        report_no = (dsNearMissList.Tables[0].Rows[0]["report_no"].ToString()),
+                        reported_by = objGlobaldata.GetEmpHrNameById(dsNearMissList.Tables[0].Rows[0]["reported_by"].ToString()),
+                        reported_by_position = (dsNearMissList.Tables[0].Rows[0]["reported_by_position"].ToString()),
+                        reported_by_dept = (dsNearMissList.Tables[0].Rows[0]["reported_by_dept"].ToString()),
+                        location = objGlobaldata.GetCompanyBranchNameById(dsNearMissList.Tables[0].Rows[0]["location"].ToString()),
+                        description = (dsNearMissList.Tables[0].Rows[0]["description"].ToString()),
+                        upload = (dsNearMissList.Tables[0].Rows[0]["upload"].ToString()),
+                        effect_incident = (dsNearMissList.Tables[0].Rows[0]["effect_incident"].ToString()),
+                        reviewed_by = objGlobaldata.GetEmpHrNameById(dsNearMissList.Tables[0].Rows[0]["reviewed_by"].ToString()),
+                        causes = objGlobaldata.GetDropdownitemById(dsNearMissList.Tables[0].Rows[0]["causes"].ToString()),
+                        project = objGlobaldata.GetDropdownitemById(dsNearMissList.Tables[0].Rows[0]["project"].ToString()),
+                    };
+                    DateTime dtValue;
+                    if (DateTime.TryParse(dsNearMissList.Tables[0].Rows[0]["incident_date"].ToString(), out dtValue))
+                    {
+                        objNearMiss.incident_date = dtValue;
                     }
+                    if (DateTime.TryParse(dsNearMissList.Tables[0].Rows[0]["reported_date"].ToString(), out dtValue))
+                    {
+                        objNearMiss.reported_date = dtValue;
+                    }
+                }
 
-                    string SqlStmt = "select correction,action,hazard,verified_by,tt.reviewed_by from t_nearmiss t,t_nearmiss_action tt"
-                    + " where t.id_nearmiss=tt.id_nearmiss and t.id_nearmiss='" + id + "' and tt.Active=1";
-                    DataSet dsNearMiss = objGlobaldata.Getdetails(SqlStmt);
-                    ViewBag.ActionDetails = dsNearMiss;
-              
-
+                string SqlStmt = "select correction,action,hazard,verified_by,tt.reviewed_by from t_nearmiss t,t_nearmiss_action tt"
+                + " where t.id_nearmiss=tt.id_nearmiss and t.id_nearmiss='" + id + "' and tt.Active=1";
+                DataSet dsNearMiss = objGlobaldata.Getdetails(SqlStmt);
+                ViewBag.ActionDetails = dsNearMiss;
             }
             catch (Exception ex)
             {
@@ -871,14 +830,11 @@ namespace ISOStd.Controllers
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
             return View(objNearMiss);
-
         }
-
 
         [HttpPost]
         public JsonResult FunGetReportNo(string Location)
         {
-
             DataSet dsData; string RepNo = "";
 
             dsData = objGlobaldata.GetReportNo("NMR", "", Location);
@@ -887,7 +843,6 @@ namespace ISOStd.Controllers
                 RepNo = dsData.Tables[0].Rows[0]["ReportNO"].ToString();
             }
             return Json(RepNo);
-
         }
     }
 }

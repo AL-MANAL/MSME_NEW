@@ -1,31 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+﻿using ISOStd.Filters;
 using ISOStd.Models;
+using System;
+using System.Collections.Generic;
 using System.Data;
-using System.Net;
-using System.IO;
-using PagedList;
-using PagedList.Mvc;
-using Rotativa;
-using ISOStd.Filters;
+using System.Linq;
+using System.Web.Mvc;
 
 namespace ISOStd.Controllers
 {
     [PreventFromUrl]
     public class FirstAidBoxController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
-        FirstAidBoxModels objFirst = new FirstAidBoxModels();
-
+        private clsGlobal objGlobaldata = new clsGlobal();
+        private FirstAidBoxModels objFirst = new FirstAidBoxModels();
 
         public FirstAidBoxController()
         {
             ViewBag.Menutype = "HSE";
             ViewBag.SubMenutype = "FirstAidBox";
         }
+
         public ActionResult AddFirstAidBox()
         {
             return InitilizeFirstAidBox();
@@ -37,7 +31,6 @@ namespace ISOStd.Controllers
             {
                 ViewBag.Location = objGlobaldata.GetDropdownList("FireEquip-Location");
                 ViewBag.FirstAid = objFirst.GetFirstAid();
-               
             }
             catch (Exception ex)
             {
@@ -46,16 +39,15 @@ namespace ISOStd.Controllers
             }
             return View();
         }
-        
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult AddFirstAidBox(FirstAidBoxModels objFirstAid, FormCollection form)
         {
             try
             {
-
                 objFirstAid.FirstAidBox_1 = form["FirstAidBox_1"];
-              
+
                 DateTime dateValue;
 
                 if (DateTime.TryParse(form["FirstAid_DateTime"], out dateValue) == true)
@@ -98,7 +90,6 @@ namespace ISOStd.Controllers
                 ViewBag.Branch = objGlobaldata.GetMultiBranchListByID(sBranchtree);
                 string sSearchtext = "";
 
-
                 string sSqlstmt = "SELECT id_FirstAidBox,FirstAid_DateTime,Location, FirstAidBox_1 from t_first_aid where Active='1'";
 
                 if (branch_name != null && branch_name != "")
@@ -117,13 +108,9 @@ namespace ISOStd.Controllers
 
                 if (dsFirstAidBoxList.Tables.Count > 0)
                 {
-
-                  
-
                     for (int i = 0; i < dsFirstAidBoxList.Tables[0].Rows.Count; i++)
-                    {                       
+                    {
                         DateTime dtValue;
-                                      
 
                         try
                         {
@@ -173,7 +160,6 @@ namespace ISOStd.Controllers
                 ViewBag.Branch = objGlobaldata.GetMultiBranchListByID(sBranchtree);
                 string sSearchtext = "";
 
-
                 string sSqlstmt = "SELECT id_FirstAidBox,FirstAid_DateTime,Location, FirstAidBox_1 from t_first_aid where Active='1'";
 
                 if (branch_name != null && branch_name != "")
@@ -192,9 +178,6 @@ namespace ISOStd.Controllers
 
                 if (dsFirstAidBoxList.Tables.Count > 0)
                 {
-
-                
-
                     for (int i = 0; i < dsFirstAidBoxList.Tables[0].Rows.Count; i++)
                     {
                         DateTime dtValue;
@@ -234,32 +217,27 @@ namespace ISOStd.Controllers
         {
             try
             {
-               
-                    if (form["id_FirstAidBox"] != null && form["id_FirstAidBox"] != "")
+                if (form["id_FirstAidBox"] != null && form["id_FirstAidBox"] != "")
+                {
+                    FirstAidBoxModels Doc = new FirstAidBoxModels();
+                    string sid_FirstAidBox = form["id_FirstAidBox"];
+
+                    if (Doc.FunDeleteFirstAidBox(sid_FirstAidBox))
                     {
-
-                        FirstAidBoxModels Doc = new FirstAidBoxModels();
-                        string sid_FirstAidBox = form["id_FirstAidBox"];
-
-
-                        if (Doc.FunDeleteFirstAidBox(sid_FirstAidBox))
-                        {
-                            TempData["Successdata"] = "Document deleted successfully";
-                            return Json("Success");
-                        }
-                        else
-                        {
-                            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                            return Json("Failed");
-                        }
+                        TempData["Successdata"] = "Document deleted successfully";
+                        return Json("Success");
                     }
                     else
                     {
-                        TempData["alertdata"] = "First Aid Box Id cannot be Null or empty";
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                         return Json("Failed");
                     }
-               
-
+                }
+                else
+                {
+                    TempData["alertdata"] = "First Aid Box Id cannot be Null or empty";
+                    return Json("Failed");
+                }
             }
             catch (Exception ex)
             {
@@ -268,7 +246,7 @@ namespace ISOStd.Controllers
             }
             return Json("Failed");
         }
-        
+
         public ActionResult FirstAidBoxEdit()
         {
             ViewBag.SubMenutype = "FirstAidBox";
@@ -277,31 +255,27 @@ namespace ISOStd.Controllers
             {
                 if (Request.QueryString["id_FirstAidBox"] != null && Request.QueryString["id_FirstAidBox"] != "")
                 {
-
                     string sid_FirstAidBox = Request.QueryString["id_FirstAidBox"];
                     string sSqlstmt = "select id_FirstAidBox,FirstAid_DateTime,Location,FirstAidBox_1 from t_first_aid where id_FirstAidBox=" + sid_FirstAidBox;
-                    
+
                     DataSet dsFirstAidBoxList = objGlobaldata.Getdetails(sSqlstmt);
-                    
+
                     if (dsFirstAidBoxList.Tables.Count > 0 && dsFirstAidBoxList.Tables[0].Rows.Count > 0)
                     {
-
                         DateTime dtValue;
-                        
+
                         objComp = new FirstAidBoxModels
-                            {
-                                id_FirstAidBox = dsFirstAidBoxList.Tables[0].Rows[0]["id_FirstAidBox"].ToString(),
-                                Location = objGlobaldata.GetDropdownitemById(dsFirstAidBoxList.Tables[0].Rows[0]["Location"].ToString()),
-                                FirstAidBox_1 = objFirst.GetFirstAidById(dsFirstAidBoxList.Tables[0].Rows[0]["FirstAidBox_1"].ToString()),
-                                
-                            };
-                            if (DateTime.TryParse(dsFirstAidBoxList.Tables[0].Rows[0]["FirstAid_DateTime"].ToString(), out dtValue))
-                            {
+                        {
+                            id_FirstAidBox = dsFirstAidBoxList.Tables[0].Rows[0]["id_FirstAidBox"].ToString(),
+                            Location = objGlobaldata.GetDropdownitemById(dsFirstAidBoxList.Tables[0].Rows[0]["Location"].ToString()),
+                            FirstAidBox_1 = objFirst.GetFirstAidById(dsFirstAidBoxList.Tables[0].Rows[0]["FirstAidBox_1"].ToString()),
+                        };
+                        if (DateTime.TryParse(dsFirstAidBoxList.Tables[0].Rows[0]["FirstAid_DateTime"].ToString(), out dtValue))
+                        {
                             objComp.FirstAid_DateTime = dtValue;
-                            }
+                        }
 
-                            InitilizeFirstAidBox();
-
+                        InitilizeFirstAidBox();
 
                         return View(objComp);
                     }
@@ -333,13 +307,12 @@ namespace ISOStd.Controllers
             try
             {
                 objFirstAid.FirstAidBox_1 = form["FirstAidBox_1"];
-               
+
                 DateTime dateValue;
 
                 if (form["FirstAid_DateTime"] != null && DateTime.TryParse(form["FirstAid_DateTime"], out dateValue) == true)
                 {
                     objFirstAid.FirstAid_DateTime = dateValue;
-                   
                 }
                 if (objFirstAid.FunUpdateFirstAid(objFirstAid))
                 {
@@ -362,17 +335,14 @@ namespace ISOStd.Controllers
         [HttpPost]
         public JsonResult FunGetReportNo(string Location)
         {
-
             DataSet dsData; string RepNo = "";
 
-            dsData = objGlobaldata.GetReportNo("FAB","", Location);
+            dsData = objGlobaldata.GetReportNo("FAB", "", Location);
             if (dsData != null && dsData.Tables.Count > 0)
             {
                 RepNo = dsData.Tables[0].Rows[0]["ReportNO"].ToString();
             }
             return Json(RepNo);
-
         }
-
     }
 }

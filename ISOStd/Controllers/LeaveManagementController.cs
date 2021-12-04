@@ -1,37 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+﻿using ISOStd.Filters;
 using ISOStd.Models;
-using System.Data;
-using System.Net;
-using System.IO;
 using PagedList;
-using PagedList.Mvc;
-using Microsoft.Reporting.WebForms;
-using System.Web.Mvc.Html;
+using System;
+using System.Collections.Generic;
+using System.Data;
 using System.Globalization;
-using ISOStd.Filters;
+using System.Linq;
+using System.Web.Mvc;
 
 namespace ISOStd.Controllers
 {
     [PreventFromUrl]
     public class LeaveManagementController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
+        private clsGlobal objGlobaldata = new clsGlobal();
 
-        static List<string> objLeaveList = new List<string>();
+        private static List<string> objLeaveList = new List<string>();
 
         public LeaveManagementController()
         {
             ViewBag.Menutype = "LeaveManagement";
         }
 
-      
         public ActionResult MasterLeaveList(int? page, string SearchText)
         {
-
             ViewBag.SubMenutype = "MasterLeave";
             LeaveModelsList objMasterLeaveModelsList = new LeaveModelsList();
             objMasterLeaveModelsList.LeaveMList = new List<LeaveManagementModels>();
@@ -50,16 +42,14 @@ namespace ISOStd.Controllers
                         + "' or emp_firstname like '" + SearchText + "%' or emp_firstname like '%" + SearchText + "%')";
                 }
 
-                sSqlstmt = sSqlstmt + sSearchtext+ " order by emp_firstname";
+                sSqlstmt = sSqlstmt + sSearchtext + " order by emp_firstname";
 
                 DataSet dsMasterLeaveList = objGlobaldata.Getdetails(sSqlstmt);
 
                 if (dsMasterLeaveList.Tables.Count > 0 && dsMasterLeaveList.Tables[0].Rows.Count > 0)
                 {
-
                     for (int i = 0; i < dsMasterLeaveList.Tables[0].Rows.Count; i++)
                     {
-
                         try
                         {
                             LeaveManagementModels objLeaveManagementModels = new LeaveManagementModels
@@ -80,7 +70,6 @@ namespace ISOStd.Controllers
                             }
                             objMasterLeaveModelsList.LeaveMList.Add(objLeaveManagementModels);
                         }
-
                         catch (Exception ex)
                         {
                             objGlobaldata.AddFunctionalLog("Exception in MasterLeaveList: " + ex.ToString());
@@ -95,12 +84,8 @@ namespace ISOStd.Controllers
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
             return View(objMasterLeaveModelsList.LeaveMList.ToList().ToPagedList(page ?? 1, 40));
-            
-
-
-
         }
-         
+
         public ActionResult AddLeaveSheet()
         {
             LeaveManagementModels objLeave = new LeaveManagementModels();
@@ -118,7 +103,7 @@ namespace ISOStd.Controllers
             }
             return View();
         }
-         
+
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -143,7 +128,7 @@ namespace ISOStd.Controllers
             }
             return RedirectToAction("AddLeaveSheetList");
         }
-         
+
         public ActionResult AddLeaveSheetList(string SearchText, int? page)
         {
             ViewBag.SubMenutype = "AddLeaveSheet";
@@ -153,18 +138,17 @@ namespace ISOStd.Controllers
             try
             {
                 string role = "", user = "";
-               
-                    role = objGlobaldata.GetCurrentUserSession().role;
-                            
-                     user = objGlobaldata.GetCurrentUserSession().empid;
-               
+
+                role = objGlobaldata.GetCurrentUserSession().role;
+
+                user = objGlobaldata.GetCurrentUserSession().empid;
+
                 string srole = objGlobaldata.GetMultiRolesNameById(role);
                 string sSqlstmt = "select leave_id,emp_no,fr_date, to_date,duration,reason_leave,leave_type,approver,applied_date,bal_type,"
                     + "(case when approved_status='1' then 'Leave Approved' when approved_status = '0' then 'Yet To Be Reviewed'"
                     + "else 'Rejected' end) as approved_status,approved_Date,logged_by from t_leave_trans where Active=1";
                 if (!srole.Contains("Admin"))
                 {
-
                     sSqlstmt = sSqlstmt + " and (logged_by='" + user + "')";
                 }
 
@@ -172,9 +156,6 @@ namespace ISOStd.Controllers
 
                 if (dsLeaveList.Tables.Count > 0 && dsLeaveList.Tables[0].Rows.Count > 0)
                 {
-                  
-                      
-                    
                     for (int i = 0; i < dsLeaveList.Tables[0].Rows.Count; i++)
                     {
                         ViewBag.approved_status = objGlobaldata.GetConstantValueKeyValuePair("approved_status");
@@ -202,7 +183,6 @@ namespace ISOStd.Controllers
                             if (DateTime.TryParse(dsLeaveList.Tables[0].Rows[i]["to_date"].ToString(), out dateValuemaster))
                             {
                                 objLeaveManagementModels.to_date = dateValuemaster;
-
                             }
                             if (DateTime.TryParse(dsLeaveList.Tables[0].Rows[i]["applied_date"].ToString(), out dateValuemaster))
                             {
@@ -213,16 +193,12 @@ namespace ISOStd.Controllers
                                 objLeaveManagementModels.approved_Date = dateValuemaster;
                             }
                             objLeaveModelsList.LeaveMList.Add(objLeaveManagementModels);
-
                         }
-
                         catch (Exception ex)
                         {
                             objGlobaldata.AddFunctionalLog("Exception in AddLeaveSheetList: " + ex.ToString());
                             TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                         }
-
-
                     }
                 }
             }
@@ -234,7 +210,6 @@ namespace ISOStd.Controllers
             return View(objLeaveModelsList.LeaveMList.ToList().ToPagedList(page ?? 1, 40));
         }
 
-         
         [AllowAnonymous]
         public ActionResult LeaveApproveReject(string leave_id, decimal duration, int iStatus, string PendingFlg, string Leavecomments)
         {
@@ -250,12 +225,10 @@ namespace ISOStd.Controllers
                 else if (iStatus == 1)
                 {
                     sStatus = "Approved";
-
                 }
                 else if (iStatus == 2)
                 {
                     sStatus = "Rejected";
-
                 }
                 if (objLeaveModels.FunLeaveApproveOrReject(leave_id, duration, iStatus, Leavecomments))
                 {
@@ -266,7 +239,6 @@ namespace ISOStd.Controllers
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 }
-
             }
             catch (Exception ex)
             {
@@ -283,39 +255,33 @@ namespace ISOStd.Controllers
                 return RedirectToAction("ListPendingForApproval");
             }
         }
-         
+
         [AllowAnonymous]
         public JsonResult LeaveDelete(FormCollection form)
         {
             try
             {
-             
-                   
-                        if (form["leave_id"] != null && form["leave_id"] != "")
-                        {
+                if (form["leave_id"] != null && form["leave_id"] != "")
+                {
+                    LeaveManagementModels Doc = new LeaveManagementModels();
+                    string sleave_id = form["leave_id"];
 
-                            LeaveManagementModels Doc = new LeaveManagementModels();
-                            string sleave_id = form["leave_id"];
-
-
-                            if (Doc.FunDeleteLeave(sleave_id))
-                            {
-                                TempData["Successdata"] = "Leave deleted successfully";
-                                return Json("Success");
-                            }
-                            else
-                            {
-                                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                                return Json("Failed");
-                            }
-                        }
-                        else
-                        {
-                            TempData["alertdata"] = "Leave Id cannot be Null or empty";
-                            return Json("Failed");
-                        }
-                    
-                
+                    if (Doc.FunDeleteLeave(sleave_id))
+                    {
+                        TempData["Successdata"] = "Leave deleted successfully";
+                        return Json("Success");
+                    }
+                    else
+                    {
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                        return Json("Failed");
+                    }
+                }
+                else
+                {
+                    TempData["alertdata"] = "Leave Id cannot be Null or empty";
+                    return Json("Failed");
+                }
             }
             catch (Exception ex)
             {
@@ -324,7 +290,7 @@ namespace ISOStd.Controllers
             }
             return Json("Failed");
         }
-         
+
         [AllowAnonymous]
         public ActionResult LeaveMgmtInfo(string id)
         {
@@ -332,10 +298,8 @@ namespace ISOStd.Controllers
             LeaveManagementModels objLeaveModel = new LeaveManagementModels();
             try
             {
-
-
                 string sSqlstmt = "select master_id,emp_no,emp_firstname,Date_of_join,joined_days,joined_years,accrued,balance,"
-                +"logged_date from t_leave_master where emp_no='"+id+"'";
+                + "logged_date from t_leave_master where emp_no='" + id + "'";
 
                 DataSet dsMasterLeaveList = objGlobaldata.Getdetails(sSqlstmt);
 
@@ -350,7 +314,6 @@ namespace ISOStd.Controllers
                         joined_years = Convert.ToDecimal(dsMasterLeaveList.Tables[0].Rows[0]["joined_years"].ToString()),
                         accrued = Convert.ToDecimal(dsMasterLeaveList.Tables[0].Rows[0]["accrued"].ToString()),
                         balance = Convert.ToDecimal(dsMasterLeaveList.Tables[0].Rows[0]["balance"].ToString()),
-                       
                     };
                     DateTime dtDocDate = new DateTime();
                     if (dsMasterLeaveList.Tables[0].Rows[0]["Date_of_join"].ToString() != ""
@@ -369,7 +332,6 @@ namespace ISOStd.Controllers
                     TempData["alertdata"] = "No Data exists";
                     return RedirectToAction("MasterLeaveList");
                 }
-
             }
             catch (Exception ex)
             {
@@ -377,41 +339,36 @@ namespace ISOStd.Controllers
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
             return View(objLeaveModel);
-
         }
 
-         
         public JsonResult GetBalanceByEmpID(string emp_no)
         {
             decimal bal = 0;
             if (emp_no != "")
             {
                 bal = objGlobaldata.GetLeaveBalance(emp_no);
-                
             }
             return Json(bal);
         }
-         
+
         public JsonResult FunCheckCalExists(string dt1)
         {
-
             LeaveManagementModels objLeave = new LeaveManagementModels();
             DateTime dt = DateTime.ParseExact(dt1, "ddd MMM dd yyyy HH:mm:ss 'GMT+0400 (Gulf Standard Time)'", CultureInfo.InvariantCulture);
             bool cal = false;
             cal = objLeave.FuncCheckCalender(dt);
             return Json(cal);
         }
-         
-        public JsonResult FunPreviousDate(string emp_no,string dt1)
-        {
 
+        public JsonResult FunPreviousDate(string emp_no, string dt1)
+        {
             LeaveManagementModels objLeave = new LeaveManagementModels();
             DateTime dt = DateTime.ParseExact(dt1, "ddd MMM dd yyyy HH:mm:ss 'GMT+0400 (Gulf Standard Time)'", CultureInfo.InvariantCulture);
             bool cal = false;
-            cal = objLeave.FuncCheckPreviousDate(emp_no,dt);
+            cal = objLeave.FuncCheckPreviousDate(emp_no, dt);
             return Json(cal);
         }
-         
+
         public JsonResult GetCalculateEmpLeave(string emp_no, string dt1, string dt2)
         {
             LeaveManagementModels objLeave = new LeaveManagementModels();
@@ -427,7 +384,6 @@ namespace ISOStd.Controllers
             return Json(closebal);
         }
 
-
         [HttpGet]
         [AllowAnonymous]
         public ActionResult UpdateLeaveBalance()
@@ -435,12 +391,11 @@ namespace ISOStd.Controllers
             LeaveManagementModels objModel = new LeaveManagementModels();
             try
             {
-
                 if (Request.QueryString["emp_no"] != null && Request.QueryString["emp_no"] != "")
                 {
                     string emp_no = Request.QueryString["emp_no"];
                     string sSqlstmt = "select emp_no,emp_firstname,balance from t_leave_master where emp_no='" + emp_no + "'";
-                 
+
                     DataSet dsLeaveList = objGlobaldata.Getdetails(sSqlstmt);
                     if (dsLeaveList.Tables.Count > 0 && dsLeaveList.Tables[0].Rows.Count > 0)
                     {
@@ -448,21 +403,17 @@ namespace ISOStd.Controllers
                         {
                             emp_no = dsLeaveList.Tables[0].Rows[0]["emp_no"].ToString(),
                             emp_firstname = dsLeaveList.Tables[0].Rows[0]["emp_firstname"].ToString(),
-                            balance =Convert.ToDecimal(dsLeaveList.Tables[0].Rows[0]["balance"].ToString()),
+                            balance = Convert.ToDecimal(dsLeaveList.Tables[0].Rows[0]["balance"].ToString()),
                         };
-                     
                     }
                     else
                     {
                         TempData["alertdata"] = "Id cannot be Null or empty";
                         return RedirectToAction("MasterLeaveList");
                     }
-
-                   
                 }
                 else
                 {
-
                     TempData["alertdata"] = "Id cannot be Null or empty";
                     return RedirectToAction("MasterLeaveList");
                 }
@@ -499,8 +450,5 @@ namespace ISOStd.Controllers
             }
             return RedirectToAction("MasterLeaveList");
         }
-
     }
-} 
-
-      
+}

@@ -1,22 +1,19 @@
-﻿using System;
+﻿using ISOStd.Filters;
+using ISOStd.Models;
+using System;
 using System.Collections.Generic;
+using System.Data;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using ISOStd.Models;
-using System.IO;
-using System.Data;
-using PagedList;
-using PagedList.Mvc;
-using ISOStd.Filters;
 
 namespace ISOStd.Controllers
 {
     [PreventFromUrl]
     public class MgmtExternalDocumentController : Controller
     {
-
-        clsGlobal objGlobaldata = new clsGlobal();
+        private clsGlobal objGlobaldata = new clsGlobal();
 
         public MgmtExternalDocumentController()
         {
@@ -26,20 +23,20 @@ namespace ISOStd.Controllers
 
         //
         // GET: /MgmtExternalDocument/
-          
+
         public ActionResult Index()
         {
             return View();
         }
 
         // GET: /MgmtExternalDocument/AddMgmtExternalDocument
-        
+
         [AllowAnonymous]
         public ActionResult AddMgmtExternalDocument()
         {
             return InitilizeAddMgmtExternalDocument();
-        }          
-         
+        }
+
         private ActionResult InitilizeAddMgmtExternalDocument()
         {
             MgmtExternalDocumentModels MgmtModel = new MgmtExternalDocumentModels();
@@ -117,7 +114,7 @@ namespace ISOStd.Controllers
                         string sFilename = objMgmtExternalDocumentModels.DocName + "_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath);
                         string sFilepath = Path.GetDirectoryName(spath);
 
-                        SoftCopy_Path.SaveAs(sFilepath + "/"  + sFilename);
+                        SoftCopy_Path.SaveAs(sFilepath + "/" + sFilename);
                         objMgmtExternalDocumentModels.SoftCopy_Path = "~/DataUpload/MgmtDocs/IMSDocs/" + sFilename;
                         ViewBag.Message = "File uploaded successfully";
                     }
@@ -130,7 +127,6 @@ namespace ISOStd.Controllers
                 {
                     ViewBag.Message = "You have not specified a file.";
                 }
-
 
                 if (objMgmtExternalDocumentModels.FunAddMgmtExternalDocument(objMgmtExternalDocumentModels))
                 {
@@ -150,9 +146,8 @@ namespace ISOStd.Controllers
             return RedirectToAction("MgmtExternalDocumentList");
         }
 
-
         // GET: /MgmtExternalDocument/MgmtExternalDocumentList
-          
+
         [AllowAnonymous]
         public ActionResult MgmtExternalDocumentList(string SearchText, string DeptId, int? page, string branch_name)
         {
@@ -210,8 +205,6 @@ namespace ISOStd.Controllers
                 DataSet dsMgmtDocumentsList = objGlobaldata.Getdetails(sSqlstmt);
                 if (dsMgmtDocumentsList.Tables.Count > 0 && dsMgmtDocumentsList.Tables[0].Rows.Count > 0)
                 {
-                                         
-                    
                     for (int i = 0; i < dsMgmtDocumentsList.Tables[0].Rows.Count; i++)
                     {
                         try
@@ -320,8 +313,6 @@ namespace ISOStd.Controllers
                 DataSet dsMgmtDocumentsList = objGlobaldata.Getdetails(sSqlstmt);
                 if (dsMgmtDocumentsList.Tables.Count > 0 && dsMgmtDocumentsList.Tables[0].Rows.Count > 0)
                 {
-
-                   
                     for (int i = 0; i < dsMgmtDocumentsList.Tables[0].Rows.Count; i++)
                     {
                         try
@@ -346,7 +337,6 @@ namespace ISOStd.Controllers
                                 UploadedBy = objGlobaldata.GetEmpHrNameById(dsMgmtDocumentsList.Tables[0].Rows[i]["UploadedBy"].ToString()),
                                 branch = objGlobaldata.GetMultiCompanyBranchNameById(dsMgmtDocumentsList.Tables[0].Rows[i]["branch"].ToString()),
                                 Location = objGlobaldata.GetDivisionLocationById(dsMgmtDocumentsList.Tables[0].Rows[i]["Location"].ToString())
-
                             };
 
                             DateTime dtDocDate;
@@ -374,7 +364,6 @@ namespace ISOStd.Controllers
             return Json("Success");
         }
 
-
         public ActionResult MgmtExternalDocumentHistory(int? page)
         {
             ViewBag.SubMenutype = "External";
@@ -391,14 +380,11 @@ namespace ISOStd.Controllers
                     string sSqlstmt = "select Mgmt_doc_External_Id, DocRef, DocName, Doc_Origin, IssueNo, RevNo, DocDate, DeptId, CustodyOf, SoftCopy_Path, MethodOf_Updating,"
                         + "Updated_Thru, Person_Responsible, Remarks, UploadedBy, UploadedDate,Eve_Date from t_mgmt_doc_external_trans where Mgmt_doc_External_Id=" + sMgmt_doc_External_Id;
 
-
                     //sSqlstmt = sSqlstmt + " order by DocName asc";
 
                     DataSet dsMgmtDocumentsList = objGlobaldata.Getdetails(sSqlstmt);
                     if (dsMgmtDocumentsList.Tables.Count > 0 && dsMgmtDocumentsList.Tables[0].Rows.Count > 0)
                     {
-
-                        
                         for (int i = 0; i < dsMgmtDocumentsList.Tables[0].Rows.Count; i++)
                         {
                             try
@@ -432,7 +418,6 @@ namespace ISOStd.Controllers
 
                                 objMgmtExternalDocumentModelsList.lstMgmtExternalDocument.Add(objMgmtDocumentsModels);
                             }
-
                             catch (Exception ex)
                             {
                                 objGlobaldata.AddFunctionalLog("Exception in MgmtExternalDocumentHistory: " + ex.ToString());
@@ -449,7 +434,6 @@ namespace ISOStd.Controllers
             }
             return View(objMgmtExternalDocumentModelsList.lstMgmtExternalDocument.ToList());
         }
-
 
         // GET: /MgmtExternalDocument/MgmtExternalDocumentDetails
 
@@ -500,7 +484,6 @@ namespace ISOStd.Controllers
                         {
                             objMgmtDocumentsModels.Eve_Date = dtDocDate;
                         }
-
                     }
                     else
                     {
@@ -521,7 +504,7 @@ namespace ISOStd.Controllers
             }
             return View(objMgmtDocumentsModels);
         }
-          
+
         [AllowAnonymous]
         public ActionResult MgmtExternalDocumentInfo(int id)
         {
@@ -530,50 +513,49 @@ namespace ISOStd.Controllers
 
             try
             {
-                    string sSqlstmt = "select Mgmt_doc_External_Id, DocRef, DocName, Doc_Origin, IssueNo, RevNo, DocDate, DeptId, CustodyOf, SoftCopy_Path, MethodOf_Updating,"
-                            + "Updated_Thru, Person_Responsible, Remarks, UploadedBy, UploadedDate, Eve_Date,NotificationDays,NotificationPeriod,NotificationValue,branch,Location from t_mgmt_doc_external where Mgmt_doc_External_Id='"
-                            + id + "'";
+                string sSqlstmt = "select Mgmt_doc_External_Id, DocRef, DocName, Doc_Origin, IssueNo, RevNo, DocDate, DeptId, CustodyOf, SoftCopy_Path, MethodOf_Updating,"
+                        + "Updated_Thru, Person_Responsible, Remarks, UploadedBy, UploadedDate, Eve_Date,NotificationDays,NotificationPeriod,NotificationValue,branch,Location from t_mgmt_doc_external where Mgmt_doc_External_Id='"
+                        + id + "'";
 
-                    DataSet dsMgmtDocumentsList = objGlobaldata.Getdetails(sSqlstmt);
-                    if (dsMgmtDocumentsList.Tables.Count > 0 && dsMgmtDocumentsList.Tables[0].Rows.Count > 0)
+                DataSet dsMgmtDocumentsList = objGlobaldata.Getdetails(sSqlstmt);
+                if (dsMgmtDocumentsList.Tables.Count > 0 && dsMgmtDocumentsList.Tables[0].Rows.Count > 0)
+                {
+                    objMgmtDocumentsModels = new MgmtExternalDocumentModels
                     {
-                        objMgmtDocumentsModels = new MgmtExternalDocumentModels
-                        {
-                            Mgmt_doc_External_Id = Convert.ToInt16(dsMgmtDocumentsList.Tables[0].Rows[0]["Mgmt_doc_External_Id"].ToString()),
-                            DeptId = objGlobaldata.GetMultiDeptNameById(dsMgmtDocumentsList.Tables[0].Rows[0]["DeptId"].ToString()),
-                            DocRef = (dsMgmtDocumentsList.Tables[0].Rows[0]["DocRef"].ToString()),
-                            DocName = dsMgmtDocumentsList.Tables[0].Rows[0]["DocName"].ToString(),
-                            Doc_Origin = (dsMgmtDocumentsList.Tables[0].Rows[0]["Doc_Origin"].ToString()),
-                            IssueNo = dsMgmtDocumentsList.Tables[0].Rows[0]["IssueNo"].ToString(),
-                            RevNo = dsMgmtDocumentsList.Tables[0].Rows[0]["RevNo"].ToString(),
-                            DocDate = Convert.ToDateTime(dsMgmtDocumentsList.Tables[0].Rows[0]["DocDate"].ToString()),
-                            CustodyOf = objGlobaldata.GetEmpHrNameById(dsMgmtDocumentsList.Tables[0].Rows[0]["CustodyOf"].ToString()),
-                            SoftCopy_Path = (dsMgmtDocumentsList.Tables[0].Rows[0]["SoftCopy_Path"].ToString()),
-                            MethodOf_Updating = (dsMgmtDocumentsList.Tables[0].Rows[0]["MethodOf_Updating"].ToString()),
-                            Updated_Thru = (dsMgmtDocumentsList.Tables[0].Rows[0]["Updated_Thru"].ToString()),
-                            Person_Responsible = objGlobaldata.GetMultiHrEmpNameById(dsMgmtDocumentsList.Tables[0].Rows[0]["Person_Responsible"].ToString()),
-                            Remarks = dsMgmtDocumentsList.Tables[0].Rows[0]["Remarks"].ToString(),
-                            UploadedDate = Convert.ToDateTime(dsMgmtDocumentsList.Tables[0].Rows[0]["UploadedDate"].ToString()),
-                            UploadedBy = objGlobaldata.GetEmpHrNameById(dsMgmtDocumentsList.Tables[0].Rows[0]["UploadedBy"].ToString()),
-                            NotificationPeriod = dsMgmtDocumentsList.Tables[0].Rows[0]["NotificationPeriod"].ToString(),
-                            NotificationValue = dsMgmtDocumentsList.Tables[0].Rows[0]["NotificationValue"].ToString(),
-                            branch = objGlobaldata.GetMultiCompanyBranchNameById(dsMgmtDocumentsList.Tables[0].Rows[0]["branch"].ToString()),
-                            Location = objGlobaldata.GetDivisionLocationById(dsMgmtDocumentsList.Tables[0].Rows[0]["Location"].ToString()),
-                        };
+                        Mgmt_doc_External_Id = Convert.ToInt16(dsMgmtDocumentsList.Tables[0].Rows[0]["Mgmt_doc_External_Id"].ToString()),
+                        DeptId = objGlobaldata.GetMultiDeptNameById(dsMgmtDocumentsList.Tables[0].Rows[0]["DeptId"].ToString()),
+                        DocRef = (dsMgmtDocumentsList.Tables[0].Rows[0]["DocRef"].ToString()),
+                        DocName = dsMgmtDocumentsList.Tables[0].Rows[0]["DocName"].ToString(),
+                        Doc_Origin = (dsMgmtDocumentsList.Tables[0].Rows[0]["Doc_Origin"].ToString()),
+                        IssueNo = dsMgmtDocumentsList.Tables[0].Rows[0]["IssueNo"].ToString(),
+                        RevNo = dsMgmtDocumentsList.Tables[0].Rows[0]["RevNo"].ToString(),
+                        DocDate = Convert.ToDateTime(dsMgmtDocumentsList.Tables[0].Rows[0]["DocDate"].ToString()),
+                        CustodyOf = objGlobaldata.GetEmpHrNameById(dsMgmtDocumentsList.Tables[0].Rows[0]["CustodyOf"].ToString()),
+                        SoftCopy_Path = (dsMgmtDocumentsList.Tables[0].Rows[0]["SoftCopy_Path"].ToString()),
+                        MethodOf_Updating = (dsMgmtDocumentsList.Tables[0].Rows[0]["MethodOf_Updating"].ToString()),
+                        Updated_Thru = (dsMgmtDocumentsList.Tables[0].Rows[0]["Updated_Thru"].ToString()),
+                        Person_Responsible = objGlobaldata.GetMultiHrEmpNameById(dsMgmtDocumentsList.Tables[0].Rows[0]["Person_Responsible"].ToString()),
+                        Remarks = dsMgmtDocumentsList.Tables[0].Rows[0]["Remarks"].ToString(),
+                        UploadedDate = Convert.ToDateTime(dsMgmtDocumentsList.Tables[0].Rows[0]["UploadedDate"].ToString()),
+                        UploadedBy = objGlobaldata.GetEmpHrNameById(dsMgmtDocumentsList.Tables[0].Rows[0]["UploadedBy"].ToString()),
+                        NotificationPeriod = dsMgmtDocumentsList.Tables[0].Rows[0]["NotificationPeriod"].ToString(),
+                        NotificationValue = dsMgmtDocumentsList.Tables[0].Rows[0]["NotificationValue"].ToString(),
+                        branch = objGlobaldata.GetMultiCompanyBranchNameById(dsMgmtDocumentsList.Tables[0].Rows[0]["branch"].ToString()),
+                        Location = objGlobaldata.GetDivisionLocationById(dsMgmtDocumentsList.Tables[0].Rows[0]["Location"].ToString()),
+                    };
 
-                      DateTime dtDocDate;
-                      if (dsMgmtDocumentsList.Tables[0].Rows[0]["Eve_Date"].ToString() != ""
-                           && DateTime.TryParse(dsMgmtDocumentsList.Tables[0].Rows[0]["Eve_Date"].ToString(), out dtDocDate))
-                      {
+                    DateTime dtDocDate;
+                    if (dsMgmtDocumentsList.Tables[0].Rows[0]["Eve_Date"].ToString() != ""
+                         && DateTime.TryParse(dsMgmtDocumentsList.Tables[0].Rows[0]["Eve_Date"].ToString(), out dtDocDate))
+                    {
                         objMgmtDocumentsModels.Eve_Date = dtDocDate;
-                      }
-
                     }
-                    else
-                    {
-                        TempData["alertdata"] = "No Data exists";
-                        return RedirectToAction("MgmtExternalDocumentList");
-                    }
+                }
+                else
+                {
+                    TempData["alertdata"] = "No Data exists";
+                    return RedirectToAction("MgmtExternalDocumentList");
+                }
             }
             catch (Exception ex)
             {
@@ -582,8 +564,9 @@ namespace ISOStd.Controllers
             }
             return View(objMgmtDocumentsModels);
         }
+
         // GET: /MgmtExternalDocument/MgmtExternalDocumentEdit
-          
+
         [AllowAnonymous]
         public ActionResult MgmtExternalDocumentEdit()
         {
@@ -601,7 +584,6 @@ namespace ISOStd.Controllers
                     DataSet dsMgmtDocumentsList = objGlobaldata.Getdetails(sSqlstmt);
                     if (dsMgmtDocumentsList.Tables.Count > 0 && dsMgmtDocumentsList.Tables[0].Rows.Count > 0)
                     {
-
                         objMgmtDocumentsModels = new MgmtExternalDocumentModels
                         {
                             Mgmt_doc_External_Id = Convert.ToInt16(dsMgmtDocumentsList.Tables[0].Rows[0]["Mgmt_doc_External_Id"].ToString()),
@@ -630,7 +612,7 @@ namespace ISOStd.Controllers
                         // ViewBag.EmpList = objGlobaldata.GetGEmpListBymulitBDL(dsMgmtDocumentsList.Tables[0].Rows[0]["branch"].ToString(), dsMgmtDocumentsList.Tables[0].Rows[0]["DeptId"].ToString(), dsMgmtDocumentsList.Tables[0].Rows[0]["Location"].ToString());
                         ViewBag.NotificationPeriod = objGlobaldata.GetConstantValueKeyValuePair("NotificationPeriod");
                         ViewBag.Branch = objGlobaldata.GetCompanyBranchListbox();
-                        
+
                         DateTime dtDocDate;
                         if (dsMgmtDocumentsList.Tables[0].Rows[0]["Eve_Date"].ToString() != ""
                              && DateTime.TryParse(dsMgmtDocumentsList.Tables[0].Rows[0]["Eve_Date"].ToString(), out dtDocDate))
@@ -655,13 +637,12 @@ namespace ISOStd.Controllers
                 objGlobaldata.AddFunctionalLog("Exception in MgmtExternalDocumentEdit: " + ex.ToString());
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
-           
+
             return View(objMgmtDocumentsModels);
         }
 
-
         // POST: /MgmtExternalDocument/MgmtExternalDocumentEdit
-          
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult MgmtExternalDocumentEdit(MgmtExternalDocumentModels objMgmtExternalDocumentModels, FormCollection form, HttpPostedFileBase SoftCopy_Path)
@@ -716,7 +697,7 @@ namespace ISOStd.Controllers
                     try
                     {
                         string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/IMSDocs"), Path.GetFileName(SoftCopy_Path.FileName));
-                        string sFilename = objMgmtExternalDocumentModels.DocName + "_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath) ;
+                        string sFilename = objMgmtExternalDocumentModels.DocName + "_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath);
                         string sFilepath = Path.GetDirectoryName(spath);
 
                         SoftCopy_Path.SaveAs(sFilepath + "/" + sFilename);
@@ -732,7 +713,6 @@ namespace ISOStd.Controllers
                 {
                     ViewBag.Message = "You have not specified a file.";
                 }
-
 
                 if (objMgmtExternalDocumentModels.FunUpdateMgmtExternalDocument(objMgmtExternalDocumentModels))
                 {
@@ -752,19 +732,15 @@ namespace ISOStd.Controllers
             return RedirectToAction("MgmtExternalDocumentList");
         }
 
-
         [AllowAnonymous]
         public JsonResult MgmtExternalDocDelete(FormCollection form)
         {
             try
             {
-
                 if (form["Mgmt_doc_External_Id"] != null && form["Mgmt_doc_External_Id"] != "")
                 {
-
                     MgmtExternalDocumentModels Doc = new MgmtExternalDocumentModels();
                     string sMgmt_doc_External_Id = form["Mgmt_doc_External_Id"];
-
 
                     if (Doc.FunDeleteExternalMgmtDoc(sMgmt_doc_External_Id))
                     {
@@ -782,7 +758,6 @@ namespace ISOStd.Controllers
                     TempData["alertdata"] = "ExternalDoc Id cannot be Null or empty";
                     return Json("Failed");
                 }
-
             }
             catch (Exception ex)
             {
@@ -815,6 +790,5 @@ namespace ISOStd.Controllers
 
             return Json(user);
         }
-
     }
 }

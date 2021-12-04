@@ -1,38 +1,36 @@
-﻿using System;
+﻿using ISOStd.Filters;
+using ISOStd.Models;
+using System;
 using System.Collections.Generic;
+using System.Data;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using ISOStd.Models;
-using System.Data;
-using System.Net;
-using System.IO;
-using PagedList;
-using PagedList.Mvc;
-using ISOStd.Filters;
 
 namespace ISOStd.Controllers
 {
     [PreventFromUrl]
     public class PPEIssueLogController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
-       
+        private clsGlobal objGlobaldata = new clsGlobal();
+
         public PPEIssueLogController()
         {
             ViewBag.Menutype = "HSE";
             ViewBag.SubMenutype = "PPEIssueLog";
         }
+
         //
         // GET: /PPEIssueLog/
-         
+
         public ActionResult Index()
         {
             return View();
         }
 
         // GET: /PPEIssueLog/AddPPEIssueLog
-         
+
         [AllowAnonymous]
         public ActionResult AddPPEIssueLog()
         {
@@ -40,7 +38,7 @@ namespace ISOStd.Controllers
             objPPEIssueLog.branch = objGlobaldata.GetCurrentUserSession().division;
             objPPEIssueLog.Department = objGlobaldata.GetCurrentUserSession().DeptID;
             objPPEIssueLog.Work_Location = objGlobaldata.GetCurrentUserSession().Work_Location;
-            
+
             ViewBag.Branch = objGlobaldata.GetCompanyBranchListbox();
             ViewBag.Department = objGlobaldata.GetDepartmentListbox(objPPEIssueLog.branch);
             ViewBag.Location = objGlobaldata.GetDivisionLocationList(objPPEIssueLog.branch);
@@ -53,20 +51,19 @@ namespace ISOStd.Controllers
         }
 
         // POST: /PPEIssueLog/AddPPEIssueLog
-         
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult AddPPEIssueLog(PPEIssueLogModels objPPEIssueLog, FormCollection form, HttpPostedFileBase PPE_Issue_Voucher)
         {
             try
             {
-              
                 objPPEIssueLog.LoggedBy = objGlobaldata.GetCurrentUserSession().empid;
                 objPPEIssueLog.branch = form["branch"];
                 objPPEIssueLog.Work_Location = form["Work_Location"];
                 objPPEIssueLog.Department = form["Department"];
                 objPPEIssueLog.PPE_Issued = form["PPE_Issued"];
-               
+
                 DateTime dateValue;
 
                 if (form["Issue_Date"] != null && DateTime.TryParse(form["Issue_Date"], out dateValue) == true)
@@ -119,38 +116,33 @@ namespace ISOStd.Controllers
 
             return RedirectToAction("PPEIssueLogList");
         }
-         
+
         [AllowAnonymous]
         public JsonResult PPELogDocDelete(FormCollection form)
         {
             try
-            {               
-                    
-                        if (form["IssueLog_Id"] != null && form["IssueLog_Id"] != "")
-                        {
+            {
+                if (form["IssueLog_Id"] != null && form["IssueLog_Id"] != "")
+                {
+                    PPEIssueLogModels Doc = new PPEIssueLogModels();
+                    string sIssueLog_Id = form["IssueLog_Id"];
 
-                            PPEIssueLogModels Doc = new PPEIssueLogModels();
-                            string sIssueLog_Id = form["IssueLog_Id"];
-
-
-                            if (Doc.FunDeletePPELogDoc(sIssueLog_Id))
-                            {
-                                TempData["Successdata"] = "Document deleted successfully";
-                                return Json("Success");
-                            }
-                            else
-                            {
-                                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                                return Json("Failed");
-                            }
-                        }
-                        else
-                        {
-                            TempData["alertdata"] = "PPE Log Id cannot be Null or empty";
-                            return Json("Failed");
-                        }
-                    
-               
+                    if (Doc.FunDeletePPELogDoc(sIssueLog_Id))
+                    {
+                        TempData["Successdata"] = "Document deleted successfully";
+                        return Json("Success");
+                    }
+                    else
+                    {
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                        return Json("Failed");
+                    }
+                }
+                else
+                {
+                    TempData["alertdata"] = "PPE Log Id cannot be Null or empty";
+                    return Json("Failed");
+                }
             }
             catch (Exception ex)
             {
@@ -162,14 +154,14 @@ namespace ISOStd.Controllers
 
         //
         // GET: /PPEIssueLog/PPEIssueLogList
-         
+
         [AllowAnonymous]
         public ActionResult PPEIssueLogList(string branch_name)
         {
             PPEIssueLogModelsList objPPEIssueLogList = new PPEIssueLogModelsList();
             objPPEIssueLogList.lstPPEIssueLog = new List<PPEIssueLogModels>();
 
-           // ViewBag.Location = objGlobaldata.GetCompanyBranchListbox();
+            // ViewBag.Location = objGlobaldata.GetCompanyBranchListbox();
             ViewBag.Project = objGlobaldata.GetDropdownList("Projects");
             ViewBag.PPEIssued = objGlobaldata.GetDropdownList("PPE Issued");
 
@@ -197,7 +189,7 @@ namespace ISOStd.Controllers
 
                 DataSet dsPPELog = objGlobaldata.Getdetails(sSqlstmt);
                 if (dsPPELog.Tables.Count > 0)
-                {   
+                {
                     for (int i = 0; i < dsPPELog.Tables[0].Rows.Count; i++)
                     {
                         try
@@ -210,7 +202,7 @@ namespace ISOStd.Controllers
                                 Cust_Project_Name = objGlobaldata.GetDropdownitemById(dsPPELog.Tables[0].Rows[i]["Cust_Project_Name"].ToString()),
                                 Work_Location = objGlobaldata.GetDivisionLocationById(dsPPELog.Tables[0].Rows[i]["Work_Location"].ToString()),
                                 PPE_Issued = objGlobaldata.GetDropdownitemById(dsPPELog.Tables[0].Rows[i]["PPE_Issued"].ToString()),
-                                Issued_By =  objGlobaldata.GetEmpHrNameById(dsPPELog.Tables[0].Rows[i]["Issued_By"].ToString()),
+                                Issued_By = objGlobaldata.GetEmpHrNameById(dsPPELog.Tables[0].Rows[i]["Issued_By"].ToString()),
                                 PPE_Issue_Voucher = dsPPELog.Tables[0].Rows[i]["PPE_Issue_Voucher"].ToString(),
                                 LoggedBy = objGlobaldata.GetEmpHrNameById(dsPPELog.Tables[0].Rows[i]["LoggedBy"].ToString()),
                                 branch = objGlobaldata.GetMultiCompanyBranchNameById(dsPPELog.Tables[0].Rows[i]["branch"].ToString()),
@@ -243,13 +235,12 @@ namespace ISOStd.Controllers
 
             return View(objPPEIssueLogList.lstPPEIssueLog.ToList());
         }
+
         [AllowAnonymous]
         public ActionResult PPEIssueLogHistoryList()
         {
             PPEIssueLogModelsList objPPEIssueLogList = new PPEIssueLogModelsList();
             objPPEIssueLogList.lstPPEIssueLog = new List<PPEIssueLogModels>();
-
-          
 
             try
             {
@@ -299,7 +290,6 @@ namespace ISOStd.Controllers
                                 objGlobaldata.AddFunctionalLog("Exception in PPEIssueLogHistoryList: " + ex.ToString());
                                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                             }
-
                         }
                     }
                     else
@@ -317,7 +307,6 @@ namespace ISOStd.Controllers
 
             return View(objPPEIssueLogList.lstPPEIssueLog.ToList());
         }
-
 
         [AllowAnonymous]
         public JsonResult PPEIssueLogListSearch(string branch_name)
@@ -353,8 +342,7 @@ namespace ISOStd.Controllers
 
                 DataSet dsPPELog = objGlobaldata.Getdetails(sSqlstmt);
                 if (dsPPELog.Tables.Count > 0)
-                {                  
-
+                {
                     for (int i = 0; i < dsPPELog.Tables[0].Rows.Count; i++)
                     {
                         try
@@ -403,7 +391,7 @@ namespace ISOStd.Controllers
 
             return Json("Success");
         }
-               
+
         [AllowAnonymous]
         public ActionResult PPEIssueLogDetails()
         {
@@ -418,7 +406,6 @@ namespace ISOStd.Controllers
                     DataSet dsPPELog = objGlobaldata.Getdetails(sSqlstmt);
                     if (dsPPELog.Tables.Count > 0)
                     {
-
                         PPEIssueLogModels objPPEIssueLog = new PPEIssueLogModels
                         {
                             IssueLog_Id = dsPPELog.Tables[0].Rows[0]["IssueLog_Id"].ToString(),
@@ -427,7 +414,7 @@ namespace ISOStd.Controllers
                             Cust_Project_Name = objGlobaldata.GetDropdownitemById(dsPPELog.Tables[0].Rows[0]["Cust_Project_Name"].ToString()),
                             Work_Location = objGlobaldata.GetDivisionLocationById(dsPPELog.Tables[0].Rows[0]["Work_Location"].ToString()),
                             PPE_Issued = objGlobaldata.GetDropdownitemById(dsPPELog.Tables[0].Rows[0]["PPE_Issued"].ToString()),
-                            Issued_By =objGlobaldata.GetEmpHrNameById(dsPPELog.Tables[0].Rows[0]["Issued_By"].ToString()),
+                            Issued_By = objGlobaldata.GetEmpHrNameById(dsPPELog.Tables[0].Rows[0]["Issued_By"].ToString()),
                             PPE_Issue_Voucher = dsPPELog.Tables[0].Rows[0]["PPE_Issue_Voucher"].ToString(),
                             LoggedBy = objGlobaldata.GetEmpHrNameById(dsPPELog.Tables[0].Rows[0]["LoggedBy"].ToString()),
                             branch = objGlobaldata.GetMultiCompanyBranchNameById(dsPPELog.Tables[0].Rows[0]["branch"].ToString()),
@@ -448,7 +435,6 @@ namespace ISOStd.Controllers
                         }
 
                         return View(objPPEIssueLog);
-
                     }
                     else
                     {
@@ -470,53 +456,51 @@ namespace ISOStd.Controllers
 
             return RedirectToAction("PPEIssueLogList");
         }
-         
+
         [AllowAnonymous]
         public ActionResult PPEIssueLogInfo(int id)
         {
             try
             {
-                    string sSqlstmt = "select IssueLog_Id, Issue_Date, Receiver_Name, Position, Cust_Project_Name, Work_Location, PPE_Issued, PPE_Issued_Last_Date, Issued_By,"
-                        + " PPE_Issue_Voucher, LoggedBy,branch,Department from t_ppe_issuelog where IssueLog_Id='" + id + "'";
+                string sSqlstmt = "select IssueLog_Id, Issue_Date, Receiver_Name, Position, Cust_Project_Name, Work_Location, PPE_Issued, PPE_Issued_Last_Date, Issued_By,"
+                    + " PPE_Issue_Voucher, LoggedBy,branch,Department from t_ppe_issuelog where IssueLog_Id='" + id + "'";
 
-                    DataSet dsPPELog = objGlobaldata.Getdetails(sSqlstmt);
-                    if (dsPPELog.Tables.Count > 0)
+                DataSet dsPPELog = objGlobaldata.Getdetails(sSqlstmt);
+                if (dsPPELog.Tables.Count > 0)
+                {
+                    PPEIssueLogModels objPPEIssueLog = new PPEIssueLogModels
                     {
+                        IssueLog_Id = dsPPELog.Tables[0].Rows[0]["IssueLog_Id"].ToString(),
+                        Receiver_Name = objGlobaldata.GetEmpHrNameById(dsPPELog.Tables[0].Rows[0]["Receiver_Name"].ToString()),
+                        Position = dsPPELog.Tables[0].Rows[0]["Position"].ToString(),
+                        Cust_Project_Name = dsPPELog.Tables[0].Rows[0]["Cust_Project_Name"].ToString(),
+                        Work_Location = objGlobaldata.GetDivisionLocationById(dsPPELog.Tables[0].Rows[0]["Work_Location"].ToString()),
+                        PPE_Issued = objGlobaldata.GetDropdownitemById(dsPPELog.Tables[0].Rows[0]["PPE_Issued"].ToString()),
+                        Issued_By = objGlobaldata.GetEmpHrNameById(dsPPELog.Tables[0].Rows[0]["Issued_By"].ToString()),
+                        PPE_Issue_Voucher = dsPPELog.Tables[0].Rows[0]["PPE_Issue_Voucher"].ToString(),
+                        LoggedBy = objGlobaldata.GetEmpHrNameById(dsPPELog.Tables[0].Rows[0]["LoggedBy"].ToString()),
+                        branch = objGlobaldata.GetMultiCompanyBranchNameById(dsPPELog.Tables[0].Rows[0]["branch"].ToString()),
+                        Department = objGlobaldata.GetMultiDeptNameById(dsPPELog.Tables[0].Rows[0]["Department"].ToString()),
+                    };
 
-                        PPEIssueLogModels objPPEIssueLog = new PPEIssueLogModels
-                        {
-                            IssueLog_Id = dsPPELog.Tables[0].Rows[0]["IssueLog_Id"].ToString(),
-                            Receiver_Name = objGlobaldata.GetEmpHrNameById(dsPPELog.Tables[0].Rows[0]["Receiver_Name"].ToString()),
-                            Position = dsPPELog.Tables[0].Rows[0]["Position"].ToString(),
-                            Cust_Project_Name = dsPPELog.Tables[0].Rows[0]["Cust_Project_Name"].ToString(),
-                            Work_Location = objGlobaldata.GetDivisionLocationById(dsPPELog.Tables[0].Rows[0]["Work_Location"].ToString()),
-                            PPE_Issued = objGlobaldata.GetDropdownitemById(dsPPELog.Tables[0].Rows[0]["PPE_Issued"].ToString()),
-                            Issued_By = objGlobaldata.GetEmpHrNameById(dsPPELog.Tables[0].Rows[0]["Issued_By"].ToString()),
-                            PPE_Issue_Voucher = dsPPELog.Tables[0].Rows[0]["PPE_Issue_Voucher"].ToString(),
-                            LoggedBy = objGlobaldata.GetEmpHrNameById(dsPPELog.Tables[0].Rows[0]["LoggedBy"].ToString()),
-                            branch = objGlobaldata.GetMultiCompanyBranchNameById(dsPPELog.Tables[0].Rows[0]["branch"].ToString()),
-                            Department = objGlobaldata.GetMultiDeptNameById(dsPPELog.Tables[0].Rows[0]["Department"].ToString()),
-                        };
-
-                        DateTime dateValue;
-                        if (DateTime.TryParse(dsPPELog.Tables[0].Rows[0]["Issue_Date"].ToString(), out dateValue))
-                        {
-                            objPPEIssueLog.Issue_Date = dateValue;
-                        }
-
-                        if (DateTime.TryParse(dsPPELog.Tables[0].Rows[0]["PPE_Issued_Last_Date"].ToString(), out dateValue))
-                        {
-                            objPPEIssueLog.PPE_Issued_Last_Date = dateValue;
-                        }
-
-                        return View(objPPEIssueLog);
-
-                    }
-                    else
+                    DateTime dateValue;
+                    if (DateTime.TryParse(dsPPELog.Tables[0].Rows[0]["Issue_Date"].ToString(), out dateValue))
                     {
-                        TempData["alertdata"] = "No data exists";
-                        return RedirectToAction("PPEIssueLogList");
+                        objPPEIssueLog.Issue_Date = dateValue;
                     }
+
+                    if (DateTime.TryParse(dsPPELog.Tables[0].Rows[0]["PPE_Issued_Last_Date"].ToString(), out dateValue))
+                    {
+                        objPPEIssueLog.PPE_Issued_Last_Date = dateValue;
+                    }
+
+                    return View(objPPEIssueLog);
+                }
+                else
+                {
+                    TempData["alertdata"] = "No data exists";
+                    return RedirectToAction("PPEIssueLogList");
+                }
             }
             catch (Exception ex)
             {
@@ -526,7 +510,7 @@ namespace ISOStd.Controllers
 
             return RedirectToAction("PPEIssueLogList");
         }
-                 
+
         [AllowAnonymous]
         public ActionResult PPEIssueLogEdit()
         {
@@ -580,7 +564,6 @@ namespace ISOStd.Controllers
                         ViewBag.PPEIssued = objGlobaldata.GetDropdownList("PPE Issued");
                         ViewBag.IssueBy = objGlobaldata.GetHrEmployeeList();
                         return View(objPPEIssueLog);
-
                     }
                     else
                     {
@@ -602,7 +585,7 @@ namespace ISOStd.Controllers
 
             return RedirectToAction("PPEIssueLogList");
         }
-        
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult PPEIssueLogEdit(PPEIssueLogModels objPPEIssueLog, FormCollection form, HttpPostedFileBase PPE_Issue_Voucher)
@@ -613,7 +596,7 @@ namespace ISOStd.Controllers
                 objPPEIssueLog.Work_Location = form["Work_Location"];
                 objPPEIssueLog.Department = form["Department"];
                 objPPEIssueLog.PPE_Issued = form["PPE_Issued"];
-               
+
                 DateTime dateValue;
 
                 if (form["Issue_Date"] != null && DateTime.TryParse(form["Issue_Date"], out dateValue) == true)
@@ -667,20 +650,17 @@ namespace ISOStd.Controllers
             return RedirectToAction("PPEIssueLogList");
         }
 
-
         [HttpPost]
         public JsonResult FunGetLastIssueDate(string Receiver_Name)
         {
             DateTime max_date = new DateTime();
             try
             {
-               
                 string sql = "select max(Issue_Date) as max_date from t_ppe_issuelog_trans where Receiver_Name = 6 and active = 1 ";
                 DataSet dsList = objGlobaldata.Getdetails(sql);
 
                 if (dsList.Tables.Count > 0 && dsList.Tables[0].Rows.Count > 0)
                 {
-
                     DateTime dtDocDate;
                     if (dsList.Tables[0].Rows[0]["max_date"].ToString() != ""
                      && DateTime.TryParse(dsList.Tables[0].Rows[0]["max_date"].ToString(), out dtDocDate))
@@ -696,6 +676,7 @@ namespace ISOStd.Controllers
             }
             return Json(max_date);
         }
+
         //[HttpPost]
         public JsonResult doesEmployeeExist(string Receiver_Name)
         {
@@ -709,6 +690,5 @@ namespace ISOStd.Controllers
 
             return Json(user);
         }
-
     }
 }

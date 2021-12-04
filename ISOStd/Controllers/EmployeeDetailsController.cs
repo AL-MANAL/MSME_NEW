@@ -1,15 +1,13 @@
-﻿using System;
+﻿using ISOStd.Filters;
+using ISOStd.Models;
+using PagedList;
+using System;
 using System.Collections.Generic;
+using System.Data;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using ISOStd.Models;
-using System.Data;
-using System.IO;
-using PagedList;
-using PagedList.Mvc;
-using ISOStd.Filters;
-using Newtonsoft.Json;
 using System.Web.Script.Serialization;
 
 namespace ISOStd.Controllers
@@ -17,7 +15,7 @@ namespace ISOStd.Controllers
     [PreventFromUrl]
     public class EmployeeDetailsController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
+        private clsGlobal objGlobaldata = new clsGlobal();
 
         public EmployeeDetailsController()
         {
@@ -75,7 +73,6 @@ namespace ISOStd.Controllers
         {
             try
             {
-
                 objEmployeeMasterModels.ChartName = form["ChartName"];
 
                 if (file != null && file.ContentLength > 0)
@@ -108,7 +105,6 @@ namespace ISOStd.Controllers
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 }
-
             }
             catch (Exception ex)
             {
@@ -156,7 +152,6 @@ namespace ISOStd.Controllers
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 }
-
             }
             catch (Exception ex)
             {
@@ -179,7 +174,7 @@ namespace ISOStd.Controllers
                 DataSet dsEmployeeList = objGlobaldata.Getdetails(sSqlstmt);
 
                 if (dsEmployeeList.Tables.Count > 0 && dsEmployeeList.Tables[0].Rows.Count > 0)
-                {   
+                {
                     for (int i = 0; i < dsEmployeeList.Tables[0].Rows.Count; i++)
                     {
                         try
@@ -189,7 +184,6 @@ namespace ISOStd.Controllers
                                 chartId = (dsEmployeeList.Tables[0].Rows[i]["chartId"].ToString()),
                                 ChartName = dsEmployeeList.Tables[0].Rows[i]["ChartName"].ToString(),
                                 DocUploadPath = dsEmployeeList.Tables[0].Rows[i]["DocUploadPath"].ToString(),
-
                             };
                             objEmployeeModelList.EmployeeList.Add(objEmployee);
                         }
@@ -208,12 +202,10 @@ namespace ISOStd.Controllers
             }
 
             return View(objEmployeeModelList.EmployeeList.ToList().ToPagedList(page ?? 1, 10000));
-
         }
 
         public ActionResult OrgChartHistory(int? page)
         {
-
             EmployeeMasterModelList objEmployeeModelList = new EmployeeMasterModelList();
             objEmployeeModelList.EmployeeList = new List<EmployeeMasterModels>();
             try
@@ -234,7 +226,6 @@ namespace ISOStd.Controllers
                                     chartId = (dsEmployeeList.Tables[0].Rows[i]["chartId"].ToString()),
                                     ChartName = dsEmployeeList.Tables[0].Rows[i]["ChartName"].ToString(),
                                     DocUploadPath = dsEmployeeList.Tables[0].Rows[i]["DocUploadPath"].ToString(),
-
                                 };
                                 objEmployeeModelList.EmployeeList.Add(objEmployee);
                             }
@@ -246,7 +237,6 @@ namespace ISOStd.Controllers
                         }
                     }
                 }
-
             }
             catch (Exception ex)
             {
@@ -260,33 +250,27 @@ namespace ISOStd.Controllers
         {
             try
             {
+                if (form["chartId"] != null && form["chartId"] != "")
+                {
+                    EmployeeMasterModels chart = new EmployeeMasterModels();
+                    string schartId = form["chartId"];
 
-               
-                    if (form["chartId"] != null && form["chartId"] != "")
+                    if (chart.FunDeleteChart(schartId))
                     {
-
-                        EmployeeMasterModels chart = new EmployeeMasterModels();
-                        string schartId = form["chartId"];
-
-
-                        if (chart.FunDeleteChart(schartId))
-                        {
-                            TempData["Successdata"] = "Chart details deleted successfully";
-                            return Json("Success");
-                        }
-                        else
-                        {
-                            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                            return Json("Failed");
-                        }
+                        TempData["Successdata"] = "Chart details deleted successfully";
+                        return Json("Success");
                     }
                     else
                     {
-                        TempData["alertdata"] = "Chart Id cannot be Null or empty";
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                         return Json("Failed");
                     }
-               
-
+                }
+                else
+                {
+                    TempData["alertdata"] = "Chart Id cannot be Null or empty";
+                    return Json("Failed");
+                }
             }
             catch (Exception ex)
             {
@@ -310,7 +294,7 @@ namespace ISOStd.Controllers
                 ViewBag.DeptHeadList = objGlobaldata.GetDeptHeadList("");
                 //ViewBag.CustomerList = objGlobaldata.GetCustomerListbox();
                 ViewBag.Division = objGlobaldata.GetCompanyBranchListbox();
-                ViewBag.YesNo = objGlobaldata.GetConstantValue("YesNo");                
+                ViewBag.YesNo = objGlobaldata.GetConstantValue("YesNo");
                 ViewBag.Roles = objGlobaldata.GetRoles();
                 ViewBag.EmploymentType = objGlobaldata.GetDropdownList("Employment Type");
                 ViewBag.Qualification = objGlobaldata.GetDropdownList("Employee Qualification");
@@ -347,7 +331,6 @@ namespace ISOStd.Controllers
 
             return Json(user);
         }
-
 
         //Used In Add Page
         public JsonResult doesEmailExist(string EmailId)
@@ -469,7 +452,6 @@ namespace ISOStd.Controllers
                 {
                     try
                     {
-
                         string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/Employee"), Path.GetFileName(JobDesc.FileName));
                         string sFilename = objEmployeeModel.emp_firstname + "_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath);
                         string sFilepath = Path.GetDirectoryName(spath);
@@ -581,19 +563,18 @@ namespace ISOStd.Controllers
                 FileStream fsSource;
                 FileStream[] fsSource1 = new FileStream[15];
                 string[] sFileName;
-                if(jd_report != "" && jd_report.Contains(","))
-                { 
-                sFileName = jd_report.Split(',');
-                int i = 0;
-                foreach (var file in sFileName)
+                if (jd_report != "" && jd_report.Contains(","))
                 {
-
-                    string filename = Path.GetFileName(file);
-                    fsSource = new FileStream(Server.MapPath(file), FileMode.Open, FileAccess.Read);
-                    fsSource1[i] = fsSource;
-                    i++;
+                    sFileName = jd_report.Split(',');
+                    int i = 0;
+                    foreach (var file in sFileName)
+                    {
+                        string filename = Path.GetFileName(file);
+                        fsSource = new FileStream(Server.MapPath(file), FileMode.Open, FileAccess.Read);
+                        fsSource1[i] = fsSource;
+                        i++;
+                    }
                 }
-            }                 
 
                 if (objEmployeeModel.FunAddEmployeeMaster(objEmployeeModel, fsSource1))
                 {
@@ -668,12 +649,8 @@ namespace ISOStd.Controllers
                 sSqlstmt = sSqlstmt + sSearchtext + " order by emp_firstname";
                 DataSet dsEmployeeList = objGlobaldata.Getdetails(sSqlstmt);
 
-
                 if (dsEmployeeList.Tables.Count > 0 && dsEmployeeList.Tables[0].Rows.Count > 0)
                 {
-
-                   
-
                     for (int i = 0; i < dsEmployeeList.Tables[0].Rows.Count; i++)
                     {
                         try
@@ -803,9 +780,9 @@ namespace ISOStd.Controllers
 
                 sSqlstmt = sSqlstmt + sSearchtext + " order by emp_firstname";
                 DataSet dsEmployeeList = objGlobaldata.Getdetails(sSqlstmt);
-                
+
                 if (dsEmployeeList.Tables.Count > 0 && dsEmployeeList.Tables[0].Rows.Count > 0)
-                { 
+                {
                     for (int i = 0; i < dsEmployeeList.Tables[0].Rows.Count; i++)
                     {
                         try
@@ -887,7 +864,6 @@ namespace ISOStd.Controllers
             }
             return Json("Success");
         }
-        
 
         [AllowAnonymous]
         public ActionResult AllEmployeesList(string SearchText, int? page)
@@ -895,7 +871,7 @@ namespace ISOStd.Controllers
             EmployeeMasterModelList objEmployeeModelList = new EmployeeMasterModelList();
             objEmployeeModelList.EmployeeList = new List<EmployeeMasterModels>();
             try
-            {              
+            {
                 string sSqlstmt = "select emp_no, emp_id, emp_lastname, emp_firstname, emp_middlename, Nationaliity, Designation,"
                     + " Gender,  Marital_status, "
                         + "EmailId, MobileNo, UID_no, Visa_Type, Visa_no, Visa_stamped_on, Eid_no, Emp_info_no, Passport_no, Passport_expiry, Labour_cardno, "
@@ -903,9 +879,9 @@ namespace ISOStd.Controllers
                         + " Emp_work_location, Emp_accomodation, Date_of_join, Date_of_exit, Basic_Salary, Acc_allow, Other_allow, Gratuity, Remarks, Custody_Documents,"
                         + " Date_of_Birth, dept_id, Food_allow, Transport_allow, JobDesc, EvaluatedBy, CompetancyFromDate, CompetancyToDate, CompetancyDoc,visa_Exp_date,DeptInCharge,division,Role"
                         + " from t_hr_employee where emp_status=1 order by emp_firstname";
-               
+
                 DataSet dsEmployeeList = objGlobaldata.Getdetails(sSqlstmt);
-                
+
                 if (dsEmployeeList.Tables.Count > 0 && dsEmployeeList.Tables[0].Rows.Count > 0)
                 {
                     for (int i = 0; i < dsEmployeeList.Tables[0].Rows.Count; i++)
@@ -1156,9 +1132,9 @@ namespace ISOStd.Controllers
                             HealthCardUpload = dsEmployeeList.Tables[0].Rows[0]["HealthCardUpload"].ToString(),
                             Visa_upload = dsEmployeeList.Tables[0].Rows[0]["Visa_upload"].ToString(),
                             DeptInCharge = dsEmployeeList.Tables[0].Rows[0]["DeptInCharge"].ToString(),
-                            division =objGlobaldata.GetCompanyBranchNameById(dsEmployeeList.Tables[0].Rows[0]["division"].ToString()),
+                            division = objGlobaldata.GetCompanyBranchNameById(dsEmployeeList.Tables[0].Rows[0]["division"].ToString()),
                             Role = objGlobaldata.GetMultiRoleById(dsEmployeeList.Tables[0].Rows[0]["Role"].ToString()),
-                            employment_type =objGlobaldata.GetDropdownitemById(dsEmployeeList.Tables[0].Rows[0]["employment_type"].ToString()),
+                            employment_type = objGlobaldata.GetDropdownitemById(dsEmployeeList.Tables[0].Rows[0]["employment_type"].ToString()),
                             qualification = objGlobaldata.GetDropdownitemById(dsEmployeeList.Tables[0].Rows[0]["qualification"].ToString()),
                             years_exp = dsEmployeeList.Tables[0].Rows[0]["years_exp"].ToString(),
                         };
@@ -1229,7 +1205,6 @@ namespace ISOStd.Controllers
                         {
                             objEmployee.Date_of_Birth = dateValue;
                         }
-
 
                         if (DateTime.TryParse(dsEmployeeList.Tables[0].Rows[0]["CompetancyFromDate"].ToString(), out dateValue))
                         {
@@ -1430,7 +1405,7 @@ namespace ISOStd.Controllers
                         {
                             objEmployee.HealthCardExpDate = dateValue;
                         }
-                        
+
                         ViewBag.Location = objGlobaldata.GetDivisionLocationList(dsEmployeeList.Tables[0].Rows[0]["division"].ToString());
                         ViewBag.DeptList = objGlobaldata.GetDepartmentListbox(dsEmployeeList.Tables[0].Rows[0]["division"].ToString());//GetDepartmentList();
                         ViewBag.Visa_Type = objGlobaldata.GetConstantValue("Visa_Type");
@@ -1438,12 +1413,12 @@ namespace ISOStd.Controllers
                         ViewBag.Gender = objGlobaldata.GetConstantValue("Gender");
                         ViewBag.DeptHeadList = objGlobaldata.GetDeptHeadList("");
                         //ViewBag.CustomerList = objGlobaldata.GetCustomerListbox();
-                         ViewBag.YesNo = objGlobaldata.GetConstantValue("YesNo");
+                        ViewBag.YesNo = objGlobaldata.GetConstantValue("YesNo");
                         ViewBag.Division = objGlobaldata.GetCompanyBranchListbox();
                         ViewBag.Roles = objGlobaldata.GetRoles();
                         ViewBag.EmploymentType = objGlobaldata.GetDropdownList("Employment Type");
                         ViewBag.Qualification = objGlobaldata.GetDropdownList("Employee Qualification");
-                        return View(objEmployee); 
+                        return View(objEmployee);
                     }
                     else
                     {
@@ -1474,7 +1449,6 @@ namespace ISOStd.Controllers
         {
             try
             {
-
                 objEmployeeModel.emp_no = form["emp_no"];
                 objEmployeeModel.dept_id = form["DeptID"];
                 objEmployeeModel.Emp_work_location = form["Emp_work_location"];
@@ -1544,7 +1518,6 @@ namespace ISOStd.Controllers
                     objEmployeeModel.CompetancyToDate = dateValue;
                 }
 
-
                 objEmployeeModel.EvaluatedBy = form["EvaluatedBy"];
 
                 if (ProfilePic != null && ProfilePic.ContentLength > 0)
@@ -1569,7 +1542,6 @@ namespace ISOStd.Controllers
                 {
                     try
                     {
-
                         string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/Employee"), Path.GetFileName(JobDesc.FileName));
                         string sFilename = objEmployeeModel.emp_firstname + "_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath);
                         string sFilepath = Path.GetDirectoryName(spath);
@@ -1682,7 +1654,6 @@ namespace ISOStd.Controllers
                 //    objEmployeeModel.Visa_Type = form["Visa_Type"];
                 //}
 
-
                 if (objEmployeeModel.FunUpdateEmployeeMaster(objEmployeeModel))
                 {
                     TempData["Successdata"] = "Employee details updated successfully";
@@ -1705,7 +1676,6 @@ namespace ISOStd.Controllers
         public ActionResult EmployeeDelete(FormCollection form)
         {
             string sEmp_no = form["emp_no"];
-
 
             if (sEmp_no != "")
             {
@@ -1751,7 +1721,6 @@ namespace ISOStd.Controllers
                         objEmployee = new EmployeeDependentModels
                         {
                             emp_no = Convert.ToInt32(dsEmpDepList.Tables[0].Rows[0]["emp_no"].ToString()),
-
                         };
                         return View(objEmployee);
                     }
@@ -1777,10 +1746,8 @@ namespace ISOStd.Controllers
         {
             try
             {
-
                 EmployeeDependentModelsList lstemp = new EmployeeDependentModelsList();
                 lstemp.EmpDepList = new List<EmployeeDependentModels>();
-
 
                 for (int i = 0; i < Convert.ToInt16(form["itemcnt"]); i++)
                 {
@@ -1826,7 +1793,6 @@ namespace ISOStd.Controllers
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 }
-
             }
             catch (Exception ex)
             {
@@ -1871,7 +1837,6 @@ namespace ISOStd.Controllers
                         objEmployee = new EmployeePassModels
                         {
                             emp_no = Convert.ToInt32(dsEmpDepList.Tables[0].Rows[0]["emp_no"].ToString()),
-
                         };
                         return View(objEmployee);
                     }
@@ -1897,7 +1862,6 @@ namespace ISOStd.Controllers
         {
             try
             {
-
                 EmployeePassModelsList lstemp = new EmployeePassModelsList();
                 lstemp.EmpPassList = new List<EmployeePassModels>();
 
@@ -1906,17 +1870,17 @@ namespace ISOStd.Controllers
                     EmployeePassModels objEmpPass = new EmployeePassModels();
                     DateTime dateValues;
                     if (form["PassType" + i] != null && form["Upload" + i] != null)
-                    { 
-                    objEmpPass.PassType = form["PassType" + i];
-                    objEmpPass.Upload = form["Upload" + i];
-
-                    if (DateTime.TryParse(form["ExpDate" + i], out dateValues) == true)
                     {
-                        objEmpPass.ExpDate = dateValues;
-                    }
+                        objEmpPass.PassType = form["PassType" + i];
+                        objEmpPass.Upload = form["Upload" + i];
 
-                    lstemp.EmpPassList.Add(objEmpPass);
-                   }
+                        if (DateTime.TryParse(form["ExpDate" + i], out dateValues) == true)
+                        {
+                            objEmpPass.ExpDate = dateValues;
+                        }
+
+                        lstemp.EmpPassList.Add(objEmpPass);
+                    }
                 }
 
                 if (objEmp.FunAddEmpPassDetails(objEmp, lstemp))
@@ -1927,7 +1891,6 @@ namespace ISOStd.Controllers
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 }
-
             }
             catch (Exception ex)
             {
@@ -1941,7 +1904,6 @@ namespace ISOStd.Controllers
         [AllowAnonymous]
         public ActionResult EmployeePassList(string SearchText, int? page)
         {
-
             EmployeePassModelsList Emplst = new EmployeePassModelsList();
             Emplst.EmpPassList = new List<EmployeePassModels>();
 
@@ -1955,8 +1917,6 @@ namespace ISOStd.Controllers
                     DataSet dsEmployeeList = objGlobaldata.Getdetails(sSqlstmt);
                     if (dsEmployeeList.Tables.Count > 0 && dsEmployeeList.Tables[0].Rows.Count > 0)
                     {
-
-
                         for (int i = 0; i < dsEmployeeList.Tables[0].Rows.Count; i++)
                         {
                             try
@@ -1967,7 +1927,6 @@ namespace ISOStd.Controllers
                                     emp_no = Convert.ToInt32(dsEmployeeList.Tables[0].Rows[i]["emp_no"].ToString()),
                                     PassType = objGlobaldata.GetDropdownitemById(dsEmployeeList.Tables[0].Rows[i]["PassType"].ToString()),
                                     Upload = dsEmployeeList.Tables[0].Rows[i]["Upload"].ToString(),
-
                                 };
 
                                 DateTime dtDate;
@@ -2003,7 +1962,6 @@ namespace ISOStd.Controllers
         [AllowAnonymous]
         public ActionResult EmployeePassEdit()
         {
-
             EmployeePassModels objEmp = new EmployeePassModels();
 
             try
@@ -2017,14 +1975,12 @@ namespace ISOStd.Controllers
                     DataSet dsEmployeeList = objGlobaldata.Getdetails(sSqlstmt);
                     if (dsEmployeeList.Tables.Count > 0 && dsEmployeeList.Tables[0].Rows.Count > 0)
                     {
-
                         objEmp = new EmployeePassModels
                         {
                             id_pass = Convert.ToInt32(dsEmployeeList.Tables[0].Rows[0]["id_pass"].ToString()),
                             emp_no = Convert.ToInt32(dsEmployeeList.Tables[0].Rows[0]["emp_no"].ToString()),
                             PassType = objGlobaldata.GetDropdownitemById(dsEmployeeList.Tables[0].Rows[0]["PassType"].ToString()),
                             Upload = dsEmployeeList.Tables[0].Rows[0]["Upload"].ToString(),
-
                         };
                         DateTime dtDate;
                         if (DateTime.TryParse(dsEmployeeList.Tables[0].Rows[0]["ExpDate"].ToString(), out dtDate))
@@ -2034,14 +1990,12 @@ namespace ISOStd.Controllers
                     }
                     else
                     {
-
                         TempData["alertdata"] = "PassID cannot be Null or empty";
                         return RedirectToAction("EmployeeList");
                     }
                 }
                 else
                 {
-
                     TempData["alertdata"] = "PassID cannot be Null or empty";
                     return RedirectToAction("EmployeeList");
                 }
@@ -2113,31 +2067,26 @@ namespace ISOStd.Controllers
             string semp_no = form["emp_no"];
             try
             {
+                if (form["id_pass"] != null && form["id_pass"] != "")
+                {
+                    EmployeePassModels obj = new EmployeePassModels();
+                    string sid_pass = form["id_pass"];
 
-                   if (form["id_pass"] != null && form["id_pass"] != "")
+                    if (obj.FunDeletePass(sid_pass))
                     {
-
-                        EmployeePassModels obj = new EmployeePassModels();
-                        string sid_pass = form["id_pass"];
-
-                        if (obj.FunDeletePass(sid_pass))
-                        {
-                            TempData["Successdata"] = "Pass details deleted successfully";
-
-                        }
-                        else
-                        {
-                            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                            return Json("Success");
-                        }
-                   
+                        TempData["Successdata"] = "Pass details deleted successfully";
+                    }
+                    else
+                    {
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                        return Json("Success");
+                    }
                 }
                 else
                 {
                     TempData["alertdata"] = "Access Denied";
                     return Json("Failed");
                 }
-
             }
             catch (Exception ex)
             {
@@ -2152,31 +2101,26 @@ namespace ISOStd.Controllers
             string semp_no = form["emp_no"];
             try
             {
+                if (form["id_hr_emp_dependents"] != null && form["id_hr_emp_dependents"] != "")
+                {
+                    EmployeePassModels obj = new EmployeePassModels();
+                    string id_hr_emp_dependents = form["id_hr_emp_dependents"];
 
-                 if (form["id_hr_emp_dependents"] != null && form["id_hr_emp_dependents"] != "")
+                    if (obj.FunDeleteDependents(id_hr_emp_dependents))
                     {
-
-                        EmployeePassModels obj = new EmployeePassModels();
-                        string id_hr_emp_dependents = form["id_hr_emp_dependents"];
-
-                        if (obj.FunDeleteDependents(id_hr_emp_dependents))
-                        {
-                            TempData["Successdata"] = "Details deleted successfully";
-
-                        }
-                        else
-                        {
-                            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                            return Json("Success");
-                        }
+                        TempData["Successdata"] = "Details deleted successfully";
                     }
                     else
                     {
-                        TempData["alertdata"] = "Id cannot be Null or empty";
-                        return Json("Failed");
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                        return Json("Success");
                     }
-               
-
+                }
+                else
+                {
+                    TempData["alertdata"] = "Id cannot be Null or empty";
+                    return Json("Failed");
+                }
             }
             catch (Exception ex)
             {
@@ -2186,11 +2130,9 @@ namespace ISOStd.Controllers
             return Json("Failed");
         }
 
-
         [AllowAnonymous]
         public ActionResult EmployeeDependentList(string SearchText, int? page)
         {
-
             EmployeeDependentModelsList Emplst = new EmployeeDependentModelsList();
             Emplst.EmpDepList = new List<EmployeeDependentModels>();
 
@@ -2203,8 +2145,7 @@ namespace ISOStd.Controllers
 
                     DataSet dsEmployeeList = objGlobaldata.Getdetails(sSqlstmt);
                     if (dsEmployeeList.Tables.Count > 0 && dsEmployeeList.Tables[0].Rows.Count > 0)
-                    {                     
-
+                    {
                         for (int i = 0; i < dsEmployeeList.Tables[0].Rows.Count; i++)
                         {
                             try
@@ -2216,7 +2157,7 @@ namespace ISOStd.Controllers
                                     FirstName = (dsEmployeeList.Tables[0].Rows[i]["FirstName"].ToString()),
                                     LastName = dsEmployeeList.Tables[0].Rows[i]["LastName"].ToString(),
                                     Gender = dsEmployeeList.Tables[0].Rows[i]["Gender"].ToString(),
-                                    Relationship =objGlobaldata.GetDropdownitemById(dsEmployeeList.Tables[0].Rows[i]["Relationship"].ToString()),
+                                    Relationship = objGlobaldata.GetDropdownitemById(dsEmployeeList.Tables[0].Rows[i]["Relationship"].ToString()),
                                     PassportNo = dsEmployeeList.Tables[0].Rows[i]["PassportNo"].ToString(),
                                     EIDNo = dsEmployeeList.Tables[0].Rows[i]["EIDNo"].ToString(),
                                     HealthInsProvider = dsEmployeeList.Tables[0].Rows[i]["HealthInsProvider"].ToString(),
@@ -2271,7 +2212,6 @@ namespace ISOStd.Controllers
 
         public ActionResult EmployeeDependentsEdit()
         {
-
             EmployeeDependentModels objEmp = new EmployeeDependentModels();
 
             try
@@ -2286,7 +2226,6 @@ namespace ISOStd.Controllers
                     DataSet dsEmployeeList = objGlobaldata.Getdetails(sSqlstmt);
                     if (dsEmployeeList.Tables.Count > 0 && dsEmployeeList.Tables[0].Rows.Count > 0)
                     {
-
                         objEmp = new EmployeeDependentModels
                         {
                             id_hr_emp_dependents = Convert.ToInt32(dsEmployeeList.Tables[0].Rows[0]["id_hr_emp_dependents"].ToString()),
@@ -2324,14 +2263,12 @@ namespace ISOStd.Controllers
                     }
                     else
                     {
-
                         TempData["alertdata"] = "ID cannot be Null or empty";
                         return RedirectToAction("EmployeeList");
                     }
                 }
                 else
                 {
-
                     TempData["alertdata"] = "ID cannot be Null or empty";
                     return RedirectToAction("EmployeeList");
                 }
@@ -2362,44 +2299,43 @@ namespace ISOStd.Controllers
         {
             try
             {
-               
-                    DateTime dateValues;
-                    objEmp.FirstName = form["FirstName"];
-                    objEmp.LastName = form["LastName"];
-                    objEmp.Gender = form["Gender"];
-                    objEmp.Relationship = form["Relationship"];
-                    objEmp.PassportNo = form["PassportNo"];
-                    objEmp.VisaNo = form["VisaNo"];
-                    objEmp.EIDNo = form["EIDNo"];
-                    objEmp.HealthInsProvider = form["HealthInsProvider"];
-                    if (DateTime.TryParse(form["DOB"], out dateValues) == true)
-                    {
-                        objEmp.DOB = dateValues;
-                    }
-                    if (DateTime.TryParse(form["PassportExpDate"], out dateValues) == true)
-                    {
-                        objEmp.PassportExpDate = dateValues;
-                    }
-                    if (DateTime.TryParse(form["EIDExpDate"], out dateValues) == true)
-                    {
-                        objEmp.EIDExpDate = dateValues;
-                    }
-                    if (DateTime.TryParse(form["HealthInsExp"], out dateValues) == true)
-                    {
-                        objEmp.HealthInsExp = dateValues;
-                    }
-                   if (DateTime.TryParse(form["VisaExpDate"], out dateValues) == true)
-                   {
-                      objEmp.VisaExpDate = dateValues;
-                   }
+                DateTime dateValues;
+                objEmp.FirstName = form["FirstName"];
+                objEmp.LastName = form["LastName"];
+                objEmp.Gender = form["Gender"];
+                objEmp.Relationship = form["Relationship"];
+                objEmp.PassportNo = form["PassportNo"];
+                objEmp.VisaNo = form["VisaNo"];
+                objEmp.EIDNo = form["EIDNo"];
+                objEmp.HealthInsProvider = form["HealthInsProvider"];
+                if (DateTime.TryParse(form["DOB"], out dateValues) == true)
+                {
+                    objEmp.DOB = dateValues;
+                }
+                if (DateTime.TryParse(form["PassportExpDate"], out dateValues) == true)
+                {
+                    objEmp.PassportExpDate = dateValues;
+                }
+                if (DateTime.TryParse(form["EIDExpDate"], out dateValues) == true)
+                {
+                    objEmp.EIDExpDate = dateValues;
+                }
+                if (DateTime.TryParse(form["HealthInsExp"], out dateValues) == true)
+                {
+                    objEmp.HealthInsExp = dateValues;
+                }
+                if (DateTime.TryParse(form["VisaExpDate"], out dateValues) == true)
+                {
+                    objEmp.VisaExpDate = dateValues;
+                }
                 if (objEmp.FunUpdateEmpDependant(objEmp))
-                    {
-                        TempData["Successdata"] = "Employee Dependent details updated successfully";
-                    }
-                    else
-                    {
-                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                    }
+                {
+                    TempData["Successdata"] = "Employee Dependent details updated successfully";
+                }
+                else
+                {
+                    TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                }
             }
             catch (Exception ex)
             {
@@ -2449,8 +2385,7 @@ namespace ISOStd.Controllers
                 sSqlstmt = sSqlstmt + sSearchtext + " order by emp_firstname";
                 DataSet dsEmployeeList = objGlobaldata.Getdetails(sSqlstmt);
                 if (dsEmployeeList.Tables.Count > 0 && dsEmployeeList.Tables[0].Rows.Count > 0)
-                {                
-
+                {
                     for (int i = 0; i < dsEmployeeList.Tables[0].Rows.Count; i++)
                     {
                         try
@@ -2495,7 +2430,6 @@ namespace ISOStd.Controllers
             return View(objEmployeeModelList.EmployeeList.ToList());
         }
 
-
         [AllowAnonymous]
         public JsonResult ExitEmployeeListSearch(string SearchText, int? page, string Department, string branch_name)
         {
@@ -2537,9 +2471,6 @@ namespace ISOStd.Controllers
                 DataSet dsEmployeeList = objGlobaldata.Getdetails(sSqlstmt);
                 if (dsEmployeeList.Tables.Count > 0 && dsEmployeeList.Tables[0].Rows.Count > 0)
                 {
-
-                  
-
                     for (int i = 0; i < dsEmployeeList.Tables[0].Rows.Count; i++)
                     {
                         try
@@ -2558,7 +2489,6 @@ namespace ISOStd.Controllers
                                 Emp_work_location = objGlobaldata.GetDivisionLocationById(dsEmployeeList.Tables[0].Rows[i]["Emp_work_location"].ToString()),
                                 Gender = dsEmployeeList.Tables[0].Rows[i]["Gender"].ToString(),
                             };
-
 
                             DateTime dtDate;
                             if (DateTime.TryParse(dsEmployeeList.Tables[0].Rows[i]["Date_of_exit"].ToString(), out dtDate))
@@ -2583,7 +2513,6 @@ namespace ISOStd.Controllers
             }
             return Json("Success");
         }
-
 
         //Customer Visit
 
@@ -2610,7 +2539,6 @@ namespace ISOStd.Controllers
             ViewBag.SubMenutype = "Visitor";
             try
             {
-
                 DateTime dateValue;
 
                 if (DateTime.TryParse(form["visit_date"], out dateValue) == true)
@@ -2619,7 +2547,6 @@ namespace ISOStd.Controllers
                 }
 
                 //objCustomerVisitModels.Branch = form["Branch"];
-
 
                 if (file != null && file.ContentLength > 0)
                 {
@@ -2643,7 +2570,6 @@ namespace ISOStd.Controllers
                 {
                     ViewBag.Message = "You have not specified a file.";
                 }
-
 
                 if (objVisitor.FunAddVisitors(objVisitor))
                 {
@@ -2689,7 +2615,6 @@ namespace ISOStd.Controllers
                         sSearchtext = sSearchtext + " and (firstname ='" + SearchText + "' or firstname like '%" + SearchText + "%' or lastname ='" + SearchText + "' or lastname like '%" + SearchText + "%')";
                     }
 
-
                     if (hse_ind != null && hse_ind != "" && hse_ind != "Select")
                     {
                         ViewBag.HSEIND = hse_ind;
@@ -2701,10 +2626,8 @@ namespace ISOStd.Controllers
                         else
                         {
                             sSearchtext = " and (hse_ind ='" + hse_ind + "')";
-
                         }
                     }
-
                 }
                 else
                 {
@@ -2727,9 +2650,6 @@ namespace ISOStd.Controllers
                 {
                     try
                     {
-
-                     
-
                         VisitorsModels objVisitor = new VisitorsModels
                         {
                             id_visitors = dsVisitors.Tables[0].Rows[i]["id_visitors"].ToString(),
@@ -2766,7 +2686,6 @@ namespace ISOStd.Controllers
             }
 
             return View(objVisitorList.VisiorList.ToList());
-
         }
 
         [AllowAnonymous]
@@ -2796,7 +2715,6 @@ namespace ISOStd.Controllers
                         sSearchtext = sSearchtext + " and (firstname ='" + SearchText + "' or firstname like '%" + SearchText + "%' or lastname ='" + SearchText + "' or lastname like '%" + SearchText + "%')";
                     }
 
-
                     if (hse_ind != null && hse_ind != "" && hse_ind != "Select")
                     {
                         ViewBag.HSEIND = hse_ind;
@@ -2808,10 +2726,8 @@ namespace ISOStd.Controllers
                         else
                         {
                             sSearchtext = " and (hse_ind ='" + hse_ind + "')";
-
                         }
                     }
-
                 }
                 else
                 {
@@ -2834,9 +2750,6 @@ namespace ISOStd.Controllers
                 {
                     try
                     {
-
-
-
                         VisitorsModels objVisitor = new VisitorsModels
                         {
                             id_visitors = dsVisitors.Tables[0].Rows[i]["id_visitors"].ToString(),
@@ -2912,7 +2825,6 @@ namespace ISOStd.Controllers
                         }
 
                         return View(objVisitor);
-
                     }
                     else
                     {
@@ -2942,7 +2854,6 @@ namespace ISOStd.Controllers
             ViewBag.SubMenutype = "Visitor";
             try
             {
-
                 DateTime dateValue;
 
                 if (DateTime.TryParse(form["visit_date"], out dateValue) == true)
@@ -2992,31 +2903,28 @@ namespace ISOStd.Controllers
         public JsonResult VisitorDelete(FormCollection form)
         {
             try
-            {            
-                    if (form["id_visitors"] != null && form["id_visitors"] != "")
+            {
+                if (form["id_visitors"] != null && form["id_visitors"] != "")
+                {
+                    VisitorsModels Doc = new VisitorsModels();
+                    string sid_visitors = form["id_visitors"];
+
+                    if (Doc.FunDeleteVisitors(sid_visitors))
                     {
-
-                        VisitorsModels Doc = new VisitorsModels();
-                        string sid_visitors = form["id_visitors"];
-
-
-                        if (Doc.FunDeleteVisitors(sid_visitors))
-                        {
-                            TempData["Successdata"] = "Document deleted successfully";
-                            return Json("Success");
-                        }
-                        else
-                        {
-                            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                            return Json("Failed");
-                        }
+                        TempData["Successdata"] = "Document deleted successfully";
+                        return Json("Success");
                     }
                     else
                     {
-                        TempData["alertdata"] = "Customer Visit Id cannot be Null or empty";
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                         return Json("Failed");
                     }
-               
+                }
+                else
+                {
+                    TempData["alertdata"] = "Customer Visit Id cannot be Null or empty";
+                    return Json("Failed");
+                }
             }
             catch (Exception ex)
             {
@@ -3026,11 +2934,10 @@ namespace ISOStd.Controllers
             return Json("Failed");
         }
 
-        
         public ActionResult FunGetDeptList(string branch)
-        {     
-               MultiSelectList  lstDept = objGlobaldata.GetDepartmentListbox(branch);
-               return Json(lstDept);
+        {
+            MultiSelectList lstDept = objGlobaldata.GetDepartmentListbox(branch);
+            return Json(lstDept);
         }
 
         public ActionResult FunGetLocationList(string division)
@@ -3044,8 +2951,8 @@ namespace ISOStd.Controllers
         {
             string Division = "";
             if (branch != null)
-            { 
-              Division = string.Join(",", branch);
+            {
+                Division = string.Join(",", branch);
             }
             MultiSelectList lstDept = objGlobaldata.GetDepartmentList1(Division);
             return Json(lstDept);
@@ -3061,10 +2968,10 @@ namespace ISOStd.Controllers
             }
             MultiSelectList LocList = objGlobaldata.GetLocationbyMultiDivision(Division);
             return Json(LocList);
-        }       
+        }
 
         public ActionResult FunGetEmpBydept(string dept)
-        { 
+        {
             MultiSelectList LocList = objGlobaldata.GetHrEmpListByDept(dept);
             return Json(LocList);
         }
@@ -3093,17 +3000,17 @@ namespace ISOStd.Controllers
         }
 
         //public ActionResult FunGetAllRoleList(string branch,string role)
-        //{            
+        //{
         //    MultiSelectList lstDept = objGlobaldata.GetDepartmentList1(branch,,role);
         //    return Json(lstDept);
         //}
 
-        BranchModelsList printSeries(int m, int level, DataSet dsList, BranchModelsList objBranchModelList, BranchModels objModels)
+        private BranchModelsList printSeries(int m, int level, DataSet dsList, BranchModelsList objBranchModelList, BranchModels objModels)
         {
-            int  count = 0;
+            int count = 0;
             for (int i = 0; i < dsList.Tables[0].Rows.Count; i++)
             {
-                if (m ==Convert.ToInt32(dsList.Tables[0].Rows[i]["parent_level"].ToString()))
+                if (m == Convert.ToInt32(dsList.Tables[0].Rows[i]["parent_level"].ToString()))
                 {
                     bool value = objBranchModelList.BranchList.Exists(item => item.id == dsList.Tables[0].Rows[i]["id"].ToString());
                     if (!value)
@@ -3118,47 +3025,44 @@ namespace ISOStd.Controllers
 
                         level = Convert.ToInt32(dsList.Tables[0].Rows[i]["parent_level"].ToString());
 
-                      return  objBranchModelList=printSeries(Convert.ToInt32(dsList.Tables[0].Rows[i]["id"].ToString()), level, dsList, objBranchModelList, objModels);
-                    }                    
-                }              
-                    count++;               
+                        return objBranchModelList = printSeries(Convert.ToInt32(dsList.Tables[0].Rows[i]["id"].ToString()), level, dsList, objBranchModelList, objModels);
+                    }
+                }
+                count++;
             }
 
             if (level - 1 >= 0)
             {
-                objBranchModelList=printSeries(Convert.ToInt32(dsList.Tables[0].Rows[level - 1]["id"].ToString()), Convert.ToInt32(dsList.Tables[0].Rows[level - 1]["parent_level"].ToString()), dsList, objBranchModelList, objModels);
-            }            
-                return objBranchModelList;            
+                objBranchModelList = printSeries(Convert.ToInt32(dsList.Tables[0].Rows[level - 1]["id"].ToString()), Convert.ToInt32(dsList.Tables[0].Rows[level - 1]["parent_level"].ToString()), dsList, objBranchModelList, objModels);
+            }
+            return objBranchModelList;
         }
 
         public ActionResult FunGetBranchList()
         {
-           
             DataSet dsList = new DataSet();
             BranchModelsList objBranchModelList = new BranchModelsList();
             objBranchModelList.BranchList = new List<BranchModels>();
             BranchModels objModels = new BranchModels();
             try
             {
-
                 string sSqlstmt = "select id,BranchName as text,parent_level,level_step from t_company_branch where Active=1 order by parent_level asc";
 
                 dsList = objGlobaldata.Getdetails(sSqlstmt);
                 for (int i = 0; i < dsList.Tables[0].Rows.Count; i++)
                 {
-
                     if (dsList.Tables[0].Rows[i]["id"].ToString() == "1")
                     {
-                    objModels = new BranchModels
-                           {
-                               id = (dsList.Tables[0].Rows[i]["id"].ToString()),
-                               text = (dsList.Tables[0].Rows[i]["text"].ToString()),
-                               level_step = (dsList.Tables[0].Rows[i]["level_step"].ToString())
-                           };
-                    objBranchModelList.BranchList.Add(objModels);
+                        objModels = new BranchModels
+                        {
+                            id = (dsList.Tables[0].Rows[i]["id"].ToString()),
+                            text = (dsList.Tables[0].Rows[i]["text"].ToString()),
+                            level_step = (dsList.Tables[0].Rows[i]["level_step"].ToString())
+                        };
+                        objBranchModelList.BranchList.Add(objModels);
                     }
                 }
-                objBranchModelList=printSeries(Convert.ToInt32(dsList.Tables[0].Rows[0]["id"].ToString()), 0, dsList, objBranchModelList, objModels);
+                objBranchModelList = printSeries(Convert.ToInt32(dsList.Tables[0].Rows[0]["id"].ToString()), 0, dsList, objBranchModelList, objModels);
             }
             catch (Exception ex)
             {
@@ -3169,12 +3073,10 @@ namespace ISOStd.Controllers
             var json = new JavaScriptSerializer().Serialize(objBranchModelList.BranchList);
 
             return Json(json);
-
         }
 
         public JsonResult FunGetEmpDetails(string semp_no)
         {
-
             NCModels objModels = new NCModels();
             try
             {
@@ -3203,6 +3105,5 @@ namespace ISOStd.Controllers
             }
             return Json("");
         }
-                
     }
 }

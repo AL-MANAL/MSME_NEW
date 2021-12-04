@@ -2,14 +2,12 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
-using System.Linq;
-using System.Web;
 
 namespace ISOStd.Models
 {
     public class AccidentReportModels
     {
-        clsGlobal objGlobalData = new clsGlobal();
+        private clsGlobal objGlobalData = new clsGlobal();
 
         [Display(Name = "Id")]
         public string id_accident_rept { get; set; }
@@ -79,7 +77,7 @@ namespace ISOStd.Models
 
         [Display(Name = "Incident Type")]
         public string Incident_Type { get; set; }
-       
+
         [DataType(DataType.MultilineText)]
         [Display(Name = "Immediate actions taken(containment action)")]
         public string Actions_Taken { get; set; }
@@ -114,7 +112,7 @@ namespace ISOStd.Models
                 }
                 sSqlstmt = sSqlstmt + sFields;
                 sSqlstmt = sSqlstmt + ") values('" + objAcc.reported_by + "','" + objAcc.location + "','" + objAcc.details + "'"
-                    + ",'" + objAcc.upload + "','" + objAcc.damage + "','" + objAcc.invest_need + "','" + objAcc.justify + "','" 
+                    + ",'" + objAcc.upload + "','" + objAcc.damage + "','" + objAcc.invest_need + "','" + objAcc.justify + "','"
                     + objGlobalData.GetCurrentUserSession().empid + "','" + objAcc.branch + "','" + objAcc.accident_place + "','" + objAcc.Incident_Type + "','" + objAcc.Actions_Taken + "','" + objAcc.Department + "'";
                 sSqlstmt = sSqlstmt + sFieldValue + ")";
                 int id_accident_rept = 0;
@@ -134,7 +132,6 @@ namespace ISOStd.Models
 
                     if (id_accident_rept > 0)
                     {
-
                         string LocationName = objGlobalData.GetCompanyBranchNameById(sBranch);
                         DataSet dsData = objGlobalData.GetReportNo("ACC", "", LocationName);
                         if (dsData != null && dsData.Tables.Count > 0)
@@ -152,7 +149,6 @@ namespace ISOStd.Models
 
                         return objGlobalData.ExecuteQuery(sql);
                     }
-                    
                 }
                 return false;
             }
@@ -181,7 +177,6 @@ namespace ISOStd.Models
                     + ",'" + objAccTypeList.AccidentList[i].injury_type + "','" + objAccTypeList.AccidentList[i].no_person + "','" + objAccTypeList.AccidentList[i].pers_name + "')"
                     + " ON DUPLICATE KEY UPDATE "
                      + " id_accident_type= values(id_accident_type), id_accident_rept= values(id_accident_rept), injury_type = values(injury_type), no_person= values(no_person), pers_name= values(pers_name) ; ";
-
                 }
 
                 return objGlobalData.ExecuteQuery(sSqlstmt);
@@ -230,7 +225,7 @@ namespace ISOStd.Models
             {
                 string sSqlstmt = "update t_accident_report set reported_by ='" + objAcc.reported_by + "', location='" + objAcc.location + "', "
                     + "details='" + objAcc.details + "',upload='" + objAcc.upload + "',damage='" + objAcc.damage + "',invest_need='" + objAcc.invest_need
-                    + "',justify='" + objAcc.justify + "',accident_place='" + objAcc.accident_place + "',Incident_Type='" + objAcc.Incident_Type 
+                    + "',justify='" + objAcc.justify + "',accident_place='" + objAcc.accident_place + "',Incident_Type='" + objAcc.Incident_Type
                     + "',Actions_Taken='" + objAcc.Actions_Taken + "',branch='" + objAcc.branch + "',Department='" + objAcc.Department + "'";
 
                 if (objAcc.acc_date != null && objAcc.acc_date > Convert.ToDateTime("01/01/0001 00:00:00"))
@@ -255,7 +250,6 @@ namespace ISOStd.Models
                     else
                     {
                         FunUpdateAccidentType(objAcc.id_accident_rept);
-
                     }
                     if (Convert.ToInt32(objAccInfoList.AccidentList.Count) > 0)
                     {
@@ -265,8 +259,8 @@ namespace ISOStd.Models
                     else
                     {
                         FunUpdateAccInformation(objAcc.id_accident_rept);
-                    }                   
-                   
+                    }
+
                     return true;
                 }
                 return false;
@@ -320,7 +314,6 @@ namespace ISOStd.Models
             }
             return false;
         }
-
     }
 
     public class AccidentReportModelsList

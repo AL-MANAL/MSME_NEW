@@ -1,20 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-using ISOStd.Models;
-using System.IO;
+﻿using ISOStd.Models;
+using System;
 using System.Data;
-using ISOStd.Filters;
+using System.Web.Mvc;
 
 namespace ISOStd.Controllers
 {
-
-   
     public class SurveySetupController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
+        private clsGlobal objGlobaldata = new clsGlobal();
 
         // GET: SurveySetup
         public ActionResult SurveySetupWizard()
@@ -32,20 +25,16 @@ namespace ISOStd.Controllers
             if (Step1.Tables[0].Rows.Count > 0 && Step1.Tables[0].Rows.Count < 2)
             {
                 ViewBag.Step1 = Step1.Tables[0].Rows[0]["remote_url"].ToString();
-
             }
 
             if (Step2.Tables[0].Rows.Count > 0 && Step2.Tables[0].Rows.Count < 2)
             {
                 ObjSurveySetupModel.Email = Step2.Tables[0].Rows[0]["user_email"].ToString();
                 ObjSurveySetupModel.Password = Step2.Tables[0].Rows[0]["user_password"].ToString();
-
-
             }
-            if ((ViewBag.Step1 !="" && ViewBag.Step1 !=null) && (ObjSurveySetupModel.Email != "" && ObjSurveySetupModel.Email != null) && (ObjSurveySetupModel.Password != "" && ObjSurveySetupModel.Password != null))
+            if ((ViewBag.Step1 != "" && ViewBag.Step1 != null) && (ObjSurveySetupModel.Email != "" && ObjSurveySetupModel.Email != null) && (ObjSurveySetupModel.Password != "" && ObjSurveySetupModel.Password != null))
             {
                 return RedirectToAction("SurveySetupDetails");
-
             }
             else
             {
@@ -68,14 +57,12 @@ namespace ISOStd.Controllers
             if (Step1.Tables[0].Rows.Count > 0 && Step1.Tables[0].Rows.Count < 2)
             {
                 ObjSurveySetupModel.Cloud = Step1.Tables[0].Rows[0]["remote_url"].ToString();
-
             }
 
             if (Step2.Tables[0].Rows.Count > 0 && Step2.Tables[0].Rows.Count < 2)
             {
                 ObjSurveySetupModel.Email = Step2.Tables[0].Rows[0]["user_email"].ToString();
                 ObjSurveySetupModel.Password = Step2.Tables[0].Rows[0]["user_password"].ToString();
-
             }
             if ((ObjSurveySetupModel.Cloud != "" && ObjSurveySetupModel.Cloud != null) && (ObjSurveySetupModel.Email != "" && ObjSurveySetupModel.Email != null) && (ObjSurveySetupModel.Password != "" && ObjSurveySetupModel.Password != null))
             {
@@ -84,15 +71,10 @@ namespace ISOStd.Controllers
             else
             {
                 return RedirectToAction("SurveySetupWizard");
-
             }
-          
         }
 
-
-
         [HttpPost]
-    
         public ActionResult AddCloud(string cloud)
         {
             SurveySetupModel ObjSurveySetupModel = new SurveySetupModel();
@@ -103,13 +85,11 @@ namespace ISOStd.Controllers
                 {
                     //objEmployeeModel.MailTempPassword(objEmployeeModel.emailAddress);
                     return Json("Success");
-
                 }
                 else
                 {
                     return Json("Failed");
                 }
-
             }
             catch (Exception ex)
             {
@@ -117,14 +97,11 @@ namespace ISOStd.Controllers
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
 
-           return Json("Failed");
+            return Json("Failed");
         }
 
-
-
         [HttpPost]
-
-        public ActionResult AddCredentials(string user,string password)
+        public ActionResult AddCredentials(string user, string password)
         {
             SurveySetupModel ObjSurveySetupModel = new SurveySetupModel();
             ObjSurveySetupModel.Email = user;
@@ -136,13 +113,11 @@ namespace ISOStd.Controllers
                 {
                     //objEmployeeModel.MailTempPassword(objEmployeeModel.emailAddress);
                     return Json("Success");
-
                 }
                 else
                 {
                     return Json("Failed");
                 }
-
             }
             catch (Exception ex)
             {
@@ -153,10 +128,7 @@ namespace ISOStd.Controllers
             return Json("Failed");
         }
 
-
-
         [HttpPost]
-
         public ActionResult DeleteSurvey()
         {
             SurveySetupModel ObjSurveySetupModel = new SurveySetupModel();
@@ -166,13 +138,11 @@ namespace ISOStd.Controllers
                 {
                     //objEmployeeModel.MailTempPassword(objEmployeeModel.emailAddress);
                     return Json("Success");
-
                 }
                 else
                 {
                     return Json("Failed");
                 }
-
             }
             catch (Exception ex)
             {
@@ -182,11 +152,5 @@ namespace ISOStd.Controllers
 
             return Json("Failed");
         }
-
-
-
-
-
-
     }
 }

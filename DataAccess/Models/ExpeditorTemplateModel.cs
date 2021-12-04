@@ -1,16 +1,10 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DataAccess.Models
 {
     public class ExpeditorTemplateModel : ExpeditorTemplate
     {
-        
-
         [JsonIgnore]
         public string ExpectedReceivingDate { get; set; }
 
@@ -35,8 +29,6 @@ namespace DataAccess.Models
         [JsonIgnore]
         public string Supplier_Order { get; set; }
 
-        
-
         [JsonIgnore]
         private DateTime Customer_delivery_date { get; set; }
 
@@ -52,7 +44,8 @@ namespace DataAccess.Models
     {
         public int Id { get; set; }
         public int BatchId { get; set; }
-        public string LineItemAction { get { return "Edit"; } }
+        public string LineItemAction
+        { get { return "Edit"; } }
         public string Company { get; set; }
         public string Division { get; set; }
         public string Area { get; set; }
@@ -75,6 +68,7 @@ namespace DataAccess.Models
         public string Customer_delivery_terms { get; set; }
         public string Customer_nmr_requirements { get; set; }
         public string SupplierPONo { get; set; }
+
         public string SupplierPODate
         {
             get { return this.Supplier_Order_Date != DateTime.MinValue ? Supplier_Order_Date.ToString("yyyy-MM-dd") : string.Empty; }
@@ -92,29 +86,31 @@ namespace DataAccess.Models
 
         [JsonIgnore]
         public string SupplierUnit { get; set; }
-        
+
         public string Supplier_payment_terms { get; set; }
         public string Supplier_delivery_terms { get; set; }
         public string Supplier_nmr_requirements { get; set; }
         public string Saber_requirements { get; set; }
         public string Bill_No { get; set; }
 
-       
         public DateTime bill_date { get; set; }
+
         public string BillDate
         {
             get { return this.bill_date != DateTime.MinValue ? bill_date.ToString("yyyy-MM-dd") : string.Empty; }
             set { bill_date = string.IsNullOrEmpty(value) ? DateTime.MinValue : DateTime.Parse(value); }
         }
+
         public int Bill_Quantity { get; set; }
 
-
         public DateTime eta { get; set; }
+
         public string DisplayETA
         {
             get { return this.eta != DateTime.MinValue ? eta.ToString("yyyy-MM-dd") : string.Empty; }
             set { eta = string.IsNullOrEmpty(value) ? DateTime.MinValue : DateTime.Parse(value); }
         }
+
         public string ShipmentMode { get; set; }
         public string Shipping_Doc_Rect { get; set; }
         public string Shipping_Doc_to_CCL_Dept { get; set; }
@@ -125,18 +121,20 @@ namespace DataAccess.Models
         //    set { prr_date = string.IsNullOrEmpty(value) ? DateTime.MinValue : DateTime.Parse(value); }
         //}
 
-        
         //private DateTime prr_date { get; set; }
 
         public DateTime prr_date { get; set; }
+
         public string PRRDate
         {
             get { return this.prr_date != DateTime.MinValue ? prr_date.ToString("yyyy-MM-dd") : string.Empty; }
             set { prr_date = string.IsNullOrEmpty(value) ? DateTime.MinValue : DateTime.Parse(value); }
         }
+
         public string PRR_No { get; set; }
 
         public DateTime Srv_date { get; set; }
+
         public string SRVDate
         {
             get { return this.Srv_date != DateTime.MinValue ? Srv_date.ToString("yyyy-MM-dd") : string.Empty; }
@@ -149,6 +147,7 @@ namespace DataAccess.Models
         public string Asn_quantity { get; set; }
 
         public string DeliveryStatus { get; set; }
+
         public string Delivery_Status
         {
             get
@@ -176,22 +175,27 @@ namespace DataAccess.Models
                 DeliveryStatus = value;
             }
         }
+
         public string DeliveryNoteNo { get; set; }
 
         public DateTime CustomerReceiptofMaterialGRDate { get; set; }
+
         public string CustomerReceiptofMaterial_GRDate
         {
             get { return this.CustomerReceiptofMaterialGRDate != DateTime.MinValue ? CustomerReceiptofMaterialGRDate.ToString("yyyy-MM-dd") : string.Empty; }
             set { CustomerReceiptofMaterialGRDate = string.IsNullOrEmpty(value) ? DateTime.MinValue : DateTime.Parse(value); }
         }
+
         public string kanoo_invoice_no { get; set; }
 
         public DateTime kanoo_invoice_date { get; set; }
+
         public string Pkanoo_invoice_date
         {
             get { return this.kanoo_invoice_date != DateTime.MinValue ? kanoo_invoice_date.ToString("yyyy-MM-dd") : string.Empty; }
             set { kanoo_invoice_date = string.IsNullOrEmpty(value) ? DateTime.MinValue : DateTime.Parse(value); }
         }
+
         public string FollowUp { get; set; }
         public string Root_cause_of_details { get; set; }
 
@@ -201,6 +205,7 @@ namespace DataAccess.Models
         private DateTime Supplier_Order_Date { get; set; }
 
         public DateTime Supplier_delivery_date { get; set; }
+
         public string PSupplier_delivery_date
         {
             get { return this.Supplier_delivery_date != DateTime.MinValue ? Supplier_delivery_date.ToString("yyyy-MM-dd") : string.Empty; }

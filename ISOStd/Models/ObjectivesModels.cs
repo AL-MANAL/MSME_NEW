@@ -547,18 +547,52 @@ namespace ISOStd.Models
                 }
 
                 sSqlstmt = sSqlstmt + " where Objectives_Id='" + objObjectivesModels.Objectives_Id + "';";
-                sSqlstmt = sSqlstmt + "update t_objectives_trans set  Objectives_val='" + objObjectivesModels.Objectives_val + "', "
-                    + "Obj_Target='" + objObjectivesModels.Obj_Target + "', Base_Line_Value='" + objObjectivesModels.Base_Line_Value
-                    + "', Monitoring_Mechanism='" + objObjectivesModels.Monitoring_Mechanism + "', Target_Date='" + sTarget_Date
-                    + "', Approved_By='" + objObjectivesModels.Approved_By + "', Approved_Status=0 ,ApprovedDate = '0001/01/01', Accepted_Value='" + objObjectivesModels.Accepted_Value + "', Risk_ifObjFails='" + objObjectivesModels.Risk_ifObjFails
-                    + "', baseline_data='" + objObjectivesModels.baseline_data + "', unit='" + objObjectivesModels.unit + "', obj_inline='" + objObjectivesModels.obj_inline + "'";
 
+                sSqlstmt = sSqlstmt + "delete from t_objectives_trans where ObjectivesTrans_Id='" + objObjectivesModels.ObjectivesTrans_Id + "';";
+
+
+
+                sSqlstmt = sSqlstmt + "insert into t_objectives_trans (Objectives_Id,Objectives_val,Obj_Target,Base_Line_Value,Monitoring_Mechanism,Freq_of_Eval,Approved_By,Accepted_Value,Risk_ifObjFails,baseline_data,unit,obj_inline,Obj_Ref";
+
+                string sFields = "", sFieldValue = "";
+
+                if (objObjectivesModels.Obj_Estld_On != null && objObjectivesModels.Obj_Estld_On > Convert.ToDateTime("01/01/0001"))
+                {
+                    sFields = sFields + ", Obj_Estld_On";
+                    sFieldValue = sFieldValue + ", '" + objObjectivesModels.Obj_Estld_On.ToString("yyyy/MM/dd") + "'";
+                }
+                if (objObjectivesModels.Target_Date != null && objObjectivesModels.Target_Date > Convert.ToDateTime("01/01/0001"))
+                {
+                    sFields = sFields + ", Target_Date";
+                    sFieldValue = sFieldValue + ", '" + objObjectivesModels.Target_Date.ToString("yyyy/MM/dd") + "'";
+                }
                 if (objObjectivesModels.Action_Plan != null && objObjectivesModels.Action_Plan != "")
                 {
-                    sSqlstmt = sSqlstmt + ", Action_Plan='" + objObjectivesModels.Action_Plan + "'";
+                    sFields = sFields + ", Action_Plan";
+                    sFieldValue = sFieldValue + ", '" + objObjectivesModels.Action_Plan + "'";
+                    
                 }
 
-                sSqlstmt = sSqlstmt + " where ObjectivesTrans_Id='" + objObjectivesModels.ObjectivesTrans_Id + "'";
+                sSqlstmt = sSqlstmt + sFields;
+                sSqlstmt = sSqlstmt + ") values('" + objObjectivesModels.Objectives_Id + "','" + objObjectivesModels.Objectives_val + "','" + objObjectivesModels.Obj_Target + "','" + objObjectivesModels.Base_Line_Value + "', '" + objObjectivesModels.Monitoring_Mechanism + "', '" + objObjectivesModels.Freq_of_Eval + "'"
+                      + ",'" + objObjectivesModels.Approved_By + "','" + objObjectivesModels.Accepted_Value + "','" + objObjectivesModels.Risk_ifObjFails + "', '" + objObjectivesModels.baseline_data + "', '" + objObjectivesModels.unit + "', '" + objObjectivesModels.obj_inline + "', '" + objObjectivesModels.Obj_Ref + "'";
+
+                sSqlstmt = sSqlstmt + sFieldValue + ")";
+
+
+
+                //sSqlstmt = sSqlstmt + "update t_objectives_trans set  Objectives_val='" + objObjectivesModels.Objectives_val + "', "
+                //    + "Obj_Target='" + objObjectivesModels.Obj_Target + "', Base_Line_Value='" + objObjectivesModels.Base_Line_Value
+                //    + "', Monitoring_Mechanism='" + objObjectivesModels.Monitoring_Mechanism + "', Target_Date='" + sTarget_Date
+                //    + "', Approved_By='" + objObjectivesModels.Approved_By + "', Approved_Status=0 ,ApprovedDate = '0001/01/01', Accepted_Value='" + objObjectivesModels.Accepted_Value + "', Risk_ifObjFails='" + objObjectivesModels.Risk_ifObjFails
+                //    + "', baseline_data='" + objObjectivesModels.baseline_data + "', unit='" + objObjectivesModels.unit + "', obj_inline='" + objObjectivesModels.obj_inline + "'";
+
+                //if (objObjectivesModels.Action_Plan != null && objObjectivesModels.Action_Plan != "")
+                //{
+                //    sSqlstmt = sSqlstmt + ", Action_Plan='" + objObjectivesModels.Action_Plan + "'";
+                //}
+
+                //sSqlstmt = sSqlstmt + " where ObjectivesTrans_Id='" + objObjectivesModels.ObjectivesTrans_Id + "'";
 
                 return objGlobalData.ExecuteQuery(sSqlstmt);
             }

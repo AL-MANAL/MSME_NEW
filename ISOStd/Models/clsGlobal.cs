@@ -25,6 +25,48 @@ namespace ISOStd.Models
         private object fileUploader;
         private object mail;
 
+
+        //training need employee list
+        //public MultiSelectList GetHrEmployeeList()
+        //{
+        //    EmployeeList emplist = new EmployeeList();
+        //    emplist.EmpList = new List<Employee>();
+        //    try
+        //    {
+        //        string sSqlstmt = "(select Name as emp_id,concat(emp_firstname, ' ', ifnull(emp_middlename, ' '), ' ', ifnull(emp_lastname, ' ')) as Empname from t_emp_competence_eval t,t_hr_employee tt where t.Name = tt.emp_no and active = 1 and Need_Of_Trainings = 'Yes') UNION"
+
+        //        +" (select t.emp_id,concat(emp_firstname, ' ', ifnull(emp_middlename, ' '), ' ', ifnull(emp_lastname, ' ')) as Empname from t_emp_performance_eval t, t_hr_employee tt where t.emp_id = tt.emp_no and active = 1 and training_need = 'Yes') UNION"
+
+        //  (select employee as emp_id,
+        //  concat(emp_firstname, ' ', ifnull(emp_middlename, ' '), ' ', ifnull(emp_lastname, ' ')) as Empname
+        //  from t_training_staff t, t_hr_employee tt
+        //  where t.employee = tt.emp_no and
+        //  active = 1)";
+        //        DataSet dsEmp = Getdetails(sSqlstmt);// and CompanyId='" + sCompanyId+"'");
+        //        if (dsEmp.Tables.Count > 0 && dsEmp.Tables[0].Rows.Count > 0)
+        //        {
+        //            for (int i = 0; i < dsEmp.Tables[0].Rows.Count; i++)
+        //            {
+        //                Employee emp = new Employee()
+        //                {
+        //                    Empid = dsEmp.Tables[0].Rows[i]["Empid"].ToString(),
+        //                    Empname = Regex.Replace(dsEmp.Tables[0].Rows[i]["Empname"].ToString(), " +", " ")
+        //                };
+        //                emp.Empname = emp.Empname.Trim();
+        //                emplist.EmpList.Add(emp);
+        //            }
+        //        }
+
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        AddFunctionalLog("Exception in GetHrEmployeeList: " + ex.ToString());
+        //    }
+
+        //    return new MultiSelectList(emplist.EmpList, "Empid", "Empname");
+
+        //}
+
         //q&a department employees
         public MultiSelectList GetQADeptEmployeeList()
         {

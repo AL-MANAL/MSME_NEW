@@ -1,0 +1,584 @@
+﻿@model ISOStd.Models.EmployeeMasterModels
+@using System.Data;
+@{
+    ViewBag.Title = "";
+    ISOStd.Models.EmployeeMasterModelList objQList = new ISOStd.Models.EmployeeMasterModelList();
+    ISOStd.Models.EmployeeMasterModelList objList = new ISOStd.Models.EmployeeMasterModelList();
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+    DataSet dsMI = new DataSet();
+    int icnt = 0, icnt1 = 0;
+    if (ViewBag.objQList != null)
+    {
+        objQList = ViewBag.objQList;
+        icnt = objQList.EmployeeList.Count;
+    }
+    if (ViewBag.objSkillList != null)
+    {
+        objList = ViewBag.objSkillList;
+        icnt1 = objList.EmployeeList.Count;
+    }
+}
+
+
+@section featured {
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("EmployeeList", "EmployeeDetails", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Employee Management</span>
+                    </a>
+                    <span class="breadcrumb-item active">Add Employee Competence Details</span>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@using (Html.BeginForm("AddCompetenceDetails", "EmployeeDetails", FormMethod.Post,
+                                             new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Add Employee Competence Details</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+                <input type="hidden" id="emp_no" name="emp_no" value="@Model.emp_no" />
+                
+                <input type="hidden" id="itemcnt" name="itemcnt" value="@icnt" />
+                <input type="hidden" id="itemcnt1" name="itemcnt1" value="@icnt1" />
+                <table class="table table-lg">
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.emp_id)
+                        </td>
+                        <td class="col">
+                            @Html.DisplayFor(model => model.emp_id)
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.emp_firstname)
+                        </td>
+                        <td class="col">
+                            @Html.DisplayFor(model => model.emp_firstname)
+                        </td>
+                        </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.years_exp)<text style="color: red;">*</text>
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <input type="number" class="form-control" id="years_exp" name="years_exp" required value="@Model.years_exp"/>
+                        </td>
+                    </tr>
+                 
+                  
+                 
+                </table>
+
+                <fieldset>
+                   
+                    <fieldset class="border p-2">
+                        <legend class="font-weight-semibold text-success">Academic Qualification</legend>
+                        <table class="table table-lg">
+                            <tr class="row">                            
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.DisplayNameFor(model => model.qualification)<text style="color: red;">*</text>
+                                    </div>
+                                </td>
+                                <td class="col">
+                                    <div class="editor-field">
+                                        <select class="form-control select-search select2-hidden-accessible" data-fouc id="qualification" name="qualification" multiple>
+                                            @*<option value='' hidden>Select</option>*@
+                                            @if (ViewBag.qualification != null)
+                                            {
+                                                foreach (var item in ViewBag.qualification)
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+
+                                                }
+                                            }
+                                        </select>
+                                        <span class="field-validation-error"><span id="qualification-message" style="display: none;">This field is required.</span></span>
+                                        @Html.ValidationMessageFor(model => model.qualification)
+                                    </div>
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.DisplayNameFor(model => model.q_year)<text style="color: red;">*</text>
+                                    </div>
+                                </td>
+                                <td class="col">
+                                    <div class="editor-field">
+                                        <select class="form-control select-search select2-hidden-accessible" data-fouc id="q_year" name="q_year">
+                                            <option value='' hidden>Select</option>
+                                            @if (ViewBag.year != null)
+                                            {
+                                                foreach (var item in ViewBag.year)
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+
+                                                }
+                                            }
+                                        </select>
+                                        <span class="field-validation-error"><span id="q_year-message" style="display: none;">This field is required.</span></span>
+                                        @Html.ValidationMessageFor(model => model.q_year)
+                                    </div>
+                                </td>
+                            </tr>
+                          <tr class="row">
+                              <td class="col-xs-3 col-md-2">
+                                  <div class="editor-label">
+                                      @Html.DisplayNameFor(model => model.upload)<text style="color: red;">*</text>
+                                  </div>
+                              </td>
+                              <td class="col-xs-3 col-md-4">
+                                  <input type="file" name="upload" id="upload" multiple="multiple" title="Upload Document" onchange="FileFormatValidation(this)" accept=".pdf, .doc, .docx, .xls, .xlsx, .png, .jpg, .jpeg,image/*" />
+                                  <span class="form-text text-muted"><code>(Hold Ctrl Key in case of multiple files or drag multiple files and drop here)</code></span>
+                                  <span class="field-validation-error"><label id="upload-message" class="validation-invalid-label" style="display:none" for="basic">Upload field is required.</label> </span>
+                              </td>
+                          </tr>
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-1">
+                                    <input type="button" value="Add" class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" onclick="AddData()" />
+                                </td>
+                            </tr>
+                        </table>
+                    </fieldset>
+
+                    <div class="card" id="hidden card">
+
+                        <div class="card-body scrollbar-container">
+
+                            <div class="card card-table table-responsive shadow-0 mb-0 scrollbar">
+
+                                <table class="table" id="team-list">
+                                    <tr class="bg-blue">
+                                        <th>Delete</th>
+                                        <th>Qualification</th>
+                                        <th>Year Passed</th>
+                                        <th>Document(s)</th>
+                                      
+                                    </tr>
+                                    @if (objQList.EmployeeList != null && objQList.EmployeeList.Count > 0)
+                                    {
+                                        for (int index = 0; index < objQList.EmployeeList.Count; index++)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    <span class="badge badge-info" onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span>
+                                                </td>    
+                                                <td>
+                                                    <select class="form-control select-search select2-hidden-accessible" id="qualification @(index)" name="qualification @(index)" multiple>
+                                                       
+                                                        @if (ViewBag.qualification != null)
+                                                        {
+                                                            foreach (var data in ViewBag.qualification)
+                                                            {
+                                                                if (Array.IndexOf(objQList.EmployeeList[index].qualification.ToString().Split(','), data.Value) >= 0)
+                                                                {
+                                                                    <option value='@data.Value' selected>@data.Text</option>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <option value='@data.Value'>@data.Text</option>
+                                                                }
+                                                            }
+                                                        }
+                                                    </select>
+                                                </td>
+                                                <td>
+                                                    <select class="form-control select-search select2-hidden-accessible" id="q_year @(index)" name="q_year @(index)">
+                                                        <option value='' hidden>Select</option>
+                                                        @if (ViewBag.year != null)
+                                                        {
+                                                            foreach (var item in ViewBag.year)
+                                                            {
+                                                                if (item.Value == objQList.EmployeeList[index].q_year)
+                                                                {
+                                                                    <option value='@item.Value' selected>@item.Text</option>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <option value='@item.Value'>@item.Text</option>
+                                                                }
+                                                            }
+                                                        }
+                                                    </select>
+                                                </td>
+                                                <td>
+                                                    <input type='hidden' id='upload1 @index' name="upload1 @index" value='@objQList.EmployeeList[index].upload'>
+                                                    @if (objQList.EmployeeList[index].upload != null && objQList.EmployeeList[index].upload != "" && objQList.EmployeeList[index].upload.Length > 0)
+                                                    {
+                                                        foreach (var docs in objQList.EmployeeList[index].upload.Trim(',').Split(','))
+                                                        {
+                                                            <div class="form-check">
+                                                                <label class="form-check-label">
+                                                                    <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" class="text-orange">
+                                                                        @System.IO.Path.GetFileName(docs)
+                                                                    </a>
+                                                                </label>
+                                                            </div>
+                                                        }
+                                                    }
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <fieldset class="border p-2">
+                        <legend class="font-weight-semibold text-success">Skills</legend>
+                        <table class="table table-lg">
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.DisplayNameFor(model => model.skill)<text style="color: red;">*</text>
+                                    </div>
+                                </td>
+                                <td class="col">
+                                    <div class="editor-field">
+                                        <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="skill" name="skill"></textarea>
+                                        <span class="field-validation-error"><span id="skill-message" style="display: none;">This field is required.</span></span>
+                                        @Html.ValidationMessageFor(model => model.skill)
+                                    </div>
+                                </td>  
+                                <td class="col-xs-3 col-md-1">
+                                    <input type="button" value="Add" class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" onclick="AddSkillData()" />
+                                </td>                        
+                            </tr>                      
+                           
+                        </table>
+                    </fieldset>
+
+                    <div class="card" id="hidden card1">
+
+                        <div class="card-body scrollbar-container">
+
+                            <div class="card card-table table-responsive shadow-0 mb-0 scrollbar">
+
+                                <table class="table" id="team-list1">
+                                    <tr class="bg-blue">
+                                        <th>Delete</th>
+                                        <th>Skills</th>
+                                    </tr>
+                                    @if (objList.EmployeeList != null && objList.EmployeeList.Count > 0)
+                                    {
+                                        for (int index = 0; index < objList.EmployeeList.Count; index++)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    <span class="badge badge-info" onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span>
+                                                </td>
+                                                <td>
+                                                    <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="6" class="form-control elastic maxlength-badge-position" id='skill @(index)' name="skill @(index)">@objList.EmployeeList[index].skill</textarea>
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </fieldset>
+
+            </div>
+        </div>
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+            @Html.ActionLink("Back to List", "EmployeeList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+
+            <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Add</button>
+        </div>
+    </div>
+}
+
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            @if (TempData["alertdata"] != null)
+            {
+                     @: new Noty({
+                                     @:     text: '@TempData["alertdata"]',
+                                     @:     type: 'error'
+                                     @: }).show();
+                        }
+
+
+            @if (@TempData["Successdata"] != null)
+            {
+
+            @:new Noty({
+                       @:text: '@TempData["Successdata"]',
+                       @: type: 'success'
+                       @:}).show();
+            }
+
+        });
+        var showClass = 'is-visible';
+        var hideClass = 'invisible';
+        function SkillValidation() {
+            var validflg = true;
+            var ssnMessage = "";
+            if (document.getElementById("skill").value == "") {
+                ssnMessage = $('#skill-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#skill-message');
+                ssnMessage.hide();
+            }        
+            return validflg;
+        }
+        function AddSkillData() {
+
+            if (SkillValidation() == true) {
+
+                document.getElementById("hidden card1").style.display = "block";
+                var cnt = document.getElementById("itemcnt1").value;
+
+                document.getElementById("itemcnt1").value = cnt;
+                // Find a <table> element with id="myTable":
+                var table = document.getElementById("team-list1");
+
+                // Create an empty <tr> element and add it to the 1st position of the table:
+                var row = table.insertRow();
+
+                // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                var cell0 = row.insertCell(0);
+                var cell1 = row.insertCell(1);
+
+                var skill = $('#skill').val();
+              
+                cell0.innerHTML = "<span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span>";
+                cell1.innerHTML = "<textarea id='skill " + cnt + "' name='skill " + cnt + "' style='overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;' class='form-control elastic maxlength-badge-position' cols='4' rows='4' placeholder='Textarea' maxlength='2000'>" + skill + "</textarea>";
+              
+                        cnt++;
+                        document.getElementById("itemcnt1").value = cnt;
+
+                        //reintialisation
+
+                        // Badge position
+                        $('.maxlength-badge-position').maxlength({
+                            alwaysShow: true,
+                            placement: 'top'
+                        });
+                      
+                        //auto resize
+                        autosize($('.elastic'));
+                        $('.select-fixed-single').select2({
+                            minimumResultsForSearch: Infinity,
+                            width: 150
+                        });
+                        document.getElementById("hidden card1").classList.remove(hideClass);
+                        document.getElementById("hidden card1").classList.add(showClass);
+
+                        document.getElementById("skill").value = "";
+                       
+                    }
+
+                }
+       
+
+        function FileFormatValidation(file) {
+            var ext = file.value.split(".").pop().toLowerCase();
+            if ($.inArray(ext, ["pdf", "xlsx", "xls", "doc", "docx", "jpg", "jpeg", "gif", "png"]) == -1) {
+                file.value = "";
+                bootbox.alert({
+                    title: 'File type',
+                    message: 'Invalid file format, please upload only doc, pdf, docx, xls, xls,jpg, jpeg, gif, png format'
+                });
+            }
+        }
+
+        function deleteRow(btn) {
+            var row = btn.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+        }
+
+        function Validation() {
+            var validflg = true;
+            var ssnMessage = "";
+            if (document.getElementById("qualification").value == "") {
+                ssnMessage = $('#qualification-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#qualification-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("q_year").value == "") {
+                ssnMessage = $('#q_year-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#q_year-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("upload").value == "") {
+                ssnMessage = $('#upload-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#upload-message');
+                ssnMessage.hide();
+            }
+
+            return validflg;
+        }
+
+
+
+        function AddData() {
+
+            if (Validation() == true) {
+
+                //document.getElementById("dvItems").style.display = "";
+                var cnt = document.getElementById("itemcnt").value;
+
+                document.getElementById("itemcnt").value = cnt;
+                // Find a <table> element with id="myTable":
+
+                uploadServerPath = UploadDocument(cnt);
+            }
+        }
+
+        function UploadDocument(ind) {
+            var upload = ($("#upload")).files;
+            var formData = new FormData();
+            var totalFiles = document.getElementById("upload").files.length;
+            for (var i = 0; i < totalFiles; i++) {
+                var file = document.getElementById("upload").files[i];
+                formData.append("upload", file);
+            }
+            jQuery.ajax({
+                url: '@Url.Action("UploadMultipleDocument", "EmployeeDetails")',
+                type: 'POST',
+                contentType: false,
+                processData: false,
+                data: formData,
+                success: function (result) {
+                    DisplayDocument(result,ind);
+                    return result;
+                }
+            });
+        }
+
+        function DisplayDocument(Filepath, cnt) {
+            var sfile = Filepath.split(',');
+            var sfilecont = sfile.length;
+            var sfilename = "";
+            var filename = "";
+            for (var i = 0; i < sfilecont; i++) {
+                sfilename = sfile[i].substring(sfile[i].lastIndexOf('/') + 1);
+                filename = sfilename.substring(0, sfilename.indexOf(".")) + ',' + filename
+            }
+            filename=filename.slice(0, -1);
+
+             document.getElementById("hidden card").style.display = "block";
+                var cnt = document.getElementById("itemcnt").value;
+
+                document.getElementById("itemcnt").value = cnt;
+                // Find a <table> element with id="myTable":
+                var table = document.getElementById("team-list");
+
+
+                // Create an empty <tr> element and add it to the 1st position of the table:
+                var row = table.insertRow();
+
+                // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                var cell0 = row.insertCell(0);
+                var cell1 = row.insertCell(1);
+                var cell2 = row.insertCell(2);
+                var cell3 = row.insertCell(3);
+
+
+
+                var qualification = $.map($("#qualification option:selected"), function (el, i) {
+                    return $(el).text();
+                });
+                var qualificationVal = $("#qualification").val();
+
+                var q_year = $.map($("#q_year option:selected"), function (el, i) {
+                    return $(el).text();
+                });
+                var q_yearVal = $("#q_year").val();
+
+                cell0.innerHTML = "<span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span>";
+
+                cell1.innerHTML = "<select class='select-fixed-single' id='qualification " + cnt + "' name='qualification " + cnt + "'><option value='" + qualificationVal + "' selected>" + qualification + "</option>@if (ViewBag.qualification != null)
+                {
+                    foreach (var item in ViewBag.qualification)
+                    { <option value='@item.Value'>@item.Text</option> }
+                    }</select>";
+
+                cell2.innerHTML = "<select class='select-fixed-single' id='q_year " + cnt + "' name='q_year " + cnt + "'><option value='" + q_yearVal + "' selected>" + q_year + "</option>@if (ViewBag.year != null)
+                {
+                    foreach (var item in ViewBag.year)
+                    { <option value='@item.Value'>@item.Text</option> }
+                    }</select>";
+
+                cell3.innerHTML = "<input type='hidden' id='upload1 " + cnt + "' name='upload1 " + cnt + "' value='" + Filepath + "'>" + filename;
+
+
+                cnt++;
+                        document.getElementById("itemcnt").value = cnt;
+
+                        //reintialisation
+
+                        // Badge position
+                        $('.maxlength-badge-position').maxlength({
+                            alwaysShow: true,
+                            placement: 'top'
+                        });
+
+                       //auto resize
+                        autosize($('.elastic'));
+                        $('.select-fixed-single').select2({
+                            minimumResultsForSearch: Infinity,
+                            width: 150
+                        });
+
+                        document.getElementById("hidden card").classList.remove(hideClass);
+                        document.getElementById("hidden card").classList.add(showClass);
+
+                        document.getElementById("upload").value = "";
+                        $("#qualification").val('').trigger('change');
+                        $("#q_year").val('').trigger('change');
+        }
+
+   
+
+
+
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

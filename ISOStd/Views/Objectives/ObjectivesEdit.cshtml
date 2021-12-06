@@ -113,6 +113,7 @@
             <div class="container-fluid">
                 <input type="hidden" id="Objectives_Id" name="Objectives_Id" value="@Model.Objectives_Id" />
                 <input type="hidden" id="ObjectivesTrans_Id" name="ObjectivesTrans_Id" value="@Model.ObjectivesTrans_Id" />
+                <input type="hidden" id="Obj_Ref" name="Obj_Ref" value="@Model.Obj_Ref" />
                 <table class="table table-lg">
                     <tr class="row">
 
@@ -331,10 +332,18 @@
                         <tr class="row">
                             <th class="col-xs-3 col-md-2" style="font-weight: bold;">    @Html.LabelFor(model => model.Obj_Estld_On)<text style="color: red;">*</text></th>
                             <td class="col">
-                                @if (Model.Obj_Estld_On != null && Model.Obj_Estld_On > Convert.ToDateTime("01/01/0001"))
+                                @*@if (Model.Obj_Estld_On != null && Model.Obj_Estld_On > Convert.ToDateTime("01/01/0001"))
                                 {
                                     @Html.Label(Model.Obj_Estld_On.ToString("dd/MM/yyyy"))
+                                }*@
+                                @if (Model.Obj_Estld_On != null && Model.Obj_Estld_On > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    <input class="form-control" type="date" id="Obj_Estld_On" name="Obj_Estld_On" value="@Model.Obj_Estld_On.ToString("yyyy-MM-dd")" />
                                 }
+                                else
+                                {
+                                    <input class="form-control" type="date" id="Obj_Estld_On" name="Obj_Estld_On" />
+                                } 
                             </td>
                             <th class="col-xs-3 col-md-2" style="font-weight: bold;">
                                 @Html.LabelFor(model => model.Obj_Ref)
@@ -433,13 +442,13 @@
                                 @Html.LabelFor(model => model.Freq_of_Eval)<text style="color: red;">*</text>
                             </th>
                             <td class="col">
-                                @*<select class="form-control select-search select2-hidden-accessible" data-fouc id="Freq_of_Eval" name="Freq_of_Eval" required>
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="Freq_of_Eval" name="Freq_of_Eval" required>
                             <option value='' hidden>Select</option>
                             @if (ViewBag.Freq_of_Eval != null)
                             {
                                 foreach (var item in ViewBag.Freq_of_Eval)
                                 {
-                                    if (item.Value == Model.Freq_of_Eval)
+                                    if (item.Text == Model.Freq_of_Eval)
                                     {
                                         <option value='@item.Value' selected>@item.Text</option>
                                     }
@@ -449,8 +458,8 @@
                                     }
                                 }
                             }
-                        </select>*@
-                                @Html.DisplayFor(model => model.Freq_of_Eval)
+                        </select>
+                               
                             </td>
 
                             <th class="col-xs-3 col-md-2" style="font-weight: bold;">

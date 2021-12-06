@@ -323,6 +323,8 @@ namespace ISOStd.Controllers
             return View();
         }
 
+
+
         // [HttpPost]
         public JsonResult doesEmpIDExist(string emp_id)
         {
@@ -360,6 +362,7 @@ namespace ISOStd.Controllers
 
             return Json(user);
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -1854,7 +1857,24 @@ namespace ISOStd.Controllers
 
             return Json("Failed");
         }
+        [HttpPost]
+        public JsonResult UploadMultipleDocument()
+        {
+            HttpFileCollectionBase upload = Request.Files;
+            DocumentTrackingModels obj = new DocumentTrackingModels();
+            for (int i = 0; i < Request.Files.Count; i++)
+            {
+                var file = Request.Files[i];
+                string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/Employee"), Path.GetFileName(file.FileName));
+                string sFilename = Path.GetFileName(spath), sFilepath = Path.GetDirectoryName(spath);
+                file.SaveAs(sFilepath + "/" + sFilename);
+                //return Json("~/DataUpload/MgmtDocs/Surveillance/" + "Surveillance" + DateTime.Now.ToString("ddMMyyyyHHmm") + sFilename);
+                obj.upload = obj.upload + "," + "~/DataUpload/MgmtDocs/Employee/" + sFilename;
 
+            }
+            obj.upload = obj.upload.Trim(',');
+            return Json(obj.upload);
+        }
         public ActionResult AddEmployeePassDetails()
         {
             EmployeePassModels objEmployee = new EmployeePassModels();
@@ -3203,6 +3223,283 @@ namespace ISOStd.Controllers
             }
             return Json("");
         }
-                
+
+        [AllowAnonymous]
+        public ActionResult AddCompetenceDetails()
+        {
+           EmployeeMasterModels  objModels = new EmployeeMasterModels();
+            try
+            {
+
+                if (Request.QueryString["emp_no"] != null && Request.QueryString["emp_no"] != "")
+                {
+                    string emp_no = Request.QueryString["emp_no"];
+
+                    string sSqlstmt = "select emp_no,emp_id,emp_firstname,years_exp from t_hr_employee where emp_no=" + emp_no;
+
+                    DataSet dsModelsList = objGlobaldata.Getdetails(sSqlstmt);
+
+                    if (dsModelsList.Tables.Count > 0 && dsModelsList.Tables[0].Rows.Count > 0)
+                    {
+
+                        objModels = new EmployeeMasterModels
+                        {
+                            emp_no = (dsModelsList.Tables[0].Rows[0]["emp_no"].ToString()),
+                            emp_id = (dsModelsList.Tables[0].Rows[0]["emp_id"].ToString()),
+                            emp_firstname = (dsModelsList.Tables[0].Rows[0]["emp_firstname"].ToString()),
+                            years_exp = (dsModelsList.Tables[0].Rows[0]["years_exp"].ToString()),
+
+                        };
+
+                        ViewBag.qualification = objGlobaldata.GetDropdownList("Employee Qualification");
+                        ViewBag.year = objGlobaldata.GetDropdownList("Years");
+
+                        //Qualification
+
+                        EmployeeMasterModelList objQModelsList = new EmployeeMasterModelList();
+                        objQModelsList.EmployeeList = new List<EmployeeMasterModels>();
+
+                        sSqlstmt = "select id_emp_qualification,emp_no,qualification,q_year,upload from t_hr_employee_qualification where emp_no='" + emp_no + "'";
+                        DataSet dsList = objGlobaldata.Getdetails(sSqlstmt);
+                        if (dsList.Tables.Count > 0 && dsList.Tables[0].Rows.Count > 0)
+                        {
+                            for (int i = 0; i < dsList.Tables[0].Rows.Count; i++)
+                            {
+                                try
+                                {
+                                    EmployeeMasterModels objQualific = new EmployeeMasterModels
+                                    {
+                                        id_emp_qualification = dsList.Tables[0].Rows[i]["id_emp_qualification"].ToString(),
+                                        emp_no = dsList.Tables[0].Rows[i]["emp_no"].ToString(),
+                                        qualification = dsList.Tables[0].Rows[i]["qualification"].ToString(),
+                                        q_year = dsList.Tables[0].Rows[i]["q_year"].ToString(),
+                                        upload = dsList.Tables[0].Rows[i]["upload"].ToString(),
+                                    };
+                                    objQModelsList.EmployeeList.Add(objQualific);
+                                }
+                                catch (Exception ex)
+                                {
+                                    objGlobaldata.AddFunctionalLog("Exception in AddCompetenceDetails: " + ex.ToString());
+                                    TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                                    return RedirectToAction("EmployeeList");
+                                }
+                            }
+                            ViewBag.objQList = objQModelsList;
+                        }
+
+
+                        //Skills
+
+                        EmployeeMasterModelList objSkillModelsList = new EmployeeMasterModelList();
+                        objSkillModelsList.EmployeeList = new List<EmployeeMasterModels>();
+
+                        sSqlstmt = "select id_emp_skill,emp_no,skill from t_hr_employee_skills where emp_no='" + emp_no + "'";
+                        dsList = objGlobaldata.Getdetails(sSqlstmt);
+                        if (dsList.Tables.Count > 0 && dsList.Tables[0].Rows.Count > 0)
+                        {
+                            for (int i = 0; i < dsList.Tables[0].Rows.Count; i++)
+                            {
+                                try
+                                {
+                                    EmployeeMasterModels objQualific = new EmployeeMasterModels
+                                    {
+                                        id_emp_skill = dsList.Tables[0].Rows[i]["id_emp_skill"].ToString(),
+                                        emp_no = dsList.Tables[0].Rows[i]["emp_no"].ToString(),
+                                        skill = dsList.Tables[0].Rows[i]["skill"].ToString(),
+                                       
+                                    };
+                                    objSkillModelsList.EmployeeList.Add(objQualific);
+                                }
+                                catch (Exception ex)
+                                {
+                                    objGlobaldata.AddFunctionalLog("Exception in AddCompetenceDetails: " + ex.ToString());
+                                    TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                                    return RedirectToAction("EmployeeList");
+                                }
+                            }
+                            ViewBag.objSkillList = objSkillModelsList;
+                        }
+                    }
+
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in AddCompetenceDetails: " + ex.ToString());
+                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+            }
+
+            return View(objModels);
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public ActionResult AddCompetenceDetails(EmployeeMasterModels objKPI, FormCollection form)
+        {
+            try
+            {
+
+                EmployeeMasterModelList objQModelsList = new EmployeeMasterModelList();
+                objQModelsList.EmployeeList = new List<EmployeeMasterModels>();
+
+                for (int i = 0; i < Convert.ToInt16(form["itemcnt"]); i++)
+                {
+                    EmployeeMasterModels objModels = new EmployeeMasterModels();
+                    if (form["qualification " + i] != null && form["qualification " + i] != "")
+                    {
+                        objModels.qualification = form["qualification " + i];
+                        objModels.q_year = form["q_year " + i];
+                        objModels.upload = form["upload1 " + i];
+
+                        objQModelsList.EmployeeList.Add(objModels);
+                    }
+                }
+
+                EmployeeMasterModelList objSkillModelsList = new EmployeeMasterModelList();
+                objSkillModelsList.EmployeeList = new List<EmployeeMasterModels>();
+
+                for (int i = 0; i < Convert.ToInt16(form["itemcnt1"]); i++)
+                {
+                    EmployeeMasterModels objModels = new EmployeeMasterModels();
+                    if (form["skill " + i] != null && form["skill " + i] != "")
+                    {
+                        objModels.skill = form["skill " + i];
+
+                        objSkillModelsList.EmployeeList.Add(objModels);
+                    }
+                }
+
+
+                if (objKPI.FunAddCompetenceDetails(objQModelsList, objSkillModelsList))
+                {
+                    TempData["Successdata"] = "Added Competence Details successfully";
+                }
+                else
+                {
+                    TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                }
+
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in AddCompetenceDetails: " + ex.ToString());
+                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+            }
+            return RedirectToAction("EmployeeList");
+        }
+
+
+        [AllowAnonymous]
+        public ActionResult CompetenceDetails()
+        {
+            EmployeeMasterModels objModels = new EmployeeMasterModels();
+            try
+            {
+
+                if (Request.QueryString["emp_no"] != null && Request.QueryString["emp_no"] != "")
+                {
+                    string emp_no = Request.QueryString["emp_no"];
+
+                    string sSqlstmt = "select emp_no,emp_id,emp_firstname,years_exp from t_hr_employee where emp_no=" + emp_no;
+
+                    DataSet dsModelsList = objGlobaldata.Getdetails(sSqlstmt);
+
+                    if (dsModelsList.Tables.Count > 0 && dsModelsList.Tables[0].Rows.Count > 0)
+                    {
+
+                        objModels = new EmployeeMasterModels
+                        {
+                            emp_no = (dsModelsList.Tables[0].Rows[0]["emp_no"].ToString()),
+                            emp_id = (dsModelsList.Tables[0].Rows[0]["emp_id"].ToString()),
+                            emp_firstname = (dsModelsList.Tables[0].Rows[0]["emp_firstname"].ToString()),
+                            years_exp = (dsModelsList.Tables[0].Rows[0]["years_exp"].ToString()),
+
+                        };
+
+                        ViewBag.qualification = objGlobaldata.GetDropdownList("Employee Qualification");
+                        ViewBag.year = objGlobaldata.GetDropdownList("Years");
+
+                        //Qualification
+
+                        EmployeeMasterModelList objQModelsList = new EmployeeMasterModelList();
+                        objQModelsList.EmployeeList = new List<EmployeeMasterModels>();
+
+                        sSqlstmt = "select id_emp_qualification,emp_no,qualification,q_year,upload from t_hr_employee_qualification where emp_no='" + emp_no + "'";
+                        DataSet dsList = objGlobaldata.Getdetails(sSqlstmt);
+                        if (dsList.Tables.Count > 0 && dsList.Tables[0].Rows.Count > 0)
+                        {
+                            for (int i = 0; i < dsList.Tables[0].Rows.Count; i++)
+                            {
+                                try
+                                {
+                                    EmployeeMasterModels objQualific = new EmployeeMasterModels
+                                    {
+                                        id_emp_qualification = dsList.Tables[0].Rows[i]["id_emp_qualification"].ToString(),
+                                        emp_no = dsList.Tables[0].Rows[i]["emp_no"].ToString(),
+                                        qualification = dsList.Tables[0].Rows[i]["qualification"].ToString(),
+                                        q_year = dsList.Tables[0].Rows[i]["q_year"].ToString(),
+                                        upload = dsList.Tables[0].Rows[i]["upload"].ToString(),
+                                    };
+                                    objQModelsList.EmployeeList.Add(objQualific);
+                                }
+                                catch (Exception ex)
+                                {
+                                    objGlobaldata.AddFunctionalLog("Exception in AddCompetenceDetails: " + ex.ToString());
+                                    TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                                    return RedirectToAction("EmployeeList");
+                                }
+                            }
+                            ViewBag.objQList = objQModelsList;
+                        }
+
+
+                        //Skills
+
+                        EmployeeMasterModelList objSkillModelsList = new EmployeeMasterModelList();
+                        objSkillModelsList.EmployeeList = new List<EmployeeMasterModels>();
+
+                        sSqlstmt = "select id_emp_skill,emp_no,skill from t_hr_employee_skills where emp_no='" + emp_no + "'";
+                        dsList = objGlobaldata.Getdetails(sSqlstmt);
+                        if (dsList.Tables.Count > 0 && dsList.Tables[0].Rows.Count > 0)
+                        {
+                            for (int i = 0; i < dsList.Tables[0].Rows.Count; i++)
+                            {
+                                try
+                                {
+                                    EmployeeMasterModels objQualific = new EmployeeMasterModels
+                                    {
+                                        id_emp_skill = dsList.Tables[0].Rows[i]["id_emp_skill"].ToString(),
+                                        emp_no = dsList.Tables[0].Rows[i]["emp_no"].ToString(),
+                                        skill = dsList.Tables[0].Rows[i]["skill"].ToString(),
+
+                                    };
+                                    objSkillModelsList.EmployeeList.Add(objQualific);
+                                }
+                                catch (Exception ex)
+                                {
+                                    objGlobaldata.AddFunctionalLog("Exception in AddCompetenceDetails: " + ex.ToString());
+                                    TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                                    return RedirectToAction("EmployeeList");
+                                }
+                            }
+                            ViewBag.objSkillList = objSkillModelsList;
+                        }
+                    }
+
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in CompetenceDetails: " + ex.ToString());
+                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+            }
+
+            return View(objModels);
+        }
+
     }
 }

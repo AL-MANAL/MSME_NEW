@@ -25,47 +25,88 @@ namespace ISOStd.Models
         private object fileUploader;
         private object mail;
 
+        //training plan reviewer 
+        public DataSet getListPendingForReviewTrainingPlan(string sempid)
+        {
+            try
+            {
+                string sSqlstmt = "select id_training_plan,department,topic,logged_by from t_training_plan"
+                + " where active = 1 and approval_status = 0 and reviewed_by = '" + sempid + "' order by id_training_plan desc";
+
+                DataSet dsApprovalList = Getdetails(sSqlstmt);
+                if (dsApprovalList.Tables.Count > 0 && dsApprovalList.Tables[0].Rows.Count > 0)
+                {
+                    return dsApprovalList;
+                }
+            }
+            catch (Exception ex)
+            {
+                AddFunctionalLog("Exception in getListPendingForReviewTrainingPlan: " + ex.ToString());
+            }
+            return null;
+        }
+        //training plan approver 
+        public DataSet getListPendingForApproveTrainingPlan(string sempid)
+        {
+            try
+            {
+               
+                string sSqlstmt = "select id_training_plan,department,topic,logged_by from t_training_plan"
+               + " where active = 1 and approval_status = 2 and approved_by = '" + sempid + "' order by id_training_plan desc";
+
+
+                DataSet dsApprovalList = Getdetails(sSqlstmt);
+                if (dsApprovalList.Tables.Count > 0 && dsApprovalList.Tables[0].Rows.Count > 0)
+                {
+                    return dsApprovalList;
+                }
+            }
+            catch (Exception ex)
+            {
+                AddFunctionalLog("Exception in getListPendingForApproveTrainingPlan: " + ex.ToString());
+            }
+            return null;
+        }
 
         //training need employee list
-        //public MultiSelectList GetHrEmployeeList()
-        //{
-        //    EmployeeList emplist = new EmployeeList();
-        //    emplist.EmpList = new List<Employee>();
-        //    try
-        //    {
-        //        string sSqlstmt = "(select Name as emp_id,concat(emp_firstname, ' ', ifnull(emp_middlename, ' '), ' ', ifnull(emp_lastname, ' ')) as Empname from t_emp_competence_eval t,t_hr_employee tt where t.Name = tt.emp_no and active = 1 and Need_Of_Trainings = 'Yes') UNION"
+        public MultiSelectList GetTrainingPlanEmployeeList()
+        {
+            EmployeeList emplist = new EmployeeList();
+            emplist.EmpList = new List<Employee>();
+            try
+            {
+                string sSqlstmt = "(select Name as emp_id,concat(emp_firstname, ' ', ifnull(emp_middlename, ' '), ' ', ifnull(emp_lastname, ' ')) as Empname from t_emp_competence_eval t,t_hr_employee tt where t.Name = tt.emp_no and active = 1 and Need_Of_Trainings = 'Yes') UNION"
 
-        //        +" (select t.emp_id,concat(emp_firstname, ' ', ifnull(emp_middlename, ' '), ' ', ifnull(emp_lastname, ' ')) as Empname from t_emp_performance_eval t, t_hr_employee tt where t.emp_id = tt.emp_no and active = 1 and training_need = 'Yes') UNION"
+                + " (select t.emp_id,concat(emp_firstname, ' ', ifnull(emp_middlename, ' '), ' ', ifnull(emp_lastname, ' ')) as Empname from t_emp_performance_eval t, t_hr_employee tt where t.emp_id = tt.emp_no and active = 1 and training_need = 'Yes') UNION"
 
-        //  (select employee as emp_id,
-        //  concat(emp_firstname, ' ', ifnull(emp_middlename, ' '), ' ', ifnull(emp_lastname, ' ')) as Empname
-        //  from t_training_staff t, t_hr_employee tt
-        //  where t.employee = tt.emp_no and
-        //  active = 1)";
-        //        DataSet dsEmp = Getdetails(sSqlstmt);// and CompanyId='" + sCompanyId+"'");
-        //        if (dsEmp.Tables.Count > 0 && dsEmp.Tables[0].Rows.Count > 0)
-        //        {
-        //            for (int i = 0; i < dsEmp.Tables[0].Rows.Count; i++)
-        //            {
-        //                Employee emp = new Employee()
-        //                {
-        //                    Empid = dsEmp.Tables[0].Rows[i]["Empid"].ToString(),
-        //                    Empname = Regex.Replace(dsEmp.Tables[0].Rows[i]["Empname"].ToString(), " +", " ")
-        //                };
-        //                emp.Empname = emp.Empname.Trim();
-        //                emplist.EmpList.Add(emp);
-        //            }
-        //        }
+                +" (select employee as emp_id, concat(emp_firstname, ' ', ifnull(emp_middlename, ' '), ' ', ifnull(emp_lastname, ' ')) as Empname from t_training_staff t, t_hr_employee tt"
+         
+                +" where t.employee = tt.emp_no and active = 1)";
 
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        AddFunctionalLog("Exception in GetHrEmployeeList: " + ex.ToString());
-        //    }
+                DataSet dsEmp = Getdetails(sSqlstmt);// and CompanyId='" + sCompanyId+"'");
+                if (dsEmp.Tables.Count > 0 && dsEmp.Tables[0].Rows.Count > 0)
+                {
+                    for (int i = 0; i < dsEmp.Tables[0].Rows.Count; i++)
+                    {
+                        Employee emp = new Employee()
+                        {
+                            Empid = dsEmp.Tables[0].Rows[i]["emp_id"].ToString(),
+                            Empname = Regex.Replace(dsEmp.Tables[0].Rows[i]["Empname"].ToString(), " +", " ")
+                        };
+                        emp.Empname = emp.Empname.Trim();
+                        emplist.EmpList.Add(emp);
+                    }
+                }
 
-        //    return new MultiSelectList(emplist.EmpList, "Empid", "Empname");
+            }
+            catch (Exception ex)
+            {
+                AddFunctionalLog("Exception in GetHrEmployeeList: " + ex.ToString());
+            }
 
-        //}
+            return new MultiSelectList(emplist.EmpList, "Empid", "Empname");
+
+        }
 
         //q&a department employees
         public MultiSelectList GetQADeptEmployeeList()
@@ -76,7 +117,7 @@ namespace ISOStd.Models
             {
                 string Emp_Id = GetCurrentUserSession().empid;
                 string sSqlstmt = "select concat(emp_firstname,' ',ifnull(emp_middlename,' '),' ',ifnull(emp_lastname,' ')) as Empname, emp_no as Empid"
-                + " from t_hr_employee t,t_departments tt where emp_status = 1 and t.Dept_Id = tt.DeptId and DeptName like '%q&a' or '%q&a%' or 'q&a%' or '%q&a' or '%q&a%' or 'q&a%'";
+                + " from t_hr_employee t,t_departments tt where emp_status = 1 and t.Dept_Id = tt.DeptId and DeptName like '%QA/QC' or '%QA/QC%' or 'QA/QC%' or '%QA/QC' or '%QA/QC%' or 'QA/QC%'";
 
                 DataSet dsEmp = Getdetails(sSqlstmt);// and CompanyId='" + sCompanyId+"'");
                 if (dsEmp.Tables.Count > 0 && dsEmp.Tables[0].Rows.Count > 0)

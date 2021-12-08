@@ -2,11 +2,12 @@
 @using System.Data;
 @{
     ViewBag.Title = "";
+    ISOStd.Models.EmployeeMasterModelList objTList = new ISOStd.Models.EmployeeMasterModelList();
     ISOStd.Models.EmployeeMasterModelList objQList = new ISOStd.Models.EmployeeMasterModelList();
     ISOStd.Models.EmployeeMasterModelList objList = new ISOStd.Models.EmployeeMasterModelList();
     ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
     DataSet dsMI = new DataSet();
-    int icnt = 0, icnt1 = 0;
+    int icnt = 0, icnt1 = 0, icnt2 = 0;
     if (ViewBag.objQList != null)
     {
         objQList = ViewBag.objQList;
@@ -16,6 +17,11 @@
     {
         objList = ViewBag.objSkillList;
         icnt1 = objList.EmployeeList.Count;
+    }
+    if (ViewBag.objTList != null)
+    {
+        objTList = ViewBag.objTList;
+        icnt2 = objTList.EmployeeList.Count;
     }
 }
 
@@ -66,6 +72,7 @@
                 
                 <input type="hidden" id="itemcnt" name="itemcnt" value="@icnt" />
                 <input type="hidden" id="itemcnt1" name="itemcnt1" value="@icnt1" />
+                <input type="hidden" id="itemcnt2" name="itemcnt2" value="@icnt2" />
                 <table class="table table-lg">
                     <tr class="row">
                         <td class="col-xs-3 col-md-2">
@@ -294,6 +301,130 @@
                                                 </td>
                                                 <td>
                                                     <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="6" class="form-control elastic maxlength-badge-position" id='skill @(index)' name="skill @(index)">@objList.EmployeeList[index].skill</textarea>
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <fieldset class="border p-2">
+                        <legend class="font-weight-semibold text-success">Trainings Completed</legend>
+                        <table class="table table-lg">
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.DisplayNameFor(model => model.training_type)<text style="color: red;">*</text>
+                                    </div>
+                                </td>
+                                <td class="col">
+                                    <div class="editor-field">
+                                        <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="training_type" name="training_type"></textarea>
+                                        <span class="field-validation-error"><span id="training_type-message" style="display: none;">This field is required.</span></span>
+                                        @Html.ValidationMessageFor(model => model.training_type)
+                                    </div>
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.DisplayNameFor(model => model.duration)<text style="color: red;">*</text>
+                                    </div>
+                                </td>
+                                <td class="col">
+                                    <div class="editor-field">
+                                        <input type="number" class="form-control" id="duration" name="duration" />
+                                        <span class="field-validation-error"><span id="duration-message" style="display: none;">This field is required.</span></span>
+                                        @Html.ValidationMessageFor(model => model.duration)
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.DisplayNameFor(model => model.completed_date)<text style="color: red;">*</text>
+                                    </div>
+                                </td>
+                                <td class="col">
+                                    <div class="editor-field">
+                                        <input type="date" class="form-control" id="completed_date" name="completed_date" />
+                                        <span class="field-validation-error"><span id="completed_date-message" style="display: none;">This field is required.</span></span>
+                                        @Html.ValidationMessageFor(model => model.completed_date)
+                                    </div>
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.DisplayNameFor(model => model.training_upload)
+                                    </div>
+                                </td>
+                                <td class="col">
+                                    <input type="file" name="training_upload" id="training_upload" multiple="multiple" title="Upload Document" onchange="FileFormatValidation(this)" accept=".pdf, .doc, .docx, .xls, .xlsx, .png, .jpg, .jpeg,image/*" />
+                                    <span class="form-text text-muted"><code>(Hold Ctrl Key in case of multiple files or drag multiple files and drop here)</code></span>
+                                   
+                                </td>
+                            </tr>
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-1">
+                                    <input type="button" value="Add" class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" onclick="AddTData()" />
+                                </td>
+                            </tr>
+                        </table>
+                    </fieldset>
+
+                    <div class="card" id="hidden card2">
+
+                        <div class="card-body scrollbar-container">
+
+                            <div class="card card-table table-responsive shadow-0 mb-0 scrollbar">
+
+                                <table class="table" id="team-list2">
+                                    <tr class="bg-blue">
+                                        <th>Delete</th>
+                                        <th>Type of Training</th>
+                                        <th>Training Duration in Days</th>
+                                        <th>Training Completed On</th>
+                                        <th>Document(s)</th>
+
+                                    </tr>
+                                    @if (objTList.EmployeeList != null && objTList.EmployeeList.Count > 0)
+                                    {
+                                        for (int index = 0; index < objTList.EmployeeList.Count; index++)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    <span class="badge badge-info" onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span>
+                                                </td>
+                                                <td>
+                                                    <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="6" class="form-control elastic maxlength-badge-position" id='training_type @(index)' name="training_type @(index)">@objTList.EmployeeList[index].training_type</textarea>
+                                                </td>
+                                                <td>
+                                                   <input type="number" class="form-control" id='duration @(index)' name="duration @(index)" value="@objTList.EmployeeList[index].duration"/>
+                                                    </td>
+                                                <td>
+                                                    @if (objTList.EmployeeList[index].completed_date != null && objTList.EmployeeList[index].completed_date > Convert.ToDateTime("01/01/0001"))
+                                                    {
+                                                        <input class="form-control" type="date" id='completed_date @(index)' name='completed_date @(index)' value="@objTList.EmployeeList[index].completed_date.ToString("yyyy-MM-dd")" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <input class="form-control" type="date" id='completed_date @(index)' name='completed_date @(index)' />
+                                                    }
+                                                </td>
+                                                <td>
+                                                    <input type='hidden' id='upload2 @index' name="upload2 @index" value='@objTList.EmployeeList[index].training_upload'>
+                                                    @if (objTList.EmployeeList[index].training_upload != null && objTList.EmployeeList[index].training_upload != "" && objTList.EmployeeList[index].training_upload.Length > 0)
+                                                    {
+                                                        foreach (var docs in objTList.EmployeeList[index].training_upload.Trim(',').Split(','))
+                                                        {
+                                                            <div class="form-check">
+                                                                <label class="form-check-label">
+                                                                    <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" class="text-orange">
+                                                                       Preview
+                                                                    </a>
+                                                                </label>
+                                                            </div>
+                                                        }
+                                                    }
                                                 </td>
                                             </tr>
                                         }
@@ -576,7 +707,169 @@
         }
 
    
+        //---------------------------Training---------------------------
 
+        
+        function TValidation() {
+            var validflg = true;
+            var ssnMessage = "";
+            if (document.getElementById("training_type").value == "") {
+                ssnMessage = $('#training_type-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#training_type-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("duration").value == "") {
+                ssnMessage = $('#duration-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#duration-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("completed_date").value == "") {
+                ssnMessage = $('#completed_date-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#completed_date-message');
+                ssnMessage.hide();
+            }
+
+            return validflg;
+        }
+
+
+
+        function AddTData() {
+
+            if (TValidation() == true) {
+
+                //document.getElementById("dvItems").style.display = "";
+                var cnt = document.getElementById("itemcnt2").value;
+
+                document.getElementById("itemcnt2").value = cnt;
+                // Find a <table> element with id="myTable":
+                var totalFiles = document.getElementById("training_upload").files.length;
+                if (totalFiles != 0)
+                {
+                     uploadServerPath = UploadTDocument(cnt);
+                }
+                else
+                {
+                    DisplayTDocument("", cnt);
+                }
+                
+                
+            }
+        }
+
+        function UploadTDocument(ind) {
+            var upload = ($("#training_upload")).files;
+            var formData = new FormData();
+            var totalFiles = document.getElementById("training_upload").files.length;
+            for (var i = 0; i < totalFiles; i++) {
+                var file = document.getElementById("training_upload").files[i];
+                formData.append("upload", file);
+            }
+            jQuery.ajax({
+                url: '@Url.Action("UploadMultipleDocument", "EmployeeDetails")',
+                type: 'POST',
+                contentType: false,
+                processData: false,
+                data: formData,
+                success: function (result) {
+                    DisplayTDocument(result, ind);
+                    return result;
+                }
+            });
+        }
+
+        function DisplayTDocument(Filepath, cnt) {
+            var sfilename = "";
+            var filename = "";
+            if (Filepath != "" && Filepath != null)
+            {
+                  var sfile = Filepath.split(',');
+            var sfilecont = sfile.length;
+          
+            for (var i = 0; i < sfilecont; i++) {
+                sfilename = sfile[i].substring(sfile[i].lastIndexOf('/') + 1);
+                filename = sfilename.substring(0, sfilename.indexOf(".")) + ',' + filename
+            }
+            filename=filename.slice(0, -1);
+            }
+            
+          
+
+            document.getElementById("hidden card2").style.display = "block";
+            var cnt = document.getElementById("itemcnt2").value;
+
+            document.getElementById("itemcnt2").value = cnt;
+            // Find a <table> element with id="myTable":
+            var table = document.getElementById("team-list2");
+
+
+            // Create an empty <tr> element and add it to the 1st position of the table:
+            var row = table.insertRow();
+
+            // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+            var cell0 = row.insertCell(0);
+            var cell1 = row.insertCell(1);
+            var cell2 = row.insertCell(2);
+            var cell3 = row.insertCell(3);
+            var cell4 = row.insertCell(4);
+
+
+           
+            var training_type = $("#training_type").val();
+            var duration = $("#duration").val();
+            var completed_date = $("#completed_date").val();
+          
+
+            cell0.innerHTML = "<span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span>";
+
+            cell1.innerHTML = "<textarea id='training_type " + cnt + "' name='training_type " + cnt + "' style='overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;' class='form-control elastic maxlength-badge-position' cols='4' rows='4' placeholder='Textarea' maxlength='2000'>" + training_type + "</textarea>";
+
+            cell2.innerHTML = "<input class='form-control' type='number' id='duration " + cnt + "' name='duration " + cnt + "' value='" + duration + "' />";
+
+            cell3.innerHTML = "<input class='form-control' type='date' id='completed_date " + cnt + "' name='completed_date " + cnt + "' value='" + completed_date + "' />";
+
+            cell4.innerHTML = "<input type='hidden' id='upload2 " + cnt + "' name='upload2 " + cnt + "' value='" + Filepath + "'>" + filename;
+
+
+                    cnt++;
+                    document.getElementById("itemcnt2").value = cnt;
+
+                    //reintialisation
+
+                    // Badge position
+                    $('.maxlength-badge-position').maxlength({
+                        alwaysShow: true,
+                        placement: 'top'
+                    });
+
+                    //auto resize
+                    autosize($('.elastic'));
+                    $('.select-fixed-single').select2({
+                        minimumResultsForSearch: Infinity,
+                        width: 150
+                    });
+
+                    document.getElementById("hidden card2").classList.remove(hideClass);
+                    document.getElementById("hidden card2").classList.add(showClass);
+
+                    document.getElementById("training_upload").value = "";
+                    document.getElementById("training_type").value = "";
+                    document.getElementById("duration").value = "";
+                    document.getElementById("completed_date").value = "";
+                   
+                }
 
 
     </script>

@@ -115,7 +115,9 @@
                         <th>
                             @Html.DisplayNameFor(model => model.First().approval_status)
                         </th>
-                      
+                        <th>
+                            @Html.DisplayNameFor(model => model.First().training_status)
+                        </th>
                         <th data-priority="2" class="text-center not-export-column">Actions</th>
                     </tr>
                 </thead>
@@ -129,7 +131,7 @@
                             <tr>
 
                                 <td>
-                                    @Html.ActionLink(i.ToString(), "", new { id_training_plan = item.id_training_plan.ToString() }, new { onclick = "HyperLinkProgressIconFunction()" })
+                                    @Html.ActionLink(i.ToString(), "TrainingPlanDetail", new { id_training_plan = item.id_training_plan.ToString() }, new { onclick = "HyperLinkProgressIconFunction()" })
                                 </td>
                                 <td>
                                     @Html.DisplayFor(modelItem => item.topic)
@@ -153,7 +155,9 @@
                                 <td>
                                     @Html.DisplayFor(modelItem => item.approval_status)
                                 </td>
-                              
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.training_status)
+                                </td>
                                 <td class="text-center">
                                     <div class="list-icons">
                                         <div class="list-icons-item dropdown">
@@ -162,14 +166,28 @@
                                             </a>
 
                                             <div class="dropdown-menu dropdown-menu-right">
-       
+                                                <a class="dropdown-item" data-toggle="popover_emplist" data-trigger="hover" id="@item.id_training_plan" title="">
+                                                    <i class="icon-pencil7"></i>Employee List
+                                                </a>
+@if (item.training_status != "Pending")
+{
+                                                <a class="dropdown-item" href='@Url.Action("UpdateTrainingStatus", "TrainingPlan", new { id_training_plan = item.id_training_plan })' title="" onclick="HyperLinkProgressIconFunction()">
+                                                    <i class="icon-pencil7"></i>Update Training Status
+                                                </a>
+}
+@if (item.training_status == "Completed")
+{
+    <a class="dropdown-item" href='@Url.Action("CertificateList", "TrainingPlan", new { id_training_plan = item.id_training_plan })' title="" onclick="HyperLinkProgressIconFunction()">
+        <i class="icon-pencil7"></i>Training Certificate
+    </a>
+}
                                                 @if (item.approval_status == "Pending for Review")
                                                 {
                                                     <a class="dropdown-item" href='@Url.Action("EditTrainingPlan", "TrainingPlan", new { id_training_plan = item.id_training_plan })' title="Edit" onclick="HyperLinkProgressIconFunction()">
                                                         <i class="icon-pencil7"></i>Edit
                                                     </a>
                                                 }
-                                                
+                                               
                                                 <div class="dropdown-divider"></div>
                                                    
                                                         <span class="dropdown-item text-center" title="Delete Document" onclick="DeleteItems(@item.id_training_plan)" style="cursor:pointer;"><i class="icon-bin"></i>Delete</span>
@@ -209,7 +227,23 @@
          @:   }).show();
         }
     });
-    //zzz----
+
+            function setDataEmployee(id) {
+                var set_data = '';
+                var element = $(this);
+                var id = element.attr("id");
+                $.ajax({
+                    url: '@Url.Action("EmployeeList", "TrainingPlan")',
+                    methos: "post",
+                    async: false,
+                    data: { id: id },
+                    success: function (data) {
+                        set_data = data;
+
+                    }
+                });
+                return set_data;
+            }
 
 
 
@@ -259,6 +293,13 @@
                                         html: true,
                                         //content: setData,
                                         container: 'body'
+                                    });
+                                    $('[data-toggle="popover_emplist"]').popover({
+                                        html: true,
+                                        content: setDataEmployee,
+                                        container: 'body',
+
+                                        //data: setData,
                                     });
                                     var dropdownMenu;
 
@@ -488,8 +529,8 @@
                 callback: function (r) {
                     if (r == true) {
                              jQuery.ajax({
-                                 url: '@Url.Action("OFIDocDelete", "OFI")',
-                                 data: { id_training_plan: id_training_plan },
+                                 url: '@Url.Action("TrainingPlanDelete", "TrainingPlan")',
+                                 data: { Id: id_training_plan },
                         type: 'POST',
                         dataType: "json",
                         success: function (result) {

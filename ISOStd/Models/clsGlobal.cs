@@ -25,6 +25,29 @@ namespace ISOStd.Models
         private object fileUploader;
         private object mail;
 
+        //to get the id of the dropdown item
+        public string GetDropdownitemId(string header_id, string item_desc)
+        {
+            try
+            {
+                if (header_id != "" && item_desc != "")
+                {
+                    string sSsqlstmt = "select item_id as Id from dropdownitems where header_id='"+ header_id + "' and item_desc='"+ item_desc + "'";
+                    DataSet dsData = Getdetails(sSsqlstmt);
+                    if (dsData.Tables.Count > 0 && dsData.Tables[0].Rows.Count > 0)
+                    {
+                        string sDesc = dsData.Tables[0].Rows[0]["Id"].ToString();
+                       
+                        return sDesc;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                AddFunctionalLog("Exception in GetDropdownitemById: " + ex.ToString());
+            }
+            return "";
+        }
         //training plan reviewer 
         public DataSet getListPendingForReviewTrainingPlan(string sempid)
         {

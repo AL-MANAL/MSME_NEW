@@ -207,7 +207,7 @@ namespace ISOStd.Controllers
                 string sBranchtree = objGlobaldata.GetCurrentUserSession().BranchTree;
                 ViewBag.Branch = objGlobaldata.GetMultiBranchListByID(sBranchtree);
 
-                string sSqlstmt = "select id_training_plan,topic,department,from_date,to_date," +
+                string sSqlstmt = "select id_training_plan,topic,department,from_date,to_date,training_status," +
                  "(CASE WHEN approval_status = '0' THEN 'Pending for Review' WHEN approval_status = '1' THEN 'Review Rejected' WHEN approval_status = '2' THEN 'Reviewed,Pending for Approval' WHEN approval_status = '3' THEN 'Rejected' WHEN approval_status = '4' THEN 'Approved' END) as  approval_status" +
                     " from t_training_plan where active = 1";
 
@@ -236,6 +236,7 @@ namespace ISOStd.Controllers
                                 department =objGlobaldata.GetDeptNameById(dsList.Tables[0].Rows[i]["department"].ToString()),
                                 topic =objGlobaldata.GetTrainingTopicById(dsList.Tables[0].Rows[i]["topic"].ToString()),
                                 approval_status = (dsList.Tables[0].Rows[i]["approval_status"].ToString()),
+                                training_status = objGlobaldata.GetDropdownitemById(dsList.Tables[0].Rows[i]["training_status"].ToString()),
                             };
 
                             DateTime dtDocDate;
@@ -280,8 +281,9 @@ namespace ISOStd.Controllers
                     string id_training_plan = Request.QueryString["id_training_plan"];
 
                     string sSqlstmt = "select id_training_plan,division,department,location,topic,emp_id,from_date,to_date,source_id,trainer_name,reviewed_by,approved_by,ext_entity,"
-                         +  "(CASE WHEN approval_status = '0' THEN 'Pending for Review' WHEN approval_status = '1' THEN 'Review Rejected' WHEN approval_status = '2' THEN 'Reviewed,Pending for Approval' WHEN approval_status = '3' THEN 'Rejected' WHEN approval_status = '4' THEN 'Approved' END) as  approval_status" 
-                        + " ,approval_status as approval_status_id,reviewer_comments,reviewed_date,approver_comments,approved_date from t_training_plan where id_training_plan = '" + id_training_plan + "'";
+                         +  "(CASE WHEN approval_status = '0' THEN 'Pending for Review' WHEN approval_status = '1' THEN 'Review Rejected' WHEN approval_status = '2' THEN 'Reviewed,Pending for Approval' WHEN approval_status = '3' THEN 'Rejected' WHEN approval_status = '4' THEN 'Approved' END) as  approval_status,"
+                         + "(CASE  WHEN review_status = '1' THEN 'Review Rejected' WHEN review_status = '2' THEN 'Reviewed'  END) as  review_status"
+                        + " ,approval_status as approval_status_id,reviewer_comments,reviewed_date,approver_comments,approved_date,training_status,status_updated_date,training_start_date,training_completed_date,upload,reshedule_from_date,reshedule_to_date,reason_reschedule,reason_cancell from t_training_plan where id_training_plan = '" + id_training_plan + "'";
 
                     DataSet dsList = objGlobaldata.Getdetails(sSqlstmt);
 
@@ -305,6 +307,13 @@ namespace ISOStd.Controllers
                             approved_by_id = (dsList.Tables[0].Rows[0]["approved_by"].ToString()),
                             reviewer_comments = (dsList.Tables[0].Rows[0]["reviewer_comments"].ToString()),
                             approver_comments = (dsList.Tables[0].Rows[0]["approver_comments"].ToString()),
+                            approval_status = (dsList.Tables[0].Rows[0]["approval_status"].ToString()),
+                            review_status = (dsList.Tables[0].Rows[0]["review_status"].ToString()),
+
+                            upload = dsList.Tables[0].Rows[0]["upload"].ToString(),
+                            reason_reschedule = dsList.Tables[0].Rows[0]["reason_reschedule"].ToString(),
+                            reason_cancell = dsList.Tables[0].Rows[0]["reason_cancell"].ToString(),
+                            training_status =objGlobaldata.GetDropdownitemById(dsList.Tables[0].Rows[0]["training_status"].ToString()),
                         };
                         DateTime dtDocDate;
                         if (dsList.Tables[0].Rows[0]["from_date"].ToString() != ""
@@ -327,6 +336,34 @@ namespace ISOStd.Controllers
                         {
                             objModel.approved_date = dtDocDate;
                         }
+                        if (dsList.Tables[0].Rows[0]["status_updated_date"].ToString() != ""
+                       && DateTime.TryParse(dsList.Tables[0].Rows[0]["status_updated_date"].ToString(), out dtDocDate))
+                        {
+                            objModel.status_updated_date = dtDocDate;
+                        }
+                        if (dsList.Tables[0].Rows[0]["training_start_date"].ToString() != ""
+                        && DateTime.TryParse(dsList.Tables[0].Rows[0]["training_start_date"].ToString(), out dtDocDate))
+                        {
+                            objModel.training_start_date = dtDocDate;
+                        }
+                        if (dsList.Tables[0].Rows[0]["training_completed_date"].ToString() != ""
+                      && DateTime.TryParse(dsList.Tables[0].Rows[0]["training_completed_date"].ToString(), out dtDocDate))
+                        {
+                            objModel.training_completed_date = dtDocDate;
+                        }
+                        if (dsList.Tables[0].Rows[0]["reshedule_from_date"].ToString() != ""
+                    && DateTime.TryParse(dsList.Tables[0].Rows[0]["reshedule_from_date"].ToString(), out dtDocDate))
+                        {
+                            objModel.reshedule_from_date = dtDocDate;
+                        }
+                        if (dsList.Tables[0].Rows[0]["reshedule_to_date"].ToString() != ""
+                  && DateTime.TryParse(dsList.Tables[0].Rows[0]["reshedule_to_date"].ToString(), out dtDocDate))
+                        {
+                            objModel.reshedule_to_date = dtDocDate;
+                        }
+
+                        string sql = "select emp_id,certificate,expiry_date,updated_date from t_training_plan_certificate where id_training_plan='"+ id_training_plan + "'";
+                        ViewBag.Cert = objGlobaldata.Getdetails(sql);
                     }
                 }
               
@@ -338,6 +375,457 @@ namespace ISOStd.Controllers
             }
             return View(objModel);
         }
+
+        public ActionResult TrainingPlanReview(TrainingPlanModels objModel, FormCollection form)
+        {
+            try
+            {
+
+                if (objModel.FunTrainingPlanReview(objModel))
+                {
+                    TempData["Successdata"] = "Status updated successfully";
+                }
+                else
+                {
+                    TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in TrainingPlanReview: " + ex.ToString());
+                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+            }
+            return RedirectToAction("Index", "Home");
+        }
+
+        public ActionResult TrainingPlanApprove(TrainingPlanModels objModel, FormCollection form)
+        {
+            try
+            {
+
+                if (objModel.FunTrainingPlanApprove(objModel))
+                {
+                    TempData["Successdata"] = "Status updated successfully";
+                }
+                else
+                {
+                    TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in TrainingPlanApprove: " + ex.ToString());
+                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+            }
+            return RedirectToAction("Index", "Home");
+        }
+
+        [AllowAnonymous]
+        public JsonResult TrainingPlanDelete(FormCollection form)
+        {
+            try
+            {
+                if (form["Id"] != null && form["Id"] != "")
+                {
+                    TrainingPlanModels objModel = new TrainingPlanModels();
+                    string sId = form["Id"];
+
+                    if (objModel.FunDeleteTrainingPlan(sId))
+                    {
+                        TempData["Successdata"] = "Deleted successfully";
+                        return Json("Success");
+                    }
+                    else
+                    {
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                        return Json("Failed");
+                    }
+                }
+                else
+                {
+                    TempData["alertdata"] = "Id cannot be Null or empty";
+                    return Json("Failed");
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in TrainingPlanDelete: " + ex.ToString());
+                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+            }
+            return Json("Failed");
+        }
+
+        //Employee List
+        [AllowAnonymous]
+        public ActionResult EmployeeList(int id)
+        {
+            TrainingPlanModels objTrainings = new TrainingPlanModels();
+            try
+            {
+                if (id > 0)
+                {
+                    string Training_id = objTrainings.GetAttendees(id);
+                    if (Training_id != "" && Training_id != null)
+                    {
+                      
+                        string sSqlstmt = "select concat(emp_firstname,' ',ifnull(emp_middlename,' '),' ',ifnull(emp_lastname,' ')) as Empname, emp_no as Empid"
+                        + " from t_hr_employee where emp_status=1 and emp_no in (" + Training_id + ")";
+                        DataSet dsData = objGlobaldata.Getdetails(sSqlstmt);
+                        ViewBag.Person_Name = dsData;
+                    }
+                    else
+                    {
+                        ViewBag.Person_Name = "";
+                    }
+
+                   
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in EmployeeList: " + ex.ToString());
+                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+            }
+            return View();
+        }
+
+        [AllowAnonymous]
+        public ActionResult UpdateTrainingStatus()
+        {
+            TrainingPlanModels objModel = new TrainingPlanModels();
+            try
+            {
+
+                if (Request.QueryString["id_training_plan"] != null && Request.QueryString["id_training_plan"] != "")
+                {
+
+                    string id_training_plan = Request.QueryString["id_training_plan"];
+
+                    string sSqlstmt = "select id_training_plan,training_status,status_updated_date,training_start_date,training_completed_date,upload,reshedule_from_date,reshedule_to_date,reason_reschedule,reason_cancell"
+
+                        + " from t_training_plan where id_training_plan = '" + id_training_plan + "'";
+
+                    DataSet dsList = objGlobaldata.Getdetails(sSqlstmt);
+
+                    if (dsList.Tables.Count > 0 && dsList.Tables[0].Rows.Count > 0)
+                    {
+                        objModel = new TrainingPlanModels
+                        {
+                            id_training_plan = dsList.Tables[0].Rows[0]["id_training_plan"].ToString(),
+                            upload = dsList.Tables[0].Rows[0]["upload"].ToString(),
+                            reason_reschedule = dsList.Tables[0].Rows[0]["reason_reschedule"].ToString(),
+                            reason_cancell = dsList.Tables[0].Rows[0]["reason_cancell"].ToString(),
+                            training_status = dsList.Tables[0].Rows[0]["training_status"].ToString(),
+                        };
+                        DateTime dtDocDate;
+                        if (dsList.Tables[0].Rows[0]["status_updated_date"].ToString() != ""
+                         && DateTime.TryParse(dsList.Tables[0].Rows[0]["status_updated_date"].ToString(), out dtDocDate))
+                        {
+                            objModel.status_updated_date = dtDocDate;
+                        }
+                        if (dsList.Tables[0].Rows[0]["training_start_date"].ToString() != ""
+                        && DateTime.TryParse(dsList.Tables[0].Rows[0]["training_start_date"].ToString(), out dtDocDate))
+                        {
+                            objModel.training_start_date = dtDocDate;
+                        }
+                        if (dsList.Tables[0].Rows[0]["training_completed_date"].ToString() != ""
+                      && DateTime.TryParse(dsList.Tables[0].Rows[0]["training_completed_date"].ToString(), out dtDocDate))
+                        {
+                            objModel.training_completed_date = dtDocDate;
+                        }
+                        if (dsList.Tables[0].Rows[0]["reshedule_from_date"].ToString() != ""
+                    && DateTime.TryParse(dsList.Tables[0].Rows[0]["reshedule_from_date"].ToString(), out dtDocDate))
+                        {
+                            objModel.reshedule_from_date = dtDocDate;
+                        }
+                        if (dsList.Tables[0].Rows[0]["reshedule_to_date"].ToString() != ""
+                  && DateTime.TryParse(dsList.Tables[0].Rows[0]["reshedule_to_date"].ToString(), out dtDocDate))
+                        {
+                            objModel.reshedule_to_date = dtDocDate;
+                        }
+                    }
+                }
+              
+                ViewBag.Status = objGlobaldata.GetDropdownList("Training Plan Status");
+             
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in UpdateTrainingStatus: " + ex.ToString());
+                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+            }
+            return View(objModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult UpdateTrainingStatus(TrainingPlanModels objModel, FormCollection form, IEnumerable<HttpPostedFileBase> upload)
+        {
+            try
+            {
+                IList<HttpPostedFileBase> nc_uploadList = (IList<HttpPostedFileBase>)upload;
+                string QCDelete = Request.Form["QCDocsValselectall"];
+
+                if (nc_uploadList[0] != null)
+                {
+                    objModel.upload = "";
+                    foreach (var file in upload)
+                    {
+                        try
+                        {
+                            string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/Training"), Path.GetFileName(file.FileName));
+                            string sFilename = "TP" + "_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath), sFilepath = Path.GetDirectoryName(spath);
+                            file.SaveAs(sFilepath + "/" + sFilename);
+                            objModel.upload = objModel.upload + "," + "~/DataUpload/MgmtDocs/Training/" + sFilename;
+                        }
+                        catch (Exception ex)
+                        {
+                            objGlobaldata.AddFunctionalLog("Exception in UpdateTrainingStatus-upload: " + ex.ToString());
+
+                        }
+                    }
+                    objModel.upload = objModel.upload.Trim(',');
+                }
+                else
+                {
+                    ViewBag.Message = "You have not specified a file.";
+                }
+                if (form["QCDocsVal"] != null && form["QCDocsVal"] != "")
+                {
+                    objModel.upload = objModel.upload + "," + form["QCDocsVal"];
+                    objModel.upload = objModel.upload.Trim(',');
+                }
+                else if (form["QCDocsVal"] == null && QCDelete != null && nc_uploadList[0] == null)
+                {
+                    objModel.upload = null;
+                }
+                else if (form["QCDocsVal"] == null && nc_uploadList[0] == null)
+                {
+                    objModel.upload = null;
+                }
+              
+                DateTime dateValue;
+                if (form["status_updated_date"] != null && DateTime.TryParse(form["status_updated_date"], out dateValue) == true)
+                {
+                    objModel.status_updated_date = dateValue;
+                }
+                if (form["training_start_date"] != null && DateTime.TryParse(form["training_start_date"], out dateValue) == true)
+                {
+                    objModel.training_start_date = dateValue;
+                }
+                if (form["training_completed_date"] != null && DateTime.TryParse(form["training_completed_date"], out dateValue) == true)
+                {
+                    objModel.training_completed_date = dateValue;
+                }
+                if (form["reshedule_from_date"] != null && DateTime.TryParse(form["reshedule_from_date"], out dateValue) == true)
+                {
+                    objModel.reshedule_from_date = dateValue;
+                }
+                if (form["reshedule_to_date"] != null && DateTime.TryParse(form["reshedule_to_date"], out dateValue) == true)
+                {
+                    objModel.reshedule_to_date = dateValue;
+                }
+                if (objModel.FunUpdateTrainingStatus(objModel))
+                {
+                    TempData["Successdata"] = "Updated training status successfully";
+                }
+                else
+                {
+                    TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in UpdateTrainingStatus: " + ex.ToString());
+                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+            }
+            return RedirectToAction("TrainingPlanList");
+        }
+
+
+        //NC List
+        [AllowAnonymous]
+        public ActionResult CertificateList()
+        {
+            TrainingPlanModelsList objList = new TrainingPlanModelsList();
+            objList.ObjList = new List<TrainingPlanModels>();
+            
+            try
+            {
+                if (Request.QueryString["id_training_plan"] != null && Request.QueryString["id_training_plan"] != "")
+                {
+                    string id_training_plan = Request.QueryString["id_training_plan"];
+                    string id_certificate = Request.QueryString["id_certificate"];
+                    string sSqlstmt = "select id_certificate,id_training_plan,emp_id,certificate,expiry_date,updated_date from t_training_plan_certificate where id_training_plan = '" + id_training_plan + "'";
+
+                    DataSet dsList = objGlobaldata.Getdetails(sSqlstmt);
+                    if (dsList.Tables.Count > 0 && dsList.Tables[0].Rows.Count > 0)
+                    {
+                        for (int i = 0; i < dsList.Tables[0].Rows.Count; i++)
+                        {
+                            try
+                            {
+                                TrainingPlanModels objModel = new TrainingPlanModels
+                                {
+                                    id_certificate = dsList.Tables[0].Rows[i]["id_certificate"].ToString(),
+                                    id_training_plan = dsList.Tables[0].Rows[i]["id_training_plan"].ToString(),
+                                    emp_id =objGlobaldata.GetMultiHrEmpNameById(dsList.Tables[0].Rows[i]["emp_id"].ToString()),
+                                    certificate = dsList.Tables[0].Rows[i]["certificate"].ToString(),
+
+                                };
+                                DateTime dtDocDate;
+                                if (dsList.Tables[0].Rows[i]["expiry_date"].ToString() != ""
+                                 && DateTime.TryParse(dsList.Tables[0].Rows[i]["expiry_date"].ToString(), out dtDocDate))
+                                {
+                                    objModel.expiry_date = dtDocDate;
+                                }
+                                if (dsList.Tables[0].Rows[i]["updated_date"].ToString() != ""
+                                && DateTime.TryParse(dsList.Tables[0].Rows[i]["updated_date"].ToString(), out dtDocDate))
+                                {
+                                    objModel.updated_date = dtDocDate;
+                                }
+                                objList.ObjList.Add(objModel);
+                            }
+                            catch (Exception ex)
+                            {
+                                objGlobaldata.AddFunctionalLog("Exception in CertificateList: " + ex.ToString());
+                                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                            }
+                        }
+
+                        sSqlstmt = "select id_certificate,id_training_plan,emp_id,certificate,expiry_date,updated_date from t_training_plan_certificate where id_certificate = '" + id_certificate + "'";
+
+                        dsList = objGlobaldata.Getdetails(sSqlstmt);
+                        if (dsList.Tables.Count > 0 && dsList.Tables[0].Rows.Count > 0)
+                        {
+                            try
+                            {
+                                TrainingPlanModels objModel = new TrainingPlanModels
+                                {
+                                    id_certificate = dsList.Tables[0].Rows[0]["id_certificate"].ToString(),
+                                    id_training_plan = dsList.Tables[0].Rows[0]["id_training_plan"].ToString(),
+                                    emp_id = objGlobaldata.GetMultiHrEmpNameById(dsList.Tables[0].Rows[0]["emp_id"].ToString()),
+                                    certificate = dsList.Tables[0].Rows[0]["certificate"].ToString(),
+
+                                };
+                                DateTime dtDocDate;
+                                if (dsList.Tables[0].Rows[0]["expiry_date"].ToString() != ""
+                                 && DateTime.TryParse(dsList.Tables[0].Rows[0]["expiry_date"].ToString(), out dtDocDate))
+                                {
+                                    objModel.expiry_date = dtDocDate;
+                                }
+                                if (dsList.Tables[0].Rows[0]["updated_date"].ToString() != ""
+                                && DateTime.TryParse(dsList.Tables[0].Rows[0]["updated_date"].ToString(), out dtDocDate))
+                                {
+                                    objModel.updated_date = dtDocDate;
+                                }
+                                ViewBag.Certificate = objModel;
+                            }
+                            catch (Exception ex)
+                            {
+                                objGlobaldata.AddFunctionalLog("Exception in CertificateList: " + ex.ToString());
+                                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                            }
+                           
+                        }
+                    }
+                    else
+                    {
+                        TempData["alertdata"] = "Id Cannot be null";
+                        return RedirectToAction("TrainingPlanList");
+                    }
+                   
+                }
+                else
+                {
+                    TempData["alertdata"] = "Id Cannot be null";
+                    return RedirectToAction("TrainingPlanList");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in CertificateList: " + ex.ToString());
+                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+            }
+            return View(objList.ObjList.ToList());
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult CertificateUpdate(TrainingPlanModels objModel, FormCollection form, IEnumerable<HttpPostedFileBase> certificate)
+        {
+            try
+            {
+                IList<HttpPostedFileBase> nc_uploadList = (IList<HttpPostedFileBase>)certificate;
+                string QCDelete = Request.Form["QCDocsValselectall"];
+
+                if (nc_uploadList[0] != null)
+                {
+                    objModel.certificate = "";
+                    foreach (var file in certificate)
+                    {
+                        try
+                        {
+                            string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/Training"), Path.GetFileName(file.FileName));
+                            string sFilename = "TP" + "_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath), sFilepath = Path.GetDirectoryName(spath);
+                            file.SaveAs(sFilepath + "/" + sFilename);
+                            objModel.certificate = objModel.certificate + "," + "~/DataUpload/MgmtDocs/Training/" + sFilename;
+                        }
+                        catch (Exception ex)
+                        {
+                            objGlobaldata.AddFunctionalLog("Exception in CertificateUpdate-upload: " + ex.ToString());
+
+                        }
+                    }
+                    objModel.certificate = objModel.certificate.Trim(',');
+                }
+                else
+                {
+                    ViewBag.Message = "You have not specified a file.";
+                }
+                if (form["QCDocsVal"] != null && form["QCDocsVal"] != "")
+                {
+                    objModel.certificate = objModel.certificate + "," + form["QCDocsVal"];
+                    objModel.certificate = objModel.certificate.Trim(',');
+                }
+                else if (form["QCDocsVal"] == null && QCDelete != null && nc_uploadList[0] == null)
+                {
+                    objModel.certificate = null;
+                }
+                else if (form["QCDocsVal"] == null && nc_uploadList[0] == null)
+                {
+                    objModel.certificate = null;
+                }
+
+                DateTime dateValue;
+                if (form["expiry_date"] != null && DateTime.TryParse(form["expiry_date"], out dateValue) == true)
+                {
+                    objModel.expiry_date = dateValue;
+                }
+                if (form["updated_date"] != null && DateTime.TryParse(form["updated_date"], out dateValue) == true)
+                {
+                    objModel.updated_date = dateValue;
+                }
+                
+                if (objModel.FunUpdateCertUpdate(objModel))
+                {
+                    TempData["Successdata"] = "Updated training certificate successfully";
+                }
+                else
+                {
+                    TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in CertificateUpdate: " + ex.ToString());
+                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+            }
+            return RedirectToAction("TrainingPlanList");
+        }
+
+
 
     }
 }

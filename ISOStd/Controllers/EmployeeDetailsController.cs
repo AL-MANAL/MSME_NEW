@@ -3319,6 +3319,46 @@ namespace ISOStd.Controllers
                             }
                             ViewBag.objSkillList = objSkillModelsList;
                         }
+
+                        //training
+
+                        EmployeeMasterModelList objTModelsList = new EmployeeMasterModelList();
+                        objTModelsList.EmployeeList = new List<EmployeeMasterModels>();
+
+                        sSqlstmt = "select id_training,emp_no,training_type,duration,completed_date,training_upload from t_hr_employee_training where emp_no='" + emp_no + "'";
+                        dsList = objGlobaldata.Getdetails(sSqlstmt);
+                        if (dsList.Tables.Count > 0 && dsList.Tables[0].Rows.Count > 0)
+                        {
+                            for (int i = 0; i < dsList.Tables[0].Rows.Count; i++)
+                            {
+                                try
+                                {
+                                    EmployeeMasterModels objQualific = new EmployeeMasterModels
+                                    {
+                                        id_training = dsList.Tables[0].Rows[i]["id_training"].ToString(),
+                                        emp_no = dsList.Tables[0].Rows[i]["emp_no"].ToString(),
+                                        training_type = dsList.Tables[0].Rows[i]["training_type"].ToString(),
+                                        duration = dsList.Tables[0].Rows[i]["duration"].ToString(),
+                                        training_upload = dsList.Tables[0].Rows[i]["training_upload"].ToString(),
+                                    };
+                                    DateTime dtDocDate;
+                                    if (dsList.Tables[0].Rows[0]["completed_date"].ToString() != ""
+                                     && DateTime.TryParse(dsList.Tables[0].Rows[0]["completed_date"].ToString(), out dtDocDate))
+                                    {
+                                        objQualific.completed_date = dtDocDate;
+                                    }
+
+                                    objTModelsList.EmployeeList.Add(objQualific);
+                                }
+                                catch (Exception ex)
+                                {
+                                    objGlobaldata.AddFunctionalLog("Exception in AddCompetenceDetails: " + ex.ToString());
+                                    TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                                    return RedirectToAction("EmployeeList");
+                                }
+                            }
+                            ViewBag.objTList = objTModelsList;
+                        }
                     }
 
                 }
@@ -3371,8 +3411,27 @@ namespace ISOStd.Controllers
                     }
                 }
 
+                EmployeeMasterModelList objTModelsList = new EmployeeMasterModelList();
+                objTModelsList.EmployeeList = new List<EmployeeMasterModels>();
 
-                if (objKPI.FunAddCompetenceDetails(objQModelsList, objSkillModelsList))
+                for (int i = 0; i < Convert.ToInt16(form["itemcnt2"]); i++)
+                {
+                    EmployeeMasterModels objModels = new EmployeeMasterModels();
+                    if (form["training_type " + i] != null && form["training_type " + i] != "")
+                    {
+                        objModels.training_type = form["training_type " + i];
+                        objModels.duration = form["duration " + i];
+                        objModels.training_upload = form["upload2 " + i];
+                        DateTime dateValue;
+                        if (DateTime.TryParse(form["completed_date " + i], out dateValue) == true)
+                        {
+                            objModels.completed_date = dateValue;
+                        }
+                        objTModelsList.EmployeeList.Add(objModels);
+                    }
+                }
+
+                if (objKPI.FunAddCompetenceDetails(objQModelsList, objSkillModelsList, objTModelsList))
                 {
                     TempData["Successdata"] = "Added Competence Details successfully";
                 }
@@ -3485,6 +3544,46 @@ namespace ISOStd.Controllers
                                 }
                             }
                             ViewBag.objSkillList = objSkillModelsList;
+                        }
+
+                        //training
+
+                        EmployeeMasterModelList objTModelsList = new EmployeeMasterModelList();
+                        objTModelsList.EmployeeList = new List<EmployeeMasterModels>();
+
+                        sSqlstmt = "select id_training,emp_no,training_type,duration,completed_date,training_upload from t_hr_employee_training where emp_no='" + emp_no + "'";
+                        dsList = objGlobaldata.Getdetails(sSqlstmt);
+                        if (dsList.Tables.Count > 0 && dsList.Tables[0].Rows.Count > 0)
+                        {
+                            for (int i = 0; i < dsList.Tables[0].Rows.Count; i++)
+                            {
+                                try
+                                {
+                                    EmployeeMasterModels objQualific = new EmployeeMasterModels
+                                    {
+                                        id_training = dsList.Tables[0].Rows[i]["id_training"].ToString(),
+                                        emp_no = dsList.Tables[0].Rows[i]["emp_no"].ToString(),
+                                        training_type = dsList.Tables[0].Rows[i]["training_type"].ToString(),
+                                        duration = dsList.Tables[0].Rows[i]["duration"].ToString(),
+                                        training_upload = dsList.Tables[0].Rows[i]["training_upload"].ToString(),
+                                    };
+                                    DateTime dtDocDate;
+                                    if (dsList.Tables[0].Rows[0]["completed_date"].ToString() != ""
+                                     && DateTime.TryParse(dsList.Tables[0].Rows[0]["completed_date"].ToString(), out dtDocDate))
+                                    {
+                                        objQualific.completed_date = dtDocDate;
+                                    }
+
+                                    objTModelsList.EmployeeList.Add(objQualific);
+                                }
+                                catch (Exception ex)
+                                {
+                                    objGlobaldata.AddFunctionalLog("Exception in AddCompetenceDetails: " + ex.ToString());
+                                    TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                                    return RedirectToAction("EmployeeList");
+                                }
+                            }
+                            ViewBag.objTList = objTModelsList;
                         }
                     }
 

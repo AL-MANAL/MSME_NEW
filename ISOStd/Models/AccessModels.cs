@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Web;
 
 namespace ISOStd.Models
 {
     public class AccessModels
     {
-        clsGlobal objGlobalData = new clsGlobal();
+        private clsGlobal objGlobalData = new clsGlobal();
 
         [Display(Name = "AuditNum")]
         public string Id_access { get; set; }
@@ -54,7 +52,7 @@ namespace ISOStd.Models
         [Display(Name = "Change Management(Moc)")]
         public string ChangeMgmt { get; set; }
 
-        [Display(Name ="Context of Organisation")]
+        [Display(Name = "Context of Organisation")]
         public string ContextOrganise { get; set; }
 
         [Display(Name = "Internal/External Parties")]
@@ -323,9 +321,9 @@ namespace ISOStd.Models
 
         [Display(Name = "ISO Standards")]
         public string ISOStd { get; set; }
-       
+
         public string TRA { get; set; }
-      
+
         public string ResConsump { get; set; }
 
         public string NC { get; set; }
@@ -398,6 +396,7 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "Documents":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -412,6 +411,7 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "InternalDoc":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -426,6 +426,7 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "ExternalDoc":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -440,6 +441,7 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "Record":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -484,6 +486,7 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "ObjKPI":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -498,6 +501,7 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "Objectives":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -512,6 +516,7 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "Kpi":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -526,6 +531,7 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "RiskMgmt":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -585,6 +591,7 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "Issues":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -599,6 +606,7 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "Risk":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -613,6 +621,7 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "HazardRiskReg":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -627,6 +636,7 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "HR":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -671,6 +681,7 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "Competancy":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -685,6 +696,7 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "OrgChart":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -699,6 +711,7 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "ManHour":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -713,6 +726,7 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "ExitEmp":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -757,6 +771,7 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "LeaveCredit":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -771,6 +786,7 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "AdjustLeave":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -785,6 +801,7 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "ApplyLeave":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -799,6 +816,7 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "LeaveMaster":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -843,6 +861,7 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "ATS":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -857,6 +876,7 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "HseATS":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -871,6 +891,7 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "Meeting":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -885,6 +906,7 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "MAgenda":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -929,6 +951,7 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "Suppliers":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -943,6 +966,7 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "Supplier":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -957,6 +981,7 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "DLog":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -971,6 +996,7 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "SupplierPer":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -1030,6 +1056,7 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "Visits":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -1044,6 +1071,7 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "AddCust":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -1058,6 +1086,7 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "Complaints":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -1072,6 +1101,7 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "SurveyQues":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -1131,6 +1161,7 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "TrainingOri":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -1145,6 +1176,7 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "AddTopic":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -1159,6 +1191,7 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "Perftraining":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -1173,6 +1206,7 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "EmpTrainingOri":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -1217,6 +1251,7 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "ExterAudit":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -1231,6 +1266,7 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "ExtAuditRpt":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -1245,6 +1281,7 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "CustAudit":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -1259,6 +1296,7 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "RaiseNc":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -1303,6 +1341,7 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "HSE":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -1317,6 +1356,7 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "IncidentRpt":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -1331,6 +1371,7 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "NearMissRept":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -1345,6 +1386,7 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "EmergPlan":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -1389,6 +1431,7 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "PpeLog":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -1403,6 +1446,7 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "HseInsp":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -1417,6 +1461,7 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "AirNoise":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -1431,6 +1476,7 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "Waste":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -1475,6 +1521,7 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "FirstBox":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -1489,6 +1536,7 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "FireInspection":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -1503,6 +1551,7 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "Project":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -1517,6 +1566,7 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "Equip":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -1561,6 +1611,7 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "LegalReg":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -1575,6 +1626,7 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "Legal":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -1589,6 +1641,7 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "Certificates":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -1603,6 +1656,7 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "Training":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -1647,6 +1701,7 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "Report":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -1661,6 +1716,7 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "Rept":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -1675,6 +1731,7 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "DashRept":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -1689,6 +1746,7 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "MISRept":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -1733,6 +1791,7 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "WorkPermit":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -1747,25 +1806,27 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "Settings":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
 
                                 //if (j < Sselected.Length - 1)
                                 //{
-                                    if (Sselected[j + 1] == Sselected[j - 1])
-                                    {
-                                        sql1 = "update t_access set " + Sselected[j] + "=concat(Settings,',2,3,4,5') where Id_access='" + Sselected[j - 1] + "'";
-                                        objGlobalData.ExecuteQuery(sql1);
-                                    }
+                                if (Sselected[j + 1] == Sselected[j - 1])
+                                {
+                                    sql1 = "update t_access set " + Sselected[j] + "=concat(Settings,',2,3,4,5') where Id_access='" + Sselected[j - 1] + "'";
+                                    objGlobalData.ExecuteQuery(sql1);
+                                }
                                 //}
-                              
+
                                 for (int i = j + 2; (i < len1 && Sselected[i].Length == 1); i = i + 2)
                                 {
                                     sql1 = "update t_access set " + Sselected[j] + "=concat(Settings,','," + Sselected[i] + ") where Id_access='" + Sselected[j - 1] + "'";
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "Company":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -1780,6 +1841,7 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "Dept":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -1824,6 +1886,7 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "EmpRole":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -1838,6 +1901,7 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "ISOStd":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -1852,6 +1916,7 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "TRA":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -1866,6 +1931,7 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "ResConsump":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -1880,6 +1946,7 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "NC":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -1894,6 +1961,7 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "Portal":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -1908,6 +1976,7 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "sub_cr":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -1922,6 +1991,7 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "access_portal":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -1936,6 +2006,7 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(sql1);
                                 }
                                 break;
+
                             case "portal_userlog":
                                 sql = "update t_access set " + Sselected[j] + "=1 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
@@ -1951,11 +2022,9 @@ namespace ISOStd.Models
                                 }
                                 break;
                         }
-
                     }
                     return objGlobalData.UpdateAccesdetails(role_id);
                     //return true;
-                    
                 }
                 if (status == 0)
                 {
@@ -1967,439 +2036,546 @@ namespace ISOStd.Models
                                 sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
                                 break;
+
                             case "Documents":
                                 sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
                                 break;
+
                             case "InternalDoc":
                                 sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
                                 break;
+
                             case "ExternalDoc":
                                 sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
                                 break;
+
                             case "Record":
                                 sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
                                 break;
+
                             case "DocChangeReq":
                                 sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
                                 break;
+
                             case "DocTrack":
                                 sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
                                 break;
+
                             case "ObjKPI":
                                 sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
                                 break;
+
                             case "Objectives":
                                 sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
                                 break;
+
                             case "Kpi":
                                 sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
                                 break;
+
                             case "RiskMgmt":
                                 sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
                                 break;
+
                             case "ChangeMgmt":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break; 
-                            case "ContextOrganise":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "Parties":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "Issues":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "Risk":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "HazardRiskReg":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "HR":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "Emp":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "EmpPerfEval":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "Competancy":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "OrgChart":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "ManHour":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "ExitEmp":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "Visitor":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "LeaveMgmt":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "LeaveCredit":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "AdjustLeave":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "ApplyLeave":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "LeaveMaster":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "Holiday":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "ATSS":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "ATS":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "HseATS":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "Meeting":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "MAgenda":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "MSchedule":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "MUnplaned":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "Suppliers":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "Supplier":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "DLog":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "SupplierPer":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "Providers":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "SupplierRate":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "CustMgmt":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "Visits":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "AddCust":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "Complaints":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "SurveyQues":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "UploadSurvey":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "CustReturnProcuct":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "Bidding":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "TrainingOri":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "AddTopic":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "Perftraining":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "EmpTrainingOri":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "Audit":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "InterAudit":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "ExterAudit":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "ExtAuditRpt":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "CustAudit":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "RaiseNc":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "InterChecklist":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "AuditChecklist":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "HSE":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "IncidentRpt":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "NearMissRept":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "EmergPlan":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "ToolTalk":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "SafetyLog":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "PpeLog":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "HseInsp":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "AirNoise":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "Waste":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "ObservCard":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "HseIndu":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "FirstBox":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "FireInspection":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "Project":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "Equip":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "Maintenance":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "Calibration":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "LegalReg":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "Legal":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "Certificates":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "Training":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "TrainingList":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "TrainingCal":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "Report":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "Rept":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "DashRept":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "MISRept":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "Permits":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "AccessPermit":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "WorkPermit":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "Settings":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "Company":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "Dept":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "User":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "DropDown":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "EmpRole":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "ISOStd":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "TRA":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "ResConsump":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "NC":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "Portal":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "sub_cr":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "access_portal":
-                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
-                                objGlobalData.ExecuteQuery(sql);
-                                break;
-                            case "portal_userlog":
                                 sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
                                 objGlobalData.ExecuteQuery(sql);
                                 break;
 
+                            case "ContextOrganise":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "Parties":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "Issues":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "Risk":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "HazardRiskReg":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "HR":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "Emp":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "EmpPerfEval":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "Competancy":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "OrgChart":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "ManHour":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "ExitEmp":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "Visitor":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "LeaveMgmt":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "LeaveCredit":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "AdjustLeave":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "ApplyLeave":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "LeaveMaster":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "Holiday":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "ATSS":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "ATS":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "HseATS":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "Meeting":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "MAgenda":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "MSchedule":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "MUnplaned":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "Suppliers":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "Supplier":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "DLog":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "SupplierPer":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "Providers":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "SupplierRate":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "CustMgmt":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "Visits":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "AddCust":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "Complaints":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "SurveyQues":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "UploadSurvey":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "CustReturnProcuct":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "Bidding":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "TrainingOri":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "AddTopic":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "Perftraining":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "EmpTrainingOri":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "Audit":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "InterAudit":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "ExterAudit":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "ExtAuditRpt":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "CustAudit":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "RaiseNc":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "InterChecklist":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "AuditChecklist":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "HSE":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "IncidentRpt":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "NearMissRept":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "EmergPlan":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "ToolTalk":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "SafetyLog":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "PpeLog":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "HseInsp":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "AirNoise":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "Waste":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "ObservCard":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "HseIndu":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "FirstBox":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "FireInspection":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "Project":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "Equip":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "Maintenance":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "Calibration":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "LegalReg":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "Legal":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "Certificates":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "Training":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "TrainingList":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "TrainingCal":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "Report":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "Rept":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "DashRept":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "MISRept":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "Permits":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "AccessPermit":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "WorkPermit":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "Settings":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "Company":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "Dept":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "User":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "DropDown":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "EmpRole":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "ISOStd":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "TRA":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "ResConsump":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "NC":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "Portal":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "sub_cr":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "access_portal":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
+
+                            case "portal_userlog":
+                                sql = "update t_access set " + Sselected[j] + "=0 where Id_access='" + Sselected[j - 1] + "'";
+                                objGlobalData.ExecuteQuery(sql);
+                                break;
                         }
                     }
                     return objGlobalData.UpdateAccesdetails(role_id);
@@ -2414,9 +2590,9 @@ namespace ISOStd.Models
             return false;
         }
     }
+
     public class AccessModelsList
     {
         public List<AccessModels> AccessList { get; set; }
     }
-
 }

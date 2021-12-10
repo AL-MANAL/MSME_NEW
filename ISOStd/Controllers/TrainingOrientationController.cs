@@ -1,23 +1,20 @@
-﻿using System;
+﻿using ISOStd.Filters;
+using ISOStd.Models;
+using PagedList;
+using System;
 using System.Collections.Generic;
+using System.Data;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using ISOStd.Models;
-using System.Data;
-using System.Net;
-using System.IO;
-using PagedList;
-using PagedList.Mvc;
-using Rotativa;
-using ISOStd.Filters;
 
 namespace ISOStd.Controllers
 {
     [PreventFromUrl]
     public class TrainingOrientationController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
+        private clsGlobal objGlobaldata = new clsGlobal();
 
         public TrainingOrientationController()
         {
@@ -33,29 +30,27 @@ namespace ISOStd.Controllers
             {
                 ViewBag.SubMenutype = "TrainingOrientation";
 
-                    if (form["emp_orientation_id"] != null && form["emp_orientation_id"] != "")
+                if (form["emp_orientation_id"] != null && form["emp_orientation_id"] != "")
+                {
+                    TrainingOrientationModels Orientation = new TrainingOrientationModels();
+                    string semp_orientation_id = form["emp_orientation_id"];
+
+                    if (Orientation.FunDeleteTrainingOrientation(semp_orientation_id))
                     {
-                        TrainingOrientationModels Orientation = new TrainingOrientationModels();
-                        string semp_orientation_id = form["emp_orientation_id"];
-                    
-                        if (Orientation.FunDeleteTrainingOrientation(semp_orientation_id))
-                        {
-                            TempData["Successdata"] = "Orientation details deleted successfully";
-                            return Json("Success");
-                        }
-                        else
-                        {
-                            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                            return Json("Failed");
-                        }
+                        TempData["Successdata"] = "Orientation details deleted successfully";
+                        return Json("Success");
                     }
                     else
                     {
-                        TempData["alertdata"] = "Id cannot be Null or empty";
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                         return Json("Failed");
                     }
-              
-
+                }
+                else
+                {
+                    TempData["alertdata"] = "Id cannot be Null or empty";
+                    return Json("Failed");
+                }
             }
             catch (Exception ex)
             {
@@ -64,7 +59,7 @@ namespace ISOStd.Controllers
             }
             return Json("Failed");
         }
-        
+
         [AllowAnonymous]
         public JsonResult OrientationTopicDelete(FormCollection form)
         {
@@ -73,30 +68,26 @@ namespace ISOStd.Controllers
                 ViewBag.SubMenutype = "TrainingOrientation";
 
                 if (form["TrainingOrientation_Id"] != null && form["TrainingOrientation_Id"] != "")
+                {
+                    TrainingOrientationModels Orientation = new TrainingOrientationModels();
+                    string sTrainingOrientation_Id = form["TrainingOrientation_Id"];
+
+                    if (Orientation.FunDeleteTrainingOrientationTopic(sTrainingOrientation_Id))
                     {
-
-                        TrainingOrientationModels Orientation = new TrainingOrientationModels();
-                        string sTrainingOrientation_Id = form["TrainingOrientation_Id"];
-
-
-                        if (Orientation.FunDeleteTrainingOrientationTopic(sTrainingOrientation_Id))
-                        {
-                            TempData["Successdata"] = "Orientation Topic deleted successfully";
-                            return Json("Success");
-                        }
-                        else
-                        {
-                            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                            return Json("Failed");
-                        }
+                        TempData["Successdata"] = "Orientation Topic deleted successfully";
+                        return Json("Success");
                     }
                     else
                     {
-                        TempData["alertdata"] = "Id cannot be Null or empty";
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                         return Json("Failed");
                     }
-                
-
+                }
+                else
+                {
+                    TempData["alertdata"] = "Id cannot be Null or empty";
+                    return Json("Failed");
+                }
             }
             catch (Exception ex)
             {
@@ -105,7 +96,7 @@ namespace ISOStd.Controllers
             }
             return Json("Failed");
         }
-        
+
         [HttpPost]
         [AllowAnonymous]
         public ActionResult AddTrainingOrientation(TrainingOrientationModels objOrientation, FormCollection form, HttpPostedFileBase file)
@@ -146,7 +137,6 @@ namespace ISOStd.Controllers
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 }
-
             }
             catch (Exception ex)
             {
@@ -156,7 +146,7 @@ namespace ISOStd.Controllers
 
             return RedirectToAction("AddOrientationDetails");
         }
-        
+
         [AllowAnonymous]
         public ActionResult AddOrientationDetails(int? page)
         {
@@ -178,7 +168,7 @@ namespace ISOStd.Controllers
                 DataSet dsOrientation = objGlobaldata.Getdetails(sSqlstmt);
 
                 if (dsOrientation.Tables.Count > 0 && dsOrientation.Tables[0].Rows.Count > 0)
-                {  
+                {
                     for (int i = 0; i < dsOrientation.Tables[0].Rows.Count; i++)
                     {
                         try
@@ -208,7 +198,7 @@ namespace ISOStd.Controllers
             }
             return View(objOrientation.Orientation.ToList());
         }
-        
+
         [AllowAnonymous]
         public ActionResult TrainingOrientationEdit()
         {
@@ -224,7 +214,7 @@ namespace ISOStd.Controllers
                     string sSqlstmt = "select TrainingOrientation_Id,Topic,DocUploadPath,branch,Department,Location from t_trainingorientation where TrainingOrientation_Id='" + sTrainingOrientation_Id + "'";
 
                     DataSet dsOrientationList = objGlobaldata.Getdetails(sSqlstmt);
-                    
+
                     if (dsOrientationList.Tables.Count > 0 && dsOrientationList.Tables[0].Rows.Count > 0)
                     {
                         objOrientaionModels = new TrainingOrientationModels
@@ -249,7 +239,6 @@ namespace ISOStd.Controllers
                 }
                 else
                 {
-
                     TempData["alertdata"] = "TrainingOrientationID cannot be Null or empty";
                     return RedirectToAction("AddOrientationDetails");
                 }
@@ -306,7 +295,6 @@ namespace ISOStd.Controllers
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 }
-
             }
             catch (Exception ex)
             {
@@ -316,7 +304,7 @@ namespace ISOStd.Controllers
 
             return RedirectToAction("AddOrientationDetails");
         }
-        
+
         [AllowAnonymous]
         public ActionResult AddEmployeeTrainingOrientation()
         {
@@ -336,7 +324,7 @@ namespace ISOStd.Controllers
             }
             return View();
         }
-        
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult AddEmployeeTrainingOrientation(TrainingOrientationModels objOrientation, FormCollection form)
@@ -356,7 +344,6 @@ namespace ISOStd.Controllers
 
                 for (int i = 0; TrainingTopic.Tables.Count > 0 && i < TrainingTopic.Tables[0].Rows.Count; i++)
                 {
-
                     EmpOrientationModels objOrient1 = new EmpOrientationModels();
                     objOrient1.TrainingOrientation_Id = form["Topic " + TrainingTopic.Tables[0].Rows[i]["TrainingOrientation_Id"].ToString()];
                     objOrient1.SQ_OptionsId = form["SQ_OptionsId " + TrainingTopic.Tables[0].Rows[i]["TrainingOrientation_Id"].ToString()];
@@ -390,12 +377,12 @@ namespace ISOStd.Controllers
 
             return RedirectToAction("EmployeeTrainingOrientationList");
         }
-        
+
         [AllowAnonymous]
         public ActionResult EmployeeTrainingOrientationList(string SearchText, int? page, string branch_name)
         {
             TrainingOrientationModelList objEmpOrient = new TrainingOrientationModelList();
-            objEmpOrient.Orientation = new List<TrainingOrientationModels>();                                
+            objEmpOrient.Orientation = new List<TrainingOrientationModels>();
 
             try
             {
@@ -432,9 +419,6 @@ namespace ISOStd.Controllers
 
                 for (int i = 0; dsCustomer.Tables.Count > 0 && i < dsCustomer.Tables[0].Rows.Count; i++)
                 {
-
-                  
-
                     try
                     {
                         TrainingOrientationModels objCustomer = new TrainingOrientationModels
@@ -446,7 +430,6 @@ namespace ISOStd.Controllers
                             Department = objGlobaldata.GetDeptIdByHrEmpId(dsCustomer.Tables[0].Rows[i]["Emp_id"].ToString()),
                             VerifiedBy = objGlobaldata.GetEmpHrNameById(dsCustomer.Tables[0].Rows[i]["VerifiedBy"].ToString())
                         };
-
 
                         objEmpOrient.Orientation.Add(objCustomer);
                     }
@@ -504,9 +487,6 @@ namespace ISOStd.Controllers
 
                 for (int i = 0; dsCustomer.Tables.Count > 0 && i < dsCustomer.Tables[0].Rows.Count; i++)
                 {
-
-                   
-
                     try
                     {
                         TrainingOrientationModels objCustomer = new TrainingOrientationModels
@@ -518,7 +498,6 @@ namespace ISOStd.Controllers
                             Department = objGlobaldata.GetDeptIdByHrEmpId(dsCustomer.Tables[0].Rows[i]["Emp_id"].ToString()),
                             VerifiedBy = objGlobaldata.GetEmpHrNameById(dsCustomer.Tables[0].Rows[i]["VerifiedBy"].ToString())
                         };
-
 
                         objEmpOrient.Orientation.Add(objCustomer);
                     }
@@ -541,7 +520,6 @@ namespace ISOStd.Controllers
         [AllowAnonymous]
         public ActionResult EmployeeTrainingOrientationDetails()
         {
-
             try
             {
                 ViewBag.SubMenutype = "TrainingOrientation";
@@ -551,7 +529,6 @@ namespace ISOStd.Controllers
 
                     string sSqlstmt = "select emp_orientation_id,Emp_id,First_name,Designation,Department,"
                     + "Orientation_date,VerifiedBy,TrainingStatus,Action,Evidence,OrientationStatus,VerificationDate FROM t_emp_orientation  where emp_orientation_id='" + semp_orientation_id + "'";
-
 
                     DataSet dsOrientation = objGlobaldata.Getdetails(sSqlstmt);
 
@@ -606,7 +583,6 @@ namespace ISOStd.Controllers
                         ViewBag.PerformanceElement = obTrainingOrient;
 
                         return View(objOrientation);
-
                     }
                     else
                     {
@@ -629,7 +605,6 @@ namespace ISOStd.Controllers
             return RedirectToAction("EmployeePerformanceEvalList");
         }
 
-
         [HttpPost]
         public JsonResult doesTopicNameExist(string Topic)
         {
@@ -638,7 +613,6 @@ namespace ISOStd.Controllers
 
             return Json(user);
         }
-
 
         [AllowAnonymous]
         public ActionResult TrainingOrientationVerification()
@@ -660,7 +634,6 @@ namespace ISOStd.Controllers
 
                     string sSqlstmt = "select emp_orientation_id,Emp_id,First_name,Designation,Department,Orientation_date FROM t_emp_orientation  where emp_orientation_id='" + semp_orientation_id + "'";
 
-
                     DataSet dsOrientation = objGlobaldata.Getdetails(sSqlstmt);
 
                     if (dsOrientation.Tables.Count > 0 && dsOrientation.Tables[0].Rows.Count > 0)
@@ -672,7 +645,6 @@ namespace ISOStd.Controllers
                             First_name = objGlobaldata.GetEmpHrNameById(dsOrientation.Tables[0].Rows[0]["Emp_id"].ToString()),
                             Designation = objGlobaldata.GetEmpDesignationByHrEmpId(dsOrientation.Tables[0].Rows[0]["Emp_id"].ToString()),
                             Department = dsOrientation.Tables[0].Rows[0]["Department"].ToString(),
-
                         };
 
                         DateTime dtDocDate = new DateTime();
@@ -704,7 +676,6 @@ namespace ISOStd.Controllers
                         ViewBag.PerformanceElement = obTrainingOrient;
 
                         return View(objOrientation);
-
                     }
                     else
                     {
@@ -727,7 +698,6 @@ namespace ISOStd.Controllers
             return RedirectToAction("EmployeePerformanceEvalList");
         }
 
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult TrainingOrientationVerification(TrainingOrientationModels objOrientation, FormCollection form, HttpPostedFileBase Evidence)
@@ -739,7 +709,6 @@ namespace ISOStd.Controllers
                 objOrientation.Action = form["Action"];
                 objOrientation.OrientationStatus = form["OrientationStatus"];
                 objOrientation.emp_orientation_id = form["emp_orientation_id"];
-
 
                 if (Evidence != null && Evidence.ContentLength > 0)
                 {

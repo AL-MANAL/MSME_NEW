@@ -1,20 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+﻿using ISOStd.Filters;
 using ISOStd.Models;
+using System;
+using System.Collections.Generic;
 using System.Data;
-using PagedList;
-using PagedList.Mvc;
-using ISOStd.Filters;
+using System.Linq;
+using System.Web.Mvc;
 
 namespace ISOStd.Controllers
 {
     [PreventFromUrl]
     public class SupplierPerformanceController : Controller
     {
-        clsGlobal objGlobalData = new clsGlobal();
+        private clsGlobal objGlobalData = new clsGlobal();
 
         public SupplierPerformanceController()
         {
@@ -29,37 +26,32 @@ namespace ISOStd.Controllers
             return View();
         }
 
-
         [AllowAnonymous]
         public JsonResult SupplierPerformanceDelete(FormCollection form)
         {
             try
-            {               
-                    if (form["Sup_Perf_id"] != null && form["Sup_Perf_id"] != "")
+            {
+                if (form["Sup_Perf_id"] != null && form["Sup_Perf_id"] != "")
+                {
+                    SupplierPerformanceModels Doc = new SupplierPerformanceModels();
+                    string sSup_Perf_id = form["Sup_Perf_id"];
+
+                    if (Doc.FunDeleteSupplierPerformanceDoc(sSup_Perf_id))
                     {
-
-                        SupplierPerformanceModels Doc = new SupplierPerformanceModels();
-                        string sSup_Perf_id = form["Sup_Perf_id"];
-
-
-                        if (Doc.FunDeleteSupplierPerformanceDoc(sSup_Perf_id))
-                        {
-                            TempData["Successdata"] = "Document deleted successfully";
-                            return Json("Success");
-                        }
-                        else
-                        {
-                            TempData["alertdata"] = objGlobalData.GetConstantValue("ExceptionError")[0];
-                            return Json("Failed");
-                        }
+                        TempData["Successdata"] = "Document deleted successfully";
+                        return Json("Success");
                     }
                     else
                     {
-                        TempData["alertdata"] = "SupplierPerformanceDoc Id cannot be Null or empty";
+                        TempData["alertdata"] = objGlobalData.GetConstantValue("ExceptionError")[0];
                         return Json("Failed");
                     }
-                
-
+                }
+                else
+                {
+                    TempData["alertdata"] = "SupplierPerformanceDoc Id cannot be Null or empty";
+                    return Json("Failed");
+                }
             }
             catch (Exception ex)
             {
@@ -85,14 +77,12 @@ namespace ISOStd.Controllers
             return View();
         }
 
-
         // POST: /SupplierPerformance/AddSupplierPerformance
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult AddSupplierPerformance(SupplierPerformanceModels objSupplierPerformance, FormCollection form)
         {
-
             try
             {
                 if (objSupplierPerformance != null)
@@ -150,7 +140,6 @@ namespace ISOStd.Controllers
             return View();
         }
 
-
         // GET: /SupplierPerformance/SupplierPerformanceList
 
         [AllowAnonymous]
@@ -169,7 +158,7 @@ namespace ISOStd.Controllers
                 string sBranchtree = objGlobalData.GetCurrentUserSession().BranchTree;
                 ViewBag.Branch = objGlobalData.GetMultiBranchListByID(sBranchtree);
 
-                //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS  
+                //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS
                 string sSqlstmt = "select Sup_Perf_id,Eval_FromDate,Eval_ToDate,Supplier_Name,Scope_OfSupplies,total_delv,accept_delv"
                 + ",ontime_delv,lowest_price,supp_price,SHE_total from t_supplier_performance where Active=1";
                 string sSearchtext = "";
@@ -244,12 +233,8 @@ namespace ISOStd.Controllers
                 }
                 if (dsSupplierPerformanceModels.Tables.Count > 0 && dsSupplierPerformanceModels.Tables[0].Rows.Count > 0)
                 {
-
-                    
-
                     for (int i = 0; i < dsSupplierPerformanceModels.Tables[0].Rows.Count; i++)
                     {
-
                         try
                         {
                             decimal stotal_delv = Convert.ToDecimal(dsSupplierPerformanceModels.Tables[0].Rows[i]["total_delv"].ToString());
@@ -340,7 +325,7 @@ namespace ISOStd.Controllers
                 string sBranchtree = objGlobalData.GetCurrentUserSession().BranchTree;
                 ViewBag.Branch = objGlobalData.GetMultiBranchListByID(sBranchtree);
 
-                //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS  
+                //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS
                 string sSqlstmt = "select Sup_Perf_id,Eval_FromDate,Eval_ToDate,Supplier_Name,Scope_OfSupplies,total_delv,accept_delv"
                 + ",ontime_delv,lowest_price,supp_price,SHE_total from t_supplier_performance where Active=1";
                 string sSearchtext = "";
@@ -415,12 +400,8 @@ namespace ISOStd.Controllers
                 }
                 if (dsSupplierPerformanceModels.Tables.Count > 0 && dsSupplierPerformanceModels.Tables[0].Rows.Count > 0)
                 {
-
-                  
-
                     for (int i = 0; i < dsSupplierPerformanceModels.Tables[0].Rows.Count; i++)
                     {
-
                         try
                         {
                             decimal stotal_delv = Convert.ToDecimal(dsSupplierPerformanceModels.Tables[0].Rows[i]["total_delv"].ToString());
@@ -557,7 +538,6 @@ namespace ISOStd.Controllers
                     }
                     if (dsSupplierPerformanceModels.Tables.Count > 0 && dsSupplierPerformanceModels.Tables[0].Rows.Count > 0)
                     {
-
                         try
                         {
                             decimal stotal_delv = Convert.ToDecimal(dsSupplierPerformanceModels.Tables[0].Rows[0]["total_delv"].ToString());
@@ -619,7 +599,6 @@ namespace ISOStd.Controllers
                             //    objSupplierPerformanceModels.Eval_ToDate = dateValue;
                             //}
                             objSupplierPerformanceModels.Action_sup = objGlobalData.GetSupplierPerfAction(objSupplierPerformanceModels.rating);
-
                         }
                         catch (Exception ex)
                         {
@@ -637,7 +616,6 @@ namespace ISOStd.Controllers
                 {
                     TempData["alertdata"] = "SupID cannot be Null or empty";
                     return RedirectToAction("SupplierPerformanceList");
-
                 }
             }
             catch (Exception ex)
@@ -647,7 +625,6 @@ namespace ISOStd.Controllers
             }
             return View(objSupplierPerformanceModels);
         }
-
 
         [AllowAnonymous]
         public ActionResult SupplierPerformanceInfo(int id)
@@ -709,7 +686,6 @@ namespace ISOStd.Controllers
                     }
                     if (dsSupplierPerformanceModels.Tables.Count > 0 && dsSupplierPerformanceModels.Tables[0].Rows.Count > 0)
                     {
-
                         try
                         {
                             decimal stotal_delv = Convert.ToDecimal(dsSupplierPerformanceModels.Tables[0].Rows[0]["total_delv"].ToString());
@@ -765,7 +741,6 @@ namespace ISOStd.Controllers
                             //    objSupplierPerformanceModels.Eval_ToDate = dateValue;
                             //}
                             objSupplierPerformanceModels.Action_sup = objGlobalData.GetSupplierPerfAction(objSupplierPerformanceModels.rating);
-
                         }
                         catch (Exception ex)
                         {
@@ -783,7 +758,6 @@ namespace ISOStd.Controllers
                 {
                     TempData["alertdata"] = "SupID cannot be Null or empty";
                     return RedirectToAction("SupplierPerformanceList");
-
                 }
             }
             catch (Exception ex)
@@ -811,7 +785,7 @@ namespace ISOStd.Controllers
                 ViewBag.EmpList = objGlobalData.GetHrEmployeeListbox();
                 ViewBag.Env = objGlobalData.GetConstantValue("YesNo");
                 ViewBag.Rating = objGlobalData.GetConstantValue("SupplierRating");
-                //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS  
+                //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS
                 string sSqlstmt = "select Sup_Perf_id,Eval_FromDate,Eval_ToDate,Supplier_Name,Scope_OfSupplies,total_delv,accept_delv"
                 + ",ontime_delv,lowest_price,supp_price,SHE_total,hse_compliance,iso9001_compliance,recomend_by,payment_terms,sale_perf,EnvMgmt from t_supplier_performance  where Sup_Perf_id='" + sSup_Perf_id + "' order by Sup_Perf_id desc";
 
@@ -819,7 +793,6 @@ namespace ISOStd.Controllers
 
                 if (dsSupplierPerformanceModels.Tables.Count > 0 && dsSupplierPerformanceModels.Tables[0].Rows.Count > 0)
                 {
-
                     objSupplierPerformanceModels = new SupplierPerformanceModels
                     {
                         Sup_Perf_id = Convert.ToInt16(dsSupplierPerformanceModels.Tables[0].Rows[0]["Sup_Perf_id"].ToString()),
@@ -859,7 +832,6 @@ namespace ISOStd.Controllers
             ViewBag.SuppList = objGlobalData.GetSupplierList();
             ViewBag.EvalToYear = objGlobalData.GetDropdownList("Years");
             return View(objSupplierPerformanceModels);
-
         }
 
         // POST: /SupplierPerformance/SupplierPerformanceEdit
@@ -885,7 +857,6 @@ namespace ISOStd.Controllers
                     //{
                     //    objSupplierPerformance.Eval_ToDate = dateValue;
                     //}
-
 
                     if (objSupplierPerformance.FunUpdateSupplierPerf(objSupplierPerformance))
                     {

@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+﻿using ISOStd.Filters;
 using ISOStd.Models;
-using System.Data;
-using System.IO;
 using PagedList;
-using PagedList.Mvc;
-using ISOStd.Filters;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Web.Mvc;
 
 namespace ISOStd.Controllers
 {
@@ -16,12 +13,14 @@ namespace ISOStd.Controllers
     public class HolidayAddController : Controller
     {
         // GET: HolidayAdd
-        clsGlobal objGlobaldata = new clsGlobal();
+        private clsGlobal objGlobaldata = new clsGlobal();
+
         public HolidayAddController()
         {
             ViewBag.Menutype = "LeaveMgmt";
             ViewBag.SubMenutype = "Holiday";
         }
+
         // GET: Certificates
 
         public ActionResult Index()
@@ -58,7 +57,6 @@ namespace ISOStd.Controllers
 
                 if (dsHolList.Tables.Count > 0 && dsHolList.Tables[0].Rows.Count > 0)
                 {
-
                     for (int i = 0; i < dsHolList.Tables[0].Rows.Count; i++)
                     {
                         try
@@ -67,8 +65,6 @@ namespace ISOStd.Controllers
                             {
                                 Id_holiday = (dsHolList.Tables[0].Rows[i]["Id_holiday"].ToString()),
                                 Name = dsHolList.Tables[0].Rows[i]["Name"].ToString(),
-
-
                             };
                             DateTime dtDocDate;
                             if (dsHolList.Tables[0].Rows[i]["Frdate"].ToString() != ""
@@ -98,7 +94,6 @@ namespace ISOStd.Controllers
             }
 
             return View(obj.HolidayList.ToList().ToPagedList(page ?? 1, 10));
-
         }
 
         [AllowAnonymous]
@@ -125,7 +120,6 @@ namespace ISOStd.Controllers
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 }
-
             }
             catch (Exception ex)
             {
@@ -135,33 +129,26 @@ namespace ISOStd.Controllers
             return RedirectToAction("Holiday");
         }
 
-
         [AllowAnonymous]
         public JsonResult HolidayDelete(FormCollection form)
         {
             try
             {
+                if (form["Id_holiday"] != null && form["Id_holiday"] != "")
+                {
+                    HolidayAddModel cert = new HolidayAddModel();
+                    string sId_holiday = form["Id_holiday"];
 
-                
-                    if (form["Id_holiday"] != null && form["Id_holiday"] != "")
+                    if (cert.FunDeleteCertificate(sId_holiday))
                     {
-
-                        HolidayAddModel cert = new HolidayAddModel();
-                        string sId_holiday = form["Id_holiday"];
-
-
-                        if (cert.FunDeleteCertificate(sId_holiday))
-                        {
-                            TempData["Successdata"] = "Holiday details deleted successfully";
-                            return Json("Success");
-                        }
-                        else
-                        {
-                            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                            return Json("Failed");
-                        }
-                    
-
+                        TempData["Successdata"] = "Holiday details deleted successfully";
+                        return Json("Success");
+                    }
+                    else
+                    {
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                        return Json("Failed");
+                    }
                 }
                 else
                 {
@@ -177,13 +164,11 @@ namespace ISOStd.Controllers
             return Json("Failed");
         }
 
-
         public ActionResult HolidayEdit()
         {
             HolidayAddModel obj = new HolidayAddModel();
             try
             {
-
                 if (Request.QueryString["Id_holiday"] != null && Request.QueryString["Id_holiday"] != "")
                 {
                     string sId_holiday = Request.QueryString["Id_holiday"];
@@ -192,13 +177,10 @@ namespace ISOStd.Controllers
                     DataSet dsHolitList = objGlobaldata.Getdetails(sSqlstmt);
                     if (dsHolitList.Tables.Count > 0 && dsHolitList.Tables[0].Rows.Count > 0)
                     {
-
                         obj = new HolidayAddModel
                         {
                             Id_holiday = (dsHolitList.Tables[0].Rows[0]["Id_holiday"].ToString()),
                             Name = dsHolitList.Tables[0].Rows[0]["Name"].ToString(),
-
-
                         };
                         DateTime dtDocDate;
                         if (dsHolitList.Tables[0].Rows[0]["Frdate"].ToString() != ""
@@ -214,7 +196,6 @@ namespace ISOStd.Controllers
                     }
                     else
                     {
-
                         TempData["alertdata"] = "Holiday ID cannot be Null or empty";
                         return RedirectToAction("Holiday");
                     }
@@ -238,8 +219,6 @@ namespace ISOStd.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult HolidayEdit(HolidayAddModel obj, FormCollection form)
         {
-
-
             try
             {
                 DateTime dateValue;
@@ -252,7 +231,6 @@ namespace ISOStd.Controllers
                     obj.Todate = dateValue;
                 }
 
-
                 if (obj.FunUpdateHolidady(obj))
                 {
                     TempData["Successdata"] = "Holiday details updated successfully";
@@ -261,7 +239,6 @@ namespace ISOStd.Controllers
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 }
-
             }
             catch (Exception ex)
             {
@@ -271,12 +248,5 @@ namespace ISOStd.Controllers
 
             return RedirectToAction("Holiday");
         }
-
-
-
-
-
-
-
     }
 }

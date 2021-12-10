@@ -1,38 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-using ISOStd.Models;
+﻿using ISOStd.Models;
+using System;
 using System.Data;
-using System.Net;
-using System.IO;
-using PagedList;
-using PagedList.Mvc;
+using System.Web.Mvc;
 
 namespace ISOStd.Controllers
 {
     public class DocumentsController : Controller
     {
-
-
         public DocumentsController()
         {
             ViewBag.Menutype = "DocumentsStats";
         }
-        clsGlobal objGlobaldata = new clsGlobal();
+
+        private clsGlobal objGlobaldata = new clsGlobal();
+
         // GET: Documents
         public ActionResult Index()
         {
             return View();
         }
 
-
         public ActionResult Documents()
         {
             try
             {
-
                 //internal documents start
                 string sSqlstmt = "Select  * from t_mgmt_documents where `status` = 1;";
                 DataSet dsInternalTotal = objGlobaldata.Getdetails(sSqlstmt);
@@ -84,7 +75,7 @@ namespace ISOStd.Controllers
                 DataSet dsDocTrackApproved = objGlobaldata.Getdetails(sSqlstmt);
                 ViewBag.dsDocTrackApproved = dsDocTrackApproved;
 
-                sSqlstmt = "select * from t_document_tracking where datediff(now(),exp_date) > 30 and active = 0;" ;
+                sSqlstmt = "select * from t_document_tracking where datediff(now(),exp_date) > 30 and active = 0;";
                 DataSet dsDocTrackDeclined = objGlobaldata.Getdetails(sSqlstmt);
                 ViewBag.dsDocTrackDeclined = dsDocTrackDeclined;
                 //Documents Tracked ends
@@ -117,7 +108,6 @@ namespace ISOStd.Controllers
                 ViewBag.dsVisaDeclined = dsVisaDeclined;
                 //Visa Documents Ends
 
-
                 //Employee Insurance
                 sSqlstmt = "select * from t_hr_employee where emp_status=1;";
                 DataSet dsInsuranceTotal = objGlobaldata.Getdetails(sSqlstmt);
@@ -145,7 +135,6 @@ namespace ISOStd.Controllers
                 DataSet dsPerformanceDeclined = objGlobaldata.Getdetails(sSqlstmt);
                 ViewBag.dsPerformanceDeclined = dsPerformanceDeclined;
                 //Peformance Evaluation Ends
-
 
                 //MOC
                 sSqlstmt = "select * from t_changemanagement where  active=1;";
@@ -190,9 +179,7 @@ namespace ISOStd.Controllers
                 DataSet dsAccessGovtApproved = objGlobaldata.Getdetails(sSqlstmt);
                 ViewBag.dsAccessGovtApproved = dsAccessGovtApproved;
                 //Access Request - Goverment Ends
-
             }
-
             catch (Exception ex)
             {
                 objGlobaldata.AddFunctionalLog("Exception in Docstats: " + ex.ToString());

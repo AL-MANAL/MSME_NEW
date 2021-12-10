@@ -365,7 +365,7 @@ namespace ISOStd.Models
                     IssuedBy = IssuedBy.TrimEnd(',');
                     IssuedBy = IssuedBy.TrimStart(',');
                 }
-                string sInformation = "", sHeader = "";
+                string sHeader = "";
                 string sCCList = objGlobalData.GetMultiHrEmpEmailIdById(objNCRCAPA.Correction_taken_by);
                 sCCList = Regex.Replace(sCCList, ",+", ",");
                 sCCList = sCCList.Trim();
@@ -447,7 +447,7 @@ namespace ISOStd.Models
         {
             try
             {
-                string sInformation = "", sHeader = "";
+                string sHeader = "";
                 string sCCList = objGlobalData.GetMultiHrEmpEmailIdById(objNCRCAPA.IssuedBy);
                 sCCList = Regex.Replace(sCCList, ",+", ",");
                 sCCList = sCCList.Trim();
@@ -532,7 +532,7 @@ namespace ISOStd.Models
                     IssuedBy = IssuedBy.TrimEnd(',');
                     IssuedBy = IssuedBy.TrimStart(',');
                 }
-                string sInformation = "", sHeader = "";
+                string sHeader = "";
                 string sCCList = "";
                 string Report_close = "";
 

@@ -1,11 +1,7 @@
 ﻿using DataAccess.Contract;
 using DataAccess.Models;
 using HA.HALoG5BWService.DatabaseAccess.Impl;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DataAccess.Impl
 {
@@ -19,7 +15,8 @@ namespace DataAccess.Impl
         {
             this._connectionString = Constants.DbConnectionString;
         }
-        #endregion
+
+        #endregion Constructor
 
         public List<DropDownModel> GetDepartment(string type)
         {

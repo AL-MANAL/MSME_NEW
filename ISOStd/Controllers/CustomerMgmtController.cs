@@ -1,22 +1,21 @@
-﻿using System;
+﻿using ISOStd.Filters;
+using ISOStd.Models;
+using PagedList;
+using System;
 using System.Collections.Generic;
+using System.Data;
+using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Mvc;
-using ISOStd.Models;
-using System.IO;
-using System.Data;
-using PagedList;
-using PagedList.Mvc;
-using System.Text.RegularExpressions;
-using ISOStd.Filters;
-using System.Net.Http;
+
 namespace ISOStd.Controllers
 {
     [PreventFromUrl]
     public class CustomerMgmtController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
+        private clsGlobal objGlobaldata = new clsGlobal();
 
         public CustomerMgmtController()
         {
@@ -63,7 +62,7 @@ namespace ISOStd.Controllers
             }
             return Json(Valid);
         }
-        
+
         [HttpPost]
         public JsonResult doesEmailIDExist(string EmailId)
         {
@@ -75,7 +74,7 @@ namespace ISOStd.Controllers
             }
             return Json(user);
         }
-     
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult AddCustomer(CustomerModels objCustomerModels, FormCollection form, IEnumerable<HttpPostedFileBase> upload)
@@ -92,8 +91,8 @@ namespace ISOStd.Controllers
                 if (form["LicenceExpiry"] != null && DateTime.TryParse(form["LicenceExpiry"], out dateValue) == true)
                 {
                     objCustomerModels.LicenceExpiry = dateValue;
-                }               
-               
+                }
+
                 if (upload != null && files.ContentLength > 0)
                 {
                     objCustomerModels.upload = "";
@@ -117,7 +116,6 @@ namespace ISOStd.Controllers
                 {
                     ViewBag.Message = "You have not specified a file.";
                 }
-
 
                 CustomerContactsModelsList objCustomerContactsList = new CustomerContactsModelsList();
                 objCustomerContactsList.lstCustomerContacts = new List<CustomerContactsModels>();
@@ -212,7 +210,7 @@ namespace ISOStd.Controllers
 
                 //            Surveys = readTask.Result;
                 //        }
-                //        else //web api sent error response 
+                //        else //web api sent error response
                 //        {
                 //            //log response status here..
 
@@ -307,7 +305,6 @@ namespace ISOStd.Controllers
             }
 
             return View(objCustomerModelsList.CustomerMList.ToList());
-
         }
 
         //[AllowAnonymous]
@@ -363,7 +360,7 @@ namespace ISOStd.Controllers
 
         //                    Surveys = readTask.Result;
         //                }
-        //                else //web api sent error response 
+        //                else //web api sent error response
         //                {
         //                    //log response status here..
 
@@ -459,7 +456,6 @@ namespace ISOStd.Controllers
         //    return Json("Success");
         //}
 
-
         //[AllowAnonymous]
         //public ActionResult ExportCustomerList(string SearchText, int? page)
         //{
@@ -471,7 +467,6 @@ namespace ISOStd.Controllers
 
         //    try
         //    {
-
         //        string sSqlstmt = " select CompanyName, Address, City, State, PostalCode, Country, ContactPerson, PhoneNumber, FaxNumber, "
         //                    + " EmailId, CustType,upload,VatNo,LicenceExpiry from t_customer_info where compstatus=1";
         //        string sSearchtext = "";
@@ -525,7 +520,6 @@ namespace ISOStd.Controllers
 
                     if (dsCustomer.Tables.Count > 0 && dsCustomer.Tables[0].Rows.Count > 0)
                     {
-
                         objCustomer = new CustomerModels
                         {
                             CustID = dsCustomer.Tables[0].Rows[0]["CustID"].ToString(),
@@ -549,7 +543,6 @@ namespace ISOStd.Controllers
                             branch = objGlobaldata.GetMultiCompanyBranchNameById(dsCustomer.Tables[0].Rows[0]["branch"].ToString()),
                             Department = objGlobaldata.GetMultiDeptNameById(dsCustomer.Tables[0].Rows[0]["Department"].ToString()),
                             Location = objGlobaldata.GetDivisionLocationById(dsCustomer.Tables[0].Rows[0]["Location"].ToString()),
-
                         };
                         DateTime dateValue;
                         if (DateTime.TryParse(dsCustomer.Tables[0].Rows[0]["LicenceExpiry"].ToString(), out dateValue))
@@ -559,7 +552,6 @@ namespace ISOStd.Controllers
                         //sSqlstmt = "select * from t_Company_Branch where CompId=" + objCustomer.CustID;
                         //ViewBag.Branches = objGlobaldata.GetCompanyBranch(objCustomer.CustID);
 
-
                         CustomerContactsModelsList objCustomerContactsList = new CustomerContactsModelsList();
                         objCustomerContactsList.lstCustomerContacts = new List<CustomerContactsModels>();
 
@@ -568,11 +560,10 @@ namespace ISOStd.Controllers
                             sSqlstmt = "select ContactsId, tci.CustID, CompanyName, tcic.PhoneNumber, tcic.EmailId, tcic.ContactPerson, tcic.MobileNumber, tcic.designation from t_customer_info_contacts as tcic,"
                                     + " t_customer_info as tci where tcic.CustID=tci.CustID and tci.CustID='" + sCustSuppID + "'  and tcic.active=1 ";
 
-
                             sSqlstmt = sSqlstmt + " order by tcic.ContactPerson asc";
 
                             DataSet dsCustomerContacts = objGlobaldata.Getdetails(sSqlstmt);
-                            
+
                             if (dsCustomerContacts.Tables.Count > 0 && dsCustomerContacts.Tables[0].Rows.Count > 0)
                             {
                                 for (int i = 0; dsCustomerContacts.Tables.Count > 0 && i < dsCustomerContacts.Tables[0].Rows.Count; i++)
@@ -607,7 +598,6 @@ namespace ISOStd.Controllers
                             TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                         }
 
-
                         return View(objCustomer);
                     }
                     else
@@ -630,7 +620,7 @@ namespace ISOStd.Controllers
 
             return RedirectToAction("CustomerList");
         }
-        
+
         [AllowAnonymous]
         public ActionResult CustomerInfo(int id)
         {
@@ -715,7 +705,6 @@ namespace ISOStd.Controllers
                         TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                     }
 
-
                     return View(objCustomer);
                 }
                 else
@@ -732,7 +721,7 @@ namespace ISOStd.Controllers
 
             return RedirectToAction("CustomerList");
         }
-        
+
         [AllowAnonymous]
         public ActionResult CustomerEdit()
         {
@@ -769,7 +758,7 @@ namespace ISOStd.Controllers
                             CustType = objGlobaldata.GetDropdownitemById(dsCustomer.Tables[0].Rows[0]["CustType"].ToString()),
                             upload = dsCustomer.Tables[0].Rows[0]["upload"].ToString(),
                             VatNo = dsCustomer.Tables[0].Rows[0]["VatNo"].ToString(),
-                            branch =(dsCustomer.Tables[0].Rows[0]["branch"].ToString()),
+                            branch = (dsCustomer.Tables[0].Rows[0]["branch"].ToString()),
                             Department = (dsCustomer.Tables[0].Rows[0]["Department"].ToString()),
                             Location = (dsCustomer.Tables[0].Rows[0]["Location"].ToString()),
                         };
@@ -794,15 +783,12 @@ namespace ISOStd.Controllers
                             sSqlstmt = "select ContactsId, tci.CustID, CompanyName, tcic.PhoneNumber, tcic.EmailId, tcic.ContactPerson, tcic.MobileNumber,tcic.designation from t_customer_info_contacts as tcic,"
                                     + " t_customer_info as tci where tcic.CustID=tci.CustID and tci.CustID='" + sCustSuppID + "'  and tcic.active=1 ";
 
-
                             sSqlstmt = sSqlstmt + " order by tcic.ContactPerson asc";
 
                             DataSet dsCustomerContacts = objGlobaldata.Getdetails(sSqlstmt);
 
-
                             if (dsCustomerContacts.Tables.Count > 0 && dsCustomerContacts.Tables[0].Rows.Count > 0)
                             {
-
                                 for (int i = 0; dsCustomerContacts.Tables.Count > 0 && i < dsCustomerContacts.Tables[0].Rows.Count; i++)
                                 {
                                     try
@@ -816,7 +802,7 @@ namespace ISOStd.Controllers
                                             MobileNumber = dsCustomerContacts.Tables[0].Rows[i]["MobileNumber"].ToString(),
                                             ContactPerson = dsCustomerContacts.Tables[0].Rows[i]["ContactPerson"].ToString(),
                                             EmailId = dsCustomerContacts.Tables[0].Rows[i]["EmailId"].ToString(),
-                                            designation= dsCustomerContacts.Tables[0].Rows[i]["designation"].ToString(),
+                                            designation = dsCustomerContacts.Tables[0].Rows[i]["designation"].ToString(),
                                         };
                                         objCustomerContactsList.lstCustomerContacts.Add(objCustomerContacts);
                                     }
@@ -857,7 +843,7 @@ namespace ISOStd.Controllers
 
             return RedirectToAction("CustomerList");
         }
-          
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult CustomerEdit(CustomerModels objCustomerModels, FormCollection form, IEnumerable<HttpPostedFileBase> upload)
@@ -876,7 +862,7 @@ namespace ISOStd.Controllers
             {
                 objCustomerModels.LicenceExpiry = dateValue;
             }
-           
+
             if (upload != null && files.ContentLength > 0)
             {
                 objCustomerModels.upload = "";
@@ -914,7 +900,7 @@ namespace ISOStd.Controllers
             {
                 objCustomerModels.upload = null;
             }
-            
+
             if (objCustomerModels.FunUpdateCustomer(objCustomerModels))
             {
                 TempData["Successdata"] = "Updated successfully";
@@ -928,7 +914,6 @@ namespace ISOStd.Controllers
 
         //Get: /CustomerMgmt/CustomerDelete
         [HttpPost]
-
         public JsonResult CustomerDelete(FormCollection form)
         {
             string sCustID = form["CustID"];
@@ -947,7 +932,6 @@ namespace ISOStd.Controllers
                     {
                         TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                     }
-
                 }
                 catch (Exception ex)
                 {
@@ -958,10 +942,9 @@ namespace ISOStd.Controllers
             return Json("Delete Failed, Customer Id null");
         }
 
-
         //Get: /CustomerMgmt/EmailFeedbackform
 
-        public ActionResult EmailFeedbackform(string EmailIds,string selectedSurveysId,string selectedSurveysName)
+        public ActionResult EmailFeedbackform(string EmailIds, string selectedSurveysId, string selectedSurveysName)
         {
             try
             {
@@ -980,7 +963,6 @@ namespace ISOStd.Controllers
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                     return Json("Failed");
-
                 }
             }
             catch (Exception ex)
@@ -1065,7 +1047,6 @@ namespace ISOStd.Controllers
                 string sSqlstmt = "select ContactsId, tci.CustID, CompanyName, tcic.PhoneNumber, tcic.EmailId, tcic.ContactPerson, tcic.MobileNumber from t_customer_info_contacts as tcic,"
                         + " t_customer_info as tci where tcic.CustID=tci.CustID  and tcic.active=1 ";
 
-
                 if (Request.QueryString["CustID"] != null && Request.QueryString["CustID"] != "")
                 {
                     string sCustID = Request.QueryString["CustID"];
@@ -1084,10 +1065,8 @@ namespace ISOStd.Controllers
 
                 DataSet dsCustomer = objGlobaldata.Getdetails(sSqlstmt);
 
-
                 if (dsCustomer.Tables.Count > 0 && dsCustomer.Tables[0].Rows.Count > 0)
                 {
-
                     for (int i = 0; dsCustomer.Tables.Count > 0 && i < dsCustomer.Tables[0].Rows.Count; i++)
                     {
                         try
@@ -1120,7 +1099,6 @@ namespace ISOStd.Controllers
 
             return View(objCustomerContactsList.lstCustomerContacts.ToList().ToPagedList(page ?? 1, 40));
         }
-
 
         //
         // GET: /CustomerMgmt/CustomerContactEdit
@@ -1172,7 +1150,6 @@ namespace ISOStd.Controllers
             return RedirectToAction("CustomerContactList");
         }
 
-
         //
         // POST: /CustomerMgmt/CustomerEdit
 
@@ -1195,8 +1172,6 @@ namespace ISOStd.Controllers
 
         //Get: /CustomerMgmt/CustomerContactDelete
         [HttpPost]
-        // [ValidateAntiForgeryToken]
-
         public JsonResult CustomerContactDelete(FormCollection form)
         {
             string sContactsId = form["ContactsId"];
@@ -1224,6 +1199,7 @@ namespace ISOStd.Controllers
             }
             return Json("Delete Failed");
         }
+
         public JsonResult ChangeManagementApproveRejectNoty(string IdMgmt, int iStatus, string PendingFlg)
         {
             try
@@ -1238,12 +1214,10 @@ namespace ISOStd.Controllers
                 else if (iStatus == 1)
                 {
                     sStatus = "Approved";
-
                 }
                 else if (iStatus == 2)
                 {
                     sStatus = "Rejected";
-
                 }
                 if (objManagementModels.FunChangeManagementRequestApproveOrReject(IdMgmt, iStatus))
                 {
@@ -1253,7 +1227,6 @@ namespace ISOStd.Controllers
                 {
                     return Json("Failed");
                 }
-
             }
             catch (Exception ex)
             {

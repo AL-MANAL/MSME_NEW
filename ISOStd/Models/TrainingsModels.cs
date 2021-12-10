@@ -391,7 +391,6 @@ namespace ISOStd.Models
             try
             {
                 TrainingsModels objTrainingsModels = new TrainingsModels();
-                string sType = "email";
                 //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS  
                 string sSqlstmt = "SELECT TrainingID, Attendees, DeptId, Training_Topic, Traning_BeforeDate, Training_Requested_By, Reasonfor_Training,"
                 + "(case when RequestStatus='0' then 'Pending' when RequestStatus='1' then 'Approved' when RequestStatus='2' then 'Rejected' end) "
@@ -412,7 +411,7 @@ namespace ISOStd.Models
                 {
                     //objGlobalData.AddFunctionalLog("Step");
                     //AddFunctionalLog("Step");
-                    string sHeader, sInformation = "", sContent = "", aAttachment = "", BccEmailIds = "";
+                    string sHeader, sInformation = "", sContent = "", aAttachment = "";
 
                     //using streamreader for reading my htmltemplate 
                     //Form the Email Subject and Body content

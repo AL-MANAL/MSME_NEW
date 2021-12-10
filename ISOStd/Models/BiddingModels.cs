@@ -1,18 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Web.Mvc;
-using System.IO;
 
 namespace ISOStd.Models
 {
     [Bind(Exclude = "proposal_date")]
     public class BiddingModels
     {
-        clsGlobal objGlobalData = new clsGlobal();
+        private clsGlobal objGlobalData = new clsGlobal();
+
         [Display(Name = "Id")]
         public int id_bidding { get; set; }
 
@@ -46,8 +44,6 @@ namespace ISOStd.Models
 
         [Display(Name = "Proposal Status")]
         public string proposal_status { get; set; }
-
-        
 
         [Display(Name = "Document")]
         public string upload { get; set; }
@@ -83,6 +79,7 @@ namespace ISOStd.Models
             }
             return false;
         }
+
         internal bool FunAddBiddingDetails(BiddingModels objBidModels)
         {
             try
@@ -91,7 +88,7 @@ namespace ISOStd.Models
                 int count = name.Length;
                 string user = objGlobalData.GetCurrentUserSession().empid;
                 string sSqlstmt = "insert into t_bidding (client,folderref,projectname,preparedby,checkedby,proposalref,loggedby,approver_count,upload,NotificationPeriod,NotificationValue";
-              
+
                 string sFields = "", sFieldValue = "";
 
                 if (objBidModels.submission_date != null && objBidModels.submission_date > Convert.ToDateTime("01/01/0001 00:00:00"))
@@ -115,11 +112,9 @@ namespace ISOStd.Models
                 sSqlstmt = sSqlstmt + sFieldValue + ")";
                 if (objGlobalData.ExecuteQuery(sSqlstmt))
                 {
-
                     SendEmail(objBidModels);
                     return true;
                 }
-
             }
             catch (Exception ex)
             {
@@ -127,35 +122,36 @@ namespace ISOStd.Models
             }
             return false;
         }
+
         internal bool SendEmail(BiddingModels objBidModels)
         {
             try
             {
-                string sInformation = "", sHeader = "";
+                string sHeader = "";
                 string sCCList = objGlobalData.GetHrEmpEmailIdById(objBidModels.preparedby);
-               
+
                 string sUserName = objGlobalData.GetMultiHrEmpNameById(objBidModels.checkedby);
                 string sToEmailId = objGlobalData.GetMultiHrEmpEmailIdById(objBidModels.checkedby);
-                     
-                        sHeader = "<tr><td ><b>Client:<b></td> <td >"
-                               + objBidModels.client + "</td></tr>"
-                               + "<tr><td ><b>Project Name:<b></td> <td >" + objBidModels.projectname + "</td></tr>"
-                               + "<tr><td ><b>Submission Date:<b></td> <td >" + objBidModels.submission_date.ToString("dd/MM/yyyy") + "</td></tr>"
-                               + "<tr><td ><b>Prepared By:<b></td> <td >" + objGlobalData.GetEmpHrNameById(objBidModels.preparedby) + "</td></tr>"
-                               + "<tr><td ><b>Proposal Ref:<b></td> <td >" + objBidModels.proposalref + "</td></tr>"
-                                + "<tr><td ><b>Proposal Date:<b></td> <td >" + objBidModels.proposal_date.ToString("dd/MM/yyyy")  + "</td></tr>";
 
-                        Dictionary<string, string> dicEmailContent = objGlobalData.FormEmailBody(sUserName, "BiddingApproval", sHeader, "", "Bidding Details for approval");
-                        objGlobalData.Sendmail(sToEmailId, dicEmailContent["subject"], dicEmailContent["body"], "", sCCList, "");
+                sHeader = "<tr><td ><b>Client:<b></td> <td >"
+                       + objBidModels.client + "</td></tr>"
+                       + "<tr><td ><b>Project Name:<b></td> <td >" + objBidModels.projectname + "</td></tr>"
+                       + "<tr><td ><b>Submission Date:<b></td> <td >" + objBidModels.submission_date.ToString("dd/MM/yyyy") + "</td></tr>"
+                       + "<tr><td ><b>Prepared By:<b></td> <td >" + objGlobalData.GetEmpHrNameById(objBidModels.preparedby) + "</td></tr>"
+                       + "<tr><td ><b>Proposal Ref:<b></td> <td >" + objBidModels.proposalref + "</td></tr>"
+                        + "<tr><td ><b>Proposal Date:<b></td> <td >" + objBidModels.proposal_date.ToString("dd/MM/yyyy") + "</td></tr>";
+
+                Dictionary<string, string> dicEmailContent = objGlobalData.FormEmailBody(sUserName, "BiddingApproval", sHeader, "", "Bidding Details for approval");
+                objGlobalData.Sendmail(sToEmailId, dicEmailContent["subject"], dicEmailContent["body"], "", sCCList, "");
                 return true;
             }
             catch (Exception ex)
             {
                 objGlobalData.AddFunctionalLog("Exception in SendEmail: " + ex.ToString());
-
             }
             return false;
         }
+
         internal bool FunUpdateBiddingDetails(BiddingModels objBidModels)
         {
             try
@@ -187,18 +183,17 @@ namespace ISOStd.Models
             return false;
         }
 
-        internal bool FunBiddingDocApprove(string sid_bidding, int sStatus,string comments)
+        internal bool FunBiddingDocApprove(string sid_bidding, int sStatus, string comments)
         {
             try
             {
                 string sApprovedDate = DateTime.Now.ToString("yyyy-MM-dd HH':'mm':'ss");
                 string user = "";
-             
-                    user = objGlobalData.GetCurrentUserSession().empid;
-                
+
+                user = objGlobalData.GetCurrentUserSession().empid;
+
                 if (sStatus == 1)
                 {
-
                     string sSqlstmt1 = "update t_bidding set approver_count=approver_count-1 where id_bidding='" + sid_bidding + "'";
                     if (objGlobalData.ExecuteQuery(sSqlstmt1))
                     {
@@ -218,7 +213,6 @@ namespace ISOStd.Models
                                     objGlobalData.ExecuteQuery(Sql2);
                                     SendApproveEmail(sid_bidding);
                                     return true;
-
                                 }
                             }
                             else
@@ -229,7 +223,6 @@ namespace ISOStd.Models
                                 string Sql4 = "insert into t_bidding_comments set id_bidding='" + sid_bidding + "',CommentBy='" + user + "',Comments='" + comments + "',ApprovalStatus='Approved',ApproveDate='" + sApprovedDate + "'";
                                 return objGlobalData.ExecuteQuery(Sql4);
                             }
-
                         }
                     }
                 }
@@ -246,7 +239,7 @@ namespace ISOStd.Models
         {
             try
             {
-                string sInformation = "", sHeader = "";
+                string sHeader = "";
 
                 string sSqlStmt = "select id_bidding,client,folderref,projectname,submission_date,preparedby,checkedby,proposalref"
                     + ",proposal_date from t_bidding where id_bidding='" + sid_bidding + "'";
@@ -275,17 +268,13 @@ namespace ISOStd.Models
                         return true;
                     }
                 }
-
             }
             catch (Exception ex)
             {
                 objGlobalData.AddFunctionalLog("Exception in SendApproveEmail: " + ex.ToString());
-
             }
             return false;
         }
-
-
 
         public MultiSelectList GetPreparer()
         {
@@ -295,7 +284,6 @@ namespace ISOStd.Models
 
             try
             {
-                
                 string sSqlstmt1 = "select Id from roles where Active=1 and RoleName='Preparer'";
 
                 DataSet dsEmp = objGlobalData.Getdetails(sSqlstmt1);
@@ -308,7 +296,6 @@ namespace ISOStd.Models
                     }
                 }
                 string sSqlstmt = "select FirstName, empid from t_employee where active=1 and FIND_IN_SET('" + Id + "',Role) order by FirstName asc";
-
 
                 DataSet dsEmp1 = objGlobalData.Getdetails(sSqlstmt);// and CompanyId='" + sCompanyId+"'");
                 if (dsEmp1.Tables.Count > 0 && dsEmp1.Tables[0].Rows.Count > 0)
@@ -324,8 +311,6 @@ namespace ISOStd.Models
                         emplist.EmpList.Add(emp);
                     }
                 }
-
-
             }
             catch (Exception ex)
             {
@@ -334,7 +319,6 @@ namespace ISOStd.Models
 
             return new MultiSelectList(emplist.EmpList, "Empid", "Empname");
         }
-    
     }
 
     public class BiddingModelsList

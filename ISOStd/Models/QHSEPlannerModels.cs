@@ -167,7 +167,7 @@ namespace ISOStd.Models
         {
             try
             {
-                string sInformation = "", sHeader = "", sToEmailId = "", sCCList = "", sUserName = "", sUser = "";
+                string sInformation = "", sHeader = "", sToEmailId = "", sCCList = "", sUserName = "";
                 sCCList = objGlobalData.GetMultiHrEmpEmailIdById(objModel.Person_responsible) + ","+objGlobalData.GetMultiHrEmpEmailIdById(objGlobalData.GetCurrentUserSession().empid);
                 sToEmailId = objGlobalData.GetMultiHrEmpEmailIdById(objModel.notification_to);
                 sUserName = objGlobalData.GetMultiHrEmpNameById(objModel.notification_to);
@@ -334,10 +334,10 @@ namespace ISOStd.Models
             try
             {
 
-                string sInformation = "", sHeader = "", sToEmailId = "", sCCList = "", sUserName = "", sUser = "";
+                string sInformation = "", sHeader = "", sToEmailId = "", sCCList = "", sUserName = "";
 
-                    // string sInformation = "", sHeader = "";
-                    sCCList = objGlobalData.GetMultiHrEmpEmailIdById(objGlobalData.GetCurrentUserSession().empid);
+                // string sInformation = "", sHeader = "";
+                sCCList = objGlobalData.GetMultiHrEmpEmailIdById(objGlobalData.GetCurrentUserSession().empid);
                     sToEmailId = objGlobalData.GetMultiHrEmpEmailIdById(lstPlanner.lstPlan[i].Person_responsible);
                     //sUserName = objGlobalData.GetMultiHrEmpNameById(objGlobalData.GetHSEEmployee());
 

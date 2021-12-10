@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using ISOStd.Models;
+using System;
 using System.Web.Mvc;
-using ISOStd.Models;
 
 namespace ISOStd.Controllers
 {
     public class LocationController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
+        private clsGlobal objGlobaldata = new clsGlobal();
 
         public LocationController()
         {
@@ -17,7 +14,7 @@ namespace ISOStd.Controllers
         }
 
         [AllowAnonymous]
-        public ActionResult AddLocations(string id_country = "",string area_type="")
+        public ActionResult AddLocations(string id_country = "", string area_type = "")
         {
             LocationModels objModel = new LocationModels();
             try
@@ -26,13 +23,13 @@ namespace ISOStd.Controllers
                 //MultiSelectList CountryList = objGlobaldata.GetCountryListbox();
                 //ViewBag.CountryHeader = CountryList;//GetDepartmentList();
                 ViewBag.CountryHeader = objGlobaldata.GetCountryListbox();
-               // ViewBag.AreaName = objGlobaldata.GetAreaTypeNameList();
+                // ViewBag.AreaName = objGlobaldata.GetAreaTypeNameList();
                 if (id_country != null && id_country != "" && area_type != "" && area_type != null)
                 {
                     // ViewBag.dsCountry = objGlobaldata.Getdetails("select id_country, country_name from t_country where id_country='" + id_country + "' order by id_country asc");
                     ViewBag.dsLocations = objGlobaldata.Getdetails("select id_location,id_country, location_name from t_location where id_country='" + id_country + "' and area_type='" + area_type + "' and active= 1 order by id_country asc");
                     ViewBag.Country = id_country;
-                   // ViewBag.Area = area_type;
+                    // ViewBag.Area = area_type;
                 }
                 else if (id_country != null && id_country != "")
                 {
@@ -63,7 +60,6 @@ namespace ISOStd.Controllers
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 }
-
             }
             catch (Exception ex)
             {
@@ -71,9 +67,8 @@ namespace ISOStd.Controllers
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
 
-            return RedirectToAction("AddLocations", new { id_country = objModels.id_country, area_type =objModels.area_type });
+            return RedirectToAction("AddLocations", new { id_country = objModels.id_country, area_type = objModels.area_type });
         }
-        
 
         [AllowAnonymous]
         public JsonResult UpdateLocation(string id_location, string location_name)
@@ -82,10 +77,10 @@ namespace ISOStd.Controllers
             try
             {
                 objModels.id_location = id_location;
-                objModels.location_name = location_name;              
+                objModels.location_name = location_name;
 
                 if (objModels.FunUpdateLocations(objModels))
-                {                    
+                {
                     TempData["Successdata"] = "Updated Location details successfully";
                     return Json("Update Success");
                 }
@@ -102,10 +97,10 @@ namespace ISOStd.Controllers
             return Json("Update Failed");
         }
 
-        [HttpPost]        
+        [HttpPost]
         public JsonResult DeleteLocation(FormCollection form)
         {
-            string id_location = form["id_location"];            
+            string id_location = form["id_location"];
 
             if (id_location != "")
             {
@@ -121,7 +116,6 @@ namespace ISOStd.Controllers
                     {
                         TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                     }
-
                 }
                 catch (Exception ex)
                 {
@@ -135,28 +129,26 @@ namespace ISOStd.Controllers
         [HttpPost]
         public JsonResult GetLocations(string id_country)
         {
-            
             MultiSelectList LocList = objGlobaldata.GetLocationListWithCountryId(id_country);
 
             return Json(LocList);
         }
 
         [HttpPost]
-        public JsonResult GetLocationsWithArea(string id_country,string area_type)
+        public JsonResult GetLocationsWithArea(string id_country, string area_type)
         {
             //MultiSelectList LocList = new MultiSelectList("");
 
-            if (area_type != "" && area_type != null )
+            if (area_type != "" && area_type != null)
             {
                 MultiSelectList LocList = objGlobaldata.GetLocationListWithCountrynAreaId(id_country, area_type);
                 return Json(LocList);
             }
             else
             {
-                MultiSelectList LocList=objGlobaldata.GetLocationListWithCountryId(id_country);
+                MultiSelectList LocList = objGlobaldata.GetLocationListWithCountryId(id_country);
                 return Json(LocList);
-            } 
-            
+            }
         }
 
         public ActionResult FunGetAreaTypeNameList()
@@ -164,6 +156,5 @@ namespace ISOStd.Controllers
             MultiSelectList AreaList = objGlobaldata.GetAreaTypeNameList();
             return Json(AreaList);
         }
-
     }
 }

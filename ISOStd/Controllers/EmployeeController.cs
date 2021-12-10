@@ -1,21 +1,18 @@
-﻿using System;
+﻿using ISOStd.Filters;
+using ISOStd.Models;
+using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using ISOStd.Models;
-using System.Data;
-using System.IO;
-using PagedList;
-using PagedList.Mvc;
-using ISOStd.Filters;
 
 namespace ISOStd.Controllers
 {
     [PreventFromUrl]
     public class EmployeeController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
+        private clsGlobal objGlobaldata = new clsGlobal();
 
         public EmployeeController()
         {
@@ -37,6 +34,7 @@ namespace ISOStd.Controllers
         {
             return View();
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult ResetPasswordExp(EmployeeModels objEmployeeModel, FormCollection form)
@@ -51,12 +49,10 @@ namespace ISOStd.Controllers
             {
                 if (model.LoginAuthenticate(sUsername, sPwd))
                 {
-
                     string sEmpID = objGlobaldata.GetEmpIDByUsername(sUsername, clsGlobal.Encrypt(sPwd));
                     if (objEmployeeModel.FunPwdReset(sEmpID, clsGlobal.Encrypt(objEmployeeModel.Pwd)))
                     {
                         TempData["Successdata"] = "Password reset successful";
-
                     }
                     else
                     {
@@ -103,7 +99,6 @@ namespace ISOStd.Controllers
             //}
         }
 
-
         public JsonResult FunGetDetails(string emp_no)
         {
             EmployeeModels objEmployeeModel = new EmployeeModels();
@@ -132,7 +127,6 @@ namespace ISOStd.Controllers
             return Json(objEmployeeModel);
         }
 
-
         //[HttpPost]
         public JsonResult doesCompEmpIDExist(string CompEmpId)
         {
@@ -145,7 +139,6 @@ namespace ISOStd.Controllers
 
             return Json(user);
         }
-
 
         //[HttpPost]
         public JsonResult doesEmailIDExist(string EmailId)
@@ -168,7 +161,6 @@ namespace ISOStd.Controllers
         {
             try
             {
-
                 //if (ModelState.IsValid)
                 {
                     //objEmployeeModel.CompEmpId= objGlobaldata.GetEmpIDByEmpNo(form["CompEmpId"]);
@@ -200,7 +192,6 @@ namespace ISOStd.Controllers
                     //    ViewBag.Message = "You have not specified a file.";
                     //}
 
-
                     if (objEmployeeModel.FunRegisterUser(objEmployeeModel))
                     {
                         //objEmployeeModel.MailTempPassword(objEmployeeModel.emailAddress);
@@ -220,7 +211,6 @@ namespace ISOStd.Controllers
 
             return RedirectToAction("EmployeeList");
         }
-
 
         //
         // GET: /Employee/EmployeeList
@@ -265,13 +255,12 @@ namespace ISOStd.Controllers
                     sSearchtext = sSearchtext + " and tt.division='" + sBranch_name + "' ";
                 }
 
-                sSqlstmt = sSqlstmt + sSearchtext +" order by emp_firstname asc";
+                sSqlstmt = sSqlstmt + sSearchtext + " order by emp_firstname asc";
                 DataSet dsEmployeeList = objGlobaldata.Getdetails(sSqlstmt);
                 if (dsEmployeeList.Tables.Count > 0)
                 {
                     for (int i = 0; i < dsEmployeeList.Tables[0].Rows.Count; i++)
                     {
-
                         try
                         {
                             EmployeeModels objEmployee = new EmployeeModels
@@ -360,7 +349,6 @@ namespace ISOStd.Controllers
                 {
                     for (int i = 0; i < dsEmployeeList.Tables[0].Rows.Count; i++)
                     {
-
                         try
                         {
                             EmployeeModels objEmployee = new EmployeeModels
@@ -377,7 +365,7 @@ namespace ISOStd.Controllers
                                 //Role = objGlobaldata.GetMultiRoleById(dsEmployeeList.Tables[0].Rows[i]["Role"].ToString()),
                                 Work_Location = objGlobaldata.GetDivisionLocationById(dsEmployeeList.Tables[0].Rows[i]["Emp_work_location"].ToString()),
                                 division = objGlobaldata.GetCompanyBranchNameById(dsEmployeeList.Tables[0].Rows[i]["division"].ToString()),
-                             };
+                            };
 
                             objEmployeeModelList.EmployeeList.Add(objEmployee);
                         }
@@ -387,7 +375,7 @@ namespace ISOStd.Controllers
                             TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                         }
                     }
-                }               
+                }
             }
             catch (Exception ex)
             {
@@ -397,7 +385,7 @@ namespace ISOStd.Controllers
 
             return Json("Success");
         }
-               
+
         [AllowAnonymous]
         public ActionResult EmployeeDetails()
         {
@@ -460,7 +448,6 @@ namespace ISOStd.Controllers
                             Work_Location = objGlobaldata.GetDivisionLocationById(dsEmployee.Tables[0].Rows[0]["Emp_work_location"].ToString()),
                             division = objGlobaldata.GetMultiWorkLocationById(dsEmployee.Tables[0].Rows[0]["division"].ToString())
                         };
-
                     }
                     else
                     {
@@ -479,9 +466,6 @@ namespace ISOStd.Controllers
                     TempData["alertdata"] = "Employee Id cannot be Null or empty";
                     return RedirectToAction("EmployeeList");
                 }
-
-
-
             }
             catch (Exception ex)
             {
@@ -490,7 +474,7 @@ namespace ISOStd.Controllers
             }
             return View(objEmployee);
         }
-            
+
         [AllowAnonymous]
         public ActionResult EmployeeEdit()
         {
@@ -498,7 +482,7 @@ namespace ISOStd.Controllers
             try
             {
                 //   ViewBag.DeptList = objGlobaldata.GetDepartmentWithIdListbox();//GetDepartmentList();
-               // ViewBag.Roles = objGlobaldata.GetRoles();
+                // ViewBag.Roles = objGlobaldata.GetRoles();
                 // ViewBag.EmpType = new string[] { "Internal", "External" };
                 // ViewBag.DeptInCharge = new string[] { "No", "Yes" };
                 //  ViewBag.Work_Location = objGlobaldata.GetCompanyBranchListbox();
@@ -506,7 +490,6 @@ namespace ISOStd.Controllers
                 ViewBag.SubMenutype = "Employee";
 
                 //objGlobaldata.CreateUserSession();
-
 
                 if (Request.QueryString["EmpID"] != null && Request.QueryString["EmpID"] != "")
                 {
@@ -522,7 +505,6 @@ namespace ISOStd.Controllers
 
                     if (dsEmployee.Tables.Count > 0 && dsEmployee.Tables[0].Rows.Count > 0)
                     {
-
                         objEmployee = new EmployeeModels
                         {
                             EmpID = dsEmployee.Tables[0].Rows[0]["EmpID"].ToString(),
@@ -541,7 +523,6 @@ namespace ISOStd.Controllers
                             division = objGlobaldata.GetMultiWorkLocationById(dsEmployee.Tables[0].Rows[0]["division"].ToString())
                         };
                     }
-
                 }
                 else
                 {
@@ -556,7 +537,6 @@ namespace ISOStd.Controllers
             }
 
             return View(objEmployee);
-
         }
 
         //
@@ -617,7 +597,6 @@ namespace ISOStd.Controllers
         // GET: /Employee/EmployeeDelete
 
         [HttpPost]
-        //[AllowAnonymous]
         public ActionResult EmployeeDelete(FormCollection form)
         {
             string sEmpID = form["EmpID"];
@@ -699,7 +678,6 @@ namespace ISOStd.Controllers
             return View();
         }
 
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult ResetPassword(EmployeeModels objEmployeeModel, FormCollection form)
@@ -712,7 +690,6 @@ namespace ISOStd.Controllers
 
                 if (objEmployeeModel.Pwd != null)
                 {
-
                     if (objEmployeeModel.FunPwdReset(sEmpID, clsGlobal.Encrypt(objEmployeeModel.Pwd)))
                     {
                         TempData["Successdata"] = "Password reset successful";
@@ -734,8 +711,6 @@ namespace ISOStd.Controllers
             }
             return RedirectToAction("Index", "Home");
         }
-
-
 
         [HttpPost]
         public JsonResult SendResetPassword(FormCollection form)
@@ -761,7 +736,6 @@ namespace ISOStd.Controllers
             return Json("Password Reset Failed, Email id is null");
         }
 
-
         [AllowAnonymous]
         public ActionResult ForgotPassword()
         {
@@ -769,7 +743,6 @@ namespace ISOStd.Controllers
             //string sTempPwd= objGlobaldata.GenerateTempPassword();
             return View();
         }
-
 
         [HttpPost]
         [AllowAnonymous]
@@ -790,7 +763,7 @@ namespace ISOStd.Controllers
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];// objGlobaldata.GetConstantValue("ExceptionError")[0];
                 }
 
-                //return RedirectToAction("Login", "Account");                
+                //return RedirectToAction("Login", "Account");
             }
             else
             {
@@ -799,6 +772,7 @@ namespace ISOStd.Controllers
 
             return View();
         }
+
         //[HttpPost]
         //public JsonResult FunCheckPaswd(string Password)
         //{

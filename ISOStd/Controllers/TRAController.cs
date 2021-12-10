@@ -1,22 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+﻿using ISOStd.Filters;
 using ISOStd.Models;
-using System.IO;
+using System;
+using System.Collections.Generic;
 using System.Data;
-using PagedList;
-using PagedList.Mvc;
-using Rotativa;
-using ISOStd.Filters;
+using System.Linq;
+using System.Web.Mvc;
 
 namespace ISOStd.Controllers
 {
     [PreventFromUrl]
     public class TRAController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
+        private clsGlobal objGlobaldata = new clsGlobal();
 
         public TRAController()
         {
@@ -43,7 +38,7 @@ namespace ISOStd.Controllers
                 ViewBag.severity = objGlobaldata.GetDropdownList("Risk-Severity");
                 ViewBag.probability = objGlobaldata.GetDropdownList("Risk-likelihood");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 objGlobaldata.AddFunctionalLog("Exception in AddTRA: " + ex.ToString());
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
@@ -55,7 +50,6 @@ namespace ISOStd.Controllers
         [AllowAnonymous]
         public JsonResult AddTRA(FormCollection form, TRAModels objTRA)
         {
-           
             try
             {
                 objTRA.branch = form["branch"];
@@ -67,10 +61,10 @@ namespace ISOStd.Controllers
 
                 TRAModelsList objTRATaskList = new TRAModelsList();
                 objTRATaskList.TRAList = new List<TRAModels>();
-                
+
                 DateTime dateValue;
 
-                if(DateTime.TryParse(form["tra_date"], out dateValue) == true)
+                if (DateTime.TryParse(form["tra_date"], out dateValue) == true)
                 {
                     objTRA.tra_date = dateValue;
                 }
@@ -86,9 +80,9 @@ namespace ISOStd.Controllers
                     TRAModels objTRAModel = new TRAModels();
                     if (form["pers_name " + i] != "" && form["pers_name " + i] != null)
                     {
-                    objTRAModel.pers_name = form["pers_name " + i];
-                    objTRAModel.designation = form["designation " + i];
-                    objTRAPersList.TRAList.Add(objTRAModel);
+                        objTRAModel.pers_name = form["pers_name " + i];
+                        objTRAModel.designation = form["designation " + i];
+                        objTRAPersList.TRAList.Add(objTRAModel);
                     }
                 }
                 if (objTRA.activity != "" && objTRA.activity != null)
@@ -121,9 +115,9 @@ namespace ISOStd.Controllers
                     }
                 }
 
-                if(objTRA.FunAddTRA(objTRA, objTRAPersList, objTRATaskList))
+                if (objTRA.FunAddTRA(objTRA, objTRAPersList, objTRATaskList))
                 {
-                    TempData["Successdata"] = "Added TRA details successfully  with Reference Number '" + objTRA.tra_no + "'"; 
+                    TempData["Successdata"] = "Added TRA details successfully  with Reference Number '" + objTRA.tra_no + "'";
                 }
                 else
                 {
@@ -152,7 +146,7 @@ namespace ISOStd.Controllers
                 string sBranchtree = objGlobaldata.GetCurrentUserSession().BranchTree;
                 ViewBag.Branch = objGlobaldata.GetMultiBranchListByID(sBranchtree);
 
-                string sSearchtext = "";               
+                string sSearchtext = "";
 
                 if (branch_name != null && branch_name != "")
                 {
@@ -169,7 +163,7 @@ namespace ISOStd.Controllers
                 DataSet dsTRA = objGlobaldata.Getdetails(sSqlstmt);
 
                 for (int i = 0; dsTRA.Tables.Count > 0 && i < dsTRA.Tables[0].Rows.Count; i++)
-                {                  
+                {
                     try
                     {
                         TRAModels objTRAModels = new TRAModels
@@ -241,7 +235,6 @@ namespace ISOStd.Controllers
 
                 DataSet dsTRA = objGlobaldata.Getdetails(sSqlstmt);
 
-
                 for (int i = 0; dsTRA.Tables.Count > 0 && i < dsTRA.Tables[0].Rows.Count; i++)
                 {
                     try
@@ -285,12 +278,10 @@ namespace ISOStd.Controllers
             return Json("Success");
         }
 
-
-
         [AllowAnonymous]
         public ActionResult TRAEdit()
         {
-            RiskMgmtModels objRisk = new RiskMgmtModels(); 
+            RiskMgmtModels objRisk = new RiskMgmtModels();
             try
             {
                 if (Request.QueryString["id_tra"] != null)
@@ -323,7 +314,6 @@ namespace ISOStd.Controllers
                             task_performer = dsTRAList.Tables[0].Rows[0]["task_performer"].ToString(),
                             branch = /*objGlobaldata.GetMultiCompanyBranchNameById*/(dsTRAList.Tables[0].Rows[0]["branch"].ToString()),
                             department = /*objGlobaldata.GetMultiDeptNameById*/(dsTRAList.Tables[0].Rows[0]["department"].ToString()),
-
                         };
                         DateTime dtValue;
                         if (DateTime.TryParse(dsTRAList.Tables[0].Rows[0]["tra_date"].ToString(), out dtValue))
@@ -333,7 +323,6 @@ namespace ISOStd.Controllers
                         ViewBag.Branch = objGlobaldata.GetCompanyBranchListbox();
                         ViewBag.Location = objGlobaldata.GetLocationbyMultiDivision(dsTRAList.Tables[0].Rows[0]["branch"].ToString());
                         ViewBag.Department = objGlobaldata.GetDepartmentList1(dsTRAList.Tables[0].Rows[0]["branch"].ToString());
-
 
                         TRAModelsList objTRAPersList = new TRAModelsList();
                         objTRAPersList.TRAList = new List<TRAModels>();
@@ -406,7 +395,6 @@ namespace ISOStd.Controllers
                             ViewBag.objTaskList = objTRATaskList;
                         }
 
-
                         TRAModelsList objTRAEvalList = new TRAModelsList();
                         objTRAEvalList.TRAList = new List<TRAModels>();
 
@@ -440,7 +428,7 @@ namespace ISOStd.Controllers
                                         close_by = dsEvalList.Tables[0].Rows[i]["close_by"].ToString(),
                                         out_come = dsEvalList.Tables[0].Rows[i]["out_come"].ToString(),
                                     };
-                                   
+
                                     if (DateTime.TryParse(dsEvalList.Tables[0].Rows[i]["close_date"].ToString(), out dtValue))
                                     {
                                         objEval.close_date = dtValue;
@@ -494,7 +482,7 @@ namespace ISOStd.Controllers
 
                 TRAModelsList objTRATaskList = new TRAModelsList();
                 objTRATaskList.TRAList = new List<TRAModels>();
-                
+
                 DateTime dateValue;
 
                 if (DateTime.TryParse(form["tra_date"], out dateValue) == true)
@@ -553,7 +541,7 @@ namespace ISOStd.Controllers
                         objTRATaskModel.tra_status = form["tra_status" + i];
                         objTRATaskModel.close_by = form["close_by" + i];
                         objTRATaskModel.out_come = form["out_come" + i];
-                        if (DateTime.TryParse(form["close_date" +i], out dateValue) == true)
+                        if (DateTime.TryParse(form["close_date" + i], out dateValue) == true)
                         {
                             objTRATaskModel.close_date = dateValue;
                         }
@@ -587,7 +575,6 @@ namespace ISOStd.Controllers
             {
                 if (Request.QueryString["id_tra"] != null)
                 {
-                   
                     string sid_tra = Request.QueryString["id_tra"];
 
                     string sSqlstmt = "select id_tra,tra_no,tra_date,revno,tra_ref,location,desc_work,document_title,duration,task_performer,branch,department from t_tra"
@@ -610,7 +597,6 @@ namespace ISOStd.Controllers
                             task_performer = dsTRAList.Tables[0].Rows[0]["task_performer"].ToString(),
                             branch = objGlobaldata.GetMultiCompanyBranchNameById(dsTRAList.Tables[0].Rows[0]["branch"].ToString()),
                             department = objGlobaldata.GetMultiDeptNameById(dsTRAList.Tables[0].Rows[0]["department"].ToString()),
-
                         };
                         DateTime dtValue;
                         if (DateTime.TryParse(dsTRAList.Tables[0].Rows[0]["tra_date"].ToString(), out dtValue))
@@ -618,16 +604,14 @@ namespace ISOStd.Controllers
                             objTRAModel.tra_date = dtValue;
                         }
 
-                        
-
                         sSqlstmt = "select id_jobperformer,id_tra,pers_name,designation from t_tra_jobperformer where id_tra='" + sid_tra + "'";
                         ViewBag.Pers = objGlobaldata.Getdetails(sSqlstmt);
-                
+
                         sSqlstmt = "select id_task,id_tra,activity,hazards,causes,consequences,existing_measure," +
                             "severity,probability,risk_rating,additional_measures,add_severity,add_probability,add_risk_rating" +
                             ",tra_status,close_date,close_by,out_come from t_tra_task where id_tra='" + sid_tra + "'";
                         ViewBag.Task = objGlobaldata.Getdetails(sSqlstmt);
-                       
+
                         return View(objTRAModel);
                     }
                     else
@@ -649,38 +633,33 @@ namespace ISOStd.Controllers
             }
             return RedirectToAction("TRAList");
         }
-        
+
         [AllowAnonymous]
         public JsonResult TRADocDelete(FormCollection form)
         {
             try
             {
+                if (form["id_tra"] != null && form["id_tra"] != "")
+                {
+                    TRAModels Doc = new TRAModels();
+                    string sid_tra = form["id_tra"];
 
-                   if (form["id_tra"] != null && form["id_tra"] != "")
+                    if (Doc.FunDeleteTRADoc(sid_tra))
                     {
-
-                        TRAModels Doc = new TRAModels();
-                        string sid_tra = form["id_tra"];
-
-
-                        if (Doc.FunDeleteTRADoc(sid_tra))
-                        {
-                            TempData["Successdata"] = "Document deleted successfully";
-                            return Json("Success");
-                        }
-                        else
-                        {
-                            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                            return Json("Failed");
-                        }
+                        TempData["Successdata"] = "Document deleted successfully";
+                        return Json("Success");
                     }
                     else
                     {
-                        TempData["alertdata"] = "Id cannot be Null or empty";
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                         return Json("Failed");
                     }
-               
-
+                }
+                else
+                {
+                    TempData["alertdata"] = "Id cannot be Null or empty";
+                    return Json("Failed");
+                }
             }
             catch (Exception ex)
             {
@@ -689,7 +668,7 @@ namespace ISOStd.Controllers
             }
             return Json("Failed");
         }
-        
+
         [HttpPost]
         public JsonResult FunGetRiskRating(string severity, string probability)
         {
@@ -707,6 +686,5 @@ namespace ISOStd.Controllers
 
             return Json(RiskRating);
         }
-
-    }   
+    }
 }

@@ -1,27 +1,25 @@
-﻿using System;
+﻿using ISOStd.Filters;
+using ISOStd.Models;
+using System;
 using System.Collections.Generic;
+using System.Data;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using ISOStd.Models;
-using System.Data;
-using System.Net;
-using System.IO;
-using PagedList;
-using PagedList.Mvc;
-using Rotativa;
-using ISOStd.Filters;
 
 namespace ISOStd.Controllers
 {
     [PreventFromUrl]
     public class QHSEPlannerController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
+        private clsGlobal objGlobaldata = new clsGlobal();
+
         public QHSEPlannerController()
         {
             ViewBag.Menutype = "QHSEPlanner";
         }
+
         public ActionResult AddQHSEPlanner()
         {
             try
@@ -35,10 +33,10 @@ namespace ISOStd.Controllers
                 objGlobaldata.AddFunctionalLog("Exception in AddQHSEPlanner: " + ex.ToString());
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
-           
+
             return View();
         }
-        
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult AddQHSEPlanner(QHSEPlannerModels objPlan, FormCollection form)
@@ -46,7 +44,6 @@ namespace ISOStd.Controllers
             try
             {
                 objPlan.Logged_by = objGlobaldata.GetCurrentUserSession().empid;
-
 
                 QHSEPlannerModelsList lstPlanner = new QHSEPlannerModelsList();
                 lstPlanner.lstPlan = new List<QHSEPlannerModels>();
@@ -90,7 +87,7 @@ namespace ISOStd.Controllers
                     lstPlanner.lstPlan.Add(objQPlan);
                 }
 
-                if (objPlan.FunAddQHSEPlanner(objPlan,lstPlanner))
+                if (objPlan.FunAddQHSEPlanner(objPlan, lstPlanner))
                 {
                     TempData["Successdata"] = "QHSE Planner added successfully";
                 }
@@ -98,7 +95,6 @@ namespace ISOStd.Controllers
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 }
-
             }
             catch (Exception ex)
             {
@@ -107,10 +103,9 @@ namespace ISOStd.Controllers
             }
             return RedirectToAction("QHSEPlannerList");
         }
-      
 
         [AllowAnonymous]
-        public ActionResult QHSEPlannerList(int? page,string branch_name)
+        public ActionResult QHSEPlannerList(int? page, string branch_name)
         {
             QHSEPlannerModelsList objPlanList = new QHSEPlannerModelsList();
             objPlanList.lstPlan = new List<QHSEPlannerModels>();
@@ -119,13 +114,13 @@ namespace ISOStd.Controllers
             {
                 string sSqlstmt = "select id_qhse,QHSE_name,Activity_name,Planned_date,Target_date,Actual_date,Person_responsible,Status,Remarks"
                 + " from t_qhse_planner where Active=1";
-               
+
                 string sSearchtext = "";
                 string sBranch_name = objGlobaldata.GetCurrentUserSession().division;
                 string sBranchtree = objGlobaldata.GetCurrentUserSession().BranchTree;
                 ViewBag.Branch = objGlobaldata.GetMultiBranchListByID(sBranchtree);
 
-                if (branch_name != null && branch_name !="")
+                if (branch_name != null && branch_name != "")
                 {
                     sSearchtext = sSearchtext + " and branch='" + branch_name + "' ";
                     ViewBag.Branch_name = branch_name;
@@ -139,9 +134,6 @@ namespace ISOStd.Controllers
 
                 if (dsPlannerList.Tables.Count > 0 && dsPlannerList.Tables[0].Rows.Count > 0)
                 {
-                   
-                                          
-                   
                     for (int i = 0; i < dsPlannerList.Tables[0].Rows.Count; i++)
                     {
                         try
@@ -149,12 +141,11 @@ namespace ISOStd.Controllers
                             QHSEPlannerModels objHSEModels = new QHSEPlannerModels
                             {
                                 id_qhse = Convert.ToInt16(dsPlannerList.Tables[0].Rows[i]["id_qhse"].ToString()),
-                                QHSE_name =objGlobaldata.GetIsoStdNameById(dsPlannerList.Tables[0].Rows[i]["QHSE_name"].ToString()),
+                                QHSE_name = objGlobaldata.GetIsoStdNameById(dsPlannerList.Tables[0].Rows[i]["QHSE_name"].ToString()),
                                 Activity_name = dsPlannerList.Tables[0].Rows[i]["Activity_name"].ToString(),
                                 Person_responsible = objGlobaldata.GetMultiHrEmpNameById(dsPlannerList.Tables[0].Rows[i]["Person_responsible"].ToString()),
                                 Status = objGlobaldata.GetDropdownitemById(dsPlannerList.Tables[0].Rows[i]["Status"].ToString()),
                                 Remarks = dsPlannerList.Tables[0].Rows[i]["Remarks"].ToString(),
-
                             };
 
                             DateTime dtValue;
@@ -185,7 +176,7 @@ namespace ISOStd.Controllers
                 objGlobaldata.AddFunctionalLog("Exception in QHSEPlannerList: " + ex.ToString());
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
-          
+
             return View(objPlanList.lstPlan.ToList());
         }
 
@@ -219,10 +210,6 @@ namespace ISOStd.Controllers
 
                 if (dsPlannerList.Tables.Count > 0 && dsPlannerList.Tables[0].Rows.Count > 0)
                 {
-
-                  
-
-
                     for (int i = 0; i < dsPlannerList.Tables[0].Rows.Count; i++)
                     {
                         try
@@ -235,7 +222,6 @@ namespace ISOStd.Controllers
                                 Person_responsible = objGlobaldata.GetMultiHrEmpNameById(dsPlannerList.Tables[0].Rows[i]["Person_responsible"].ToString()),
                                 Status = objGlobaldata.GetDropdownitemById(dsPlannerList.Tables[0].Rows[i]["Status"].ToString()),
                                 Remarks = dsPlannerList.Tables[0].Rows[i]["Remarks"].ToString(),
-
                             };
 
                             DateTime dtValue;
@@ -268,7 +254,7 @@ namespace ISOStd.Controllers
             }
             return Json("Success");
         }
-        
+
         [AllowAnonymous]
         public ActionResult QHSEPlannerEdit()
         {
@@ -287,7 +273,6 @@ namespace ISOStd.Controllers
                     DataSet dsPlannerList = objGlobaldata.Getdetails(sSqlstmt);
                     if (dsPlannerList.Tables.Count > 0 && dsPlannerList.Tables[0].Rows.Count > 0)
                     {
-
                         objPlanner = new QHSEPlannerModels
                         {
                             id_qhse = Convert.ToInt16(dsPlannerList.Tables[0].Rows[0]["id_qhse"].ToString()),
@@ -310,7 +295,6 @@ namespace ISOStd.Controllers
                     }
                     else
                     {
-
                         TempData["alertdata"] = "issueId cannot be Null or empty";
                         return RedirectToAction("QHSEPlannerList");
                     }
@@ -329,7 +313,7 @@ namespace ISOStd.Controllers
             }
             return View(objPlanner);
         }
-        
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult QHSEPlannerEdit(QHSEPlannerModels objPlan, FormCollection form)
@@ -338,7 +322,7 @@ namespace ISOStd.Controllers
             {
                 objPlan.QHSE_name = form["QHSE_name"];
                 objPlan.Person_responsible = form["Person_responsible"];
-               
+
                 DateTime dateValue;
                 if (DateTime.TryParse(form["Planned_date"], out dateValue) == true)
                 {
@@ -382,7 +366,7 @@ namespace ISOStd.Controllers
 
             return RedirectToAction("QHSEPlannerList");
         }
-        
+
         [AllowAnonymous]
         public ActionResult QHSEPlannerActiveStatus()
         {
@@ -401,7 +385,6 @@ namespace ISOStd.Controllers
                     DataSet dsPlannerList = objGlobaldata.Getdetails(sSqlstmt);
                     if (dsPlannerList.Tables.Count > 0 && dsPlannerList.Tables[0].Rows.Count > 0)
                     {
-
                         objPlanner = new QHSEPlannerModels
                         {
                             id_qhse = Convert.ToInt16(dsPlannerList.Tables[0].Rows[0]["id_qhse"].ToString()),
@@ -409,9 +392,8 @@ namespace ISOStd.Controllers
                             Activity_name = dsPlannerList.Tables[0].Rows[0]["Activity_name"].ToString(),
                             Person_responsible = objGlobaldata.GetMultiHrEmpNameById(dsPlannerList.Tables[0].Rows[0]["Person_responsible"].ToString()),
                             Remarks = dsPlannerList.Tables[0].Rows[0]["Remarks"].ToString(),
-                            Status =objGlobaldata.GetDropdownitemById(dsPlannerList.Tables[0].Rows[0]["Status"].ToString()),
+                            Status = objGlobaldata.GetDropdownitemById(dsPlannerList.Tables[0].Rows[0]["Status"].ToString()),
                             Upload = dsPlannerList.Tables[0].Rows[0]["Upload"].ToString(),
-
                         };
                         DateTime dtValue;
                         if (DateTime.TryParse(dsPlannerList.Tables[0].Rows[0]["Planned_date"].ToString(), out dtValue))
@@ -429,7 +411,6 @@ namespace ISOStd.Controllers
                     }
                     else
                     {
-
                         TempData["alertdata"] = "issueId cannot be Null or empty";
                         return RedirectToAction("QHSEPlannerList");
                     }
@@ -448,7 +429,7 @@ namespace ISOStd.Controllers
             }
             return View(objPlanner);
         }
-        
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult QHSEPlannerActiveStatus(QHSEPlannerModels objPlan, FormCollection form, IEnumerable<HttpPostedFileBase> Upload)
@@ -478,7 +459,6 @@ namespace ISOStd.Controllers
                         catch (Exception ex)
                         {
                             objGlobaldata.AddFunctionalLog("Exception in QHSEPlannerActiveStatus-upload: " + ex.ToString());
-
                         }
                     }
                     objPlan.Upload = objPlan.Upload.Trim(',');
@@ -487,7 +467,7 @@ namespace ISOStd.Controllers
                 {
                     ViewBag.Message = "You have not specified a file.";
                 }
-               
+
                 if (objPlan.FunUpdateQHSEPlannerstatus(objPlan))
                 {
                     TempData["Successdata"] = "QHSE Planner updated successfully";
@@ -506,7 +486,7 @@ namespace ISOStd.Controllers
 
             return RedirectToAction("QHSEPlannerList");
         }
-        
+
         [AllowAnonymous]
         public ActionResult QHSEPlannerDetails()
         {
@@ -518,7 +498,7 @@ namespace ISOStd.Controllers
                 {
                     string sid_qhse = Request.QueryString["id_qhse"];
 
-                    //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS  
+                    //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS
                     string sSqlstmt = "select id_qhse,QHSE_name,Activity_name,Planned_date,Target_date,Person_responsible,Remarks,Status,Upload,Actual_date"
                    + ",NotificationDays,NotificationPeriod,NotificationValue from t_qhse_planner where id_qhse='" + sid_qhse + "'";
                     DataSet dsPlannerList = objGlobaldata.Getdetails(sSqlstmt);
@@ -550,7 +530,6 @@ namespace ISOStd.Controllers
                         {
                             objPlanner.Actual_date = dtValue;
                         }
-
                     }
                     else
                     {
@@ -569,11 +548,10 @@ namespace ISOStd.Controllers
                 objGlobaldata.AddFunctionalLog("Exception in QHSEPlannerDetails: " + ex.ToString());
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
-           
-            return View(objPlanner);
 
+            return View(objPlanner);
         }
-        
+
         [AllowAnonymous]
         public ActionResult QHSEPlannerInfo(int id)
         {
@@ -581,44 +559,43 @@ namespace ISOStd.Controllers
 
             try
             {
-                    string sSqlstmt = "select id_qhse,QHSE_name,Activity_name,Planned_date,Target_date,Person_responsible,Remarks,Status,Upload,Actual_date"
-                   + ",NotificationDays,NotificationPeriod,NotificationValue from t_qhse_planner where id_qhse='" + id + "'";
-                    DataSet dsPlannerList = objGlobaldata.Getdetails(sSqlstmt);
-                    if (dsPlannerList.Tables.Count > 0 && dsPlannerList.Tables[0].Rows.Count > 0)
+                string sSqlstmt = "select id_qhse,QHSE_name,Activity_name,Planned_date,Target_date,Person_responsible,Remarks,Status,Upload,Actual_date"
+               + ",NotificationDays,NotificationPeriod,NotificationValue from t_qhse_planner where id_qhse='" + id + "'";
+                DataSet dsPlannerList = objGlobaldata.Getdetails(sSqlstmt);
+                if (dsPlannerList.Tables.Count > 0 && dsPlannerList.Tables[0].Rows.Count > 0)
+                {
+                    objPlanner = new QHSEPlannerModels
                     {
-                        objPlanner = new QHSEPlannerModels
-                        {
-                            id_qhse = Convert.ToInt16(dsPlannerList.Tables[0].Rows[0]["id_qhse"].ToString()),
-                            QHSE_name = objGlobaldata.GetIsoStdNameById(dsPlannerList.Tables[0].Rows[0]["QHSE_name"].ToString()),
-                            Activity_name = dsPlannerList.Tables[0].Rows[0]["Activity_name"].ToString(),
-                            Person_responsible = objGlobaldata.GetMultiHrEmpNameById(dsPlannerList.Tables[0].Rows[0]["Person_responsible"].ToString()),
-                            Remarks = dsPlannerList.Tables[0].Rows[0]["Remarks"].ToString(),
-                            Status = objGlobaldata.GetDropdownitemById(dsPlannerList.Tables[0].Rows[0]["Status"].ToString()),
-                            Upload = dsPlannerList.Tables[0].Rows[0]["Upload"].ToString(),
-                            NotificationPeriod = dsPlannerList.Tables[0].Rows[0]["NotificationPeriod"].ToString(),
-                            NotificationValue = dsPlannerList.Tables[0].Rows[0]["NotificationValue"].ToString()
-                        };
+                        id_qhse = Convert.ToInt16(dsPlannerList.Tables[0].Rows[0]["id_qhse"].ToString()),
+                        QHSE_name = objGlobaldata.GetIsoStdNameById(dsPlannerList.Tables[0].Rows[0]["QHSE_name"].ToString()),
+                        Activity_name = dsPlannerList.Tables[0].Rows[0]["Activity_name"].ToString(),
+                        Person_responsible = objGlobaldata.GetMultiHrEmpNameById(dsPlannerList.Tables[0].Rows[0]["Person_responsible"].ToString()),
+                        Remarks = dsPlannerList.Tables[0].Rows[0]["Remarks"].ToString(),
+                        Status = objGlobaldata.GetDropdownitemById(dsPlannerList.Tables[0].Rows[0]["Status"].ToString()),
+                        Upload = dsPlannerList.Tables[0].Rows[0]["Upload"].ToString(),
+                        NotificationPeriod = dsPlannerList.Tables[0].Rows[0]["NotificationPeriod"].ToString(),
+                        NotificationValue = dsPlannerList.Tables[0].Rows[0]["NotificationValue"].ToString()
+                    };
 
-                        DateTime dtValue;
-                        if (DateTime.TryParse(dsPlannerList.Tables[0].Rows[0]["Planned_date"].ToString(), out dtValue))
-                        {
-                            objPlanner.Planned_date = dtValue;
-                        }
-                        if (DateTime.TryParse(dsPlannerList.Tables[0].Rows[0]["Target_date"].ToString(), out dtValue))
-                        {
-                            objPlanner.Target_date = dtValue;
-                        }
-                        if (DateTime.TryParse(dsPlannerList.Tables[0].Rows[0]["Actual_date"].ToString(), out dtValue))
-                        {
-                            objPlanner.Actual_date = dtValue;
-                        }
-
-                    }
-                    else
+                    DateTime dtValue;
+                    if (DateTime.TryParse(dsPlannerList.Tables[0].Rows[0]["Planned_date"].ToString(), out dtValue))
                     {
-                        TempData["alertdata"] = "No Data exists";
-                        return RedirectToAction("QHSEPlannerList");
+                        objPlanner.Planned_date = dtValue;
                     }
+                    if (DateTime.TryParse(dsPlannerList.Tables[0].Rows[0]["Target_date"].ToString(), out dtValue))
+                    {
+                        objPlanner.Target_date = dtValue;
+                    }
+                    if (DateTime.TryParse(dsPlannerList.Tables[0].Rows[0]["Actual_date"].ToString(), out dtValue))
+                    {
+                        objPlanner.Actual_date = dtValue;
+                    }
+                }
+                else
+                {
+                    TempData["alertdata"] = "No Data exists";
+                    return RedirectToAction("QHSEPlannerList");
+                }
             }
             catch (Exception ex)
             {
@@ -626,38 +603,33 @@ namespace ISOStd.Controllers
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
             return View(objPlanner);
-
         }
-        
+
         [AllowAnonymous]
         public JsonResult QHSEPlannerDelete(FormCollection form)
         {
             try
             {
-                
-                   
-                        if (form["id_qhse"] != null && form["id_qhse"] != "")
-                        {
-                            QHSEPlannerModels Doc = new QHSEPlannerModels();
-                            string sid_qhse = form["id_qhse"];
-                            if (Doc.FunDeleteQHSEPlanner(sid_qhse))
-                            {
-                                TempData["Successdata"] = "Document deleted successfully";
-                                return Json("Success");
-                            }
-                            else
-                            {
-                                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                                return Json("Failed");
-                            }
-                        }
-                        else
-                        {
-                            TempData["alertdata"] = "Planner Id cannot be Null or empty";
-                            return Json("Failed");
-                        }
-                                   
-        
+                if (form["id_qhse"] != null && form["id_qhse"] != "")
+                {
+                    QHSEPlannerModels Doc = new QHSEPlannerModels();
+                    string sid_qhse = form["id_qhse"];
+                    if (Doc.FunDeleteQHSEPlanner(sid_qhse))
+                    {
+                        TempData["Successdata"] = "Document deleted successfully";
+                        return Json("Success");
+                    }
+                    else
+                    {
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                        return Json("Failed");
+                    }
+                }
+                else
+                {
+                    TempData["alertdata"] = "Planner Id cannot be Null or empty";
+                    return Json("Failed");
+                }
             }
             catch (Exception ex)
             {
@@ -666,12 +638,13 @@ namespace ISOStd.Controllers
             }
             return Json("Failed");
         }
-        
+
         public ActionResult FunGetDeptEmpList(string DeptId)
         {
             MultiSelectList lstEmp = objGlobaldata.GetHrEmpListByDept(DeptId);
             return Json(lstEmp);
         }
+
         public ActionResult EventPlanner()
         {
             try
@@ -681,7 +654,6 @@ namespace ISOStd.Controllers
                 ViewBag.Status = objGlobaldata.GetDropdownList("Calendar Event Status");
                 ViewBag.Type = objGlobaldata.GetDropdownList("Calendar Event Type");
                 ViewBag.Priority = objGlobaldata.GetDropdownList("Calendar Event Priority");
-
 
                 ViewBag.Branch_name = objGlobaldata.GetCurrentUserSession().division;
                 string sBranchtree = objGlobaldata.GetCurrentUserSession().BranchTree;
@@ -694,7 +666,8 @@ namespace ISOStd.Controllers
             }
             return View();
         }
-        public JsonResult GetEvents(string branch,string event_status,string event_priority,string event_type)
+
+        public JsonResult GetEvents(string branch, string event_status, string event_priority, string event_type)
         {
             QHSEPlannerModelsList objPlanList = new QHSEPlannerModelsList();
             objPlanList.lstPlan = new List<QHSEPlannerModels>();
@@ -702,13 +675,12 @@ namespace ISOStd.Controllers
             try
             {
                 string sSqlstmt = "select id_event,subject,description,start_date,end_date,Logged_by,full_day,Person_responsible,NotificationPeriod,NotificationValue,event_status,event_type,"
-                    +"event_priority from t_event_planner where active=1";
+                    + "event_priority from t_event_planner where active=1";
 
                 string sSearchtext = "";
                 if (branch != null && branch != "")
                 {
                     sSearchtext = sSearchtext + " and branch='" + branch + "' ";
-
                 }
                 else
                 {
@@ -717,17 +689,14 @@ namespace ISOStd.Controllers
                 if (event_status != null && event_status != "")
                 {
                     sSearchtext = sSearchtext + " and event_status='" + event_status + "' ";
-                    
                 }
                 if (event_priority != null && event_priority != "")
                 {
                     sSearchtext = sSearchtext + " and event_priority='" + event_priority + "' ";
-
                 }
                 if (event_type != null && event_type != "")
                 {
                     sSearchtext = sSearchtext + " and event_type='" + event_type + "' ";
-
                 }
                 sSqlstmt = sSqlstmt + sSearchtext;
                 DataSet dsEventList = objGlobaldata.Getdetails(sSqlstmt);
@@ -741,7 +710,6 @@ namespace ISOStd.Controllers
                         {
                             QHSEPlannerModels objModels = new QHSEPlannerModels
                             {
-
                                 id_event = Convert.ToInt32(dsEventList.Tables[0].Rows[i]["id_event"].ToString()),
                                 subject = dsEventList.Tables[0].Rows[i]["subject"].ToString(),
                                 description = dsEventList.Tables[0].Rows[i]["description"].ToString(),
@@ -755,18 +723,17 @@ namespace ISOStd.Controllers
                                 event_type = dsEventList.Tables[0].Rows[i]["event_type"].ToString(),
                                 event_priority = dsEventList.Tables[0].Rows[i]["event_priority"].ToString(),
                                 priority_color = objGlobaldata.GetCalendarEventPriorityColorById(dsEventList.Tables[0].Rows[i]["event_priority"].ToString()),
-                                sevent_status =objGlobaldata.GetDropdownitemById(dsEventList.Tables[0].Rows[i]["event_status"].ToString()),
-                                sevent_type =objGlobaldata.GetDropdownitemById(dsEventList.Tables[0].Rows[i]["event_type"].ToString()),
-                                sevent_priority =objGlobaldata.GetDropdownitemById(dsEventList.Tables[0].Rows[i]["event_priority"].ToString()),
-
+                                sevent_status = objGlobaldata.GetDropdownitemById(dsEventList.Tables[0].Rows[i]["event_status"].ToString()),
+                                sevent_type = objGlobaldata.GetDropdownitemById(dsEventList.Tables[0].Rows[i]["event_type"].ToString()),
+                                sevent_priority = objGlobaldata.GetDropdownitemById(dsEventList.Tables[0].Rows[i]["event_priority"].ToString()),
                             };
                             DateTime dtValue;
                             if (DateTime.TryParse(dsEventList.Tables[0].Rows[i]["start_date"].ToString(), out dtValue))
                             {
                                 objModels.start_date = dtValue;
-                                objModels.starttime= objModels.start_date.ToShortTimeString();
+                                objModels.starttime = objModels.start_date.ToShortTimeString();
                             }
-                            if (dsEventList.Tables[0].Rows[i]["end_date"].ToString() !=null && dsEventList.Tables[0].Rows[i]["end_date"].ToString() != "")
+                            if (dsEventList.Tables[0].Rows[i]["end_date"].ToString() != null && dsEventList.Tables[0].Rows[i]["end_date"].ToString() != "")
                             {
                                 if (DateTime.TryParse(dsEventList.Tables[0].Rows[i]["end_date"].ToString(), out dtValue))
                                 {
@@ -787,7 +754,7 @@ namespace ISOStd.Controllers
                                     {
                                         id_comments = sdsData.Tables[0].Rows[k]["id_comments"].ToString(),
                                         comments = sdsData.Tables[0].Rows[k]["comments"].ToString(),
-                                        Logged_by =objGlobaldata.GetEmpHrNameById(sdsData.Tables[0].Rows[k]["Logged_by"].ToString()),
+                                        Logged_by = objGlobaldata.GetEmpHrNameById(sdsData.Tables[0].Rows[k]["Logged_by"].ToString()),
                                     };
                                     DateTime dtDocDate;
                                     if (sdsData.Tables[0].Rows[k]["logged_date"].ToString() != ""
@@ -808,7 +775,6 @@ namespace ISOStd.Controllers
                             TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                         }
                     }
-
                 }
             }
             catch (Exception ex)
@@ -818,15 +784,15 @@ namespace ISOStd.Controllers
             }
             return new JsonResult { Data = objPlanList.lstPlan.ToList(), JsonRequestBehavior = JsonRequestBehavior.AllowGet };
         }
+
         [HttpPost]
-        public JsonResult DeleteEvent(string  eventID)
+        public JsonResult DeleteEvent(string eventID)
         {
             QHSEPlannerModels objModel = new QHSEPlannerModels();
             var status = false;
             try
             {
                 status = objModel.FunDeleteCalenderEvent(eventID);
-
             }
             catch (Exception ex)
             {
@@ -835,8 +801,9 @@ namespace ISOStd.Controllers
             }
             return new JsonResult { Data = new { status = status } };
         }
+
         [HttpPost]
-        public JsonResult SaveEvent(QHSEPlannerModels e,FormCollection form)
+        public JsonResult SaveEvent(QHSEPlannerModels e, FormCollection form)
         {
             QHSEPlannerModels objModel = new QHSEPlannerModels();
             var status = false;
@@ -846,11 +813,10 @@ namespace ISOStd.Controllers
                 if (form["start_date"] != null && DateTime.TryParse(form["start_date"], out dateValue) == true)
                 {
                     e.start_date = dateValue;
-                   
+
                     if (form["starttime"] != null)
                     {
                         e.start_date = DateTime.Parse(dateValue.ToString("dd/MM/yyyy") + " " + e.starttime + ":00");
-
                     }
                 }
                 if (form["end_date"] != null && DateTime.TryParse(form["end_date"], out dateValue) == true)
@@ -885,17 +851,15 @@ namespace ISOStd.Controllers
                 {
                     e.NotificationDays = Notificationval;
                 }
-               
+
                 if (e.id_event > 0)
                 {
                     status = objModel.FunUpdateEvent(e);
-
                 }
                 else
                 {
                     status = objModel.FunSaveEvent(e);
                 }
-              
             }
             catch (Exception ex)
             {

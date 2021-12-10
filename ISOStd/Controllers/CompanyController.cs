@@ -1,22 +1,20 @@
-﻿using System;
+﻿using ISOStd.Filters;
+using ISOStd.Models;
+using PagedList;
+using System;
 using System.Collections.Generic;
+using System.Data;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using ISOStd.Models;
-using System.IO;
-using System.Data;
-using PagedList;
-using PagedList.Mvc;
-using ISOStd.Filters;
 
 namespace ISOStd.Controllers
 {
     [PreventFromUrl]
-    //[CusAuthentication("Admin", "CEO")]
     public class CompanyController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
+        private clsGlobal objGlobaldata = new clsGlobal();
 
         public CompanyController()
         {
@@ -25,7 +23,7 @@ namespace ISOStd.Controllers
 
         //
         // GET: /Company/
-        
+
         public ActionResult Index()
         {
             return View();
@@ -60,7 +58,6 @@ namespace ISOStd.Controllers
         //    return View();
 
         //}
-
 
         ////
         //// POST: /Company/AddCompany
@@ -135,16 +132,14 @@ namespace ISOStd.Controllers
         //
         // GET: /Company/CompanyDetails
 
-
         // POST: /ProductionLog/GetCustomerType
-          
+
         [HttpPost]
         public JsonResult GetCurrencyCode()
         {
             return Json(objGlobaldata.GetCurrencyCode());
         }
 
-          
         [AllowAnonymous]
         public ActionResult CompanyDetails()
         {
@@ -210,12 +205,11 @@ namespace ISOStd.Controllers
 
         //
         // GET: /Company/CompanyEdit
-          
+
         [AllowAnonymous]
         public ActionResult CompanyEdit()
         {
             ViewBag.SubMenutype = "Company";
-          
 
             CompanyModels objCompany = new CompanyModels();
             try
@@ -227,7 +221,6 @@ namespace ISOStd.Controllers
 
                 if (dsCompany.Tables.Count > 0 && dsCompany.Tables[0].Rows.Count > 0)
                 {
-
                     objCompany = new CompanyModels
                     {
                         CompanyID = dsCompany.Tables[0].Rows[0]["CompanyID"].ToString(),
@@ -274,109 +267,108 @@ namespace ISOStd.Controllers
 
         //
         // POST: /Company/CompanyEdit
-          
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult CompanyEdit(CompanyModels objCustomerModels, FormCollection form, HttpPostedFileBase CompanyLogo, IEnumerable<HttpPostedFileBase> License)
         {
             ViewBag.SubMenutype = "Company";
-                try
-                {
-                    string QCDelete = Request.Form["QCDocsValselectall"];
-                    HttpPostedFileBase files = Request.Files[1];
-                    objCustomerModels.Audit_Criteria = form["Audit_Criteria"];
-                    objCustomerModels.CompanyID = form["CompanyID"];
+            try
+            {
+                string QCDelete = Request.Form["QCDocsValselectall"];
+                HttpPostedFileBase files = Request.Files[1];
+                objCustomerModels.Audit_Criteria = form["Audit_Criteria"];
+                objCustomerModels.CompanyID = form["CompanyID"];
                 //objCustomerModels.CompanyName = "AL MANAL";
                 objCustomerModels.CompanyName = form["CompanyName"];
-                    objCustomerModels.PhoneNumber = form["PhoneNumber"];
-                    objCustomerModels.FaxNumber = form["FaxNumber"];
-                    objCustomerModels.PostalCode = form["PostalCode"];
-                    objCustomerModels.Scope = form["Scope"];
-                    objCustomerModels.Address = form["Address"];
-                    objCustomerModels.Country = form["Country"]; 
+                objCustomerModels.PhoneNumber = form["PhoneNumber"];
+                objCustomerModels.FaxNumber = form["FaxNumber"];
+                objCustomerModels.PostalCode = form["PostalCode"];
+                objCustomerModels.Scope = form["Scope"];
+                objCustomerModels.Address = form["Address"];
+                objCustomerModels.Country = form["Country"];
 
                 DateTime dateValue;
-                    if (DateTime.TryParse(form["expiry_date"], out dateValue) == true)
-                    {
-                        objCustomerModels.expiry_date = dateValue;
-                    }
-
-                    if (CompanyLogo != null && CompanyLogo.ContentLength > 0)
-                    {
-                        string spath = Path.Combine(Server.MapPath("~/DataUpload/ProfilePic"), Path.GetFileName(CompanyLogo.FileName));
-                        string sFilename = "CompanyLogo" + Path.GetExtension(CompanyLogo.FileName), sFilepath = Path.GetDirectoryName(spath);
-                        CompanyLogo.SaveAs(sFilepath + "/" + sFilename);
-                        objCustomerModels.logo = "~/DataUpload/ProfilePic/" + sFilename;
-                        ViewBag.Message = "File uploaded successfully";
-                    }
-                    else
-                    {
-                        ViewBag.Message = "You have not specified a file.";
-                    }
-                    if (License != null && files.ContentLength > 0)
-                    {
-                        objCustomerModels.License = "";
-                        foreach (var file in License)
-                        {
-                            try
-                            {
-                                string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/License"), Path.GetFileName(file.FileName));
-                                string sFilename = "License" + "_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath), sFilepath = Path.GetDirectoryName(spath);
-                                file.SaveAs(sFilepath + "/" + sFilename);
-                                objCustomerModels.License = objCustomerModels.License + "," + "~/DataUpload/MgmtDocs/License/" + sFilename;
-                            }
-                            catch (Exception ex)
-                            {
-                                objGlobaldata.AddFunctionalLog("Exception in License-uploaddocument: " + ex.ToString());
-                                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                            }
-                        }
-                        objCustomerModels.License = objCustomerModels.License.Trim(',');
-                    }
-                    else
-                    {
-                        ViewBag.Message = "You have not specified a file.";
-                    }
-                    if (form["QCDocsVal"] != null && form["QCDocsVal"] != "")
-                    {
-                        objCustomerModels.License = objCustomerModels.License + "," + form["QCDocsVal"];
-                        objCustomerModels.License = objCustomerModels.License.Trim(',');
-                    }
-                    else if (form["QCDocsVal"] == null && QCDelete != null && files.ContentLength == 0)
-                    {
-                        objCustomerModels.License = null;
-                    }
-                    else if (form["QCDocsVal"] == null && files.ContentLength == 0)
-                    {
-                        objCustomerModels.License = null;
-                    }
-                    if (objCustomerModels.FunUpdateCompany(objCustomerModels))
-                    {
-                        TempData["Successdata"] = "Company details updated successfully";
-                    }
-                    else
-                    {
-                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                    }
+                if (DateTime.TryParse(form["expiry_date"], out dateValue) == true)
+                {
+                    objCustomerModels.expiry_date = dateValue;
                 }
-                catch (Exception ex)
+
+                if (CompanyLogo != null && CompanyLogo.ContentLength > 0)
+                {
+                    string spath = Path.Combine(Server.MapPath("~/DataUpload/ProfilePic"), Path.GetFileName(CompanyLogo.FileName));
+                    string sFilename = "CompanyLogo" + Path.GetExtension(CompanyLogo.FileName), sFilepath = Path.GetDirectoryName(spath);
+                    CompanyLogo.SaveAs(sFilepath + "/" + sFilename);
+                    objCustomerModels.logo = "~/DataUpload/ProfilePic/" + sFilename;
+                    ViewBag.Message = "File uploaded successfully";
+                }
+                else
+                {
+                    ViewBag.Message = "You have not specified a file.";
+                }
+                if (License != null && files.ContentLength > 0)
+                {
+                    objCustomerModels.License = "";
+                    foreach (var file in License)
+                    {
+                        try
+                        {
+                            string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/License"), Path.GetFileName(file.FileName));
+                            string sFilename = "License" + "_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath), sFilepath = Path.GetDirectoryName(spath);
+                            file.SaveAs(sFilepath + "/" + sFilename);
+                            objCustomerModels.License = objCustomerModels.License + "," + "~/DataUpload/MgmtDocs/License/" + sFilename;
+                        }
+                        catch (Exception ex)
+                        {
+                            objGlobaldata.AddFunctionalLog("Exception in License-uploaddocument: " + ex.ToString());
+                            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                        }
+                    }
+                    objCustomerModels.License = objCustomerModels.License.Trim(',');
+                }
+                else
+                {
+                    ViewBag.Message = "You have not specified a file.";
+                }
+                if (form["QCDocsVal"] != null && form["QCDocsVal"] != "")
+                {
+                    objCustomerModels.License = objCustomerModels.License + "," + form["QCDocsVal"];
+                    objCustomerModels.License = objCustomerModels.License.Trim(',');
+                }
+                else if (form["QCDocsVal"] == null && QCDelete != null && files.ContentLength == 0)
+                {
+                    objCustomerModels.License = null;
+                }
+                else if (form["QCDocsVal"] == null && files.ContentLength == 0)
+                {
+                    objCustomerModels.License = null;
+                }
+                if (objCustomerModels.FunUpdateCompany(objCustomerModels))
+                {
+                    TempData["Successdata"] = "Company details updated successfully";
+                }
+                else
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                    objGlobaldata.AddFunctionalLog("Logo error: " + ex.ToString() + ", ");
                 }
-          
+            }
+            catch (Exception ex)
+            {
+                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                objGlobaldata.AddFunctionalLog("Logo error: " + ex.ToString() + ", ");
+            }
+
             return RedirectToAction("CompanyEdit", "Company", new { CompanyID = objCustomerModels.CompanyID });
         }
-     
 
         //POST: /Company/MeetingItemEdit
 
-        public ActionResult BranchEdit(string Parent,string Name,string Code, string Address,  string sItemNo, string scope)
+        public ActionResult BranchEdit(string Parent, string Name, string Code, string Address, string sItemNo, string scope)
         {
             try
             {
                 CompanyModels objCustomerModels = new CompanyModels();
-                objCustomerModels.FunUpdateBranch(sItemNo,Parent, Name,Code, Address, scope);
+                objCustomerModels.FunUpdateBranch(sItemNo, Parent, Name, Code, Address, scope);
                 return Json("Update Success");
             }
             catch (Exception ex)
@@ -387,7 +379,7 @@ namespace ISOStd.Controllers
         }
 
         //POST: /Company/MeetingItemEdit
-          
+
         //public ActionResult AddNewBranch(CompanyModels objCustomerModels, FormCollection form, string BranchName, string BranchAddress, string Curr_code, string scope, int CompId = 1)
         //{
         //    try
@@ -409,19 +401,18 @@ namespace ISOStd.Controllers
         //    catch (Exception ex)
         //    {
         //        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-        //        objGlobaldata.AddFunctionalLog("Exception in AddNewBranch: " + ex.ToString());                
+        //        objGlobaldata.AddFunctionalLog("Exception in AddNewBranch: " + ex.ToString());
         //    }
 
         //    return RedirectToAction("CompanyDetails");
         //}
-               
 
         [AllowAnonymous]
         public JsonResult AddNewBranch(string parent_level, string BranchName, string BranchCode, string BranchAddress, string scope, int CompId = 1)
         {
             CompanyModels objCustomerModels = new CompanyModels(); ;
             Dictionary<string, string> dicBranch = new Dictionary<string, string>();
-            dicBranch.Add(BranchName, BranchAddress + "$" +  scope + "$" + parent_level + "$" + BranchCode);
+            dicBranch.Add(BranchName, BranchAddress + "$" + scope + "$" + parent_level + "$" + BranchCode);
             //CompanyModels objCustomerModels = new CompanyModels();
             if (objCustomerModels.FunAddBranch(dicBranch, CompId))
             {
@@ -433,7 +424,6 @@ namespace ISOStd.Controllers
             }
             return Json("Success");
         }
-                    
 
         //POST: /Company/MeetingItemEdit
 
@@ -442,7 +432,7 @@ namespace ISOStd.Controllers
             try
             {
                 CompanyModels objCustomerModels = new CompanyModels();
-              
+
                 if (objCustomerModels.FunDeleteBranch(sItemNo))
                 {
                     TempData["Successdata"] = "Deleted Branch details successfully";
@@ -463,15 +453,13 @@ namespace ISOStd.Controllers
 
         //
         // GET: /Company/AddDepartment
-          
+
         [AllowAnonymous]
         public ActionResult AddDepartment()
         {
-            
             return InitializeDepartment();
         }
 
-          
         public ActionResult InitializeDepartment()
         {
             try
@@ -487,20 +475,19 @@ namespace ISOStd.Controllers
             {
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 objGlobaldata.AddFunctionalLog("Exception in AddDepartment: " + ex.ToString());
-               
             }
             return View();
         }
 
         //
         // POST: /Company/AddDepartment
-          
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult AddDepartment(DepartmentModels objDepartmentModels,FormCollection form)
+        public ActionResult AddDepartment(DepartmentModels objDepartmentModels, FormCollection form)
         {
             ViewBag.SubMenutype = "Department";
-            objDepartmentModels.branch=form["branch"];
+            objDepartmentModels.branch = form["branch"];
             if (objDepartmentModels.FunAddDept(objDepartmentModels))
             {
                 TempData["Successdata"] = "Department details updated Successfully";
@@ -515,7 +502,7 @@ namespace ISOStd.Controllers
 
         //
         // GET: /Employee/EmployeeDelete
-          
+
         [AllowAnonymous]
         public JsonResult DepartmentDelete(string Id)
         {
@@ -532,7 +519,6 @@ namespace ISOStd.Controllers
             }
             return Json("Success");
         }
-               
 
         [AllowAnonymous]
         public JsonResult DepartmentEdit(string Id, string dept, FormCollection form)
@@ -540,7 +526,7 @@ namespace ISOStd.Controllers
             ViewBag.SubMenutype = "Department";
             DepartmentModels objDepartmentModels = new DepartmentModels();
             string branch = form["branch[]"];
-           
+
             if (objDepartmentModels.FunEditDept(Id, dept, branch))
             {
                 TempData["Successdata"] = "Department details Edited Successfully";
@@ -576,15 +562,15 @@ namespace ISOStd.Controllers
             ViewBag.SubMenutype = "Settings";
             ViewBag.IsoStd = objGlobaldata.GetAllIsoStdListbox();
             try
-            { 
-              if (objModel.FunAddISOStd(objModel))
-              {
-                TempData["Successdata"] = "ISOStd added Successfully";
-              }
-              else
-              {
-                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-              }
+            {
+                if (objModel.FunAddISOStd(objModel))
+                {
+                    TempData["Successdata"] = "ISOStd added Successfully";
+                }
+                else
+                {
+                    TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                }
             }
             catch (Exception ex)
             {
@@ -592,10 +578,10 @@ namespace ISOStd.Controllers
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
             return RedirectToAction("ISOStdList");
-         }
+        }
 
         [AllowAnonymous]
-        public ActionResult ISOStdList( int? page)
+        public ActionResult ISOStdList(int? page)
         {
             CompanyModelsList obj = new CompanyModelsList();
             obj.CompanyMList = new List<CompanyModels>();
@@ -606,19 +592,18 @@ namespace ISOStd.Controllers
                 DataSet dsIsoList = objGlobaldata.Getdetails(sSqlstmt);
 
                 if (dsIsoList.Tables.Count > 0 && dsIsoList.Tables[0].Rows.Count > 0)
-                {                 
-                                       
+                {
                     for (int i = 0; i < dsIsoList.Tables[0].Rows.Count; i++)
                     {
                         try
                         {
-                          objstd = new CompanyModels
+                            objstd = new CompanyModels
                             {
-                              StdId = (dsIsoList.Tables[0].Rows[i]["StdId"].ToString()),
-                              IsoName = (dsIsoList.Tables[0].Rows[i]["IsoName"].ToString()),
-                              Descriptions = dsIsoList.Tables[0].Rows[i]["Descriptions"].ToString(),
+                                StdId = (dsIsoList.Tables[0].Rows[i]["StdId"].ToString()),
+                                IsoName = (dsIsoList.Tables[0].Rows[i]["IsoName"].ToString()),
+                                Descriptions = dsIsoList.Tables[0].Rows[i]["Descriptions"].ToString(),
                             };
-                            
+
                             obj.CompanyMList.Add(objstd);
                         }
                         catch (Exception ex)
@@ -636,7 +621,6 @@ namespace ISOStd.Controllers
             }
 
             return View(obj.CompanyMList.ToList().ToPagedList(page ?? 1, 10));
-
         }
 
         public ActionResult ISOStdEdit()
@@ -644,7 +628,6 @@ namespace ISOStd.Controllers
             CompanyModels obj = new CompanyModels();
             try
             {
-
                 if (Request.QueryString["StdId"] != null && Request.QueryString["StdId"] != "")
                 {
                     string sStdId = Request.QueryString["StdId"];
@@ -662,7 +645,6 @@ namespace ISOStd.Controllers
                     }
                     else
                     {
-
                         TempData["alertdata"] = "StdId cannot be Null or empty";
                         return RedirectToAction("ISOStdList");
                     }
@@ -687,7 +669,7 @@ namespace ISOStd.Controllers
         public ActionResult ISOStdEdit(CompanyModels obj, FormCollection form)
         {
             try
-            {               
+            {
                 if (obj.FunUpdateISOStd(obj))
                 {
                     TempData["Successdata"] = "ISOStd details updated successfully";
@@ -696,7 +678,6 @@ namespace ISOStd.Controllers
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 }
-
             }
             catch (Exception ex)
             {
@@ -712,31 +693,27 @@ namespace ISOStd.Controllers
         {
             try
             {
+                if (form["StdId"] != null && form["StdId"] != "")
+                {
+                    CompanyModels objmdl = new CompanyModels();
+                    string sStdId = form["StdId"];
 
-                  if (form["StdId"] != null && form["StdId"] != "")
+                    if (objmdl.FunDeleteISOStd(sStdId))
                     {
-
-                        CompanyModels objmdl = new CompanyModels();
-                        string sStdId = form["StdId"];
-
-                        if (objmdl.FunDeleteISOStd(sStdId))
-                        {
-                            TempData["Successdata"] = "ISOStd deleted successfully";
-                            return Json("Success");
-                        }
-                        else
-                        {
-                            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                            return Json("Failed");
-                        }
+                        TempData["Successdata"] = "ISOStd deleted successfully";
+                        return Json("Success");
                     }
                     else
                     {
-                        TempData["alertdata"] = "StdId cannot be Null or empty";
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                         return Json("Failed");
                     }
-
-               
+                }
+                else
+                {
+                    TempData["alertdata"] = "StdId cannot be Null or empty";
+                    return Json("Failed");
+                }
             }
             catch (Exception ex)
             {
@@ -746,6 +723,4 @@ namespace ISOStd.Controllers
             return Json("Failed");
         }
     }
-
-
 }

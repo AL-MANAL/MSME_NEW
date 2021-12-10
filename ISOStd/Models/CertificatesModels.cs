@@ -1,17 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-using System.IO;
 using System.ComponentModel.DataAnnotations;
-using System.Data;
 
 namespace ISOStd.Models
 {
     public class CertificatesModels
     {
-        clsGlobal objGlobalData = new clsGlobal();
+        private clsGlobal objGlobalData = new clsGlobal();
 
         [Display(Name = "ID")]
         public string certId { get; set; }
@@ -42,8 +37,8 @@ namespace ISOStd.Models
                 //string sBranch = objGlobalData.GetCurrentUserSession().division;
 
                 string sSqlstmt = "insert into t_certificates (certName,DocUploadPath,branch,Department,Location";
-                 string sFields = "", sFieldValue = "";
-                 if (objCertModel.expiry_date != null && objCertModel.expiry_date > Convert.ToDateTime("01/01/0001 00:00:00"))
+                string sFields = "", sFieldValue = "";
+                if (objCertModel.expiry_date != null && objCertModel.expiry_date > Convert.ToDateTime("01/01/0001 00:00:00"))
                 {
                     sFields = sFields + ", expiry_date";
                     sFieldValue = sFieldValue + ", '" + objCertModel.expiry_date.ToString("yyyy/MM/dd") + "'";
@@ -65,13 +60,12 @@ namespace ISOStd.Models
             return false;
         }
 
-
         internal bool FunUpdateCertificate(CertificatesModels objCertModel)
         {
             try
             {
-                string sSqlstmt = "update t_certificates set certName='" + objCertModel.certName + "', branch='"+ objCertModel.branch
-                    + "', Department='" + objCertModel.Department  + "', Location='" + objCertModel.Location + "'";
+                string sSqlstmt = "update t_certificates set certName='" + objCertModel.certName + "', branch='" + objCertModel.branch
+                    + "', Department='" + objCertModel.Department + "', Location='" + objCertModel.Location + "'";
                 if (objCertModel.DocUploadPath != null && objCertModel.DocUploadPath != "")
                 {
                     sSqlstmt = sSqlstmt + ", DocUploadPath='" + objCertModel.DocUploadPath + "'";
@@ -82,8 +76,8 @@ namespace ISOStd.Models
                     sFields = sFields + ", expiry_date='";
                     sFields = sFields + objCertModel.expiry_date.ToString("yyyy/MM/dd") + "'";
                 }
-                sSqlstmt = sSqlstmt + sFields+ " where certId='"+objCertModel.certId+"'";
-                
+                sSqlstmt = sSqlstmt + sFields + " where certId='" + objCertModel.certId + "'";
+
                 if (objGlobalData.ExecuteQuery(sSqlstmt))
                 {
                     return true;
@@ -110,7 +104,6 @@ namespace ISOStd.Models
             }
             return false;
         }
-
     }
 
     public class CertificatesModelsList

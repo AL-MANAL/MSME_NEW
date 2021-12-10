@@ -1,27 +1,24 @@
-﻿using System;
+﻿using ISOStd.Filters;
+using ISOStd.Models;
+using PagedList;
+using Rotativa;
+using System;
 using System.Collections.Generic;
+using System.Data;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using ISOStd.Models;
-using System.Data;
-using System.Net;
-using System.IO;
-using PagedList;
-using PagedList.Mvc;
-using Rotativa;
-using ISOStd.Filters;
 
 namespace ISOStd.Controllers
 {
     [PreventFromUrl]
     public class SupplierAuditChecklistController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
+        private clsGlobal objGlobaldata = new clsGlobal();
 
         public ActionResult GenerateAuditChecklist()
         {
-
             SupplierAuditElementsModels obj = new SupplierAuditElementsModels();
 
             try
@@ -45,21 +42,18 @@ namespace ISOStd.Controllers
                             ViewBag.ItemNo = ItemNo;
                             Session["ItemNo"] = ViewBag.ItemNo;
                         }
-
                     }
                     catch (Exception ex)
                     {
                         objGlobaldata.AddFunctionalLog("Exception in GenerateAuditChecklist: " + ex.ToString());
                         TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                     }
-
                 }
                 else
                 {
                     ViewBag.ItemNo = "1";
                     Session["ItemNo"] = ViewBag.ItemNo;
                 }
-
             }
             catch (Exception ex)
             {
@@ -69,7 +63,6 @@ namespace ISOStd.Controllers
             return View();
         }
 
-         
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -85,14 +78,11 @@ namespace ISOStd.Controllers
                 for (int i = 0; i < cnt; i++)
                 {
                     quest = quest + form["Audit_Elements " + i] + ",";
-
-
                 }
                 objChecklist.Questions = quest.TrimEnd(',');
                 if (objChecklist.FunAddAuditChecklist(objChecklist))
                 {
                     TempData["Successdata"] = "Audit checklist Generated successfully";
-
                 }
                 else
                 {
@@ -108,7 +98,6 @@ namespace ISOStd.Controllers
             return RedirectToAction("AuditChecklistList");
         }
 
-         
         [AllowAnonymous]
         public ActionResult AuditChecklistList(string SearchText, string ChangeIn, string Approvestatus, int? page)
         {
@@ -117,16 +106,13 @@ namespace ISOStd.Controllers
 
             try
             {
-                //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS  
+                //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS
                 string sSqlstmt = "select id_AuditChecklist,Itemno,Business,Department,Supplier,AuditCriteria from t_supplier_auditchecklist where Active=1";
-
 
                 DataSet dsChecklistModelsList = objGlobaldata.Getdetails(sSqlstmt);
 
                 if (dsChecklistModelsList.Tables.Count > 0 && dsChecklistModelsList.Tables[0].Rows.Count > 0)
                 {
-                   
-                       
                     for (int i = 0; i < dsChecklistModelsList.Tables[0].Rows.Count; i++)
                     {
                         try
@@ -149,9 +135,6 @@ namespace ISOStd.Controllers
                         }
                     }
                 }
-
-
-
             }
             catch (Exception ex)
             {
@@ -162,7 +145,6 @@ namespace ISOStd.Controllers
             return View(objAuditChecklist.AuditCheckList.ToList().ToPagedList(page ?? 1, 40));
         }
 
-         
         public ActionResult AddAuditElements(string sBusiness, string sDepartment)
         {
             try
@@ -184,7 +166,6 @@ namespace ISOStd.Controllers
             return View();
         }
 
-         
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult AddAuditElements(SupplierAuditElementsModels objElementModels, FormCollection form)
@@ -205,7 +186,6 @@ namespace ISOStd.Controllers
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 }
                 ViewBag.AuditElements = obj.GetAuditElementsListbox(objElementModels.Business, objElementModels.Department);
-
             }
             catch (Exception ex)
             {
@@ -215,7 +195,6 @@ namespace ISOStd.Controllers
             return View(objElementModels);
         }
 
-         
         [AllowAnonymous]
         public JsonResult AuditElementUpdate(int id_element, string Audit_Elements)
         {
@@ -241,47 +220,40 @@ namespace ISOStd.Controllers
             return Json("Failed");
         }
 
-         
         [HttpPost]
         public JsonResult doesElementExist(string Audit_Elements)
         {
-
             SupplierAuditElementsModels obj = new SupplierAuditElementsModels();
             var exists = obj.checkAuditElementExists(Audit_Elements);
             return Json(exists);
         }
 
-         
         [AllowAnonymous]
         public JsonResult AuditChecklistDocDelete(FormCollection form)
         {
             try
             {
+                if (form["id_AuditChecklist"] != null && form["id_AuditChecklist"] != "")
+                {
+                    SupplierAuditChecklistModels Doc = new SupplierAuditChecklistModels();
+                    string sid_AuditChecklist = form["id_AuditChecklist"];
 
-                        if (form["id_AuditChecklist"] != null && form["id_AuditChecklist"] != "")
-                        {
-                            SupplierAuditChecklistModels Doc = new SupplierAuditChecklistModels();
-                            string sid_AuditChecklist = form["id_AuditChecklist"];
-
-
-                            if (Doc.FunDeleteAuditChecklist(sid_AuditChecklist))
-                            {
-                                TempData["Successdata"] = "Checklist deleted successfully";
-                                return Json("Success");
-                            }
-                            else
-                            {
-                                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                                return Json("Failed");
-                            }
-                        }
-                        else
-                        {
-                            TempData["alertdata"] = "Audit checklist Id cannot be Null or empty";
-                            return Json("Failed");
-                        }
-                    
-                
+                    if (Doc.FunDeleteAuditChecklist(sid_AuditChecklist))
+                    {
+                        TempData["Successdata"] = "Checklist deleted successfully";
+                        return Json("Success");
+                    }
+                    else
+                    {
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                        return Json("Failed");
+                    }
+                }
+                else
+                {
+                    TempData["alertdata"] = "Audit checklist Id cannot be Null or empty";
+                    return Json("Failed");
+                }
             }
             catch (Exception ex)
             {
@@ -291,7 +263,6 @@ namespace ISOStd.Controllers
             return Json("Failed");
         }
 
-         
         public ActionResult AuditQuestionDelete(string id_element, string Business, string Department)
         {
             SupplierAuditElementsModels obj = new SupplierAuditElementsModels();
@@ -315,14 +286,11 @@ namespace ISOStd.Controllers
             return RedirectToAction("AddAuditElements", new { sBusiness = Business, sDepartment = Department });
         }
 
-         
         public JsonResult AuditQuestionDelete1(string id_element, string Business, string Department)
         {
-
             SupplierAuditElementsModels obj = new SupplierAuditElementsModels();
             try
             {
-
                 if (obj.FunDeleteQuestions(id_element))
                 {
                     TempData["Successdata"] = "Question deleted successfully";
@@ -331,7 +299,6 @@ namespace ISOStd.Controllers
                 else
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-
                 }
             }
             catch (Exception ex)
@@ -343,7 +310,6 @@ namespace ISOStd.Controllers
             return Json("Failed");
         }
 
-         
         public ActionResult PerformAudit()
         {
             SupplierAuditChecklistModels objAuditChecklistModels = new SupplierAuditChecklistModels();
@@ -360,7 +326,6 @@ namespace ISOStd.Controllers
                 {
                     string sid_AuditChecklist = Request.QueryString["id_AuditChecklist"];
 
-
                     string sSqlstmt = "select id_AuditChecklist,Itemno,Business,Department,Supplier,AuditCriteria,Questions from t_supplier_auditchecklist where id_AuditChecklist='" + sid_AuditChecklist + "'";
 
                     DataSet dsChecklistModelsList = objGlobaldata.Getdetails(sSqlstmt);
@@ -368,7 +333,6 @@ namespace ISOStd.Controllers
                     {
                         for (int i = 0; i < dsChecklistModelsList.Tables[0].Rows.Count; i++)
                         {
-
                             objAuditChecklistModels = new SupplierAuditChecklistModels
                             {
                                 id_AuditChecklist = Convert.ToInt16(dsChecklistModelsList.Tables[0].Rows[i]["id_AuditChecklist"].ToString()),
@@ -378,7 +342,6 @@ namespace ISOStd.Controllers
                                 Questions = dsChecklistModelsList.Tables[0].Rows[i]["Questions"].ToString(),
                                 Department = objGlobaldata.GetDeptNameById(dsChecklistModelsList.Tables[0].Rows[i]["Department"].ToString()),
                                 Supplier = objGlobaldata.GetSupplierNameById(dsChecklistModelsList.Tables[0].Rows[i]["Supplier"].ToString()),
-
                             };
                             ViewBag.AuditElements = obj.GetAuditElementsListbox(dsChecklistModelsList.Tables[0].Rows[i]["Business"].ToString(), dsChecklistModelsList.Tables[0].Rows[i]["Department"].ToString());
                         }
@@ -403,7 +366,6 @@ namespace ISOStd.Controllers
             return View(objAuditChecklistModels);
         }
 
-         
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult PerformAudit(SupplierAuditChecklistModels objAuditChecklist, FormCollection form)
@@ -425,15 +387,13 @@ namespace ISOStd.Controllers
                 //{
                 //    for (int j = 0; j < dsChecklistModelsList.Tables[0].Rows.Count; j++)
                 //    {
-
                 //        //SupplierAuditChecklistModels objAuditChecklistModels = new SupplierAuditChecklistModels
                 //        //{
                 //        //   Business = dsChecklistModelsList.Tables[0].Rows[i]["Business"].ToString(),
-                //        //};        
+                //        //};
                 //        dept = dsChecklistModelsList.Tables[0].Rows[j]["Business"].ToString();
                 //    }
                 //}
-
 
                 DateTime dateValue;
                 if (DateTime.TryParse(form["AuditDate"], out dateValue) == true)
@@ -464,7 +424,6 @@ namespace ISOStd.Controllers
                     i++;
                 }
 
-
                 if (objAuditChecklist.FunAddAuditPerformance(objAuditChecklist, objAudit))
                 {
                     TempData["Successdata"] = "Audit Performance details added successfully";
@@ -483,7 +442,6 @@ namespace ISOStd.Controllers
             return RedirectToAction("AuditChecklistList");
         }
 
-         
         [HttpPost]
         public JsonResult UploadDocument()
         {
@@ -497,14 +455,11 @@ namespace ISOStd.Controllers
                 string sFilename = Path.GetFileName(spath), sFilepath = Path.GetDirectoryName(spath);
                 file.SaveAs(sFilepath + "/" + "Evidence" + DateTime.Now.ToString("ddMMyyyyHHmm") + sFilename);
                 return Json("~/DataUpload/MgmtDocs/" + "Evidence" + DateTime.Now.ToString("ddMMyyyyHHmm") + sFilename);
-
-
             }
 
             return Json("Failed");
         }
 
-         
         [HttpPost]
         public ActionResult AuditChecklistReport(FormCollection form)
         {
@@ -513,10 +468,8 @@ namespace ISOStd.Controllers
             {
                 if (sidt_checklist != "")
                 {
-
                     string sSqlstmt = "select t.id_AuditChecklist,idt_checklist,Itemno,Business,Department,Supplier,AuditCriteria,AuditNo,AuditDate,"
                     + "Auditors,Auditee,Notes,Remarks from t_supplier_auditchecklist t,t_supplier_generateauditchecklist tt where t.id_AuditChecklist=tt.id_AuditChecklist and idt_checklist='" + sidt_checklist + "'";
-
 
                     DataSet dsAudit = objGlobaldata.Getdetails(sSqlstmt);
 
@@ -549,8 +502,6 @@ namespace ISOStd.Controllers
                         DataSet dsAuditElement = objGlobaldata.Getdetails(sSqlstmt);
                         ViewBag.AuditElement = dsAuditElement;
                         SupplierAuditElementsModels obj = new SupplierAuditElementsModels();
-
-
 
                         ViewBag.AuditRating = obj.GetAuditRating();
                     }
@@ -585,15 +536,11 @@ namespace ISOStd.Controllers
                 Cookies = cookieCollection,
                 CustomSwitches = footer
             };
-
-
         }
 
-         
         [AllowAnonymous]
         public ActionResult AuditChecklistDetails()
         {
-
             try
             {
                 if (Request.QueryString["idt_checklist"] != null && Request.QueryString["idt_checklist"] != "")
@@ -602,7 +549,6 @@ namespace ISOStd.Controllers
 
                     string sSqlstmt = "select idt_checklist,t.id_AuditChecklist,Itemno,Business,Department,Supplier,AuditCriteria,AuditNo,AuditDate,"
                     + "Auditors,Auditee,Notes,Remarks,Questions from t_supplier_generateauditchecklist t,t_supplier_auditchecklist tt where t.id_AuditChecklist=tt.id_AuditChecklist and idt_checklist='" + sidt_checklist + "'";
-
 
                     DataSet dsAudit = objGlobaldata.Getdetails(sSqlstmt);
 
@@ -622,7 +568,6 @@ namespace ISOStd.Controllers
                             Remarks = dsAudit.Tables[0].Rows[0]["Remarks"].ToString(),
                             Department = objGlobaldata.GetDeptNameById(dsAudit.Tables[0].Rows[0]["Department"].ToString()),
                             Supplier = objGlobaldata.GetSupplierNameById(dsAudit.Tables[0].Rows[0]["Supplier"].ToString()),
-
                         };
                         DateTime dtValue;
                         if (DateTime.TryParse(dsAudit.Tables[0].Rows[0]["AuditDate"].ToString(), out dtValue))
@@ -636,7 +581,6 @@ namespace ISOStd.Controllers
 
                         DataSet dsAuditElement = objGlobaldata.Getdetails(sSqlstmt);
 
-
                         SupplierAuditPerformanceModelsList objAuditPerformanceList = new SupplierAuditPerformanceModelsList();
                         objAuditPerformanceList.lstAudit = new List<SupplierAuditPerformanceModels>();
 
@@ -646,7 +590,6 @@ namespace ISOStd.Controllers
                         {
                             SupplierAuditPerformanceModels objElements = new SupplierAuditPerformanceModels
                             {
-
                                 id_element = obj.GetAuditQuestionNameById(dsAuditElement.Tables[0].Rows[i]["id_element"].ToString()),
                                 id_auditratings = obj.GetAuditRatingNameById(dsAuditElement.Tables[0].Rows[i]["id_auditratings"].ToString()),
                                 comment = dsAuditElement.Tables[0].Rows[i]["comment"].ToString(),
@@ -659,7 +602,6 @@ namespace ISOStd.Controllers
                         ViewBag.AuditElement = objAuditPerformanceList;
                         ViewBag.AuditRating = obj.GetAuditRating();
                         return View(objAudit);
-
                     }
                     else
                     {
@@ -682,12 +624,9 @@ namespace ISOStd.Controllers
             return RedirectToAction("AuditChecklistList");
         }
 
-
-         
         [AllowAnonymous]
         public ActionResult AuditChecklistEdit()
         {
-
             SupplierAuditElementsModels obj = new SupplierAuditElementsModels();
             SupplierAuditChecklistModels objAudit = new SupplierAuditChecklistModels();
             try
@@ -696,7 +635,6 @@ namespace ISOStd.Controllers
                 ViewBag.AuditCriteria = objGlobaldata.GetAuditCriteria();
                 if (Request.QueryString["id_AuditChecklist"] != null && Request.QueryString["id_AuditChecklist"] != "")
                 {
-
                     string sid_AuditChecklist = Request.QueryString["id_AuditChecklist"];
 
                     string sSqlstmt = "select id_AuditChecklist,Itemno,Business,AuditCriteria,Questions"
@@ -713,20 +651,17 @@ namespace ISOStd.Controllers
                             Business = objGlobaldata.GetDeptNameById(dsAudit.Tables[0].Rows[0]["Business"].ToString()),
                             AuditCriteria = objGlobaldata.GetIsoStdDescriptionById(dsAudit.Tables[0].Rows[0]["AuditCriteria"].ToString()),
                             Questions = dsAudit.Tables[0].Rows[0]["Questions"].ToString(),
-
                         };
                         ViewBag.AuditElements = obj.GetAuditElementsListbox(dsAudit.Tables[0].Rows[0]["Business"].ToString(), dsAudit.Tables[0].Rows[0]["Department"].ToString());
                     }
                     else
                     {
-
                         TempData["alertdata"] = "Id cannot be Null or empty";
                         return RedirectToAction("");
                     }
                 }
                 else
                 {
-
                     TempData["alertdata"] = "Id cannot be Null or empty";
                     return RedirectToAction("");
                 }
@@ -739,14 +674,11 @@ namespace ISOStd.Controllers
             }
 
             return View(objAudit);
-
         }
 
-          
         [HttpPost]
         [ValidateAntiForgeryToken]
         [AllowAnonymous]
-
         public ActionResult AuditChecklistEdit(SupplierAuditChecklistModels objAudit, FormCollection form)
         {
             try
@@ -762,11 +694,9 @@ namespace ISOStd.Controllers
                     objAudit.Questions = quest;
                 }
 
-
                 if (objAudit.FunUpdateAuditChecklist(objAudit, cnt))
                 {
                     TempData["Successdata"] = "Audit checklist details updated successfully";
-
                 }
                 else
                 {
@@ -781,9 +711,9 @@ namespace ISOStd.Controllers
 
             return RedirectToAction("AuditChecklistList");
         }
-          
+
         [HttpPost]
-        public JsonResult GetQuestions(string Business,string Department)
+        public JsonResult GetQuestions(string Business, string Department)
         {
             SupplierAuditElementsModels obj = new SupplierAuditElementsModels();
 
@@ -791,7 +721,7 @@ namespace ISOStd.Controllers
 
             return Json(data);
         }
-          
+
         [AllowAnonymous]
         public ActionResult AuditList(int? page)
         {
@@ -800,10 +730,8 @@ namespace ISOStd.Controllers
 
             try
             {
-
                 if (Request.QueryString["id_AuditChecklist"] != null && Request.QueryString["id_AuditChecklist"] != "")
                 {
-
                     string sid_AuditChecklist = Request.QueryString["id_AuditChecklist"];
                     string sSqlstmt = "select idt_checklist,id_AuditChecklist,AuditNo,AuditDate,Auditors,Auditee from t_supplier_generateauditchecklist where id_AuditChecklist='" + sid_AuditChecklist + "' and Active=1";
 
@@ -811,9 +739,6 @@ namespace ISOStd.Controllers
 
                     if (dsAudit.Tables.Count > 0 && dsAudit.Tables[0].Rows.Count > 0)
                     {
-                       
-                        
-                        
                         for (int i = 0; i < dsAudit.Tables[0].Rows.Count; i++)
                         {
                             try
@@ -825,8 +750,6 @@ namespace ISOStd.Controllers
                                     AuditNo = dsAudit.Tables[0].Rows[i]["AuditNo"].ToString(),
                                     Auditors = dsAudit.Tables[0].Rows[i]["Auditors"].ToString(),
                                     Auditee = (dsAudit.Tables[0].Rows[i]["Auditee"].ToString()),
-
-
                                 };
                                 DateTime dtValue;
                                 if (DateTime.TryParse(dsAudit.Tables[0].Rows[i]["AuditDate"].ToString(), out dtValue))
@@ -848,7 +771,6 @@ namespace ISOStd.Controllers
                         TempData["alertdata"] = "No data exists";
                         return RedirectToAction("AuditChecklistList");
                     }
-
                 }
                 else
                 {
@@ -865,11 +787,9 @@ namespace ISOStd.Controllers
             return View(objAuditChecklist.AuditCheckList.ToList().ToPagedList(page ?? 1, 40));
         }
 
-          
         [AllowAnonymous]
         public ActionResult AuditPerformanceEdit()
         {
-
             try
             {
                 if (Request.QueryString["idt_checklist"] != null && Request.QueryString["idt_checklist"] != "")
@@ -879,7 +799,6 @@ namespace ISOStd.Controllers
                     string sSqlstmt = "select t.id_AuditChecklist,Itemno,Business,AuditCriteria,Questions,idt_checklist,AuditNo,"
                     + "AuditDate,Auditors,Auditee,Notes,Remarks from t_supplier_auditchecklist t,t_supplier_generateauditchecklist tt where t.id_AuditChecklist=tt.id_AuditChecklist"
                     + " and idt_checklist='" + sidt_checklist + "'";
-
 
                     DataSet dsAudit = objGlobaldata.Getdetails(sSqlstmt);
 
@@ -945,7 +864,6 @@ namespace ISOStd.Controllers
                         ViewBag.Business = objGlobaldata.GetDropdownList("Business Nature");
                         ViewBag.EmpLists = objGlobaldata.GetHrEmployeeListbox();
                         return View(objPerformance);
-
                     }
                     else
                     {
@@ -968,7 +886,6 @@ namespace ISOStd.Controllers
             return RedirectToAction("AuditChecklistList");
         }
 
-          
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult AuditPerformanceEdit(SupplierAuditChecklistModels objAuditChecklist, FormCollection form)
@@ -982,8 +899,6 @@ namespace ISOStd.Controllers
                 objAuditChecklist.Notes = form["Notes"];
                 objAuditChecklist.Remarks = form["Remarks"];
                 objAuditChecklist.Business = form["Business"];
-
-
 
                 DateTime dateValue;
                 if (DateTime.TryParse(form["AuditDate"], out dateValue) == true)
@@ -1013,14 +928,12 @@ namespace ISOStd.Controllers
                         if (upload != null)
                         {
                             objElements.evidence_upload = form["evidence_upload" + i];
-
                         }
 
                         objAudit.lstAudit.Add(objElements);
                     }
                     i++;
                 }
-
 
                 if (objAuditChecklist.FunUpdateAuditPerformance(objAuditChecklist, objAudit))
                 {
@@ -1040,37 +953,32 @@ namespace ISOStd.Controllers
             return RedirectToAction("AuditList", new { id_AuditChecklist = objAuditChecklist.id_AuditChecklist });
         }
 
-          
         [AllowAnonymous]
         public JsonResult ChecklistDocDelete(FormCollection form)
         {
             try
             {
-               
-                      if (form["idt_checklist"] != null && form["idt_checklist"] != "")
-                        {
-                            SupplierAuditChecklistModels Doc = new SupplierAuditChecklistModels();
-                            string sidt_checklist = form["idt_checklist"];
+                if (form["idt_checklist"] != null && form["idt_checklist"] != "")
+                {
+                    SupplierAuditChecklistModels Doc = new SupplierAuditChecklistModels();
+                    string sidt_checklist = form["idt_checklist"];
 
-
-                            if (Doc.FunDeleteChecklist(sidt_checklist))
-                            {
-                                TempData["Successdata"] = "Audit Checklist deleted successfully";
-                                return Json("Success");
-                            }
-                            else
-                            {
-                                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                                return Json("Failed");
-                            }
-                        }
-                        else
-                        {
-                            TempData["alertdata"] = "Audit checklist Id cannot be Null or empty";
-                            return Json("Failed");
-                        }
-                    
-                
+                    if (Doc.FunDeleteChecklist(sidt_checklist))
+                    {
+                        TempData["Successdata"] = "Audit Checklist deleted successfully";
+                        return Json("Success");
+                    }
+                    else
+                    {
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                        return Json("Failed");
+                    }
+                }
+                else
+                {
+                    TempData["alertdata"] = "Audit checklist Id cannot be Null or empty";
+                    return Json("Failed");
+                }
             }
             catch (Exception ex)
             {

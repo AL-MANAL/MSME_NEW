@@ -1,35 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+﻿using ISOStd.Filters;
 using ISOStd.Models;
-using System.Data;
-using ISOStd.Filters;
-using System.Xml;
 using Newtonsoft.Json;
+using System;
+using System.Data;
 using System.Data.OleDb;
 using System.IO;
+using System.Web;
+using System.Web.Mvc;
 
 namespace ISOStd.Controllers
 {
     [PreventFromUrl]
     public class DashboardController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
+        private clsGlobal objGlobaldata = new clsGlobal();
 
         public DashboardController()
         {
             ViewBag.Menutype = "Dashboard";
         }
-        
+
         // Dashboard Controller Comments comment
 
         public ActionResult Index()
         {
             return View();
         }
-
 
         public ActionResult ListPendingForApproval()
         {
@@ -39,7 +35,6 @@ namespace ISOStd.Controllers
                 string sempid = "";
 
                 sempid = objGlobaldata.GetCurrentUserSession().empid;
-                
 
                 //==========================Supplier Reevalution======================================
                 string sSqlstmt = "select id_reevaluation, branch, supplier, logged_by, perf_review_year, recommanded,recommanded_to,isrecommand, recommand_date, approved_to,isapproved,approved_date from t_supplier_reevaluation"
@@ -47,7 +42,7 @@ namespace ISOStd.Controllers
 
                 DataSet dsApprovalList = objGlobaldata.Getdetails(sSqlstmt);
                 count = count + dsApprovalList.Tables[0].Rows.Count;
-                               
+
                 if (dsApprovalList.Tables.Count > 0 && dsApprovalList.Tables[0].Rows.Count > 0)
                 {
                     ViewBag.dsSuppReevaluation = dsApprovalList;
@@ -55,12 +50,12 @@ namespace ISOStd.Controllers
 
                 //==========================Safety Violation Log======================================
 
-                 sSqlstmt = "select * from t_safety_violationlog where Active= 1 and Approved_Status=0 and " +
-                    "( find_in_set('" + sempid + "',ApprovedBy) and not find_in_set('" + sempid + "',Approvers))" +
-                    " and ( find_in_set('" + sempid + "',ApprovedBy) and not find_in_set('" + sempid + "',ApprovalRejector)) " +
-                    "order by ViolationLog_Id, Reported_On desc ";
+                sSqlstmt = "select * from t_safety_violationlog where Active= 1 and Approved_Status=0 and " +
+                   "( find_in_set('" + sempid + "',ApprovedBy) and not find_in_set('" + sempid + "',Approvers))" +
+                   " and ( find_in_set('" + sempid + "',ApprovedBy) and not find_in_set('" + sempid + "',ApprovalRejector)) " +
+                   "order by ViolationLog_Id, Reported_On desc ";
 
-                 dsApprovalList = objGlobaldata.Getdetails(sSqlstmt);
+                dsApprovalList = objGlobaldata.Getdetails(sSqlstmt);
                 count = dsApprovalList.Tables[0].Rows.Count;
                 if (dsApprovalList.Tables.Count > 0 && dsApprovalList.Tables[0].Rows.Count > 0)
                 {
@@ -72,12 +67,12 @@ namespace ISOStd.Controllers
                 //             " find_in_set('" + sempid + "',ApprovedBy) "
                 //            + "and find_in_set('" + sempid + "',ApprovedBy)";
                 //sSqlstmt = sSqlstmt + " order by DocLevels, idmgmt desc";
-                 sSqlstmt = "select * from t_mgmt_documents where Status= 1 and Approved_Status=0 and Reviewed_Status=1 and" +
-                              " ( find_in_set('" + sempid + "',ApprovedBy) and not find_in_set('" + sempid + "',Approvers)) "
-                             + "and ( find_in_set('" + sempid + "',ApprovedBy) and not find_in_set('" + sempid + "',ApprovalRejector))";
+                sSqlstmt = "select * from t_mgmt_documents where Status= 1 and Approved_Status=0 and Reviewed_Status=1 and" +
+                             " ( find_in_set('" + sempid + "',ApprovedBy) and not find_in_set('" + sempid + "',Approvers)) "
+                            + "and ( find_in_set('" + sempid + "',ApprovedBy) and not find_in_set('" + sempid + "',ApprovalRejector))";
                 sSqlstmt = sSqlstmt + " order by DocLevels, idmgmt desc";
 
-                 dsApprovalList = objGlobaldata.Getdetails(sSqlstmt);
+                dsApprovalList = objGlobaldata.Getdetails(sSqlstmt);
                 count = dsApprovalList.Tables[0].Rows.Count;
                 if (dsApprovalList.Tables.Count > 0 && dsApprovalList.Tables[0].Rows.Count > 0)
                 {
@@ -118,7 +113,7 @@ namespace ISOStd.Controllers
                 sSqlstmt = "SELECT TrainingID, Attendees, DeptId, Training_Topic, Training_Start_Date, Expected_Date_Completion,Training_Requested_By, Reasonfor_Training, RequestStatus, "
                            + " ApprovedBy from t_trainings where Active=1 and RequestStatus='0' and ( find_in_set('" + sempid + "',ApprovedBy) and not find_in_set('" + sempid + "',Approvers))"
                            + "and ( find_in_set('" + sempid + "',ApprovedBy) and not find_in_set('" + sempid + "',ApprovalRejector)) order by TrainingID desc";
-                
+
                 dsApprovalList = objGlobaldata.Getdetails(sSqlstmt);
                 count = count + dsApprovalList.Tables[0].Rows.Count;
                 if (dsApprovalList.Tables.Count > 0 && dsApprovalList.Tables[0].Rows.Count > 0)
@@ -134,7 +129,7 @@ namespace ISOStd.Controllers
                     " where b.approved_status = 0 and Active = 1 and trans_active=1 and a.Objectives_Id = b.Objectives_Id  and b.Approved_By = '" + sempid + "'";
                 dsApprovalList = objGlobaldata.Getdetails(sSqlstmt);
                 count = count + dsApprovalList.Tables[0].Rows.Count;
-                                             
+
                 if (dsApprovalList.Tables.Count > 0 && dsApprovalList.Tables[0].Rows.Count > 0)
                 {
                     ViewBag.dsObjectives = dsApprovalList;
@@ -152,7 +147,6 @@ namespace ISOStd.Controllers
                     ViewBag.dslegalregister = dsApprovalList;
                 }
 
-
                 //==========================Document Revise Request======================================
 
                 sSqlstmt = "select * from t_documentchangerequest where ApproveStatus=0 and ( find_in_set('" + sempid + "',ApprovedBy) and not find_in_set('" + sempid + "',Approvers))"
@@ -164,12 +158,9 @@ namespace ISOStd.Controllers
                     ViewBag.dsDocChangeRequest = dsApprovalList;
                 }
 
-
-
                 //==========================CHANGE MANAGEMENT REQUEST======================================
 
                 sSqlstmt = "select * from t_changemanagement where ApproveStatus=0 and ( find_in_set('" + sempid + "',ApprovedBy) and not find_in_set('" + sempid + "',Approvers))";
-
 
                 dsApprovalList = objGlobaldata.Getdetails(sSqlstmt);
                 count = count + dsApprovalList.Tables[0].Rows.Count;
@@ -215,7 +206,6 @@ namespace ISOStd.Controllers
                 //==========================LEAVE2======================================
                 sSqlstmt = "select leave_id,t.emp_no,fr_date,to_date,leave_type,duration,approver,applied_date,reason_leave,bal_annual_leave,bal_sick_leave,bal_other_leave"
                  + " from t_leavetrans t,t_leavemaster tt where t.emp_no=tt.emp_no and  t.syear=tt.syear and approved_status=0 and t.Active=1 and tt.Active=1 and approver ='" + sempid + "'";
-
 
                 dsApprovalList = objGlobaldata.Getdetails(sSqlstmt);
                 count = count + dsApprovalList.Tables[0].Rows.Count;
@@ -299,7 +289,6 @@ namespace ISOStd.Controllers
                 //    ViewBag.dsAuditProcess = dsApprovalList;
                 //}
 
-
                 //==========================OFI Approval======================================
 
                 sSqlstmt = "select id_ofi,ofi_no,risk_no,reported_date,approved_status,realization_approved_status,ofi_status,reportedby,division,department,location from t_ofi where active=1 and " +
@@ -312,7 +301,6 @@ namespace ISOStd.Controllers
                 {
                     ViewBag.dsOFI = dsApprovalList;
                 }
-
 
                 //==========================OFI Checkedby======================================
 
@@ -350,10 +338,9 @@ namespace ISOStd.Controllers
 
                 //==========================Document Create Request======================================
 
-                 sSqlstmt = "select id_doc_request,dcr_no,date_request,division,`department`,reason,upload,checkedby,doc_status as doc_statusId,logged_by," +
-                      "case when doc_status = '0' then 'Pending for Department Head' when doc_status = '1' then 'Pending for Assistant manager QHSE' when doc_status = '2' then 'Approved' when doc_status = '3' then 'Rejected' end  as doc_status " +
-                       " from t_document_create_request where Active=1 and (doc_status = 0 and find_in_set('" + sempid + "',checkedby)) or (doc_status = 1 and find_in_set('" + sempid + "',doc_control))";
-
+                sSqlstmt = "select id_doc_request,dcr_no,date_request,division,`department`,reason,upload,checkedby,doc_status as doc_statusId,logged_by," +
+                     "case when doc_status = '0' then 'Pending for Department Head' when doc_status = '1' then 'Pending for Assistant manager QHSE' when doc_status = '2' then 'Approved' when doc_status = '3' then 'Rejected' end  as doc_status " +
+                      " from t_document_create_request where Active=1 and (doc_status = 0 and find_in_set('" + sempid + "',checkedby)) or (doc_status = 1 and find_in_set('" + sempid + "',doc_control))";
 
                 dsApprovalList = objGlobaldata.Getdetails(sSqlstmt);
                 if (dsApprovalList.Tables.Count > 0 && dsApprovalList.Tables[0].Rows.Count > 0)
@@ -370,7 +357,7 @@ namespace ISOStd.Controllers
                  + " or(apporved_status = '1' and find_in_set('" + sempid + "', approve_ceo))"
                  + " or(apporved_status = '2' and find_in_set('" + sempid + "', approve_vp))"
                  + " or(apporved_status = '3' and find_in_set('" + sempid + "', approve_chairman)))";
-             
+
                 dsApprovalList = objGlobaldata.Getdetails(sSqlstmt);
                 count = count + dsApprovalList.Tables[0].Rows.Count;
                 if (dsApprovalList.Tables.Count > 0 && dsApprovalList.Tables[0].Rows.Count > 0)
@@ -386,7 +373,6 @@ namespace ISOStd.Controllers
             return View();
         }
 
-
         public ActionResult ListPendingForReview()
         {
             try
@@ -401,15 +387,13 @@ namespace ISOStd.Controllers
                 //          " find_in_set('" + sempid + "',ReviewedBy) "
                 //         + "and find_in_set('" + sempid + "',ReviewedBy)";
                 //sSqlstmt = sSqlstmt + " order by DocLevels, idmgmt desc";
-               
-                
+
                 //New Code Here appoval and reject both are included
 
                 string sSqlstmt = "select * from t_mgmt_documents where Status= 1 and Approved_Status=0 and Reviewed_Status=0 and" +
                                   " ( find_in_set('" + sempid + "',ReviewedBy) and not find_in_set('" + sempid + "',Reviewers)) "
                                  + "and ( find_in_set('" + sempid + "',ReviewedBy) and not find_in_set('" + sempid + "',ReviewRejector))";
-                sSqlstmt = sSqlstmt + " order by DocLevels, idmgmt desc";                
-
+                sSqlstmt = sSqlstmt + " order by DocLevels, idmgmt desc";
 
                 DataSet dsApprovalList = objGlobaldata.Getdetails(sSqlstmt);
                 if (dsApprovalList.Tables.Count > 0 && dsApprovalList.Tables[0].Rows.Count > 0)
@@ -442,13 +426,13 @@ namespace ISOStd.Controllers
                 //}
 
                 //==========================Supplier Reevalution======================================
-                 sSqlstmt = "select id_reevaluation, branch, supplier, logged_by, perf_review_year, recommanded,isrecommand, recommand_date,recommanded_to,approved_to,isapproved,approved,approved_date from t_supplier_reevaluation"
-                    + " where isrecommand =0 and Active=1 and recommanded_to ='" + sempid + "'";
+                sSqlstmt = "select id_reevaluation, branch, supplier, logged_by, perf_review_year, recommanded,isrecommand, recommand_date,recommanded_to,approved_to,isapproved,approved,approved_date from t_supplier_reevaluation"
+                   + " where isrecommand =0 and Active=1 and recommanded_to ='" + sempid + "'";
 
                 dsApprovalList = objGlobaldata.Getdetails(sSqlstmt);
                 if (dsApprovalList.Tables.Count > 0 && dsApprovalList.Tables[0].Rows.Count > 0)
                 {
-                    ViewBag.dsSuppReevaluation= dsApprovalList;
+                    ViewBag.dsSuppReevaluation = dsApprovalList;
                 }
                 //==========================LEGAL REGISTER======================================
 
@@ -536,11 +520,9 @@ namespace ISOStd.Controllers
                         string sFilepath = Path.GetDirectoryName(fileLocation);
                         string sFilename = Path.GetFileName(fileLocation);
 
-
                         //string fileLocation = Server.MapPath("~/DataUpload/ImportExcelOLEDB/") + Request.Files["file"].FileName;
                         if (System.IO.File.Exists(fileLocation))
                         {
-
                             System.IO.File.Delete(fileLocation);
                         }
                         //if (System.IO.File.Exists(fileLocation))
@@ -559,7 +541,6 @@ namespace ISOStd.Controllers
                         //connection String for xlsx file format.
                         else if (fileExtension == ".xlsx")
                         {
-
                             excelConnectionString = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" + fileLocation + ";Extended Properties=\"Excel 12.0;HDR=Yes;IMEX=2\"";
                         }
                         //Create Connection to Excel work book and add oledb namespace
@@ -583,7 +564,6 @@ namespace ISOStd.Controllers
                             t++;
                         }
                         OleDbConnection excelConnection1 = new OleDbConnection(excelConnectionString);
-
 
                         string query = string.Format("Select * from [{0}]", excelSheets[0]);
                         using (OleDbDataAdapter dataAdapter = new OleDbDataAdapter(query, excelConnection1))
@@ -614,7 +594,6 @@ namespace ISOStd.Controllers
                             TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                         }
                     }
-
                 }
             }
             catch (Exception ex)
@@ -622,8 +601,6 @@ namespace ISOStd.Controllers
                 objGlobaldata.AddFunctionalLog("Exception in ImportToExcel: " + ex.ToString());
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
-
-
 
             return View("DashboardSetting");
         }
@@ -647,12 +624,8 @@ namespace ISOStd.Controllers
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
 
-
             var json = JsonConvert.SerializeObject(dsReport, Newtonsoft.Json.Formatting.Indented);
             return Json(json, JsonRequestBehavior.AllowGet);
         }
-
-
-
     }
 }

@@ -1,29 +1,27 @@
-﻿using System;
+﻿using ISOStd.Filters;
+using ISOStd.Models;
+using PagedList;
+using System;
 using System.Collections.Generic;
+using System.Data;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using ISOStd.Models;
-using System.Data;
-using System.Net;
-using System.IO;
-using PagedList;
-using PagedList.Mvc;
-using ISOStd.Filters;
 
 namespace ISOStd.Controllers
 {
     [PreventFromUrl]
     public class MgmtDocumentsController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
+        private clsGlobal objGlobaldata = new clsGlobal();
 
         public MgmtDocumentsController()
         {
             ViewBag.Menutype = "Documents";
             ViewBag.SubMenutype = "MgmtDocuments";
         }
-               
+
         public ActionResult Index()
         {
             return View();
@@ -36,13 +34,12 @@ namespace ISOStd.Controllers
             return InitilizeAddMgmtDocuments();
         }
 
-
         [AllowAnonymous]
         public ActionResult Mgmtvideo()
         {
             return View();
         }
-       
+
         private ActionResult InitilizeAddMgmtDocuments()
         {
             MgmtDocumentsModels objmgmt = new MgmtDocumentsModels();
@@ -52,18 +49,16 @@ namespace ISOStd.Controllers
                 objmgmt.Department = objGlobaldata.GetCurrentUserSession().DeptID;
                 objmgmt.Location = objGlobaldata.GetCurrentUserSession().Work_Location;
 
-              
-               
-                  ViewBag.PreparerList =objGlobaldata.GetGEmpListbymultiBranch(objmgmt.branch);
-                  ViewBag.ReviewerList = objGlobaldata.GetReviewer();
-                  ViewBag.ApproverList = objGlobaldata.GetApprover();
+                ViewBag.PreparerList = objGlobaldata.GetGEmpListbymultiBranch(objmgmt.branch);
+                ViewBag.ReviewerList = objGlobaldata.GetReviewer();
+                ViewBag.ApproverList = objGlobaldata.GetApprover();
                 //ViewBag.PreparerList = objGlobaldata.GetGEmpListBymulitBDL(objmgmt.branch, objmgmt.Department, objmgmt.Location);
                 //ViewBag.ReviewerList = objGlobaldata.GetGRoleList(objmgmt.branch, objmgmt.Department, objmgmt.Location, "Reviewer");
                 //ViewBag.ApproverList = objGlobaldata.GetGRoleList(objmgmt.branch, objmgmt.Department, objmgmt.Location, "Approver");
                 //// ViewBag.DeptList = objGlobaldata.GetDepartmentWithIdListbox();
                 ViewBag.DocLevels = objGlobaldata.GetDocLevelsList();
-               // ViewBag.Doctype = objGlobaldata.GetConstantValue("Doctype");
-                
+                // ViewBag.Doctype = objGlobaldata.GetConstantValue("Doctype");
+
                 //ViewBag.DeptHeadList = objGlobaldata.GetDeptHeadList("");
                 ViewBag.Department = objGlobaldata.GetDepartmentListbox(objmgmt.branch);
                 ViewBag.Location = objGlobaldata.GetDivisionLocationList(objmgmt.branch);
@@ -83,12 +78,12 @@ namespace ISOStd.Controllers
                     {
                         for (int i = 0; i < dsEmp.Tables[0].Rows.Count; i++)
                         {
-                             Isostd = new DropdownMultiItems()
+                            Isostd = new DropdownMultiItems()
                             {
                                 Id = dsEmp.Tables[0].Rows[i]["StdId"].ToString(),
                                 Name = dsEmp.Tables[0].Rows[i]["IsoName"].ToString(),
                                 Desc = dsEmp.Tables[0].Rows[i]["Descriptions"].ToString()
-                             };
+                            };
                             dplist.DropdownList.Add(Isostd);
                         }
                         ViewBag.ISOStds = dplist;
@@ -106,7 +101,7 @@ namespace ISOStd.Controllers
             }
             return View(objmgmt);
         }
-        
+
         [HttpPost]
         public JsonResult doesDocNameExist(string DocName)
         {
@@ -115,7 +110,7 @@ namespace ISOStd.Controllers
 
             return Json(user);
         }
-        
+
         [HttpPost]
         public JsonResult doesDocRefExist(string DocRef)
         {
@@ -125,13 +120,13 @@ namespace ISOStd.Controllers
             return Json(user);
         }
 
-       public ActionResult FunISOClauseList(string ISOStdId)
+        public ActionResult FunISOClauseList(string ISOStdId)
         {
             MgmtDocumentsModels objMgmtDocuments = new MgmtDocumentsModels();
             MultiSelectList lstEmp = objMgmtDocuments.GetMultiISOClauseList(ISOStdId);
             return Json(lstEmp);
         }
-        
+
         [HttpPost]
         public JsonResult FunCheckRevisionNo(string idMgmt)
         {
@@ -144,7 +139,7 @@ namespace ISOStd.Controllers
 
             return Json(RevNo);
         }
-        
+
         [HttpPost]
         public JsonResult FunCheckIssueNo(string idMgmt)
         {
@@ -157,7 +152,7 @@ namespace ISOStd.Controllers
 
             return Json(IssueNo);
         }
-         
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult AddMgmtDocuments(MgmtDocumentsModels objMgmtDocuments, FormCollection form, HttpPostedFileBase fileUploader)
@@ -223,8 +218,6 @@ namespace ISOStd.Controllers
                     ViewBag.Message = "You have not specified a file.";
                 }
 
-            
-
                 if (objMgmtDocuments.FunAddMgmtDocuments(objMgmtDocuments, fileUploader))
                 {
                     TempData["Successdata"] = "Added Document details successfully";
@@ -243,20 +236,15 @@ namespace ISOStd.Controllers
             return RedirectToAction("MgmtDocumentsList");
         }
 
-
         [AllowAnonymous]
         public JsonResult MgmtDocDelete(FormCollection form)
         {
             try
             {
-
-
                 if (form["idMgmt"] != null && form["idMgmt"] != "")
                 {
-
                     MgmtDocumentsModels Doc = new MgmtDocumentsModels();
                     string sidMgmt = form["idMgmt"];
-
 
                     if (Doc.FunDeleteMgmtDoc(sidMgmt))
                     {
@@ -274,9 +262,6 @@ namespace ISOStd.Controllers
                     TempData["alertdata"] = "MgmtDoc Id cannot be Null or empty";
                     return Json("Failed");
                 }
-
-
-
             }
             catch (Exception ex)
             {
@@ -286,20 +271,15 @@ namespace ISOStd.Controllers
             return Json("Failed");
         }
 
-
         [AllowAnonymous]
         public JsonResult AnnexureDelete(FormCollection form)
         {
             try
             {
-
-
                 if (form["idAnnexure"] != null && form["idAnnexure"] != "")
                 {
-
                     MgmtDocumentsModels Doc = new MgmtDocumentsModels();
                     string sidAnnexure = form["idAnnexure"];
-
 
                     if (Doc.FunDeleteAnnexure(sidAnnexure))
                     {
@@ -317,9 +297,6 @@ namespace ISOStd.Controllers
                     TempData["alertdata"] = "Annexure ID cannot be Null or empty";
                     return Json("Failed");
                 }
-
-
-
             }
             catch (Exception ex)
             {
@@ -328,7 +305,6 @@ namespace ISOStd.Controllers
             }
             return Json("Failed");
         }
-
 
         [AllowAnonymous]
         public ActionResult MgmtHistoricalDocumentsList(FormCollection form, int? page)
@@ -345,7 +321,6 @@ namespace ISOStd.Controllers
                 string sSqlstmt = "select idMgmt,Company, DocLevels, Doctype, ISOStds, AppClauses, DocRef, DocName, IssueNo, RevNo, PreparedBy, ReviewedBy, DocDate,"
                     + " DocUploadPath, ApprovedBy, (case when Approved_Status='1' then 'Approved' else 'Not Approved' end) as Approved_Status,(case when Reviewed_Status='1' then 'Reviewed' else 'Not Reviewed' end) as Reviewed_Status, ApprovedDate, UploadedBy "
                     + " from t_mgmt_documents where status=1";
-
 
                 UserCredentials objUser = new UserCredentials();
 
@@ -367,8 +342,6 @@ namespace ISOStd.Controllers
                 DataSet dsMgmtDocumentsList = objGlobaldata.Getdetails(sSqlstmt);
                 if (dsMgmtDocumentsList.Tables.Count > 0 && dsMgmtDocumentsList.Tables[0].Rows.Count > 0)
                 {
-
-
                     for (int i = 0; i < dsMgmtDocumentsList.Tables[0].Rows.Count; i++)
                     {
                         DateTime dtDocDate = Convert.ToDateTime(dsMgmtDocumentsList.Tables[0].Rows[i]["DocDate"].ToString());
@@ -384,7 +357,7 @@ namespace ISOStd.Controllers
                                 idMgmt = Convert.ToInt16(dsMgmtDocumentsList.Tables[0].Rows[i]["idMgmt"].ToString()),
                                 Dept = sDept,
                                 Company = objGlobaldata.GetCompanyBranchNameById(dsMgmtDocumentsList.Tables[0].Rows[i]["Company"].ToString()),
-                                DocLevels =(dsMgmtDocumentsList.Tables[0].Rows[i]["DocLevels"].ToString()),
+                                DocLevels = (dsMgmtDocumentsList.Tables[0].Rows[i]["DocLevels"].ToString()),
                                 Doctype = dsMgmtDocumentsList.Tables[0].Rows[i]["Doctype"].ToString(),
                                 ISOStds = objGlobaldata.GetIsoStdNamebyId(dsMgmtDocumentsList.Tables[0].Rows[i]["ISOStds"].ToString()),
                                 AppClauses = objMgmtDocuments.GetMultiISOClauseNameById(dsMgmtDocumentsList.Tables[0].Rows[i]["AppClauses"].ToString()),
@@ -425,8 +398,8 @@ namespace ISOStd.Controllers
             }
             return View(objMgmtDocumentsList.MgmtDocumentsMList.ToList().ToPagedList(page ?? 1, 1000));
         }
-        // GET: /MgmtDocuments/MgmtDocumentsList
 
+        // GET: /MgmtDocuments/MgmtDocumentsList
 
         [AllowAnonymous]
         public ActionResult MgmtDocumentsList(FormCollection form, string SearchText, string Approvestatus, int? page, string branch_name)
@@ -439,7 +412,6 @@ namespace ISOStd.Controllers
             MgmtDocumentsModels objMgmtDocuments = new MgmtDocumentsModels();
             try
             {
-
                 //ViewBag.View = Request.QueryString["View"];
 
                 //String DocumentType = objMgmtDocuments.GetDocumentTypeIdbyName("Policy");
@@ -447,7 +419,6 @@ namespace ISOStd.Controllers
                 //String DocumentType2 = objMgmtDocuments.GetDocumentTypeIdbyName("Procedure");
                 //String DocumentType3 = objMgmtDocuments.GetDocumentTypeIdbyName("Forms");
                 //String DocumentType4 = objMgmtDocuments.GetDocumentTypeIdbyName("Work Instructions");
-
 
                 string sSqlstmt = "select idMgmt,Department, DocLevels, Doctype, ISOStds, AppClauses, DocRef, DocName, IssueNo, RevNo, PreparedBy, ReviewedBy, DocDate,"
                     + " DocUploadPath, ApprovedBy, (case when Approved_Status='1' then 'Approved' when Approved_Status='2' then 'Approve Rejected' else 'Not Approved' end) as Approved_Status," +
@@ -481,7 +452,7 @@ namespace ISOStd.Controllers
                 ViewBag.Approvestatus = objGlobaldata.GetConstantValueKeyValuePair("DocStatus");
 
                 ViewBag.Department = objGlobaldata.GetDepartmentWithIdListbox();
-              
+
                 //searching the company name
                 objMgmtDocuments.Department = form["Department"];//retrieving dept id
                 string sSDepartment = objGlobaldata.GetMultiDeptNameById(form["Department"]);//retrieving name by id
@@ -558,11 +529,11 @@ namespace ISOStd.Controllers
                                 Approved_StatusId = dsMgmtDocumentsList.Tables[0].Rows[i]["Approved_StatusId"].ToString(),
                                 Reviewed_StatusId = dsMgmtDocumentsList.Tables[0].Rows[i]["Reviewed_StatusId"].ToString(),
                             };
-                            if(objMgmtDocumentsModels.Reviewers != "0")
+                            if (objMgmtDocumentsModels.Reviewers != "0")
                             {
-                                string sReviewer = objMgmtDocumentsModels.Reviewers;                          
-                                string sReviewedPersons= sReviewer.Substring(2);
-                                objMgmtDocumentsModels.Reviewers=objGlobaldata.GetMultiHrEmpNameById(sReviewedPersons);
+                                string sReviewer = objMgmtDocumentsModels.Reviewers;
+                                string sReviewedPersons = sReviewer.Substring(2);
+                                objMgmtDocumentsModels.Reviewers = objGlobaldata.GetMultiHrEmpNameById(sReviewedPersons);
                             }
                             if (objMgmtDocumentsModels.Approvers != "0")
                             {
@@ -606,7 +577,6 @@ namespace ISOStd.Controllers
         //    MgmtDocumentsModels objMgmtDocuments = new MgmtDocumentsModels();
         //    try
         //    {
-
         //        //ViewBag.View = Request.QueryString["View"];
 
         //        //String DocumentType = objMgmtDocuments.GetDocumentTypeIdbyName("Policy");
@@ -614,7 +584,6 @@ namespace ISOStd.Controllers
         //        //String DocumentType2 = objMgmtDocuments.GetDocumentTypeIdbyName("Procedure");
         //        //String DocumentType3 = objMgmtDocuments.GetDocumentTypeIdbyName("Forms");
         //        //String DocumentType4 = objMgmtDocuments.GetDocumentTypeIdbyName("Work Instructions");
-
 
         //        string sSqlstmt = "select idMgmt,Department, DocLevels, Doctype, ISOStds, AppClauses, DocRef, DocName, IssueNo, RevNo, PreparedBy, ReviewedBy, DocDate,"
         //            + " DocUploadPath, ApprovedBy, (case when Approved_Status='1' then 'Approved' when Approved_Status='2' then 'Approval Rejected' else 'Not Approved' end) as Approved_Status," +
@@ -648,7 +617,7 @@ namespace ISOStd.Controllers
         //        ViewBag.Approvestatus = objGlobaldata.GetConstantValueKeyValuePair("DocStatus");
 
         //        ViewBag.Department = objGlobaldata.GetDepartmentWithIdListbox();
-               
+
         //        //searching the company name
         //        objMgmtDocuments.Department = form["Department"];//retrieving dept id
         //        string sSDepartment = objGlobaldata.GetMultiDeptNameById(form["Department"]);//retrieving name by id
@@ -746,7 +715,6 @@ namespace ISOStd.Controllers
         //    return Json("Success");
         //}
 
-
         //[AllowAnonymous]
         //public ActionResult MgmtDocumentsListSearch(FormCollection form, string SearchText, string Approvestatus, int? page)
         //{
@@ -785,7 +753,7 @@ namespace ISOStd.Controllers
         //        ViewBag.Approvestatus = objGlobaldata.GetConstantValueKeyValuePair("DocStatus");
 
         //        ViewBag.Department = objGlobaldata.GetDepartmentWithIdListbox();
-              
+
         //        //searching the company name
         //        objMgmtDocuments.Department = form["Department"];//retrieving dept id
         //        string sSDepartment = objGlobaldata.GetMultiDeptNameById(form["Department"]);//retrieving name by id
@@ -819,15 +787,11 @@ namespace ISOStd.Controllers
 
         //        //if (objMgmtDocuments.Department != null && sSDepartment != "ALL")
 
-
         //        sSqlstmt = sSqlstmt + sSearchtext + " order by DocLevels asc, DocRef asc";
 
         //        DataSet dsMgmtDocumentsList = objGlobaldata.Getdetails(sSqlstmt);
         //        if (dsMgmtDocumentsList.Tables.Count > 0 && dsMgmtDocumentsList.Tables[0].Rows.Count > 0)
         //        {
-
-
-
         //            for (int i = 0; i < dsMgmtDocumentsList.Tables[0].Rows.Count; i++)
         //            {
         //                DateTime dtDocDate = Convert.ToDateTime(dsMgmtDocumentsList.Tables[0].Rows[i]["DocDate"].ToString());
@@ -888,8 +852,6 @@ namespace ISOStd.Controllers
         //    return View(objMgmtDocumentsList.MgmtDocumentsMList.ToList().ToPagedList(page ?? 1, 1000));
         //}
 
-       
-
         [AllowAnonymous]
         public ActionResult MgmtDocumentsApproveReject(string idMgmt, int iStatus, string PendingFlg, string Document, string DocName, string DocRef)
         {
@@ -922,12 +884,10 @@ namespace ISOStd.Controllers
                 else if (iStatus == 1)
                 {
                     sStatus = "Approved";
-
                 }
                 else if (iStatus == 2)
                 {
                     sStatus = "Rejected";
-
                 }
                 if (objMgmtDocuments.FunMgmtDocumentApproveOrReject(idMgmt, iStatus, fsSource, filename, DocName, DocRef))
                 {
@@ -937,7 +897,6 @@ namespace ISOStd.Controllers
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 }
-
             }
             catch (Exception ex)
             {
@@ -962,11 +921,8 @@ namespace ISOStd.Controllers
             {
                 return RedirectToAction("ListPendingForApproval", "Dashboard");
             }
+        }
 
-            }
-
-
-       
         [AllowAnonymous]
         public ActionResult MgmtDocumentsReviewedApproveOrReject(string idMgmt, int iStatus, string PendingFlg, string Document, string DocName, string DocRef)
         {
@@ -982,7 +938,7 @@ namespace ISOStd.Controllers
                 {
                     if (Document.Contains(","))
                     {
-                        string[] filearray = Document.Split(',');                        
+                        string[] filearray = Document.Split(',');
                         fsSource = new FileStream(Server.MapPath(filearray[0]), FileMode.Open, FileAccess.Read, FileShare.Read);
                     }
                     else
@@ -1000,22 +956,19 @@ namespace ISOStd.Controllers
                 else if (iStatus == 1)
                 {
                     sStatus = "Approved";
-
                 }
                 else if (iStatus == 2)
                 {
                     sStatus = "Rejected";
-
                 }
                 if (objMgmtDocuments.FunMgmtDocumentsReviewApproveOrReject(idMgmt, iStatus, fsSource, filename, DocName, DocRef))
                 {
-                    TempData["Successdata"] = "Document Review "+sStatus+" successfully";
+                    TempData["Successdata"] = "Document Review " + sStatus + " successfully";
                 }
                 else
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 }
-
             }
             catch (Exception ex)
             {
@@ -1025,7 +978,7 @@ namespace ISOStd.Controllers
 
             if (PendingFlg != null && PendingFlg == "true")
             {
-                string path = Request.CurrentExecutionFilePath;                
+                string path = Request.CurrentExecutionFilePath;
                 string[] url = path.Split('/');
                 //var controller = url[1];
                 if (url[1] == "MgmtDocuments" || url[2] == "MgmtDocuments")
@@ -1035,15 +988,13 @@ namespace ISOStd.Controllers
                 else
                 {
                     return RedirectToAction("ListPendingForReview", "Dashboard");
-                }                
+                }
             }
             else
             {
                 return RedirectToAction("MgmtDocumentsList");
             }
         }
-
-
 
         // GET: /MgmtDocuments/MgmtDocumentsHistoryList
 
@@ -1060,7 +1011,7 @@ namespace ISOStd.Controllers
 
             try
             {
-                //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS  
+                //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS
                 string sSqlstmt = "select idMgmtTrans, idMgmt, DocLevels, Doctype, ISOStds, AppClauses, DocRef, DocName, IssueNo, RevNo, PreparedBy, ReviewedBy,"
                             + "DocDate, DocUploadPath, TransDate, ApprovedBy, Approved_Status, ApprovedDate, UploadedBy from t_mgmt_documents_trans where idMgmt='"
                             + idMgmt + "'";
@@ -1080,7 +1031,7 @@ namespace ISOStd.Controllers
                     for (int i = 0; i < dsMgmtDocumentsList.Tables[0].Rows.Count; i++)
                     {
                         DateTime dtDocDate = Convert.ToDateTime(dsMgmtDocumentsList.Tables[0].Rows[i]["DocDate"].ToString());
-                        //DateTime dtTransDate; 
+                        //DateTime dtTransDate;
 
                         //if (dsMgmtDocumentsList.Tables[0].Rows[i]["TransDate"].ToString() != null)
                         //{
@@ -1098,7 +1049,7 @@ namespace ISOStd.Controllers
                                 idMgmtTrans = Convert.ToInt16(dsMgmtDocumentsList.Tables[0].Rows[i]["idMgmtTrans"].ToString()),
                                 idMgmt = Convert.ToInt16(dsMgmtDocumentsList.Tables[0].Rows[i]["idMgmt"].ToString()),
 
-                                DocLevels =(dsMgmtDocumentsList.Tables[0].Rows[i]["DocLevels"].ToString()),
+                                DocLevels = (dsMgmtDocumentsList.Tables[0].Rows[i]["DocLevels"].ToString()),
                                 Doctype = dsMgmtDocumentsList.Tables[0].Rows[i]["Doctype"].ToString(),
                                 ISOStds = objGlobaldata.GetIsoStdNamebyId(dsMgmtDocumentsList.Tables[0].Rows[i]["ISOStds"].ToString()),
                                 AppClauses = objMgmtDocuments.GetMultiISOClauseNameById(dsMgmtDocumentsList.Tables[0].Rows[i]["AppClauses"].ToString()),
@@ -1146,7 +1097,6 @@ namespace ISOStd.Controllers
             return View(objMgmtDocumentsList.MgmtDocumentsMList.ToList());
         }
 
-
         // GET: /MgmtDocuments/MgmtDocumentsDetails
 
         [AllowAnonymous]
@@ -1159,7 +1109,6 @@ namespace ISOStd.Controllers
             ViewBag.user = objGlobaldata.GetEmpHrNameById(objUser.empid);
             try
             {
-
                 if (Request.QueryString["idMgmt"] != null && Request.QueryString["idMgmt"] != "")
                 {
                     string idMgmt = Request.QueryString["idMgmt"];
@@ -1167,10 +1116,10 @@ namespace ISOStd.Controllers
 
                     ViewBag.UserRole = objGlobaldata.GetRoleName(objGlobaldata.GetCurrentUserSession().role);
 
-                    //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS  
+                    //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS
                     string sSqlstmt = "select idMgmt, DocLevels,Department, Doctype, ISOStds, AppClauses, DocRef, DocName, IssueNo, RevNo, PreparedBy, ReviewedBy, DocDate,"
                         + " DocUploadPath, ApprovedBy, (case when Approved_Status='1' then 'Approved' when Approved_Status='2' then 'Rejected' else 'Not Approved' end) as Approved_Status,"
-                        +"(case when Reviewed_Status = '1' then 'Reviewed' when Reviewed_Status = '2' then 'Review Rejected' else 'Not Reviewed' end) as Reviewed_Status, ApprovedDate,ReviewedDate, "
+                        + "(case when Reviewed_Status = '1' then 'Reviewed' when Reviewed_Status = '2' then 'Review Rejected' else 'Not Reviewed' end) as Reviewed_Status, ApprovedDate,ReviewedDate, "
                         + "UploadedBy,branch,Location,Reviewers,Approvers,Reviewed_Status as Reviewed_StatusId,Approved_Status as Approved_StatusId,dcr_no,view_by from t_mgmt_documents where idmgmt='" + idMgmt + "'";
 
                     DataSet dsMgmtDocumentsList = objGlobaldata.Getdetails(sSqlstmt);
@@ -1215,7 +1164,6 @@ namespace ISOStd.Controllers
                             Approved_StatusId = dsMgmtDocumentsList.Tables[0].Rows[0]["Approved_StatusId"].ToString(),
                             dcr_no = objGlobaldata.GetDCRNOById(dsMgmtDocumentsList.Tables[0].Rows[0]["dcr_no"].ToString()),
                             view_by = objGlobaldata.GetViewDeptNameById(dsMgmtDocumentsList.Tables[0].Rows[0]["view_by"].ToString()),
-
                         };
                         if (objMgmtDocumentsModels.Reviewers != "0")
                         {
@@ -1257,15 +1205,14 @@ namespace ISOStd.Controllers
                     TempData["alertdata"] = "Document Id cannot be Null or empty";
                     return RedirectToAction("MgmtDocumentsList");
                 }
-            }       
+            }
             catch (Exception ex)
             {
                 objGlobaldata.AddFunctionalLog("Exception in MgmtDocumentsDetails: " + ex.ToString());
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-            }           
+            }
             return View(objMgmtDocumentsModels);
         }
-
 
         [AllowAnonymous]
         public ActionResult MgmtDocumentsInfo(int id)
@@ -1275,7 +1222,6 @@ namespace ISOStd.Controllers
             UserCredentials objUser = new UserCredentials();
             try
             {
-
                 string sSqlstmt = "select idMgmt, DocLevels,Dept, Doctype, ISOStds, AppClauses, DocRef, DocName, IssueNo, RevNo, PreparedBy, ReviewedBy, DocDate,"
                     + " DocUploadPath, ApprovedBy, (case when Approved_Status='1' then 'Approved' when Approved_Status='2' then 'Rejected' else 'Not Approved' end) as Approved_Status, ApprovedDate,Department,ReviewedDate, "
                     + "UploadedBy,branch,Location,dcr_no from t_mgmt_documents where idmgmt='" + id + "'";
@@ -1329,7 +1275,6 @@ namespace ISOStd.Controllers
                     TempData["alertdata"] = "No Data exists";
                     return RedirectToAction("MgmtDocumentsList");
                 }
-
             }
             catch (Exception ex)
             {
@@ -1337,7 +1282,6 @@ namespace ISOStd.Controllers
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
             return View(objMgmtDocumentsModels);
-
         }
 
         // POST: /MgmtDocuments/MgmtDocumentsDetails
@@ -1391,8 +1335,6 @@ namespace ISOStd.Controllers
 
                     ViewBag.idMgmt = idMgmt;
 
-
-                    
                     // ViewBag.PreparerList = objGlobaldata.GetHrEmployeeListbox();//all internal active employees
                     ViewBag.ReviewerList = objGlobaldata.GetReviewer();//role=1+active+internal
                     ViewBag.ApproverList = objGlobaldata.GetApprover();//role=2
@@ -1400,12 +1342,12 @@ namespace ISOStd.Controllers
                     // ViewBag.EmpLists = objGlobaldata.GetHrEmployeeListbox('I');
                     //ViewBag.DeptList = objGlobaldata.GetDepartmentWithIdListbox();
                     ViewBag.DocLevels = objGlobaldata.GetDocLevelsList();
-                     ViewBag.DeptHeadList = objGlobaldata.GetDeptHeadList("");
+                    ViewBag.DeptHeadList = objGlobaldata.GetDeptHeadList("");
                     //ViewBag.CompanyName = objGlobaldata.GetCompanyBranchListbox();
-                   // ViewBag.Department = objGlobaldata.GetDepartmentWithIdListbox();
+                    // ViewBag.Department = objGlobaldata.GetDepartmentWithIdListbox();
                     ViewBag.Views = objGlobaldata.GetViewsListbox();
                     ViewBag.Branch = objGlobaldata.GetCompanyBranchListbox();
-                   
+
                     //ViewBag.ISOStds = objGlobaldata.GetAllIsoStdListbox();
 
                     DropdownMultiItemsList dplist = new DropdownMultiItemsList();
@@ -1438,7 +1380,7 @@ namespace ISOStd.Controllers
                         + "DocUploadPath, ApprovedBy, Approved_Status, UploadedBy,view_by,branch,Location,dcr_no from t_mgmt_documents where idmgmt='" + idMgmt + "'";
 
                     DataSet dsMgmtDocumentsList = objGlobaldata.Getdetails(sSqlstmt);
-                    
+
                     if (dsMgmtDocumentsList.Tables.Count > 0 && dsMgmtDocumentsList.Tables[0].Rows.Count > 0)
                     {
                         DateTime dtDocDate = Convert.ToDateTime(dsMgmtDocumentsList.Tables[0].Rows[0]["DocDate"].ToString());
@@ -1474,10 +1416,9 @@ namespace ISOStd.Controllers
                         ViewBag.AppClauses = objMgmtDocumentsModels.GetMultiISOClauseList(dsMgmtDocumentsList.Tables[0].Rows[0]["ISOStds"].ToString());
                         ViewBag.Department = objGlobaldata.GetDepartmentList1(dsMgmtDocumentsList.Tables[0].Rows[0]["branch"].ToString());
                         ViewBag.Location = objGlobaldata.GetLocationbyMultiDivision(dsMgmtDocumentsList.Tables[0].Rows[0]["branch"].ToString());
-                        ViewBag.DocType = objGlobaldata.GetDocTypeListbyDocLevels(dsMgmtDocumentsList.Tables[0].Rows[0]["DocLevels"].ToString()); 
+                        ViewBag.DocType = objGlobaldata.GetDocTypeListbyDocLevels(dsMgmtDocumentsList.Tables[0].Rows[0]["DocLevels"].ToString());
                         ViewBag.DCRDoc = objGlobaldata.GetDCRDocumentList(dsMgmtDocumentsList.Tables[0].Rows[0]["branch"].ToString(), dsMgmtDocumentsList.Tables[0].Rows[0]["Location"].ToString());
                         ViewBag.PreparerList = objGlobaldata.GetGEmpListbymultiBranch(dsMgmtDocumentsList.Tables[0].Rows[0]["branch"].ToString());
-
                     }
                     else
                     {
@@ -1500,9 +1441,8 @@ namespace ISOStd.Controllers
                 return RedirectToAction("MgmtDocumentsList");
             }
             return View(objMgmtDocumentsModels);
-
         }
-        
+
         // POST: /MgmtDocuments/MgmtDocumentsEdit
 
         [HttpPost]
@@ -1514,7 +1454,7 @@ namespace ISOStd.Controllers
             string sDocName = form["DocName"], sDocRef = form["DocRef"];
             //if (objMgmtDocumentsModels != null && objMgmtDocumentsModels.CheckForDuplicate(sDocName, sDocRef))
             try
-            {               
+            {
                 objMgmtDocumentsModels.DocName = sDocName;
                 objMgmtDocumentsModels.DocLevels = form["DocLevels"];
                 objMgmtDocumentsModels.DocRef = sDocRef;
@@ -1530,11 +1470,11 @@ namespace ISOStd.Controllers
 
                 objMgmtDocumentsModels.AppClauses = form["AppClauses"];
                 objMgmtDocumentsModels.Location = form["Location"];
-                objMgmtDocumentsModels.Department = form["Department"];               
+                objMgmtDocumentsModels.Department = form["Department"];
                 objMgmtDocumentsModels.idMgmt = Convert.ToInt16(form["idMgmt"]);
                 //objMgmtDocumentsModels.branch = form["branch"];
 
-               string supload = form["upload"];
+                string supload = form["upload"];
 
                 if (objMgmtDocumentsModels.branch == null || objMgmtDocumentsModels.branch == "")
                 {
@@ -1547,7 +1487,7 @@ namespace ISOStd.Controllers
                     objMgmtDocumentsModels.DocDate = dateValue;
                 }
 
-                if (supload  != null && supload != "")
+                if (supload != null && supload != "")
                 {
                     objMgmtDocumentsModels.DocUploadPath = supload;
                 }
@@ -1573,8 +1513,6 @@ namespace ISOStd.Controllers
                     ViewBag.Message = "You have not specified a file.";
                 }
 
-               
-
                 if (objMgmtDocumentsModels.FunUpdateMgmtDocuments(objMgmtDocumentsModels, file, OldIssueNo, OldRevNo))
                 {
                     TempData["Successdata"] = "Document details updated successfully";
@@ -1597,7 +1535,6 @@ namespace ISOStd.Controllers
         [AllowAnonymous]
         public ActionResult AddAnnexure()
         {
-
             return InitilizeAddAnnexure();
         }
 
@@ -1670,7 +1607,6 @@ namespace ISOStd.Controllers
                         ViewBag.Message = "You have not specified a file.";
                     }
 
-
                     if (objMgmtDocuments.FunAddAnnexure(objMgmtDocuments, file))
                     {
                         TempData["Successdata"] = "Added Annexure details successfully";
@@ -1706,7 +1642,7 @@ namespace ISOStd.Controllers
 
                 if (iMgmtId > 0)
                 {
-                    //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS  
+                    //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS
                     string sSqlstmt = "select idAnnexure, MgmtId, DocRef, DocName, IssueNo, RevNo, PreparedBy, ReviewedBy, DocDate, DocUploadPath, ApprovedBy, ApprovedStatus "
                         + "from t_mgmt_annexure where Status=1 and MgmtId='" + iMgmtId + "'";
 
@@ -1758,7 +1694,6 @@ namespace ISOStd.Controllers
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
             return RedirectToAction("MgmtDocumentsList");
-
         }
 
         // GET: /MgmtDocuments/AnnexureHistoryList
@@ -1775,7 +1710,7 @@ namespace ISOStd.Controllers
                 int idAnnexure = 0;
                 int.TryParse(Request.QueryString["idAnnexure"], out idAnnexure);
 
-                //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS  
+                //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS
                 string sSqlstmt = "select idAnnexTrans, idAnnexure, MgmtId, DocRef, DocName, IssueNo, RevNo, PreparedBy, ReviewedBy, DocDate, DocUploadPath, TransDate, ApprovedBy "
                                         + " from t_mgmt_annexure_trans where idAnnexure='" + idAnnexure + "'";
 
@@ -1842,7 +1777,7 @@ namespace ISOStd.Controllers
                 {
                     string idAnnexure = Request.QueryString["idAnnexure"];
 
-                    //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS  
+                    //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS
                     string sSqlstmt = "select idAnnexure, MgmtId, DocRef, DocName, IssueNo, RevNo, PreparedBy, ReviewedBy, DocDate, DocUploadPath ,ApprovedBy "
                         + "from t_mgmt_annexure where idAnnexure='" + idAnnexure + "'";
 
@@ -1900,7 +1835,6 @@ namespace ISOStd.Controllers
 
             try
             {
-
                 string sSqlstmt = "select idAnnexure, MgmtId, DocRef, DocName, IssueNo, RevNo, PreparedBy, ReviewedBy, DocDate, DocUploadPath ,ApprovedBy "
                     + "from t_mgmt_annexure where idAnnexure='" + id + "'";
 
@@ -1932,7 +1866,6 @@ namespace ISOStd.Controllers
                     TempData["alertdata"] = "Annexure Id cannot be Null or empty";
                     return RedirectToAction("AnnexureList");
                 }
-
             }
             catch (Exception ex)
             {
@@ -1955,7 +1888,7 @@ namespace ISOStd.Controllers
                 {
                     string idAnnexure = Request.QueryString["idAnnexure"];
 
-                    //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS  
+                    //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS
                     string sSqlstmt = "select idAnnexure, MgmtId, DocRef, DocName, IssueNo, RevNo, PreparedBy, ReviewedBy, DocDate, DocUploadPath, ApprovedBy "
                         + " from t_mgmt_annexure where idAnnexure='" + idAnnexure + "'";
 
@@ -2048,7 +1981,6 @@ namespace ISOStd.Controllers
                     ViewBag.Message = "You have not specified a file.";
                 }
 
-
                 if (objMgmtDocumentsModels.FunUpdateAnnexure(objMgmtDocumentsModels))
                 {
                     TempData["Successdata"] = "Annexure details updated successfully";
@@ -2064,11 +1996,9 @@ namespace ISOStd.Controllers
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
 
-
             return RedirectToAction("AnnexureList", new { idMgmt = objMgmtDocumentsModels.idMgmt });
         }
 
-        
         [AllowAnonymous]
         public ActionResult AnnexureApproval(string idAnnexure, string PendingFlg, string Document)
         {
@@ -2086,11 +2016,10 @@ namespace ISOStd.Controllers
                     {
                         string[] filearray = Document.Split(',');
 
-
                         //string fullfile = "";
                         //for (int ii=0; ii< filearray.Length; ii++)
                         //{
-                        //     filename = Path.GetFileName(filearray[ii]);                                                       
+                        //     filename = Path.GetFileName(filearray[ii]);
                         //}
                         fsSource = new FileStream(Server.MapPath(filearray[0]), FileMode.Open, FileAccess.Read);
                     }
@@ -2109,8 +2038,6 @@ namespace ISOStd.Controllers
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 }
-
-
             }
             catch (Exception ex)
             {
@@ -2148,7 +2075,7 @@ namespace ISOStd.Controllers
                         //string fullfile = "";
                         //for (int ii=0; ii< filearray.Length; ii++)
                         //{
-                        //     filename = Path.GetFileName(filearray[ii]);                                                       
+                        //     filename = Path.GetFileName(filearray[ii]);
                         //}
                         fsSource = new FileStream(Server.MapPath(filearray[0]), FileMode.Open, FileAccess.Read);
                     }
@@ -2159,10 +2086,9 @@ namespace ISOStd.Controllers
                     }
                 }
 
-
                 if (objMgmtDocuments.FunMgmtDocumentApproveOrReject(idMgmt, iStatus, fsSource, filename, DocName, DocRef))
                 {
-                    return Json("Success"+ iStatus);
+                    return Json("Success" + iStatus);
                 }
                 else
                 {
@@ -2173,7 +2099,6 @@ namespace ISOStd.Controllers
                 //{
                 //    TempData["alertdata"] = "Access Denied";
                 //}
-
             }
             catch (Exception ex)
             {
@@ -2208,11 +2133,10 @@ namespace ISOStd.Controllers
                     {
                         string[] filearray = Document.Split(',');
 
-
                         //string fullfile = "";
                         //for (int ii=0; ii< filearray.Length; ii++)
                         //{
-                        //     filename = Path.GetFileName(filearray[ii]);                                                       
+                        //     filename = Path.GetFileName(filearray[ii]);
                         //}
                         fsSource = new FileStream(Server.MapPath(filearray[0]), FileMode.Open, FileAccess.Read);
                     }
@@ -2235,7 +2159,6 @@ namespace ISOStd.Controllers
             catch (Exception ex)
             {
                 objGlobaldata.AddFunctionalLog("Exception in AnnexureApproval: " + ex.ToString());
-
             }
 
             if (PendingFlg != null && PendingFlg == "true")
@@ -2248,9 +2171,8 @@ namespace ISOStd.Controllers
                 return Json("Failed");
             }
         }
-               
 
-        public JsonResult MgmtDocumentsReviewedNoty(string idMgmt, string PendingFlg, string Document, int iStatus,string DocName,string DocRef)
+        public JsonResult MgmtDocumentsReviewedNoty(string idMgmt, string PendingFlg, string Document, int iStatus, string DocName, string DocRef)
         {
             try
             {
@@ -2263,25 +2185,24 @@ namespace ISOStd.Controllers
                     if (Document.Contains(","))
                     {
                         string[] filearray = Document.Split(',');
-                       
-                        
+
                         //string fullfile = "";
                         //for (int ii=0; ii< filearray.Length; ii++)
                         //{
-                        //     filename = Path.GetFileName(filearray[ii]);                                                       
+                        //     filename = Path.GetFileName(filearray[ii]);
                         //}
-                         fsSource = new FileStream(Server.MapPath(filearray[0]), FileMode.Open, FileAccess.Read);
+                        fsSource = new FileStream(Server.MapPath(filearray[0]), FileMode.Open, FileAccess.Read);
                     }
                     else
                     {
-                         filename = Path.GetFileName(Document);
-                         fsSource = new FileStream(Server.MapPath(Document), FileMode.Open, FileAccess.Read);
+                        filename = Path.GetFileName(Document);
+                        fsSource = new FileStream(Server.MapPath(Document), FileMode.Open, FileAccess.Read);
                     }
                 }
-               
+
                 if (objMgmtDocuments.FunMgmtDocumentsReviewApproveOrReject(idMgmt, iStatus, fsSource, filename, DocName, DocRef))
                 {
-                    return Json("Success"+ iStatus);
+                    return Json("Success" + iStatus);
                 }
                 else
                 {
@@ -2316,7 +2237,7 @@ namespace ISOStd.Controllers
                 objGlobaldata.AddFunctionalLog("Exception in FunGetDocTypebyDocLevels: " + ex.ToString());
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
-           return Json ("");
+            return Json("");
         }
 
         public JsonResult FunGetExistDCRNo(string dcr_no)
@@ -2343,12 +2264,12 @@ namespace ISOStd.Controllers
             return Json("");
         }
 
-        public JsonResult FunGetDCRList(string branch,string location)
+        public JsonResult FunGetDCRList(string branch, string location)
         {
             try
             {
-               MultiSelectList DCRList = objGlobaldata.GetDCRDocumentList(branch,location);
-               return Json(DCRList);
+                MultiSelectList DCRList = objGlobaldata.GetDCRDocumentList(branch, location);
+                return Json(DCRList);
             }
             catch (Exception ex)
             {
@@ -2357,7 +2278,5 @@ namespace ISOStd.Controllers
             }
             return Json("");
         }
-
     }
 }
-

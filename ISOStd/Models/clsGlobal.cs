@@ -140,7 +140,8 @@ namespace ISOStd.Models
             {
                 string Emp_Id = GetCurrentUserSession().empid;
                 string sSqlstmt = "select concat(emp_firstname,' ',ifnull(emp_middlename,' '),' ',ifnull(emp_lastname,' ')) as Empname, emp_no as Empid"
-                + " from t_hr_employee t,t_departments tt where emp_status = 1 and t.Dept_Id = tt.DeptId and DeptName like '%QA/QC' or '%QA/QC%' or 'QA/QC%' or '%QA/QC' or '%QA/QC%' or 'QA/QC%'";
+
+                + " from t_hr_employee t,t_departments tt where emp_status = 1 and t.Dept_Id = tt.DeptId and (Upper(DeptName) like '%QA%' Or Upper(DeptName) like '%Management%') "
 
                 DataSet dsEmp = Getdetails(sSqlstmt);// and CompanyId='" + sCompanyId+"'");
                 if (dsEmp.Tables.Count > 0 && dsEmp.Tables[0].Rows.Count > 0)

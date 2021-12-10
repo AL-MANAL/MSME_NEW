@@ -1,21 +1,19 @@
-﻿using System;
+﻿using ISOStd.Filters;
+using ISOStd.Models;
+using System;
 using System.Collections.Generic;
+using System.Data;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using ISOStd.Models;
-using System.Data;
-using System.IO;
-using PagedList;
-using PagedList.Mvc;
-using ISOStd.Filters;
 
 namespace ISOStd.Controllers
 {
     [PreventFromUrl]
     public class EmployeeCompetenceEvalController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
+        private clsGlobal objGlobaldata = new clsGlobal();
 
         public EmployeeCompetenceEvalController()
         {
@@ -25,7 +23,7 @@ namespace ISOStd.Controllers
 
         //
         // GET: /EmployeeCompetenceEval/
-          
+
         public ActionResult Index()
         {
             return View();
@@ -33,7 +31,7 @@ namespace ISOStd.Controllers
 
         //
         // GET: /EmployeeCompetenceEval/AddEmployeeCompetenceEval
-         
+
         [AllowAnonymous]
         public ActionResult AddEmployeeCompetenceEval()
         {
@@ -59,11 +57,9 @@ namespace ISOStd.Controllers
             return View();
         }
 
-
         //
         // POST: /EmployeeCompetenceEval/AddEmployeeCompetenceEval
         [HttpPost]
-        
         [ValidateAntiForgeryToken]
         public ActionResult AddEmployeeCompetenceEval(EmployeeCompetenceEvalModels objEmployeeCompetence, FormCollection form, HttpPostedFileBase ProfilePic)
         {
@@ -78,7 +74,6 @@ namespace ISOStd.Controllers
                 {
                     objEmployeeCompetence.Evaluation_DoneOn = dateValue;
                 }
-
 
                 EmployeeCompetenceEvalModelsList objModelList = new EmployeeCompetenceEvalModelsList();
                 objModelList.lstEmployeeCompetenceEval = new List<EmployeeCompetenceEvalModels>();
@@ -116,7 +111,7 @@ namespace ISOStd.Controllers
 
         //
         // GET: /EmployeeCompetenceEval/EmployeeCompetenceEvalList
-        
+
         [AllowAnonymous]
         public ActionResult EmployeeCompetenceEvalList(string SearchText, int? page, string branch_name)
         {
@@ -156,7 +151,7 @@ namespace ISOStd.Controllers
                 sSqlstmt = sSqlstmt + sSearchtext + " order by Name ";
                 DataSet dsCompetenceList = objGlobaldata.Getdetails(sSqlstmt);
                 if (dsCompetenceList.Tables.Count > 0)
-                {      
+                {
                     for (int i = 0; i < dsCompetenceList.Tables[0].Rows.Count; i++)
                     {
                         try
@@ -201,7 +196,6 @@ namespace ISOStd.Controllers
             return View(objEmployeeCompetenceList.lstEmployeeCompetenceEval.ToList());
         }
 
-
         [AllowAnonymous]
         public JsonResult EmployeeCompetenceEvalListSearch(string SearchText, int? page, string branch_name)
         {
@@ -240,8 +234,7 @@ namespace ISOStd.Controllers
                 sSqlstmt = sSqlstmt + sSearchtext + " order by Name ";
                 DataSet dsCompetenceList = objGlobaldata.Getdetails(sSqlstmt);
                 if (dsCompetenceList.Tables.Count > 0)
-                {                
-
+                {
                     for (int i = 0; i < dsCompetenceList.Tables[0].Rows.Count; i++)
                     {
                         try
@@ -337,7 +330,7 @@ namespace ISOStd.Controllers
                             //LoggedBy = objGlobaldata.GetEmpHrNameById(dsCompetenceList.Tables[0].Rows[0]["LoggedBy"].ToString())
 
                             eval_status = (dsCompetenceList.Tables[0].Rows[0]["eval_status"].ToString()),
-                            review_comments = (dsCompetenceList.Tables[0].Rows[0]["review_comments"].ToString()),   
+                            review_comments = (dsCompetenceList.Tables[0].Rows[0]["review_comments"].ToString()),
                             review_upload = (dsCompetenceList.Tables[0].Rows[0]["review_upload"].ToString()),
                             eval_status_id = (dsCompetenceList.Tables[0].Rows[0]["eval_status_id"].ToString()),
                             approver_comments = (dsCompetenceList.Tables[0].Rows[0]["approver_comments"].ToString()),
@@ -358,7 +351,7 @@ namespace ISOStd.Controllers
                             objEmployeeCompetence.approved_date = dateValue;
                         }
 
-                        string sql = "select id_training,CompetenceId,training_topic,source_training,criticality from t_emp_competence_eval_training where CompetenceId='"+ sCompetenceId + "'";
+                        string sql = "select id_training,CompetenceId,training_topic,source_training,criticality from t_emp_competence_eval_training where CompetenceId='" + sCompetenceId + "'";
                         ViewBag.dsList = objGlobaldata.Getdetails(sql);
 
                         return View(objEmployeeCompetence);
@@ -482,57 +475,56 @@ namespace ISOStd.Controllers
             try
             {
                 EmployeeCompetenceEvalModels objcomp = new EmployeeCompetenceEvalModels();
-               
-                    string sSqlstmt = "SELECT CompetenceId,Evaluation_DoneOn, Evaluated_Freq, Evalaution_Done_By, Academic_MinComp_Details,"
-                            + "Academic_EmpComp_Details, Academic_EvalOutput, YrExp_MinComp_Details, YrExp_EmpComp_Details, YrExp_EvalOutput, Relevant_MinComp_Details,"
-                            + "Relevant_EmpComp_Details, Relevant_EvalOutput, Skills_MinComp_Details, Skills_EmpComp_Details, Skills_EvalOutput, Emp_Suit_Hold_Pos,"
-                            + " Emp_Prom_Nxt_Pos, Need_Of_Trainings, Emp_Not_Competent_Action, Eval_ReviewedBy, Eval_ApprovedBy,Name"
-                            + " FROM t_emp_competence_eval where CompetenceId='" + id + "'";
 
-                    DataSet dsCompetenceList = objGlobaldata.Getdetails(sSqlstmt);
-                    if (dsCompetenceList.Tables.Count > 0 && dsCompetenceList.Tables[0].Rows.Count > 0)
+                string sSqlstmt = "SELECT CompetenceId,Evaluation_DoneOn, Evaluated_Freq, Evalaution_Done_By, Academic_MinComp_Details,"
+                        + "Academic_EmpComp_Details, Academic_EvalOutput, YrExp_MinComp_Details, YrExp_EmpComp_Details, YrExp_EvalOutput, Relevant_MinComp_Details,"
+                        + "Relevant_EmpComp_Details, Relevant_EvalOutput, Skills_MinComp_Details, Skills_EmpComp_Details, Skills_EvalOutput, Emp_Suit_Hold_Pos,"
+                        + " Emp_Prom_Nxt_Pos, Need_Of_Trainings, Emp_Not_Competent_Action, Eval_ReviewedBy, Eval_ApprovedBy,Name"
+                        + " FROM t_emp_competence_eval where CompetenceId='" + id + "'";
+
+                DataSet dsCompetenceList = objGlobaldata.Getdetails(sSqlstmt);
+                if (dsCompetenceList.Tables.Count > 0 && dsCompetenceList.Tables[0].Rows.Count > 0)
+                {
+                    EmployeeCompetenceEvalModels objEmployeeCompetence = new EmployeeCompetenceEvalModels
                     {
-                        EmployeeCompetenceEvalModels objEmployeeCompetence = new EmployeeCompetenceEvalModels
-                        {
-                            CompetenceId = dsCompetenceList.Tables[0].Rows[0]["CompetenceId"].ToString(),
-                            Name = objGlobaldata.GetEmpHrNameById(dsCompetenceList.Tables[0].Rows[0]["Name"].ToString()),
-                            Evaluated_Freq = objcomp.GetEvaluationFrequencyNameById(dsCompetenceList.Tables[0].Rows[0]["Evaluated_Freq"].ToString()),
-                            Evalaution_Done_By = objGlobaldata.GetMultiHrEmpNameById(dsCompetenceList.Tables[0].Rows[0]["Evalaution_Done_By"].ToString()),
-                            Academic_MinComp_Details = dsCompetenceList.Tables[0].Rows[0]["Academic_MinComp_Details"].ToString(),
-                            Academic_EmpComp_Details = dsCompetenceList.Tables[0].Rows[0]["Academic_EmpComp_Details"].ToString(),
-                            Academic_EvalOutput = objcomp.GetEvaluationOutputNameById(dsCompetenceList.Tables[0].Rows[0]["Academic_EvalOutput"].ToString()),
-                            YrExp_MinComp_Details = dsCompetenceList.Tables[0].Rows[0]["YrExp_MinComp_Details"].ToString(),
-                            YrExp_EmpComp_Details = dsCompetenceList.Tables[0].Rows[0]["YrExp_EmpComp_Details"].ToString(),
-                            YrExp_EvalOutput = objcomp.GetEvaluationOutputNameById(dsCompetenceList.Tables[0].Rows[0]["YrExp_EvalOutput"].ToString()),
-                            Relevant_MinComp_Details = dsCompetenceList.Tables[0].Rows[0]["Relevant_MinComp_Details"].ToString(),
-                            Relevant_EmpComp_Details = dsCompetenceList.Tables[0].Rows[0]["Relevant_EmpComp_Details"].ToString(),
-                            Relevant_EvalOutput = objcomp.GetEvaluationOutputNameById(dsCompetenceList.Tables[0].Rows[0]["Relevant_EvalOutput"].ToString()),
-                            Skills_MinComp_Details = dsCompetenceList.Tables[0].Rows[0]["Skills_MinComp_Details"].ToString(),
-                            Skills_EmpComp_Details = dsCompetenceList.Tables[0].Rows[0]["Skills_EmpComp_Details"].ToString(),
-                            Skills_EvalOutput = objcomp.GetEvaluationOutputNameById(dsCompetenceList.Tables[0].Rows[0]["Skills_EvalOutput"].ToString()),
-                            Emp_Suit_Hold_Pos = dsCompetenceList.Tables[0].Rows[0]["Emp_Suit_Hold_Pos"].ToString(),
-                            Emp_Prom_Nxt_Pos = dsCompetenceList.Tables[0].Rows[0]["Emp_Prom_Nxt_Pos"].ToString(),
-                            Need_Of_Trainings = (dsCompetenceList.Tables[0].Rows[0]["Need_Of_Trainings"].ToString()),
-                            Emp_Not_Competent_Action = (dsCompetenceList.Tables[0].Rows[0]["Emp_Not_Competent_Action"].ToString()),
-                            Eval_ReviewedBy = objGlobaldata.GetMultiHrEmpNameById(dsCompetenceList.Tables[0].Rows[0]["Eval_ReviewedBy"].ToString()),
-                            Eval_ApprovedBy = objGlobaldata.GetMultiHrEmpNameById(dsCompetenceList.Tables[0].Rows[0]["Eval_ApprovedBy"].ToString()),
-                            //LoggedBy = objGlobaldata.GetEmpHrNameById(dsCompetenceList.Tables[0].Rows[0]["LoggedBy"].ToString())
-                        };
+                        CompetenceId = dsCompetenceList.Tables[0].Rows[0]["CompetenceId"].ToString(),
+                        Name = objGlobaldata.GetEmpHrNameById(dsCompetenceList.Tables[0].Rows[0]["Name"].ToString()),
+                        Evaluated_Freq = objcomp.GetEvaluationFrequencyNameById(dsCompetenceList.Tables[0].Rows[0]["Evaluated_Freq"].ToString()),
+                        Evalaution_Done_By = objGlobaldata.GetMultiHrEmpNameById(dsCompetenceList.Tables[0].Rows[0]["Evalaution_Done_By"].ToString()),
+                        Academic_MinComp_Details = dsCompetenceList.Tables[0].Rows[0]["Academic_MinComp_Details"].ToString(),
+                        Academic_EmpComp_Details = dsCompetenceList.Tables[0].Rows[0]["Academic_EmpComp_Details"].ToString(),
+                        Academic_EvalOutput = objcomp.GetEvaluationOutputNameById(dsCompetenceList.Tables[0].Rows[0]["Academic_EvalOutput"].ToString()),
+                        YrExp_MinComp_Details = dsCompetenceList.Tables[0].Rows[0]["YrExp_MinComp_Details"].ToString(),
+                        YrExp_EmpComp_Details = dsCompetenceList.Tables[0].Rows[0]["YrExp_EmpComp_Details"].ToString(),
+                        YrExp_EvalOutput = objcomp.GetEvaluationOutputNameById(dsCompetenceList.Tables[0].Rows[0]["YrExp_EvalOutput"].ToString()),
+                        Relevant_MinComp_Details = dsCompetenceList.Tables[0].Rows[0]["Relevant_MinComp_Details"].ToString(),
+                        Relevant_EmpComp_Details = dsCompetenceList.Tables[0].Rows[0]["Relevant_EmpComp_Details"].ToString(),
+                        Relevant_EvalOutput = objcomp.GetEvaluationOutputNameById(dsCompetenceList.Tables[0].Rows[0]["Relevant_EvalOutput"].ToString()),
+                        Skills_MinComp_Details = dsCompetenceList.Tables[0].Rows[0]["Skills_MinComp_Details"].ToString(),
+                        Skills_EmpComp_Details = dsCompetenceList.Tables[0].Rows[0]["Skills_EmpComp_Details"].ToString(),
+                        Skills_EvalOutput = objcomp.GetEvaluationOutputNameById(dsCompetenceList.Tables[0].Rows[0]["Skills_EvalOutput"].ToString()),
+                        Emp_Suit_Hold_Pos = dsCompetenceList.Tables[0].Rows[0]["Emp_Suit_Hold_Pos"].ToString(),
+                        Emp_Prom_Nxt_Pos = dsCompetenceList.Tables[0].Rows[0]["Emp_Prom_Nxt_Pos"].ToString(),
+                        Need_Of_Trainings = (dsCompetenceList.Tables[0].Rows[0]["Need_Of_Trainings"].ToString()),
+                        Emp_Not_Competent_Action = (dsCompetenceList.Tables[0].Rows[0]["Emp_Not_Competent_Action"].ToString()),
+                        Eval_ReviewedBy = objGlobaldata.GetMultiHrEmpNameById(dsCompetenceList.Tables[0].Rows[0]["Eval_ReviewedBy"].ToString()),
+                        Eval_ApprovedBy = objGlobaldata.GetMultiHrEmpNameById(dsCompetenceList.Tables[0].Rows[0]["Eval_ApprovedBy"].ToString()),
+                        //LoggedBy = objGlobaldata.GetEmpHrNameById(dsCompetenceList.Tables[0].Rows[0]["LoggedBy"].ToString())
+                    };
 
-                        DateTime dateValue;
-                        if (DateTime.TryParse(dsCompetenceList.Tables[0].Rows[0]["Evaluation_DoneOn"].ToString(), out dateValue))
-                        {
-                            objEmployeeCompetence.Evaluation_DoneOn = dateValue;
-                        }
-
-                        return View(objEmployeeCompetence);
-                    }
-                    else
+                    DateTime dateValue;
+                    if (DateTime.TryParse(dsCompetenceList.Tables[0].Rows[0]["Evaluation_DoneOn"].ToString(), out dateValue))
                     {
-                        TempData["alertdata"] = "No data exists";
-                        return RedirectToAction("EmployeeCompetenceEvalList");
+                        objEmployeeCompetence.Evaluation_DoneOn = dateValue;
                     }
-            
+
+                    return View(objEmployeeCompetence);
+                }
+                else
+                {
+                    TempData["alertdata"] = "No data exists";
+                    return RedirectToAction("EmployeeCompetenceEvalList");
+                }
             }
             catch (Exception ex)
             {
@@ -543,38 +535,32 @@ namespace ISOStd.Controllers
             return RedirectToAction("EmployeeCompetenceEvalList");
         }
 
-        
         [AllowAnonymous]
         public JsonResult CompetenceEvalDelete(FormCollection form)
         {
             try
             {
+                if (form["CompetenceId"] != null && form["CompetenceId"] != "")
+                {
+                    EmployeeCompetenceEvalModels Doc = new EmployeeCompetenceEvalModels();
+                    string sCompetenceId = form["CompetenceId"];
 
-                   
-                        if (form["CompetenceId"] != null && form["CompetenceId"] != "")
-                        {
-
-                            EmployeeCompetenceEvalModels Doc = new EmployeeCompetenceEvalModels();
-                            string sCompetenceId = form["CompetenceId"];
-
-
-                            if (Doc.FunDeleteCompetenceDoc(sCompetenceId))
-                            {
-                                TempData["Successdata"] = "Document deleted successfully";
-                                return Json("Success");
-                            }
-                            else
-                            {
-                                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                                return Json("Failed");
-                            }
-                        }
-                        else
-                        {
-                            TempData["alertdata"] = "MgmtDoc Id cannot be Null or empty";
-                            return Json("Failed");
-                        }
-                   
+                    if (Doc.FunDeleteCompetenceDoc(sCompetenceId))
+                    {
+                        TempData["Successdata"] = "Document deleted successfully";
+                        return Json("Success");
+                    }
+                    else
+                    {
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                        return Json("Failed");
+                    }
+                }
+                else
+                {
+                    TempData["alertdata"] = "MgmtDoc Id cannot be Null or empty";
+                    return Json("Failed");
+                }
             }
             catch (Exception ex)
             {
@@ -583,10 +569,10 @@ namespace ISOStd.Controllers
             }
             return Json("Failed");
         }
+
         //
         // GET: /EmployeeCompetenceEval/EmployeeCompetenceEvalEdit
 
-        
         [AllowAnonymous]
         public ActionResult EmployeeCompetenceEvalEdit()
         {
@@ -711,7 +697,7 @@ namespace ISOStd.Controllers
 
         //
         // POST: /EmployeeCompetenceEval/AddEmployeeCompetenceEval
-        
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult EmployeeCompetenceEvalEdit(EmployeeCompetenceEvalModels objEmployeeCompetence, FormCollection form, HttpPostedFileBase ProfilePic)

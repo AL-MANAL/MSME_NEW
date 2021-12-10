@@ -579,7 +579,7 @@ namespace ISOStd.Models
                 {
                     //objGlobalData.AddFunctionalLog("Step");
                     //AddFunctionalLog("Step");
-                    string sHeader, sInformation = "", sTitle = "", sSubject = "", sContent = "", aAttachment = "", aAttachment1 = "", BccEmailIds = "";
+                    string sHeader, sInformation = "", sSubject = "", sContent = "", aAttachment = "", aAttachment1 = "";
 
                     //using streamreader for reading my htmltemplate 
                     //Form the Email Subject and Body content
@@ -598,9 +598,12 @@ namespace ISOStd.Models
                     string sName = "All";
                     string sToEmailIds = objGlobalData.GetMultiHrEmpEmailIdById(dsComplaintList.Tables[0].Rows[0]["ForwardTo"].ToString());
                     string sCCEmailIds = objGlobalData.GetHrEmpEmailIdById(dsComplaintList.Tables[0].Rows[0]["LoggedBy"].ToString());
-                    if(dsComplaintList.Tables[0].Rows[0]["complaint_copiedto"].ToString() != "")
+                    if(dsComplaintList.Tables[0].Rows[0]["complaint_copiedto"].ToString() != "" && dsComplaintList.Tables[0].Rows[0]["complaint_copiedto"] != null)
                     {
-                        sCCEmailIds = sCCEmailIds + "," + objGlobalData.GetHrEmpEmailIdById(dsComplaintList.Tables[0].Rows[0]["complaint_copiedto"].ToString());
+                        foreach (var item in dsComplaintList.Tables[0].Rows[0]["complaint_copiedto"].ToString().Split(','))
+                        {
+                            sCCEmailIds = sCCEmailIds + "," + objGlobalData.GetHrEmpEmailIdById(item);
+                        }
                     }
 
                     sToEmailIds = sToEmailIds.Trim(',');
@@ -723,7 +726,7 @@ namespace ISOStd.Models
                 {
                     //objGlobalData.AddFunctionalLog("Step");
                     //AddFunctionalLog("Step");
-                    string sHeader, sInformation = "", RejectaAttachment = "", sSubject = "", sContent = "", aAttachment = "", Attachment = "";
+                    string sHeader, sInformation = "", RejectaAttachment = "", sSubject = "", sContent = "";
 
                     //using streamreader for reading my htmltemplate 
                     //Form the Email Subject and Body content
@@ -861,7 +864,7 @@ namespace ISOStd.Models
                 {
                     //objGlobalData.AddFunctionalLog("Step");
                     //AddFunctionalLog("Step");
-                    string sHeader, sInformation = "", sTitle = "", sSubject = "", sContent = "", aAttachment = "", BccEmailIds = "";
+                    string sHeader, sInformation = "", sSubject = "", sContent = "", aAttachment = "";
 
                     //using streamreader for reading my htmltemplate 
                     //Form the Email Subject and Body content
@@ -1150,7 +1153,7 @@ namespace ISOStd.Models
 
                 if (dsNCList.Tables.Count > 0 && dsNCList.Tables[0].Rows.Count > 0)
                 {
-                    string sHeader, sInformation = "", sTitle = "", sSubject = "", sContent = "", aAttachment = "", BccEmailIds = "";
+                    string sHeader, sInformation = "", sSubject = "", sContent = "", aAttachment = "";
 
                     //Form the Email Subject and Body content
                     DataSet dsEmailXML = new DataSet();

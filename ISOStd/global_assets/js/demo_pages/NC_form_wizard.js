@@ -9,7 +9,6 @@
 
 // Setup module
 // ------------------------------
-
 var FormWizard = function () {
 	//
 	// Setup module components
@@ -143,7 +142,6 @@ var FormWizard = function () {
 			transitionEffect: 'fade',
 			autoFocus: true,
 			onStepChanging: function (event, currentIndex, newIndex) {
-
 				// Allways allow previous action even if the current form is not valid!
 				if (currentIndex > newIndex) {
 					return true;
@@ -157,15 +155,19 @@ var FormWizard = function () {
 					form.find('.body:eq(' + newIndex + ') .error').removeClass('error');
 				}
 
-				form.validate().settings.ignore = ':disabled,:hidden';
+				//form.validate().settings.ignore = ':disabled,:hidden';
 				return form.valid();
 			},
 			onFinishing: function (event, currentIndex) {
-				form.validate().settings.ignore = ':disabled';
+				//form.validate().settings.ignore = ':disabled';
 				return form.valid();
 			},
 			onFinished: function (event, currentIndex) {
+				$('a[href^="#finish"]').css('pointer-events', 'none');
 				event.preventDefault();
+				
+				
+
 				//var model = $('#form1').serialize();
 				var model = new FormData(this);
 				jQuery.ajax({
@@ -179,11 +181,15 @@ var FormWizard = function () {
 						//window.location = window.location.protocol + "//" +
 						//                   window.location.host + "/TRA/TRAList";
 
+						$('a[href^="#finish"]').css('pointer-events', '');
 						window.location = window.location.protocol + "//" +
                             window.location.host +
                             window.location.pathname.replace("AddNC", "NCList");
 
-					}
+					},
+					error: function (error) {
+						$('a[href^="#finish"]').css('pointer-events', '');
+                    }
 				});
 			}
 		});

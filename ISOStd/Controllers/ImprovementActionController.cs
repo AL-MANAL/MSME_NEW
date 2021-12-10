@@ -1,21 +1,15 @@
-﻿using System;
+﻿using ISOStd.Models;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-using ISOStd.Models;
-using System.IO;
 using System.Data;
-using PagedList;
-using PagedList.Mvc;
-using Rotativa;
-using ISOStd.Filters;
+using System.Linq;
+using System.Web.Mvc;
 
 namespace ISOStd.Controllers
 {
     public class ImprovementActionController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
+        private clsGlobal objGlobaldata = new clsGlobal();
 
         public ImprovementActionController()
         {
@@ -41,13 +35,12 @@ namespace ISOStd.Controllers
                 ViewBag.Location = objGlobaldata.GetDivisionLocationList(objImp.branch);
 
                 ViewBag.Complaint = objGlobaldata.GetDropdownList("Improvement Action Complaint");
-                ViewBag.Severity = objGlobaldata.GetImprovementSeverityList();                
+                ViewBag.Severity = objGlobaldata.GetImprovementSeverityList();
                 ViewBag.Receivedby = objGlobaldata.GetHrEmployeeListbox();
                 ViewBag.Disposition = objGlobaldata.GetDropdownList("Improvement Action Disposition");
                 ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
                 ViewBag.Consequence = objGlobaldata.GetDropdownList("Improvement Action Consequence");
                 ViewBag.MonitoringPeriod = objGlobaldata.GetDropdownList("Improvement Monitoring Period");
-                
             }
             catch (Exception ex)
             {
@@ -59,14 +52,12 @@ namespace ISOStd.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        //[ValidateAntiForgeryToken]
-        //[ValidateInput(false)]
         public JsonResult AddImprovement(FormCollection form, ImprovementActionModels objTRA)
         {
             ViewBag.SubMenutype = "ImprovementAction";
             try
             {
-                objTRA.disposition = form["disposition"]; 
+                objTRA.disposition = form["disposition"];
                 objTRA.consequence = form["consequence"];
                 objTRA.branch = form["branch"];
                 objTRA.Department = form["Department"];
@@ -88,11 +79,10 @@ namespace ISOStd.Controllers
                 {
                     objTRA.closedout_date = dateValue;
                 }
-        
+
                 if (objTRA.FunAddImprovement(objTRA))
                 {
                     TempData["Successdata"] = "Added details successfully  with Reference Number '" + objTRA.ca_no + "'";
-              
                 }
                 else
                 {
@@ -106,7 +96,7 @@ namespace ISOStd.Controllers
             }
             return Json(true);
         }
-        
+
         [AllowAnonymous]
         public ActionResult ImprovementList(string branch_name)
         {
@@ -133,7 +123,7 @@ namespace ISOStd.Controllers
                 {
                     sSearchtext = sSearchtext + " and find_in_set('" + sBranch_name + "', branch)";
                 }
-                sSqlstmt = sSqlstmt + sSearchtext ;
+                sSqlstmt = sSqlstmt + sSearchtext;
 
                 DataSet dsAction = objGlobaldata.Getdetails(sSqlstmt);
 
@@ -260,7 +250,6 @@ namespace ISOStd.Controllers
                             branch = objGlobaldata.GetMultiCompanyBranchNameById(dsAction.Tables[0].Rows[i]["branch"].ToString()),
                             Department = objGlobaldata.GetMultiDeptNameById(dsAction.Tables[0].Rows[i]["Department"].ToString()),
                             Location = objGlobaldata.GetDivisionLocationById(dsAction.Tables[0].Rows[i]["Location"].ToString()),
-
                         };
 
                         DateTime dateValue;
@@ -293,7 +282,6 @@ namespace ISOStd.Controllers
             return Json("Success");
         }
 
-
         [AllowAnonymous]
         public ActionResult ImprovementEdit()
         {
@@ -301,7 +289,7 @@ namespace ISOStd.Controllers
             ImprovementActionModels objTRAModels = new ImprovementActionModels();
             try
             {
-                ViewBag.Complaint = objGlobaldata.GetDropdownList("Improvement Action Complaint");               
+                ViewBag.Complaint = objGlobaldata.GetDropdownList("Improvement Action Complaint");
                 ViewBag.Severity = objGlobaldata.GetImprovementSeverityList();
                 ViewBag.Receivedby = objGlobaldata.GetHrEmployeeListbox();
                 ViewBag.Disposition = objGlobaldata.GetDropdownList("Improvement Action Disposition");
@@ -309,20 +297,19 @@ namespace ISOStd.Controllers
                 ViewBag.Consequence = objGlobaldata.GetDropdownList("Improvement Action Consequence");
                 ViewBag.MonitoringPeriod = objGlobaldata.GetDropdownList("Improvement Monitoring Period");
 
-              if (Request.QueryString["id_action"] != null)
-                { 
-                string sid_action = Request.QueryString["id_action"];
+                if (Request.QueryString["id_action"] != null)
+                {
+                    string sid_action = Request.QueryString["id_action"];
 
-                string sSqlstmt = "select id_action,ca_no,actoin_date,complaint,complaint_desc,reference,non_conf,receivedby,risk_complaint,severity,disposition," +
-                    "qty_coordinator,analysis,qty_coordinator1,corrective_action,qty_coordinator2,consequence,completion_date,monitoring_period,monitoring_value," +
-                    "compeltion_action,assesed_risk,closedout_date,verifiedby,branch,Department,Location from t_improvement_action where active=1 and id_action='" + sid_action + "'";
+                    string sSqlstmt = "select id_action,ca_no,actoin_date,complaint,complaint_desc,reference,non_conf,receivedby,risk_complaint,severity,disposition," +
+                        "qty_coordinator,analysis,qty_coordinator1,corrective_action,qty_coordinator2,consequence,completion_date,monitoring_period,monitoring_value," +
+                        "compeltion_action,assesed_risk,closedout_date,verifiedby,branch,Department,Location from t_improvement_action where active=1 and id_action='" + sid_action + "'";
 
-                DataSet dsAction = objGlobaldata.Getdetails(sSqlstmt);
+                    DataSet dsAction = objGlobaldata.Getdetails(sSqlstmt);
 
                     if (dsAction.Tables.Count > 0 && dsAction.Tables[0].Rows.Count > 0)
                     {
-                       
-                         objTRAModels = new ImprovementActionModels
+                        objTRAModels = new ImprovementActionModels
                         {
                             id_action = dsAction.Tables[0].Rows[0]["id_action"].ToString(),
                             ca_no = dsAction.Tables[0].Rows[0]["ca_no"].ToString(),
@@ -348,8 +335,7 @@ namespace ISOStd.Controllers
                             branch = (dsAction.Tables[0].Rows[0]["branch"].ToString()),
                             Department = dsAction.Tables[0].Rows[0]["Department"].ToString(),
                             Location = dsAction.Tables[0].Rows[0]["Location"].ToString(),
-
-                         };
+                        };
 
                         ViewBag.Branch = objGlobaldata.GetCompanyBranchListbox();
                         ViewBag.Location = objGlobaldata.GetLocationbyMultiDivision(dsAction.Tables[0].Rows[0]["branch"].ToString());
@@ -367,15 +353,14 @@ namespace ISOStd.Controllers
                         if (DateTime.TryParse(dsAction.Tables[0].Rows[0]["closedout_date"].ToString(), out dateValue))
                         {
                             objTRAModels.closedout_date = dateValue;
-                        }                      
-
+                        }
                     }
                     else
-                        {
-                            TempData["alertdata"] = "No Data exists";
-                            return RedirectToAction("ImprovementList");
-                        }                   
-               }
+                    {
+                        TempData["alertdata"] = "No Data exists";
+                        return RedirectToAction("ImprovementList");
+                    }
+                }
                 else
                 {
                     TempData["alertdata"] = "Id cannot be Null or empty";
@@ -386,13 +371,13 @@ namespace ISOStd.Controllers
             {
                 objGlobaldata.AddFunctionalLog("Exception in ImprovementEdit: " + ex.ToString());
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-            }   
+            }
 
             return View(objTRAModels);
         }
 
         [HttpPost]
-        [AllowAnonymous]     
+        [AllowAnonymous]
         public JsonResult ImprovementEdit(FormCollection form, ImprovementActionModels objTRA)
         {
             ViewBag.SubMenutype = "ImprovementAction";
@@ -465,7 +450,6 @@ namespace ISOStd.Controllers
 
                     if (dsAction.Tables.Count > 0 && dsAction.Tables[0].Rows.Count > 0)
                     {
-
                         objTRAModels = new ImprovementActionModels
                         {
                             id_action = dsAction.Tables[0].Rows[0]["id_action"].ToString(),
@@ -492,7 +476,6 @@ namespace ISOStd.Controllers
                             branch = objGlobaldata.GetMultiCompanyBranchNameById(dsAction.Tables[0].Rows[0]["branch"].ToString()),
                             Department = objGlobaldata.GetMultiDeptNameById(dsAction.Tables[0].Rows[0]["Department"].ToString()),
                             Location = objGlobaldata.GetDivisionLocationById(dsAction.Tables[0].Rows[0]["Location"].ToString()),
-
                         };
 
                         DateTime dateValue;
@@ -508,7 +491,6 @@ namespace ISOStd.Controllers
                         {
                             objTRAModels.closedout_date = dateValue;
                         }
-
                     }
                     else
                     {
@@ -537,65 +519,62 @@ namespace ISOStd.Controllers
             ViewBag.SubMenutype = "ImprovementAction";
             ImprovementActionModels objTRAModels = new ImprovementActionModels();
             try
-            {  
-                    string sSqlstmt = "select id_action,ca_no,actoin_date,complaint,complaint_desc,reference,non_conf,receivedby,risk_complaint,severity,disposition," +
-                        "qty_coordinator,analysis,qty_coordinator1,corrective_action,qty_coordinator2,consequence,completion_date,monitoring_period,monitoring_value," +
-                        "compeltion_action,assesed_risk,closedout_date,verifiedby,branch,Department,Location from t_improvement_action where active=1 and id_action='" + id + "'";
+            {
+                string sSqlstmt = "select id_action,ca_no,actoin_date,complaint,complaint_desc,reference,non_conf,receivedby,risk_complaint,severity,disposition," +
+                    "qty_coordinator,analysis,qty_coordinator1,corrective_action,qty_coordinator2,consequence,completion_date,monitoring_period,monitoring_value," +
+                    "compeltion_action,assesed_risk,closedout_date,verifiedby,branch,Department,Location from t_improvement_action where active=1 and id_action='" + id + "'";
 
-                    DataSet dsAction = objGlobaldata.Getdetails(sSqlstmt);
+                DataSet dsAction = objGlobaldata.Getdetails(sSqlstmt);
 
-                    if (dsAction.Tables.Count > 0 && dsAction.Tables[0].Rows.Count > 0)
+                if (dsAction.Tables.Count > 0 && dsAction.Tables[0].Rows.Count > 0)
+                {
+                    objTRAModels = new ImprovementActionModels
                     {
+                        id_action = dsAction.Tables[0].Rows[0]["id_action"].ToString(),
+                        ca_no = dsAction.Tables[0].Rows[0]["ca_no"].ToString(),
+                        complaint = objGlobaldata.GetDropdownitemById(dsAction.Tables[0].Rows[0]["complaint"].ToString()),
+                        complaint_desc = dsAction.Tables[0].Rows[0]["complaint_desc"].ToString(),
+                        reference = dsAction.Tables[0].Rows[0]["reference"].ToString(),
+                        non_conf = dsAction.Tables[0].Rows[0]["non_conf"].ToString(),
+                        receivedby = objGlobaldata.GetEmpHrNameById(dsAction.Tables[0].Rows[0]["receivedby"].ToString()),
+                        risk_complaint = dsAction.Tables[0].Rows[0]["risk_complaint"].ToString(),
+                        severity = objGlobaldata.GetImprovementSeverityById(dsAction.Tables[0].Rows[0]["severity"].ToString()),
+                        disposition = objGlobaldata.GetDropdownitemById(dsAction.Tables[0].Rows[0]["disposition"].ToString()),
+                        qty_coordinator = objGlobaldata.GetEmpHrNameById(dsAction.Tables[0].Rows[0]["qty_coordinator"].ToString()),
+                        analysis = dsAction.Tables[0].Rows[0]["analysis"].ToString(),
+                        qty_coordinator1 = objGlobaldata.GetEmpHrNameById(dsAction.Tables[0].Rows[0]["qty_coordinator1"].ToString()),
+                        corrective_action = dsAction.Tables[0].Rows[0]["corrective_action"].ToString(),
+                        qty_coordinator2 = objGlobaldata.GetEmpHrNameById(dsAction.Tables[0].Rows[0]["qty_coordinator2"].ToString()),
+                        consequence = objGlobaldata.GetDropdownitemById(dsAction.Tables[0].Rows[0]["consequence"].ToString()),
+                        monitoring_period = objGlobaldata.GetDropdownitemById(dsAction.Tables[0].Rows[0]["monitoring_period"].ToString()),
+                        monitoring_value = dsAction.Tables[0].Rows[0]["monitoring_value"].ToString(),
+                        compeltion_action = dsAction.Tables[0].Rows[0]["compeltion_action"].ToString(),
+                        assesed_risk = objGlobaldata.GetImprovementSeverityById(dsAction.Tables[0].Rows[0]["assesed_risk"].ToString()),
+                        verifiedby = objGlobaldata.GetEmpHrNameById(dsAction.Tables[0].Rows[0]["verifiedby"].ToString()),
+                        branch = objGlobaldata.GetMultiCompanyBranchNameById(dsAction.Tables[0].Rows[0]["branch"].ToString()),
+                        Department = objGlobaldata.GetMultiDeptNameById(dsAction.Tables[0].Rows[0]["Department"].ToString()),
+                        Location = objGlobaldata.GetDivisionLocationById(dsAction.Tables[0].Rows[0]["Location"].ToString()),
+                    };
 
-                        objTRAModels = new ImprovementActionModels
-                        {
-                            id_action = dsAction.Tables[0].Rows[0]["id_action"].ToString(),
-                            ca_no = dsAction.Tables[0].Rows[0]["ca_no"].ToString(),
-                            complaint = objGlobaldata.GetDropdownitemById(dsAction.Tables[0].Rows[0]["complaint"].ToString()),
-                            complaint_desc = dsAction.Tables[0].Rows[0]["complaint_desc"].ToString(),
-                            reference = dsAction.Tables[0].Rows[0]["reference"].ToString(),
-                            non_conf = dsAction.Tables[0].Rows[0]["non_conf"].ToString(),
-                            receivedby = objGlobaldata.GetEmpHrNameById(dsAction.Tables[0].Rows[0]["receivedby"].ToString()),
-                            risk_complaint = dsAction.Tables[0].Rows[0]["risk_complaint"].ToString(),
-                            severity = objGlobaldata.GetImprovementSeverityById(dsAction.Tables[0].Rows[0]["severity"].ToString()),
-                            disposition = objGlobaldata.GetDropdownitemById(dsAction.Tables[0].Rows[0]["disposition"].ToString()),
-                            qty_coordinator = objGlobaldata.GetEmpHrNameById(dsAction.Tables[0].Rows[0]["qty_coordinator"].ToString()),
-                            analysis = dsAction.Tables[0].Rows[0]["analysis"].ToString(),
-                            qty_coordinator1 = objGlobaldata.GetEmpHrNameById(dsAction.Tables[0].Rows[0]["qty_coordinator1"].ToString()),
-                            corrective_action = dsAction.Tables[0].Rows[0]["corrective_action"].ToString(),
-                            qty_coordinator2 = objGlobaldata.GetEmpHrNameById(dsAction.Tables[0].Rows[0]["qty_coordinator2"].ToString()),
-                            consequence = objGlobaldata.GetDropdownitemById(dsAction.Tables[0].Rows[0]["consequence"].ToString()),
-                            monitoring_period = objGlobaldata.GetDropdownitemById(dsAction.Tables[0].Rows[0]["monitoring_period"].ToString()),
-                            monitoring_value = dsAction.Tables[0].Rows[0]["monitoring_value"].ToString(),
-                            compeltion_action = dsAction.Tables[0].Rows[0]["compeltion_action"].ToString(),
-                            assesed_risk = objGlobaldata.GetImprovementSeverityById(dsAction.Tables[0].Rows[0]["assesed_risk"].ToString()),
-                            verifiedby = objGlobaldata.GetEmpHrNameById(dsAction.Tables[0].Rows[0]["verifiedby"].ToString()),
-                            branch = objGlobaldata.GetMultiCompanyBranchNameById(dsAction.Tables[0].Rows[0]["branch"].ToString()),
-                            Department = objGlobaldata.GetMultiDeptNameById(dsAction.Tables[0].Rows[0]["Department"].ToString()),
-                            Location = objGlobaldata.GetDivisionLocationById(dsAction.Tables[0].Rows[0]["Location"].ToString()),
-
-                        };
-
-                        DateTime dateValue;
-                        if (DateTime.TryParse(dsAction.Tables[0].Rows[0]["actoin_date"].ToString(), out dateValue))
-                        {
-                            objTRAModels.actoin_date = dateValue;
-                        }
-                        if (DateTime.TryParse(dsAction.Tables[0].Rows[0]["completion_date"].ToString(), out dateValue))
-                        {
-                            objTRAModels.completion_date = dateValue;
-                        }
-                        if (DateTime.TryParse(dsAction.Tables[0].Rows[0]["closedout_date"].ToString(), out dateValue))
-                        {
-                            objTRAModels.closedout_date = dateValue;
-                        }
-
+                    DateTime dateValue;
+                    if (DateTime.TryParse(dsAction.Tables[0].Rows[0]["actoin_date"].ToString(), out dateValue))
+                    {
+                        objTRAModels.actoin_date = dateValue;
                     }
-                    else
+                    if (DateTime.TryParse(dsAction.Tables[0].Rows[0]["completion_date"].ToString(), out dateValue))
                     {
-                        TempData["alertdata"] = "No Data exists";
-                        return RedirectToAction("ImprovementList");
-                    }               
+                        objTRAModels.completion_date = dateValue;
+                    }
+                    if (DateTime.TryParse(dsAction.Tables[0].Rows[0]["closedout_date"].ToString(), out dateValue))
+                    {
+                        objTRAModels.closedout_date = dateValue;
+                    }
+                }
+                else
+                {
+                    TempData["alertdata"] = "No Data exists";
+                    return RedirectToAction("ImprovementList");
+                }
             }
             catch (Exception ex)
             {
@@ -615,10 +594,8 @@ namespace ISOStd.Controllers
 
                 if (form["id_action"] != null && form["id_action"] != "")
                 {
-
                     ImprovementActionModels Doc = new ImprovementActionModels();
                     string sid_action = form["id_action"];
-
 
                     if (Doc.FunDeleteImplementationDoc(sid_action))
                     {
@@ -636,8 +613,6 @@ namespace ISOStd.Controllers
                     TempData["alertdata"] = "Id cannot be Null or empty";
                     return Json("Failed");
                 }
-
-
             }
             catch (Exception ex)
             {
@@ -658,12 +633,10 @@ namespace ISOStd.Controllers
                 DataSet dsData = objGlobaldata.Getdetails(sql);
                 if (dsData.Tables.Count > 0 && dsData.Tables[0].Rows.Count > 0)
                 {
-                    DeptHead =objGlobaldata.GetEmpHrNameById(dsData.Tables[0].Rows[0]["EvaluatedBy"].ToString());
+                    DeptHead = objGlobaldata.GetEmpHrNameById(dsData.Tables[0].Rows[0]["EvaluatedBy"].ToString());
                 }
             }
             return Json(DeptHead);
         }
-
-
     }
 }

@@ -1,21 +1,19 @@
-﻿using System;
+﻿using ISOStd.Filters;
+using ISOStd.Models;
+using System;
 using System.Collections.Generic;
+using System.Data;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using ISOStd.Models;
-using System.Data;
-using System.IO;
-using PagedList;
-using PagedList.Mvc;
-using ISOStd.Filters;
 
 namespace ISOStd.Controllers
 {
     [PreventFromUrl]
     public class RecordsRetentionController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
+        private clsGlobal objGlobaldata = new clsGlobal();
 
         public RecordsRetentionController()
         {
@@ -35,12 +33,11 @@ namespace ISOStd.Controllers
 
             try
             {
-
                 objrec.branch = objGlobaldata.GetCurrentUserSession().division;
                 objrec.Dept_id = objGlobaldata.GetCurrentUserSession().DeptID;
                 objrec.Work_Location = objGlobaldata.GetCurrentUserSession().Work_Location;
 
-               // ViewBag.DeptId = objGlobaldata.GetDepartmentListbox();
+                // ViewBag.DeptId = objGlobaldata.GetDepartmentListbox();
                 //ViewBag.RecordsType = objGlobaldata.GetAllIsoStdListbox();
                 ViewBag.RecordsType = objGlobaldata.GetDropdownList("Record Type");
                 ViewBag.RecordRetention = objGlobaldata.GetDropdownList("RecordRetention");
@@ -52,7 +49,6 @@ namespace ISOStd.Controllers
                 ViewBag.DeptId = objGlobaldata.GetDepartmentListbox(objrec.branch);
                 ViewBag.WorkLocation = objGlobaldata.GetDivisionLocationList(objrec.branch);
                 ViewBag.CriteriaList = objGlobaldata.GetDropdownList("Recored Retention Criteria");
-
             }
             catch (Exception ex)
             {
@@ -117,38 +113,33 @@ namespace ISOStd.Controllers
 
             return RedirectToAction("RecordsList");
         }
-        
+
         [AllowAnonymous]
         public JsonResult RecordDocDelete(FormCollection form)
         {
             try
             {
+                if (form["Records_Id"] != null && form["Records_Id"] != "")
+                {
+                    RecordsRetentionModels Doc = new RecordsRetentionModels();
+                    string sRecords_Id = form["Records_Id"];
 
-                  if (form["Records_Id"] != null && form["Records_Id"] != "")
+                    if (Doc.FunDeleteRecordDoc(sRecords_Id))
                     {
-
-                        RecordsRetentionModels Doc = new RecordsRetentionModels();
-                        string sRecords_Id = form["Records_Id"];
-
-
-                        if (Doc.FunDeleteRecordDoc(sRecords_Id))
-                        {
-                            TempData["Successdata"] = "Document deleted successfully";
-                            return Json("Success");
-                        }
-                        else
-                        {
-                            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                            return Json("Failed");
-                        }
+                        TempData["Successdata"] = "Document deleted successfully";
+                        return Json("Success");
                     }
                     else
                     {
-                        TempData["alertdata"] = "Id cannot be Null or empty";
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                         return Json("Failed");
                     }
-               
-
+                }
+                else
+                {
+                    TempData["alertdata"] = "Id cannot be Null or empty";
+                    return Json("Failed");
+                }
             }
             catch (Exception ex)
             {
@@ -157,7 +148,7 @@ namespace ISOStd.Controllers
             }
             return Json("Failed");
         }
-        
+
         [AllowAnonymous]
         public ActionResult RecordsList(string Record_Title, string branch_name)
         {
@@ -193,7 +184,7 @@ namespace ISOStd.Controllers
                 sSqlstmt = sSqlstmt + sSearchtext + " order by Generated_On desc,Record_Title";
                 DataSet dsRecordsList = objGlobaldata.Getdetails(sSqlstmt);
                 if (dsRecordsList.Tables.Count > 0)
-                {  
+                {
                     for (int i = 0; i < dsRecordsList.Tables[0].Rows.Count; i++)
                     {
                         try
@@ -230,7 +221,6 @@ namespace ISOStd.Controllers
                             objGlobaldata.AddFunctionalLog("Exception in RecordsList: " + ex.ToString());
                             TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                         }
-
                     }
                 }
             }
@@ -280,8 +270,6 @@ namespace ISOStd.Controllers
                 DataSet dsRecordsList = objGlobaldata.Getdetails(sSqlstmt);
                 if (dsRecordsList.Tables.Count > 0)
                 {
-
-
                     for (int i = 0; i < dsRecordsList.Tables[0].Rows.Count; i++)
                     {
                         try
@@ -298,7 +286,6 @@ namespace ISOStd.Controllers
                                 Retention_Period = dsRecordsList.Tables[0].Rows[i]["Retention_Period"].ToString(),
                                 LoggedBy = objGlobaldata.GetEmpHrNameById(dsRecordsList.Tables[0].Rows[i]["LoggedBy"].ToString()),
                                 branch = objGlobaldata.GetMultiCompanyBranchNameById(dsRecordsList.Tables[0].Rows[i]["branch"].ToString())
-
                             };
 
                             DateTime dateValue;
@@ -319,7 +306,6 @@ namespace ISOStd.Controllers
                             objGlobaldata.AddFunctionalLog("Exception in RecordsListSearch: " + ex.ToString());
                             TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                         }
-
                     }
                 }
             }
@@ -330,7 +316,7 @@ namespace ISOStd.Controllers
             }
             return Json("Success");
         }
-               
+
         [AllowAnonymous]
         public ActionResult RecordsDetails()
         {
@@ -396,7 +382,7 @@ namespace ISOStd.Controllers
 
             return RedirectToAction("RecordsList");
         }
-        
+
         [AllowAnonymous]
         public ActionResult RecordsInfo(int id)
         {
@@ -443,7 +429,6 @@ namespace ISOStd.Controllers
                     TempData["alertdata"] = "No data exists";
                     return RedirectToAction("RecordsList");
                 }
-
             }
             catch (Exception ex)
             {
@@ -453,14 +438,14 @@ namespace ISOStd.Controllers
 
             return RedirectToAction("RecordsList");
         }
-               
+
         [AllowAnonymous]
         public ActionResult RecordsEdit()
         {
             try
             {
                 RecordsRetentionModels objrec = new RecordsRetentionModels();
-                 //string Work_Location = objGlobaldata.GetCurrentUserSession().division;
+                //string Work_Location = objGlobaldata.GetCurrentUserSession().division;
                 //ViewBag.WorkLocation = objGlobaldata.GetDivisionLocationList(Work_Location);
 
                 ViewBag.DocList = objGlobaldata.GetDocumentNameList();
@@ -571,7 +556,6 @@ namespace ISOStd.Controllers
                 {
                     objRecordsRetentionModels.Generated_On = dateValue;
                 }
-
 
                 if (objRecordsRetentionModels.FunUpdateRecords(objRecordsRetentionModels))
                 {

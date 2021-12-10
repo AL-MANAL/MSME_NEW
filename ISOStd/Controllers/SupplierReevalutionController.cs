@@ -14,7 +14,8 @@ namespace ISOStd.Controllers
     [PreventFromUrl]
     public class SupplierReevalutionController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
+        private clsGlobal objGlobaldata = new clsGlobal();
+
         public SupplierReevalutionController()
         {
             ViewBag.Menutype = "Suppliers";
@@ -115,41 +116,41 @@ namespace ISOStd.Controllers
                     }
                 }
                 if (Request.Files.Count > 0)
-                { 
+                {
                     HttpPostedFileBase files1 = Request.Files[0];
-                if (visit_upload != null && files1.ContentLength > 0)
-                {
-                    objModel.visit_upload = "";
-                    foreach (var file in visit_upload)
+                    if (visit_upload != null && files1.ContentLength > 0)
                     {
-                        try
+                        objModel.visit_upload = "";
+                        foreach (var file in visit_upload)
                         {
-                            string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/Supplier"), Path.GetFileName(file.FileName));
-                            string sFilename = "Reeval" + "_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath), sFilepath = Path.GetDirectoryName(spath);
-                            file.SaveAs(sFilepath + "/" + sFilename);
-                            objModel.visit_upload = objModel.visit_upload + "," + "~/DataUpload/MgmtDocs/Supplier/" + sFilename;
+                            try
+                            {
+                                string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/Supplier"), Path.GetFileName(file.FileName));
+                                string sFilename = "Reeval" + "_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath), sFilepath = Path.GetDirectoryName(spath);
+                                file.SaveAs(sFilepath + "/" + sFilename);
+                                objModel.visit_upload = objModel.visit_upload + "," + "~/DataUpload/MgmtDocs/Supplier/" + sFilename;
+                            }
+                            catch (Exception ex)
+                            {
+                                objGlobaldata.AddFunctionalLog("Exception in AddSupplierReevalution-upload: " + ex.ToString());
+                            }
                         }
-                        catch (Exception ex)
-                        {
-                            objGlobaldata.AddFunctionalLog("Exception in AddSupplierReevalution-upload: " + ex.ToString());
-                        }
+                        objModel.visit_upload = objModel.visit_upload.Trim(',');
                     }
-                    objModel.visit_upload = objModel.visit_upload.Trim(',');
+                    else
+                    {
+                        ViewBag.Message = "You have not specified a file.";
+                    }
                 }
-                else
-                {
-                    ViewBag.Message = "You have not specified a file.";
-                }
-            }
 
                 SupplierReevalutionModelsList objList = new SupplierReevalutionModelsList();
                 objList.EvalList = new List<SupplierReevalutionModels>();
 
-                for(int i= 0; i< Convert.ToInt16(form["itemcnt"]);i++)
+                for (int i = 0; i < Convert.ToInt16(form["itemcnt"]); i++)
                 {
                     SupplierReevalutionModels objElements = new SupplierReevalutionModels();
-                    if(form["cust_name" + i] != "")
-                    { 
+                    if (form["cust_name" + i] != "")
+                    {
                         objElements.cust_name = form["cust_name" + i];
                         objElements.complaints = form["complaints" + i];
                         objElements.description_complaint = form["description_complaint" + i];
@@ -280,7 +281,6 @@ namespace ISOStd.Controllers
                         TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                     }
                 }
-            
             }
             catch (Exception ex)
             {
@@ -289,7 +289,7 @@ namespace ISOStd.Controllers
             }
             return View(ObjList.EvalList.ToList());
         }
-        
+
         [AllowAnonymous]
         public ActionResult SupplierReevalutionListSearch(string SearchText, int? page, string branch_name)
         {
@@ -350,7 +350,6 @@ namespace ISOStd.Controllers
                             branch = objGlobaldata.GetMultiCompanyBranchNameById(dsSupplier.Tables[0].Rows[i]["branch"].ToString()),
                             Department = objGlobaldata.GetMultiDeptNameById(dsSupplier.Tables[0].Rows[i]["Department"].ToString()),
                             Location = objGlobaldata.GetDivisionLocationById(dsSupplier.Tables[0].Rows[i]["Location"].ToString()),
-
                         };
 
                         DateTime dtValue;
@@ -393,7 +392,7 @@ namespace ISOStd.Controllers
                 {
                     SupplierReevalutionModels Doc = new SupplierReevalutionModels();
                     string sid_reevaluation = form["id_reevaluation"];
-                    
+
                     if (Doc.FunDeleteSupplierReevalution(sid_reevaluation))
                     {
                         TempData["Successdata"] = "Document deleted successfully";
@@ -410,7 +409,6 @@ namespace ISOStd.Controllers
                     TempData["alertdata"] = "Id cannot be Null or empty";
                     return Json("Failed");
                 }
-
             }
             catch (Exception ex)
             {
@@ -449,7 +447,6 @@ namespace ISOStd.Controllers
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 }
-
             }
             catch (Exception ex)
             {
@@ -509,14 +506,14 @@ namespace ISOStd.Controllers
                 return Json("Failed");
             }
         }
-        
+
         [AllowAnonymous]
         public ActionResult SupplierReevalutionApprove(string id_reevaluation, int iStatus, string PendingFlg)
         {
             try
             {
                 SupplierReevalutionModels objMdl = new SupplierReevalutionModels();
-               
+
                 string sStatus = "";
                 if (iStatus == 0)
                 {
@@ -538,8 +535,7 @@ namespace ISOStd.Controllers
                 else
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                }              
-
+                }
             }
             catch (Exception ex)
             {
@@ -562,7 +558,7 @@ namespace ISOStd.Controllers
             try
             {
                 SupplierReevalutionModels objMdl = new SupplierReevalutionModels();
-                               
+
                 string sStatus = "";
                 if (iStatus == 0)
                 {
@@ -584,7 +580,7 @@ namespace ISOStd.Controllers
                 else
                 {
                     return Json("Failed");
-                } 
+                }
             }
             catch (Exception ex)
             {
@@ -642,13 +638,12 @@ namespace ISOStd.Controllers
             {
                 SurveyModels objSurvey = new SurveyModels();
                 ViewBag.dsSurvey = objSurvey.GetSurveyTypeListbox();
-                               
+
                 ViewBag.Survey_Type = objSurveyModels.Survey_TypeId;
                 ViewBag.Survey_TypeId = objSurvey.getSurveyIDByName(objSurveyModels.Survey_TypeId);
                 objSurveyModels.Survey_TypeId1 = objSurvey.getSurveyIDByName(objSurveyModels.Survey_TypeId);
                 if (objSurveyModels.Questions != "")
                 {
-
                     if (objSurveyModels.FunAddSurvey(objSurveyModels))
                     {
                         TempData["Successdata"] = "Added Supplier Performance Questions successfully";
@@ -671,14 +666,12 @@ namespace ISOStd.Controllers
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
 
-
             return View(objSurveyModels);
         }
 
         [AllowAnonymous]
         public ActionResult SuppReevalQuestionsDelete(string SQId)
         {
-
             ViewBag.SubMenutype = "SupplierReevalution";
             SurveyModels objSurveyModels = new SurveyModels();
             try
@@ -704,7 +697,6 @@ namespace ISOStd.Controllers
         [AllowAnonymous]
         public ActionResult SuppReevalQuestionsDelete1(string SQId)
         {
-
             ViewBag.SubMenutype = "SupplierReevalution";
             SurveyModels objSurveyModels = new SurveyModels();
             try
@@ -713,7 +705,6 @@ namespace ISOStd.Controllers
                 {
                     TempData["Successdata"] = "Survey details deleted successfully";
                     return Json("Success");
-
                 }
                 else
                 {
@@ -731,7 +722,6 @@ namespace ISOStd.Controllers
         [AllowAnonymous]
         public JsonResult SuppReevalQuestionUpdate(string SQId, string Questions)
         {
-
             ViewBag.SubMenutype = "SupplierReevalution";
             SurveyModels objSurveyModels = new SurveyModels();
             try
@@ -753,7 +743,6 @@ namespace ISOStd.Controllers
             }
 
             return Json("Failed");
-
         }
 
         public JsonResult FunGetsupplierInfo(string supplier_id)
@@ -761,9 +750,9 @@ namespace ISOStd.Controllers
             SupplierModels objSupp = new SupplierModels();
             string sql = "Select SupplierCode,SupplyScope from t_supplier where SupplierID='" + supplier_id + "'and active=1";
             DataSet dsSupp = objGlobaldata.Getdetails(sql);
-            if(dsSupp.Tables.Count>0 && dsSupp.Tables[0].Rows.Count>0)
+            if (dsSupp.Tables.Count > 0 && dsSupp.Tables[0].Rows.Count > 0)
             {
-                 objSupp = new SupplierModels
+                objSupp = new SupplierModels
                 {
                     SupplierCode = dsSupp.Tables[0].Rows[0]["SupplierCode"].ToString(),
                     SupplyScope = dsSupp.Tables[0].Rows[0]["SupplyScope"].ToString()
@@ -794,7 +783,7 @@ namespace ISOStd.Controllers
         public ActionResult SupplierReevalutionEdit()
         {
             SupplierReevalutionModels objSupplier = new SupplierReevalutionModels();
-          
+
             try
             {
                 ViewBag.SubMenutype = "SupplierReevalution";
@@ -808,7 +797,7 @@ namespace ISOStd.Controllers
 
                     DataSet dsSupplier = objGlobaldata.Getdetails(sSqlstmt);
 
-                    try                        
+                    try
                     {
                         if (dsSupplier.Tables.Count > 0 && dsSupplier.Tables[0].Rows.Count > 0)
                         {
@@ -855,20 +844,19 @@ namespace ISOStd.Controllers
                             ViewBag.Location = objGlobaldata.GetLocationbyMultiDivision(dsSupplier.Tables[0].Rows[0]["branch"].ToString());
                             ViewBag.Department = objGlobaldata.GetDepartmentList1(dsSupplier.Tables[0].Rows[0]["branch"].ToString());
                             ViewBag.Branch = objGlobaldata.GetCompanyBranchListbox();
-
                         }
 
                         SupplierReevalutionModelsList ObjList = new SupplierReevalutionModelsList();
                         ObjList.EvalList = new List<SupplierReevalutionModels>();
 
                         string Sql = "Select id_reevaluation_trans,id_reevaluation,date_reevaluation,cust_name,complaints," +
-                            "description_complaint,ref_no_complaint from t_supplier_reevaluation_trans where id_reevaluation = '"+ sid_reevaluation + "'";
+                            "description_complaint,ref_no_complaint from t_supplier_reevaluation_trans where id_reevaluation = '" + sid_reevaluation + "'";
                         DataSet dsSuppTrans = objGlobaldata.Getdetails(Sql);
 
                         if (dsSuppTrans.Tables.Count > 0 && dsSupplier.Tables[0].Rows.Count > 0)
                         {
                             for (int i = 0; i < dsSuppTrans.Tables[0].Rows.Count; i++)
-                            { 
+                            {
                                 try
                                 {
                                     SupplierReevalutionModels objSuppTrans = new SupplierReevalutionModels
@@ -893,7 +881,7 @@ namespace ISOStd.Controllers
                                 }
                             }
                         }
-                        ViewBag.ObjTransList=ObjList;
+                        ViewBag.ObjTransList = ObjList;
 
                         string Sqlstmt = "Select id_reevaluation_quest,id_reevaluation,SQId,SQ_OptionsId from t_supplier_reevaluation_quest where id_reevaluation = '" + sid_reevaluation + "'";
                         DataSet dsSuppQuest = objGlobaldata.Getdetails(Sqlstmt);
@@ -905,10 +893,10 @@ namespace ISOStd.Controllers
 
                         if (dsSuppQuest.Tables.Count > 0 && dsSuppQuest.Tables[0].Rows.Count > 0)
                         {
-                            for (int i=0; i< dsSuppQuest.Tables[0].Rows.Count; i++)
+                            for (int i = 0; i < dsSuppQuest.Tables[0].Rows.Count; i++)
                             {
-                                try {
-
+                                try
+                                {
                                     SupplierReevalutionModels objSuppQuest = new SupplierReevalutionModels()
                                     {
                                         id_reevaluation = dsSuppQuest.Tables[0].Rows[i]["id_reevaluation"].ToString(),
@@ -922,7 +910,7 @@ namespace ISOStd.Controllers
                                 {
                                     objGlobaldata.AddFunctionalLog("Exception in SupplierReevalutionEdit: " + ex.ToString());
                                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                                }                                
+                                }
                             }
                         }
                         ViewBag.ObjQuestList = ObjQuestList;
@@ -935,7 +923,7 @@ namespace ISOStd.Controllers
                         objGlobaldata.AddFunctionalLog("Exception in SupplierReevalutionList: " + ex.ToString());
                         TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                     }
-                }               
+                }
             }
             catch (Exception ex)
             {
@@ -974,7 +962,7 @@ namespace ISOStd.Controllers
                 if (Request.Files.Count > 0)
                 {
                     HttpPostedFileBase files = Request.Files[0];
-                    
+
                     if (audit_upload != null && files.ContentLength > 0)
                     {
                         objModel.audit_upload = "";
@@ -1003,26 +991,24 @@ namespace ISOStd.Controllers
 
                 string QCDelete = Request.Form["QCDocsValselectall"];
 
-                   if (form["QCDocsVal"] != null && form["QCDocsVal"] != "")
-                    {
-                        objModel.audit_upload = objModel.audit_upload + "," + form["QCDocsVal"];
-                        objModel.audit_upload = objModel.audit_upload.Trim(',');
-                    }
-                    else if (form["QCDocsVal"] == null && QCDelete != null && Request.Files.Count == 0)
-                    {
-                        objModel.audit_upload = null;
-                    }
-                    else if (form["QCDocsVal"] == null && Request.Files.Count == 0)
-                    {
-                        objModel.audit_upload = null;
-                    }
-
+                if (form["QCDocsVal"] != null && form["QCDocsVal"] != "")
+                {
+                    objModel.audit_upload = objModel.audit_upload + "," + form["QCDocsVal"];
+                    objModel.audit_upload = objModel.audit_upload.Trim(',');
+                }
+                else if (form["QCDocsVal"] == null && QCDelete != null && Request.Files.Count == 0)
+                {
+                    objModel.audit_upload = null;
+                }
+                else if (form["QCDocsVal"] == null && Request.Files.Count == 0)
+                {
+                    objModel.audit_upload = null;
+                }
 
                 if (Request.Files.Count > 0)
                 {
-
                     HttpPostedFileBase files1 = Request.Files[0];
-                    
+
                     if (visit_upload != null && files1.ContentLength > 0)
                     {
                         objModel.visit_upload = "";
@@ -1064,7 +1050,6 @@ namespace ISOStd.Controllers
                 {
                     objModel.visit_upload = null;
                 }
-            
 
                 SupplierReevalutionModelsList objList = new SupplierReevalutionModelsList();
                 objList.EvalList = new List<SupplierReevalutionModels>();
@@ -1124,7 +1109,7 @@ namespace ISOStd.Controllers
         {
             EmployeeModels emp = new EmployeeModels();
             DataSet dsEmp = objGlobaldata.Getdetails("Select EvaluatedBy from t_hr_employee where emp_no = '" + Emp_id + "'");
-            if(dsEmp.Tables.Count >0 && dsEmp.Tables[0].Rows.Count>0)
+            if (dsEmp.Tables.Count > 0 && dsEmp.Tables[0].Rows.Count > 0)
             {
                 emp.EmpID = dsEmp.Tables[0].Rows[0]["EvaluatedBy"].ToString();
                 emp.CompEmpId = objGlobaldata.GetEmpHrNameById(dsEmp.Tables[0].Rows[0]["EvaluatedBy"].ToString());
@@ -1176,8 +1161,8 @@ namespace ISOStd.Controllers
                                 recommanded_to = objGlobaldata.GetEmpHrNameById(dsSupplier.Tables[0].Rows[0]["recommanded_to"].ToString()),
                                 approved_to = objGlobaldata.GetEmpHrNameById(dsSupplier.Tables[0].Rows[0]["approved_to"].ToString()),
                                 perf_review_year = objGlobaldata.GetDropdownitemById(dsSupplier.Tables[0].Rows[0]["perf_review_year"].ToString()),
-                                supp_code= objGlobaldata.GetSupplierCodeBySupplierId(dsSupplier.Tables[0].Rows[0]["supplier"].ToString()),
-                                supp_scope= objGlobaldata.GetSupplierScopeBySupplierId(dsSupplier.Tables[0].Rows[0]["supplier"].ToString()),
+                                supp_code = objGlobaldata.GetSupplierCodeBySupplierId(dsSupplier.Tables[0].Rows[0]["supplier"].ToString()),
+                                supp_scope = objGlobaldata.GetSupplierScopeBySupplierId(dsSupplier.Tables[0].Rows[0]["supplier"].ToString()),
                                 branch = objGlobaldata.GetMultiCompanyBranchNameById(dsSupplier.Tables[0].Rows[0]["branch"].ToString()),
                                 Department = objGlobaldata.GetMultiDeptNameById(dsSupplier.Tables[0].Rows[0]["Department"].ToString()),
                                 Location = objGlobaldata.GetDivisionLocationById(dsSupplier.Tables[0].Rows[0]["Location"].ToString()),
@@ -1250,7 +1235,6 @@ namespace ISOStd.Controllers
                             {
                                 try
                                 {
-
                                     SupplierReevalutionModels objSuppQuest = new SupplierReevalutionModels()
                                     {
                                         id_reevaluation = dsSuppQuest.Tables[0].Rows[i]["id_reevaluation"].ToString(),
@@ -1268,8 +1252,7 @@ namespace ISOStd.Controllers
                             }
                         }
                         ViewBag.ObjQuestList = ObjQuestList;
-                       // ViewBag.dicQuestElements = dicQuestElements;
-                     
+                        // ViewBag.dicQuestElements = dicQuestElements;
                     }
                     catch (Exception ex)
                     {
@@ -1421,7 +1404,6 @@ namespace ISOStd.Controllers
                         }
                         ViewBag.ObjQuestList = ObjQuestList;
                         // ViewBag.dicQuestElements = dicQuestElements;
-
                     }
                     catch (Exception ex)
                     {
@@ -1486,7 +1468,6 @@ namespace ISOStd.Controllers
                                 branch = objGlobaldata.GetMultiCompanyBranchNameById(dsSupplier.Tables[0].Rows[0]["branch"].ToString()),
                                 Department = objGlobaldata.GetMultiDeptNameById(dsSupplier.Tables[0].Rows[0]["Department"].ToString()),
                                 Location = objGlobaldata.GetDivisionLocationById(dsSupplier.Tables[0].Rows[0]["Location"].ToString()),
-
                             };
 
                             DateTime dtValue;
@@ -1508,7 +1489,6 @@ namespace ISOStd.Controllers
                             string loggedby = objGlobaldata.GetCurrentUserSession().empid;
                             dsSupplier = objGlobaldata.GetReportDetails(dsSupplier, objSupplier.id_reevaluation, loggedby, "SUPPLIER REEVALUATION REPORT");
                             ViewBag.CompanyInfo = dsSupplier;
-
                         }
                         ViewBag.Supplier = objSupplier;
                         //SupplierReevalutionModelsList ObjList = new SupplierReevalutionModelsList();
@@ -1563,7 +1543,6 @@ namespace ISOStd.Controllers
                         //    {
                         //        try
                         //        {
-
                         //            SupplierReevalutionModels objSuppQuest = new SupplierReevalutionModels()
                         //            {
                         //                id_reevaluation = dsSuppQuest.Tables[0].Rows[i]["id_reevaluation"].ToString(),
@@ -1582,7 +1561,6 @@ namespace ISOStd.Controllers
                         //}
                         //ViewBag.ObjQuestList = ObjQuestList;
                         // ViewBag.dicQuestElements = dicQuestElements;
-
                     }
                     catch (Exception ex)
                     {

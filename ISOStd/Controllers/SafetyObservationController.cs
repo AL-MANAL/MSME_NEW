@@ -1,31 +1,26 @@
-﻿using System;
+﻿using ISOStd.Filters;
+using ISOStd.Models;
+using System;
 using System.Collections.Generic;
+using System.Data;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using ISOStd.Models;
-using System.Data;
-using System.Net;
-using System.IO;
-using PagedList;
-using PagedList.Mvc;
-using Rotativa;
-using ISOStd.Filters;
 
 namespace ISOStd.Controllers
 {
     [PreventFromUrl]
     public class SafetyObservationController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
-        SafetyObservationModels objSafeObs = new SafetyObservationModels();
+        private clsGlobal objGlobaldata = new clsGlobal();
+        private SafetyObservationModels objSafeObs = new SafetyObservationModels();
 
         public SafetyObservationController()
         {
             ViewBag.Menutype = "HSE";
             ViewBag.SubMenutype = "SafetyObservation";
         }
-
 
         public ActionResult AddSafetyObservation()
         {
@@ -38,7 +33,7 @@ namespace ISOStd.Controllers
                 ViewBag.ObservationType = objGlobaldata.GetDropdownList("Safety Observation Type");
                 ViewBag.Observer = objGlobaldata.GetDropdownList("Safety Observation Observer");
                 ViewBag.Status = objGlobaldata.GetDropdownList("Safety Observation Status");
-                ViewBag.EmpList= objGlobaldata.GetHrEmployeeListbox();
+                ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
                 ViewBag.Dept = objGlobaldata.GetDepartmentListbox();
             }
             catch (Exception ex)
@@ -73,7 +68,6 @@ namespace ISOStd.Controllers
                     objSafeObs.upload = "";
                     foreach (var file in upload)
                     {
-
                         try
                         {
                             string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/Safety"), Path.GetFileName(file.FileName));
@@ -145,11 +139,9 @@ namespace ISOStd.Controllers
 
                 if (dsSaftyObservationList.Tables.Count > 0)
                 {
-                   
-
                     for (int i = 0; i < dsSaftyObservationList.Tables[0].Rows.Count; i++)
                     {
-                       // DateTime dtDailyDate = Convert.ToDateTime(dsSaftyObservationList.Tables[0].Rows[i]["observation_date"].ToString());
+                        // DateTime dtDailyDate = Convert.ToDateTime(dsSaftyObservationList.Tables[0].Rows[i]["observation_date"].ToString());
                         DateTime dtValue;
 
                         try
@@ -233,8 +225,6 @@ namespace ISOStd.Controllers
 
                 if (dsSaftyObservationList.Tables.Count > 0)
                 {
-                
-
                     for (int i = 0; i < dsSaftyObservationList.Tables[0].Rows.Count; i++)
                     {
                         // DateTime dtDailyDate = Convert.ToDateTime(dsSaftyObservationList.Tables[0].Rows[i]["observation_date"].ToString());
@@ -300,7 +290,7 @@ namespace ISOStd.Controllers
                 if (Request.QueryString["id_safety_observation"] != null && Request.QueryString["id_safety_observation"] != "")
                 {
                     string sid_safety_observation = Request.QueryString["id_safety_observation"];
-                    
+
                     string sSqlstmt = "SELECT id_safety_observation,observation_date, type_observation, desc_observation,action_taken, observed_by, " +
                     "reported_by, project, location,report_no,status,comments,upload,dept,resp_person,target_date from t_safety_observation where id_safety_observation = '" + sid_safety_observation + "'";
 
@@ -509,42 +499,41 @@ namespace ISOStd.Controllers
             SafetyObservationModels objSafty = new SafetyObservationModels();
             try
             {
-                    string sSqlstmt = "SELECT id_safety_observation,observation_date, type_observation, desc_observation,action_taken, observed_by, " +
-                    "reported_by, project, location,report_no,status,comments,dept,resp_person,target_date from t_safety_observation where id_safety_observation = '" + id + "'";
+                string sSqlstmt = "SELECT id_safety_observation,observation_date, type_observation, desc_observation,action_taken, observed_by, " +
+                "reported_by, project, location,report_no,status,comments,dept,resp_person,target_date from t_safety_observation where id_safety_observation = '" + id + "'";
 
-                    DataSet dsSaftyObservationList = objGlobaldata.Getdetails(sSqlstmt);
+                DataSet dsSaftyObservationList = objGlobaldata.Getdetails(sSqlstmt);
 
-                    if (dsSaftyObservationList.Tables.Count > 0 && dsSaftyObservationList.Tables[0].Rows.Count > 0)
+                if (dsSaftyObservationList.Tables.Count > 0 && dsSaftyObservationList.Tables[0].Rows.Count > 0)
+                {
+                    // DateTime dtDailyDate = Convert.ToDateTime(dsSaftyObservationList.Tables[0].Rows[0]["observation_date"].ToString());
+                    DateTime dtValue;
+
+                    objSafty = new SafetyObservationModels
                     {
-                        // DateTime dtDailyDate = Convert.ToDateTime(dsSaftyObservationList.Tables[0].Rows[0]["observation_date"].ToString());
-                        DateTime dtValue;
-
-                        objSafty = new SafetyObservationModels
-                        {
-                            id_safety_observation = dsSaftyObservationList.Tables[0].Rows[0]["id_safety_observation"].ToString(),
-                            location = /*objGlobaldata.GetCompanyBranchNameById*/(dsSaftyObservationList.Tables[0].Rows[0]["location"].ToString()),
-                            // observation_date = dtDailyDate,
-                            type_observation = objGlobaldata.GetDropdownitemById(dsSaftyObservationList.Tables[0].Rows[0]["type_observation"].ToString()),
-                            desc_observation = dsSaftyObservationList.Tables[0].Rows[0]["desc_observation"].ToString(),
-                            action_taken = dsSaftyObservationList.Tables[0].Rows[0]["action_taken"].ToString(),
-                            observed_by = objGlobaldata.GetDropdownitemById(dsSaftyObservationList.Tables[0].Rows[0]["observed_by"].ToString()),
-                            reported_by = dsSaftyObservationList.Tables[0].Rows[0]["reported_by"].ToString(),
-                            status = objGlobaldata.GetDropdownitemById(dsSaftyObservationList.Tables[0].Rows[0]["status"].ToString()),
-                            comments = dsSaftyObservationList.Tables[0].Rows[0]["comments"].ToString(),
-                            project = objGlobaldata.GetDropdownitemById(dsSaftyObservationList.Tables[0].Rows[0]["project"].ToString()),
-                            report_no = dsSaftyObservationList.Tables[0].Rows[0]["report_no"].ToString(),
-                            dept = objGlobaldata.GetDeptNameById(dsSaftyObservationList.Tables[0].Rows[0]["dept"].ToString()),
-                            resp_person = objGlobaldata.GetMultiHrEmpNameById(dsSaftyObservationList.Tables[0].Rows[0]["resp_person"].ToString()),
-                        };
-                        if (DateTime.TryParse(dsSaftyObservationList.Tables[0].Rows[0]["observation_date"].ToString(), out dtValue))
-                        {
-                            objSafty.observation_date = dtValue;
-                        }
+                        id_safety_observation = dsSaftyObservationList.Tables[0].Rows[0]["id_safety_observation"].ToString(),
+                        location = /*objGlobaldata.GetCompanyBranchNameById*/(dsSaftyObservationList.Tables[0].Rows[0]["location"].ToString()),
+                        // observation_date = dtDailyDate,
+                        type_observation = objGlobaldata.GetDropdownitemById(dsSaftyObservationList.Tables[0].Rows[0]["type_observation"].ToString()),
+                        desc_observation = dsSaftyObservationList.Tables[0].Rows[0]["desc_observation"].ToString(),
+                        action_taken = dsSaftyObservationList.Tables[0].Rows[0]["action_taken"].ToString(),
+                        observed_by = objGlobaldata.GetDropdownitemById(dsSaftyObservationList.Tables[0].Rows[0]["observed_by"].ToString()),
+                        reported_by = dsSaftyObservationList.Tables[0].Rows[0]["reported_by"].ToString(),
+                        status = objGlobaldata.GetDropdownitemById(dsSaftyObservationList.Tables[0].Rows[0]["status"].ToString()),
+                        comments = dsSaftyObservationList.Tables[0].Rows[0]["comments"].ToString(),
+                        project = objGlobaldata.GetDropdownitemById(dsSaftyObservationList.Tables[0].Rows[0]["project"].ToString()),
+                        report_no = dsSaftyObservationList.Tables[0].Rows[0]["report_no"].ToString(),
+                        dept = objGlobaldata.GetDeptNameById(dsSaftyObservationList.Tables[0].Rows[0]["dept"].ToString()),
+                        resp_person = objGlobaldata.GetMultiHrEmpNameById(dsSaftyObservationList.Tables[0].Rows[0]["resp_person"].ToString()),
+                    };
+                    if (DateTime.TryParse(dsSaftyObservationList.Tables[0].Rows[0]["observation_date"].ToString(), out dtValue))
+                    {
+                        objSafty.observation_date = dtValue;
+                    }
                     if (DateTime.TryParse(dsSaftyObservationList.Tables[0].Rows[0]["target_date"].ToString(), out dtValue))
                     {
                         objSafty.target_date = dtValue;
                     }
-
                 }
                 else
                 {
@@ -565,30 +554,27 @@ namespace ISOStd.Controllers
         {
             try
             {
-                   if (form["id_safety_observation"] != null && form["id_safety_observation"] != "")
+                if (form["id_safety_observation"] != null && form["id_safety_observation"] != "")
+                {
+                    SafetyObservationModels Doc = new SafetyObservationModels();
+                    string sid_safety_observation = form["id_safety_observation"];
+
+                    if (Doc.FunDeleteObservation(sid_safety_observation))
                     {
-
-                        SafetyObservationModels Doc = new SafetyObservationModels();
-                        string sid_safety_observation = form["id_safety_observation"];
-
-                        if (Doc.FunDeleteObservation(sid_safety_observation))
-                        {
-                            TempData["Successdata"] = "Document deleted successfully";
-                            return Json("Success");
-                        }
-                        else
-                        {
-                            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                            return Json("Failed");
-                        }
+                        TempData["Successdata"] = "Document deleted successfully";
+                        return Json("Success");
                     }
                     else
                     {
-                        TempData["alertdata"] = "Safety Observation Card Id cannot be Null or empty";
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                         return Json("Failed");
                     }
-               
-
+                }
+                else
+                {
+                    TempData["alertdata"] = "Safety Observation Card Id cannot be Null or empty";
+                    return Json("Failed");
+                }
             }
             catch (Exception ex)
             {
@@ -601,17 +587,14 @@ namespace ISOStd.Controllers
         [HttpPost]
         public JsonResult FunGetReportNo(string Location)
         {
-
             DataSet dsData; string RepNo = "";
 
-            dsData = objGlobaldata.GetReportNo("SOC","", Location);
+            dsData = objGlobaldata.GetReportNo("SOC", "", Location);
             if (dsData != null && dsData.Tables.Count > 0)
             {
                 RepNo = dsData.Tables[0].Rows[0]["ReportNO"].ToString();
             }
             return Json(RepNo);
-
         }
-
     }
 }

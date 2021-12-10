@@ -1,24 +1,21 @@
-﻿using System;
+﻿using ISOStd.Filters;
+using ISOStd.Models;
+using PagedList;
+using System;
 using System.Collections.Generic;
+using System.Data;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using ISOStd.Models;
-using System.Data;
-using System.Net;
-using System.IO;
-using PagedList;
-using PagedList.Mvc;
-using Rotativa;
-using ISOStd.Filters;
 
 namespace ISOStd.Controllers
 {
     [PreventFromUrl]
     public class TUVController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
-         
+        private clsGlobal objGlobaldata = new clsGlobal();
+
         [AllowAnonymous]
         public ActionResult AddCustomer()
         {
@@ -27,14 +24,14 @@ namespace ISOStd.Controllers
                 ViewBag.IsoStdList = objGlobaldata.GetAllIsoStdListbox();
                 ViewBag.CustType = objGlobaldata.GetDropdownList("Customer Type");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-              objGlobaldata.AddFunctionalLog("Exception in AddCustomer: " + ex.ToString());
+                objGlobaldata.AddFunctionalLog("Exception in AddCustomer: " + ex.ToString());
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
             return View();
         }
-         
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult AddCustomer(TUVCustomerModels objCust, FormCollection form)
@@ -43,7 +40,6 @@ namespace ISOStd.Controllers
             {
                 if (objCust != null)
                 {
-
                     TUVCustomerModelsList objCustList = new TUVCustomerModelsList();
                     objCustList.CustomerList = new List<TUVCustomerModels>();
 
@@ -66,7 +62,7 @@ namespace ISOStd.Controllers
                         objCustModel.Project_desc = form["Project_desc" + i];
                         objCustModel.ISOStd = form["ISOStd" + i];
                         objCustModel.Audit_team = form["Audit_team" + i];
-                      
+
                         objCustList.CustomerList.Add(objCustModel);
                     }
 
@@ -88,18 +84,18 @@ namespace ISOStd.Controllers
 
             return RedirectToAction("CustomerList");
         }
-         
+
         [AllowAnonymous]
-        public ActionResult CustomerList(FormCollection form, int? page,string CompanyName,string chkAll)
+        public ActionResult CustomerList(FormCollection form, int? page, string CompanyName, string chkAll)
         {
             TUVCustomerModels objCust = new TUVCustomerModels();
             TUVCustomerModelsList objCustList = new TUVCustomerModelsList();
             objCustList.CustomerList = new List<TUVCustomerModels>();
-           
+
             try
             {
                 string sSqlstmt = "select CustID,Cust_Code,CompanyName,Address,City,PostalCode,Country,FaxNumber,Email_Id,"
-                +"CustType from t_customer_info_tuv where Active=1";
+                + "CustType from t_customer_info_tuv where Active=1";
                 ViewBag.CustomerList = objCust.GetCustomerListbox();
                 string sSearchtext = "";
                 if (chkAll == null && chkAll != "All")
@@ -120,9 +116,6 @@ namespace ISOStd.Controllers
 
                 if (dsCustList.Tables.Count > 0 && dsCustList.Tables[0].Rows.Count > 0)
                 {
-                    
-                      
-                    
                     for (int i = 0; i < dsCustList.Tables[0].Rows.Count; i++)
                     {
                         try
@@ -138,7 +131,7 @@ namespace ISOStd.Controllers
                                 Country = dsCustList.Tables[0].Rows[i]["Country"].ToString(),
                                 FaxNumber = dsCustList.Tables[0].Rows[i]["FaxNumber"].ToString(),
                                 Email_Id = dsCustList.Tables[0].Rows[i]["Email_Id"].ToString(),
-                                CustType =objGlobaldata.GetDropdownitemById(dsCustList.Tables[0].Rows[i]["CustType"].ToString())
+                                CustType = objGlobaldata.GetDropdownitemById(dsCustList.Tables[0].Rows[i]["CustType"].ToString())
                             };
                             objCustList.CustomerList.Add(objCustModel);
                         }
@@ -157,39 +150,34 @@ namespace ISOStd.Controllers
             }
             return View(objCustList.CustomerList.ToList().ToPagedList(page ?? 1, 1000));
         }
-         
+
         [AllowAnonymous]
         public JsonResult CustomerDocDelete(FormCollection form)
         {
             try
             {
-              
-                     if (form["CustID"] != null && form["CustID"] != "")
-                        {
+                if (form["CustID"] != null && form["CustID"] != "")
+                {
+                    TUVCustomerModels Doc = new TUVCustomerModels();
+                    string sCustID = form["CustID"];
 
-                            TUVCustomerModels Doc = new TUVCustomerModels();
-                            string sCustID = form["CustID"];
-
-
-                            if (Doc.FunDeleteCustomerDoc(sCustID))
-                            {
-                                TempData["Successdata"] = "Document deleted successfully";
-                                return Json("Success");
-                            }
-                            else
-                            {
-                                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                                return Json("Failed");
-                            }
-                        }
-                        else
-                        {
-                            TempData["alertdata"] = "Customer Id cannot be Null or empty";
-                            return Json("Failed");
-                        }
-                  
+                    if (Doc.FunDeleteCustomerDoc(sCustID))
+                    {
+                        TempData["Successdata"] = "Document deleted successfully";
+                        return Json("Success");
+                    }
+                    else
+                    {
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                        return Json("Failed");
+                    }
                 }
-            
+                else
+                {
+                    TempData["alertdata"] = "Customer Id cannot be Null or empty";
+                    return Json("Failed");
+                }
+            }
             catch (Exception ex)
             {
                 objGlobaldata.AddFunctionalLog("Exception in CustomerDocDelete: " + ex.ToString());
@@ -197,37 +185,33 @@ namespace ISOStd.Controllers
             }
             return Json("Failed");
         }
-        
+
         [AllowAnonymous]
         public JsonResult ProjectDocDelete(FormCollection form)
         {
             try
             {
-               
-                      if (form["id_project"] != null && form["id_project"] != "")
-                        {
+                if (form["id_project"] != null && form["id_project"] != "")
+                {
+                    TUVCustomerModels Doc = new TUVCustomerModels();
+                    string sid_project = form["id_project"];
 
-                            TUVCustomerModels Doc = new TUVCustomerModels();
-                            string sid_project = form["id_project"];
-
-                            if (Doc.FunDeleteProject(sid_project))
-                            {
-                                TempData["Successdata"] = "Project deleted successfully";
-                                return Json("Success");
-                            }
-                            else
-                            {
-                                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                                return Json("Failed");
-                            }
-                        }
-                        else
-                        {
-                            TempData["alertdata"] = "Project Id cannot be Null or empty";
-                            return Json("Failed");
-                        }
-                  
-                
+                    if (Doc.FunDeleteProject(sid_project))
+                    {
+                        TempData["Successdata"] = "Project deleted successfully";
+                        return Json("Success");
+                    }
+                    else
+                    {
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                        return Json("Failed");
+                    }
+                }
+                else
+                {
+                    TempData["alertdata"] = "Project Id cannot be Null or empty";
+                    return Json("Failed");
+                }
             }
             catch (Exception ex)
             {
@@ -236,38 +220,33 @@ namespace ISOStd.Controllers
             }
             return Json("Failed");
         }
-         
+
         [AllowAnonymous]
         public JsonResult CustContactDelete(FormCollection form)
         {
             try
             {
-               
-                  
-                        if (form["ContactsId"] != null && form["ContactsId"] != "")
-                        {
+                if (form["ContactsId"] != null && form["ContactsId"] != "")
+                {
+                    TUVCustomerContactsModels Doc = new TUVCustomerContactsModels();
+                    string sContactsId = form["ContactsId"];
 
-                            TUVCustomerContactsModels Doc = new TUVCustomerContactsModels();
-                            string sContactsId = form["ContactsId"];
-
-                            if (Doc.FunDeleteContacts(sContactsId))
-                            {
-                                TempData["Successdata"] = "Contact deleted successfully";
-                                return Json("Success");
-                            }
-                            else
-                            {
-                                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                                return Json("Failed");
-                            }
-                        }
-                        else
-                        {
-                            TempData["alertdata"] = "Contact Id cannot be Null or empty";
-                            return Json("Failed");
-                        }
-                   
-                
+                    if (Doc.FunDeleteContacts(sContactsId))
+                    {
+                        TempData["Successdata"] = "Contact deleted successfully";
+                        return Json("Success");
+                    }
+                    else
+                    {
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                        return Json("Failed");
+                    }
+                }
+                else
+                {
+                    TempData["alertdata"] = "Contact Id cannot be Null or empty";
+                    return Json("Failed");
+                }
             }
             catch (Exception ex)
             {
@@ -276,7 +255,7 @@ namespace ISOStd.Controllers
             }
             return Json("Failed");
         }
-         
+
         [HttpPost]
         public JsonResult doesCompNameExist(string CompanyName)
         {
@@ -289,7 +268,7 @@ namespace ISOStd.Controllers
 
             return Json(Valid);
         }
-         
+
         [AllowAnonymous]
         public ActionResult CustomerEdit()
         {
@@ -306,30 +285,27 @@ namespace ISOStd.Controllers
 
                     if (dsCustList.Tables.Count > 0 && dsCustList.Tables[0].Rows.Count > 0)
                     {
-                            TUVCustomerModels objCust = new TUVCustomerModels
-                            {
-                                CustID = dsCustList.Tables[0].Rows[0]["CustID"].ToString(),
-                                Cust_Code = dsCustList.Tables[0].Rows[0]["Cust_Code"].ToString(),
-                                CompanyName = dsCustList.Tables[0].Rows[0]["CompanyName"].ToString(),
-                                Address = dsCustList.Tables[0].Rows[0]["Address"].ToString(),
-                                City = dsCustList.Tables[0].Rows[0]["City"].ToString(),
-                                PostalCode = dsCustList.Tables[0].Rows[0]["PostalCode"].ToString(),
-                                Country = dsCustList.Tables[0].Rows[0]["Country"].ToString(),
-                                FaxNumber = dsCustList.Tables[0].Rows[0]["FaxNumber"].ToString(),
-                                Email_Id = dsCustList.Tables[0].Rows[0]["Email_Id"].ToString(),
-                                CustType =objGlobaldata.GetDropdownitemById(dsCustList.Tables[0].Rows[0]["CustType"].ToString())
-                            };
+                        TUVCustomerModels objCust = new TUVCustomerModels
+                        {
+                            CustID = dsCustList.Tables[0].Rows[0]["CustID"].ToString(),
+                            Cust_Code = dsCustList.Tables[0].Rows[0]["Cust_Code"].ToString(),
+                            CompanyName = dsCustList.Tables[0].Rows[0]["CompanyName"].ToString(),
+                            Address = dsCustList.Tables[0].Rows[0]["Address"].ToString(),
+                            City = dsCustList.Tables[0].Rows[0]["City"].ToString(),
+                            PostalCode = dsCustList.Tables[0].Rows[0]["PostalCode"].ToString(),
+                            Country = dsCustList.Tables[0].Rows[0]["Country"].ToString(),
+                            FaxNumber = dsCustList.Tables[0].Rows[0]["FaxNumber"].ToString(),
+                            Email_Id = dsCustList.Tables[0].Rows[0]["Email_Id"].ToString(),
+                            CustType = objGlobaldata.GetDropdownitemById(dsCustList.Tables[0].Rows[0]["CustType"].ToString())
+                        };
 
-                            sSqlstmt = "select id_project,CustID,Project_no,Project_desc,ISOStd,Audit_team,Contract_from,Contract_to"
-                            +" from t_projectmaster_tuv  where CustID='" + sCustID +"' and Active=1 order by Project_no desc";
-                            ViewBag.Project = objGlobaldata.Getdetails(sSqlstmt);
-                            ViewBag.IsoStdList = objGlobaldata.GetAllIsoStdListbox();
-                            ViewBag.CustType = objGlobaldata.GetDropdownList("Customer Type");
+                        sSqlstmt = "select id_project,CustID,Project_no,Project_desc,ISOStd,Audit_team,Contract_from,Contract_to"
+                        + " from t_projectmaster_tuv  where CustID='" + sCustID + "' and Active=1 order by Project_no desc";
+                        ViewBag.Project = objGlobaldata.Getdetails(sSqlstmt);
+                        ViewBag.IsoStdList = objGlobaldata.GetAllIsoStdListbox();
+                        ViewBag.CustType = objGlobaldata.GetDropdownList("Customer Type");
 
-
-                            return View(objCust);
-                        
-
+                        return View(objCust);
                     }
                     else
                     {
@@ -349,9 +325,8 @@ namespace ISOStd.Controllers
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
             return RedirectToAction("CustomerList");
-
         }
-         
+
         [AllowAnonymous]
         public ActionResult CustomerDetails()
         {
@@ -389,8 +364,6 @@ namespace ISOStd.Controllers
                         ViewBag.CustType = objGlobaldata.GetDropdownList("Customer Type");
 
                         return View(objCust);
-
-
                     }
                     else
                     {
@@ -410,9 +383,8 @@ namespace ISOStd.Controllers
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
             return RedirectToAction("CustomerList");
-
         }
-         
+
         [AllowAnonymous]
         public ActionResult AddCustomerContact()
         {
@@ -436,14 +408,13 @@ namespace ISOStd.Controllers
             }
             return View(objCustomerContactsModels);
         }
-         
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult AddCustomerContact(TUVCustomerContactsModels objContactModels, FormCollection form)
         {
             try
             {
-
                 if (objContactModels.FunAddContactsDetails(objContactModels))
                 {
                     TempData["Successdata"] = "Added Contact details successfully";
@@ -460,7 +431,7 @@ namespace ISOStd.Controllers
             }
             return RedirectToAction("CustomerContactList", new { CustID = objContactModels.CustID });
         }
-         
+
         [AllowAnonymous]
         public ActionResult CustomerContactList(string SearchText, int? page)
         {
@@ -477,8 +448,6 @@ namespace ISOStd.Controllers
                     ViewBag.CustID = sCustID;
                     if (dsCustomer.Tables.Count > 0 && dsCustomer.Tables[0].Rows.Count > 0)
                     {
-                       
-
                         for (int i = 0; dsCustomer.Tables.Count > 0 && i < dsCustomer.Tables[0].Rows.Count; i++)
                         {
                             try
@@ -515,7 +484,7 @@ namespace ISOStd.Controllers
             }
             return View(objContactsList.ContactList.ToList().ToPagedList(page ?? 1, 40));
         }
-         
+
         [AllowAnonymous]
         public ActionResult CustomerContactEdit()
         {
@@ -561,12 +530,11 @@ namespace ISOStd.Controllers
 
             return RedirectToAction("CustomerContactList");
         }
-         
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult CustomerContactEdit(TUVCustomerContactsModels objContactsModels, FormCollection form)
         {
-
             if (objContactsModels.FunUpdateContactsDetails(objContactsModels))
             {
                 TempData["Successdata"] = "Updated Contact details successfully";
@@ -577,7 +545,7 @@ namespace ISOStd.Controllers
             }
             return RedirectToAction("CustomerContactList", new { CustID = objContactsModels.CustID });
         }
-         
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult CustomerEdit(TUVCustomerModels objCust, FormCollection form)
@@ -605,7 +573,6 @@ namespace ISOStd.Controllers
             return RedirectToAction("CustomerList");
         }
 
-         
         [AllowAnonymous]
         public ActionResult ProjectUpdate(TUVCustomerModels objCust, FormCollection form)
         {
@@ -629,7 +596,7 @@ namespace ISOStd.Controllers
                     objCust.ISOStd = form["ISOStd"];
                     objCustList.CustomerList.Add(objCust);
 
-                    if(objCust.FunAddProject(objCustList, Convert.ToInt16(objCust.CustID)))
+                    if (objCust.FunAddProject(objCustList, Convert.ToInt16(objCust.CustID)))
                     {
                         TempData["Successdata"] = "Added Project successfully";
                     }
@@ -661,7 +628,6 @@ namespace ISOStd.Controllers
                     }
                 }
                 return RedirectToAction("CustomerEdit", new { CustID = objCust.CustID });
-              
             }
             catch (Exception ex)
             {
@@ -671,7 +637,6 @@ namespace ISOStd.Controllers
             return RedirectToAction("CustomerList");
         }
 
-         
         [AllowAnonymous]
         public ActionResult AddSupplier()
         {
@@ -679,7 +644,6 @@ namespace ISOStd.Controllers
             {
                 if (Request.QueryString["id_project"] != null)
                 {
-                  
                     ViewBag.SubMenutype = "SupplierList";
                     ViewBag.id_project = Request.QueryString["id_project"];
                     ViewBag.ApprovalCriteria = objGlobaldata.GetDropdownList("Supplier-ApprovalCriteria");
@@ -700,7 +664,7 @@ namespace ISOStd.Controllers
             }
             return View();
         }
-         
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult AddSupplier(TUVSupplierModels objSupplierModels, FormCollection form, IEnumerable<HttpPostedFileBase> SupportingDoc)
@@ -709,9 +673,9 @@ namespace ISOStd.Controllers
             {
                 HttpPostedFileBase files = Request.Files[0];
                 objSupplierModels.ApprovalCriteria = form["ApprovalCriteria"];
-               
-                    objSupplierModels.Added_Updated_By = objGlobaldata.GetCurrentUserSession().empid;
-                
+
+                objSupplierModels.Added_Updated_By = objGlobaldata.GetCurrentUserSession().empid;
+
                 objSupplierModels.Supplier_type = form["Supplier_type"];
                 objSupplierModels.Payment_term = form["Payment_term"];
 
@@ -740,7 +704,6 @@ namespace ISOStd.Controllers
                     ViewBag.Message = "You have not specified a file.";
                 }
 
-
                 if (objSupplierModels.FunAddSupplier(objSupplierModels))
                 {
                     TempData["Successdata"] = "Added Supplier details successfully";
@@ -757,15 +720,14 @@ namespace ISOStd.Controllers
             }
             return RedirectToAction("SupplierList", new { id_project = objSupplierModels.id_project });
         }
-         
+
         [AllowAnonymous]
         public ActionResult SupplierList(string SearchText, string Approvestatus, int? page, string chkAll)
         {
             ViewBag.SubMenutype = "SupplierList";
             TUVSupplierModelsList objSupplierModelsList = new TUVSupplierModelsList();
             objSupplierModelsList.lstSupplier = new List<TUVSupplierModels>();
-         
-           
+
             try
             {
                 if (Request.QueryString["id_project"] != null)
@@ -784,9 +746,6 @@ namespace ISOStd.Controllers
 
                     for (int i = 0; dsSupplier.Tables.Count > 0 && i < dsSupplier.Tables[0].Rows.Count; i++)
                     {
-                       
-                           
-                        
                         try
                         {
                             TUVSupplierModels objSupplierModels = new TUVSupplierModels
@@ -846,14 +805,14 @@ namespace ISOStd.Controllers
 
             return View(objSupplierModelsList.lstSupplier.ToList().ToPagedList(page ?? 1, 1000));
         }
-         
+
         [AllowAnonymous]
         public ActionResult SupplierEdit()
         {
             ViewBag.SubMenutype = "SupplierList";
             ViewBag.paymentTerm = objGlobaldata.GetDropdownList("Supplier payment term");
             TUVSupplierModels objSupplierModels = new TUVSupplierModels();
-           
+
             try
             {
                 ViewBag.SupplierType = objGlobaldata.GetDropdownList("Supplier Type");
@@ -869,7 +828,6 @@ namespace ISOStd.Controllers
 
                     if (dsSupplier.Tables.Count > 0 && dsSupplier.Tables[0].Rows.Count > 0)
                     {
-                        
                         objSupplierModels = new TUVSupplierModels
                         {
                             SupplierId = dsSupplier.Tables[0].Rows[0]["SupplierId"].ToString(),
@@ -911,7 +869,6 @@ namespace ISOStd.Controllers
                         ViewBag.paymentTerm = objGlobaldata.GetDropdownList("Supplier payment term");
 
                         return View(objSupplierModels);
-                      
                     }
                     else
                     {
@@ -933,7 +890,7 @@ namespace ISOStd.Controllers
 
             return RedirectToAction("SupplierList");
         }
-         
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult SupplierEdit(TUVSupplierModels objSupplierModels, FormCollection form, IEnumerable<HttpPostedFileBase> SupportingDoc)
@@ -998,7 +955,7 @@ namespace ISOStd.Controllers
             }
             return RedirectToAction("SupplierList", new { id_project = objSupplierModels.id_project });
         }
-         
+
         [AllowAnonymous]
         public ActionResult SupplierDetails()
         {
@@ -1076,14 +1033,13 @@ namespace ISOStd.Controllers
 
             return RedirectToAction("SupplierList");
         }
-         
-        [AllowAnonymous]
-        public ActionResult ProjectList(FormCollection form, int? page, string CompanyName,string Project_no,string chkAll)
-        {
 
+        [AllowAnonymous]
+        public ActionResult ProjectList(FormCollection form, int? page, string CompanyName, string Project_no, string chkAll)
+        {
             TUVCustomerModelsList objCustList = new TUVCustomerModelsList();
             objCustList.CustomerList = new List<TUVCustomerModels>();
-            TUVCustomerModels objCust=new TUVCustomerModels();
+            TUVCustomerModels objCust = new TUVCustomerModels();
 
             try
             {
@@ -1094,7 +1050,7 @@ namespace ISOStd.Controllers
                 string sSearchtext = "";
                 if (chkAll == null && chkAll != "All")
                 {
-                    if (CompanyName != null &&  CompanyName != "")
+                    if (CompanyName != null && CompanyName != "")
                     {
                         ViewBag.CustomerListVal = CompanyName;
                         sSearchtext = sSearchtext + " and (t.CustID ='" + CompanyName + "')";
@@ -1113,7 +1069,6 @@ namespace ISOStd.Controllers
                 DataSet dsCustList = objGlobaldata.Getdetails(sSqlstmt);
                 if (dsCustList.Tables.Count > 0 && dsCustList.Tables[0].Rows.Count > 0)
                 {
-                   
                     for (int i = 0; i < dsCustList.Tables[0].Rows.Count; i++)
                     {
                         try
@@ -1125,7 +1080,7 @@ namespace ISOStd.Controllers
                                 CompanyName = dsCustList.Tables[0].Rows[i]["CompanyName"].ToString(),
                                 Project_no = dsCustList.Tables[0].Rows[i]["Project_no"].ToString(),
                                 Project_desc = dsCustList.Tables[0].Rows[i]["Project_desc"].ToString(),
-                                ISOStd =objGlobaldata.GetIsoStdNameById(dsCustList.Tables[0].Rows[i]["ISOStd"].ToString()),
+                                ISOStd = objGlobaldata.GetIsoStdNameById(dsCustList.Tables[0].Rows[i]["ISOStd"].ToString()),
                                 Audit_team = dsCustList.Tables[0].Rows[i]["Audit_team"].ToString(),
                             };
                             DateTime dtValue;
@@ -1154,38 +1109,33 @@ namespace ISOStd.Controllers
             }
             return View(objCustList.CustomerList.ToList().ToPagedList(page ?? 1, 1000));
         }
-         
+
         [HttpPost]
         public JsonResult SupplierDelete(FormCollection form)
         {
             try
             {
-               
-                   
-                        if (form["SupplierId"] != null && form["SupplierId"] != "")
-                        {
+                if (form["SupplierId"] != null && form["SupplierId"] != "")
+                {
+                    TUVSupplierModels Doc = new TUVSupplierModels();
+                    string SupplierId = form["SupplierId"];
 
-                            TUVSupplierModels Doc = new TUVSupplierModels();
-                            string SupplierId = form["SupplierId"];
-
-
-                            if (Doc.FunDeleteSupplier(SupplierId))
-                            {
-                                TempData["Successdata"] = "Deleted successfully";
-                                return Json("Success");
-                            }
-                            else
-                            {
-                                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                                return Json("Failed");
-                            }
-                        }
-                        else
-                        {
-                            TempData["alertdata"] = "Supplier Id cannot be Null or empty";
-                            return Json("Failed");
-                        }
-                    
+                    if (Doc.FunDeleteSupplier(SupplierId))
+                    {
+                        TempData["Successdata"] = "Deleted successfully";
+                        return Json("Success");
+                    }
+                    else
+                    {
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                        return Json("Failed");
+                    }
+                }
+                else
+                {
+                    TempData["alertdata"] = "Supplier Id cannot be Null or empty";
+                    return Json("Failed");
+                }
             }
             catch (Exception ex)
             {
@@ -1193,9 +1143,8 @@ namespace ISOStd.Controllers
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
             return Json("Failed");
-
         }
-         
+
         [AllowAnonymous]
         public ActionResult AddAudit()
         {
@@ -1208,14 +1157,14 @@ namespace ISOStd.Controllers
                 ViewBag.AuditTimeInHour = objGlobaldata.GetAuditTimeInHour();
                 ViewBag.AuditTimeInMin = objGlobaldata.GetAuditTimeInMin();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 objGlobaldata.AddFunctionalLog("Exception in AddAudit: " + ex.ToString());
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
             return View();
         }
-         
+
         [AllowAnonymous]
         public ActionResult AuditList(FormCollection form, int? page, string CompanyName, string Project_no, string chkAll)
         {
@@ -1226,7 +1175,7 @@ namespace ISOStd.Controllers
             try
             {
                 string sSqlstmt = "select id_audit,CustID,Project_no,Audit_cycle,Audit_date,Audit_criteria,Location"
-                +" from t_audit_tuv where Active=1";
+                + " from t_audit_tuv where Active=1";
                 ViewBag.CustomerList = objCust.GetCustomerListbox();
                 ViewBag.ProjectList = objCust.GetProjectListbox();
                 string sSearchtext = "";
@@ -1252,9 +1201,6 @@ namespace ISOStd.Controllers
 
                 if (dsAuditList.Tables.Count > 0 && dsAuditList.Tables[0].Rows.Count > 0)
                 {
-                    
-                       
-                    
                     for (int i = 0; i < dsAuditList.Tables[0].Rows.Count; i++)
                     {
                         try
@@ -1262,8 +1208,8 @@ namespace ISOStd.Controllers
                             TUVAuditModels objCustModel = new TUVAuditModels
                             {
                                 id_audit = dsAuditList.Tables[0].Rows[i]["id_audit"].ToString(),
-                                CustID =objCust.GetCustomerByID(dsAuditList.Tables[0].Rows[i]["CustID"].ToString()),
-                                Project_no =objCust.GetProjectByID(dsAuditList.Tables[0].Rows[i]["Project_no"].ToString()),
+                                CustID = objCust.GetCustomerByID(dsAuditList.Tables[0].Rows[i]["CustID"].ToString()),
+                                Project_no = objCust.GetProjectByID(dsAuditList.Tables[0].Rows[i]["Project_no"].ToString()),
                                 Audit_cycle = dsAuditList.Tables[0].Rows[i]["Audit_cycle"].ToString(),
                                 Audit_criteria = dsAuditList.Tables[0].Rows[i]["Audit_criteria"].ToString(),
                                 Location = dsAuditList.Tables[0].Rows[i]["Location"].ToString()
@@ -1290,7 +1236,7 @@ namespace ISOStd.Controllers
             }
             return View(objAuditList.lstAudit.ToList().ToPagedList(page ?? 1, 1000));
         }
-         
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult AddAudit(TUVAuditModels objAudit, FormCollection form)
@@ -1344,39 +1290,33 @@ namespace ISOStd.Controllers
 
             return RedirectToAction("AuditList");
         }
-         
+
         [HttpPost]
         public JsonResult AuditDelete(FormCollection form)
         {
             try
             {
-               
-                   
-                        if (form["id_audit"] != null && form["id_audit"] != "")
-                        {
+                if (form["id_audit"] != null && form["id_audit"] != "")
+                {
+                    TUVAuditModels Doc = new TUVAuditModels();
+                    string sid_audit = form["id_audit"];
 
-                            TUVAuditModels Doc = new TUVAuditModels();
-                            string sid_audit = form["id_audit"];
-
-
-                            if (Doc.FunDeleteAudit(sid_audit))
-                            {
-                                TempData["Successdata"] = "Deleted successfully";
-                                return Json("Success");
-                            }
-                            else
-                            {
-                                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                                return Json("Failed");
-                            }
-                        }
-                        else
-                        {
-                            TempData["alertdata"] = "Audit Id cannot be Null or empty";
-                            return Json("Failed");
-                        }
-                  
-                
+                    if (Doc.FunDeleteAudit(sid_audit))
+                    {
+                        TempData["Successdata"] = "Deleted successfully";
+                        return Json("Success");
+                    }
+                    else
+                    {
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                        return Json("Failed");
+                    }
+                }
+                else
+                {
+                    TempData["alertdata"] = "Audit Id cannot be Null or empty";
+                    return Json("Failed");
+                }
             }
             catch (Exception ex)
             {
@@ -1384,41 +1324,34 @@ namespace ISOStd.Controllers
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
             return Json("Failed");
-
         }
-         
+
         [HttpPost]
         public JsonResult AuditTransDelete(FormCollection form)
         {
             try
             {
+                if (form["id_audit_trans"] != null && form["id_audit_trans"] != "")
+                {
+                    TUVAuditModels Doc = new TUVAuditModels();
+                    string sid_audit_trans = form["id_audit_trans"];
 
-                  
-                        if (form["id_audit_trans"] != null && form["id_audit_trans"] != "")
-                        {
-
-                            TUVAuditModels Doc = new TUVAuditModels();
-                            string sid_audit_trans = form["id_audit_trans"];
-
-
-                            if (Doc.FunDeleteAuditTrans(sid_audit_trans))
-                            {
-                                TempData["Successdata"] = "Deleted successfully";
-                                return Json("Success");
-                            }
-                            else
-                            {
-                                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                                return Json("Failed");
-                            }
-                        }
-                        else
-                        {
-                            TempData["alertdata"] = "Audit Id cannot be Null or empty";
-                            return Json("Failed");
-                        }
-                   
-                
+                    if (Doc.FunDeleteAuditTrans(sid_audit_trans))
+                    {
+                        TempData["Successdata"] = "Deleted successfully";
+                        return Json("Success");
+                    }
+                    else
+                    {
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                        return Json("Failed");
+                    }
+                }
+                else
+                {
+                    TempData["alertdata"] = "Audit Id cannot be Null or empty";
+                    return Json("Failed");
+                }
             }
             catch (Exception ex)
             {
@@ -1426,14 +1359,13 @@ namespace ISOStd.Controllers
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
             return Json("Failed");
-
         }
-         
+
         [AllowAnonymous]
         public ActionResult AuditEdit()
         {
             TUVCustomerModels objCust = new TUVCustomerModels();
-            TUVSupplierModels objSup=new TUVSupplierModels();
+            TUVSupplierModels objSup = new TUVSupplierModels();
             try
             {
                 if (Request.QueryString["id_audit"] != null)
@@ -1441,7 +1373,7 @@ namespace ISOStd.Controllers
                     string sid_audit = Request.QueryString["id_audit"];
 
                     string sSqlstmt = "select id_audit,CustID,Project_no,Audit_cycle,Audit_date,Audit_criteria,Location"
-                + " from t_audit_tuv where id_audit='"+sid_audit+"' ";
+                + " from t_audit_tuv where id_audit='" + sid_audit + "' ";
 
                     DataSet dsAuditList = objGlobaldata.Getdetails(sSqlstmt);
 
@@ -1462,7 +1394,7 @@ namespace ISOStd.Controllers
                             objCustModel.Audit_date = dtValue;
                         }
                         sSqlstmt = "select id_audit_trans,id_audit,SupplierName,fromAuditTime,toAuditTime,Audit_team,Auditee,"
-                        + "Scheduled_date,Audit_status from t_audit_trans_tuv where id_audit='"+sid_audit+"' and Active=1";
+                        + "Scheduled_date,Audit_status from t_audit_trans_tuv where id_audit='" + sid_audit + "' and Active=1";
                         ViewBag.Audit = objGlobaldata.Getdetails(sSqlstmt);
 
                         ViewBag.AuditCycle = objGlobaldata.GetConstantValue("AuditCycle");
@@ -1491,7 +1423,7 @@ namespace ISOStd.Controllers
             }
             return RedirectToAction("AuditList");
         }
-         
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult AuditEdit(TUVAuditModels objAudit, FormCollection form)
@@ -1524,7 +1456,7 @@ namespace ISOStd.Controllers
 
             return RedirectToAction("AuditList");
         }
-         
+
         [AllowAnonymous]
         public ActionResult AuditTransEdit(TUVAuditModels objAudit, FormCollection form)
         {
@@ -1579,7 +1511,6 @@ namespace ISOStd.Controllers
                     }
                 }
                 return RedirectToAction("AuditEdit", new { id_audit = objAudit.id_audit });
-
             }
             catch (Exception ex)
             {
@@ -1588,7 +1519,7 @@ namespace ISOStd.Controllers
             }
             return RedirectToAction("CustomerList");
         }
-         
+
         [AllowAnonymous]
         public ActionResult AuditDetails()
         {
@@ -1651,33 +1582,33 @@ namespace ISOStd.Controllers
             }
             return RedirectToAction("AuditList");
         }
-         
+
         public ActionResult FunGetSupplierList(string Project_no)
         {
             TUVSupplierModels objSup = new TUVSupplierModels();
             MultiSelectList lstSup = objSup.GetSupplierListbox(Project_no);
             return Json(lstSup);
         }
-         
+
         public ActionResult FunGetProjectList(string CustID)
         {
             TUVCustomerModels objPrj = new TUVCustomerModels();
             MultiSelectList lstPrj = objPrj.GetProjectListboxByCustID(CustID);
             return Json(lstPrj);
         }
-         
+
         [HttpPost]
         public JsonResult FunGetProjectAuditCriteria(string Project_no)
         {
             TUVCustomerModels objCust = new TUVCustomerModels();
             string Isostd = "";
-            if (Project_no !="")
+            if (Project_no != "")
             {
                 Isostd = objCust.GetAuditCriteriaByProject(Project_no);
             }
             return Json(Isostd);
         }
-         
+
         [AllowAnonymous]
         public ActionResult GenerateAuditQuestion(string CustID, string Project_no, string SupplierID)
         {
@@ -1705,12 +1636,11 @@ namespace ISOStd.Controllers
             }
             return View();
         }
-         
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult GenerateAuditQuestion(TUVPerformAuditModels objAudit, FormCollection form)
         {
-            
             try
             {
                 TUVCustomerModels objCust = new TUVCustomerModels();
@@ -1731,7 +1661,6 @@ namespace ISOStd.Controllers
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 }
                 ViewBag.AuditElements = obj.GetAuditQuestions(objAudit.CustID, objAudit.Project_no, objAudit.SupplierID);
-
             }
             catch (Exception ex)
             {
@@ -1740,19 +1669,18 @@ namespace ISOStd.Controllers
             }
             return View(objAudit);
         }
-         
+
         [HttpPost]
         public JsonResult GetQuestions(string CustID, string Project_no, string SupplierID)
         {
             TUVPerformAuditModels obj = new TUVPerformAuditModels();
-             MultiSelectList   data = obj.GetAuditQuestions(CustID, Project_no, SupplierID);
+            MultiSelectList data = obj.GetAuditQuestions(CustID, Project_no, SupplierID);
             return Json(data);
         }
-         
+
         [AllowAnonymous]
         public JsonResult QuestionUpdate(string id_element, string Questions)
         {
-
             ViewBag.SubMenutype = "CustomerSurvey";
             TUVPerformAuditModels obj = new TUVPerformAuditModels();
             try
@@ -1774,11 +1702,10 @@ namespace ISOStd.Controllers
             }
             return Json("Failed");
         }
-         
+
         [AllowAnonymous]
         public ActionResult QuestionDelete(string id_element)
         {
-
             ViewBag.SubMenutype = "CustomerSurvey";
             TUVPerformAuditModels obj = new TUVPerformAuditModels();
             try
@@ -1799,9 +1726,8 @@ namespace ISOStd.Controllers
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
             return Json("Failed");
-
         }
-         
+
         [AllowAnonymous]
         public ActionResult QuestionDelete1(string id_element, string CustID, string Project_no, string SupplierID)
         {
@@ -1824,9 +1750,8 @@ namespace ISOStd.Controllers
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
             return RedirectToAction("GenerateAuditQuestion", new { CustID = CustID, Project_no = Project_no, SupplierID = SupplierID });
-
         }
-         
+
         public ActionResult PerformAudit()
         {
             TUVPerformAuditModels objAudit = new TUVPerformAuditModels();
@@ -1879,13 +1804,13 @@ namespace ISOStd.Controllers
             }
             return View(objAudit);
         }
-         
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult PerformAudit(TUVPerformAuditModels objAudit, FormCollection form)
         {
             try
-            {          
+            {
                 DateTime dateValue;
                 if (DateTime.TryParse(form["Audit_date"], out dateValue) == true)
                 {
@@ -1895,20 +1820,20 @@ namespace ISOStd.Controllers
                 AuditElemtlist.lstAudit = new List<TUVPerformAuditModels>();
                 TUVPerformAuditModels obj = new TUVPerformAuditModels();
                 MultiSelectList AuditQuestions = obj.GetAuditElementsListbox(objAudit.CustID, objAudit.Project_no, objAudit.SupplierID);
-                 int cnt = Convert.ToInt16(form["itmctn"]);
+                int cnt = Convert.ToInt16(form["itmctn"]);
                 int i = 1;
 
                 foreach (var item in AuditQuestions)
                 {
                     if (i <= Convert.ToInt16(form["itmctn"]))
                     {
-                    TUVPerformAuditModels objElements = new TUVPerformAuditModels();
-                    objElements.id_element = form["Questions " + item.Value];
-                    objElements.id_auditratings = form["id_auditratings " + item.Value];
-                    objElements.comment = form["comment " + i];
-                    objElements.evidence_upload = form["evidence_upload" + i];
-                    objElements.finding_category = form["finding_category " + i];
-                    AuditElemtlist.lstAudit.Add(objElements);
+                        TUVPerformAuditModels objElements = new TUVPerformAuditModels();
+                        objElements.id_element = form["Questions " + item.Value];
+                        objElements.id_auditratings = form["id_auditratings " + item.Value];
+                        objElements.comment = form["comment " + i];
+                        objElements.evidence_upload = form["evidence_upload" + i];
+                        objElements.finding_category = form["finding_category " + i];
+                        AuditElemtlist.lstAudit.Add(objElements);
                     }
                     i++;
                 }
@@ -1928,10 +1853,9 @@ namespace ISOStd.Controllers
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
 
-            return RedirectToAction("PerformAuditList", new { id_audit_trans = objAudit.id_audit_trans});
+            return RedirectToAction("PerformAuditList", new { id_audit_trans = objAudit.id_audit_trans });
         }
 
-         
         [AllowAnonymous]
         public ActionResult PerformAuditList(FormCollection form, int? page)
         {
@@ -1942,18 +1866,15 @@ namespace ISOStd.Controllers
             {
                 if (Request.QueryString["id_audit_trans"] != null && Request.QueryString["id_audit_trans"] != "")
                 {
-                    string sid_audit_trans=Request.QueryString["id_audit_trans"];
-                    string sSqlstmt = "select t.id_paudit,tt.id_audit,tt.id_audit_trans,SupplierName,Audit_date,Auditors,t.Auditee" 
-                    +" from t_performaudit_tuv t,t_audit_trans_tuv tt where t.id_audit_trans=tt.id_audit_trans and"
+                    string sid_audit_trans = Request.QueryString["id_audit_trans"];
+                    string sSqlstmt = "select t.id_paudit,tt.id_audit,tt.id_audit_trans,SupplierName,Audit_date,Auditors,t.Auditee"
+                    + " from t_performaudit_tuv t,t_audit_trans_tuv tt where t.id_audit_trans=tt.id_audit_trans and"
                     + " t.id_audit_trans='" + sid_audit_trans + "' and t.Active=1 and tt.Active=1";
 
                     DataSet dsAuditList = objGlobaldata.Getdetails(sSqlstmt);
 
                     if (dsAuditList.Tables.Count > 0 && dsAuditList.Tables[0].Rows.Count > 0)
                     {
-                       
-                           
-                        
                         for (int i = 0; i < dsAuditList.Tables[0].Rows.Count; i++)
                         {
                             try
@@ -1965,8 +1886,7 @@ namespace ISOStd.Controllers
                                     id_audit_trans = dsAuditList.Tables[0].Rows[i]["id_audit_trans"].ToString(),
                                     Auditors = dsAuditList.Tables[0].Rows[i]["Auditors"].ToString(),
                                     Auditee = dsAuditList.Tables[0].Rows[i]["Auditee"].ToString(),
-                                    SupplierName =objSup.GetSupplierByID(dsAuditList.Tables[0].Rows[i]["SupplierName"].ToString()),
-                                 
+                                    SupplierName = objSup.GetSupplierByID(dsAuditList.Tables[0].Rows[i]["SupplierName"].ToString()),
                                 };
                                 ViewBag.id_audit = dsAuditList.Tables[0].Rows[i]["id_audit"].ToString();
                                 DateTime dateValue;
@@ -2002,11 +1922,10 @@ namespace ISOStd.Controllers
             }
             return View(AuditElemtlist.lstAudit.ToList().ToPagedList(page ?? 1, 1000));
         }
-         
+
         [AllowAnonymous]
         public ActionResult PerformAuditDetails()
         {
-
             try
             {
                 TUVSupplierModels objSup = new TUVSupplierModels();
@@ -2015,7 +1934,7 @@ namespace ISOStd.Controllers
                     string sid_paudit = Request.QueryString["id_paudit"];
 
                     string sSqlstmt = "select tt.id_audit_trans,SupplierName,Audit_criteria,tp.Audit_date,Auditors,tp.Auditee"
-                    +" from t_performaudit_tuv tp,t_audit_tuv t,t_audit_trans_tuv tt where t.id_audit=tt.id_audit"
+                    + " from t_performaudit_tuv tp,t_audit_tuv t,t_audit_trans_tuv tt where t.id_audit=tt.id_audit"
                     + " and  tp.id_audit_trans=tt.id_audit_trans and id_paudit='" + sid_paudit + "'";
 
                     DataSet dsAudit = objGlobaldata.Getdetails(sSqlstmt);
@@ -2050,7 +1969,6 @@ namespace ISOStd.Controllers
                         {
                             TUVPerformAuditModels objElements = new TUVPerformAuditModels
                             {
-
                                 id_element = obj.GetAuditQuestionNameById(dsAuditElement.Tables[0].Rows[i]["id_element"].ToString()),
                                 id_auditratings = obj.GetAuditRatingNameById(dsAuditElement.Tables[0].Rows[i]["id_auditratings"].ToString()),
                                 comment = dsAuditElement.Tables[0].Rows[i]["comment"].ToString(),
@@ -2063,7 +1981,6 @@ namespace ISOStd.Controllers
                         ViewBag.AuditElement = AuditElemtlist;
                         ViewBag.AuditRating = obj.GetAuditRating();
                         return View(objAudit);
-
                     }
                     else
                     {
@@ -2085,11 +2002,10 @@ namespace ISOStd.Controllers
 
             return RedirectToAction("AuditList");
         }
-         
+
         [AllowAnonymous]
         public ActionResult PerformAuditEdit()
         {
-
             try
             {
                 TUVSupplierModels objSup = new TUVSupplierModels();
@@ -2127,7 +2043,7 @@ namespace ISOStd.Controllers
                         }
 
                         sSqlstmt = "select id_checklist,id_paudit,id_element,id_auditratings,comment,evidence_upload,finding_category"
-                        +" from t_performauditchecklist_tuv where id_paudit='"+sid_paudit+"'";
+                        + " from t_performauditchecklist_tuv where id_paudit='" + sid_paudit + "'";
                         DataSet dsAuditElement = objGlobaldata.Getdetails(sSqlstmt);
 
                         TUVPerformAuditModelsList AuditElemtlist = new TUVPerformAuditModelsList();
@@ -2184,7 +2100,7 @@ namespace ISOStd.Controllers
 
             return RedirectToAction("AuditList");
         }
-         
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult PerformAuditEdit(TUVPerformAuditModels objAudit, FormCollection form)
@@ -2223,7 +2139,6 @@ namespace ISOStd.Controllers
                     i++;
                 }
 
-
                 if (objAudit.FunUpdateAuditPerformance(objAudit, AuditElemtlist))
                 {
                     TempData["Successdata"] = "Audit Performance details updated successfully";
@@ -2241,39 +2156,33 @@ namespace ISOStd.Controllers
 
             return RedirectToAction("PerformAuditList", new { id_audit_trans = objAudit.id_audit_trans });
         }
-         
+
         [HttpPost]
         public JsonResult AuditPerformanceDelete(FormCollection form)
         {
             try
             {
-              
-                    
-                        if (form["id_paudit"] != null && form["id_paudit"] != "")
-                        {
+                if (form["id_paudit"] != null && form["id_paudit"] != "")
+                {
+                    TUVPerformAuditModels Doc = new TUVPerformAuditModels();
+                    string sid_paudit = form["id_paudit"];
 
-                            TUVPerformAuditModels Doc = new TUVPerformAuditModels();
-                            string sid_paudit = form["id_paudit"];
-
-
-                            if (Doc.FunDeleteAuditPerformance(sid_paudit))
-                            {
-                                TempData["Successdata"] = "Deleted successfully";
-                                return Json("Success");
-                            }
-                            else
-                            {
-                                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                                return Json("Failed");
-                            }
-                        }
-                        else
-                        {
-                            TempData["alertdata"] = "Audit Id cannot be Null or empty";
-                            return Json("Failed");
-                        }
-                   
-                
+                    if (Doc.FunDeleteAuditPerformance(sid_paudit))
+                    {
+                        TempData["Successdata"] = "Deleted successfully";
+                        return Json("Success");
+                    }
+                    else
+                    {
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                        return Json("Failed");
+                    }
+                }
+                else
+                {
+                    TempData["alertdata"] = "Audit Id cannot be Null or empty";
+                    return Json("Failed");
+                }
             }
             catch (Exception ex)
             {
@@ -2282,7 +2191,7 @@ namespace ISOStd.Controllers
             }
             return Json("Failed");
         }
-         
+
         [HttpPost]
         public JsonResult UploadDocument()
         {
@@ -2300,8 +2209,5 @@ namespace ISOStd.Controllers
 
             return Json("Failed");
         }
-
     }
-
-
 }

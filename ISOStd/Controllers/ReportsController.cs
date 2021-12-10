@@ -1,5 +1,6 @@
-﻿using ISOStd.Models;
-using Microsoft.Reporting.WebForms;
+﻿using ClosedXML.Excel;
+using ISOStd.Filters;
+using ISOStd.Models;
 using Rotativa;
 using System;
 using System.Collections.Generic;
@@ -8,18 +9,13 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using PagedList;
-using PagedList.Mvc;
-using ClosedXML.Excel;
-using ISOStd.Filters;
-
 
 namespace ISOStd.Controllers
 {
     [PreventFromUrl]
     public class ReportsController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
+        private clsGlobal objGlobaldata = new clsGlobal();
 
         public ReportsController()
         {
@@ -29,13 +25,12 @@ namespace ISOStd.Controllers
 
         //
         // GET: /Reports/
-         
+
         public ActionResult Index()
         {
             return View();
         }
 
-         
         [AllowAnonymous]
         public ActionResult DashboardReports(string ReportType, string Years)
         {
@@ -100,7 +95,6 @@ namespace ISOStd.Controllers
             return View();
         }
 
-         
         [AllowAnonymous]
         public ActionResult MISReports(string ReportType, string Years)
         {
@@ -174,8 +168,6 @@ namespace ISOStd.Controllers
             return View();
         }
 
-      
-       
         //[HttpPost]
         //[AllowAnonymous]
         //[ValidateAntiForgeryToken]
@@ -205,10 +197,8 @@ namespace ISOStd.Controllers
         //    return View();
         //}
 
-         
         //public FileContentResult GenerateAndDisplayKPIReport(string format)
         //{
-
         //    Microsoft.Reporting.WebForms.LocalReport lr =
         //    new Microsoft.Reporting.WebForms.LocalReport();
 
@@ -218,7 +208,6 @@ namespace ISOStd.Controllers
         //    KPIModelsList objKPI = new KPIModelsList();
         //    objKPI.KPIMList = new List<KPIModels>();
 
-
         //    try
         //    {
         //        string sSqlstmt = "select * from kpiview";
@@ -226,7 +215,6 @@ namespace ISOStd.Controllers
 
         //        if (dsKPIModelsList.Tables.Count > 0 && dsKPIModelsList.Tables[0].Rows.Count > 0)
         //        {
-
         //            for (int i = 0; i < dsKPIModelsList.Tables[0].Rows.Count; i++)
         //            {
         //                try
@@ -262,9 +250,6 @@ namespace ISOStd.Controllers
 
         //    }
 
-
-
-
         //    ReportDataSource reportDataSource = new ReportDataSource();
         //    reportDataSource.Name = "KPIDataset";
 
@@ -275,8 +260,8 @@ namespace ISOStd.Controllers
         //    string mimeType;
         //    string encoding;
         //    string fileNameExtension;
-        //    //The DeviceInfo settings should be changed based on the reportType            
-        //    //http://msdn2.microsoft.com/en-us/library/ms155397.aspx            
+        //    //The DeviceInfo settings should be changed based on the reportType
+        //    //http://msdn2.microsoft.com/en-us/library/ms155397.aspx
         //    string deviceInfo = "<DeviceInfo>" +
         //        "  <OutputFormat>JPEG</OutputFormat>" +
         //        "  <PageWidth>8.5in</PageWidth>" +
@@ -289,9 +274,9 @@ namespace ISOStd.Controllers
         //    Warning[] warnings;
         //    string[] streams;
         //    byte[] renderedBytes;
-        //    //Render the report            
+        //    //Render the report
         //    renderedBytes = lr.Render(reportType, deviceInfo, out mimeType, out encoding, out fileNameExtension, out streams, out warnings);
-        //    //Response.AddHeader("content-disposition", "attachment; filename=NorthWindCustomers." + fileNameExtension); 
+        //    //Response.AddHeader("content-disposition", "attachment; filename=NorthWindCustomers." + fileNameExtension);
         //    if (format == null)
         //    {
         //        return File(renderedBytes, "image/jpeg");
@@ -307,49 +292,46 @@ namespace ISOStd.Controllers
         //}
         ////
         //GET: /Reports/InternalAuditNCReport
-         
+
         [AllowAnonymous]
         public ActionResult InternalAuditNCReport()
         {
             ViewBag.DeptList = objGlobaldata.GetDepartmentListbox();//GetDepartmentList();
-            
+
             return View();
- 
         }
 
         //
         // GET: /Reports/InternalAuditNCReport
-         
+
         [AllowAnonymous]
         public ActionResult report()
         {
             ViewBag.DeptList = objGlobaldata.GetDepartmentListbox();
             ViewBag.AuditType = objGlobaldata.GetAuditTypeList();
             return View();
-
         }
 
         // POST: /Reports/InternalAuditNCReport
-         
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult InternalAuditNCReport(FormCollection form)
         {
-            
             string sAuditnum = form["AuditNum"];
             string sDeptId = form["DeptId"];
             DataSet dsNCReport = objGlobaldata.GetAuditNCReportdetails(sAuditnum, sDeptId);
             dsNCReport.Tables[0].TableName = "AuditNCReport";
 
-            objGlobaldata.AddFunctionalLog("Step1", "ReportLog.txt");  
-         
+            objGlobaldata.AddFunctionalLog("Step1", "ReportLog.txt");
+
             ViewBag.DeptList = objGlobaldata.GetDepartmentListbox();
             return View();
         }
 
         //
         // GET: /Reports/AuditLogReport
-         
+
         [AllowAnonymous]
         public ActionResult AuditLogReport()
         {
@@ -371,14 +353,12 @@ namespace ISOStd.Controllers
                 DataSet dsReportList = objGlobaldata.Getdetails(sSqlstmt);
                 if (dsReportList.Tables.Count > 0 && dsReportList.Tables[0].Rows.Count > 0)
                 {
-                  
                     for (int i = 0; i < dsReportList.Tables[0].Rows.Count; i++)
                     {
                         try
                         {
                             ReportsModels objModel = new ReportsModels
                             {
-
                                 id_reports = dsReportList.Tables[0].Rows[i]["id_reports"].ToString(),
                                 category = dsReportList.Tables[0].Rows[i]["category"].ToString(),
                                 report_name = dsReportList.Tables[0].Rows[i]["report_name"].ToString(),
@@ -438,10 +418,9 @@ namespace ISOStd.Controllers
             }
             return Json("Failed");
         }
-               
 
         // POST: /Reports/AuditLogReport
-         
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult AuditLogReport(FormCollection form, string command)
@@ -458,7 +437,6 @@ namespace ISOStd.Controllers
             ViewBag.AuditNum = sAuditnum;
             ViewBag.DeptId = sDeptId;
 
-
             if (command != null && command.Equals("Generate"))
             {
                 return View(AuditLogPrintPdf(AuditNo));
@@ -471,11 +449,10 @@ namespace ISOStd.Controllers
 
                 if (dsAuditLogReport.Tables.Count > 0 && dsAuditLogReport.Tables[0].Rows.Count > 0)
                 {
-                 
                     dsAuditLogReport = objCompany.GetCompanyDetailsForReport(dsAuditLogReport);
                 }
-                ViewBag.dsAuditLogReport = dsAuditLogReport;// MasterListDocReport(); 
-              
+                ViewBag.dsAuditLogReport = dsAuditLogReport;// MasterListDocReport();
+
                 dsAuditLogReport = objGlobaldata.GetReportDetails(dsAuditLogReport, AuditNo, dsAuditLogReport.Tables[0].Rows[0]["preparer"].ToString(), "INTERNAL AUDIT LOG‎ REPORT");
 
                 ViewBag.CompanyInfo = dsAuditLogReport;
@@ -493,13 +470,11 @@ namespace ISOStd.Controllers
                     CustomSwitches = footer
                 };
             }
-
         }
-
 
         //
         // GET: /Reports/AuditLogPrintPdf
-         
+
         [AllowAnonymous]
         public ActionResult AuditLogPrintPdf(string AuditNum)
         {
@@ -511,14 +486,14 @@ namespace ISOStd.Controllers
                 CompanyModels objCompany = new CompanyModels();
                 dsAuditLogReport = objCompany.GetCompanyDetailsForReport(dsAuditLogReport);
             }
-            ViewBag.dsAuditLogReport = dsAuditLogReport;// MasterListDocReport();           
+            ViewBag.dsAuditLogReport = dsAuditLogReport;// MasterListDocReport();
 
             return View();
         }
 
         //
         // GET: /Reports/AuditSummaryReport
-         
+
         [AllowAnonymous]
         public ActionResult AuditSummaryReport()
         {
@@ -526,11 +501,10 @@ namespace ISOStd.Controllers
             ViewBag.DeptList = objGlobaldata.GetDepartmentListbox();//GetDepartmentList();
             ViewBag.AuditNumList = objGlobaldata.GetAuditNumList();
             return View();
-
         }
 
         // POST: /Reports/AuditSummaryReport
-         
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult AuditSummaryReport(FormCollection form, string command)
@@ -543,7 +517,6 @@ namespace ISOStd.Controllers
             ViewBag.AuditNumList = objGlobaldata.GetAuditNumList();
             string AuditNo = objGlobaldata.GetAuditNumById(sAuditnum);
             ViewBag.AuditNum = sAuditnum;
-
 
             if (command != null && command.Equals("Generate"))
             {
@@ -565,7 +538,6 @@ namespace ISOStd.Controllers
                 ViewBag.DeptList = objGlobaldata.GetDepartmentListbox();
                 ViewBag.AuditNum = sAuditnum;
 
-
                 foreach (var key in Request.Cookies.AllKeys)
                 {
                     cookieCollection.Add(key, Request.Cookies.Get(key).Value);
@@ -582,10 +554,9 @@ namespace ISOStd.Controllers
             return View();
         }
 
-
         //
         // GET: /Reports/MasterListDocReport
-         
+
         [AllowAnonymous]
         public ActionResult AuditSummaryPrintPdf(string AuditNum)
         {
@@ -605,25 +576,23 @@ namespace ISOStd.Controllers
             return View();
         }
 
-
         //
         // GET: /Reports/MgmtMasterListDocumentReport
-         
+
         [AllowAnonymous]
         public ActionResult MgmtMasterListDocumentReport()
         {
             ViewBag.SubMenutype = "MgmtMasterListDocumentReport";
             return View();
-        }        
+        }
 
         //
         // GET: /Reports/MgmtMasterListDocumentReport
-         
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult MgmtMasterListDocumentReport(FormCollection divPrint, FormCollection form)
         {
-            
             ViewBag.SubMenutype = "MgmtMasterListDocumentReport";
             Dictionary<string, string> cookieCollection = new Dictionary<string, string>();
             UserCredentials objUser = new UserCredentials();
@@ -652,15 +621,12 @@ namespace ISOStd.Controllers
                 //FileName = "MasterListDocument.pdf",
                 Cookies = cookieCollection,
                 CustomSwitches = footer
-            };           
+            };
         }
 
-         
         [AllowAnonymous]
         public ActionResult MasterDocumentReport(FormCollection form)
         {
-           
-
             ViewBag.SubMenutype = "MgmtMasterListDocumentReport";
             DataSet dsDocReport = objGlobaldata.GetMgmtMasterDocListReportdetails();
             int i = dsDocReport.Tables[0].Rows.Count;
@@ -680,17 +646,16 @@ namespace ISOStd.Controllers
 
         //
         // GET: /Reports/MasterListDocReport
-         
+
         [AllowAnonymous]
         public ActionResult MasterDocumentPrintPdf(FormCollection form)
         {
             MgmtDocumentsModels objMgmtDocuments = new MgmtDocumentsModels();
-            
+
             if (Request.Form["button2"] != null)
             {
                 ViewBag.SubMenutype = "MgmtMasterListDocumentReport";
                 Dictionary<string, string> cookieCollection = new Dictionary<string, string>();
-           
 
                 DataSet dsDocReport = objGlobaldata.GetMgmtMasterDocListReportdetails();
                 int i = dsDocReport.Tables[0].Rows.Count;
@@ -719,12 +684,12 @@ namespace ISOStd.Controllers
                     CustomSwitches = footer
                 };
             }
-                return View();
+            return View();
         }
-       
+
         //
         // GET: /Reports/ObjectivesReport
-         
+
         [AllowAnonymous]
         public ActionResult ObjectivesReport()
         {
@@ -733,9 +698,8 @@ namespace ISOStd.Controllers
             ViewBag.Approvestatus = objGlobaldata.GetConstantValueKeyValuePair("DocStatus");
             ViewBag.SubMenutype = "ObjectivesReport";
             return View();
-
         }
-       
+
         //
         // GET: /Reports/ObjectivesPrintPdf
         [AllowAnonymous]
@@ -762,10 +726,9 @@ namespace ISOStd.Controllers
             return View();
         }
 
-      
         //
         // GET: /Reports/MgmtMasterListDocumentReport
-         
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult ObjectivesReport(FormCollection form, string command, string Approvestatus, string Dept, string Freq_of_Eval)
@@ -799,12 +762,10 @@ namespace ISOStd.Controllers
             if (command != null && command.Equals("Generate"))
             {
                 return View(ObjectivesPrintPdf(fromdateValue.ToString("yyyy-MM-dd"), toDateValue.ToString("yyyy-MM-dd")));
-                
             }
             else
             {
                 Dictionary<string, string> cookieCollection = new Dictionary<string, string>();
-
 
                 DataSet dsObjectivesReport = objGlobaldata.GetObjectivesReportdetails(fromdateValue.ToString("yyyy/MM/dd"), toDateValue.ToString("yyyy/MM/dd"));
 
@@ -822,7 +783,6 @@ namespace ISOStd.Controllers
                 ViewBag.Freq_of_Eval = objGlobaldata.GetConstantValue("Freq_of_Eval");
                 ViewBag.Approvestatus = objGlobaldata.GetConstantValueKeyValuePair("DocStatus");
 
-
                 foreach (var key in Request.Cookies.AllKeys)
                 {
                     cookieCollection.Add(key, Request.Cookies.Get(key).Value);
@@ -835,7 +795,6 @@ namespace ISOStd.Controllers
                     Cookies = cookieCollection,
                     CustomSwitches = footer,
                     PageSize = Rotativa.Options.Size.A3
-                    
                 };
             }
         }
@@ -845,6 +804,7 @@ namespace ISOStd.Controllers
         {
             return View();
         }
+
         [AllowAnonymous]
         public ActionResult KPIPrintPdf(string dtFromDate, string dtToDate)
         {
@@ -861,11 +821,9 @@ namespace ISOStd.Controllers
             ViewBag.toDateValue = Convert.ToDateTime(dtToDate).ToString("yyyy-MM-dd");
             ViewBag.dsKPIList = dsKPIReport;// MasterListDocReport();
 
-           
             //ViewBag.lstDocLevels = dsObjectivesReport.Tables[0].AsEnumerable().Select(x => x["doclevels"].ToString()).Distinct(StringComparer.CurrentCultureIgnoreCase).ToList();
             return View();
         }
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -881,7 +839,7 @@ namespace ISOStd.Controllers
             if (DateTime.TryParse(form["ToDate"], out toDateValue) == true)
             {
             }
-           
+
             if (command != null && command.Equals("Generate"))
             {
                 return View(KPIPrintPdf(fromdateValue.ToString("yyyy-MM-dd"), toDateValue.ToString("yyyy-MM-dd")));
@@ -889,7 +847,6 @@ namespace ISOStd.Controllers
             else
             {
                 Dictionary<string, string> cookieCollection = new Dictionary<string, string>();
-
 
                 DataSet dsKPIReport = objGlobaldata.GetKPIReportdetails(fromdateValue.ToString("yyyy/MM/dd"), toDateValue.ToString("yyyy/MM/dd"));
 
@@ -915,12 +872,9 @@ namespace ISOStd.Controllers
                     Cookies = cookieCollection,
                     CustomSwitches = footer,
                     PageSize = Rotativa.Options.Size.A3
-
                 };
             }
         }
-
-       
 
         ////
         //// GET: /Reports/ObjectivesReport
@@ -949,7 +903,7 @@ namespace ISOStd.Controllers
         //    {
         //        fromDate = fromdateValue.Year + "/" + fromdateValue.Month + "/01";
         //        toDate = fromdateValue.Year + "/" + fromdateValue.Month + "/31";
-        //    }          
+        //    }
 
         //    if (command != null && command.Equals("Generate"))
         //    {
@@ -980,7 +934,7 @@ namespace ISOStd.Controllers
 
         //    string sSqlstmt = "select TimeSheet_Id, CompEmpId, temp.FirstName, temp.LastName,Designation,  CompanyName , MonthOf, FirstHalf_InTime, FirstHalf_OutTime,"
         //        + " SecondHalf_InTime, SecondHalf_OutTime, OverTime, Remarks from t_emp_timesheet as tsheet, t_employee as temp, t_cust_supp_info as tcust"
-        //        + " where monthof between '" + FromDate + "' and '" + toDate + "' and tsheet.empid='" + EmpId 
+        //        + " where monthof between '" + FromDate + "' and '" + toDate + "' and tsheet.empid='" + EmpId
         //        + "' and tsheet.EmpID=temp.EmpID and tsheet.CustID=tcust.CustID;";
 
         //    DataSet dsTimeSheetReport = objGlobaldata.Getdetails(sSqlstmt);
@@ -996,7 +950,7 @@ namespace ISOStd.Controllers
         //}
 
         // GET: /Reports/DisplayDocument
-         
+
         public FileResult DisplayDocument(string Document)
         {
             if (objGlobaldata.GetCurrentUserSession() != null)
@@ -1015,7 +969,6 @@ namespace ISOStd.Controllers
                         {
                             return File(Server.MapPath("~/Views/Error/FileNotFound.html"), "text/html");
                         }
-                      
                     }
                     return File(Server.MapPath("~/Views/Error/FileNotFound.html"), "text/html");
                 }
@@ -1028,7 +981,6 @@ namespace ISOStd.Controllers
             return File(Server.MapPath("~/Views/Error/AccessDenied.html"), "text/html");
         }
 
-         
         public ActionResult SupplierReport()
         {
             ViewBag.Menutype = "Suppliers";
@@ -1037,7 +989,6 @@ namespace ISOStd.Controllers
             {
                 DataSet dsSupplier = objGlobaldata.GetSupplierReport();
                 ViewBag.SupplierList = dsSupplier;
-            
             }
             catch (Exception ex)
             {
@@ -1054,7 +1005,6 @@ namespace ISOStd.Controllers
             try
             {
                 ViewBag.years = objGlobaldata.GetDropdownList("Years");
-
             }
             catch (Exception ex)
             {
@@ -1063,6 +1013,7 @@ namespace ISOStd.Controllers
             }
             return View();
         }
+
         [HttpGet]
         [AllowAnonymous]
         public FileResult MRMExport(FormCollection form, string Years)
@@ -1081,13 +1032,12 @@ namespace ISOStd.Controllers
                 string sql1 = "select CompanyName,Logo from t_companyinfo";
                 DataSet dsData1 = objGlobaldata.Getdetails(sql1);
 
-                for (int k=0;k < dsMRMData.Tables.Count;k++)
+                for (int k = 0; k < dsMRMData.Tables.Count; k++)
                 {
-                   
                     if (dsMRMData.Tables[k].Rows.Count > 0)
                     {
                         IXLWorksheet ws = wb.Worksheets.Add("Agenda" + (k + 1));
-                        var range = ws.Range(5, 1, dsMRMData.Tables[k].Rows.Count+5, dsMRMData.Tables[k].Columns.Count-1);
+                        var range = ws.Range(5, 1, dsMRMData.Tables[k].Rows.Count + 5, dsMRMData.Tables[k].Columns.Count - 1);
                         var table = range.CreateTable();
                         string img = Server.MapPath(dsData1.Tables[0].Rows[0][1].ToString());
                         ws.AddPicture(Url.Content(img)).MoveTo(ws.Cell(1, 1)).Scale(.5); // optional: resize picture
@@ -1101,7 +1051,7 @@ namespace ISOStd.Controllers
                         ws.Cell(1, 2).Style.Font.FontColor = XLColor.Blue;
 
                         ws.Cell(3, 1).Value = dsMRMData.Tables[k].Rows[0][0].ToString();
-                      
+
                         ws.Cell(3, 1).Style.Font.FontSize = 15;
                         ws.Cell(3, 1).Style.Font.SetBold();
                         ws.Cell(3, 1).Style.Font.FontColor = XLColor.Blue;
@@ -1116,18 +1066,15 @@ namespace ISOStd.Controllers
                             {
                                 table.Cell(i + 2, j).Value = dsMRMData.Tables[k].Rows[i][j].ToString();
                             }
-
                         }
                         // apply style
                         table.Theme = XLTableTheme.TableStyleLight12;
                     }
                 }
-               
 
                 wb.SaveAs(stream);
                 stream.Flush();
-
-        }
+            }
             catch (Exception ex)
             {
                 objGlobaldata.AddFunctionalLog("Exception in MRMReport: " + ex.ToString());
@@ -1140,7 +1087,6 @@ namespace ISOStd.Controllers
                 FileDownloadName = "MRMExport.xlsx"
             };
         }
-
 
         [HttpGet]
         [AllowAnonymous]
@@ -1158,13 +1104,14 @@ namespace ISOStd.Controllers
             }
             return View();
         }
+
         [HttpGet]
         [AllowAnonymous]
         public FileResult HSEReportExport(FormCollection form, string Years, string months)
         {
             IXLWorkbook wb = new XLWorkbook();
             var stream = new MemoryStream();
-           
+
             try
             {
                 ViewBag.years = objGlobaldata.GetDropdownList("Years");
@@ -1185,13 +1132,11 @@ namespace ISOStd.Controllers
                 //var table = range.CreateTable();
                 //table.Theme = XLTableTheme.None;
                 //table.ShowHeaderRow = false;
-                table.Style.Border.InsideBorder= XLBorderStyleValues.Thin;
+                table.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
                 table.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
                 string img = Server.MapPath(dsData.Tables[0].Rows[0][1].ToString());
-                ws.AddPicture(Url.Content(img)).MoveTo(table.Cell(1, 1),5,5).WithSize(150, 100); // optional: resize picture
+                ws.AddPicture(Url.Content(img)).MoveTo(table.Cell(1, 1), 5, 5).WithSize(150, 100); // optional: resize picture
                 table.Cell(1, 1).Style.Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
-
-            
 
                 ws.Column("E").Width = 25;
                 ws.Column("F").Width = 20;
@@ -1206,7 +1151,6 @@ namespace ISOStd.Controllers
                 table.Cell(1, 2).Style.Font.FontSize = 15;
                 table.Cell(1, 2).Style.Font.SetBold();
                 table.Cell(1, 2).Style.Fill.BackgroundColor = XLColor.SkyBlue;
-               
 
                 table.Range("E3:K3").Merge();
                 table.Cell(2, 1).Value = "HSE MONTHLY PERFORMANCE REPORT";
@@ -1236,7 +1180,6 @@ namespace ISOStd.Controllers
                 table.Range("F5:K5").Merge();
                 table.Range("F6:K6").Merge();
                 table.Range("F7:K7").Merge();
-
 
                 table.Range("E8:K8").Merge();
                 table.Range("E8:K8").Style.Fill.BackgroundColor = XLColor.PeachOrange;
@@ -1286,7 +1229,6 @@ namespace ISOStd.Controllers
                 table.Cell(14, 6).Style.Alignment.WrapText = true;
                 table.Cell(14, 7).Style.Alignment.WrapText = true;
 
-
                 table.Cell(14, 1).Style.Fill.BackgroundColor = XLColor.SkyBlue;
                 table.Cell(14, 2).Style.Fill.BackgroundColor = XLColor.SkyBlue;
                 table.Cell(14, 3).Style.Fill.BackgroundColor = XLColor.SkyBlue;
@@ -1295,11 +1237,11 @@ namespace ISOStd.Controllers
                 table.Cell(14, 6).Style.Fill.BackgroundColor = XLColor.SkyBlue;
                 table.Cell(14, 7).Style.Fill.BackgroundColor = XLColor.SkyBlue;
 
-                DataSet dsHSEData = objGlobaldata.GetHSEMonthlyData(objGlobaldata.GetDropdownitemById(Years),months);
+                DataSet dsHSEData = objGlobaldata.GetHSEMonthlyData(objGlobaldata.GetDropdownitemById(Years), months);
 
-                if (dsHSEData.Tables.Count > 0 && dsHSEData.Tables[0].Rows.Count >0)
+                if (dsHSEData.Tables.Count > 0 && dsHSEData.Tables[0].Rows.Count > 0)
                 {
-                    for (int i = 0,k=15; i < dsHSEData.Tables[0].Rows.Count && dsHSEData.Tables[0].Rows[i]["ind_type"].ToString() == "LAGGING INDICATORS"; i++,k++)
+                    for (int i = 0, k = 15; i < dsHSEData.Tables[0].Rows.Count && dsHSEData.Tables[0].Rows[i]["ind_type"].ToString() == "LAGGING INDICATORS"; i++, k++)
                     {
                         table.Cell(k, 1).Value = dsHSEData.Tables[0].Rows[i]["ind_desc"].ToString();
                         table.Cell(k, 2).Value = dsHSEData.Tables[0].Rows[i]["mth_total"].ToString();
@@ -1308,7 +1250,7 @@ namespace ISOStd.Controllers
                 }
                 if (dsHSEData.Tables.Count > 0 && dsHSEData.Tables[0].Rows.Count > 0)
                 {
-                    for (int i = 0, k = 15; i < dsHSEData.Tables[0].Rows.Count ; i++)
+                    for (int i = 0, k = 15; i < dsHSEData.Tables[0].Rows.Count; i++)
                     {
                         if (dsHSEData.Tables[0].Rows[i]["ind_type"].ToString() == "LEADING INDICATORS")
                         {
@@ -1324,7 +1266,6 @@ namespace ISOStd.Controllers
                 table.Range("E25:K25").Style.Fill.BackgroundColor = XLColor.YellowMunsell;
                 table.Cell(24, 1).Value = "EXTERNAL INSPECTIONS / AUDITS ";
                 table.Cell(24, 1).Style.Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
-
 
                 table.Range("E26:H26").Merge();
                 table.Range("E26:H26").Style.Fill.BackgroundColor = XLColor.SkyBlue;
@@ -1349,7 +1290,6 @@ namespace ISOStd.Controllers
 
                 wb.SaveAs(stream);
                 stream.Flush();
-                
             }
             catch (Exception ex)
             {

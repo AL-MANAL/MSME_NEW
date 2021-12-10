@@ -1,20 +1,12 @@
-﻿ using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Data.Entity;
-using System.Globalization;
-using System.Data;
-using System.Web.Mvc;
 
 namespace ISOStd.Models
 {
     public class AccessPrivilegesModels
     {
-
-        clsGlobal objGlobalData = new clsGlobal();
+        private clsGlobal objGlobalData = new clsGlobal();
 
         [Display(Name = "AuditNum")]
         public string id_AccessPrivileges { get; set; }
@@ -72,11 +64,11 @@ namespace ISOStd.Models
 
         [Display(Name = "KnowledgeBase")]
         public string KnowledgBase { get; set; }
-        
+
         [Display(Name = "Leave")]
         public string LeaveApply { get; set; }
 
-        internal bool FunUpdateAccessPrivileges(string selected,int status)
+        internal bool FunUpdateAccessPrivileges(string selected, int status)
         {
             try
             {
@@ -113,5 +105,4 @@ namespace ISOStd.Models
     {
         public List<AccessPrivilegesModels> AccessPrivilegesList { get; set; }
     }
-
 }

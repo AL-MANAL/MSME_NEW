@@ -13,7 +13,7 @@ namespace ISOStd.Controllers
     [PreventFromUrl]
     public class DocumentCreateRequestController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
+        private clsGlobal objGlobaldata = new clsGlobal();
 
         public DocumentCreateRequestController()
         {
@@ -28,22 +28,21 @@ namespace ISOStd.Controllers
             try
             {
                 ViewBag.SubMenutype = "CreateRequest";
-                
+
                 objRequest.division = objGlobaldata.GetCurrentUserSession().division;
                 objRequest.department = objGlobaldata.GetCurrentUserSession().DeptID;
                 objRequest.location = objGlobaldata.GetCurrentUserSession().Work_Location;
 
                 ViewBag.Branch = objGlobaldata.GetCompanyBranchListbox();
-               // ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
-               // ViewBag.DeptHeadList = objGlobaldata.GetDeptHeadList();
-               // ViewBag.YesNo = objGlobaldata.GetConstantValue("YesNo");
+                // ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
+                // ViewBag.DeptHeadList = objGlobaldata.GetDeptHeadList();
+                // ViewBag.YesNo = objGlobaldata.GetConstantValue("YesNo");
                 ViewBag.Branch = objGlobaldata.GetCompanyBranchListbox();
                 ViewBag.Department = objGlobaldata.GetDepartmentList1(objRequest.division);
                 ViewBag.Location = objGlobaldata.GetLocationbyMultiDivision(objRequest.division);
 
                 ViewBag.IMSGroup = objGlobaldata.GetIMSGroupRole();
-               // ViewBag.IMSGroup = objGlobaldata.GetGRolelikeList(objRequest.division, objRequest.department, objRequest.location, "%IMS% Rep%");
-
+                // ViewBag.IMSGroup = objGlobaldata.GetGRolelikeList(objRequest.division, objRequest.department, objRequest.location, "%IMS% Rep%");
             }
             catch (Exception ex)
             {
@@ -61,14 +60,14 @@ namespace ISOStd.Controllers
         {
             try
             {
-                //objRequest.division = form["division"];                
+                //objRequest.division = form["division"];
 
                 DateTime dateValue;
                 if (DateTime.TryParse(form["date_request"], out dateValue) == true)
                 {
                     objRequest.date_request = dateValue;
                 }
-               
+
                 for (int i = 0; i < Convert.ToInt16(form["itemcount"]); i++)
                 {
                     if (form["empno " + i] != "" && form["empno " + i] != null)
@@ -152,7 +151,7 @@ namespace ISOStd.Controllers
                     sSearchtext = sSearchtext + " and find_in_set('" + sBranch_name + "', division)";
                 }
                 sSqlstmt = sSqlstmt + sSearchtext + " order by id_doc_request desc";
-                
+
                 DataSet dsCreateList = objGlobaldata.Getdetails(sSqlstmt);
                 if (dsCreateList.Tables.Count > 0 && dsCreateList.Tables[0].Rows.Count > 0)
                 {
@@ -180,7 +179,7 @@ namespace ISOStd.Controllers
                             {
                                 objPartiesModels.date_request = dtDocDate;
                             }
-                           
+
                             objPortalList.RequestList.Add(objPartiesModels);
                         }
                         catch (Exception ex)
@@ -198,7 +197,7 @@ namespace ISOStd.Controllers
             }
             return View(objPortalList.RequestList.ToList());
         }
-        
+
         [AllowAnonymous]
         public ActionResult DocCreateRequestEdit()
         {
@@ -222,27 +221,27 @@ namespace ISOStd.Controllers
                     if (dsCreateList.Tables.Count > 0 && dsCreateList.Tables[0].Rows.Count > 0)
                     {
                         try
+                        {
+                            objRequest = new DocumentCreateRequestModels
                             {
-                                 objRequest = new DocumentCreateRequestModels
-                                {
-                                    id_doc_request = dsCreateList.Tables[0].Rows[0]["id_doc_request"].ToString(),
-                                    dcr_no = dsCreateList.Tables[0].Rows[0]["dcr_no"].ToString(),
-                                    division = (dsCreateList.Tables[0].Rows[0]["division"].ToString()),
-                                    department =(dsCreateList.Tables[0].Rows[0]["department"].ToString()),
-                                     location = (dsCreateList.Tables[0].Rows[0]["location"].ToString()),
-                                     reason = (dsCreateList.Tables[0].Rows[0]["reason"].ToString()),
-                                    upload = dsCreateList.Tables[0].Rows[0]["upload"].ToString(),
-                                    checkedby =/* objGlobaldata.GetMultiHrEmpNameById*/(dsCreateList.Tables[0].Rows[0]["checkedby"].ToString()),
-                                    doc_status = dsCreateList.Tables[0].Rows[0]["doc_status"].ToString(),
-                                    doc_statusId = dsCreateList.Tables[0].Rows[0]["doc_status"].ToString(),
-                                };
+                                id_doc_request = dsCreateList.Tables[0].Rows[0]["id_doc_request"].ToString(),
+                                dcr_no = dsCreateList.Tables[0].Rows[0]["dcr_no"].ToString(),
+                                division = (dsCreateList.Tables[0].Rows[0]["division"].ToString()),
+                                department = (dsCreateList.Tables[0].Rows[0]["department"].ToString()),
+                                location = (dsCreateList.Tables[0].Rows[0]["location"].ToString()),
+                                reason = (dsCreateList.Tables[0].Rows[0]["reason"].ToString()),
+                                upload = dsCreateList.Tables[0].Rows[0]["upload"].ToString(),
+                                checkedby =/* objGlobaldata.GetMultiHrEmpNameById*/(dsCreateList.Tables[0].Rows[0]["checkedby"].ToString()),
+                                doc_status = dsCreateList.Tables[0].Rows[0]["doc_status"].ToString(),
+                                doc_statusId = dsCreateList.Tables[0].Rows[0]["doc_status"].ToString(),
+                            };
 
-                                DateTime dtDocDate;
-                                if (dsCreateList.Tables[0].Rows[0]["date_request"].ToString() != ""
-                                   && DateTime.TryParse(dsCreateList.Tables[0].Rows[0]["date_request"].ToString(), out dtDocDate))
-                                {
-                                    objRequest.date_request = dtDocDate;
-                                }
+                            DateTime dtDocDate;
+                            if (dsCreateList.Tables[0].Rows[0]["date_request"].ToString() != ""
+                               && DateTime.TryParse(dsCreateList.Tables[0].Rows[0]["date_request"].ToString(), out dtDocDate))
+                            {
+                                objRequest.date_request = dtDocDate;
+                            }
                             ViewBag.Branch = objGlobaldata.GetCompanyBranchListbox();
                             ViewBag.Department = objGlobaldata.GetDepartmentList1(dsCreateList.Tables[0].Rows[0]["division"].ToString());
                             ViewBag.location = objGlobaldata.GetLocationbyMultiDivision(dsCreateList.Tables[0].Rows[0]["division"].ToString());
@@ -250,13 +249,13 @@ namespace ISOStd.Controllers
                             ViewBag.IMSGroup = objGlobaldata.GetIMSGroupRole();
 
                             objPortalList.RequestList.Add(objRequest);
-                            }
-                            catch (Exception ex)
-                            {
-                                objGlobaldata.AddFunctionalLog("Exception in DocCreateRequestEdit: " + ex.ToString());
-                                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                            }
-                     }
+                        }
+                        catch (Exception ex)
+                        {
+                            objGlobaldata.AddFunctionalLog("Exception in DocCreateRequestEdit: " + ex.ToString());
+                            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                        }
+                    }
 
                     return View(objRequest);
                 }
@@ -398,7 +397,7 @@ namespace ISOStd.Controllers
                                 //doc_level = objGlobaldata.GetDocLevelNameByID(dsCreateList.Tables[0].Rows[0]["doc_level"].ToString()),
                                 //doc_title = dsCreateList.Tables[0].Rows[0]["doc_title"].ToString(),
                                 serial_no = dsCreateList.Tables[0].Rows[0]["serial_no"].ToString(),
-                                new_doc_ref = dsCreateList.Tables[0].Rows[0]["new_doc_ref"].ToString(),             
+                                new_doc_ref = dsCreateList.Tables[0].Rows[0]["new_doc_ref"].ToString(),
                             };
 
                             DateTime dtDocDate;
@@ -417,7 +416,7 @@ namespace ISOStd.Controllers
                             {
                                 objRequest.controller_approve_date = dtDocDate;
                             }
-                          
+
                             objPortalList.RequestList.Add(objRequest);
                         }
                         catch (Exception ex)
@@ -443,11 +442,11 @@ namespace ISOStd.Controllers
             ViewBag.SubMenutype = "CreateRequest";
             DocumentCreateRequestModels objRequest = new DocumentCreateRequestModels();
 
-          if (id_doc_request != null && id_doc_request != "")
-           { 
-             try
-              {
-                   // ViewBag.CheckList = objGlobaldata.GetDCRChecklist();
+            if (id_doc_request != null && id_doc_request != "")
+            {
+                try
+                {
+                    // ViewBag.CheckList = objGlobaldata.GetDCRChecklist();
                     ViewBag.Branch = objGlobaldata.GetCompanyBranchListbox();
                     // ViewBag.DocLevel = objGlobaldata.GetDocLevel();
                     ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbyDesignation("%As%manager%HSE%");
@@ -457,56 +456,56 @@ namespace ISOStd.Controllers
                        "case when doc_status = '0' then 'Pending' when doc_status = '1' then 'Checked by Department Head' when doc_status = '2' then 'Approved' when doc_status = '3' then 'Rejected' end" +
                        " as doc_status,checklist_id,agreed,comments,doc_control from t_document_create_request where Active=1 and id_doc_request= '" + id_doc_request + "'order by id_doc_request desc";
 
-                DataSet dsCreateList = objGlobaldata.Getdetails(sSqlstmt);
-                if (dsCreateList.Tables.Count > 0 && dsCreateList.Tables[0].Rows.Count > 0)
-                {
-                    try
+                    DataSet dsCreateList = objGlobaldata.Getdetails(sSqlstmt);
+                    if (dsCreateList.Tables.Count > 0 && dsCreateList.Tables[0].Rows.Count > 0)
                     {
-                        objRequest = new DocumentCreateRequestModels
+                        try
                         {
-                            id_doc_request = dsCreateList.Tables[0].Rows[0]["id_doc_request"].ToString(),
-                            dcr_no = dsCreateList.Tables[0].Rows[0]["dcr_no"].ToString(),
-                            division = objGlobaldata.GetMultiCompanyBranchNameById(dsCreateList.Tables[0].Rows[0]["division"].ToString()),
-                            department = objGlobaldata.GetMultiDeptNameById(dsCreateList.Tables[0].Rows[0]["department"].ToString()),
-                            divisionId = (dsCreateList.Tables[0].Rows[0]["division"].ToString()),
-                            departmentId = (dsCreateList.Tables[0].Rows[0]["department"].ToString()),
-                            location =objGlobaldata.GetDivisionLocationById(dsCreateList.Tables[0].Rows[0]["location"].ToString()),
-                            reason = (dsCreateList.Tables[0].Rows[0]["reason"].ToString()),
-                            upload = dsCreateList.Tables[0].Rows[0]["upload"].ToString(),
-                            checkedby = objGlobaldata.GetMultiHrEmpNameById(dsCreateList.Tables[0].Rows[0]["checkedby"].ToString()),
-                            doc_status = dsCreateList.Tables[0].Rows[0]["doc_status"].ToString(),
-                            doc_statusId = dsCreateList.Tables[0].Rows[0]["doc_statusId"].ToString(),
-                            checklist_id = objGlobaldata.GetDCRChecklistById(dsCreateList.Tables[0].Rows[0]["checklist_id"].ToString()),
-                            agreed = dsCreateList.Tables[0].Rows[0]["agreed"].ToString(),
-                            comments = dsCreateList.Tables[0].Rows[0]["comments"].ToString(),
-                            doc_control = dsCreateList.Tables[0].Rows[0]["doc_control"].ToString(),
-                            doc_controlName = objGlobaldata.GetMultiHrEmpNameById(dsCreateList.Tables[0].Rows[0]["doc_control"].ToString()),
-                        };
+                            objRequest = new DocumentCreateRequestModels
+                            {
+                                id_doc_request = dsCreateList.Tables[0].Rows[0]["id_doc_request"].ToString(),
+                                dcr_no = dsCreateList.Tables[0].Rows[0]["dcr_no"].ToString(),
+                                division = objGlobaldata.GetMultiCompanyBranchNameById(dsCreateList.Tables[0].Rows[0]["division"].ToString()),
+                                department = objGlobaldata.GetMultiDeptNameById(dsCreateList.Tables[0].Rows[0]["department"].ToString()),
+                                divisionId = (dsCreateList.Tables[0].Rows[0]["division"].ToString()),
+                                departmentId = (dsCreateList.Tables[0].Rows[0]["department"].ToString()),
+                                location = objGlobaldata.GetDivisionLocationById(dsCreateList.Tables[0].Rows[0]["location"].ToString()),
+                                reason = (dsCreateList.Tables[0].Rows[0]["reason"].ToString()),
+                                upload = dsCreateList.Tables[0].Rows[0]["upload"].ToString(),
+                                checkedby = objGlobaldata.GetMultiHrEmpNameById(dsCreateList.Tables[0].Rows[0]["checkedby"].ToString()),
+                                doc_status = dsCreateList.Tables[0].Rows[0]["doc_status"].ToString(),
+                                doc_statusId = dsCreateList.Tables[0].Rows[0]["doc_statusId"].ToString(),
+                                checklist_id = objGlobaldata.GetDCRChecklistById(dsCreateList.Tables[0].Rows[0]["checklist_id"].ToString()),
+                                agreed = dsCreateList.Tables[0].Rows[0]["agreed"].ToString(),
+                                comments = dsCreateList.Tables[0].Rows[0]["comments"].ToString(),
+                                doc_control = dsCreateList.Tables[0].Rows[0]["doc_control"].ToString(),
+                                doc_controlName = objGlobaldata.GetMultiHrEmpNameById(dsCreateList.Tables[0].Rows[0]["doc_control"].ToString()),
+                            };
 
-                        DateTime dtDocDate;
-                        if (dsCreateList.Tables[0].Rows[0]["date_request"].ToString() != ""
-                           && DateTime.TryParse(dsCreateList.Tables[0].Rows[0]["date_request"].ToString(), out dtDocDate))
+                            DateTime dtDocDate;
+                            if (dsCreateList.Tables[0].Rows[0]["date_request"].ToString() != ""
+                               && DateTime.TryParse(dsCreateList.Tables[0].Rows[0]["date_request"].ToString(), out dtDocDate))
+                            {
+                                objRequest.date_request = dtDocDate;
+                            }
+                            ViewBag.Department = objGlobaldata.GetDepartmentList1(dsCreateList.Tables[0].Rows[0]["division"].ToString());
+                            ViewBag.Location = objGlobaldata.GetDivisionLocationList(dsCreateList.Tables[0].Rows[0]["location"].ToString());
+                            //ViewBag.EmpList = objGlobaldata.GetGEmpListBymulitBDL(dsCreateList.Tables[0].Rows[0]["division"].ToString(), dsCreateList.Tables[0].Rows[0]["department"].ToString(), dsCreateList.Tables[0].Rows[0]["location"].ToString());
+                        }
+                        catch (Exception ex)
                         {
-                           objRequest.date_request = dtDocDate;
+                            objGlobaldata.AddFunctionalLog("Exception in DocCreateRequestList: " + ex.ToString());
+                            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                         }
-                           ViewBag.Department = objGlobaldata.GetDepartmentList1(dsCreateList.Tables[0].Rows[0]["division"].ToString());
-                           ViewBag.Location = objGlobaldata.GetDivisionLocationList(dsCreateList.Tables[0].Rows[0]["location"].ToString());
-                           //ViewBag.EmpList = objGlobaldata.GetGEmpListBymulitBDL(dsCreateList.Tables[0].Rows[0]["division"].ToString(), dsCreateList.Tables[0].Rows[0]["department"].ToString(), dsCreateList.Tables[0].Rows[0]["location"].ToString());
-                        }
-                    catch (Exception ex)
-                    {
-                        objGlobaldata.AddFunctionalLog("Exception in DocCreateRequestList: " + ex.ToString());
-                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                        return View(objRequest);
                     }
-                    return View(objRequest);
+                }
+                catch (Exception ex)
+                {
+                    objGlobaldata.AddFunctionalLog("Exception in DocCreateRequestList: " + ex.ToString());
+                    TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 }
             }
-            catch (Exception ex)
-            {
-                objGlobaldata.AddFunctionalLog("Exception in DocCreateRequestList: " + ex.ToString());
-                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-            }
-           }
             return RedirectToAction("ListPendingForApproval", "Dashboard");
         }
 
@@ -565,7 +564,7 @@ namespace ISOStd.Controllers
                     {
                         stat = "Rejected";
                     }
-                    TempData["Successdata"] = "Document Create Request " +stat+" successfully";
+                    TempData["Successdata"] = "Document Create Request " + stat + " successfully";
                 }
                 else
                 {
@@ -589,7 +588,7 @@ namespace ISOStd.Controllers
                 string stat = "";
                 if (objRequest.FunAddDCRControllerApprove(objRequest))
                 {
-                    if(objRequest.doc_status == "2")
+                    if (objRequest.doc_status == "2")
                     {
                         stat = "Approved";
                     }
@@ -597,7 +596,7 @@ namespace ISOStd.Controllers
                     {
                         stat = "Rejected";
                     }
-                    TempData["Successdata"] = "Document Create Request "+stat+" successfully";
+                    TempData["Successdata"] = "Document Create Request " + stat + " successfully";
                 }
                 else
                 {
@@ -611,7 +610,6 @@ namespace ISOStd.Controllers
             }
             return RedirectToAction("Index", "Home");
         }
-
 
         //From Layout
         public JsonResult DocCreateRequestApproveNoty()
@@ -633,7 +631,6 @@ namespace ISOStd.Controllers
 
         public JsonResult FunGetEmpDetails(string semp_no)
         {
-
             NCModels objModels = new NCModels();
             try
             {
@@ -645,12 +642,12 @@ namespace ISOStd.Controllers
                     {
                         emp_id = (dsList.Tables[0].Rows[0]["emp_id"].ToString()),
                         empname = objGlobaldata.GetEmpHrNameById(dsList.Tables[0].Rows[0]["emp_no"].ToString()),
-                       // division = objGlobaldata.GetCompanyBranchNameById(dsList.Tables[0].Rows[0]["division"].ToString()),
-                       // location = objGlobaldata.GetDivisionLocationById(dsList.Tables[0].Rows[0]["Emp_work_location"].ToString()),
+                        // division = objGlobaldata.GetCompanyBranchNameById(dsList.Tables[0].Rows[0]["division"].ToString()),
+                        // location = objGlobaldata.GetDivisionLocationById(dsList.Tables[0].Rows[0]["Emp_work_location"].ToString()),
                         department = objGlobaldata.GetDeptNameById(dsList.Tables[0].Rows[0]["Dept_Id"].ToString()),
                         EmailId = (dsList.Tables[0].Rows[0]["EmailId"].ToString()),
                         MobileNo = (dsList.Tables[0].Rows[0]["MobileNo"].ToString()),
-                      };
+                    };
                 }
                 return Json(objModels);
             }
@@ -669,7 +666,7 @@ namespace ISOStd.Controllers
             ViewBag.SubMenutype = "chklist";
             string sid_doc_request = Request.QueryString["id_doc_request"];
 
-            DCRChecklistModels ObjCheck = new DCRChecklistModels();      
+            DCRChecklistModels ObjCheck = new DCRChecklistModels();
             try
             {
                 ViewBag.DCRQuestions = ObjCheck.GetDCRQuestionList();
@@ -677,20 +674,18 @@ namespace ISOStd.Controllers
                 ViewBag.Revision = objGlobaldata.GetDropdownList("Revision Type");
                 ViewBag.YesNo = objGlobaldata.GetConstantValue("YesNo");
 
-             
-                 if (sid_doc_request != "" && sid_doc_request != null)
-                {                    
+                if (sid_doc_request != "" && sid_doc_request != null)
+                {
                     ViewBag.dcrf_no = objGlobaldata.GetDCRNoByDocId(sid_doc_request);
                     ViewBag.checklistRef = "ChkList-" + ViewBag.dcrf_no;
                 }
-                if(ViewBag.checklistRef != "")
+                if (ViewBag.checklistRef != "")
                 {
                     if (objGlobaldata.checkDCRChkListRefExists(ViewBag.checklistRef))
                     {
                         return View(ObjCheck);
-                    }                         
+                    }
                 }
-            
             }
             catch (Exception ex)
             {
@@ -698,7 +693,7 @@ namespace ISOStd.Controllers
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
             return RedirectToAction("DCRApporveDetails", "DocumentCreateRequest", new { id_doc_request = sid_doc_request });
-      }
+        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -706,15 +701,14 @@ namespace ISOStd.Controllers
         {
             try
             {
-
                 //DateTime dateValue;
                 //if (DateTime.TryParse(form["Inspection_date"], out dateValue) == true)
                 //{
                 //    objInspChecklist.Inspection_date = dateValue;
-                //}                
+                //}
 
                 DCRChecklistModelsList ObjModelList = new DCRChecklistModelsList();
-                ObjModelList.DCRChkList = new List <DCRChecklistModels> ();
+                ObjModelList.DCRChkList = new List<DCRChecklistModels>();
 
                 MultiSelectList DCRQuestions = ObjCheck.GetDCRQuestionList();
 
@@ -765,7 +759,7 @@ namespace ISOStd.Controllers
                 string sBranch_name = objGlobaldata.GetCurrentUserSession().division;
                 string sBranchtree = objGlobaldata.GetCurrentUserSession().BranchTree;
                 ViewBag.Branch = objGlobaldata.GetMultiBranchListByID(sBranchtree);
-               // string sSearchtext = "";
+                // string sSearchtext = "";
 
                 string sSqlstmt = "select id_chklist,checklistRef,revision,doc_title,dcrf_no,memo_ref," +
                     "logged_by from t_document_create_request_chklist where Active=1";
@@ -788,8 +782,8 @@ namespace ISOStd.Controllers
                     {
                         try
                         {
-                           objchklist = new DCRChecklistModels
-                           {
+                            objchklist = new DCRChecklistModels
+                            {
                                 id_chklist = dsCreateList.Tables[0].Rows[i]["id_chklist"].ToString(),
                                 checklistRef = dsCreateList.Tables[0].Rows[i]["checklistRef"].ToString(),
                                 revision = objGlobaldata.GetDropdownitemById(dsCreateList.Tables[0].Rows[i]["revision"].ToString()),
@@ -797,7 +791,7 @@ namespace ISOStd.Controllers
                                 dcrf_no = dsCreateList.Tables[0].Rows[i]["dcrf_no"].ToString(),
                                 memo_ref = dsCreateList.Tables[0].Rows[i]["memo_ref"].ToString(),
                                 logged_by = objGlobaldata.GetMultiHrEmpNameById(dsCreateList.Tables[0].Rows[i]["logged_by"].ToString()),
-                           };
+                            };
 
                             //DateTime dtDocDate;
                             //if (dsCreateList.Tables[0].Rows[i]["date_request"].ToString() != ""
@@ -831,7 +825,7 @@ namespace ISOStd.Controllers
 
             DCRChecklistModelsList objchkList = new DCRChecklistModelsList();
             objchkList.DCRChkList = new List<DCRChecklistModels>();
-           
+
             try
             {
                 string sid_chklist = Request.QueryString["id_chklist"];
@@ -839,51 +833,51 @@ namespace ISOStd.Controllers
                 if (sid_chklist != null && sid_chklist != "")
                 {
                     string sSqlstmt = "select id_chklist,checklistRef,revision,doc_title,dcrf_no,memo_ref," +
-                        "logged_by from t_document_create_request_chklist where Active=1 and id_chklist = '"+ sid_chklist+"'";
+                        "logged_by from t_document_create_request_chklist where Active=1 and id_chklist = '" + sid_chklist + "'";
 
                     DataSet dsCreateList = objGlobaldata.Getdetails(sSqlstmt);
                     if (dsCreateList.Tables.Count > 0 && dsCreateList.Tables[0].Rows.Count > 0)
                     {
                         try
+                        {
+                            DCRChecklistModels objchklist = new DCRChecklistModels
                             {
-                                DCRChecklistModels objchklist = new DCRChecklistModels
-                                {
-                                    id_chklist = dsCreateList.Tables[0].Rows[0]["id_chklist"].ToString(),
-                                    checklistRef = dsCreateList.Tables[0].Rows[0]["checklistRef"].ToString(),
-                                    revision = /*objGlobaldata.GetDropdownitemById*/(dsCreateList.Tables[0].Rows[0]["revision"].ToString()),
-                                    doc_title = dsCreateList.Tables[0].Rows[0]["doc_title"].ToString(),
-                                    dcrf_no = dsCreateList.Tables[0].Rows[0]["dcrf_no"].ToString(),
-                                    memo_ref = dsCreateList.Tables[0].Rows[0]["memo_ref"].ToString(),
-                                    logged_by = /*objGlobaldata.GetMultiHrEmpNameById*/(dsCreateList.Tables[0].Rows[0]["logged_by"].ToString()),
-                                };
+                                id_chklist = dsCreateList.Tables[0].Rows[0]["id_chklist"].ToString(),
+                                checklistRef = dsCreateList.Tables[0].Rows[0]["checklistRef"].ToString(),
+                                revision = /*objGlobaldata.GetDropdownitemById*/(dsCreateList.Tables[0].Rows[0]["revision"].ToString()),
+                                doc_title = dsCreateList.Tables[0].Rows[0]["doc_title"].ToString(),
+                                dcrf_no = dsCreateList.Tables[0].Rows[0]["dcrf_no"].ToString(),
+                                memo_ref = dsCreateList.Tables[0].Rows[0]["memo_ref"].ToString(),
+                                logged_by = /*objGlobaldata.GetMultiHrEmpNameById*/(dsCreateList.Tables[0].Rows[0]["logged_by"].ToString()),
+                            };
 
-                                string sqlstmt1 = "select id_chklist_trans,id_chklist,id_questions,ratings,comments from " +
-                                    "t_document_create_request_chklist_trans where id_chklist = '"+ sid_chklist + "'";
-                                DataSet dsChklist = objGlobaldata.Getdetails(sqlstmt1);
+                            string sqlstmt1 = "select id_chklist_trans,id_chklist,id_questions,ratings,comments from " +
+                                "t_document_create_request_chklist_trans where id_chklist = '" + sid_chklist + "'";
+                            DataSet dsChklist = objGlobaldata.Getdetails(sqlstmt1);
 
                             //Dictionary<string, string> dicDCRElement = new Dictionary<string, string>();
                             //if (dsChklist.Tables.Count > 0 && dsChklist.Tables[0].Rows.Count > 0)
-                            //{                               
+                            //{
                             //    for (int i = 0; dsChklist.Tables.Count > 0 && i < dsChklist.Tables[0].Rows.Count; i++)
                             //    {
                             //        dicDCRElement.Add(dsChklist.Tables[0].Rows[i]["id_questions"].ToString(), dsChklist.Tables[0].Rows[i]["ratings"].ToString());
                             //    }
                             //}
 
-                                ViewBag.dsChklist = dsChklist;
+                            ViewBag.dsChklist = dsChklist;
                             //    ViewBag.dicDCRElement = dicDCRElement;
-                                ViewBag.DCRQuestions = objchklist.GetDCRQuestionList();
-                                ViewBag.DCRSection = objchklist.GetDCRSectionList();
-                                ViewBag.Revision = objGlobaldata.GetDropdownList("Revision Type");
-                                ViewBag.YesNo = objGlobaldata.GetConstantValue("YesNo");
+                            ViewBag.DCRQuestions = objchklist.GetDCRQuestionList();
+                            ViewBag.DCRSection = objchklist.GetDCRSectionList();
+                            ViewBag.Revision = objGlobaldata.GetDropdownList("Revision Type");
+                            ViewBag.YesNo = objGlobaldata.GetConstantValue("YesNo");
 
                             return View(objchklist);
-                            }
-                            catch (Exception ex)
-                            {
-                                objGlobaldata.AddFunctionalLog("Exception in DocCreateRequestList: " + ex.ToString());
-                                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            objGlobaldata.AddFunctionalLog("Exception in DocCreateRequestList: " + ex.ToString());
+                            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                        }
                     }
                 }
             }
@@ -980,7 +974,6 @@ namespace ISOStd.Controllers
                             {
                                 DCRChecklistModels objElements = new DCRChecklistModels
                                 {
-
                                     id_chklist = dsChklist.Tables[0].Rows[i]["id_chklist"].ToString(),
                                     id_questions = objchklist.GetDCRQuestionNameById(dsChklist.Tables[0].Rows[i]["id_questions"].ToString()),
                                     ratings = dsChklist.Tables[0].Rows[i]["ratings"].ToString(),
@@ -1019,13 +1012,13 @@ namespace ISOStd.Controllers
             ViewBag.SubMenutype = "chklist";
 
             DCRChecklistModels objchklist = new DCRChecklistModels();
-            
+
             DCRChecklistModelsList objchkList = new DCRChecklistModelsList();
             objchkList.DCRChkList = new List<DCRChecklistModels>();
 
             try
             {
-               if (chklist != "")
+                if (chklist != "")
                 {
                     string id = objGlobaldata.GetChklistIdByRef(chklist);
                     string sSqlstmt = "select id_chklist,checklistRef,revision,doc_title,dcrf_no,memo_ref," +
@@ -1036,7 +1029,7 @@ namespace ISOStd.Controllers
                     {
                         try
                         {
-                             objchklist = new DCRChecklistModels
+                            objchklist = new DCRChecklistModels
                             {
                                 id_chklist = dsCreateList.Tables[0].Rows[0]["id_chklist"].ToString(),
                                 checklistRef = dsCreateList.Tables[0].Rows[0]["checklistRef"].ToString(),
@@ -1054,7 +1047,6 @@ namespace ISOStd.Controllers
                             {
                                 DCRChecklistModels objElements = new DCRChecklistModels
                                 {
-
                                     id_chklist = dsChklist.Tables[0].Rows[i]["id_chklist"].ToString(),
                                     id_questions = objchklist.GetDCRQuestionNameById(dsChklist.Tables[0].Rows[i]["id_questions"].ToString()),
                                     ratings = dsChklist.Tables[0].Rows[i]["ratings"].ToString(),
@@ -1068,8 +1060,6 @@ namespace ISOStd.Controllers
                             ViewBag.DCRSection = objchklist.GetDCRSectionList();
                             //ViewBag.Revision = objGlobaldata.GetRevisionTypeList();
                             //ViewBag.YesNo = objGlobaldata.GetConstantValue("YesNo");
-
-                          
                         }
                         catch (Exception ex)
                         {
@@ -1125,7 +1115,7 @@ namespace ISOStd.Controllers
         }
 
         //public JsonResult FunGetCheckList()
-        // {           
+        // {
         //     try
         //     {
         //         ViewBag.CheckList = objGlobaldata.GetDCRChecklist();
@@ -1139,7 +1129,7 @@ namespace ISOStd.Controllers
         //     return Json("");
         // }
 
-       public JsonResult FunGetDocRefNo(string Direct)
+        public JsonResult FunGetDocRefNo(string Direct)
         {
             try
             {
@@ -1150,10 +1140,10 @@ namespace ISOStd.Controllers
                 {
                     sCompany = DsCompany.Tables[0].Rows[0]["CompanyName"].ToString();
                 }
-                if (Direct !="")
+                if (Direct != "")
                 {
                     string dir = objGlobaldata.GetBranchShortNameByID(Direct);
-                   // string grp = objGlobaldata.GetDeptNameById(Grp);
+                    // string grp = objGlobaldata.GetDeptNameById(Grp);
                     DocRef = sCompany + "/" + dir /*+ "/" + grp*/ ;
                 }
                 return Json(DocRef);
@@ -1172,7 +1162,7 @@ namespace ISOStd.Controllers
             {
                 string chklist = objGlobaldata.GetDCRNoByDocId(id_doc_request);
                 string CheckList = objGlobaldata.GetDCRChecklistByRef(chklist);
-                return Json(CheckList);               
+                return Json(CheckList);
             }
             catch (Exception ex)
             {
@@ -1181,6 +1171,5 @@ namespace ISOStd.Controllers
             }
             return Json("");
         }
-        
     }
 }

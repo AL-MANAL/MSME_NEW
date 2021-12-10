@@ -1,4 +1,5 @@
-﻿using ISOStd.Models;
+﻿using ISOStd.Filters;
+using ISOStd.Models;
 using PagedList;
 using System;
 using System.Collections.Generic;
@@ -7,20 +8,20 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using ISOStd.Filters;
 
 namespace ISOStd.Controllers
 {
     [PreventFromUrl]
-    public class DocumentTrackingController :Controller
+    public class DocumentTrackingController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
+        private clsGlobal objGlobaldata = new clsGlobal();
 
         public DocumentTrackingController()
         {
             ViewBag.Menutype = "Documents";
             ViewBag.SubMenutype = "DocumentTracking";
         }
+
         public ActionResult AddDocTracking()
         {
             DocumentTrackingModels objDoc = new DocumentTrackingModels();
@@ -30,14 +31,13 @@ namespace ISOStd.Controllers
                 objDoc.Department = objGlobaldata.GetCurrentUserSession().DeptID;
                 objDoc.Location = objGlobaldata.GetCurrentUserSession().Work_Location;
 
-                
                 ViewBag.DocType = objGlobaldata.GetDropdownList("Legal DocType");
                 ViewBag.NotificationPeriod = objGlobaldata.GetConstantValueKeyValuePair("NotificationPeriod");
                 ViewBag.Branch = objGlobaldata.GetCompanyBranchListbox();
                 ViewBag.Department = objGlobaldata.GetDepartmentListbox(objDoc.branch);
                 ViewBag.Location = objGlobaldata.GetDivisionLocationList(objDoc.branch);
                 ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
-               // ViewBag.EmpList = objGlobaldata.GetGEmpListBymulitBDL(objDoc.branch, objDoc.Department, objDoc.Location);
+                // ViewBag.EmpList = objGlobaldata.GetGEmpListBymulitBDL(objDoc.branch, objDoc.Department, objDoc.Location);
             }
             catch (Exception ex)
             {
@@ -116,7 +116,6 @@ namespace ISOStd.Controllers
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 }
-
             }
             catch (Exception ex)
             {
@@ -157,7 +156,7 @@ namespace ISOStd.Controllers
                 DataSet dsDocList = objGlobaldata.Getdetails(sSqlstmt);
 
                 if (dsDocList.Tables.Count > 0 && dsDocList.Tables[0].Rows.Count > 0)
-                { 
+                {
                     for (int i = 0; i < dsDocList.Tables[0].Rows.Count; i++)
                     {
                         try
@@ -210,7 +209,7 @@ namespace ISOStd.Controllers
             objDocList.DocList = new List<DocumentTrackingModels>();
 
             try
-            {                
+            {
                 string sSearchtext = "";
                 string sBranch_name = objGlobaldata.GetCurrentUserSession().division;
                 string sBranchtree = objGlobaldata.GetCurrentUserSession().BranchTree;
@@ -229,12 +228,12 @@ namespace ISOStd.Controllers
                     sSearchtext = sSearchtext + " and find_in_set('" + sBranch_name + "', branch)";
                 }
 
-                sSqlstmt = sSqlstmt+ sSearchtext + " order by doctype asc"; 
+                sSqlstmt = sSqlstmt + sSearchtext + " order by doctype asc";
 
                 DataSet dsDocList = objGlobaldata.Getdetails(sSqlstmt);
 
                 if (dsDocList.Tables.Count > 0 && dsDocList.Tables[0].Rows.Count > 0)
-                { 
+                {
                     for (int i = 0; i < dsDocList.Tables[0].Rows.Count; i++)
                     {
                         try
@@ -300,7 +299,6 @@ namespace ISOStd.Controllers
                     DataSet dsDocList = objGlobaldata.Getdetails(sSqlstmt);
                     if (dsDocList.Tables.Count > 0 && dsDocList.Tables[0].Rows.Count > 0)
                     {
-
                         objTracModels = new DocumentTrackingModels
                         {
                             id_document_tracking = Convert.ToInt16(dsDocList.Tables[0].Rows[0]["id_document_tracking"].ToString()),
@@ -356,7 +354,6 @@ namespace ISOStd.Controllers
         {
             try
             {
-
                 objDocTrack.doctype = form["doctype"];
                 objDocTrack.docname = form["docname"];
                 objDocTrack.Department = form["Department"];
@@ -422,7 +419,6 @@ namespace ISOStd.Controllers
                     return RedirectToAction("DocTrackingList");
                 }
 
-
                 int Notificationval = 1;
 
                 if (objDocTrack.NotificationPeriod == "None")
@@ -474,10 +470,6 @@ namespace ISOStd.Controllers
 
                 if (dsDocList.Tables.Count > 0 && dsDocList.Tables[0].Rows.Count > 0)
                 {
-
-                  
-
-
                     for (int i = 0; i < dsDocList.Tables[0].Rows.Count; i++)
                     {
                         try
@@ -522,7 +514,7 @@ namespace ISOStd.Controllers
 
             return View(objDocList.DocList.ToList().ToPagedList(page ?? 1, 1000));
         }
-        
+
         [AllowAnonymous]
         public ActionResult DocTrackingDetail()
         {
@@ -539,7 +531,6 @@ namespace ISOStd.Controllers
                     DataSet dsDocList = objGlobaldata.Getdetails(sSqlstmt);
                     if (dsDocList.Tables.Count > 0 && dsDocList.Tables[0].Rows.Count > 0)
                     {
-
                         objTracModels = new DocumentTrackingModels
                         {
                             id_document_tracking = Convert.ToInt16(dsDocList.Tables[0].Rows[0]["id_document_tracking"].ToString()),
@@ -564,11 +555,9 @@ namespace ISOStd.Controllers
                         {
                             objTracModels.exp_date = dtValue;
                         }
-
                     }
                     else
                     {
-
                         TempData["alertdata"] = "Id cannot be Null or empty";
                         return RedirectToAction("DocTrackingList");
                     }
@@ -594,45 +583,42 @@ namespace ISOStd.Controllers
             DocumentTrackingModels objTracModels = new DocumentTrackingModels();
             try
             {
-                  string sSqlstmt = "select id_document_tracking,doctype,docname,issue_autority,issue_date,exp_date,NotificationPerson,upload," +
-                   "NotificationPeriod,NotificationValue,Logged_by,branch,Department,Location from t_document_tracking where id_document_tracking='" + id + "'";
+                string sSqlstmt = "select id_document_tracking,doctype,docname,issue_autority,issue_date,exp_date,NotificationPerson,upload," +
+                 "NotificationPeriod,NotificationValue,Logged_by,branch,Department,Location from t_document_tracking where id_document_tracking='" + id + "'";
 
-                    DataSet dsDocList = objGlobaldata.Getdetails(sSqlstmt);
-                    if (dsDocList.Tables.Count > 0 && dsDocList.Tables[0].Rows.Count > 0)
+                DataSet dsDocList = objGlobaldata.Getdetails(sSqlstmt);
+                if (dsDocList.Tables.Count > 0 && dsDocList.Tables[0].Rows.Count > 0)
+                {
+                    objTracModels = new DocumentTrackingModels
                     {
+                        id_document_tracking = Convert.ToInt16(dsDocList.Tables[0].Rows[0]["id_document_tracking"].ToString()),
+                        doctype = objGlobaldata.GetDropdownitemById(dsDocList.Tables[0].Rows[0]["doctype"].ToString()),
+                        docname = dsDocList.Tables[0].Rows[0]["docname"].ToString(),
+                        issue_autority = dsDocList.Tables[0].Rows[0]["issue_autority"].ToString(),
+                        NotificationPerson = objGlobaldata.GetMultiHrEmpNameById(dsDocList.Tables[0].Rows[0]["NotificationPerson"].ToString()),
+                        upload = (dsDocList.Tables[0].Rows[0]["upload"].ToString()),
+                        NotificationPeriod = dsDocList.Tables[0].Rows[0]["NotificationPeriod"].ToString(),
+                        NotificationValue = dsDocList.Tables[0].Rows[0]["NotificationValue"].ToString(),
+                        branch = objGlobaldata.GetMultiCompanyBranchNameById(dsDocList.Tables[0].Rows[0]["branch"].ToString()),
+                        Department = objGlobaldata.GetMultiDeptNameById(dsDocList.Tables[0].Rows[0]["Department"].ToString()),
+                        Location = objGlobaldata.GetDivisionLocationById(dsDocList.Tables[0].Rows[0]["Location"].ToString()),
+                    };
 
-                        objTracModels = new DocumentTrackingModels
-                        {
-                            id_document_tracking = Convert.ToInt16(dsDocList.Tables[0].Rows[0]["id_document_tracking"].ToString()),
-                            doctype = objGlobaldata.GetDropdownitemById(dsDocList.Tables[0].Rows[0]["doctype"].ToString()),
-                            docname = dsDocList.Tables[0].Rows[0]["docname"].ToString(),
-                            issue_autority = dsDocList.Tables[0].Rows[0]["issue_autority"].ToString(),
-                            NotificationPerson = objGlobaldata.GetMultiHrEmpNameById(dsDocList.Tables[0].Rows[0]["NotificationPerson"].ToString()),
-                            upload = (dsDocList.Tables[0].Rows[0]["upload"].ToString()),
-                            NotificationPeriod = dsDocList.Tables[0].Rows[0]["NotificationPeriod"].ToString(),
-                            NotificationValue = dsDocList.Tables[0].Rows[0]["NotificationValue"].ToString(),
-                            branch = objGlobaldata.GetMultiCompanyBranchNameById(dsDocList.Tables[0].Rows[0]["branch"].ToString()),
-                            Department = objGlobaldata.GetMultiDeptNameById(dsDocList.Tables[0].Rows[0]["Department"].ToString()),
-                            Location = objGlobaldata.GetDivisionLocationById(dsDocList.Tables[0].Rows[0]["Location"].ToString()),
-                        };
-
-                        DateTime dtValue;
-                        if (DateTime.TryParse(dsDocList.Tables[0].Rows[0]["issue_date"].ToString(), out dtValue))
-                        {
-                            objTracModels.issue_date = dtValue;
-                        }
-                        if (DateTime.TryParse(dsDocList.Tables[0].Rows[0]["exp_date"].ToString(), out dtValue))
-                        {
-                            objTracModels.exp_date = dtValue;
-                        }
-
-                    }
-                    else
+                    DateTime dtValue;
+                    if (DateTime.TryParse(dsDocList.Tables[0].Rows[0]["issue_date"].ToString(), out dtValue))
                     {
-
-                        TempData["alertdata"] = "Id cannot be Null or empty";
-                        return RedirectToAction("DocTrackingList");
+                        objTracModels.issue_date = dtValue;
                     }
+                    if (DateTime.TryParse(dsDocList.Tables[0].Rows[0]["exp_date"].ToString(), out dtValue))
+                    {
+                        objTracModels.exp_date = dtValue;
+                    }
+                }
+                else
+                {
+                    TempData["alertdata"] = "Id cannot be Null or empty";
+                    return RedirectToAction("DocTrackingList");
+                }
             }
             catch (Exception ex)
             {
@@ -643,32 +629,31 @@ namespace ISOStd.Controllers
             return View(objTracModels);
         }
 
-
         [AllowAnonymous]
         public JsonResult DocTrackingDelete(FormCollection form)
         {
             try
-            {                
-                    if (form["id_document_tracking"] != null && form["id_document_tracking"] != "")
+            {
+                if (form["id_document_tracking"] != null && form["id_document_tracking"] != "")
+                {
+                    DocumentTrackingModels Doc = new DocumentTrackingModels();
+                    string sid_document_tracking = form["id_document_tracking"];
+                    if (Doc.FunDeleteDocTracking(sid_document_tracking))
                     {
-                        DocumentTrackingModels Doc = new DocumentTrackingModels();
-                        string sid_document_tracking = form["id_document_tracking"];
-                        if (Doc.FunDeleteDocTracking(sid_document_tracking))
-                        {
-                            TempData["Successdata"] = "Document deleted successfully";
-                            return Json("Success");
-                        }
-                        else
-                        {
-                            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                            return Json("Failed");
-                        }
+                        TempData["Successdata"] = "Document deleted successfully";
+                        return Json("Success");
                     }
                     else
                     {
-                        TempData["alertdata"] = "Id cannot be Null or empty";
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                         return Json("Failed");
-                    } 
+                    }
+                }
+                else
+                {
+                    TempData["alertdata"] = "Id cannot be Null or empty";
+                    return Json("Failed");
+                }
             }
             catch (Exception ex)
             {
@@ -691,7 +676,6 @@ namespace ISOStd.Controllers
                 file.SaveAs(sFilepath + "/" + sFilename);
                 //return Json("~/DataUpload/MgmtDocs/Surveillance/" + "Surveillance" + DateTime.Now.ToString("ddMMyyyyHHmm") + sFilename);
                 obj.upload = obj.upload + "," + "~/DataUpload/MgmtDocs/DocTracking/" + sFilename;
-
             }
             obj.upload = obj.upload.Trim(',');
             return Json(obj.upload);

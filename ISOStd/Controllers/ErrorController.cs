@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using ISOStd.Filters;
 using System.Web.Mvc;
-using ISOStd.Filters;
 
 namespace ISOStd.Controllers
 {
@@ -12,18 +8,17 @@ namespace ISOStd.Controllers
     {
         //
         // GET: /Error/
-       
+
         public ActionResult Index()
         {
             return View();
         }
-         
+
         public ActionResult FileNotFound()
         {
             //ViewBag.FIleNotFound="Sorry requested file not found";
 
             return View();
         }
-
     }
 }

@@ -400,7 +400,7 @@ namespace ISOStd.Models
         {
             try {
 
-                string sInformation = "", sHeader = "", sCCList="";
+                string sHeader = "", sCCList = "";
              
                      sCCList = objGlobalData.GetHrEmpEmailIdById(objGlobalData.GetCurrentUserSession().empid);
                 
@@ -441,7 +441,7 @@ namespace ISOStd.Models
             try
             {
 
-                string sInformation = "", sHeader = "";
+                string sHeader = "";
               
                 string sSqlStmt = "select t.id_projectmgmt,ProjectNo,ProjectName,Dicipline,Revno,DrawingNumber,Upload,ReviewedBy,"
                 + "ApprovedBy,LoggedBy from t_projectmgmt t,t_projectdesign tt where t.id_projectmgmt=tt.id_projectmgmt and "
@@ -451,7 +451,7 @@ namespace ISOStd.Models
 
                 if (dsProject.Tables.Count > 0 && dsProject.Tables[0].Rows.Count > 0)
                 {
-                    for (int i = 0; i < dsProject.Tables[0].Rows.Count;i++ )
+                    for (int i = 0; i < dsProject.Tables[0].Rows.Count; )
                     {
                         string sUserName = objGlobalData.GetEmpHrNameById(dsProject.Tables[0].Rows[i]["ApprovedBy"].ToString());
                         string sToEmailId = objGlobalData.GetHrEmpEmailIdById(dsProject.Tables[0].Rows[i]["ApprovedBy"].ToString());
@@ -486,7 +486,7 @@ namespace ISOStd.Models
             try
             {
 
-                string sInformation = "", sHeader = "";
+                string sHeader = "";
 
                 string sSqlStmt = "select t.id_projectmgmt,ProjectNo,ProjectName,Dicipline,Revno,DrawingNumber,Upload,ReviewedBy,"
                 + "ApprovedBy,LoggedBy from t_projectmgmt t,t_projectdesign tt where t.id_projectmgmt=tt.id_projectmgmt and "
@@ -496,7 +496,7 @@ namespace ISOStd.Models
 
                 if (dsProject.Tables.Count > 0 && dsProject.Tables[0].Rows.Count > 0)
                 {
-                    for (int i = 0; i < dsProject.Tables[0].Rows.Count; i++)
+                    for (int i = 0; i < dsProject.Tables[0].Rows.Count;)
                     {
                         string sUserName = "All,";
                         string sAEmailID = objGlobalData.GetHrEmpEmailIdById(dsProject.Tables[0].Rows[i]["ApprovedBy"].ToString());

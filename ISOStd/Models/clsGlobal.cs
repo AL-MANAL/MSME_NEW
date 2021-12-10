@@ -22,6 +22,115 @@ namespace ISOStd.Models
 {
     public class clsGlobal
     {
+        private object fileUploader;
+        private object mail;
+
+        //to get the id of the dropdown item
+        public string GetDropdownitemId(string header_id, string item_desc)
+        {
+            try
+            {
+                if (header_id != "" && item_desc != "")
+                {
+                    string sSsqlstmt = "select item_id as Id from dropdownitems where header_id='"+ header_id + "' and item_desc='"+ item_desc + "'";
+                    DataSet dsData = Getdetails(sSsqlstmt);
+                    if (dsData.Tables.Count > 0 && dsData.Tables[0].Rows.Count > 0)
+                    {
+                        string sDesc = dsData.Tables[0].Rows[0]["Id"].ToString();
+                       
+                        return sDesc;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                AddFunctionalLog("Exception in GetDropdownitemById: " + ex.ToString());
+            }
+            return "";
+        }
+        //training plan reviewer 
+        public DataSet getListPendingForReviewTrainingPlan(string sempid)
+        {
+            try
+            {
+                string sSqlstmt = "select id_training_plan,department,topic,logged_by from t_training_plan"
+                + " where active = 1 and approval_status = 0 and reviewed_by = '" + sempid + "' order by id_training_plan desc";
+
+                DataSet dsApprovalList = Getdetails(sSqlstmt);
+                if (dsApprovalList.Tables.Count > 0 && dsApprovalList.Tables[0].Rows.Count > 0)
+                {
+                    return dsApprovalList;
+                }
+            }
+            catch (Exception ex)
+            {
+                AddFunctionalLog("Exception in getListPendingForReviewTrainingPlan: " + ex.ToString());
+            }
+            return null;
+        }
+        //training plan approver 
+        public DataSet getListPendingForApproveTrainingPlan(string sempid)
+        {
+            try
+            {
+               
+                string sSqlstmt = "select id_training_plan,department,topic,logged_by from t_training_plan"
+               + " where active = 1 and approval_status = 2 and approved_by = '" + sempid + "' order by id_training_plan desc";
+
+
+                DataSet dsApprovalList = Getdetails(sSqlstmt);
+                if (dsApprovalList.Tables.Count > 0 && dsApprovalList.Tables[0].Rows.Count > 0)
+                {
+                    return dsApprovalList;
+                }
+            }
+            catch (Exception ex)
+            {
+                AddFunctionalLog("Exception in getListPendingForApproveTrainingPlan: " + ex.ToString());
+            }
+            return null;
+        }
+
+        //training need employee list
+        public MultiSelectList GetTrainingPlanEmployeeList()
+        {
+            EmployeeList emplist = new EmployeeList();
+            emplist.EmpList = new List<Employee>();
+            try
+            {
+                string sSqlstmt = "(select Name as emp_id,concat(emp_firstname, ' ', ifnull(emp_middlename, ' '), ' ', ifnull(emp_lastname, ' ')) as Empname from t_emp_competence_eval t,t_hr_employee tt where t.Name = tt.emp_no and active = 1 and Need_Of_Trainings = 'Yes') UNION"
+
+                + " (select t.emp_id,concat(emp_firstname, ' ', ifnull(emp_middlename, ' '), ' ', ifnull(emp_lastname, ' ')) as Empname from t_emp_performance_eval t, t_hr_employee tt where t.emp_id = tt.emp_no and active = 1 and training_need = 'Yes') UNION"
+
+                +" (select employee as emp_id, concat(emp_firstname, ' ', ifnull(emp_middlename, ' '), ' ', ifnull(emp_lastname, ' ')) as Empname from t_training_staff t, t_hr_employee tt"
+         
+                +" where t.employee = tt.emp_no and active = 1)";
+
+                DataSet dsEmp = Getdetails(sSqlstmt);// and CompanyId='" + sCompanyId+"'");
+                if (dsEmp.Tables.Count > 0 && dsEmp.Tables[0].Rows.Count > 0)
+                {
+                    for (int i = 0; i < dsEmp.Tables[0].Rows.Count; i++)
+                    {
+                        Employee emp = new Employee()
+                        {
+                            Empid = dsEmp.Tables[0].Rows[i]["emp_id"].ToString(),
+                            Empname = Regex.Replace(dsEmp.Tables[0].Rows[i]["Empname"].ToString(), " +", " ")
+                        };
+                        emp.Empname = emp.Empname.Trim();
+                        emplist.EmpList.Add(emp);
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                AddFunctionalLog("Exception in GetHrEmployeeList: " + ex.ToString());
+            }
+
+            return new MultiSelectList(emplist.EmpList, "Empid", "Empname");
+
+        }
+
         //q&a department employees
         public MultiSelectList GetQADeptEmployeeList()
         {
@@ -31,7 +140,8 @@ namespace ISOStd.Models
             {
                 string Emp_Id = GetCurrentUserSession().empid;
                 string sSqlstmt = "select concat(emp_firstname,' ',ifnull(emp_middlename,' '),' ',ifnull(emp_lastname,' ')) as Empname, emp_no as Empid"
-                + " from t_hr_employee t,t_departments tt where emp_status = 1 and t.Dept_Id = tt.DeptId and (Upper(DeptName) like '%QA%' Or Upper(DeptName) like '%Management%') ";
+
+                + " from t_hr_employee t,t_departments tt where emp_status = 1 and t.Dept_Id = tt.DeptId and (Upper(DeptName) like '%QA%' Or Upper(DeptName) like '%Management%') "
 
                 DataSet dsEmp = Getdetails(sSqlstmt);// and CompanyId='" + sCompanyId+"'");
                 if (dsEmp.Tables.Count > 0 && dsEmp.Tables[0].Rows.Count > 0)

@@ -274,6 +274,162 @@ namespace ISOStd.Models
         [Display(Name = "Years of Experience")]
         public string years_exp { get; set; }
 
+        //t_hr_employee_skills
+
+        [Display(Name = "Id")]
+        public string id_emp_qualification { get; set; }
+
+        [Display(Name = "Year Passed")]
+        public string q_year { get; set; }
+
+        [Display(Name = "Upload Document")]
+        public string upload { get; set; }
+
+        //t_hr_employee_skills
+
+        [Display(Name = "Id")]
+        public string id_emp_skill { get; set; }
+
+        [Display(Name = "Skills")]
+        public string skill { get; set; }
+
+        //t_hr_employee_training
+
+        [Display(Name = "Id")]
+        public string id_training { get; set; }
+
+        [Display(Name = "Type of Training")]
+        public string training_type { get; set; }
+
+        [Display(Name = "Training Duration in Days")]
+        public string duration { get; set; }
+
+        [Display(Name = "Training Completed On")]
+        public DateTime completed_date { get; set; }
+
+        [Display(Name = "Document(s)")]
+        public string training_upload { get; set; }
+
+        internal bool FunAddCompetenceDetails(EmployeeMasterModelList objQModelsList, EmployeeMasterModelList objSkillModelsList, EmployeeMasterModelList objTModelsList)
+        {
+            try
+            {
+                string sSqlstmt = "update t_hr_employee set years_exp='"+years_exp+ "' where emp_no='" + emp_no + "'";
+                objGlobalData.ExecuteQuery(sSqlstmt);
+
+
+                if (Convert.ToInt32(objQModelsList.EmployeeList.Count) > 0)
+                {
+                    objQModelsList.EmployeeList[0].emp_no = emp_no.ToString();
+                    FunAddQualificationList(objQModelsList);
+                }
+                if (Convert.ToInt32(objSkillModelsList.EmployeeList.Count) > 0)
+                {
+                    objSkillModelsList.EmployeeList[0].emp_no = emp_no.ToString();
+                    FunAddSkillList(objSkillModelsList);
+                }
+                if (Convert.ToInt32(objTModelsList.EmployeeList.Count) > 0)
+                {
+                    objTModelsList.EmployeeList[0].emp_no = emp_no.ToString();
+                    FunAddTrainingList(objTModelsList);
+                }
+                return true;
+
+
+            }
+            catch (Exception ex)
+            {
+                objGlobalData.AddFunctionalLog("Exception in FunAddCompetenceDetails: " + ex.ToString());
+            }
+            return false;
+        }
+        internal bool FunAddTrainingList(EmployeeMasterModelList objTModelsList)
+        {
+            try
+            {
+                string sSqlstmt = "delete from t_hr_employee_training where emp_no='" + objTModelsList.EmployeeList[0].emp_no + "'; ";
+
+                for (int i = 0; i < objTModelsList.EmployeeList.Count; i++)
+                {
+
+                    sSqlstmt = sSqlstmt + "insert into t_hr_employee_training(emp_no,training_type,duration,training_upload";
+
+                    string sFieldValue = "", sFields = "";
+                    if (objTModelsList.EmployeeList[i].completed_date != null && objTModelsList.EmployeeList[i].completed_date > Convert.ToDateTime("01/01/0001 00:00:00"))
+                    {
+                        sFields = sFields + ", completed_date";
+                        sFieldValue = sFieldValue + ", '" + objTModelsList.EmployeeList[i].completed_date.ToString("yyyy/MM/dd") + "'";
+                    }
+
+                    sSqlstmt = sSqlstmt + sFields;
+                    sSqlstmt = sSqlstmt + ") values('" + objTModelsList.EmployeeList[0].emp_no + "', '" + objTModelsList.EmployeeList[i].training_type + "', '" + objTModelsList.EmployeeList[i].duration + "', '" + objTModelsList.EmployeeList[i].training_upload + "'";
+
+                    sSqlstmt = sSqlstmt + sFieldValue + ");";
+                }
+                return objGlobalData.ExecuteQuery(sSqlstmt);
+            }
+            catch (Exception ex)
+            {
+                objGlobalData.AddFunctionalLog("Exception in FunAddTrainingList: " + ex.ToString());
+            }
+            return false;
+        }
+
+
+        internal bool FunAddQualificationList(EmployeeMasterModelList objQModelsList)
+        {
+            try
+            {
+                string sSqlstmt = "delete from t_hr_employee_qualification where emp_no='" + objQModelsList.EmployeeList[0].emp_no + "'; ";
+
+                for (int i = 0; i < objQModelsList.EmployeeList.Count; i++)
+                {
+
+                    sSqlstmt = sSqlstmt + "insert into t_hr_employee_qualification(emp_no,qualification,q_year,upload";
+
+                    string sFieldValue = "", sFields = "";
+                   
+                    sSqlstmt = sSqlstmt + sFields;
+                    sSqlstmt = sSqlstmt + ") values('" + objQModelsList.EmployeeList[0].emp_no + "', '" + objQModelsList.EmployeeList[i].qualification + "', '" + objQModelsList.EmployeeList[i].q_year + "', '" + objQModelsList.EmployeeList[i].upload + "'";
+
+                    sSqlstmt = sSqlstmt + sFieldValue + ");";
+                }
+                return objGlobalData.ExecuteQuery(sSqlstmt);
+            }
+            catch (Exception ex)
+            {
+                objGlobalData.AddFunctionalLog("Exception in FunAddQualificationList: " + ex.ToString());
+            }
+            return false;
+        }
+
+        internal bool FunAddSkillList(EmployeeMasterModelList objQModelsList)
+        {
+            try
+            {
+                string sSqlstmt = "delete from t_hr_employee_skills where emp_no='" + objQModelsList.EmployeeList[0].emp_no + "'; ";
+
+                for (int i = 0; i < objQModelsList.EmployeeList.Count; i++)
+                {
+
+                    sSqlstmt = sSqlstmt + "insert into t_hr_employee_skills(emp_no,skill";
+
+                    string sFieldValue = "", sFields = "";
+
+                    sSqlstmt = sSqlstmt + sFields;
+                    sSqlstmt = sSqlstmt + ") values('" + objQModelsList.EmployeeList[0].emp_no + "', '" + objQModelsList.EmployeeList[i].skill + "'";
+
+                    sSqlstmt = sSqlstmt + sFieldValue + ");";
+                }
+                return objGlobalData.ExecuteQuery(sSqlstmt);
+            }
+            catch (Exception ex)
+            {
+                objGlobalData.AddFunctionalLog("Exception in FunAddSkillList: " + ex.ToString());
+            }
+            return false;
+        }
+
         internal bool FunDeleteChart(string schartId)
         {
             try

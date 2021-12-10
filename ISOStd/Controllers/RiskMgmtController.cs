@@ -1788,6 +1788,7 @@ namespace ISOStd.Controllers
                     string risk_id = Request.QueryString["risk_id"];
                     ViewBag.impact_id = objGlobaldata.GetDropdownList("Risk-Severity");
                     ViewBag.like_id = objGlobaldata.GetDropdownList("Risk-likelihood");
+                    ViewBag.EvaluatedBy = objGlobaldata.GetDeptHeadbyDivisionList();
                     ViewBag.Issue = objRisk.GetIsssuesNo();
                     ViewBag.risk_id = risk_id;
                     DateTime today_date = DateTime.Now;
@@ -1819,7 +1820,7 @@ namespace ISOStd.Controllers
                         };
                         //ViewBag.Approver = objGlobaldata.GetGRoleList(dsRiskModels.Tables[0].Rows[0]["branch_id"].ToString(), dsRiskModels.Tables[0].Rows[0]["dept"].ToString(), dsRiskModels.Tables[0].Rows[0]["Location"].ToString(), "Approver");
                         //ViewBag.EmpList = objGlobaldata.GetGEmpListBymulitBDL(dsRiskModels.Tables[0].Rows[0]["branch_id"].ToString(), dsRiskModels.Tables[0].Rows[0]["dept"].ToString(), dsRiskModels.Tables[0].Rows[0]["Location"].ToString());
-                        ViewBag.EvaluatedBy = objGlobaldata.GetDeptHeadbyDivisionList();
+                       
                         ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
                         DateTime dtValue;
                         if (DateTime.TryParse(dsRiskModels.Tables[0].Rows[0]["initevaluation_date"].ToString(), out dtValue))

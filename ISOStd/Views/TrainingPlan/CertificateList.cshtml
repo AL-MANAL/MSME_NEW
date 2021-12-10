@@ -1,0 +1,613 @@
+﻿@using PagedList;
+@using PagedList.Mvc;
+
+@model List<ISOStd.Models.TrainingPlanModels>
+
+    @{
+        ViewBag.Title = "";
+        ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+        ISOStd.Models.TrainingPlanModels ObjModel = new ISOStd.Models.TrainingPlanModels();
+        int icnt = 0;
+        if (ViewBag.Certificate != null)
+        {
+            ObjModel = ViewBag.Certificate;
+            icnt = 1;
+        }
+    }
+  @section featured {
+    <div class="page-header page-header-light">
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("TrainingPlanList", "TrainingPlan", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Training Plan List</span>
+                    </a>
+                    <span class="breadcrumb-item active">Training Certificate</span>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+}
+
+    <style>
+        .hidden {
+            display: none !important;
+        }
+    </style>
+
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Training Certificate</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+        <table class="table table-bordered table-striped table-hover datatable-responsive" id="table1">
+            <thead>
+                <tr>
+                    <th>
+                        Sl No.
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().emp_id)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().certificate)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().expiry_date)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().updated_date)
+                    </th>
+                  
+                    <th data-priority="2" class="text-center not-export-column">Actions</th>
+
+                </tr>
+            </thead>
+
+            <tbody>
+                @if (Model != null && Model.Count() > 0)
+            {
+                int i = 0;
+                foreach (var item in Model)
+                {
+                    i = i + 1;
+                        <tr>
+                            <td>
+                            @i
+                            </td>
+                            <td>
+                                @Html.DisplayFor(model => item.emp_id)
+                            </td>
+                            <td>
+                                @if (item.certificate != null && item.certificate != "" && item.certificate.Length > 0)
+                                {
+                                    foreach (var docs in item.certificate.Trim(',').Split(','))
+                                    {
+                                        <p style="margin: 0px;">
+
+                                            <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" style="color: orange;">
+                                                Preview
+                                            </a>
+                                        </p>
+                                        <br />
+                                    }
+                                }
+                            </td>
+                            <td>
+                                @if (item.expiry_date != null && item.expiry_date > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    @Html.Label(item.expiry_date.ToString("dd/MM/yyyy"))
+                                }
+                            </td>
+                            <td>
+                                @if (item.updated_date != null && item.updated_date > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    @Html.Label(item.updated_date.ToString("dd/MM/yyyy"))
+                                }
+                            </td>
+                           
+
+                            <td class="text-center">
+                                <div class="list-icons">
+                                    <div class="list-icons-item dropdown">
+                                        <a href="#" class="list-icons-item caret-0 dropdown-toggle" data-toggle="dropdown">
+                                            <i class="icon-gear mr-2"></i>
+                                        </a>
+                                        <div class="dropdown-menu dropdown-menu-right">
+
+                                                <a class="dropdown-item" href='@Url.Action("CertificateList", "TrainingPlan", new { id_certificate = item.id_certificate,id_training_plan = item.id_training_plan })' title="" onclick="HyperLinkProgressIconFunction()">
+                                                    <i class="icon-pencil7"></i>Edit
+                                                </a>
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+
+                        </tr>
+                    }
+                }
+
+            </tbody>
+        </table>
+
+        @using (Html.BeginForm("CertificateUpdate", "TrainingPlan", FormMethod.Post,
+        new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true)
+
+            <div class="card-body invisible" id="hidden card1">
+                <input type="hidden" id="id_certificate" name="id_certificate" value="@ObjModel.id_certificate" />
+                <input type="hidden" id="itemcnt" name="itemcnt" value="@icnt" />
+                <div class="container-fluid">
+                    <fieldset class="border p-2">
+                        <legend class="font-weight-semibold text-success">Edit Certificate</legend>
+                        <table class="table table-lg">
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        Employee Name
+                                    </div>
+                                </td>
+                                <td class="col">
+                                    <p class="bg-grey-300 py-1 px-2 rounded">
+                                        @ObjModel.emp_id
+                                    </p>
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        Certificate Updated On<text style="color: red;">*</text>
+                                    </div>
+                                </td>
+                                <td class="col-xs-3 col-md-4">
+                                    <div class="editor-field">
+                                        @if (ObjModel.updated_date > Convert.ToDateTime("01/01/0001"))
+                                        {
+                                            <input type="date" id="updated_date" name="updated_date" value="@ObjModel.updated_date.ToString("yyyy-MM-dd")" class="form-control" />
+                                        }
+                                        else
+                                        {
+                                            <input type="date" id="updated_date" name="updated_date" required class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")"/>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        Certificate Expiry Date<text style="color: red;">*</text>
+                                    </div>
+                                </td>
+                                <td class="col">
+                                    <div class="editor-field">
+                                        @if (ObjModel.expiry_date > Convert.ToDateTime("01/01/0001"))
+                                        {
+                                            <input type="date" id="expiry_date" name="expiry_date" value="@ObjModel.expiry_date.ToString("yyyy-MM-dd")" class="form-control" />
+                                        }
+                                        else
+                                        {
+                                            <input type="date" id="expiry_date" name="expiry_date" required class="form-control" />
+                                        }
+                                    </div>
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        Certificate
+                                    </div>
+                                </td>
+                                <td class="col-xs-3 col-md-4">
+                                    <div class="editor-field">
+                                        <input type="file" name="certificate" id="certificate" onchange="FileFormatValidation(this)" multiple accept=".pdf,.xlsx,.xls,.doc,.docx,.image/*,.png,.jpeg,.jpg" @*class="bootstrap-uploader" data-fouc*@ />
+                                        @if (ObjModel.certificate != null && ObjModel.certificate != "" && ObjModel.upload.Length > 0)
+                                        {
+
+                                            <span class="form-text text-muted">
+                                                <code>
+                                                    (Uncheck in case to remove a uploaded file)
+                                                </code>
+                                            </span>
+                                            foreach (var docs in ObjModel.certificate.Trim(',').Split(','))
+                                            {
+                                                <div class="form-check">
+                                                    <label class="form-check-label">
+                                                        <input type="checkbox" id="QCDocsVal" name="QCDocsVal" class="form-check-input-styled QCDocsVal" value="@docs.Trim(',')" checked title="Uncheck in case to remove a uploaded file" data-fouc />
+                                                        <input type="hidden" id="QCDocsValselectall" name="QCDocsValselectall" />
+                                                        <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" class="text-orange">
+                                                            Preview
+                                                        </a>
+                                                    </label>
+                                                </div>
+                                            }
+                                        }
+                                    </div>
+                                </td>
+                             
+                            </tr>
+                         
+                        </table>
+
+                    </fieldset>
+                </div>
+                <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+
+                    @Html.ActionLink("Back to List", "TrainingPlanList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+                    <div class="mt-2 mt-sm-0">
+                        <button class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" id="btnCreate" type="submit" value="Save" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Save</button>
+                    </div>
+                </div>
+
+            </div>
+        }
+    </div>
+
+
+    @section scripts {
+        <script>
+
+
+               $(document).ready(function () {
+
+            @if (TempData["alertdata"] != null)
+           {
+
+                                        @: new Noty({
+                                        @:     text: '@TempData["alertdata"]',
+                                        @:     type: 'error'
+                                        @:     }).show();
+
+            }
+
+            @if (@TempData["Successdata"] != null)
+            {
+
+                                        @:    new Noty({
+                                        @:       text: '@TempData["Successdata"]',
+                                        @:       type: 'success'
+                                        @:        }).show();
+
+             }
+               });
+
+           
+            $('.form-check-input-styled').uniform();
+            $("#QCDocsVal").click(function () {
+                if ($("#QCDocsVal").prop('checked')) {
+                    {
+                        $(this).prop('checked', true);
+                    }
+                }
+                else {
+                    $(this).prop('checked', false);
+                    document.getElementById("QCDocsValselectall").value = "DeleteQC";
+                }
+            });
+            function FileFormatValidation(file) {
+                var ext = file.value.split(".").pop().toLowerCase();
+                if ($.inArray(ext, ["doc", "pdf", "docx", "xls", "xlsx", , "png", "jpg", "jpeg"]) == -1) {
+                    file.value = "";
+                    jAlert("Invalid file format, please upload only doc, pdf, docx, xls, xlsx, png, jpeg, jpg format");
+                }
+            }
+            var hideClass = 'invisible';
+            if (document.getElementById("itemcnt").value == "1") {
+                document.getElementById("hidden card1").classList.remove(hideClass);
+            }
+            function GetISOClauses() {
+                $("#Audit_criteria").on('select2:select', function (e) {
+                    e.stopImmediatePropagation();
+                    sStd = e.params.data.id;
+                    jQuery.ajax({
+                        url: '@Url.Action("FunISOClauseList", "MgmtDocuments")',
+                        type: 'POST',
+                        dataType: "json",
+                        data: { 'ISOStdId': sStd },
+                        success: function (result) {
+                            if (result != null && result.length > 0) {
+                                $.each(result, function (index, item) {
+                                    $("#audit_clause").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                                    $("#audit_clause").trigger('change');
+                                });
+                                return;
+                            }
+                            else {
+                                bootbox.alert({
+                                    title: 'ISOClause List',
+                                    message: 'No Clauses exists.'
+                                });
+                                return;
+                            }
+                        }
+                    });
+                });
+
+                var array = new Array();
+                $("#Audit_criteria").on('select2:unselect', function (e) {
+                    e.stopImmediatePropagation();
+                    sStd = e.params.data.id;
+                    jQuery.ajax({
+                        url: '@Url.Action("FunISOClauseList", "MgmtDocuments")',
+                        type: 'POST',
+                        dataType: "json",
+                        data: { 'ISOStdId': sStd },
+                        success: function (result) {
+                            if (result != null && result.length > 0) {
+                                $.each(result, function (index, item) {
+                                    array[index] = item.Value;
+                                    $("#audit_clause option[value='" + array[index] + "']").remove();
+                                    $("#audit_clause").trigger('change');
+                                });
+                                return;
+                            }
+                        }
+                    });
+                });
+            }
+                var table1 = function () {
+                    @*var ShowEdit = @(Obj.GetCurrentUserSession().InternalDoc.Contains("3") ? "true" : "false");
+              var ShowDownld = @(Obj.GetCurrentUserSession().InternalDoc.Contains("4") ? "true" : "false");
+              var ShowDel = @(Obj.GetCurrentUserSession().InternalDoc.Contains("5") ? "true" : "false");*@
+
+                    // Basic Datatable examples
+                    var _componentDatatableBasic = function () {
+                        if (!$().DataTable) {
+                            console.warn('Warning - datatables.min.js is not loaded.');
+                            return;
+                        }
+
+                        //Setting datatable defaults
+                        $.extend($.fn.dataTable.defaults, {
+                            autoWidth: false,
+                            responsive:true,
+                            columnDefs: [{
+                                orderable: false,
+                                //width: 100,
+                                targets: 'not-export-column'
+
+                            }],
+                            responsivePriority: 2, targets: -1,
+                            colReorder: false,
+                            dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                            //dom: 'lBfrtip',
+                            language: {
+                                search: '<span>Filter:</span> _INPUT_',
+                                searchPlaceholder: 'Type to filter...',
+                                lengthMenu: '<span>Show:</span> _MENU_',
+                                paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                            }
+                        });
+
+                        var myClass = "";
+
+
+                        var table = $('#table1').DataTable({
+                            drawCallback: function () {
+
+                                var dropdownMenu;
+
+                                // and when you show it, move it to the body
+                                $('.datatable-responsive').on('show.bs.dropdown', function (e) {
+
+                                    // grab the menu
+                                    dropdownMenu = $(e.target).find('.dropdown-menu');
+
+                                    // detach it and append it to the body
+                                    $('body').append(dropdownMenu.detach());
+
+                                    // grab the new offset position
+                                    var eOffset = $(e.target).offset();
+
+                                    // make sure to place it where it would normally go (this could be improved)
+                                    dropdownMenu.css({
+                                        'display': 'block',
+                                        'top': eOffset.top + $(e.target).outerHeight(),
+                                        'left': eOffset.left
+                                    });
+                                });
+
+                                // and when you hide it, reattach the drop down, and hide it normally
+                                $('.datatable-responsive').on('hide.bs.dropdown', function (e) {
+                                    $(e.target).append(dropdownMenu.detach());
+                                    dropdownMenu.hide();
+                                });
+
+                            },
+
+                            lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                            colReorder: {
+                                fixedColumnsLeft: 1
+                            },
+                            //stateSave: true,
+                            //stateSaveParams: function (settings, data) {
+                            //    for (var i = 0, ien = data.columns.length; i < ien; i++) {
+                            //        delete data.columns[i].visible;
+                            //        delete data.columns[i].search;
+                            //    }
+                            //},
+                            scrollY: '350px',
+                            scrollCollapse: true,
+
+                            keys: {
+                                className: 'focus focus-success'
+                            },
+
+                            buttons: {
+                                buttons: [
+                                    {
+                                        extend: 'copyHtml5',
+                                        className: myClass,//className: 'btn btn-light',
+                                        title: 'Internal Document History Data export',
+                                        exportOptions: {
+                                            columns: ':visible :not(.not-export-column)'
+                                        },
+                                    },
+                                    {
+                                        extend: 'excelHtml5',
+                                        className: myClass,//className: 'btn btn-light',
+                                        title: 'Internal Document  Data export',
+                                        exportOptions: {
+                                            columns: ':visible :not(.not-export-column)'
+                                        },
+
+                                    },
+                                    {
+                                        extend: 'pdfHtml5',
+                                        className: myClass,//className: 'btn btn-light',
+                                        title: 'Internal Document  Data export',
+                                        exportOptions: {
+                                            columns: ':visible :not(.not-export-column)'
+                                        },
+                                    },
+                                    {
+                                        extend: 'csvHtml5',
+                                        className: myClass,//className: 'btn btn-light',
+                                        title: 'Internal Document  Data export',
+                                        exportOptions: {
+                                            columns: ':visible :not(.not-export-column)'
+                                        },
+                                    },
+                                    {
+                                        extend: 'print',
+                                        className: myClass,//className: 'btn btn-light',
+                                        title: 'Internal Document  Data export',
+                                        exportOptions: {
+                                            columns: ':visible :not(.not-export-column)'
+                                        },
+                                    },
+
+                                    {
+                                        extend: 'colvis',
+                                        text: '<i class="icon-three-bars"></i>',
+                                        className: 'btn bg-blue btn-icon dropdown-toggle',
+                                        columns: ':visible:not(.not-export-column)'
+                                    }
+                                ]
+                            }
+
+                        });
+                        // Adjust columns on window resize
+                        setTimeout(function () {
+                            $(window).on('resize', function () {
+                                table.columns.adjust();
+                            });
+                        }, 100);
+
+
+                        //Redraw table on click toggle. -------table.columns.adjust doesn't work properly upon calling after toggle (width increase/decrease = redraw table.).
+                        $('.sidebar-control').on('click', function () {
+
+                            setTimeout(function () {
+                                //alert("gii");
+
+                                table.columns.adjust().draw();
+                                $("#table1").resize();
+                            } , 100);
+
+                        });
+                        //}
+
+                        $('#table1').on('page.dt', function () {
+                            //table.draw();
+                            //alert("zzz1");
+                            $("#table1").resize();
+
+                        });
+
+                        $('#table1').on('column-visibility.dt', function () {
+                            //table.draw();
+                            //alert("zzz2");
+                            $("#table1").resize();
+
+                        });
+
+                        $('#table1').on('order.dt', function () {
+                            //table.draw();
+                            //alert("zzz3");
+                            $("#table1").resize();
+
+                        });
+
+
+                        $('#table1').on('responsive-display.dt', function () {
+                            //table.draw();
+                            //alert("zzz4");
+                            $("#table1").resize();
+
+                        });
+
+
+                        $('#table1').on('responsive-resize.dt', function () {
+                            //table.draw();
+                            //alert("zzz4");
+                            $("#table1").resize();
+
+                        });
+
+
+                        //.on('order.dt', function () {
+                        //    table.columns.adjust().draw();
+                        //    $("#qhse").resize(); })
+                        //.on('search.dt', function () {
+                        //    table.columns.adjust().draw();
+                        //    $("#qhse").resize(); })
+
+                        //.on('column-visibility.dt', function () {
+                        //    table.columns.adjust().draw();
+                        //    $("#qhse").resize();
+                        //})
+                    };
+
+                    // Select2 for length menu styling
+                    var _componentSelect2 = function () {
+                        if (!$().select2) {
+                            console.warn('Warning - select2.min.js is not loaded.');
+                            return;
+                        }
+
+                        // Initialize
+                        $('.dataTables_length select').select2({
+                            minimumResultsForSearch: Infinity,
+                            dropdownAutoWidth: true,
+                            width: 'auto'
+                        });
+                    };
+
+
+                    //
+                    // Return objects assigned to module
+                    //
+
+                    return {
+                        init: function () {
+                            _componentDatatableBasic();
+                            _componentSelect2();
+                        }
+                    }
+                }();
+
+
+                // Initialize module
+                // ------------------------------
+
+                document.addEventListener('DOMContentLoaded', function () {
+                    table1.init();
+                });
+
+        </script>
+
+    }

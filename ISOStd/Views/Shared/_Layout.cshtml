@@ -405,6 +405,7 @@
 
         System.Data.DataSet dsApproveInspChecklist = new System.Data.DataSet();
         System.Data.DataSet dsApproveInspPlan = new System.Data.DataSet();
+        System.Data.DataSet dsApproveTrainingPlan = new System.Data.DataSet();
 
         //Review Dataset
         System.Data.DataSet dsJDReview = new System.Data.DataSet();
@@ -416,6 +417,7 @@
         System.Data.DataSet dsReviewRiskHRR = new System.Data.DataSet();
         System.Data.DataSet dsSuppReevalationReview = new System.Data.DataSet();
         System.Data.DataSet dsReviewInspChecklist = new System.Data.DataSet();
+        System.Data.DataSet dsReviewTrainingPlan = new System.Data.DataSet();
 
         ISOStd.Models.RiskRegisterActivityModels objRisk = new ISOStd.Models.RiskRegisterActivityModels();
         ISOStd.Models.RiskRegisterActivityEvaluationModels objRiskEvl = new ISOStd.Models.RiskRegisterActivityEvaluationModels();
@@ -441,6 +443,8 @@
         //dsSuppReevalationReview = objGlobaldata.getListPendingForReviewSuppReevaluation(objUser.empid);
 
         //dsReviewInspChecklist = objGlobaldata.getListPendingForReviewInspChecklist(objUser.empid);
+
+        dsReviewTrainingPlan = objGlobaldata.getListPendingForReviewTrainingPlan(objUser.empid);
 
         //Approval
 
@@ -504,6 +508,7 @@
 
         dsApproveInspPlan = objGlobaldata.getListPendingForApproveInspPlan(objUser.empid);
 
+        dsApproveTrainingPlan = objGlobaldata.getListPendingForApproveTrainingPlan(objUser.empid);
 
         //
 
@@ -650,9 +655,12 @@
         {
             cnt += dsApproveInspPlan.Tables[0].Rows.Count;
         }
-
-        //Auditcount
-        if (dsAudit != null && dsAudit.Tables.Count > 0)
+        if (dsApproveTrainingPlan != null)
+        {
+            cnt += dsApproveTrainingPlan.Tables[0].Rows.Count;
+        }
+        //Auditcount 
+        if (dsAudit != null  && dsAudit.Tables.Count > 0)
         {
             cnt += dsAudit.Tables[0].Rows.Count;
         }
@@ -724,6 +732,10 @@
         if (dsReviewInspChecklist != null && dsReviewInspChecklist.Tables.Count > 0)
         {
             cnt2 += dsReviewInspChecklist.Tables[0].Rows.Count;
+        }
+        if (dsReviewTrainingPlan != null)
+        {
+            cnt2 += dsReviewTrainingPlan.Tables[0].Rows.Count;
         }
     }
 
@@ -1291,6 +1303,34 @@
                         </div>
 
                         <div class="dropdown-content-body dropdown-scrollable">
+                            @if (dsReviewTrainingPlan != null && dsReviewTrainingPlan.Tables.Count > 0 && dsReviewTrainingPlan.Tables[0].Rows.Count > 0)
+                            {
+                                <hr />
+                                <p class="font-weight-bold text-center">Training Plan</p>
+                                <hr />
+                                <ul class="media-list">
+                                    @for (int i = 0; i < dsReviewTrainingPlan.Tables[0].Rows.Count; i++)
+                                    {
+
+                                        <li class="media" id="@dsReviewTrainingPlan.Tables[0].Rows[i]["id_training_plan"].ToString()">
+                                            <div class="mr-3 w-25">
+
+                                                <a href='@Url.Action("TrainingPlanDetail", "TrainingPlan", new { id_training_plan= dsReviewTrainingPlan.Tables[0].Rows[i]["id_training_plan"].ToString()})' title="Document Details" class="badge badge-flat badge-icon border-teal text-teal-600"><i class="icon-file-text2"></i></a>
+                                                <br /><span class="font-weight-semibold"> Logged By <text class="text-blue">@objGlobaldata.GetMultiHrEmpNameById(dsReviewTrainingPlan.Tables[0].Rows[i]["logged_by"].ToString())</text></span>
+                                            </div>
+                                            <div class="media-body">
+
+                                                <div class="media-title">
+
+                                                    <span class="font-weight-semibold">Topic:<text class="text-blue">@objGlobaldata.GetTrainingTopicById(dsReviewTrainingPlan.Tables[0].Rows[i]["topic"].ToString()) </text></span>
+                                                    <br />
+                                                    <span class="font-weight-semibold">Department:<text class="text-blue">@objGlobaldata.GetMultiDeptNameById(dsReviewTrainingPlan.Tables[0].Rows[i]["department"].ToString()) </text></span>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    }
+                                </ul>
+                            }
                             @if (dsJDReview != null && dsJDReview.Tables.Count > 0 && dsJDReview.Tables[0].Rows.Count > 0)
                             {
                                 <hr />
@@ -1623,6 +1663,34 @@
 
                         </div>
                         <div class="dropdown-content-body dropdown-scrollable">
+                            @if (dsApproveTrainingPlan != null && dsApproveTrainingPlan.Tables.Count > 0 && dsApproveTrainingPlan.Tables[0].Rows.Count > 0)
+                            {
+                                <hr />
+                                <p class="font-weight-bold text-center">Training Plan</p>
+                                <hr />
+                                <ul class="media-list">
+                                    @for (int i = 0; i < dsApproveTrainingPlan.Tables[0].Rows.Count; i++)
+                                    {
+
+                                        <li class="media" id="@dsApproveTrainingPlan.Tables[0].Rows[i]["id_training_plan"].ToString()">
+                                            <div class="mr-3 w-25">
+
+                                                <a href='@Url.Action("TrainingPlanDetail", "TrainingPlan", new { id_training_plan= dsApproveTrainingPlan.Tables[0].Rows[i]["id_training_plan"].ToString()})' title="Document Details" class="badge badge-flat badge-icon border-teal text-teal-600"><i class="icon-file-text2"></i></a>
+                                                <br /><span class="font-weight-semibold"> Logged By <text class="text-blue">@objGlobaldata.GetMultiHrEmpNameById(dsApproveTrainingPlan.Tables[0].Rows[i]["logged_by"].ToString())</text></span>
+                                            </div>
+                                            <div class="media-body">
+
+                                                <div class="media-title">
+
+                                                    <span class="font-weight-semibold">Topic:<text class="text-blue">@objGlobaldata.GetTrainingTopicById(dsApproveTrainingPlan.Tables[0].Rows[i]["topic"].ToString()) </text></span>
+                                                    <br />
+                                                    <span class="font-weight-semibold">Department:<text class="text-blue">@objGlobaldata.GetMultiDeptNameById(dsApproveTrainingPlan.Tables[0].Rows[i]["department"].ToString()) </text></span>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    }
+                                </ul>
+                            }
                             @if (dsQRisk != null && dsQRisk.Tables.Count > 0 && dsQRisk.Tables[0].Rows.Count > 0)
                             {
                                 <hr />
@@ -3284,6 +3352,8 @@
                                             <li class="nav-item"><a href='@Url.Action("EmployeeTrainingOrientationList", "TrainingOrientation", null)' class="nav-link @(ViewBag.SubMenutype == "EmployeeTrainingOrientationList" ? "active" : "")" onclick="HyperLinkProgressIconFunction()">Training Lists </a></li>
                                         }*@
                                     <li class="nav-item"><a href='@Url.Action("TrainingStaffList", "TrainingStaff", null)' class="nav-link @(ViewBag.SubMenutype == "Staff_Training" ? "active" : "")" onclick="HyperLinkProgressIconFunction()"> Staff Training Request </a></li>
+
+                                    <li class="nav-item"><a href='@Url.Action("TrainingPlanList", "TrainingPlan", null)' class="nav-link @(ViewBag.SubMenutype == "TrainingPlanList" ? "active" : "")" onclick="HyperLinkProgressIconFunction()"> Training Plan </a></li>
 
                                     <li class="nav-item"><a href='@Url.Action("TrainingEventsList", "TrainingEvents", null)' class="nav-link @(ViewBag.SubMenutype == "TrainingEvents" ? "active" : "")" onclick="HyperLinkProgressIconFunction()"> Training Event List </a></li>
 

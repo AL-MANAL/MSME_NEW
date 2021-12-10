@@ -1,0 +1,346 @@
+﻿@model ISOStd.Models.TrainingPlanModels
+
+@{
+    ViewBag.Title = "";
+
+}
+
+@section featured {
+    <div class="page-header page-header-light">
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("TrainingPlanList", "TrainingPlan", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Training Plan List</span>
+                    </a>
+                    <span class="breadcrumb-item active">Add Training Plan</span>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+}
+@using (Html.BeginForm("AddTrainingPlan", "TrainingPlan", FormMethod.Post,
+                                             new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Add Training Plan</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+                <table class="table table-lg">
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.division)<text style="color: red;">*</text>
+                        </td>
+                        <td class="col">
+                            <select class="form-control select-fixed-multiple" data-fouc id="division" name="division" onchange="GetDeptList()" required>
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.Branch != null)
+                                {
+                                    foreach (var data in ViewBag.Branch)
+                                    {
+                                        if (Array.IndexOf(Model.division.ToString().Split(','), data.Value) >= 0)
+                                        {
+                                            <option value='@data.Value' selected>@data.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@data.Value'>@data.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                        </td>
+
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.department)<text style="color: red;">*</text>
+                        </td>
+                        <td class="col">
+                            <select class="form-control select-fixed-multiple" data-fouc id="department" name="department" required>
+                                @if (ViewBag.Department != null)
+                                {
+                                    foreach (var data in ViewBag.Department)
+                                    {
+                                        if (Array.IndexOf(Model.department.ToString().Split(','), data.Value) >= 0)
+                                        {
+                                            <option value='@data.Value' selected>@data.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@data.Value'>@data.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                        </td>
+
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.location)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-fixed-multiple" data-fouc id="location" name="location" required>
+                                    @if (ViewBag.Location != null)
+                                    {
+                                        foreach (var item in ViewBag.Location)
+                                        {
+                                            if (Array.IndexOf(Model.location.ToString().Split(','), item.Value) >= 0)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.topic)<text style="color: red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-fixed-multiple" data-fouc id="topic" name="topic" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.Topic != null)
+                                    {
+                                        foreach (var item in ViewBag.Topic)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.emp_id)<text style="color: red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <div class="editor-field">
+                                <select class="form-control select-fixed-multiple" data-fouc id="emp_id" name="emp_id" multiple required>
+
+                                    @if (ViewBag.EmpList != null)
+                                    {
+                                        foreach (var item in ViewBag.EmpList)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+                <fieldset class="border p-2">
+                    <legend class="font-weight-semibold text-success">Training duration</legend>
+                    <table class="table table-lg">
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.DisplayNameFor(model => model.from_date)<text style="color: red;">*</text>
+                            </td>
+                            <td class="col">
+                                <input type="date" class="form-control" name="from_date" id="from_date" required />
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                @Html.DisplayNameFor(model => model.to_date)<text style="color: red;">*</text>
+                            </td>
+                            <td class="col">
+                                <input type="date" class="form-control" name="to_date" id="to_date" required />
+                            </td>
+                        </tr>
+                    </table>
+                </fieldset>
+                <table class="table table-lg">
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.source_id)<text style="color: red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-fixed-multiple" data-fouc id="source_id" name="source_id"  required onchange="setSource()">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.Source != null)
+                                    {
+                                        foreach (var item in ViewBag.Source)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.trainer_name)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-fixed-multiple" data-fouc id="trainer_name" name="trainer_name" disabled>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.Trainer != null)
+                                    {
+                                        foreach (var item in ViewBag.Trainer)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.ext_entity)
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <input type="text" class="form-control" name="ext_entity" id="ext_entity" disabled/>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.reviewed_by)<text style="color: red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-fixed-multiple" data-fouc id="reviewed_by" name="reviewed_by" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.ReviewedBy != null)
+                                    {
+                                        foreach (var item in ViewBag.ReviewedBy)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.approved_by)<text style="color: red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-fixed-multiple" data-fouc id="approved_by" name="approved_by" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.ApprovedBy != null)
+                                    {
+                                        foreach (var item in ViewBag.ApprovedBy)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                    </tr>
+                    </table>
+</div>
+            <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+                @Html.ActionLink("Back to List", "TrainingPlanList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+                <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Save</button>
+            </div>
+        </div>
+    </div>
+}
+
+
+@section Scripts {
+    <script>
+
+        function setSource() {
+            var source_id = $("#source_id option:selected").text();
+
+            if (source_id == "Internal") {
+                $("#trainer_name").attr('required', true);
+                $("#trainer_name").attr('disabled', false);
+
+                $("#ext_entity").attr('disabled', true);
+                $("#ext_entity").attr('required', false);
+                document.getElementById("ext_entity").value = "";
+
+            }
+            else {
+                $("#trainer_name").attr('required', false);
+                $("#trainer_name").attr('disabled', true);
+                $("#trainer_name").val('').trigger('change');
+
+                $("#ext_entity").attr('disabled', false);
+                $("#ext_entity").attr('required', true);
+ 
+            }
+        }
+
+        function GetDeptList() {
+            var selectedValues = [];
+            $("#division :selected").each(function () {
+                selectedValues.push($(this).val());
+            });
+            // var selectedValues = $("#division option:selected").val();
+            // alert(selectedValues);
+            jQuery.ajax({
+                url: '@Url.Action("FunGetAllDeptList", "EmployeeDetails")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'branch': selectedValues },
+                success: function (result) {
+                    GetLocList(selectedValues);
+                    GetEmpList(selectedValues);
+                    $("#department").children('option').remove();
+                    $("#department").trigger('change');
+                    if (result != null && result.length > 0) {
+                        $.each(result, function (index, item) {
+                            $("#department").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                            $("#department").trigger('change');
+                        });
+                        return;
+                    }
+                    //else {
+                    //    bootbox.alert({
+                    //        title: 'Department List',
+                    //        message: 'No Department exists.'
+                    //    });
+                    //}
+                }
+            });
+        }
+
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

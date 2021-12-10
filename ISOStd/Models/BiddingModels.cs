@@ -127,7 +127,7 @@ namespace ISOStd.Models
         {
             try
             {
-                string sInformation = "", sHeader = "";
+                string sHeader = "";
                 string sCCList = objGlobalData.GetHrEmpEmailIdById(objBidModels.preparedby);
 
                 string sUserName = objGlobalData.GetMultiHrEmpNameById(objBidModels.checkedby);
@@ -239,7 +239,7 @@ namespace ISOStd.Models
         {
             try
             {
-                string sInformation = "", sHeader = "";
+                string sHeader = "";
 
                 string sSqlStmt = "select id_bidding,client,folderref,projectname,submission_date,preparedby,checkedby,proposalref"
                     + ",proposal_date from t_bidding where id_bidding='" + sid_bidding + "'";

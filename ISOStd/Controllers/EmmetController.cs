@@ -1490,7 +1490,7 @@ namespace ISOStd.Controllers
                     }
                 }
 
-                if (objModel.category != null && objModel.material != null && objModel.price != null)
+                if (objModel.category != null && objModel.material != null)
                 {
                     EmmetModels objEmmet = new EmmetModels();
                     objEmmet.category = form["category"];
@@ -2281,7 +2281,7 @@ namespace ISOStd.Controllers
                     }
                 }
 
-                if (objModel.empid != null && objModel.category != null && objModel.material != null && objModel.issue_qty != null)
+                if (objModel.empid != null && objModel.category != null && objModel.material != null)
                 {
                     EmmetModels objEmmet = new EmmetModels();
 

@@ -9,6 +9,7 @@ namespace ISOStd.Controllers
     [InitializeSimpleMembership]
     public class AccountController : Controller
     {
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private clsGlobal objGlobaldata = new clsGlobal();
         //
         // GET: /Account/Login
@@ -16,6 +17,7 @@ namespace ISOStd.Controllers
         [AllowAnonymous]
         public ActionResult Login()
         {
+            log.Info("Hello logging world!");
             //ViewBag.ReturnUrl = returnUrl;
 
             ViewBag.VerNo = objGlobaldata.GetVersionNumber();

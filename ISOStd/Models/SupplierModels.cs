@@ -197,7 +197,6 @@ namespace ISOStd.Models
             try
             {
                 string dtDateOfExpiry = objSupplierModels.License_Expires.ToString("yyyy/MM/dd HH:mm");
-                string sColumn = "", sValues = "";
                // string sBranch = objGlobalData.GetCurrentUserSession().division;
 
                 string sSqlstmt = "insert into t_supplier (SupplierCode, SupplierName, SupplyScope, ApprovalCriteria, ApprovedBy, Remarks, Added_Updated_By, ApprovedOn,"

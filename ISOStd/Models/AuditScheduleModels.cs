@@ -242,7 +242,7 @@ namespace ISOStd.Models
                 string sType = "SheduleAudit";
                 string sid_audit_schedule = objAuditList.ScheculeList[0].id_audit_schedule;
 
-                string sHeader, sInformation = "", sTitle = "", sSubject = "", sContent = "", aAttachment = "", BccEmailIds = "";
+                string sHeader, sInformation = "", sSubject = "", sContent = "", aAttachment = "";
 
                 DataSet dsEmailXML = new DataSet();
                 dsEmailXML.ReadXml(HttpContext.Current.Server.MapPath("~/EmailTemplates.xml"));

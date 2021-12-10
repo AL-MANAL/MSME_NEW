@@ -579,7 +579,7 @@ namespace ISOStd.Models
                 {
                     //objGlobalData.AddFunctionalLog("Step");
                     //AddFunctionalLog("Step");
-                    string sHeader, sInformation = "", sTitle = "", sSubject = "", sContent = "", aAttachment = "", aAttachment1 = "", BccEmailIds = "";
+                    string sHeader, sInformation = "", sSubject = "", sContent = "", aAttachment = "", aAttachment1 = "";
 
                     //using streamreader for reading my htmltemplate 
                     //Form the Email Subject and Body content
@@ -726,7 +726,7 @@ namespace ISOStd.Models
                 {
                     //objGlobalData.AddFunctionalLog("Step");
                     //AddFunctionalLog("Step");
-                    string sHeader, sInformation = "", RejectaAttachment = "", sSubject = "", sContent = "", aAttachment = "", Attachment = "";
+                    string sHeader, sInformation = "", RejectaAttachment = "", sSubject = "", sContent = "";
 
                     //using streamreader for reading my htmltemplate 
                     //Form the Email Subject and Body content
@@ -864,7 +864,7 @@ namespace ISOStd.Models
                 {
                     //objGlobalData.AddFunctionalLog("Step");
                     //AddFunctionalLog("Step");
-                    string sHeader, sInformation = "", sTitle = "", sSubject = "", sContent = "", aAttachment = "", BccEmailIds = "";
+                    string sHeader, sInformation = "", sSubject = "", sContent = "", aAttachment = "";
 
                     //using streamreader for reading my htmltemplate 
                     //Form the Email Subject and Body content
@@ -1153,7 +1153,7 @@ namespace ISOStd.Models
 
                 if (dsNCList.Tables.Count > 0 && dsNCList.Tables[0].Rows.Count > 0)
                 {
-                    string sHeader, sInformation = "", sTitle = "", sSubject = "", sContent = "", aAttachment = "", BccEmailIds = "";
+                    string sHeader, sInformation = "", sSubject = "", sContent = "", aAttachment = "";
 
                     //Form the Email Subject and Body content
                     DataSet dsEmailXML = new DataSet();

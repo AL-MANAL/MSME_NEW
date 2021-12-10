@@ -701,7 +701,7 @@ namespace ISOStd.Models
                 if (dsList.Tables.Count > 0 && dsList.Tables[0].Rows.Count > 0)
                 {
 
-                    string sHeader, sInformation = "", sTitle = "", sSubject = "", sContent = "", aAttachment = "", BccEmailIds = "";
+                    string sHeader, sSubject = "", sContent = "", aAttachment = "";
 
                     DataSet dsEmailXML = new DataSet();
                     dsEmailXML.ReadXml(HttpContext.Current.Server.MapPath("~/EmailTemplates.xml"));
@@ -763,7 +763,7 @@ namespace ISOStd.Models
                     string sid_inspection_question = "null";
                     sSqlstmt = sSqlstmt + "insert into t_inspection_questions(id_inspection_question,id_question_master,InspectionQuestions,criticality,criteria";
 
-                    string sFieldValue = "",  sValue = "", sStatement = ""; ;
+                    string sFieldValue = "",  sValue = ""; ;
                     if (objInspList.InspectionQstList[i].id_inspection_question != null)
                     {
                         sid_inspection_question = objInspList.InspectionQstList[i].id_inspection_question;
@@ -818,7 +818,7 @@ namespace ISOStd.Models
                 if (dsList.Tables.Count > 0 && dsList.Tables[0].Rows.Count > 0)
                 {
 
-                    string sHeader, sInformation = "", sTitle = "", sSubject = "", sContent = "", aAttachment = "", BccEmailIds = "";
+                    string sHeader, sSubject = "", sContent = "", aAttachment = "";
 
                     DataSet dsEmailXML = new DataSet();
                     dsEmailXML.ReadXml(HttpContext.Current.Server.MapPath("~/EmailTemplates.xml"));
@@ -933,7 +933,7 @@ namespace ISOStd.Models
                 if (dsList.Tables.Count > 0 && dsList.Tables[0].Rows.Count > 0)
                 {
 
-                    string sHeader, sInformation = "", sTitle = "", sSubject = "", sContent = "", aAttachment = "", BccEmailIds = "";
+                    string sHeader, sSubject = "", sContent = "", aAttachment = "";
 
                     DataSet dsEmailXML = new DataSet();
                     dsEmailXML.ReadXml(HttpContext.Current.Server.MapPath("~/EmailTemplates.xml"));
@@ -1168,7 +1168,7 @@ namespace ISOStd.Models
                 if (dsList.Tables.Count > 0 && dsList.Tables[0].Rows.Count > 0)
                 {
 
-                    string sHeader, sInformation = "", sTitle = "", sSubject = "", sContent = "", aAttachment = "", BccEmailIds = "";
+                    string sHeader, sInformation = "", sSubject = "", sContent = "", aAttachment = "";
 
                     DataSet dsEmailXML = new DataSet();
                     dsEmailXML.ReadXml(HttpContext.Current.Server.MapPath("~/EmailTemplates.xml"));
@@ -1308,7 +1308,7 @@ namespace ISOStd.Models
                 if (dsList.Tables.Count > 0 && dsList.Tables[0].Rows.Count > 0)
                 {
 
-                    string sHeader="", sInformation = "", sTitle = "", sSubject = "", sContent = "", aAttachment = "", BccEmailIds = "";
+                    string sHeader="", sInformation = "", sSubject = "", sContent = "", aAttachment = "";
 
                     DataSet dsEmailXML = new DataSet();
                     dsEmailXML.ReadXml(HttpContext.Current.Server.MapPath("~/EmailTemplates.xml"));
@@ -1467,7 +1467,7 @@ namespace ISOStd.Models
                     string sid_inspection_perform_checklist = "null";
                     sSqlstmt = sSqlstmt + "insert into t_inspection_perform_checklist(id_inspection_perform_checklist,id_inspection_date,id_inspection_plan,InspectionQuestions,criticality,criteria,insp_result,details,upload,action_required,suggestion";
 
-                    string sFieldValue = "", sValue = "", sStatement = ""; ;
+                    string sFieldValue = "", sValue = "";
                     if (objInspList.InspectionQstList[i].id_inspection_perform_checklist != null && objInspList.InspectionQstList[i].id_inspection_perform_checklist != "")
                     {
                         sid_inspection_perform_checklist = objInspList.InspectionQstList[i].id_inspection_perform_checklist;
@@ -1504,7 +1504,7 @@ namespace ISOStd.Models
                 if (dsList.Tables.Count > 0 && dsList.Tables[0].Rows.Count > 0)
                 {
 
-                    string sHeader, sInformation = "", sTitle = "", sSubject = "", sContent = "", aAttachment = "", BccEmailIds = "";
+                    string sHeader, sInformation = "", sSubject = "", sContent = "", aAttachment = "";
 
                     DataSet dsEmailXML = new DataSet();
                     dsEmailXML.ReadXml(HttpContext.Current.Server.MapPath("~/EmailTemplates.xml"));

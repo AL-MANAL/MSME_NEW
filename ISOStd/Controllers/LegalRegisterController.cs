@@ -1981,8 +1981,6 @@ namespace ISOStd.Controllers
                     {
                         LegalRegisterModel objObjectivesModels = new LegalRegisterModel();
 
-                        DateTime dateValues;
-
                         if (DateTime.TryParse(form["updatedDate" + i], out dateValue) == true)
                         {
                             objObjectivesModels.updatedDate = dateValue;

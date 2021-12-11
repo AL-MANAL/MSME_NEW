@@ -1,9 +1,8 @@
-﻿using System;
+﻿using ISOStd.Models;
+using System;
 using System.Web;
 using System.Web.Mvc;
-using System.Web.Routing;
-using System.Web.Security;
-using ISOStd.Models;
+
 namespace ISOStd
 {
     public class FilterConfig
@@ -14,10 +13,12 @@ namespace ISOStd
             filters.Add(new CheckSessionOutAttribute());
         }
     }
+
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, Inherited = true, AllowMultiple = false)]
     public class CheckSessionOutAttribute : ActionFilterAttribute
     {
-        clsGlobal objglobal = new clsGlobal();
+        private clsGlobal objglobal = new clsGlobal();
+
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             string controllerName = filterContext.ActionDescriptor.ControllerDescriptor.ControllerName.ToLower().Trim();
@@ -38,8 +39,6 @@ namespace ISOStd
                     return;
                 }
             }
-
         }
-
     }
 }

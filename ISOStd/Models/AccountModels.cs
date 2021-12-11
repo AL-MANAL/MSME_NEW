@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Data.Entity;
-using System.Globalization;
-using System.Web.Security;
+
 //using MySql.Data.MySqlClient;
 using System.Data;
+using System.Data.Entity;
 using System.Text.RegularExpressions;
 
 namespace ISOStd.Models
@@ -27,13 +25,13 @@ namespace ISOStd.Models
         [Key]
         [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
         public int UserId { get; set; }
+
         public string UserName { get; set; }
     }
 
-  
     public class LoginModel
     {
-        clsGlobal objGlobal = new clsGlobal();
+        private clsGlobal objGlobal = new clsGlobal();
 
         [Required]
         [Display(Name = "User name")]
@@ -51,11 +49,9 @@ namespace ISOStd.Models
         {
             try
             {
-
                 DataSet dsEmp = objGlobal.LoginPaswdExpAuth(sUsername, clsGlobal.Encrypt(sPwd));
                 if (dsEmp.Tables.Count > 0 && dsEmp.Tables[0].Rows.Count > 0)
                 {
-
                     return true;
                 }
             }
@@ -80,7 +76,7 @@ namespace ISOStd.Models
                         dsEmp.Tables[0].Rows[0]["DeptID"].ToString(), dsEmp.Tables[0].Rows[0]["Designation"].ToString(), dsEmp.Tables[0].Rows[0]["DeptInCharge"].ToString(), dsEmp.Tables[0].Rows[0]["Audit_Criteria"].ToString(), dsEmp.Tables[0].Rows[0]["Events"].ToString(),
                         dsEmp.Tables[0].Rows[0]["Documents"].ToString(), dsEmp.Tables[0].Rows[0]["InternalDoc"].ToString(), dsEmp.Tables[0].Rows[0]["ExternalDoc"].ToString(), dsEmp.Tables[0].Rows[0]["Record"].ToString(), dsEmp.Tables[0].Rows[0]["DocChangeReq"].ToString(), dsEmp.Tables[0].Rows[0]["DocTrack"].ToString(),
                         dsEmp.Tables[0].Rows[0]["ObjKPI"].ToString(), dsEmp.Tables[0].Rows[0]["Objectives"].ToString(), dsEmp.Tables[0].Rows[0]["Kpi"].ToString(), dsEmp.Tables[0].Rows[0]["RiskMgmt"].ToString(), dsEmp.Tables[0].Rows[0]["ChangeMgmt"].ToString(),
-                        dsEmp.Tables[0].Rows[0]["ContextOrganise"].ToString(),dsEmp.Tables[0].Rows[0]["Parties"].ToString(), dsEmp.Tables[0].Rows[0]["Issues"].ToString(), dsEmp.Tables[0].Rows[0]["Risk"].ToString(), dsEmp.Tables[0].Rows[0]["HazardRiskReg"].ToString(), dsEmp.Tables[0].Rows[0]["HR"].ToString(),
+                        dsEmp.Tables[0].Rows[0]["ContextOrganise"].ToString(), dsEmp.Tables[0].Rows[0]["Parties"].ToString(), dsEmp.Tables[0].Rows[0]["Issues"].ToString(), dsEmp.Tables[0].Rows[0]["Risk"].ToString(), dsEmp.Tables[0].Rows[0]["HazardRiskReg"].ToString(), dsEmp.Tables[0].Rows[0]["HR"].ToString(),
                         dsEmp.Tables[0].Rows[0]["Emp"].ToString(), dsEmp.Tables[0].Rows[0]["EmpPerfEval"].ToString(), dsEmp.Tables[0].Rows[0]["Competancy"].ToString(), dsEmp.Tables[0].Rows[0]["OrgChart"].ToString(), dsEmp.Tables[0].Rows[0]["ManHour"].ToString(),
                         dsEmp.Tables[0].Rows[0]["ExitEmp"].ToString(), dsEmp.Tables[0].Rows[0]["Visitor"].ToString(), dsEmp.Tables[0].Rows[0]["LeaveMgmt"].ToString(), dsEmp.Tables[0].Rows[0]["LeaveCredit"].ToString(), dsEmp.Tables[0].Rows[0]["AdjustLeave"].ToString(),
                         dsEmp.Tables[0].Rows[0]["ApplyLeave"].ToString(), dsEmp.Tables[0].Rows[0]["LeaveMaster"].ToString(), dsEmp.Tables[0].Rows[0]["Holiday"].ToString(), dsEmp.Tables[0].Rows[0]["ATSS"].ToString(), dsEmp.Tables[0].Rows[0]["ATS"].ToString(),
@@ -121,6 +117,4 @@ namespace ISOStd.Models
         //    return true;
         //}
     }
-
-    
 }

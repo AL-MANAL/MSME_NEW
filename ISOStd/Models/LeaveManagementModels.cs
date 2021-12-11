@@ -296,7 +296,7 @@ namespace ISOStd.Models
         {
             try
             {
-                string sInformation = "", sHeader = "", sCCList="";
+                string sHeader = "", sCCList="";
                
                      sCCList = objGlobalData.GetHrEmpEmailIdById(objGlobalData.GetCurrentUserSession().empid);
                 
@@ -434,7 +434,7 @@ namespace ISOStd.Models
                 if (dsLeaveList.Tables.Count > 0 && dsLeaveList.Tables[0].Rows.Count > 0)
                 {
 
-                    string sInformation = "", sHeader = "";
+                    string sHeader = "";
                     string sCCList = objGlobalData.GetHrEmpEmailIdById(dsLeaveList.Tables[0].Rows[0]["approver"].ToString());
                     string sToEmailId = objGlobalData.GetHrEmpEmailIdById(dsLeaveList.Tables[0].Rows[0]["logged_by"].ToString());
                     string sUserName = objGlobalData.GetEmpHrNameById(dsLeaveList.Tables[0].Rows[0]["logged_by"].ToString());

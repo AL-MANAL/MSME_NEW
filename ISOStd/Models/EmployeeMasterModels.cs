@@ -614,8 +614,7 @@ namespace ISOStd.Models
         {
             try
             {
-                string sInformation = "", sHeader = "", sToEmailId = "", sCCList = "", sUserName = "", sUser = "";
-                string jd_report = "";
+                string sInformation = "", sHeader = "", sToEmailId = "", sCCList = "", sUserName = "";
                 sCCList = objModel.EmailId;
                 sToEmailId = objGlobalData.GetMultiHrEmpEmailIdById(objModel.EvaluatedBy);
                 sUserName = objGlobalData.GetMultiHrEmpNameById(objModel.EvaluatedBy);

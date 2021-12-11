@@ -14,7 +14,7 @@ namespace ISOStd.Controllers
     [PreventFromUrl]
     public class NCController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
+        private clsGlobal objGlobaldata = new clsGlobal();
 
         public NCController()
         {
@@ -28,7 +28,6 @@ namespace ISOStd.Controllers
             NCModels objModel = new NCModels();
             try
             {
-
                 //objModel.division = objGlobaldata.GetCurrentUserSession().division;
                 // objModel.department = objGlobaldata.GetCurrentUserSession().DeptID;
                 //objModel.location = objGlobaldata.GetCurrentUserSession().Work_Location;
@@ -47,8 +46,8 @@ namespace ISOStd.Controllers
                 ViewBag.RaisedDueto = objGlobaldata.GetDropdownList("NC Raised Due to");
                 ViewBag.Impact = objGlobaldata.GetConstantValue("NCImpact");
                 if (Request.QueryString["objective_Id"] != null && Request.QueryString["objective_Id"] != "")
-                { 
-                   ViewBag.objective_Id = Request.QueryString["objective_Id"];
+                {
+                    ViewBag.objective_Id = Request.QueryString["objective_Id"];
                 }
                 ViewBag.SupplierList = objGlobaldata.GetSupplierList();
             }
@@ -59,7 +58,7 @@ namespace ISOStd.Controllers
             }
             return View(objModel);
         }
-       
+
         [HttpPost]
         [AllowAnonymous]
         public ActionResult AddNC(NCModels objModel, FormCollection form, IEnumerable<HttpPostedFileBase> nc_upload)
@@ -79,32 +78,31 @@ namespace ISOStd.Controllers
                     //if (Request.Files.Count > 0)
                     if (nc_upload != null)
                     {
-                    HttpPostedFileBase files = Request.Files[0];
-                    if (nc_upload != null && files.ContentLength > 0)
-                    {
-                        objModel.nc_upload = "";
-                        foreach (var file in nc_upload)
+                        HttpPostedFileBase files = Request.Files[0];
+                        if (nc_upload != null && files.ContentLength > 0)
                         {
-                            try
+                            objModel.nc_upload = "";
+                            foreach (var file in nc_upload)
                             {
-                                string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/NC"), Path.GetFileName(file.FileName));
-                                string sFilename = "NC" + "_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath), sFilepath = Path.GetDirectoryName(spath);
-                                file.SaveAs(sFilepath + "/" + sFilename);
-                                objModel.nc_upload = objModel.nc_upload + "," + "~/DataUpload/MgmtDocs/NC/" + sFilename;
+                                try
+                                {
+                                    string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/NC"), Path.GetFileName(file.FileName));
+                                    string sFilename = "NC" + "_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath), sFilepath = Path.GetDirectoryName(spath);
+                                    file.SaveAs(sFilepath + "/" + sFilename);
+                                    objModel.nc_upload = objModel.nc_upload + "," + "~/DataUpload/MgmtDocs/NC/" + sFilename;
+                                }
+                                catch (Exception ex)
+                                {
+                                    objGlobaldata.AddFunctionalLog("Exception in AddNC-upload: " + ex.ToString());
+                                }
                             }
-                            catch (Exception ex)
-                            {
-                                objGlobaldata.AddFunctionalLog("Exception in AddNC-upload: " + ex.ToString());
-
-                            }
+                            objModel.nc_upload = objModel.nc_upload.Trim(',');
                         }
-                        objModel.nc_upload = objModel.nc_upload.Trim(',');
+                        else
+                        {
+                            ViewBag.Message = "You have not specified a file.";
+                        }
                     }
-                    else
-                    {
-                        ViewBag.Message = "You have not specified a file.";
-                    }
-                  }
                     //Issued To
                     for (int i = 0; i < Convert.ToInt16(form["count"]); i++)
                     {
@@ -136,7 +134,7 @@ namespace ISOStd.Controllers
                     {
                         if (form["nempno " + i] != "" && form["nempno " + i] != null)
                         {
-                            objModel.nc_notifiedto =   form["nempno " + i] + "," + objModel.nc_notifiedto;
+                            objModel.nc_notifiedto = form["nempno " + i] + "," + objModel.nc_notifiedto;
                         }
                     }
                     if (objModel.nc_notifiedto != null)
@@ -146,7 +144,7 @@ namespace ISOStd.Controllers
 
                     //NC Issue
                     //NCModelsList objNcList = new NCModelsList();
-                    //objNcList.lstNC = new List<NCModels>();                   
+                    //objNcList.lstNC = new List<NCModels>();
 
                     //for (int i = 0; i < Convert.ToInt16(form["itemcounts"]); i++)
                     //{
@@ -175,7 +173,7 @@ namespace ISOStd.Controllers
                             objNCRelatedModel.nc_related_aspect = form["nc_related_aspect " + i];
                             objNCRelatedModel.nc_related_explain = form["nc_related_explain " + i];
                             objNCRelatedModel.nc_related_doc = form["nc_related_doc " + i];
-                           
+
                             objNCRelatedList.lstNC.Add(objNCRelatedModel);
                         }
                     }
@@ -203,7 +201,7 @@ namespace ISOStd.Controllers
         {
             NCModelsList NcList = new NCModelsList();
             NcList.lstNC = new List<NCModels>();
-          
+
             NCModels objRisk = new NCModels();
 
             try
@@ -220,7 +218,6 @@ namespace ISOStd.Controllers
                     + "nc_impact, nc_risk, risklevel, nc_reportedby,  nc_notifiedto, nc_division, division, department, location,nc_audit,audit_no,nc_raise_dueto," +
                     "(case when nc_issuedto_status=0 then 'Pending' when nc_issuedto_status=1 then 'Accepted' when nc_issuedto_status=2 then 'Rejected' end) as nc_issuedto_status,nc_issuedto_status as nc_issuedto_statusId,nc_initial_status as nc_initial_statusId,ca_verfiry_duedate,nc_issueto,ca_proposed_by,rca_action from t_nc where Active=1";
                 string sSearchtext = "";
-                             
 
                 if (branch_name != null && branch_name != "")
                 {
@@ -272,7 +269,7 @@ namespace ISOStd.Controllers
                                 nc_issuetoId = (dsNCModels.Tables[0].Rows[i]["nc_issueto"].ToString()),
                                 nc_reportedby_dept = objGlobaldata.GetMultiDeptNameById(objGlobaldata.GetDeptIdByHrEmpId(dsNCModels.Tables[0].Rows[i]["nc_reportedby"].ToString())),
                                 nc_issueto_dept = objGlobaldata.GetMultiDeptNameById(objGlobaldata.GetDeptIdByHrEmpId(dsNCModels.Tables[0].Rows[i]["nc_issueto"].ToString())),
-                                  ca_proposed_by = dsNCModels.Tables[0].Rows[i]["ca_proposed_by"].ToString(),
+                                ca_proposed_by = dsNCModels.Tables[0].Rows[i]["ca_proposed_by"].ToString(),
                                 rca_action= dsNCModels.Tables[0].Rows[i]["rca_action"].ToString(),
 
                             };
@@ -297,10 +294,10 @@ namespace ISOStd.Controllers
                             {
                                 for (int j = 0; j < dsNCStatusModels.Tables[0].Rows.Count; j++)
                                 {
-                                    if(dsNCStatusModels.Tables[0].Rows[j]["nc_stauts"].ToString() == "1")
-                                        {
-                                            objNCModels.nc_initial_status = objNCModels.nc_initial_status+","+ "Approved - " + objGlobaldata.GetMultiHrEmpNameById(dsNCStatusModels.Tables[0].Rows[j]["nc_issuedto"].ToString());
-                                        }
+                                    if (dsNCStatusModels.Tables[0].Rows[j]["nc_stauts"].ToString() == "1")
+                                    {
+                                        objNCModels.nc_initial_status = objNCModels.nc_initial_status + "," + "Approved - " + objGlobaldata.GetMultiHrEmpNameById(dsNCStatusModels.Tables[0].Rows[j]["nc_issuedto"].ToString());
+                                    }
                                     if (dsNCStatusModels.Tables[0].Rows[j]["nc_stauts"].ToString() == "0")
                                     {
                                         objNCModels.nc_initial_status = objNCModels.nc_initial_status + "," + "Pending - " + objGlobaldata.GetMultiHrEmpNameById(dsNCStatusModels.Tables[0].Rows[j]["nc_issuedto"].ToString());
@@ -309,7 +306,6 @@ namespace ISOStd.Controllers
                                     {
                                         objNCModels.nc_initial_status = objNCModels.nc_initial_status + "," + "Rejected - " + objGlobaldata.GetMultiHrEmpNameById(dsNCStatusModels.Tables[0].Rows[j]["nc_issuedto"].ToString());
                                     }
-  
                                 }
                                 if (objNCModels.nc_initial_status != null)
                                 {
@@ -333,7 +329,6 @@ namespace ISOStd.Controllers
             }
             return View(NcList.lstNC.ToList());
         }
-              
 
         [AllowAnonymous]
         public ActionResult NCEdit()
@@ -344,7 +339,6 @@ namespace ISOStd.Controllers
             NcList.lstNC = new List<NCModels>();
             try
             {
-               
                 ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
                 ViewBag.ReportedBy = objGlobaldata.GetQADeptandTopmgmtEmployeeList();
                 ViewBag.RiskLevel = objGlobaldata.GetDropdownList("NC Risklevel");
@@ -367,69 +361,69 @@ namespace ISOStd.Controllers
                     {
                         //for (int i = 0; i < dsNCModels.Tables[0].Rows.Count; i++)
                         //{
-                            try
+                        try
+                        {
+                            objModel = new NCModels
                             {
-                                objModel = new NCModels
-                                {
-                                    id_nc = (dsNCModels.Tables[0].Rows[0]["id_nc"].ToString()),
-                                    nc_no = (dsNCModels.Tables[0].Rows[0]["nc_no"].ToString()),
-                                    nc_category = (dsNCModels.Tables[0].Rows[0]["nc_category"].ToString()),
-                                    nc_description = (dsNCModels.Tables[0].Rows[0]["nc_description"].ToString()),
-                                    nc_activity = (dsNCModels.Tables[0].Rows[0]["nc_activity"].ToString()),
-                                    nc_performed = (dsNCModels.Tables[0].Rows[0]["nc_performed"].ToString()),
-                                    nc_pnc = (dsNCModels.Tables[0].Rows[0]["nc_pnc"].ToString()),
-                                    nc_upload = (dsNCModels.Tables[0].Rows[0]["nc_upload"].ToString()),
-                                    nc_impact = (dsNCModels.Tables[0].Rows[0]["nc_impact"].ToString()),
-                                    nc_risk = (dsNCModels.Tables[0].Rows[0]["nc_risk"].ToString()),
-                                    risklevel = (dsNCModels.Tables[0].Rows[0]["risklevel"].ToString()),
-                                    nc_reportedby = /*objGlobaldata.GetMultiHrEmpNameById*/(dsNCModels.Tables[0].Rows[0]["nc_reportedby"].ToString()),
-                                    location = /*objGlobaldata.GetDivisionLocationById*/(dsNCModels.Tables[0].Rows[0]["location"].ToString()),
-                                    nc_notifiedto = /*objGlobaldata.GetMultiHrEmpNameById*/(dsNCModels.Tables[0].Rows[0]["nc_notifiedto"].ToString()),
-                                    department = /*objGlobaldata.GetMultiDeptNameById*/(dsNCModels.Tables[0].Rows[0]["department"].ToString()),
-                                    division = /*objGlobaldata.GetMultiCompanyBranchNameById*/(dsNCModels.Tables[0].Rows[0]["division"].ToString()),
-                                    nc_division = /*objGlobaldata.GetMultiCompanyBranchNameById*/(dsNCModels.Tables[0].Rows[0]["nc_division"].ToString()),
-                                    nc_audit = (dsNCModels.Tables[0].Rows[0]["nc_audit"].ToString()),
-                                    audit_no = (dsNCModels.Tables[0].Rows[0]["audit_no"].ToString()),
-                                    nc_raise_dueto = dsNCModels.Tables[0].Rows[0]["nc_raise_dueto"].ToString(),
+                                id_nc = (dsNCModels.Tables[0].Rows[0]["id_nc"].ToString()),
+                                nc_no = (dsNCModels.Tables[0].Rows[0]["nc_no"].ToString()),
+                                nc_category = (dsNCModels.Tables[0].Rows[0]["nc_category"].ToString()),
+                                nc_description = (dsNCModels.Tables[0].Rows[0]["nc_description"].ToString()),
+                                nc_activity = (dsNCModels.Tables[0].Rows[0]["nc_activity"].ToString()),
+                                nc_performed = (dsNCModels.Tables[0].Rows[0]["nc_performed"].ToString()),
+                                nc_pnc = (dsNCModels.Tables[0].Rows[0]["nc_pnc"].ToString()),
+                                nc_upload = (dsNCModels.Tables[0].Rows[0]["nc_upload"].ToString()),
+                                nc_impact = (dsNCModels.Tables[0].Rows[0]["nc_impact"].ToString()),
+                                nc_risk = (dsNCModels.Tables[0].Rows[0]["nc_risk"].ToString()),
+                                risklevel = (dsNCModels.Tables[0].Rows[0]["risklevel"].ToString()),
+                                nc_reportedby = /*objGlobaldata.GetMultiHrEmpNameById*/(dsNCModels.Tables[0].Rows[0]["nc_reportedby"].ToString()),
+                                location = /*objGlobaldata.GetDivisionLocationById*/(dsNCModels.Tables[0].Rows[0]["location"].ToString()),
+                                nc_notifiedto = /*objGlobaldata.GetMultiHrEmpNameById*/(dsNCModels.Tables[0].Rows[0]["nc_notifiedto"].ToString()),
+                                department = /*objGlobaldata.GetMultiDeptNameById*/(dsNCModels.Tables[0].Rows[0]["department"].ToString()),
+                                division = /*objGlobaldata.GetMultiCompanyBranchNameById*/(dsNCModels.Tables[0].Rows[0]["division"].ToString()),
+                                nc_division = /*objGlobaldata.GetMultiCompanyBranchNameById*/(dsNCModels.Tables[0].Rows[0]["nc_division"].ToString()),
+                                nc_audit = (dsNCModels.Tables[0].Rows[0]["nc_audit"].ToString()),
+                                audit_no = (dsNCModels.Tables[0].Rows[0]["audit_no"].ToString()),
+                                nc_raise_dueto = dsNCModels.Tables[0].Rows[0]["nc_raise_dueto"].ToString(),
 
-                                    oa_no = (dsNCModels.Tables[0].Rows[0]["oa_no"].ToString()),
-                                    model_code = (dsNCModels.Tables[0].Rows[0]["model_code"].ToString()),
-                                    part_name = (dsNCModels.Tables[0].Rows[0]["part_name"].ToString()),
-                                    stage = (dsNCModels.Tables[0].Rows[0]["stage"].ToString()),
-                                    nc_resp_pers = (dsNCModels.Tables[0].Rows[0]["nc_resp_pers"].ToString()),
-                                    supplier_name = (dsNCModels.Tables[0].Rows[0]["supplier_name"].ToString()),
-                                    supplier_dc = (dsNCModels.Tables[0].Rows[0]["supplier_dc"].ToString()),
-                                    dc_po = (dsNCModels.Tables[0].Rows[0]["dc_po"].ToString()),
-                                    batch_qty = (dsNCModels.Tables[0].Rows[0]["batch_qty"].ToString()),
-                                    nc_qty = (dsNCModels.Tables[0].Rows[0]["nc_qty"].ToString()),
-                                    Impact_detail = (dsNCModels.Tables[0].Rows[0]["Impact_detail"].ToString()),
-                                };
-                                if (dsNCModels.Tables[0].Rows[0]["nc_issueto"].ToString() != "")
-                                {
-                                    ViewBag.IssuedToArray = (dsNCModels.Tables[0].Rows[0]["nc_issueto"].ToString()).Split(',');
-                                }
-                                if (dsNCModels.Tables[0].Rows[0]["nc_reportedby"].ToString() != "")
-                                {
-                                    ViewBag.ReportedByArray = (dsNCModels.Tables[0].Rows[0]["nc_reportedby"].ToString()).Split(',');
-                                }
-                                if (dsNCModels.Tables[0].Rows[0]["nc_notifiedto"].ToString() != "")
-                                {
-                                    ViewBag.NotifiedtoArray = (dsNCModels.Tables[0].Rows[0]["nc_notifiedto"].ToString()).Split(',');
-                                }
+                                oa_no = (dsNCModels.Tables[0].Rows[0]["oa_no"].ToString()),
+                                model_code = (dsNCModels.Tables[0].Rows[0]["model_code"].ToString()),
+                                part_name = (dsNCModels.Tables[0].Rows[0]["part_name"].ToString()),
+                                stage = (dsNCModels.Tables[0].Rows[0]["stage"].ToString()),
+                                nc_resp_pers = (dsNCModels.Tables[0].Rows[0]["nc_resp_pers"].ToString()),
+                                supplier_name = (dsNCModels.Tables[0].Rows[0]["supplier_name"].ToString()),
+                                supplier_dc = (dsNCModels.Tables[0].Rows[0]["supplier_dc"].ToString()),
+                                dc_po = (dsNCModels.Tables[0].Rows[0]["dc_po"].ToString()),
+                                batch_qty = (dsNCModels.Tables[0].Rows[0]["batch_qty"].ToString()),
+                                nc_qty = (dsNCModels.Tables[0].Rows[0]["nc_qty"].ToString()),
+                                Impact_detail = (dsNCModels.Tables[0].Rows[0]["Impact_detail"].ToString()),
+                            };
+                            if (dsNCModels.Tables[0].Rows[0]["nc_issueto"].ToString() != "")
+                            {
+                                ViewBag.IssuedToArray = (dsNCModels.Tables[0].Rows[0]["nc_issueto"].ToString()).Split(',');
+                            }
+                            if (dsNCModels.Tables[0].Rows[0]["nc_reportedby"].ToString() != "")
+                            {
+                                ViewBag.ReportedByArray = (dsNCModels.Tables[0].Rows[0]["nc_reportedby"].ToString()).Split(',');
+                            }
+                            if (dsNCModels.Tables[0].Rows[0]["nc_notifiedto"].ToString() != "")
+                            {
+                                ViewBag.NotifiedtoArray = (dsNCModels.Tables[0].Rows[0]["nc_notifiedto"].ToString()).Split(',');
+                            }
 
-                                DateTime dtValue;
-                                if (DateTime.TryParse(dsNCModels.Tables[0].Rows[0]["nc_reported_date"].ToString(), out dtValue))
-                                {
-                                    objModel.nc_reported_date = dtValue;
-                                }
-                                if (DateTime.TryParse(dsNCModels.Tables[0].Rows[0]["nc_detected_date"].ToString(), out dtValue))
-                                {
-                                    objModel.nc_detected_date = dtValue;
-                                }
+                            DateTime dtValue;
+                            if (DateTime.TryParse(dsNCModels.Tables[0].Rows[0]["nc_reported_date"].ToString(), out dtValue))
+                            {
+                                objModel.nc_reported_date = dtValue;
+                            }
+                            if (DateTime.TryParse(dsNCModels.Tables[0].Rows[0]["nc_detected_date"].ToString(), out dtValue))
+                            {
+                                objModel.nc_detected_date = dtValue;
+                            }
 
-                                ViewBag.Branch = objGlobaldata.GetCompanyBranchListbox();
-                                ViewBag.Department = objGlobaldata.GetDepartmentList1(dsNCModels.Tables[0].Rows[0]["nc_division"].ToString());
-                                ViewBag.Location = objGlobaldata.GetLocationbyMultiDivision(dsNCModels.Tables[0].Rows[0]["nc_division"].ToString());
+                            ViewBag.Branch = objGlobaldata.GetCompanyBranchListbox();
+                            ViewBag.Department = objGlobaldata.GetDepartmentList1(dsNCModels.Tables[0].Rows[0]["nc_division"].ToString());
+                            ViewBag.Location = objGlobaldata.GetLocationbyMultiDivision(dsNCModels.Tables[0].Rows[0]["nc_division"].ToString());
 
                             if (dsNCModels.Tables[0].Rows[0]["nc_impact"].ToString().ToLower() == "low")
                             {
@@ -449,12 +443,12 @@ namespace ISOStd.Controllers
                             }
 
                             NcList.lstNC.Add(objModel);
-                            }
-                            catch (Exception ex)
-                            {
-                                objGlobaldata.AddFunctionalLog("Exception in NCEdit: " + ex.ToString());
-                                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            objGlobaldata.AddFunctionalLog("Exception in NCEdit: " + ex.ToString());
+                            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                        }
                         //}
                     }
 
@@ -534,7 +528,7 @@ namespace ISOStd.Controllers
             }
             return View(objModel);
         }
-    
+
         [HttpPost]
         [AllowAnonymous]
         public ActionResult NCEdit(NCModels objModel, FormCollection form, IEnumerable<HttpPostedFileBase> nc_upload)
@@ -552,43 +546,42 @@ namespace ISOStd.Controllers
                     IList<HttpPostedFileBase> nc_uploadList = (IList<HttpPostedFileBase>)nc_upload;
                     string QCDelete = Request.Form["QCDocsValselectall"];
 
-                    if ( nc_uploadList[0] != null)
+                    if (nc_uploadList[0] != null)
+                    {
+                        objModel.nc_upload = "";
+                        foreach (var file in nc_upload)
                         {
-                            objModel.nc_upload = "";
-                            foreach (var file in nc_upload)
+                            try
                             {
-                                try
-                                {
-                                    string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/NC"), Path.GetFileName(file.FileName));
-                                    string sFilename = "NC" + "_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath), sFilepath = Path.GetDirectoryName(spath);
-                                    file.SaveAs(sFilepath + "/" + sFilename);
-                                    objModel.nc_upload = objModel.nc_upload + "," + "~/DataUpload/MgmtDocs/NC/" + sFilename;
-                                }
-                                catch (Exception ex)
-                                {
-                                    objGlobaldata.AddFunctionalLog("Exception in AddNC-upload: " + ex.ToString());
-
-                                }
+                                string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/NC"), Path.GetFileName(file.FileName));
+                                string sFilename = "NC" + "_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath), sFilepath = Path.GetDirectoryName(spath);
+                                file.SaveAs(sFilepath + "/" + sFilename);
+                                objModel.nc_upload = objModel.nc_upload + "," + "~/DataUpload/MgmtDocs/NC/" + sFilename;
                             }
-                            objModel.nc_upload = objModel.nc_upload.Trim(',');
+                            catch (Exception ex)
+                            {
+                                objGlobaldata.AddFunctionalLog("Exception in AddNC-upload: " + ex.ToString());
+                            }
                         }
-                        else
-                        {
-                            ViewBag.Message = "You have not specified a file.";
-                        }
-                        if (form["QCDocsVal"] != null && form["QCDocsVal"] != "")
-                        {
-                            objModel.nc_upload = objModel.nc_upload + "," + form["QCDocsVal"];
-                            objModel.nc_upload = objModel.nc_upload.Trim(',');
-                        }
-                        else if (form["QCDocsVal"] == null && QCDelete != null && nc_uploadList[0] == null)
-                        {
-                            objModel.nc_upload = null;
-                        }
-                        else if (form["QCDocsVal"] == null && nc_uploadList[0] == null)
-                        {
-                            objModel.nc_upload = null;
-                        }
+                        objModel.nc_upload = objModel.nc_upload.Trim(',');
+                    }
+                    else
+                    {
+                        ViewBag.Message = "You have not specified a file.";
+                    }
+                    if (form["QCDocsVal"] != null && form["QCDocsVal"] != "")
+                    {
+                        objModel.nc_upload = objModel.nc_upload + "," + form["QCDocsVal"];
+                        objModel.nc_upload = objModel.nc_upload.Trim(',');
+                    }
+                    else if (form["QCDocsVal"] == null && QCDelete != null && nc_uploadList[0] == null)
+                    {
+                        objModel.nc_upload = null;
+                    }
+                    else if (form["QCDocsVal"] == null && nc_uploadList[0] == null)
+                    {
+                        objModel.nc_upload = null;
+                    }
 
                     //Issued To
                     for (int i = 0; i < Convert.ToInt16(form["count"]); i++)
@@ -682,7 +675,7 @@ namespace ISOStd.Controllers
             }
             return Json(true);
         }
-        
+
         //Disposition
         [AllowAnonymous]
         public ActionResult AddDisposition()
@@ -690,7 +683,7 @@ namespace ISOStd.Controllers
             NCModels objModel = new NCModels();
             try
             {
-                 if (Request.QueryString["id_nc"] != null && Request.QueryString["id_nc"] != "")
+                if (Request.QueryString["id_nc"] != null && Request.QueryString["id_nc"] != "")
                 {
                     string sid_nc = Request.QueryString["id_nc"];
                     ViewBag.id_nc = sid_nc;
@@ -737,7 +730,6 @@ namespace ISOStd.Controllers
                             objModel.disp_notifeddate = dtValue;
                         }
 
-
                         NCModelsList NcDispList = new NCModelsList();
                         NcDispList.lstNC = new List<NCModels>();
 
@@ -762,7 +754,7 @@ namespace ISOStd.Controllers
                                         objDispModel.disp_complete_date = dtValue;
                                     }
                                     NcDispList.lstNC.Add(objDispModel);
-                                 }
+                                }
                                 catch (Exception ex)
                                 {
                                     objGlobaldata.AddFunctionalLog("Exception in AddDisposition: " + ex.ToString());
@@ -771,14 +763,14 @@ namespace ISOStd.Controllers
                                 ViewBag.NcDispList = NcDispList;
                             }
                         }
-                        
+
                         return View(objModel);
                     }
                     else
                     {
                         TempData["alertdata"] = "No Data exists";
                         return RedirectToAction("NCList");
-                    }                   
+                    }
                 }
             }
             catch (Exception ex)
@@ -804,7 +796,6 @@ namespace ISOStd.Controllers
                 {
                     objModel.disp_notifeddate = dateValue;
                 }
-
 
                 //Notified To
                 for (int i = 0; i < Convert.ToInt16(form["itemcnt1"]); i++)
@@ -882,7 +873,6 @@ namespace ISOStd.Controllers
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 }
-
             }
             catch (Exception ex)
             {
@@ -891,7 +881,6 @@ namespace ISOStd.Controllers
             }
             return Json(true);
         }
-
 
         //Team
         [AllowAnonymous]
@@ -930,9 +919,8 @@ namespace ISOStd.Controllers
                             nc_activity = (dsNCModels.Tables[0].Rows[0]["nc_activity"].ToString()),
                             nc_performed = (dsNCModels.Tables[0].Rows[0]["nc_performed"].ToString()),
                             nc_upload = (dsNCModels.Tables[0].Rows[0]["nc_upload"].ToString()),
-
                         };
-                        if(dsNCModels.Tables[0].Rows[0]["nc_team"].ToString() != "")
+                        if (dsNCModels.Tables[0].Rows[0]["nc_team"].ToString() != "")
                         {
                             ViewBag.TeamArray = (dsNCModels.Tables[0].Rows[0]["nc_team"].ToString()).Split(',');
                         }
@@ -957,7 +945,6 @@ namespace ISOStd.Controllers
                             objModel.team_targetdate = dtValue;
                         }
 
-
                         return View(objModel);
                     }
                     else
@@ -972,7 +959,7 @@ namespace ISOStd.Controllers
                 objGlobaldata.AddFunctionalLog("Exception in AddTeam: " + ex.ToString());
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
-            return RedirectToAction("NCList");          
+            return RedirectToAction("NCList");
         }
 
         [HttpPost]
@@ -1017,7 +1004,6 @@ namespace ISOStd.Controllers
                     objModel.team_approvedby = objModel.team_approvedby.Trim(',');
                 }
 
-
                 //Notified To
                 for (int i = 0; i < Convert.ToInt16(form["itemcnts"]); i++)
                 {
@@ -1054,7 +1040,6 @@ namespace ISOStd.Controllers
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 }
-
             }
             catch (Exception ex)
             {
@@ -1078,7 +1063,7 @@ namespace ISOStd.Controllers
                     ViewBag.RCATechniqueList = objGlobaldata.GetDropdownList("RCA Technique");
                     ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
                     ViewBag.YesNo = objGlobaldata.GetConstantValue("YesNo");
-                    
+
                     string sSqlstmt = "select id_nc,nc_no,nc_reported_date,nc_description,division,department,location,nc_issueto,nc_activity,nc_performed,nc_upload," +
                         "rca_technique,rca_details,rca_upload,rca_action,rca_justify,rca_reportedby,rca_notifiedto,rca_reporteddate,rca_startedon,ca_proposed_by,ca_verfiry_duedate from t_nc where id_nc='" + sid_nc + "'";
                     DataSet dsNCModels = objGlobaldata.Getdetails(sSqlstmt);
@@ -1110,7 +1095,7 @@ namespace ISOStd.Controllers
 
                             ca_proposed_by = (dsNCModels.Tables[0].Rows[0]["ca_proposed_by"].ToString()),
                         };
-                       
+
                         if (dsNCModels.Tables[0].Rows[0]["rca_reportedby"].ToString() != "")
                         {
                             ViewBag.ReportedByArray = (dsNCModels.Tables[0].Rows[0]["rca_reportedby"].ToString()).Split(',');
@@ -1155,7 +1140,7 @@ namespace ISOStd.Controllers
             {
                 objGlobaldata.AddFunctionalLog("Exception in AddRCA: " + ex.ToString());
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-            }        
+            }
             return RedirectToAction("NCList");
         }
 
@@ -1198,7 +1183,6 @@ namespace ISOStd.Controllers
                         catch (Exception ex)
                         {
                             objGlobaldata.AddFunctionalLog("Exception in AddRCA-upload: " + ex.ToString());
-
                         }
                     }
                     objModel.rca_upload = objModel.rca_upload.Trim(',');
@@ -1234,7 +1218,6 @@ namespace ISOStd.Controllers
                     objModel.rca_reportedby = objModel.rca_reportedby.Trim(',');
                 }
 
-
                 //Notifed To
                 for (int i = 0; i < Convert.ToInt16(form["itemcnts"]); i++)
                 {
@@ -1244,7 +1227,7 @@ namespace ISOStd.Controllers
                     }
                 }
                 if (objModel.rca_notifiedto != null)
-                {  
+                {
                     objModel.rca_notifiedto = objModel.rca_notifiedto.Trim(',');
                 }
 
@@ -1272,7 +1255,6 @@ namespace ISOStd.Controllers
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 }
-
             }
             catch (Exception ex)
             {
@@ -1294,7 +1276,7 @@ namespace ISOStd.Controllers
                     ViewBag.id_nc = sid_nc;
 
                     ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
-                   
+
                     string sSqlstmt = "select id_nc,nc_no,nc_reported_date,nc_description,division,department,location,nc_issueto,nc_activity,nc_performed,nc_upload,rca_details," +
                         "ca_verfiry_duedate,ca_proposed_by,ca_notifiedto,ca_notifed_date from t_nc where id_nc='" + sid_nc + "'";
                     DataSet dsNCModels = objGlobaldata.Getdetails(sSqlstmt);
@@ -1320,7 +1302,7 @@ namespace ISOStd.Controllers
                             ca_proposed_by = (dsNCModels.Tables[0].Rows[0]["ca_proposed_by"].ToString()),
                             ca_notifiedto = (dsNCModels.Tables[0].Rows[0]["ca_notifiedto"].ToString()),
                         };
-                        if(dsNCModels.Tables[0].Rows[0]["ca_proposed_by"].ToString() != "")
+                        if (dsNCModels.Tables[0].Rows[0]["ca_proposed_by"].ToString() != "")
                         {
                             ViewBag.ReportedByArray = (dsNCModels.Tables[0].Rows[0]["ca_proposed_by"].ToString()).Split(',');
                         }
@@ -1342,7 +1324,6 @@ namespace ISOStd.Controllers
                         {
                             objModel.ca_notifed_date = dtValue;
                         }
-
 
                         NCModelsList CAList = new NCModelsList();
                         CAList.lstNC = new List<NCModels>();
@@ -1373,7 +1354,7 @@ namespace ISOStd.Controllers
                                     {
                                         objNCModels.ca_target_date = dtValue;
                                     }
-                                    CAList.lstNC.Add(objNCModels);                                   
+                                    CAList.lstNC.Add(objNCModels);
                                 }
                                 catch (Exception ex)
                                 {
@@ -1390,7 +1371,7 @@ namespace ISOStd.Controllers
                     {
                         TempData["alertdata"] = "No Data exists";
                         return RedirectToAction("NCList");
-                    }                    
+                    }
                 }
             }
             catch (Exception ex)
@@ -1422,7 +1403,6 @@ namespace ISOStd.Controllers
                     objModel.ca_notifed_date = dateValue;
                 }
 
-
                 //Reported By
                 for (int i = 0; i < Convert.ToInt16(form["itemcnt1"]); i++)
                 {
@@ -1435,7 +1415,6 @@ namespace ISOStd.Controllers
                 {
                     objModel.ca_proposed_by = objModel.ca_proposed_by.Trim(',');
                 }
-
 
                 //Notifed To
                 for (int i = 0; i < Convert.ToInt16(form["itemcnts"]); i++)
@@ -1479,7 +1458,6 @@ namespace ISOStd.Controllers
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 }
-
             }
             catch (Exception ex)
             {
@@ -1527,7 +1505,7 @@ namespace ISOStd.Controllers
                             nc_activity = (dsNCModels.Tables[0].Rows[0]["nc_activity"].ToString()),
                             nc_performed = (dsNCModels.Tables[0].Rows[0]["nc_performed"].ToString()),
                             nc_upload = (dsNCModels.Tables[0].Rows[0]["nc_upload"].ToString()),
-                            rca_details= dsNCModels.Tables[0].Rows[0]["rca_details"].ToString(),
+                            rca_details = dsNCModels.Tables[0].Rows[0]["rca_details"].ToString(),
 
                             v_implement = (dsNCModels.Tables[0].Rows[0]["v_implement"].ToString()),
                             v_implement_explain = (dsNCModels.Tables[0].Rows[0]["v_implement_explain"].ToString()),
@@ -1574,12 +1552,12 @@ namespace ISOStd.Controllers
 
                         string Sql = "Select id_nc_corrective_action,ca_div,ca_loc,ca_dept,ca_rootcause,ca_ca,ca_resource," +
                        "ca_target_date,ca_resp_person,implement_status,ca_effective,reason from t_nc_corrective_action where id_nc = '" + sid_nc + "' and ca_active=1";
-                        
+
                         DataSet dsCAModels = objGlobaldata.Getdetails(Sql);
 
                         if (dsCAModels.Tables.Count > 0 && dsCAModels.Tables[0].Rows.Count > 0)
                         {
-                            for (int i=0;i< dsCAModels.Tables[0].Rows.Count;i++)
+                            for (int i = 0; i < dsCAModels.Tables[0].Rows.Count; i++)
                             {
                                 try
                                 {
@@ -1604,12 +1582,12 @@ namespace ISOStd.Controllers
                                     }
                                     objVeriList.lstNC.Add(objCAModel);
                                 }
-                                catch(Exception Ex)
+                                catch (Exception Ex)
                                 {
                                     objGlobaldata.AddFunctionalLog("Exception in AddVerification: " + Ex.ToString());
                                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                                 }
-                           }
+                            }
                             ViewBag.CorrectiveAction = objVeriList;
                         }
 
@@ -1620,14 +1598,13 @@ namespace ISOStd.Controllers
                         TempData["alertdata"] = "No Data exists";
                         return RedirectToAction("NCList");
                     }
-
-                 }
+                }
             }
             catch (Exception ex)
             {
                 objGlobaldata.AddFunctionalLog("Exception in AddVerification: " + ex.ToString());
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-            }           
+            }
             return RedirectToAction("NCList");
         }
 
@@ -1699,7 +1676,6 @@ namespace ISOStd.Controllers
                     objModel.v_verifiedto = objModel.v_verifiedto.Trim(',');
                 }
 
-
                 //Notifed To
                 for (int i = 0; i < Convert.ToInt16(form["itemcnts"]); i++)
                 {
@@ -1712,7 +1688,6 @@ namespace ISOStd.Controllers
                 {
                     objModel.v_notifiedto = objModel.v_notifiedto.Trim(',');
                 }
-
 
                 for (int i = 0; i < Convert.ToInt16(form["itemcount"]); i++)
                 {
@@ -1746,7 +1721,6 @@ namespace ISOStd.Controllers
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 }
-
             }
             catch (Exception ex)
             {
@@ -1755,7 +1729,6 @@ namespace ISOStd.Controllers
             }
             return Json(true);
         }
-
 
         //NC Details
         [AllowAnonymous]
@@ -1768,8 +1741,7 @@ namespace ISOStd.Controllers
             try
             {
                 if (id_nc > 0)
-                {                   
-
+                {
                     string sSqlstmt = "select id_nc, nc_no, nc_reported_date, nc_detected_date, nc_category, nc_description, nc_activity, nc_performed, nc_pnc, nc_upload,"
                    + "nc_impact, nc_risk, risklevel, nc_reportedby,  nc_notifiedto, nc_division, division, department, location,nc_audit,audit_no,nc_raise_dueto,nc_issueto," +
                    "(case when nc_issuedto_status=1 then 'Accepted' end) as nc_issuedto_status,nc_issuedto_status as nc_issuedto_statusId,nc_initial_status as nc_initial_statusId,nc_issuer_rejector,nc_issuers from t_nc where id_nc ='" + id_nc + "'";
@@ -1907,7 +1879,6 @@ namespace ISOStd.Controllers
                     //"ca_target_date,ca_resp_person,implement_status,ca_effective,reason from t_nc_corrective_action where id_nc = '" + sid_nc + "' and ca_active=1";
                     //DataSet dsVerifyModel = objGlobaldata.Getdetails(sSqlstmt18);
                     //ViewBag.VerificationList = dsVerifyModel;
-
                 }
                 else
                 {
@@ -1936,73 +1907,72 @@ namespace ISOStd.Controllers
                 if (Request.QueryString["id_nc"] != null && Request.QueryString["id_nc"] != "")
                 {
                     string sid_nc = Request.QueryString["id_nc"];
-                  
-                    string sSqlstmt = "select id_nc, nc_no, nc_reported_date, nc_detected_date, nc_category, nc_description, nc_activity, nc_performed, nc_pnc, nc_upload,"
-                   + "nc_impact, nc_risk, risklevel, nc_reportedby,  nc_notifiedto, nc_division, division, department, location,nc_audit,audit_no,nc_raise_dueto,nc_issueto," 
-                   +"(case when nc_issuedto_status=1 then 'Accepted' end) as nc_issuedto_status,nc_issuedto_status as nc_issuedto_statusId,nc_initial_status as nc_initial_statusId,nc_issuer_rejector,nc_issuers,"
-                    + "oa_no,model_code,part_name,stage,nc_resp_pers,supplier_name,supplier_dc,dc_po,batch_qty,nc_qty,Impact_detail from t_nc where id_nc ='" + sid_nc + "'";
 
+                    string sSqlstmt = "select id_nc, nc_no, nc_reported_date, nc_detected_date, nc_category, nc_description, nc_activity, nc_performed, nc_pnc, nc_upload,"
+                   + "nc_impact, nc_risk, risklevel, nc_reportedby,  nc_notifiedto, nc_division, division, department, location,nc_audit,audit_no,nc_raise_dueto,nc_issueto,"
+                   + "(case when nc_issuedto_status=1 then 'Accepted' end) as nc_issuedto_status,nc_issuedto_status as nc_issuedto_statusId,nc_initial_status as nc_initial_statusId,nc_issuer_rejector,nc_issuers,"
+                    + "oa_no,model_code,part_name,stage,nc_resp_pers,supplier_name,supplier_dc,dc_po,batch_qty,nc_qty,Impact_detail from t_nc where id_nc ='" + sid_nc + "'";
 
                     DataSet dsNCModels = objGlobaldata.Getdetails(sSqlstmt);
 
                     if (dsNCModels.Tables.Count > 0 && dsNCModels.Tables[0].Rows.Count > 0)
                     {
-                            try
+                        try
+                        {
+                            objModel = new NCModels
                             {
-                                objModel = new NCModels
-                                {
-                                    id_nc = (dsNCModels.Tables[0].Rows[0]["id_nc"].ToString()),
-                                    nc_no = (dsNCModels.Tables[0].Rows[0]["nc_no"].ToString()),
-                                    nc_category = objGlobaldata.GetDropdownitemById(dsNCModels.Tables[0].Rows[0]["nc_category"].ToString()),
-                                    nc_description = (dsNCModels.Tables[0].Rows[0]["nc_description"].ToString()),
-                                    nc_activity = (dsNCModels.Tables[0].Rows[0]["nc_activity"].ToString()),
-                                    nc_performed = (dsNCModels.Tables[0].Rows[0]["nc_performed"].ToString()),
-                                    nc_pnc = (dsNCModels.Tables[0].Rows[0]["nc_pnc"].ToString()),
-                                    nc_upload = (dsNCModels.Tables[0].Rows[0]["nc_upload"].ToString()),
-                                    nc_impact = (dsNCModels.Tables[0].Rows[0]["nc_impact"].ToString()),
-                                    nc_risk = (dsNCModels.Tables[0].Rows[0]["nc_risk"].ToString()),
-                                    risklevel =objGlobaldata.GetDropdownitemById(dsNCModels.Tables[0].Rows[0]["risklevel"].ToString()),
-                                    nc_reportedby = objGlobaldata.GetMultiHrEmpNameById(dsNCModels.Tables[0].Rows[0]["nc_reportedby"].ToString()),
-                                    emp_id = (dsNCModels.Tables[0].Rows[0]["nc_reportedby"].ToString()),
-                                    location = objGlobaldata.GetDivisionLocationById(dsNCModels.Tables[0].Rows[0]["location"].ToString()),
-                                    nc_notifiedto = objGlobaldata.GetMultiHrEmpNameById(dsNCModels.Tables[0].Rows[0]["nc_notifiedto"].ToString()),
-                                    nc_notifiedtoId =(dsNCModels.Tables[0].Rows[0]["nc_notifiedto"].ToString()),
-                                    department = objGlobaldata.GetMultiDeptNameById(dsNCModels.Tables[0].Rows[0]["department"].ToString()),
-                                    division = objGlobaldata.GetMultiCompanyBranchNameById(dsNCModels.Tables[0].Rows[0]["division"].ToString()),
-                                    nc_issueto = objGlobaldata.GetMultiHrEmpNameById(dsNCModels.Tables[0].Rows[0]["nc_issueto"].ToString()),
-                                    nc_issuetoId = (dsNCModels.Tables[0].Rows[0]["nc_issueto"].ToString()),
-                                    nc_division = objGlobaldata.GetMultiCompanyBranchNameById(dsNCModels.Tables[0].Rows[0]["nc_division"].ToString()),
-                                    nc_audit = (dsNCModels.Tables[0].Rows[0]["nc_audit"].ToString()),
-                                    audit_no = objGlobaldata.GetAuditNoFromAuditProcessById(dsNCModels.Tables[0].Rows[0]["audit_no"].ToString()),
-                                    nc_raise_dueto = objGlobaldata.GetDropdownitemById(dsNCModels.Tables[0].Rows[0]["nc_raise_dueto"].ToString()),
-                                    nc_issuedto_status = dsNCModels.Tables[0].Rows[0]["nc_issuedto_status"].ToString(),
-                                    nc_issuedto_statusId = dsNCModels.Tables[0].Rows[0]["nc_issuedto_statusId"].ToString(),
-                                    nc_issuer_rejector = dsNCModels.Tables[0].Rows[0]["nc_issuer_rejector"].ToString(),
-                                    nc_issuers = dsNCModels.Tables[0].Rows[0]["nc_issuers"].ToString(),
-                                    nc_initial_statusId = dsNCModels.Tables[0].Rows[0]["nc_initial_statusId"].ToString(),
+                                id_nc = (dsNCModels.Tables[0].Rows[0]["id_nc"].ToString()),
+                                nc_no = (dsNCModels.Tables[0].Rows[0]["nc_no"].ToString()),
+                                nc_category = objGlobaldata.GetDropdownitemById(dsNCModels.Tables[0].Rows[0]["nc_category"].ToString()),
+                                nc_description = (dsNCModels.Tables[0].Rows[0]["nc_description"].ToString()),
+                                nc_activity = (dsNCModels.Tables[0].Rows[0]["nc_activity"].ToString()),
+                                nc_performed = (dsNCModels.Tables[0].Rows[0]["nc_performed"].ToString()),
+                                nc_pnc = (dsNCModels.Tables[0].Rows[0]["nc_pnc"].ToString()),
+                                nc_upload = (dsNCModels.Tables[0].Rows[0]["nc_upload"].ToString()),
+                                nc_impact = (dsNCModels.Tables[0].Rows[0]["nc_impact"].ToString()),
+                                nc_risk = (dsNCModels.Tables[0].Rows[0]["nc_risk"].ToString()),
+                                risklevel = objGlobaldata.GetDropdownitemById(dsNCModels.Tables[0].Rows[0]["risklevel"].ToString()),
+                                nc_reportedby = objGlobaldata.GetMultiHrEmpNameById(dsNCModels.Tables[0].Rows[0]["nc_reportedby"].ToString()),
+                                emp_id = (dsNCModels.Tables[0].Rows[0]["nc_reportedby"].ToString()),
+                                location = objGlobaldata.GetDivisionLocationById(dsNCModels.Tables[0].Rows[0]["location"].ToString()),
+                                nc_notifiedto = objGlobaldata.GetMultiHrEmpNameById(dsNCModels.Tables[0].Rows[0]["nc_notifiedto"].ToString()),
+                                nc_notifiedtoId = (dsNCModels.Tables[0].Rows[0]["nc_notifiedto"].ToString()),
+                                department = objGlobaldata.GetMultiDeptNameById(dsNCModels.Tables[0].Rows[0]["department"].ToString()),
+                                division = objGlobaldata.GetMultiCompanyBranchNameById(dsNCModels.Tables[0].Rows[0]["division"].ToString()),
+                                nc_issueto = objGlobaldata.GetMultiHrEmpNameById(dsNCModels.Tables[0].Rows[0]["nc_issueto"].ToString()),
+                                nc_issuetoId = (dsNCModels.Tables[0].Rows[0]["nc_issueto"].ToString()),
+                                nc_division = objGlobaldata.GetMultiCompanyBranchNameById(dsNCModels.Tables[0].Rows[0]["nc_division"].ToString()),
+                                nc_audit = (dsNCModels.Tables[0].Rows[0]["nc_audit"].ToString()),
+                                audit_no = objGlobaldata.GetAuditNoFromAuditProcessById(dsNCModels.Tables[0].Rows[0]["audit_no"].ToString()),
+                                nc_raise_dueto = objGlobaldata.GetDropdownitemById(dsNCModels.Tables[0].Rows[0]["nc_raise_dueto"].ToString()),
+                                nc_issuedto_status = dsNCModels.Tables[0].Rows[0]["nc_issuedto_status"].ToString(),
+                                nc_issuedto_statusId = dsNCModels.Tables[0].Rows[0]["nc_issuedto_statusId"].ToString(),
+                                nc_issuer_rejector = dsNCModels.Tables[0].Rows[0]["nc_issuer_rejector"].ToString(),
+                                nc_issuers = dsNCModels.Tables[0].Rows[0]["nc_issuers"].ToString(),
+                                nc_initial_statusId = dsNCModels.Tables[0].Rows[0]["nc_initial_statusId"].ToString(),
 
-                                    oa_no = (dsNCModels.Tables[0].Rows[0]["oa_no"].ToString()),
-                                    model_code = (dsNCModels.Tables[0].Rows[0]["model_code"].ToString()),
-                                    part_name = (dsNCModels.Tables[0].Rows[0]["part_name"].ToString()),
-                                    stage = (dsNCModels.Tables[0].Rows[0]["stage"].ToString()),
-                                    nc_resp_pers = (dsNCModels.Tables[0].Rows[0]["nc_resp_pers"].ToString()),
-                                    supplier_name =objGlobaldata.GetSupplierNameById(dsNCModels.Tables[0].Rows[0]["supplier_name"].ToString()),
-                                    supplier_dc = (dsNCModels.Tables[0].Rows[0]["supplier_dc"].ToString()),
-                                    dc_po = (dsNCModels.Tables[0].Rows[0]["dc_po"].ToString()),
-                                    batch_qty = (dsNCModels.Tables[0].Rows[0]["batch_qty"].ToString()),
-                                    nc_qty = (dsNCModels.Tables[0].Rows[0]["nc_qty"].ToString()),
-                                    Impact_detail =objGlobaldata.GetDropdownitemById(dsNCModels.Tables[0].Rows[0]["Impact_detail"].ToString()),
-                                };
+                                oa_no = (dsNCModels.Tables[0].Rows[0]["oa_no"].ToString()),
+                                model_code = (dsNCModels.Tables[0].Rows[0]["model_code"].ToString()),
+                                part_name = (dsNCModels.Tables[0].Rows[0]["part_name"].ToString()),
+                                stage = (dsNCModels.Tables[0].Rows[0]["stage"].ToString()),
+                                nc_resp_pers = (dsNCModels.Tables[0].Rows[0]["nc_resp_pers"].ToString()),
+                                supplier_name = objGlobaldata.GetSupplierNameById(dsNCModels.Tables[0].Rows[0]["supplier_name"].ToString()),
+                                supplier_dc = (dsNCModels.Tables[0].Rows[0]["supplier_dc"].ToString()),
+                                dc_po = (dsNCModels.Tables[0].Rows[0]["dc_po"].ToString()),
+                                batch_qty = (dsNCModels.Tables[0].Rows[0]["batch_qty"].ToString()),
+                                nc_qty = (dsNCModels.Tables[0].Rows[0]["nc_qty"].ToString()),
+                                Impact_detail = objGlobaldata.GetDropdownitemById(dsNCModels.Tables[0].Rows[0]["Impact_detail"].ToString()),
+                            };
 
-                               DateTime dtValue;
-                                if (DateTime.TryParse(dsNCModels.Tables[0].Rows[0]["nc_reported_date"].ToString(), out dtValue))
-                                {
-                                    objModel.nc_reported_date = dtValue;
-                                }
-                                if (DateTime.TryParse(dsNCModels.Tables[0].Rows[0]["nc_detected_date"].ToString(), out dtValue))
-                                {
-                                    objModel.nc_detected_date = dtValue;
-                                }
+                            DateTime dtValue;
+                            if (DateTime.TryParse(dsNCModels.Tables[0].Rows[0]["nc_reported_date"].ToString(), out dtValue))
+                            {
+                                objModel.nc_reported_date = dtValue;
+                            }
+                            if (DateTime.TryParse(dsNCModels.Tables[0].Rows[0]["nc_detected_date"].ToString(), out dtValue))
+                            {
+                                objModel.nc_detected_date = dtValue;
+                            }
                             string sSqlstmt1 = "select nc_issuedto,nc_stauts,nc_approve_reject_date from t_nc_status where id_nc = '" + dsNCModels.Tables[0].Rows[0]["id_nc"].ToString() + "' order by id_nc_status desc";
                             DataSet dsNCStatusModels = objGlobaldata.Getdetails(sSqlstmt1);
                             if (dsNCStatusModels.Tables.Count > 0 && dsNCStatusModels.Tables[0].Rows.Count > 0)
@@ -2015,7 +1985,7 @@ namespace ISOStd.Controllers
                                     }
                                     if (dsNCStatusModels.Tables[0].Rows[j]["nc_stauts"].ToString() == "1")
                                     {
-                                        objModel.nc_initial_status = objModel.nc_initial_status + "," + "Approved - " + objGlobaldata.GetMultiHrEmpNameById(dsNCStatusModels.Tables[0].Rows[j]["nc_issuedto"].ToString())+" - " + objModel.nc_approve_reject_date;
+                                        objModel.nc_initial_status = objModel.nc_initial_status + "," + "Approved - " + objGlobaldata.GetMultiHrEmpNameById(dsNCStatusModels.Tables[0].Rows[j]["nc_issuedto"].ToString()) + " - " + objModel.nc_approve_reject_date;
                                     }
                                     if (dsNCStatusModels.Tables[0].Rows[j]["nc_stauts"].ToString() == "0")
                                     {
@@ -2024,21 +1994,21 @@ namespace ISOStd.Controllers
                                     if (dsNCStatusModels.Tables[0].Rows[j]["nc_stauts"].ToString() == "2")
                                     {
                                         objModel.nc_initial_status = objModel.nc_initial_status + "," + "Rejected - " + objGlobaldata.GetMultiHrEmpNameById(dsNCStatusModels.Tables[0].Rows[j]["nc_issuedto"].ToString()) + " - " + objModel.nc_approve_reject_date;
-                                    }                                   
+                                    }
                                 }
-                               
+
                                 if (objModel.nc_initial_status != null)
                                 {
                                     objModel.nc_initial_status = objModel.nc_initial_status.Trim(',');
                                 }
                             }
                             NcList.lstNC.Add(objModel);
-                          }
-                            catch (Exception ex)
-                            {
-                                objGlobaldata.AddFunctionalLog("Exception in NCDetails: " + ex.ToString());
-                                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            objGlobaldata.AddFunctionalLog("Exception in NCDetails: " + ex.ToString());
+                            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                        }
                     }
 
                     string SSqlstmt11 = "Select nc_issuedto,(case when nc_stauts= 0 then 'Pending' when nc_stauts = 1 then 'Approved' when nc_stauts = 2 then 'Rejected' end) as nc_stauts,nc_approve_reject_date,nc_reject_comment,nc_reject_upload from t_nc_status where id_nc = '" + sid_nc + "'";
@@ -2089,7 +2059,6 @@ namespace ISOStd.Controllers
                     "ca_target_date,ca_resp_person,implement_status,ca_effective,reason from t_nc_corrective_action where id_nc = '" + sid_nc + "' and ca_active=1";
                     DataSet dsVerifyModel = objGlobaldata.Getdetails(sSqlstmt18);
                     ViewBag.VerificationList = dsVerifyModel;
-
                 }
                 else
                 {
@@ -2105,7 +2074,7 @@ namespace ISOStd.Controllers
             return View(objModel);
         }
 
-        //NC PDF       
+        //NC PDF
         public ActionResult NCPDF(FormCollection form)
         {
             NCModels objModel = new NCModels();
@@ -2118,7 +2087,6 @@ namespace ISOStd.Controllers
                 string sid_nc = form["id_nc"];
                 if (sid_nc != null && sid_nc != "")
                 {
-                   
                     string sSqlstmt = "select id_nc, nc_no, nc_reported_date, nc_detected_date, nc_category, nc_description, nc_activity, nc_performed,  nc_pnc, nc_upload,"
                     + "nc_impact, nc_risk, risklevel, nc_reportedby,  nc_notifiedto, nc_division,division, department, location,nc_issueto,logged_by,nc_audit,audit_no,nc_raise_dueto,"
                     + "oa_no,model_code,part_name,stage,nc_resp_pers,supplier_name,supplier_dc,dc_po,batch_qty,nc_qty,Impact_detail from t_nc where id_nc ='" + sid_nc + "'";
@@ -2127,7 +2095,7 @@ namespace ISOStd.Controllers
 
                     if (dsNCModels.Tables.Count > 0 && dsNCModels.Tables[0].Rows.Count > 0)
                     {
-                       try
+                        try
                         {
                             objModel = new NCModels
                             {
@@ -2168,7 +2136,7 @@ namespace ISOStd.Controllers
                                 batch_qty = (dsNCModels.Tables[0].Rows[0]["batch_qty"].ToString()),
                                 nc_qty = (dsNCModels.Tables[0].Rows[0]["nc_qty"].ToString()),
                                 Impact_detail = objGlobaldata.GetDropdownitemById(dsNCModels.Tables[0].Rows[0]["Impact_detail"].ToString()),
-                            };                          
+                            };
 
                             DateTime dtValue;
                             if (DateTime.TryParse(dsNCModels.Tables[0].Rows[0]["nc_reported_date"].ToString(), out dtValue))
@@ -2181,7 +2149,6 @@ namespace ISOStd.Controllers
                             }
                             ViewBag.NonConfirmance = objModel;
 
-
                             //string sql = "select reported_by from t_accident_report where id_accident_rept='" + objIncidentReport.accident_reportno + "'";
                             //DataSet dsData = objGlobaldata.Getdetails(sql);
 
@@ -2189,7 +2156,6 @@ namespace ISOStd.Controllers
                             dsNCModels = objGlobaldata.GetReportDetails(dsNCModels, objModel.nc_no, dsNCModels.Tables[0].Rows[0]["logged_by"].ToString(), "NON CONFORMANCE AND CORRECTIVE ACTION REPORT");
 
                             ViewBag.CompanyInfo = dsNCModels;
-
 
                             NCModelsList NcRelatedList = new NCModelsList();
                             NcRelatedList.lstNC = new List<NCModels>();
@@ -2279,9 +2245,8 @@ namespace ISOStd.Controllers
                         {
                             objGlobaldata.AddFunctionalLog("Exception in NCDetails: " + ex.ToString());
                             TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                        }                        
-                    }                   
-
+                        }
+                    }
                 }
                 else
                 {
@@ -2310,7 +2275,6 @@ namespace ISOStd.Controllers
             };
         }
 
-
         //Delete
 
         [AllowAnonymous]
@@ -2318,10 +2282,8 @@ namespace ISOStd.Controllers
         {
             try
             {
-
                 if (form["id_nc"] != null && form["id_nc"] != "")
                 {
-
                     NCModels Doc = new NCModels();
                     string sid_nc = form["id_nc"];
 
@@ -2355,10 +2317,8 @@ namespace ISOStd.Controllers
         {
             try
             {
-
                 if (form["id_nc_corrective_action"] != null && form["id_nc_corrective_action"] != "")
                 {
-
                     NCModels Doc = new NCModels();
                     string sid_nc_corrective_action = form["id_nc_corrective_action"];
 
@@ -2389,7 +2349,6 @@ namespace ISOStd.Controllers
 
         public JsonResult FunGetEmpDetails(string semp_no)
         {
-
             NCModels objModels = new NCModels();
             try
             {
@@ -2417,7 +2376,6 @@ namespace ISOStd.Controllers
             }
             return Json("");
         }
-
 
         [AllowAnonymous]
         public ActionResult NCApproveReject(FormCollection form, HttpPostedFileBase nc_reject_upload)
@@ -2480,24 +2438,23 @@ namespace ISOStd.Controllers
                 objGlobaldata.AddFunctionalLog("Exception in NCApproveReject: " + ex.ToString());
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
-               //string path = Url.Action();
-                string path = System.Web.HttpContext.Current.Request.UrlReferrer.ToString();
-                string[] url = path.Split('/');
+            //string path = Url.Action();
+            string path = System.Web.HttpContext.Current.Request.UrlReferrer.ToString();
+            string[] url = path.Split('/');
 
-                //var controller = url[1];
-                if (url[3] == "NC" || url[4] == "NC")
-                {
-                    //string del = Request.Url.ToString();
-                    return RedirectToAction("NCList", "NC");
-                }
-                else
-                {
-                    return RedirectToAction("ListPendingForApproval", "Dashboard");
-                }            
+            //var controller = url[1];
+            if (url[3] == "NC" || url[4] == "NC")
+            {
+                //string del = Request.Url.ToString();
+                return RedirectToAction("NCList", "NC");
+            }
+            else
+            {
+                return RedirectToAction("ListPendingForApproval", "Dashboard");
+            }
         }
 
-
-        //Pdf report format        
+        //Pdf report format
         public ActionResult NCPDFReportFormat()
         {
             ReportPDFModels objModel = new ReportPDFModels();
@@ -2563,6 +2520,7 @@ namespace ISOStd.Controllers
             }
             return RedirectToAction("NCPDF", new { id_nc = objModel.id_nc });
         }
+
         public JsonResult FunGetNCImpactTypeList(string Impact_type)
         {
             if (Impact_type != null && Impact_type != "")
@@ -2589,8 +2547,6 @@ namespace ISOStd.Controllers
                 }
             }
             return Json("");
-
         }
-
     }
 }

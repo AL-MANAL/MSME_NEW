@@ -13,13 +13,14 @@ namespace ISOStd.Controllers
     [PreventFromUrl]
     public class TrainingRegisterController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
+        private clsGlobal objGlobaldata = new clsGlobal();
 
         public TrainingRegisterController()
         {
             ViewBag.Menutype = "Employee";
             ViewBag.SubMenutype = "TrainingRegister";
         }
+
         public ActionResult AddTrainingRegister()
         {
             TrainingRegisterModels objTR = new TrainingRegisterModels();
@@ -67,14 +68,13 @@ namespace ISOStd.Controllers
                 {
                     objTR.tr_expirydate = dateValue;
                 }
-                
+
                 HttpPostedFileBase files = Request.Files[0];
                 if (upload != null && files.ContentLength > 0)
                 {
                     objTR.upload = "";
                     foreach (var file in upload)
                     {
-
                         try
                         {
                             string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/Training"), Path.GetFileName(file.FileName));
@@ -83,7 +83,6 @@ namespace ISOStd.Controllers
 
                             files.SaveAs(sFilepath + "/" + sFilename);
                             objTR.upload = objTR.upload + "," + "~/DataUpload/MgmtDocs/Training/" + sFilename;
-
                         }
                         catch (Exception ex)
                         {
@@ -114,10 +113,9 @@ namespace ISOStd.Controllers
 
             return RedirectToAction("TrainingRegisterList");
         }
-  
+
         public ActionResult TrainingRegisterList(FormCollection form, int? page, string branch_name)
         {
-
             TrainingRegisterModelsList objTRList = new TrainingRegisterModelsList();
             objTRList.TRList = new List<TrainingRegisterModels>();
 
@@ -127,7 +125,7 @@ namespace ISOStd.Controllers
                 string sBranchtree = objGlobaldata.GetCurrentUserSession().BranchTree;
                 ViewBag.Branch = objGlobaldata.GetMultiBranchListByID(sBranchtree);
                 string sSearchtext = "";
-             
+
                 string sSqlstmt = "select id_tr,emp_id,division,dept_head,date_tr,tr_type,tr_topic,tr_centername,tr_location," +
                     "tr_startdate,tr_enddate,tr_expirydate,upload,loggedby from t_training_register where Active=1";
 
@@ -165,7 +163,7 @@ namespace ISOStd.Controllers
                                 division = objGlobaldata.GetMultiCompanyBranchNameById(dsTRList.Tables[0].Rows[i]["emp_id"].ToString()),
                                 location = objGlobaldata.GetDivisionLocationById(objGlobaldata.GetWorkLocationIdByHrEmpId(dsTRList.Tables[0].Rows[i]["emp_id"].ToString())),
                                 designation = objGlobaldata.GetEmpDesignationByHrEmpId(dsTRList.Tables[0].Rows[i]["emp_id"].ToString()),
-                           };
+                            };
                             DateTime dtValue;
                             if (DateTime.TryParse(dsTRList.Tables[0].Rows[i]["date_tr"].ToString(), out dtValue))
                             {
@@ -232,10 +230,10 @@ namespace ISOStd.Controllers
                             tr_centername = dsTRList.Tables[0].Rows[0]["tr_centername"].ToString(),
                             tr_location = dsTRList.Tables[0].Rows[0]["tr_location"].ToString(),
                             upload = dsTRList.Tables[0].Rows[0]["upload"].ToString(),
-                        //    department = objGlobaldata.GetDeptNameById(objGlobaldata.GetDeptIdByHrEmpId(dsTRList.Tables[0].Rows[0]["emp_id"].ToString())),
-                        //    division = objGlobaldata.GetMultiCompanyBranchNameById(dsTRList.Tables[0].Rows[0]["emp_id"].ToString()),
-                        //    location = objGlobaldata.GetDivisionLocationById(objGlobaldata.GetWorkLocationIdByHrEmpId(dsTRList.Tables[0].Rows[0]["emp_id"].ToString())),
-                        //    designation = objGlobaldata.GetEmpDesignationByHrEmpId(dsTRList.Tables[0].Rows[0]["emp_id"].ToString()),
+                            //    department = objGlobaldata.GetDeptNameById(objGlobaldata.GetDeptIdByHrEmpId(dsTRList.Tables[0].Rows[0]["emp_id"].ToString())),
+                            //    division = objGlobaldata.GetMultiCompanyBranchNameById(dsTRList.Tables[0].Rows[0]["emp_id"].ToString()),
+                            //    location = objGlobaldata.GetDivisionLocationById(objGlobaldata.GetWorkLocationIdByHrEmpId(dsTRList.Tables[0].Rows[0]["emp_id"].ToString())),
+                            //    designation = objGlobaldata.GetEmpDesignationByHrEmpId(dsTRList.Tables[0].Rows[0]["emp_id"].ToString()),
                         };
                         DateTime dtValue;
                         if (DateTime.TryParse(dsTRList.Tables[0].Rows[0]["date_tr"].ToString(), out dtValue))
@@ -305,7 +303,7 @@ namespace ISOStd.Controllers
                 {
                     objTR.tr_expirydate = dateValue;
                 }
-                
+
                 HttpPostedFileBase files = Request.Files[0];
                 string QCDelete = Request.Form["QCDocsValselectall"];
                 if (upload != null && files.ContentLength > 0)
@@ -369,10 +367,8 @@ namespace ISOStd.Controllers
         {
             try
             {
-
                 if (form["id_tr"] != null && form["id_tr"] != "")
                 {
-
                     TrainingRegisterModels Doc = new TrainingRegisterModels();
                     string sid_tr = form["id_tr"];
 
@@ -392,7 +388,6 @@ namespace ISOStd.Controllers
                     TempData["alertdata"] = "Issue Id cannot be Null or empty";
                     return Json("Failed");
                 }
-
             }
             catch (Exception ex)
             {

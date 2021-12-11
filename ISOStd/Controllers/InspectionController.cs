@@ -1,28 +1,27 @@
-﻿using System;
+﻿using ISOStd.Models;
+using PagedList;
+using Rotativa;
+using System;
 using System.Collections.Generic;
+using System.Data;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using ISOStd.Models;
-using System.Data;
-using System.Net;
-using System.IO;
-using PagedList;
-using PagedList.Mvc;
-using Rotativa;
 
 namespace ISOStd.Controllers
 {
     public class InspectionController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
+        private clsGlobal objGlobaldata = new clsGlobal();
+
         public InspectionController()
         {
             ViewBag.Menutype = "HSE";
             //ViewBag.SubMenutype = "Inspection";
         }
 
-        // Department section 
+        // Department section
 
         public ActionResult AddInspectionSection(string sDepartment)
         {
@@ -40,7 +39,7 @@ namespace ISOStd.Controllers
                 if (sDepartment != null && sDepartment != "")
                 {
                     ViewBag.Dept_Id = sDepartment;
-                    //ViewBag.CategorySection = objQst.GetInspectionSectionListbox(sCategory, ViewBag.Branch_name);  
+                    //ViewBag.CategorySection = objQst.GetInspectionSectionListbox(sCategory, ViewBag.Branch_name);
                     //ViewBag.CategoryRespPerson= obj.GetInspRespPersonList(sCategory, ViewBag.Branch_name);
                     ViewBag.dsItems = objGlobaldata.Getdetails("select id_inspection, Section, dept from t_inspection_section where dept='" + sDepartment + "' and active=1");
                 }
@@ -98,7 +97,6 @@ namespace ISOStd.Controllers
 
             try
             {
-
                 if (obj.FunDeleteSection(id_inspection))
                 {
                     TempData["Successdata"] = "Insepction Section deleted successfully";
@@ -107,7 +105,6 @@ namespace ISOStd.Controllers
                 else
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-
                 }
             }
             catch (Exception ex)
@@ -118,7 +115,6 @@ namespace ISOStd.Controllers
 
             return Json("Failed");
         }
-       
 
         public JsonResult InspectionSectionUpdate(int id_inspection, string Section, string[] dept)
         {
@@ -130,7 +126,7 @@ namespace ISOStd.Controllers
                 {
                     sdept = string.Join(",", dept);
                 }
-                
+
                 //int id_inspections = Convert.ToInt32(id_inspection);
                 if (obj.FunUpdateInspectionSection(id_inspection, Section, sdept))
                 {
@@ -179,7 +175,6 @@ namespace ISOStd.Controllers
             MultiSelectList lstEmp = new MultiSelectList(emplist.EmpList, "Value", "Text");
             try
             {
-
                 lstEmp = objGlobaldata.FunGetDeptSectionList(dept);
             }
             catch (Exception ex)
@@ -223,7 +218,7 @@ namespace ISOStd.Controllers
             {
                 DateTime dateValue;
                 objModel.insp_criteria = form["insp_criteria"];
-              
+
                 if (DateTime.TryParse(form["logged_date"], out dateValue) == true)
                 {
                     objModel.logged_date = dateValue;
@@ -232,14 +227,12 @@ namespace ISOStd.Controllers
                 InspctionQuestionList objInsp = new InspctionQuestionList();
                 objInsp.InspectionQstList = new List<InspctionQuestionModels>();
 
-
                 for (int i = 0; i < Convert.ToInt16(form["itemcnt"]); i++)
                 {
                     InspctionQuestionModels obj = new InspctionQuestionModels();
 
                     if (form["InspectionQuestions" + i] != "" && form["InspectionQuestions" + i] != null)
                     {
-
                         obj.InspectionQuestions = form["InspectionQuestions" + i];
                         obj.criticality = form["criticality" + i];
                         obj.criteria = form["criteria" + i];
@@ -269,13 +262,10 @@ namespace ISOStd.Controllers
         {
             InspctionQuestionModels objModel = new InspctionQuestionModels();
 
-
             try
             {
-
                 if (Request.QueryString["id_question_master"] != null && Request.QueryString["id_question_master"] != "")
                 {
-
                     string id_question_master = Request.QueryString["id_question_master"];
                     string sSqlstmt = "select id_question_master,branch,checklist_ref,insp_type,insp_detail,dept,Section,insp_area,insp_criteria,logged_date,reviewed_by,approved_by"
 
@@ -290,7 +280,7 @@ namespace ISOStd.Controllers
                             branch = dsList.Tables[0].Rows[0]["branch"].ToString(),
                             id_question_master = dsList.Tables[0].Rows[0]["id_question_master"].ToString(),
                             checklist_ref = dsList.Tables[0].Rows[0]["checklist_ref"].ToString(),
-                            insp_type =objGlobaldata.GetDropdownitemById(dsList.Tables[0].Rows[0]["insp_type"].ToString()),
+                            insp_type = objGlobaldata.GetDropdownitemById(dsList.Tables[0].Rows[0]["insp_type"].ToString()),
                             insp_detail = dsList.Tables[0].Rows[0]["insp_detail"].ToString(),
                             dept = (dsList.Tables[0].Rows[0]["dept"].ToString()),
                             Section = (dsList.Tables[0].Rows[0]["Section"].ToString()),
@@ -300,7 +290,6 @@ namespace ISOStd.Controllers
                             reviewed_by = (dsList.Tables[0].Rows[0]["reviewed_by"].ToString()),
 
                             approved_by = (dsList.Tables[0].Rows[0]["approved_by"].ToString()),
-
                         };
                         DateTime dtDocDate;
                         if (dsList.Tables[0].Rows[0]["logged_date"].ToString() != ""
@@ -308,10 +297,8 @@ namespace ISOStd.Controllers
                         {
                             objModel.logged_date = dtDocDate;
                         }
-
                     }
 
-                 
                     ViewBag.InspType = objGlobaldata.GetDropdownList("Inspection Type");
                     ViewBag.Department = objGlobaldata.GetDepartmentListbox(objModel.branch);
                     ViewBag.InspArea = objGlobaldata.GetDropdownList("Inspection Area");
@@ -381,7 +368,6 @@ namespace ISOStd.Controllers
                 InspctionQuestionList objInsp = new InspctionQuestionList();
                 objInsp.InspectionQstList = new List<InspctionQuestionModels>();
 
-
                 for (int i = 0; i < Convert.ToInt16(form["itemcnt"]); i++)
                 {
                     InspctionQuestionModels obj = new InspctionQuestionModels();
@@ -412,7 +398,6 @@ namespace ISOStd.Controllers
             }
             return RedirectToAction("GenerateInspChecklist");
         }
-
 
         [AllowAnonymous]
         public ActionResult GenerateInspChecklist(string branch_name)
@@ -457,8 +442,8 @@ namespace ISOStd.Controllers
                             {
                                 id_question_master = dsList.Tables[0].Rows[i]["id_question_master"].ToString(),
                                 checklist_ref = dsList.Tables[0].Rows[i]["checklist_ref"].ToString(),
-                                insp_type =objGlobaldata.GetDropdownitemById(dsList.Tables[0].Rows[i]["insp_type"].ToString()),
-                                dept =objGlobaldata.GetDeptNameById(dsList.Tables[0].Rows[i]["dept"].ToString()),
+                                insp_type = objGlobaldata.GetDropdownitemById(dsList.Tables[0].Rows[i]["insp_type"].ToString()),
+                                dept = objGlobaldata.GetDeptNameById(dsList.Tables[0].Rows[i]["dept"].ToString()),
                                 Section = objInspModel.GetSectionNamebyId(dsList.Tables[0].Rows[i]["Section"].ToString()),
                                 insp_area = objGlobaldata.GetDropdownitemById(dsList.Tables[0].Rows[i]["insp_area"].ToString()),
                                 insp_criteria = objGlobaldata.GetDropdownitemById(dsList.Tables[0].Rows[i]["insp_criteria"].ToString()),
@@ -490,19 +475,15 @@ namespace ISOStd.Controllers
 
             if (Request.QueryString["id_question_master"] != null && Request.QueryString["id_question_master"] != "")
             {
-
                 string id_question_master = Request.QueryString["id_question_master"];
-               
+
                 InspectionCategoryModels objInspModel = new InspectionCategoryModels();
 
                 try
                 {
-
                     string sSqlstmt = "select id_question_master_history,id_question_master,checklist_ref,insp_type,dept,Section,insp_area,insp_criteria," +
                      "(CASE WHEN checklist_status = '0' THEN 'Draft' WHEN checklist_status = '1' THEN 'Reviewer Rejected' WHEN checklist_status = '2' THEN 'Reviewed' WHEN checklist_status = '3' THEN 'Approver Rejected' ELSE 'Approved' END) as checklist_status" +
-                        " from t_inspection_question_master_history where id_question_master='"+ id_question_master + "'";
-
-
+                        " from t_inspection_question_master_history where id_question_master='" + id_question_master + "'";
 
                     sSqlstmt = sSqlstmt + " order by id_question_master_history desc";
 
@@ -557,7 +538,6 @@ namespace ISOStd.Controllers
             {
                 if (Request.QueryString["id_question_master"] != null && Request.QueryString["id_question_master"] != "")
                 {
-
                     string id_question_master = Request.QueryString["id_question_master"];
                     string sSqlstmt = "select id_question_master,branch,checklist_ref,insp_type,insp_detail,dept,Section,insp_area,insp_criteria,logged_date,reviewed_by,approved_by,RevNo"
 
@@ -582,21 +562,18 @@ namespace ISOStd.Controllers
                             reviewed_by = (dsList.Tables[0].Rows[0]["reviewed_by"].ToString()),
 
                             approved_by = (dsList.Tables[0].Rows[0]["approved_by"].ToString()),
-
                         };
 
-                        ViewBag.RevNo =Convert.ToInt32(dsList.Tables[0].Rows[0]["RevNo"].ToString()) + 1;
+                        ViewBag.RevNo = Convert.ToInt32(dsList.Tables[0].Rows[0]["RevNo"].ToString()) + 1;
 
-                      DateTime dtDocDate;
+                        DateTime dtDocDate;
                         if (dsList.Tables[0].Rows[0]["logged_date"].ToString() != ""
                          && DateTime.TryParse(dsList.Tables[0].Rows[0]["logged_date"].ToString(), out dtDocDate))
                         {
                             objModel.logged_date = dtDocDate;
                         }
-
                     }
 
-                
                     ViewBag.InspType = objGlobaldata.GetDropdownList("Inspection Type");
                     ViewBag.Department = objGlobaldata.GetDepartmentListbox(objModel.branch);
                     ViewBag.InspArea = objGlobaldata.GetDropdownList("Inspection Area");
@@ -606,8 +583,6 @@ namespace ISOStd.Controllers
                     ViewBag.Reviewer = objGlobaldata.GetHrQHSEEmployeeListbox();
                     ViewBag.Approver = objGlobaldata.GetTopMgmtEmpListbox();
                     ViewBag.Section = objGlobaldata.FunGetDeptSectionList(objModel.dept);
-
-                  
 
                     // Checklist questions
 
@@ -669,7 +644,6 @@ namespace ISOStd.Controllers
                 InspctionQuestionList objInsp = new InspctionQuestionList();
                 objInsp.InspectionQstList = new List<InspctionQuestionModels>();
 
-
                 for (int i = 0; i < Convert.ToInt16(form["itemcnt"]); i++)
                 {
                     InspctionQuestionModels obj = new InspctionQuestionModels();
@@ -701,7 +675,6 @@ namespace ISOStd.Controllers
             return RedirectToAction("GenerateInspChecklist");
         }
 
-
         [AllowAnonymous]
         public ActionResult InspChecklistApprovalDetails()
         {
@@ -710,7 +683,6 @@ namespace ISOStd.Controllers
             InspectionCategoryModels objInspModel = new InspectionCategoryModels();
             try
             {
-
                 if (Request.QueryString["id_question_master"] != null && Request.QueryString["id_question_master"] != "")
                 {
                     ViewBag.status = Request.QueryString["status"];
@@ -718,7 +690,7 @@ namespace ISOStd.Controllers
                     ViewBag.ApproveStatus = objGlobaldata.GetConstantValueKeyValuePair("InspChkApprove");
                     string id_question_master = Request.QueryString["id_question_master"];
                     string sSqlstmt = "select id_question_master,checklist_ref,insp_type,insp_detail,dept,Section,insp_area,insp_criteria,logged_date,logged_by,reviewed_by,reviewed_date,reviewer_comments,reviewer_upload,approved_by,approved_date,approver_comments,approver_upload,RevNo,"
-                       + "(CASE WHEN checklist_status = '0' THEN 'Draft' WHEN checklist_status = '1' THEN 'Reviewer Rejected' WHEN checklist_status = '2' THEN 'Reviewed' WHEN checklist_status = '3' THEN 'Approver Rejected' ELSE 'Approved' END) as checklist_status," 
+                       + "(CASE WHEN checklist_status = '0' THEN 'Draft' WHEN checklist_status = '1' THEN 'Reviewer Rejected' WHEN checklist_status = '2' THEN 'Reviewed' WHEN checklist_status = '3' THEN 'Approver Rejected' ELSE 'Approved' END) as checklist_status,"
                         + "(CASE WHEN reviewed_status = '2' THEN 'Reviewed' WHEN reviewed_status = '1' THEN 'Rejected' ELSE 'Pending for Review' END) as  reviewed_status,"
                      + "(CASE WHEN approved_status = '2' THEN 'Pending for Approve' WHEN approved_status = '3' THEN 'Rejected'  WHEN approved_status = '4' THEN 'Approved' END) as  approved_status"
                         + " from t_inspection_question_master where id_question_master = '" + id_question_master + "'";
@@ -742,7 +714,7 @@ namespace ISOStd.Controllers
                             reviewed_by = objGlobaldata.GetMultiHrEmpNameById(dsList.Tables[0].Rows[0]["reviewed_by"].ToString()),
                             reviewer_comments = dsList.Tables[0].Rows[0]["reviewer_comments"].ToString(),
                             reviewer_upload = dsList.Tables[0].Rows[0]["reviewer_upload"].ToString(),
-                            approved_by =objGlobaldata.GetMultiHrEmpNameById(dsList.Tables[0].Rows[0]["approved_by"].ToString()),
+                            approved_by = objGlobaldata.GetMultiHrEmpNameById(dsList.Tables[0].Rows[0]["approved_by"].ToString()),
                             approver_comments = dsList.Tables[0].Rows[0]["approver_comments"].ToString(),
                             approver_upload = dsList.Tables[0].Rows[0]["approver_upload"].ToString(),
                             RevNo = dsList.Tables[0].Rows[0]["RevNo"].ToString(),
@@ -947,10 +919,8 @@ namespace ISOStd.Controllers
             InspectionCategoryModels objInspModel = new InspectionCategoryModels();
             try
             {
-
                 if (Request.QueryString["id_question_master"] != null && Request.QueryString["id_question_master"] != "")
                 {
-                 
                     string id_question_master = Request.QueryString["id_question_master"];
                     string sSqlstmt = "select id_question_master,checklist_ref,insp_type,insp_detail,dept,Section,insp_area,insp_criteria,logged_date,logged_by,reviewed_by,reviewed_date,reviewer_comments,reviewer_upload,approved_by,approved_date,approver_comments,approver_upload,RevNo,"
                        + "(CASE WHEN checklist_status = '0' THEN 'Draft' WHEN checklist_status = '1' THEN 'Reviewer Rejected' WHEN checklist_status = '2' THEN 'Reviewed' WHEN checklist_status = '3' THEN 'Approver Rejected' ELSE 'Approved' END) as checklist_status,"
@@ -982,7 +952,7 @@ namespace ISOStd.Controllers
                             approved_by = objGlobaldata.GetMultiHrEmpNameById(dsList.Tables[0].Rows[0]["approved_by"].ToString()),
                             approver_comments = dsList.Tables[0].Rows[0]["approver_comments"].ToString(),
                             approver_upload = dsList.Tables[0].Rows[0]["approver_upload"].ToString(),
-                            RevNo =(dsList.Tables[0].Rows[0]["RevNo"].ToString()),
+                            RevNo = (dsList.Tables[0].Rows[0]["RevNo"].ToString()),
                         };
                         DateTime dtDocDate;
                         if (dsList.Tables[0].Rows[0]["logged_date"].ToString() != ""
@@ -1024,10 +994,8 @@ namespace ISOStd.Controllers
             InspectionCategoryModels objInspModel = new InspectionCategoryModels();
             try
             {
-
                 if (Request.QueryString["id_question_master_history"] != null && Request.QueryString["id_question_master_history"] != "")
                 {
-
                     string id_question_master_history = Request.QueryString["id_question_master_history"];
                     string sSqlstmt = "select id_question_master,checklist_ref,insp_type,insp_detail,dept,Section,insp_area,insp_criteria,logged_date,logged_by,reviewed_by,reviewed_date,reviewer_comments,reviewer_upload,approved_by,approved_date,approver_comments,approver_upload,RevNo,"
                        + "(CASE WHEN checklist_status = '0' THEN 'Draft' WHEN checklist_status = '1' THEN 'Reviewer Rejected' WHEN checklist_status = '2' THEN 'Reviewed' WHEN checklist_status = '3' THEN 'Approver Rejected' ELSE 'Approved' END) as checklist_status,"
@@ -1101,9 +1069,7 @@ namespace ISOStd.Controllers
             MultiSelectList lstEmp = new MultiSelectList(emplist.EmpList, "Value", "Text");
             try
             {
-
                 lstEmp = objGlobaldata.FunGetChecklistRefList(insp_type);
-              
             }
             catch (Exception ex)
             {
@@ -1112,6 +1078,7 @@ namespace ISOStd.Controllers
             }
             return Json(lstEmp);
         }
+
         public ActionResult FunGetApproverList(string dept)
         {
             EmployeeList emplist = new EmployeeList();
@@ -1119,20 +1086,18 @@ namespace ISOStd.Controllers
             MultiSelectList lstEmp = new MultiSelectList(emplist.EmpList, "Value", "Text");
             MultiSelectList lstEmp1 = new MultiSelectList(emplist.EmpList, "Value", "Text");
             MultiSelectList lstEmp2 = new MultiSelectList(emplist.EmpList, "Value", "Text");
-            IEnumerable<SelectListItem> item = lstEmp.Select(C => new SelectListItem { Value=C.Value , Text=C.Text });
-            
+            IEnumerable<SelectListItem> item = lstEmp.Select(C => new SelectListItem { Value = C.Value, Text = C.Text });
+
             try
             {
-
                 lstEmp = objGlobaldata.GetHrQHSEEmployeeListbox(); // QHSE employees
                 lstEmp1 = objGlobaldata.GetHrEmpListByDept(dept); // Department employees
                 lstEmp2 = objGlobaldata.GetTopMgmtEmpListbox(); // top mgmt
 
                 item = (lstEmp.Concat(lstEmp1)).Concat(lstEmp2);
 
-                var distinct = item.GroupBy(l => new { l.Value, l.Text }).Select(d => new 
+                var distinct = item.GroupBy(l => new { l.Value, l.Text }).Select(d => new
                 {
-
                     Value = d.Key.Value,
                     Text = d.Key.Text
                 });
@@ -1145,6 +1110,7 @@ namespace ISOStd.Controllers
             }
             return Json(item);
         }
+
         public MultiSelectList FunGetApproverMultiList(string dept)
         {
             EmployeeList emplist = new EmployeeList();
@@ -1155,7 +1121,6 @@ namespace ISOStd.Controllers
             IEnumerable<SelectListItem> item = lstEmp.Select(C => new SelectListItem { Value = C.Value, Text = C.Text });
             try
             {
-
                 lstEmp = objGlobaldata.GetHrQHSEEmployeeListbox(); // QHSE employees
                 lstEmp1 = objGlobaldata.GetHrEmpListByDept(dept); // Department employees
                 lstEmp2 = objGlobaldata.GetTopMgmtEmpListbox(); // top mgmt
@@ -1163,7 +1128,6 @@ namespace ISOStd.Controllers
                 item = (lstEmp.Concat(lstEmp1)).Concat(lstEmp2);
                 var distinct = item.GroupBy(l => new { l.Value, l.Text }).Select(d => new
                 {
-
                     Value = d.Key.Value,
                     Text = d.Key.Text
                 });
@@ -1176,6 +1140,7 @@ namespace ISOStd.Controllers
             }
             return new MultiSelectList(item, "Value", "Text");
         }
+
         public ActionResult FunGetPersRespList(string dept)
         {
             EmployeeList emplist = new EmployeeList();
@@ -1185,14 +1150,12 @@ namespace ISOStd.Controllers
             IEnumerable<SelectListItem> item = lstEmp.Select(C => new SelectListItem { Value = C.Value, Text = C.Text });
             try
             {
-
                 lstEmp = objGlobaldata.GetHrQHSEEmployeeListbox(); // QHSE employees
                 lstEmp1 = objGlobaldata.GetHrEmpListByDept(dept); // Department employees
 
                 item = (lstEmp.Concat(lstEmp1)).Concat(lstEmp1);
                 var distinct = item.GroupBy(l => new { l.Value, l.Text }).Select(d => new
                 {
-
                     Value = d.Key.Value,
                     Text = d.Key.Text
                 });
@@ -1205,6 +1168,7 @@ namespace ISOStd.Controllers
             }
             return Json(item);
         }
+
         public MultiSelectList FunGetPersRespMultiList(string dept)
         {
             EmployeeList emplist = new EmployeeList();
@@ -1214,14 +1178,12 @@ namespace ISOStd.Controllers
             IEnumerable<SelectListItem> item = lstEmp.Select(C => new SelectListItem { Value = C.Value, Text = C.Text });
             try
             {
-
                 lstEmp = objGlobaldata.GetHrQHSEEmployeeListbox(); // QHSE employees
                 lstEmp1 = objGlobaldata.GetHrEmpListByDept(dept); // Department employees
 
                 item = (lstEmp.Concat(lstEmp1)).Concat(lstEmp1);
                 var distinct = item.GroupBy(l => new { l.Value, l.Text }).Select(d => new
                 {
-
                     Value = d.Key.Value,
                     Text = d.Key.Text
                 });
@@ -1234,6 +1196,7 @@ namespace ISOStd.Controllers
             }
             return new MultiSelectList(item, "Value", "Text");
         }
+
         public JsonResult FunGetChecklistRefRevNo(string checklist_ref)
         {
             string result = "";
@@ -1288,20 +1251,18 @@ namespace ISOStd.Controllers
                 InspctionQuestionList objInsp = new InspctionQuestionList();
                 objInsp.InspectionQstList = new List<InspctionQuestionModels>();
 
-
                 for (int i = 0; i < Convert.ToInt16(form["itemcnt"]); i++)
                 {
                     InspctionQuestionModels obj = new InspctionQuestionModels();
 
                     if (form["insp_date" + i] != "" && form["insp_date" + i] != null)
                     {
-
                         if (DateTime.TryParse(form["insp_date" + i], out dateValue) == true)
                         {
                             obj.insp_date = dateValue;
                         }
                         obj.pers_resp = form["pers_resp" + i];
-                       
+
                         objInsp.InspectionQstList.Add(obj);
                     }
                 }
@@ -1328,12 +1289,10 @@ namespace ISOStd.Controllers
             InspctionQuestionModels objModel = new InspctionQuestionModels();
             try
             {
-
                 if (Request.QueryString["id_inspection_plan"] != null && Request.QueryString["id_inspection_plan"] != "")
                 {
-
                     string id_inspection_plan = Request.QueryString["id_inspection_plan"];
-                  
+
                     string sSqlstmt = "select id_inspection_plan,branch,checklist_ref,RevNo,insp_type,insp_detail,dept,Section,insp_area,location,insp_freq,project,approved_by,notified_to"
 
                         + " from t_inspection_plan where id_inspection_plan = '" + id_inspection_plan + "'";
@@ -1356,14 +1315,13 @@ namespace ISOStd.Controllers
                             project = (dsList.Tables[0].Rows[0]["project"].ToString()),
                             approved_by = (dsList.Tables[0].Rows[0]["approved_by"].ToString()),
                             branch = (dsList.Tables[0].Rows[0]["branch"].ToString()),
-                            dept_name =objGlobaldata.GetDeptNameById(dsList.Tables[0].Rows[0]["dept"].ToString()),
+                            dept_name = objGlobaldata.GetDeptNameById(dsList.Tables[0].Rows[0]["dept"].ToString()),
                             notified_to = (dsList.Tables[0].Rows[0]["notified_to"].ToString()),
                         };
                     }
 
-                   
                     ViewBag.InspType = objGlobaldata.GetDropdownList("Inspection Type");
-                   
+
                     ViewBag.InspArea = objGlobaldata.GetDropdownList("Inspection Area");
                     ViewBag.Location = objGlobaldata.GetDivisionLocationList(objModel.branch);
                     ViewBag.Frequency = objGlobaldata.GetDropdownList("Inspection Frequency");
@@ -1389,7 +1347,7 @@ namespace ISOStd.Controllers
                                 {
                                     id_inspection_date = dsChklist.Tables[0].Rows[i]["id_inspection_date"].ToString(),
                                     id_inspection_plan = dsChklist.Tables[0].Rows[i]["id_inspection_plan"].ToString(),
-                                    pers_resp = dsChklist.Tables[0].Rows[i]["pers_resp"].ToString(),            
+                                    pers_resp = dsChklist.Tables[0].Rows[i]["pers_resp"].ToString(),
                                 };
                                 DateTime dtDocDate;
                                 if (dsChklist.Tables[0].Rows[i]["insp_date"].ToString() != ""
@@ -1430,14 +1388,12 @@ namespace ISOStd.Controllers
                 InspctionQuestionList objInsp = new InspctionQuestionList();
                 objInsp.InspectionQstList = new List<InspctionQuestionModels>();
 
-
                 for (int i = 0; i < Convert.ToInt16(form["itemcnt"]); i++)
                 {
                     InspctionQuestionModels obj = new InspctionQuestionModels();
 
                     if (form["insp_date" + i] != "" && form["insp_date" + i] != null)
                     {
-
                         if (DateTime.TryParse(form["insp_date" + i], out dateValue) == true)
                         {
                             obj.insp_date = dateValue;
@@ -1463,7 +1419,6 @@ namespace ISOStd.Controllers
             }
             return RedirectToAction("PlanInspectionlist");
         }
-
 
         [AllowAnonymous]
         public ActionResult PlanInspectionlist(string branch_name)
@@ -1507,7 +1462,7 @@ namespace ISOStd.Controllers
                             {
                                 id_inspection_date = dsList.Tables[0].Rows[i]["id_inspection_date"].ToString(),
                                 id_inspection_plan = dsList.Tables[0].Rows[i]["id_inspection_plan"].ToString(),
-                                checklist_ref =objGlobaldata.GetInspectionChecklistRefNamebyRevNo(dsList.Tables[0].Rows[i]["checklist_ref"].ToString(), dsList.Tables[0].Rows[i]["RevNo"].ToString()),
+                                checklist_ref = objGlobaldata.GetInspectionChecklistRefNamebyRevNo(dsList.Tables[0].Rows[i]["checklist_ref"].ToString(), dsList.Tables[0].Rows[i]["RevNo"].ToString()),
                                 insp_type = objGlobaldata.GetDropdownitemById(dsList.Tables[0].Rows[i]["insp_type"].ToString()),
                                 dept = objGlobaldata.GetDeptNameById(dsList.Tables[0].Rows[i]["dept"].ToString()),
                                 Section = objInspModel.GetSectionNamebyId(dsList.Tables[0].Rows[i]["Section"].ToString()),
@@ -1584,10 +1539,8 @@ namespace ISOStd.Controllers
             InspectionCategoryModels objInspModel = new InspectionCategoryModels();
             try
             {
-
                 if (Request.QueryString["id_inspection_plan"] != null && Request.QueryString["id_inspection_plan"] != "")
                 {
-                 
                     ViewBag.ApproveStatus = objGlobaldata.GetConstantValueKeyValuePair("InspPlanApprove");
                     string id_inspection_plan = Request.QueryString["id_inspection_plan"];
                     string sSqlstmt = "select id_inspection_plan,checklist_ref,RevNo,insp_type,insp_detail,dept,Section,insp_area,location,insp_freq,project"
@@ -1599,7 +1552,6 @@ namespace ISOStd.Controllers
                     {
                         objModel = new InspctionQuestionModels
                         {
-                          
                             id_inspection_plan = dsList.Tables[0].Rows[0]["id_inspection_plan"].ToString(),
                             checklist_ref = objGlobaldata.GetInspectionChecklistRefNamebyRevNo(dsList.Tables[0].Rows[0]["checklist_ref"].ToString(), dsList.Tables[0].Rows[0]["RevNo"].ToString()),
                             insp_type = objGlobaldata.GetDropdownitemById(dsList.Tables[0].Rows[0]["insp_type"].ToString()),
@@ -1611,7 +1563,6 @@ namespace ISOStd.Controllers
                             insp_freq = objGlobaldata.GetDropdownitemById(dsList.Tables[0].Rows[0]["insp_freq"].ToString()),
                             project = dsList.Tables[0].Rows[0]["project"].ToString(),
                         };
-                      
                     }
 
                     // inspection dates
@@ -1633,7 +1584,6 @@ namespace ISOStd.Controllers
         {
             try
             {
-              
                 if (objModel.FunInspPlanApprove(objModel))
                 {
                     TempData["Successdata"] = "Updated Successfully";
@@ -1659,10 +1609,8 @@ namespace ISOStd.Controllers
             InspectionCategoryModels objInspModel = new InspectionCategoryModels();
             try
             {
-
                 if (Request.QueryString["id_inspection_plan"] != null && Request.QueryString["id_inspection_plan"] != "")
                 {
-
                     ViewBag.ApproveStatus = objGlobaldata.GetConstantValueKeyValuePair("InspPlanApprove");
                     string id_inspection_plan = Request.QueryString["id_inspection_plan"];
                     string sSqlstmt = "select id_inspection_plan,checklist_ref,RevNo,insp_type,insp_detail,dept,Section,insp_area,location,insp_freq,project,logged_by,logged_date,approved_by,approved_date,approver_comments,"
@@ -1675,7 +1623,6 @@ namespace ISOStd.Controllers
                     {
                         objModel = new InspctionQuestionModels
                         {
-
                             id_inspection_plan = dsList.Tables[0].Rows[0]["id_inspection_plan"].ToString(),
                             checklist_ref = objGlobaldata.GetInspectionChecklistRefNamebyRevNo(dsList.Tables[0].Rows[0]["checklist_ref"].ToString(), dsList.Tables[0].Rows[0]["RevNo"].ToString()),
                             insp_type = objGlobaldata.GetDropdownitemById(dsList.Tables[0].Rows[0]["insp_type"].ToString()),
@@ -1686,11 +1633,11 @@ namespace ISOStd.Controllers
                             location = objGlobaldata.GetDivisionLocationById(dsList.Tables[0].Rows[0]["location"].ToString()),
                             insp_freq = objGlobaldata.GetDropdownitemById(dsList.Tables[0].Rows[0]["insp_freq"].ToString()),
                             project = dsList.Tables[0].Rows[0]["project"].ToString(),
-                            logged_by =objGlobaldata.GetEmpHrNameById(dsList.Tables[0].Rows[0]["logged_by"].ToString()),
+                            logged_by = objGlobaldata.GetEmpHrNameById(dsList.Tables[0].Rows[0]["logged_by"].ToString()),
                             approved_by = objGlobaldata.GetEmpHrNameById(dsList.Tables[0].Rows[0]["approved_by"].ToString()),
                             approver_comments = dsList.Tables[0].Rows[0]["approver_comments"].ToString(),
                             approved_status = dsList.Tables[0].Rows[0]["approved_status"].ToString(),
-                            notified_to =objGlobaldata.GetMultiHrEmpNameById(dsList.Tables[0].Rows[0]["notified_to"].ToString()),
+                            notified_to = objGlobaldata.GetMultiHrEmpNameById(dsList.Tables[0].Rows[0]["notified_to"].ToString()),
                         };
                         DateTime dtDocDate;
                         if (dsList.Tables[0].Rows[0]["logged_date"].ToString() != ""
@@ -1805,10 +1752,8 @@ namespace ISOStd.Controllers
             InspectionCategoryModels objInspModel = new InspectionCategoryModels();
             try
             {
-
                 if (Request.QueryString["id_inspection_plan"] != null && Request.QueryString["id_inspection_plan"] != "" && Request.QueryString["id_inspection_date"] != null && Request.QueryString["id_inspection_date"] != "")
                 {
-
                     string id_inspection_plan = Request.QueryString["id_inspection_plan"];
                     string id_inspection_date = Request.QueryString["id_inspection_date"];
 
@@ -1852,7 +1797,7 @@ namespace ISOStd.Controllers
 
                     if (Convert.ToString(objModel.insp_perf_date) == "01/01/0001 00:00:00")
                     {
-                        string sql = "select id_question_master from t_inspection_question_master where id_question_master='"+ dsList.Tables[0].Rows[0]["checklist_ref"].ToString() + "' and  RevNo = '" + dsList.Tables[0].Rows[0]["RevNo"].ToString() + "'";
+                        string sql = "select id_question_master from t_inspection_question_master where id_question_master='" + dsList.Tables[0].Rows[0]["checklist_ref"].ToString() + "' and  RevNo = '" + dsList.Tables[0].Rows[0]["RevNo"].ToString() + "'";
                         DataSet dslist = objGlobaldata.Getdetails(sql);
                         if (dslist.Tables.Count > 0 && dslist.Tables[0].Rows.Count > 0)
                         {
@@ -1915,7 +1860,6 @@ namespace ISOStd.Controllers
                                 }
                             }
                         }
-                       
                     }
                     else
                     {
@@ -1973,7 +1917,6 @@ namespace ISOStd.Controllers
         [AllowAnonymous]
         public ActionResult PerformInspection(InspctionQuestionModels objModel, FormCollection form, IEnumerable<HttpPostedFileBase> supload0, IEnumerable<HttpPostedFileBase> supload1, IEnumerable<HttpPostedFileBase> supload2, IEnumerable<HttpPostedFileBase> supload3, IEnumerable<HttpPostedFileBase> supload4, IEnumerable<HttpPostedFileBase> supload5, IEnumerable<HttpPostedFileBase> supload6, IEnumerable<HttpPostedFileBase> supload7, IEnumerable<HttpPostedFileBase> supload8, IEnumerable<HttpPostedFileBase> supload9, IEnumerable<HttpPostedFileBase> supload10, IEnumerable<HttpPostedFileBase> supload_test)
         {
-           
             try
             {
                 string QCDeletes = "";
@@ -1988,23 +1931,20 @@ namespace ISOStd.Controllers
                 InspctionQuestionList objInsp = new InspctionQuestionList();
                 objInsp.InspectionQstList = new List<InspctionQuestionModels>();
 
-
                 for (int i = 0; i < Convert.ToInt16(form["itemcnt"]); i++)
                 {
                     InspctionQuestionModels obj = new InspctionQuestionModels();
-                   
 
                     obj.id_inspection_perform_checklist = form["id_inspection_perform_checklist" + i];
-                       
-                        obj.InspectionQuestions = form["InspectionQuestions" + i];
+
+                    obj.InspectionQuestions = form["InspectionQuestions" + i];
                     obj.criticality = form["criticality" + i];
                     obj.criteria = form["criteria" + i];
                     obj.insp_result = form["insp_result" + i];
                     obj.details = form["details" + i];
-                   
+
                     obj.action_required = form["action_required" + i];
                     obj.suggestion = form["suggestion" + i];
-
 
                     //certificate upload
                     IList<HttpPostedFileBase> upload = (IList<HttpPostedFileBase>)supload_test;
@@ -2101,7 +2041,6 @@ namespace ISOStd.Controllers
                     }
 
                     objInsp.InspectionQstList.Add(obj);
-                    
                 }
                 if (objModel.FunPerformInspection(objModel, objInsp))
                 {
@@ -2128,10 +2067,8 @@ namespace ISOStd.Controllers
             InspectionCategoryModels objInspModel = new InspectionCategoryModels();
             try
             {
-
                 if (Request.QueryString["id_inspection_plan"] != null && Request.QueryString["id_inspection_plan"] != "" && Request.QueryString["id_inspection_date"] != null && Request.QueryString["id_inspection_date"] != "")
                 {
-
                     string id_inspection_plan = Request.QueryString["id_inspection_plan"];
                     string id_inspection_date = Request.QueryString["id_inspection_date"];
 
@@ -2155,9 +2092,9 @@ namespace ISOStd.Controllers
                             location = objGlobaldata.GetDivisionLocationById(dsList.Tables[0].Rows[0]["location"].ToString()),
                             insp_freq = objGlobaldata.GetDropdownitemById(dsList.Tables[0].Rows[0]["insp_freq"].ToString()),
                             project = dsList.Tables[0].Rows[0]["project"].ToString(),
-                            insp_status =objGlobaldata.GetDropdownitemById(dsList.Tables[0].Rows[0]["insp_status"].ToString()),
+                            insp_status = objGlobaldata.GetDropdownitemById(dsList.Tables[0].Rows[0]["insp_status"].ToString()),
                             notification_to = objGlobaldata.GetMultiHrEmpNameById(dsList.Tables[0].Rows[0]["notification_to"].ToString()),
-                            logged_by =objGlobaldata.GetMultiHrEmpNameById(dsList.Tables[0].Rows[0]["logged_by"].ToString()),
+                            logged_by = objGlobaldata.GetMultiHrEmpNameById(dsList.Tables[0].Rows[0]["logged_by"].ToString()),
                             pers_resp = objGlobaldata.GetMultiHrEmpNameById(dsList.Tables[0].Rows[0]["pers_resp"].ToString()),
                         };
 
@@ -2176,9 +2113,8 @@ namespace ISOStd.Controllers
 
                     // inspection checklist
 
-                        string sSqlstmt1 = "select id_inspection_perform_checklist,id_inspection_date,id_inspection_plan,InspectionQuestions,criticality,criteria,insp_result,details,upload,action_required,suggestion from t_inspection_perform_checklist where id_inspection_date = '" + id_inspection_date + "'";
-                        ViewBag.objList = objGlobaldata.Getdetails(sSqlstmt1);
-
+                    string sSqlstmt1 = "select id_inspection_perform_checklist,id_inspection_date,id_inspection_plan,InspectionQuestions,criticality,criteria,insp_result,details,upload,action_required,suggestion from t_inspection_perform_checklist where id_inspection_date = '" + id_inspection_date + "'";
+                    ViewBag.objList = objGlobaldata.Getdetails(sSqlstmt1);
                 }
             }
             catch (Exception ex)
@@ -2188,8 +2124,8 @@ namespace ISOStd.Controllers
             }
             return View(objModel);
         }
-        //--------------------------------------
 
+        //--------------------------------------
 
         public JsonResult AddInspectionQuestionsSearch(string sCategory, string sSection, string branch_name)
         {
@@ -2199,8 +2135,8 @@ namespace ISOStd.Controllers
                 InspctionQuestionModels objQst = new InspctionQuestionModels();
 
                 ViewBag.Category = obj.GetInspectionCategoryList();
-                //ViewBag.Section = obj.GetInspectionSectionListbox(sCategory); 
-                //ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();   
+                //ViewBag.Section = obj.GetInspectionSectionListbox(sCategory);
+                //ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
 
                 string sBranch_name = objGlobaldata.GetCurrentUserSession().division;
                 string sBranchtree = objGlobaldata.GetCurrentUserSession().BranchTree;
@@ -2272,7 +2208,7 @@ namespace ISOStd.Controllers
 
         //    return View(objInspModels);
         //}
-        
+
         public ActionResult InspectionQuestionDelete(string id_inspection_question, string Category)
         {
             InspctionQuestionModels obj = new InspctionQuestionModels();
@@ -2286,7 +2222,6 @@ namespace ISOStd.Controllers
                 else
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-
                 }
             }
             catch (Exception ex)
@@ -2297,14 +2232,13 @@ namespace ISOStd.Controllers
 
             return RedirectToAction("AddInspectionQuestions");
         }
-        
+
         public JsonResult InspectionQuestionDelete1(string id_inspection_question, string Category)
         {
             InspctionQuestionModels obj = new InspctionQuestionModels();
 
             try
             {
-
                 if (obj.FunDeleteQuestions(id_inspection_question))
                 {
                     TempData["Successdata"] = "Question deleted successfully";
@@ -2313,7 +2247,6 @@ namespace ISOStd.Controllers
                 else
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-
                 }
             }
             catch (Exception ex)
@@ -2324,7 +2257,7 @@ namespace ISOStd.Controllers
 
             return Json("Failed");
         }
-        
+
         [AllowAnonymous]
         public JsonResult InspectionQuestionsUpdate(int id_inspection_question, string InspectionQuestions)
         {
@@ -2349,7 +2282,7 @@ namespace ISOStd.Controllers
 
             return Json("Failed");
         }
-        
+
         [HttpPost]
         public JsonResult GetQuestions(string Category, string Section, string branch_name)
         {
@@ -2365,7 +2298,6 @@ namespace ISOStd.Controllers
             {
                 data = obj.GetInspectionQuestList(Category, Section, sBranch_name);
             }
-
 
             return Json(data);
         }
@@ -2385,10 +2317,9 @@ namespace ISOStd.Controllers
                 data = obj.GetInspectionQuestionsListbox(Category, sBranch_name);
             }
 
-
             return Json(data);
         }
-        
+
         [HttpPost]
         public JsonResult FunGetSection(string Category, string branch_name)
         {
@@ -2441,7 +2372,6 @@ namespace ISOStd.Controllers
                 ViewBag.Category_Id = objInspModels.Category;
                 ViewBag.Category = obj.GetInspectionCategoryListbox();
 
-
                 if (objQst.FunAddInspectionRatings(objInspModels))
                 {
                     TempData["Successdata"] = "Added Ratings successfully";
@@ -2450,8 +2380,6 @@ namespace ISOStd.Controllers
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 }
-
-
             }
             catch (Exception ex)
             {
@@ -2477,7 +2405,6 @@ namespace ISOStd.Controllers
                 else
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-
                 }
             }
             catch (Exception ex)
@@ -2488,7 +2415,7 @@ namespace ISOStd.Controllers
 
             return RedirectToAction("AddInspectionRatings");
         }
-        
+
         public JsonResult InspectionRatingDelete1(string id_inspection_rating, string Category)
         {
             InspctionQuestionModels obj = new InspctionQuestionModels();
@@ -2503,7 +2430,6 @@ namespace ISOStd.Controllers
                 else
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-
                 }
             }
             catch (Exception ex)
@@ -2552,7 +2478,6 @@ namespace ISOStd.Controllers
 
         //---------------------Section-------------------------
 
-       
         public ActionResult InspectionSectionDelete(string id_inspection, string Category)
         {
             InspctionQuestionModels obj = new InspctionQuestionModels();
@@ -2566,7 +2491,6 @@ namespace ISOStd.Controllers
                 else
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-
                 }
             }
             catch (Exception ex)
@@ -2593,7 +2517,7 @@ namespace ISOStd.Controllers
                 string sBranchtree = objGlobaldata.GetCurrentUserSession().BranchTree;
                 ViewBag.Branch = objGlobaldata.GetMultiBranchListByID(sBranchtree);
                 string sSearchtext = "";
-                //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS  
+                //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS
                 // string sSqlstmt = "select  DISTINCT Category  from t_inspection_questions where Active=1";
                 string sSqlstmt = "SELECT DISTINCT Category FROM t_inspection_questions WHERE Category IN" +
                     "(SELECT DISTINCT Category FROM t_inspection_rating where Active = 1) and Active = 1";
@@ -2630,7 +2554,6 @@ namespace ISOStd.Controllers
                         }
                     }
                 }
-
             }
             catch (Exception ex)
             {
@@ -2654,7 +2577,7 @@ namespace ISOStd.Controllers
                 string sBranchtree = objGlobaldata.GetCurrentUserSession().BranchTree;
                 ViewBag.Branch = objGlobaldata.GetMultiBranchListByID(sBranchtree);
                 string sSearchtext = "";
-                //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS  
+                //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS
                 // string sSqlstmt = "select  DISTINCT Category  from t_inspection_questions where Active=1";
                 string sSqlstmt = "SELECT DISTINCT Category FROM t_inspection_questions WHERE Category IN" +
                     "(SELECT DISTINCT Category FROM t_inspection_rating where Active = 1) and Active = 1";
@@ -2680,7 +2603,6 @@ namespace ISOStd.Controllers
                             InspectionCategoryModels objInspclist = new InspectionCategoryModels
                             {
                                 Category = obj.GetInspectionCategoryByID(dsInspectionModelsList.Tables[0].Rows[i]["Category"].ToString()),
-
                             };
                             objInsplist.InspectionLst.Add(objInspclist);
                         }
@@ -2700,7 +2622,6 @@ namespace ISOStd.Controllers
             return Json("Success");
         }
 
-
         public ActionResult GenerateInspectionChecklist()
         {
             GenerateInspectionChecklistModels objInspModels = new GenerateInspectionChecklistModels();
@@ -2710,7 +2631,6 @@ namespace ISOStd.Controllers
 
             try
             {
-               
                 if (Request.QueryString["branch"] != "" && Request.QueryString["Category"] != "")
                 {
                     string Category = Request.QueryString["Category"];
@@ -2726,11 +2646,11 @@ namespace ISOStd.Controllers
                     //objInspModels.branch = objGlobaldata.GetCurrentUserSession().division;
                     objInspModels.Department = objGlobaldata.GetCurrentUserSession().DeptID;
                     objInspModels.Location = objGlobaldata.GetCurrentUserSession().Work_Location;
-                  //  objInspModels.team = objGlobaldata.GetCurrentUserSession().team;
+                    //  objInspModels.team = objGlobaldata.GetCurrentUserSession().team;
                     // ViewBag.Branch = objGlobaldata.GetCompanyBranchListbox();
                     ViewBag.Department = objGlobaldata.GetDepartmentListbox(sbranch);
                     ViewBag.Location = objGlobaldata.GetDivisionLocationList(sbranch);
-                  //  ViewBag.Team = objGlobaldata.GetMultiTeambyMultiGroup(objInspModels.Department);
+                    //  ViewBag.Team = objGlobaldata.GetMultiTeambyMultiGroup(objInspModels.Department);
                 }
                 else
                 {
@@ -2761,7 +2681,7 @@ namespace ISOStd.Controllers
                 objInspChecklist.Comment = form["Comment"];
                 objInspChecklist.branch = form["branchs"];
                 objInspChecklist.Department = form["Department"];
-              //  objInspChecklist.team = form["team"];
+                //  objInspChecklist.team = form["team"];
 
                 DateTime dateValue;
                 if (DateTime.TryParse(form["Inspection_date"], out dateValue) == true)
@@ -2811,7 +2731,7 @@ namespace ISOStd.Controllers
 
             return RedirectToAction("InspectionList", new { branch_name = objInspChecklist.branch });
         }
-        
+
         [HttpPost]
         public ActionResult GenerateInspectionChecklistReport(FormCollection form)
         {
@@ -2821,7 +2741,6 @@ namespace ISOStd.Controllers
             {
                 if (sCategory != "" && sbranch != "")
                 {
-
                     GenerateInspectionChecklistModels objInspModels = new GenerateInspectionChecklistModels();
 
                     InspctionQuestionModels obj = new InspctionQuestionModels();
@@ -2830,7 +2749,6 @@ namespace ISOStd.Controllers
                     ViewBag.InspectionQuestions = obj.GetInspectionQuestions(objCat.getInspectionCategoryIDByName(sCategory), sbranch);
                     ViewBag.SectionQuestions = obj.GetSectionQuestions(objCat.getInspectionCategoryIDByName(sCategory), sbranch);
                     ViewBag.InspectionRating = obj.GetInspectionRating(objCat.getInspectionCategoryIDByName(sCategory));
-
                 }
                 else
                 {
@@ -2858,7 +2776,7 @@ namespace ISOStd.Controllers
                 CustomSwitches = footer
             };
         }
-        
+
         [HttpPost]
         public JsonResult UploadDocument()
         {
@@ -2872,12 +2790,11 @@ namespace ISOStd.Controllers
                 string sFilename = Path.GetFileName(spath), sFilepath = Path.GetDirectoryName(spath);
                 file.SaveAs(sFilepath + "/" + "InspectionChecklist" + DateTime.Now.ToString("ddMMyyyyHHmm") + sFilename);
                 return Json("~/DataUpload/MgmtDocs/HSE/" + "InspectionChecklist" + DateTime.Now.ToString("ddMMyyyyHHmm") + sFilename);
-
             }
 
             return Json("Failed");
         }
-        
+
         [AllowAnonymous]
         public ActionResult InspectionChecklistDetails()
         {
@@ -2908,7 +2825,7 @@ namespace ISOStd.Controllers
                             Comment = dsInspect.Tables[0].Rows[0]["Comment"].ToString(),
                             branch = objGlobaldata.GetMultiCompanyBranchNameById(dsInspect.Tables[0].Rows[0]["branch"].ToString()),
                             Department = objGlobaldata.GetMultiDeptNameById(dsInspect.Tables[0].Rows[0]["Department"].ToString()),
-                          //  team = objGlobaldata.GetTeamNameByID(dsInspect.Tables[0].Rows[0]["team"].ToString()),
+                            //  team = objGlobaldata.GetTeamNameByID(dsInspect.Tables[0].Rows[0]["team"].ToString()),
                         };
                         DateTime dtValue;
                         if (DateTime.TryParse(dsInspect.Tables[0].Rows[0]["Inspection_date"].ToString(), out dtValue))
@@ -2921,7 +2838,6 @@ namespace ISOStd.Controllers
 
                         DataSet dsInspElement = objGlobaldata.Getdetails(sSqlstmt);
 
-
                         InspectionChecklistList objInspList = new InspectionChecklistList();
                         objInspList.lst = new List<InspectionChecklistModels>();
 
@@ -2931,7 +2847,6 @@ namespace ISOStd.Controllers
                         {
                             InspectionChecklistModels objElements = new InspectionChecklistModels
                             {
-
                                 id_ques = dsInspElement.Tables[0].Rows[i]["id_inspection_question"].ToString(),
                                 id_inspection_question = objIns.GetInspectionQuestionNameById(dsInspElement.Tables[0].Rows[i]["id_inspection_question"].ToString()),
                                 id_inspection_rating = objIns.GetInspectionRatingNameById(dsInspElement.Tables[0].Rows[i]["id_inspection_rating"].ToString()),
@@ -2946,7 +2861,6 @@ namespace ISOStd.Controllers
                         ViewBag.SectionQuestions = objRating.GetSectionQuestions(objInsp.cat_id, objInsp.branch);
                         ViewBag.InspectionRating = objRating.GetInspectionRating();
                         return View(objInsp);
-
                     }
                     else
                     {
@@ -2985,7 +2899,6 @@ namespace ISOStd.Controllers
                 {
                     GenerateInspectionChecklistModels objInsp = new GenerateInspectionChecklistModels
                     {
-
                         id_inspection_checklist = dsInspect.Tables[0].Rows[0]["id_inspection_checklist"].ToString(),
                         cat_id = (dsInspect.Tables[0].Rows[0]["Category"].ToString()),
                         Category = obj.GetInspectionCategoryByID(dsInspect.Tables[0].Rows[0]["Category"].ToString()),
@@ -2996,7 +2909,7 @@ namespace ISOStd.Controllers
                         Comment = dsInspect.Tables[0].Rows[0]["Comment"].ToString(),
                         branch = objGlobaldata.GetMultiCompanyBranchNameById(dsInspect.Tables[0].Rows[0]["branch"].ToString()),
                         Department = objGlobaldata.GetMultiDeptNameById(dsInspect.Tables[0].Rows[0]["Department"].ToString()),
-                      //  team = objGlobaldata.GetTeamNameByID(dsInspect.Tables[0].Rows[0]["team"].ToString()),
+                        //  team = objGlobaldata.GetTeamNameByID(dsInspect.Tables[0].Rows[0]["team"].ToString()),
                     };
                     DateTime dtValue;
                     if (DateTime.TryParse(dsInspect.Tables[0].Rows[0]["Inspection_date"].ToString(), out dtValue))
@@ -3046,7 +2959,7 @@ namespace ISOStd.Controllers
 
             return RedirectToAction("InspectionList");
         }
-        
+
         [HttpPost]
         public ActionResult InspectionChecklistReport(FormCollection form)
         {
@@ -3089,7 +3002,6 @@ namespace ISOStd.Controllers
                         dsInspect = objGlobaldata.GetReportDetails(dsInspect, objinsp.TagNo, objGlobaldata.GetCurrentUserSession().empid, "INSPECTION REPORT");
                         ViewBag.CompanyInfo = dsInspect;
 
-
                         ViewBag.ChecklistDetails = objinsp;
 
                         sSqlstmt = "SELECT id_inspection_checklist_trans,id_inspection_checklist,id_inspection_question,"
@@ -3130,10 +3042,8 @@ namespace ISOStd.Controllers
                 Cookies = cookieCollection,
                 CustomSwitches = footer
             };
-
-
         }
-        
+
         [AllowAnonymous]
         public JsonResult InspectionChecklistDocDelete(FormCollection form)
         {
@@ -3144,7 +3054,6 @@ namespace ISOStd.Controllers
                     InspectionChecklistModels Doc = new InspectionChecklistModels();
 
                     string sid_inspection_checklist = form["id_inspection_checklist"];
-
 
                     if (Doc.FunDeleteInspectionChecklist(sid_inspection_checklist))
                     {
@@ -3162,8 +3071,6 @@ namespace ISOStd.Controllers
                     TempData["alertdata"] = "Inspection checklist Id cannot be Null or empty";
                     return Json("Failed");
                 }
-
-
             }
             catch (Exception ex)
             {
@@ -3172,7 +3079,7 @@ namespace ISOStd.Controllers
             }
             return Json("Failed");
         }
-        
+
         [AllowAnonymous]
         public ActionResult InspectionChecklistList(FormCollection form)
         {
@@ -3190,7 +3097,6 @@ namespace ISOStd.Controllers
 
                 if (Request.QueryString["Category"] != null && Request.QueryString["Category"] != "" && Request.QueryString["branch"] != "" && Request.QueryString["branch"] != null)
                 {
-
                     string sCat = Request.QueryString["Category"];
                     string sCategory = obj.getInspectionCategoryIDByName(sCat);
                     ViewBag.Cate = sCategory;
@@ -3221,7 +3127,6 @@ namespace ISOStd.Controllers
                             {
                                 GenerateInspectionChecklistModels objInsp = new GenerateInspectionChecklistModels
                                 {
-
                                     id_inspection_checklist = dsInspect.Tables[0].Rows[i]["id_inspection_checklist"].ToString(),
                                     Category = obj.GetInspectionCategoryByID(dsInspect.Tables[0].Rows[i]["Category"].ToString()),
                                     Inspection_by = objGlobaldata.GetEmpHrNameById(dsInspect.Tables[0].Rows[i]["Inspection_by"].ToString()),
@@ -3231,7 +3136,7 @@ namespace ISOStd.Controllers
                                     Comment = dsInspect.Tables[0].Rows[i]["Comment"].ToString(),
                                     branch = objGlobaldata.GetMultiCompanyBranchNameById(dsInspect.Tables[0].Rows[i]["branch"].ToString()),
                                     Department = objGlobaldata.GetMultiDeptNameById(dsInspect.Tables[0].Rows[i]["Department"].ToString()),
-                                   // team = objGlobaldata.GetTeamNameByID(dsInspect.Tables[0].Rows[i]["team"].ToString()),
+                                    // team = objGlobaldata.GetTeamNameByID(dsInspect.Tables[0].Rows[i]["team"].ToString()),
                                 };
                                 ViewBag.Category = obj.GetInspectionCategoryByID(dsInspect.Tables[0].Rows[i]["Category"].ToString());
                                 DateTime dtValue;
@@ -3254,11 +3159,9 @@ namespace ISOStd.Controllers
                         TempData["alertdata"] = "No data exists";
                         return RedirectToAction("InspectionList");
                     }
-
                 }
                 else
                 {
-
                     //TempData["alertdata"] = "No data exists";
                     return RedirectToAction("InspectionList");
                 }
@@ -3287,7 +3190,6 @@ namespace ISOStd.Controllers
         //        ViewBag.Cate = Category;
         //        if (Category != null && Category != "")
         //        {
-
         //            string sCat = Request.QueryString["Category"];
         //            string sCategory = obj.getInspectionCategoryIDByName(sCat);
         //            string sid_inspection_checklist = Request.QueryString["Category"];
@@ -3310,16 +3212,12 @@ namespace ISOStd.Controllers
 
         //            if (dsInspect.Tables.Count > 0 && dsInspect.Tables[0].Rows.Count > 0)
         //            {
-
-
-
         //                for (int i = 0; i < dsInspect.Tables[0].Rows.Count; i++)
         //                {
         //                    try
         //                    {
         //                        GenerateInspectionChecklistModels objInsp = new GenerateInspectionChecklistModels
         //                        {
-
         //                            id_inspection_checklist = dsInspect.Tables[0].Rows[i]["id_inspection_checklist"].ToString(),
         //                            Category = obj.GetInspectionCategoryByID(dsInspect.Tables[0].Rows[i]["Category"].ToString()),
         //                            Inspection_by = objGlobaldata.GetEmpHrNameById(dsInspect.Tables[0].Rows[i]["Inspection_by"].ToString()),
@@ -3355,7 +3253,6 @@ namespace ISOStd.Controllers
         //    return Json("Success");
         //}
 
-
         [AllowAnonymous]
         public ActionResult InspectionChecklistListSearch(int? page, string InspfromDate, string InsptoDate, string chkAll, string Category)
         {
@@ -3364,10 +3261,8 @@ namespace ISOStd.Controllers
             InspectionCategoryModels obj = new InspectionCategoryModels();
             try
             {
-
                 if (Category != null && Category != "")
                 {
-
                     string sCat = Category;
                     string sCategory = obj.getInspectionCategoryIDByName(sCat);
                     string sid_inspection_checklist = Request.QueryString["Category"];
@@ -3389,7 +3284,6 @@ namespace ISOStd.Controllers
                             {
                                 sSearchtext = sSearchtext + " and Inspection_date between '" + dtFromdate.ToString("yyyy/MM/dd") + "' and '" + dtToDate.ToString("yyyy/MM/dd") + "'";
                             }
-
                         }
                     }
                     else
@@ -3407,7 +3301,6 @@ namespace ISOStd.Controllers
                             {
                                 GenerateInspectionChecklistModels objInsp = new GenerateInspectionChecklistModels
                                 {
-
                                     id_inspection_checklist = dsInspect.Tables[0].Rows[i]["id_inspection_checklist"].ToString(),
                                     Category = obj.GetInspectionCategoryByID(dsInspect.Tables[0].Rows[i]["Category"].ToString()),
                                     Inspection_by = objGlobaldata.GetEmpHrNameById(dsInspect.Tables[0].Rows[i]["Inspection_by"].ToString()),
@@ -3417,8 +3310,7 @@ namespace ISOStd.Controllers
                                     Comment = dsInspect.Tables[0].Rows[i]["Comment"].ToString(),
                                     branch = objGlobaldata.GetMultiCompanyBranchNameById(dsInspect.Tables[0].Rows[i]["branch"].ToString()),
                                     Department = objGlobaldata.GetMultiDeptNameById(dsInspect.Tables[0].Rows[i]["Department"].ToString()),
-                                  //  team = objGlobaldata.GetTeamNameByID(dsInspect.Tables[0].Rows[i]["team"].ToString()),
-
+                                    //  team = objGlobaldata.GetTeamNameByID(dsInspect.Tables[0].Rows[i]["team"].ToString()),
                                 };
                                 ViewBag.Category = obj.GetInspectionCategoryByID(dsInspect.Tables[0].Rows[i]["Category"].ToString());
                                 DateTime dtValue;
@@ -3441,7 +3333,6 @@ namespace ISOStd.Controllers
                         TempData["alertdata"] = "No data exists";
                         return RedirectToAction("InspectionList");
                     }
-
                 }
                 else
                 {
@@ -3458,12 +3349,11 @@ namespace ISOStd.Controllers
             return View(objInspChecklist.lstChk.ToList().ToPagedList(page ?? 1, 40));
         }
 
-
         [AllowAnonymous]
         public ActionResult InspectionChecklistEdit(int? page)
         {
             try
-            {                
+            {
                 if (Request.QueryString["id_inspection_checklist"] != null && Request.QueryString["id_inspection_checklist"] != "")
                 {
                     InspectionCategoryModels obj = new InspectionCategoryModels();
@@ -3492,7 +3382,7 @@ namespace ISOStd.Controllers
                         //ViewBag.BranchList = objGlobaldata.GetCompanyBranchListbox();
                         ViewBag.LocationList = objGlobaldata.GetLocationbyMultiDivision(dsChecklist.Tables[0].Rows[0]["branch"].ToString());
                         ViewBag.DepartmentList = objGlobaldata.GetDepartmentListbox(dsChecklist.Tables[0].Rows[0]["branch"].ToString());
-                   //     ViewBag.TeamList = objGlobaldata.GetMultiTeambyMultiGroup(dsChecklist.Tables[0].Rows[0]["Department"].ToString());
+                        //     ViewBag.TeamList = objGlobaldata.GetMultiTeambyMultiGroup(dsChecklist.Tables[0].Rows[0]["Department"].ToString());
 
                         DateTime dtValue;
                         if (DateTime.TryParse(dsChecklist.Tables[0].Rows[0]["Inspection_date"].ToString(), out dtValue))
@@ -3532,7 +3422,6 @@ namespace ISOStd.Controllers
                                 dicInspectionElements.Add(dsInspectionElement.Tables[0].Rows[i]["id_inspection_question"].ToString(), dsInspectionElement.Tables[0].Rows[i]["id_inspection_rating"].ToString());
                                 objInspectionList.lst.Add(objElements);
                             }
-
                         }
                         else
                         {
@@ -3547,7 +3436,6 @@ namespace ISOStd.Controllers
                         ViewBag.SectionQuestions = objRating.GetSectionQuestions(ViewBag.Cate_id, ViewBag.branch);
 
                         return View();
-
                     }
                     else
                     {
@@ -3570,7 +3458,6 @@ namespace ISOStd.Controllers
             return RedirectToAction("InspectionChecklistList");
         }
 
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult InspectionChecklistEdit(GenerateInspectionChecklistModels objInspChecklist, FormCollection form)
@@ -3580,7 +3467,6 @@ namespace ISOStd.Controllers
             ViewBag.branch = form["branchs"];
             try
             {
-
                 InspectionCategoryModels obj = new InspectionCategoryModels();
                 objInspChecklist.id_inspection_checklist = form["id_inspection_checklist"];
                 objInspChecklist.Category = obj.getInspectionCategoryIDByName(form["Category"]);
@@ -3603,7 +3489,6 @@ namespace ISOStd.Controllers
 
                 InspectionChecklistList objInsp = new InspectionChecklistList();
                 objInsp.lst = new List<InspectionChecklistModels>();
-
 
                 // MultiSelectList InspectionQuestions = objInsChk.GetInspectionQuestionsListbox(objInspChecklist.Category);
                 MultiSelectList InspectionQuestions = objInsChk.GetInspectionQuestions(objInspChecklist.Category, ViewBag.branch);
@@ -3648,6 +3533,5 @@ namespace ISOStd.Controllers
             }
             return RedirectToAction("InspectionChecklistList", new { Category = CatId, branch = ViewBag.branch });
         }
-
     }
 }

@@ -1,25 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+﻿using ISOStd.Filters;
 using ISOStd.Models;
+using System;
+using System.Collections.Generic;
 using System.Data;
-using System.Net;
-using System.IO;
-using PagedList;
-using PagedList.Mvc;
-using Rotativa;
-using ISOStd.Filters;
+using System.Linq;
+using System.Web.Mvc;
 
 namespace ISOStd.Controllers
 {
     [PreventFromUrl]
     public class HseIndController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
-        HseIndModels objHse = new HseIndModels();
-
+        private clsGlobal objGlobaldata = new clsGlobal();
+        private HseIndModels objHse = new HseIndModels();
 
         public HseIndController()
         {
@@ -37,7 +30,7 @@ namespace ISOStd.Controllers
             try
             {
                 ViewBag.Location = objGlobaldata.GetCompanyBranchListbox();
-                ViewBag.Employee = objGlobaldata.GetHrEmployeeListbox(); 
+                ViewBag.Employee = objGlobaldata.GetHrEmployeeListbox();
                 ViewBag.Dept = objGlobaldata.GetDepartmentListbox();
                 ViewBag.HseInd = objHse.GetMultiHseInd();
                 ViewBag.PlanTimeInHour = objGlobaldata.GetAuditTimeInHour();
@@ -101,7 +94,7 @@ namespace ISOStd.Controllers
 
             HseIndModelsList objHseIndModelsList = new HseIndModelsList();
             objHseIndModelsList.HseIndList = new List<HseIndModels>();
-           
+
             try
             {
                 string sBranch_name = objGlobaldata.GetCurrentUserSession().division;
@@ -110,7 +103,6 @@ namespace ISOStd.Controllers
                 string sSearchtext = "";
 
                 UserCredentials objUserInfo = (UserCredentials)Session["UserCredentials"];
-
 
                 string sSqlstmt = "SELECT id_Hse_insp,Hse_DateTime, Location, Employee, Dept," +
                     " General_Behavior, Site_Details_Responsibilities, Personal_Protective_Equipments_Compliance," +
@@ -130,8 +122,7 @@ namespace ISOStd.Controllers
                 DataSet dsHseIndList = objGlobaldata.Getdetails(sSqlstmt);
 
                 if (dsHseIndList.Tables.Count > 0)
-                {                  
-
+                {
                     for (int i = 0; i < dsHseIndList.Tables[0].Rows.Count; i++)
                     {
                         DateTime dtHseDate = Convert.ToDateTime(dsHseIndList.Tables[0].Rows[i]["Hse_DateTime"].ToString());
@@ -196,7 +187,6 @@ namespace ISOStd.Controllers
 
                 UserCredentials objUserInfo = (UserCredentials)Session["UserCredentials"];
 
-
                 string sSqlstmt = "SELECT id_Hse_insp,Hse_DateTime, Location, Employee, Dept, General_Behavior, Site_Details_Responsibilities, Personal_Protective_Equipments_Compliance," +
                     "First_Aid,Emergency_Assistance,IMS,Equipments_Procedures,Remarks,Induction_given_by,Project,ReportNo,EmpType,Visitors,Others"
                     + "  from t_hse_ind where Active='1'";
@@ -215,7 +205,6 @@ namespace ISOStd.Controllers
 
                 if (dsHseIndList.Tables.Count > 0)
                 {
-
                     for (int i = 0; i < dsHseIndList.Tables[0].Rows.Count; i++)
                     {
                         DateTime dtHseDate = Convert.ToDateTime(dsHseIndList.Tables[0].Rows[i]["Hse_DateTime"].ToString());
@@ -280,10 +269,8 @@ namespace ISOStd.Controllers
 
                     DataSet dsHseIndList = objGlobaldata.Getdetails(sSqlstmt);
 
-
                     if (dsHseIndList.Tables.Count > 0 && dsHseIndList.Tables[0].Rows.Count > 0)
                     {
-
                         DateTime dtHseDate = Convert.ToDateTime(dsHseIndList.Tables[0].Rows[0]["Hse_DateTime"].ToString());
                         objComp = new HseIndModels
                         {
@@ -388,29 +375,27 @@ namespace ISOStd.Controllers
         {
             try
             {
-               
-                    if (form["id_Hse_insp"] != null && form["id_Hse_insp"] != "")
-                    {
-                        HseIndModels Doc = new HseIndModels();
-                        string sid_Hse_insp = form["id_Hse_insp"];
+                if (form["id_Hse_insp"] != null && form["id_Hse_insp"] != "")
+                {
+                    HseIndModels Doc = new HseIndModels();
+                    string sid_Hse_insp = form["id_Hse_insp"];
 
-                        if (Doc.FunDeleteHseInd(sid_Hse_insp))
-                        {
-                            TempData["Successdata"] = "Document deleted successfully";
-                            return Json("Success");
-                        }
-                        else
-                        {
-                            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                            return Json("Failed");
-                        }
+                    if (Doc.FunDeleteHseInd(sid_Hse_insp))
+                    {
+                        TempData["Successdata"] = "Document deleted successfully";
+                        return Json("Success");
                     }
                     else
                     {
-                        TempData["alertdata"] = "Hse Ind Id cannot be Null or empty";
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                         return Json("Failed");
-                    }                
-
+                    }
+                }
+                else
+                {
+                    TempData["alertdata"] = "Hse Ind Id cannot be Null or empty";
+                    return Json("Failed");
+                }
             }
             catch (Exception ex)
             {
@@ -423,13 +408,12 @@ namespace ISOStd.Controllers
         public ActionResult HseIndEdit()
         {
             ViewBag.SubMenutype = "HseInd";
-           
+
             HseIndModels objComp = new HseIndModels();
             try
             {
                 if (Request.QueryString["id_Hse_insp"] != null && Request.QueryString["id_Hse_insp"] != "")
                 {
-
                     string sid_Hse_insp = Request.QueryString["id_Hse_insp"];
                     string sSqlstmt = "SELECT id_Hse_insp,Hse_DateTime, Location, Employee, Dept, General_Behavior, Site_Details_Responsibilities, Personal_Protective_Equipments_Compliance,First_Aid," +
                         "Emergency_Assistance,IMS,Equipments_Procedures,Remarks,Induction_given_by,Project,ReportNo,EmpType,Visitors,Others from t_hse_ind"
@@ -439,7 +423,6 @@ namespace ISOStd.Controllers
 
                     if (dsHseIndList.Tables.Count > 0 && dsHseIndList.Tables[0].Rows.Count > 0)
                     {
-
                         DateTime dtHseDate = Convert.ToDateTime(dsHseIndList.Tables[0].Rows[0]["Hse_DateTime"].ToString());
                         objComp = new HseIndModels
                         {
@@ -531,7 +514,7 @@ namespace ISOStd.Controllers
         {
             DataSet dsData; string RepNo = "";
 
-            dsData = objGlobaldata.GetReportNo("HID","", Location);
+            dsData = objGlobaldata.GetReportNo("HID", "", Location);
             if (dsData != null && dsData.Tables.Count > 0)
             {
                 RepNo = dsData.Tables[0].Rows[0]["ReportNO"].ToString();

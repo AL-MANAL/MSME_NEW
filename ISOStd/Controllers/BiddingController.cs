@@ -1,36 +1,33 @@
-﻿using System;
+﻿using ISOStd.Filters;
+using ISOStd.Models;
+using PagedList;
+using System;
 using System.Collections.Generic;
+using System.Data;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using ISOStd.Models;
-using System.IO;
-using System.Data;
-using PagedList;
-using PagedList.Mvc;
-using System.Globalization;
-using ISOStd.Filters;
 
 namespace ISOStd.Controllers
 {
     [PreventFromUrl]
     public class BiddingController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
-        BiddingModels objBidding = new BiddingModels();
-
+        private clsGlobal objGlobaldata = new clsGlobal();
+        private BiddingModels objBidding = new BiddingModels();
 
         public BiddingController()
         {
             ViewBag.Menutype = "Customer";
             ViewBag.SubMenutype = "Bidding";
         }
+
         [AllowAnonymous]
         public ActionResult AddBiddingDocument()
         {
             try
             {
-               
                 ViewBag.Employee = objGlobaldata.GetHrEmployeeListbox();
                 ViewBag.Reviewer = objGlobaldata.GetReviewer();
                 ViewBag.GetPreparer = objGlobaldata.GetPreparer();
@@ -44,7 +41,6 @@ namespace ISOStd.Controllers
             return View();
         }
 
-        
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult AddBiddingDocument(BiddingModels objBidModels, FormCollection form, IEnumerable<HttpPostedFileBase> upload)
@@ -58,7 +54,6 @@ namespace ISOStd.Controllers
                 objBidModels.NotificationValue = form["NotificationValue"];
                 if (objBidModels.NotificationPeriod == "Days")
                 {
-
                     Notificationval = Convert.ToInt32(form["NotificationValue"]);
                 }
                 if (objBidModels.NotificationPeriod == "None")
@@ -107,14 +102,12 @@ namespace ISOStd.Controllers
                 {
                     objBidModels.submission_date = dateValue;
                 }
-               
+
                 if (DateTime.TryParse(form["proposal_date"], out dateValue) == true)
                 {
                     objBidModels.proposal_date = dateValue;
                 }
 
-
-               
                 if (objBidModels.FunAddBiddingDetails(objBidModels))
                 {
                     TempData["Successdata"] = "Added Bidding details successfully";
@@ -133,10 +126,8 @@ namespace ISOStd.Controllers
             return RedirectToAction("BiddingList");
         }
 
-         
         public ActionResult BiddingList(int? page)
         {
-
             BiddingModelsList objBiddingList = new BiddingModelsList();
             objBiddingList.BiddingList = new List<BiddingModels>();
             try
@@ -148,9 +139,6 @@ namespace ISOStd.Controllers
 
                 if (dsBiddingList.Tables.Count > 0)
                 {
-                  
-                       
-                    
                     for (int i = 0; i < dsBiddingList.Tables[0].Rows.Count; i++)
                     {
                         try
@@ -161,12 +149,10 @@ namespace ISOStd.Controllers
                                 client = dsBiddingList.Tables[0].Rows[i]["client"].ToString(),
                                 folderref = dsBiddingList.Tables[0].Rows[i]["folderref"].ToString(),
                                 projectname = dsBiddingList.Tables[0].Rows[i]["projectname"].ToString(),
-                                preparedby =objGlobaldata.GetEmpHrNameById(dsBiddingList.Tables[0].Rows[i]["preparedby"].ToString()),
+                                preparedby = objGlobaldata.GetEmpHrNameById(dsBiddingList.Tables[0].Rows[i]["preparedby"].ToString()),
                                 checkedby = objGlobaldata.GetMultiHrEmpNameById(dsBiddingList.Tables[0].Rows[i]["checkedby"].ToString()),
                                 proposalref = dsBiddingList.Tables[0].Rows[i]["proposalref"].ToString(),
                                 proposal_status = dsBiddingList.Tables[0].Rows[i]["proposal_status"].ToString(),
-                              
-
                             };
                             DateTime dtValue;
                             if (DateTime.TryParse(dsBiddingList.Tables[0].Rows[i]["submission_date"].ToString(), out dtValue))
@@ -195,7 +181,6 @@ namespace ISOStd.Controllers
             return View(objBiddingList.BiddingList.ToList().ToPagedList(page ?? 1, 40));
         }
 
-        
         [AllowAnonymous]
         public ActionResult BiddingEdit()
         {
@@ -206,12 +191,11 @@ namespace ISOStd.Controllers
             BiddingModels objBiddingModel = new BiddingModels();
             try
             {
-
                 if (Request.QueryString["id_bidding"] != null && Request.QueryString["id_bidding"] != "")
                 {
                     string sid_bidding = Request.QueryString["id_bidding"];
 
-                    //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS  
+                    //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS
                     string sSqlstmt = "select id_bidding,client,folderref,projectname,submission_date,preparedby,"
                     + "checkedby,proposalref,proposal_date,upload from t_bidding where id_bidding='" + sid_bidding + "'";
 
@@ -230,21 +214,18 @@ namespace ISOStd.Controllers
                             upload = dsBiddingList.Tables[0].Rows[0]["upload"].ToString(),
                         };
 
-                       
                         DateTime dtValue;
                         if (DateTime.TryParse(dsBiddingList.Tables[0].Rows[0]["submission_date"].ToString(), out dtValue))
                         {
                             objBiddingModel.submission_date = dtValue;
                             objBiddingModel.sub_date = objBiddingModel.submission_date.ToString("yyyy-MM-dd");
                         }
-                       
+
                         if (DateTime.TryParse(dsBiddingList.Tables[0].Rows[0]["proposal_date"].ToString(), out dtValue))
                         {
                             objBiddingModel.proposal_date = dtValue;
                             objBiddingModel.prop_date = objBiddingModel.proposal_date.ToString("yyyy-MM-dd");
                         }
-
-                       
                     }
                     else
                     {
@@ -257,7 +238,6 @@ namespace ISOStd.Controllers
                     TempData["alertdata"] = "Id cannot be Null or empty";
                     return RedirectToAction("BiddingList");
                 }
-
             }
             catch (Exception ex)
             {
@@ -266,10 +246,8 @@ namespace ISOStd.Controllers
                 return RedirectToAction("BiddingList");
             }
             return View(objBiddingModel);
-
         }
 
-        
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult BiddingEdit(BiddingModels objBidding, FormCollection form, IEnumerable<HttpPostedFileBase> upload)
@@ -296,7 +274,6 @@ namespace ISOStd.Controllers
                         catch (Exception ex)
                         {
                             objGlobaldata.AddFunctionalLog("Exception in BiddingEdit-upload: " + ex.ToString());
-                           
                         }
                     }
                     objBidding.upload = objBidding.upload.Trim(',');
@@ -314,7 +291,7 @@ namespace ISOStd.Controllers
                 {
                     objBidding.upload = null;
                 }
-                else if (form["QCDocsVal"] == null  && files.ContentLength == 0)
+                else if (form["QCDocsVal"] == null && files.ContentLength == 0)
                 {
                     objBidding.upload = null;
                 }
@@ -338,7 +315,6 @@ namespace ISOStd.Controllers
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 }
-
             }
             catch (Exception ex)
             {
@@ -349,7 +325,6 @@ namespace ISOStd.Controllers
             return RedirectToAction("BiddingList");
         }
 
-        
         [AllowAnonymous]
         public ActionResult BiddingApprove(string id_bidding, int iStatus, string biddingcomments)
         {
@@ -361,7 +336,6 @@ namespace ISOStd.Controllers
                 if (iStatus == 1)
                 {
                     sStatus = "Approved";
-
                 }
 
                 if (objBiddingModels.FunBiddingDocApprove(id_bidding, iStatus, biddingcomments))
@@ -381,7 +355,6 @@ namespace ISOStd.Controllers
             return RedirectToAction("ListPendingForApproval", "Dashboard");
         }
 
-        
         [HttpPost]
         public JsonResult BiddingDelete(FormCollection form)
         {
@@ -401,7 +374,6 @@ namespace ISOStd.Controllers
                     {
                         TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                     }
-
                 }
                 catch (Exception ex)
                 {
@@ -412,7 +384,6 @@ namespace ISOStd.Controllers
             return Json("Delete Failed, Customer Id null");
         }
 
-         
         [AllowAnonymous]
         public ActionResult BiddingDetails()
         {
@@ -424,7 +395,7 @@ namespace ISOStd.Controllers
                 {
                     string sid_bidding = Request.QueryString["id_bidding"];
 
-                    //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS  
+                    //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS
                     string sSqlstmt = "select id_bidding,client,folderref,projectname,submission_date,preparedby,"
                     + "checkedby,proposalref,proposal_date,(case when proposal_status=1 then 'Approved' else 'Not approved' end) as proposal_status,"
                     + "approved_date,upload,Approvers from t_bidding where id_bidding='" + sid_bidding + "'";
@@ -481,8 +452,6 @@ namespace ISOStd.Controllers
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
             return View(objBiddingModel);
-
         }
-        
     }
 }

@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
-using Dapper;
-using DataAccess.Contract;
+﻿using DataAccess.Contract;
 using DataAccess.Models;
 using HA.HALoG5BWService.DatabaseAccess.Impl;
-using MySql.Data.MySqlClient;
+using System.Collections.Generic;
 
 namespace DataAccess.Impl
 {
@@ -20,7 +15,8 @@ namespace DataAccess.Impl
         {
             this._connectionString = Constants.DbConnectionString;
         }
-        #endregion
+
+        #endregion Constructor
 
         //#region DB methods
 
@@ -55,6 +51,7 @@ namespace DataAccess.Impl
 
             return (int)base.Insert(parameters, "insert_user_notification");
         }
+
         //#endregion
     }
 }

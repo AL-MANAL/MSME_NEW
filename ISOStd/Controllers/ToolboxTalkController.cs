@@ -1,35 +1,32 @@
-﻿using System;
+﻿using ISOStd.Filters;
+using ISOStd.Models;
+using System;
 using System.Collections.Generic;
+using System.Data;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using ISOStd.Models;
-using System.Data;
-using System.Net;
-using System.IO;
-using PagedList;
-using PagedList.Mvc;
-using ISOStd.Filters;
 
 namespace ISOStd.Controllers
 {
     [PreventFromUrl]
     public class ToolboxTalkController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
-        static List<string> objLeaveList = new List<string>();
+        private clsGlobal objGlobaldata = new clsGlobal();
+        private static List<string> objLeaveList = new List<string>();
 
         public ToolboxTalkController()
         {
             ViewBag.Menutype = "HSE";
             ViewBag.SubMenutype = "ToolboxTalk";
         }
-                
+
         public ActionResult Index()
         {
             return View();
-        }        
-        
+        }
+
         [AllowAnonymous]
         public ActionResult AddToolboxTalk()
         {
@@ -46,7 +43,7 @@ namespace ISOStd.Controllers
                 ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
                 ViewBag.PlanTimeInHour = objGlobaldata.GetAuditTimeInHour();
                 ViewBag.PlanTimeInMin = objGlobaldata.GetAuditTimeInMin();
-               // ViewBag.Department = objGlobaldata.GetDepartmentWithIdListbox();
+                // ViewBag.Department = objGlobaldata.GetDepartmentWithIdListbox();
                 ViewBag.Topics = objGlobaldata.GetDropdownList("Toolbox Topic");
                 //ViewBag.Location = objGlobaldata.GetCompanyBranchListbox();
                 ViewBag.ActivityType = objGlobaldata.GetDropdownList("ToolBox-Activity Type");
@@ -63,9 +60,8 @@ namespace ISOStd.Controllers
             return View(objToolbox);
         }
 
-
         // POST: /ToolboxTalk/AddToolboxTalk
-        
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult AddToolboxTalk(ToolboxTalkModels objToolboxTalk, FormCollection form, IEnumerable<HttpPostedFileBase> Upload_Report)
@@ -140,36 +136,33 @@ namespace ISOStd.Controllers
 
             return RedirectToAction("ToolboxTalkList");
         }
-         
+
         [AllowAnonymous]
         public JsonResult ToolBoxTalkDocDelete(FormCollection form)
         {
             try
-            {                
-                        if (form["ToolBox_TalkId"] != null && form["ToolBox_TalkId"] != "")
-                        {
+            {
+                if (form["ToolBox_TalkId"] != null && form["ToolBox_TalkId"] != "")
+                {
+                    ToolboxTalkModels Doc = new ToolboxTalkModels();
+                    string sToolBox_TalkId = form["ToolBox_TalkId"];
 
-                            ToolboxTalkModels Doc = new ToolboxTalkModels();
-                            string sToolBox_TalkId = form["ToolBox_TalkId"];
-
-
-                            if (Doc.FunDeletToolBoxTalkDoc(sToolBox_TalkId))
-                            {
-                                TempData["Successdata"] = "Document deleted successfully";
-                                return Json("Success");
-                            }
-                            else
-                            {
-                                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                                return Json("Failed");
-                            }
-                        }
-                        else
-                        {
-                            TempData["alertdata"] = "Incident Id cannot be Null or empty";
-                            return Json("Failed");
-                        }
-                   
+                    if (Doc.FunDeletToolBoxTalkDoc(sToolBox_TalkId))
+                    {
+                        TempData["Successdata"] = "Document deleted successfully";
+                        return Json("Success");
+                    }
+                    else
+                    {
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                        return Json("Failed");
+                    }
+                }
+                else
+                {
+                    TempData["alertdata"] = "Incident Id cannot be Null or empty";
+                    return Json("Failed");
+                }
             }
             catch (Exception ex)
             {
@@ -178,17 +171,16 @@ namespace ISOStd.Controllers
             }
             return Json("Failed");
         }
-          
+
         [AllowAnonymous]
         public ActionResult ToolboxTalkList(string branch_name)
         {
             ToolboxTalkModelsList objToolboxTalkList = new ToolboxTalkModelsList();
             objToolboxTalkList.lstToolboxTalkModels = new List<ToolboxTalkModels>();
 
-           //ViewBag.Department = objGlobaldata.GetDepartmentWithIdListbox();
-           //ViewBag.Location = objGlobaldata.GetCompanyBranchListbox();
-           ViewBag.Project = objGlobaldata.GetDropdownList("Projects");
-
+            //ViewBag.Department = objGlobaldata.GetDepartmentWithIdListbox();
+            //ViewBag.Location = objGlobaldata.GetCompanyBranchListbox();
+            ViewBag.Project = objGlobaldata.GetDropdownList("Projects");
 
             try
             {
@@ -215,7 +207,7 @@ namespace ISOStd.Controllers
 
                 DataSet dsToolboxTalk = objGlobaldata.Getdetails(sSqlstmt);
                 if (dsToolboxTalk.Tables.Count > 0)
-                {   
+                {
                     for (int i = 0; i < dsToolboxTalk.Tables[0].Rows.Count; i++)
                     {
                         try
@@ -224,7 +216,7 @@ namespace ISOStd.Controllers
                             {
                                 ToolBox_TalkId = dsToolboxTalk.Tables[0].Rows[i]["ToolBox_TalkId"].ToString(),
                                 Conducted_By = objGlobaldata.GetMultiHrEmpNameById(dsToolboxTalk.Tables[0].Rows[i]["Conducted_By"].ToString()),
-                                Topic =objGlobaldata.GetDropdownitemById(dsToolboxTalk.Tables[0].Rows[i]["Topic"].ToString()),
+                                Topic = objGlobaldata.GetDropdownitemById(dsToolboxTalk.Tables[0].Rows[i]["Topic"].ToString()),
                                 Report_No = dsToolboxTalk.Tables[0].Rows[i]["Report_No"].ToString(),
                                 Upload_Report = (dsToolboxTalk.Tables[0].Rows[i]["Upload_Report"].ToString()),
                                 LoggedBy = objGlobaldata.GetEmpHrNameById(dsToolboxTalk.Tables[0].Rows[i]["LoggedBy"].ToString()),
@@ -273,7 +265,7 @@ namespace ISOStd.Controllers
 
             return View(objToolboxTalkList.lstToolboxTalkModels.ToList());
         }
-        
+
         [AllowAnonymous]
         public JsonResult ToolboxTalkListSearch(string branch_name)
         {
@@ -367,7 +359,7 @@ namespace ISOStd.Controllers
 
             return Json("Success");
         }
-        
+
         [AllowAnonymous]
         public ActionResult ToolboxTalkDetails()
         {
@@ -383,7 +375,6 @@ namespace ISOStd.Controllers
                     DataSet dsToolboxTalk = objGlobaldata.Getdetails(sSqlstmt);
                     if (dsToolboxTalk.Tables.Count > 0)
                     {
-
                         ToolboxTalkModels objToolboxTalk = new ToolboxTalkModels
                         {
                             ToolBox_TalkId = dsToolboxTalk.Tables[0].Rows[0]["ToolBox_TalkId"].ToString(),
@@ -440,61 +431,60 @@ namespace ISOStd.Controllers
 
             return RedirectToAction("ToolboxTalkList");
         }
-                
+
         [AllowAnonymous]
         public ActionResult ToolboxTalkInfo(int id)
         {
             try
             {
-                    string sSqlstmt = "select ToolBox_TalkId, Talk_DateTime, Conducted_By, Topic, Attendee_No, Report_No,"
-                    + "Upload_Report, LoggedBy,Project,Location,Department,Attended_by,Activity_type,Identified_method,ptw," +
-                    "Comply_ppe,Identified_hazard,feedback_tbt,outcome_tbt,branch FROM t_toolbox_talk where ToolBox_TalkId='" + id + "'";
+                string sSqlstmt = "select ToolBox_TalkId, Talk_DateTime, Conducted_By, Topic, Attendee_No, Report_No,"
+                + "Upload_Report, LoggedBy,Project,Location,Department,Attended_by,Activity_type,Identified_method,ptw," +
+                "Comply_ppe,Identified_hazard,feedback_tbt,outcome_tbt,branch FROM t_toolbox_talk where ToolBox_TalkId='" + id + "'";
 
-                    DataSet dsToolboxTalk = objGlobaldata.Getdetails(sSqlstmt);
-                    if (dsToolboxTalk.Tables.Count > 0)
+                DataSet dsToolboxTalk = objGlobaldata.Getdetails(sSqlstmt);
+                if (dsToolboxTalk.Tables.Count > 0)
+                {
+                    ToolboxTalkModels objToolboxTalk = new ToolboxTalkModels
                     {
+                        ToolBox_TalkId = dsToolboxTalk.Tables[0].Rows[0]["ToolBox_TalkId"].ToString(),
+                        Conducted_By = objGlobaldata.GetMultiHrEmpNameById(dsToolboxTalk.Tables[0].Rows[0]["Conducted_By"].ToString()),
+                        Topic = objGlobaldata.GetDropdownitemById(dsToolboxTalk.Tables[0].Rows[0]["Topic"].ToString()),
+                        Report_No = dsToolboxTalk.Tables[0].Rows[0]["Report_No"].ToString(),
+                        Upload_Report = (dsToolboxTalk.Tables[0].Rows[0]["Upload_Report"].ToString()),
+                        LoggedBy = objGlobaldata.GetEmpHrNameById(dsToolboxTalk.Tables[0].Rows[0]["LoggedBy"].ToString()),
+                        Project = objGlobaldata.GetDropdownitemById(dsToolboxTalk.Tables[0].Rows[0]["Project"].ToString()),
+                        Location = objGlobaldata.GetDivisionLocationById(dsToolboxTalk.Tables[0].Rows[0]["Location"].ToString()),
+                        Department = objGlobaldata.GetMultiDeptNameById(dsToolboxTalk.Tables[0].Rows[0]["Department"].ToString()),
+                        Attended_by = objGlobaldata.GetMultiHrEmpNameById(dsToolboxTalk.Tables[0].Rows[0]["Attended_by"].ToString()),
+                        Activity_type = objGlobaldata.GetDropdownitemById(dsToolboxTalk.Tables[0].Rows[0]["Activity_type"].ToString()),
+                        Identified_method = dsToolboxTalk.Tables[0].Rows[0]["Identified_method"].ToString(),
+                        ptw = objGlobaldata.GetDropdownitemById(dsToolboxTalk.Tables[0].Rows[0]["ptw"].ToString()),
+                        Comply_ppe = dsToolboxTalk.Tables[0].Rows[0]["Comply_ppe"].ToString(),
+                        Identified_hazard = objGlobaldata.GetDropdownitemById(dsToolboxTalk.Tables[0].Rows[0]["Identified_hazard"].ToString()),
+                        feedback_tbt = dsToolboxTalk.Tables[0].Rows[0]["feedback_tbt"].ToString(),
+                        outcome_tbt = dsToolboxTalk.Tables[0].Rows[0]["outcome_tbt"].ToString(),
+                        branch = objGlobaldata.GetMultiCompanyBranchNameById(dsToolboxTalk.Tables[0].Rows[0]["branch"].ToString()),
+                    };
 
-                        ToolboxTalkModels objToolboxTalk = new ToolboxTalkModels
-                        {
-                            ToolBox_TalkId = dsToolboxTalk.Tables[0].Rows[0]["ToolBox_TalkId"].ToString(),
-                            Conducted_By = objGlobaldata.GetMultiHrEmpNameById(dsToolboxTalk.Tables[0].Rows[0]["Conducted_By"].ToString()),
-                            Topic = objGlobaldata.GetDropdownitemById(dsToolboxTalk.Tables[0].Rows[0]["Topic"].ToString()),
-                            Report_No = dsToolboxTalk.Tables[0].Rows[0]["Report_No"].ToString(),
-                            Upload_Report = (dsToolboxTalk.Tables[0].Rows[0]["Upload_Report"].ToString()),
-                            LoggedBy = objGlobaldata.GetEmpHrNameById(dsToolboxTalk.Tables[0].Rows[0]["LoggedBy"].ToString()),
-                            Project = objGlobaldata.GetDropdownitemById(dsToolboxTalk.Tables[0].Rows[0]["Project"].ToString()),
-                            Location = objGlobaldata.GetDivisionLocationById(dsToolboxTalk.Tables[0].Rows[0]["Location"].ToString()),
-                            Department = objGlobaldata.GetMultiDeptNameById(dsToolboxTalk.Tables[0].Rows[0]["Department"].ToString()),
-                            Attended_by = objGlobaldata.GetMultiHrEmpNameById(dsToolboxTalk.Tables[0].Rows[0]["Attended_by"].ToString()),
-                            Activity_type = objGlobaldata.GetDropdownitemById(dsToolboxTalk.Tables[0].Rows[0]["Activity_type"].ToString()),
-                            Identified_method = dsToolboxTalk.Tables[0].Rows[0]["Identified_method"].ToString(),
-                            ptw = objGlobaldata.GetDropdownitemById(dsToolboxTalk.Tables[0].Rows[0]["ptw"].ToString()),
-                            Comply_ppe = dsToolboxTalk.Tables[0].Rows[0]["Comply_ppe"].ToString(),
-                            Identified_hazard = objGlobaldata.GetDropdownitemById(dsToolboxTalk.Tables[0].Rows[0]["Identified_hazard"].ToString()),
-                            feedback_tbt = dsToolboxTalk.Tables[0].Rows[0]["feedback_tbt"].ToString(),
-                            outcome_tbt = dsToolboxTalk.Tables[0].Rows[0]["outcome_tbt"].ToString(),
-                            branch = objGlobaldata.GetMultiCompanyBranchNameById(dsToolboxTalk.Tables[0].Rows[0]["branch"].ToString()),
-                        };
-
-                        DateTime dateValue;
-                        if (DateTime.TryParse(dsToolboxTalk.Tables[0].Rows[0]["Talk_DateTime"].ToString(), out dateValue))
-                        {
-                            objToolboxTalk.Talk_DateTime = dateValue;
-                        }
-
-                        int iValue;
-                        if (int.TryParse(dsToolboxTalk.Tables[0].Rows[0]["Attendee_No"].ToString(), out iValue))
-                        {
-                            objToolboxTalk.Attendee_No = iValue;
-                        }
-
-                        return View(objToolboxTalk);
-                    }
-                    else
+                    DateTime dateValue;
+                    if (DateTime.TryParse(dsToolboxTalk.Tables[0].Rows[0]["Talk_DateTime"].ToString(), out dateValue))
                     {
-                        TempData["alertdata"] = "No data exists";
-                        return RedirectToAction("ToolboxTalkList");
+                        objToolboxTalk.Talk_DateTime = dateValue;
                     }
+
+                    int iValue;
+                    if (int.TryParse(dsToolboxTalk.Tables[0].Rows[0]["Attendee_No"].ToString(), out iValue))
+                    {
+                        objToolboxTalk.Attendee_No = iValue;
+                    }
+
+                    return View(objToolboxTalk);
+                }
+                else
+                {
+                    TempData["alertdata"] = "No data exists";
+                    return RedirectToAction("ToolboxTalkList");
+                }
             }
             catch (Exception ex)
             {
@@ -504,7 +494,7 @@ namespace ISOStd.Controllers
 
             return RedirectToAction("ToolboxTalkList");
         }
-         
+
         [AllowAnonymous]
         public ActionResult ToolboxTalkEdit()
         {
@@ -620,7 +610,7 @@ namespace ISOStd.Controllers
                         objToolboxTalk.Talk_DateTime = DateTime.Parse(dateValue.ToString("dd/MM/yyyy") + " " + iHr + ":" + iMin + ":00");
                     }
                 }
-                
+
                 if (Upload_Report != null && files.ContentLength > 0)
                 {
                     objToolboxTalk.Upload_Report = "";
@@ -674,7 +664,7 @@ namespace ISOStd.Controllers
 
             return RedirectToAction("ToolboxTalkList");
         }
-                        
+
         public JsonResult GetEmployeeNameListMaster(string Conducted_By)
         {
             objLeaveList = objGlobaldata.GetEmployeeNameListboxForAutoCompMaster();
@@ -687,7 +677,6 @@ namespace ISOStd.Controllers
         [HttpPost]
         public JsonResult FunGetReportNo(/*string Project,*/ string Location)
         {
-
             DataSet dsData; string RepNo = "";
 
             dsData = objGlobaldata.GetReportNo("TBT", "", Location);
@@ -696,8 +685,6 @@ namespace ISOStd.Controllers
                 RepNo = dsData.Tables[0].Rows[0]["ReportNO"].ToString();
             }
             return Json(RepNo);
-
         }
-
     }
 }

@@ -1,23 +1,20 @@
-﻿using System;
+﻿using ISOStd.Filters;
+using ISOStd.Models;
+using Rotativa;
+using System;
 using System.Collections.Generic;
+using System.Data;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using ISOStd.Models;
-using System.Data;
-using System.Net;
-using System.IO;
-using PagedList;
-using PagedList.Mvc;
-using ISOStd.Filters;
-using Rotativa;
 
 namespace ISOStd.Controllers
 {
     [PreventFromUrl]
     public class KPIController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
+        private clsGlobal objGlobaldata = new clsGlobal();
 
         public KPIController()
         {
@@ -27,14 +24,14 @@ namespace ISOStd.Controllers
 
         //
         // GET: /KPI/
-       
+
         public ActionResult Index()
         {
             return View();
         }
 
         // GET: /KPI/AddKPIEvaluation
-        
+
         [AllowAnonymous]
         public ActionResult AddKPIEvaluation()
         {
@@ -42,22 +39,22 @@ namespace ISOStd.Controllers
         }
 
         // GET: /KPI/InitilizeAddKPIEvaluation
-        
+
         private ActionResult InitilizeAddKPIEvaluation()
         {
             KPIModels objKpi = new KPIModels();
             try
             {
                 objKpi.branch = objGlobaldata.GetCurrentUserSession().division;
-                objKpi.group_name = objGlobaldata.GetCurrentUserSession().DeptID;              
-              
+                objKpi.group_name = objGlobaldata.GetCurrentUserSession().DeptID;
+
                 ViewBag.Branch = objGlobaldata.GetCompanyBranchListbox();
-                ViewBag.Department = objGlobaldata.GetDepartmentListbox(objKpi.branch);       
-               
+                ViewBag.Department = objGlobaldata.GetDepartmentListbox(objKpi.branch);
+
                 ViewBag.Perf = objGlobaldata.GetKPIPerformanceIndicatorList();
                 ViewBag.Level = objGlobaldata.GetKPILevelList();
                 ViewBag.Type = objGlobaldata.GetKPITypeList();
-              //  ViewBag.Monitoring = objGlobaldata.GetKPIMonitoringMechanismList();
+                //  ViewBag.Monitoring = objGlobaldata.GetKPIMonitoringMechanismList();
                 ViewBag.Frequency = objGlobaldata.GetKPIFrequencyEvaluationList();
                 ViewBag.Status = objGlobaldata.GetKPIStatusList();
                 ViewBag.Unit = objGlobaldata.GetConstantValue("KPIUnit");
@@ -73,7 +70,7 @@ namespace ISOStd.Controllers
         }
 
         // POST: /KPI/AddKPIEvaluation
-        
+
         [HttpPost]
         [AllowAnonymous]
         public ActionResult AddKPIEvaluation(KPIModels objKPI, FormCollection form, IEnumerable<HttpPostedFileBase> upload)
@@ -90,7 +87,6 @@ namespace ISOStd.Controllers
                     {
                         objKPI.established_date = dateValue;
                     }
-                   
 
                     KPIModelsList objModelsList = new KPIModelsList();
                     objModelsList.KPIMList = new List<KPIModels>();
@@ -107,7 +103,6 @@ namespace ISOStd.Controllers
 
                         if (form["causes_failure" + i] != null && form["causes_failure" + i] != "")
                         {
-
                             objModels.causes_failure = form["causes_failure" + i];
                             objModelsList.KPIMList.Add(objModels);
                         }
@@ -119,7 +114,7 @@ namespace ISOStd.Controllers
                     for (int i = 0; i < Convert.ToInt16(form["itemcnts"]); i++)
                     {
                         KPIModels objMeasureModels = new KPIModels();
-                      
+
                         if (form["measurable_indicator " + i] != null && form["measurable_indicator " + i] != "")
                         {
                             objMeasureModels.measurable_indicator = form["measurable_indicator " + i];
@@ -187,7 +182,6 @@ namespace ISOStd.Controllers
             return Json(true);
         }
 
-
         // GET: /KPI/KPIEvaluationList
 
         [AllowAnonymous]
@@ -206,7 +200,7 @@ namespace ISOStd.Controllers
                 ViewBag.Branch = objGlobaldata.GetMultiCompanyBranchNameByID(sBranchtree);
 
                 string sSqlstmt = "select t.KPI_Id,t.kpi_ref_no,established_date,branch,group_name,process_indicator,kpi_level,process_monitor,pers_resp,t.upload,approved_by,t.kpi_status,"
-                +"status_reason,kpiapprv_status from t_kpi t where Active = 1";
+                + "status_reason,kpiapprv_status from t_kpi t where Active = 1";
                 string sSearchtext = "";
                 if (branch_name != null && branch_name != "")
                 {
@@ -224,7 +218,6 @@ namespace ISOStd.Controllers
                 {
                     for (int i = 0; i < dsKPIModelsList.Tables[0].Rows.Count; i++)
                     {
-                       
                         try
                         {
                             KPIModels objKPIModels = new KPIModels
@@ -234,11 +227,10 @@ namespace ISOStd.Controllers
                                 kpi_ref_no = (dsKPIModelsList.Tables[0].Rows[i]["kpi_ref_no"].ToString()),
                                 branch = objGlobaldata.GetCompanyBranchNameById(dsKPIModelsList.Tables[0].Rows[i]["branch"].ToString()),
                                 group_name = objGlobaldata.GetDeptNameById(dsKPIModelsList.Tables[0].Rows[i]["group_name"].ToString()),
-                                process_indicator =objGlobaldata.GetKPIPerformanceIndicatorById(dsKPIModelsList.Tables[0].Rows[i]["process_indicator"].ToString()),
-                                kpi_level =objGlobaldata.GetKPILevelById(dsKPIModelsList.Tables[0].Rows[i]["kpi_level"].ToString()),
+                                process_indicator = objGlobaldata.GetKPIPerformanceIndicatorById(dsKPIModelsList.Tables[0].Rows[i]["process_indicator"].ToString()),
+                                kpi_level = objGlobaldata.GetKPILevelById(dsKPIModelsList.Tables[0].Rows[i]["kpi_level"].ToString()),
                                 process_monitor = (dsKPIModelsList.Tables[0].Rows[i]["process_monitor"].ToString()),
                                 kpiapprv_status = (dsKPIModelsList.Tables[0].Rows[i]["kpiapprv_status"].ToString()),
-                               
                             };
                             objKPIModelsList.KPIMList.Add(objKPIModels);
                         }
@@ -293,7 +285,6 @@ namespace ISOStd.Controllers
                 {
                     for (int i = 0; i < dsKPIModelsList.Tables[0].Rows.Count; i++)
                     {
-
                         try
                         {
                             KPIModels objKPIModels = new KPIModels
@@ -336,7 +327,6 @@ namespace ISOStd.Controllers
         //    KPIModels objKPIModels = new KPIModels();
         //    try
         //    {
-
         //        if (Request.QueryString["EvalId"] != null && Request.QueryString["EvalId"] != "")
         //        {
         //            string sEvalId = Request.QueryString["EvalId"];
@@ -395,20 +385,18 @@ namespace ISOStd.Controllers
             KPIModels objKPIModels = new KPIModels();
             try
             {
-
                 if (Request.QueryString["KPI_Id"] != null && Request.QueryString["KPI_Id"] != "")
                 {
                     string KPI_Id = Request.QueryString["KPI_Id"];
 
                     string sSqlstmt = "select KPI_Id,kpi_ref_no,established_date,branch,group_name,process_indicator,"
-                        +"kpi_level,process_monitor,pers_resp,upload,"
+                        + "kpi_level,process_monitor,pers_resp,upload,"
                         + "approved_by,kpi_status,status_reason  from t_kpi where KPI_Id=" + KPI_Id;
 
                     DataSet dsKPIModelsList = objGlobaldata.Getdetails(sSqlstmt);
 
                     if (dsKPIModelsList.Tables.Count > 0 && dsKPIModelsList.Tables[0].Rows.Count > 0)
                     {
-                       
                         objKPIModels = new KPIModels
                         {
                             KPI_Id = (dsKPIModelsList.Tables[0].Rows[0]["KPI_Id"].ToString()),
@@ -436,12 +424,12 @@ namespace ISOStd.Controllers
                         {
                             objKPIModels.established_date = dtValue;
                         }
-                       
+
                         //if (DateTime.TryParse(dsKPIModelsList.Tables[0].Rows[0]["monitoring_frm_date"].ToString(), out dtValue))
                         //{
                         //    objKPIModels.monitoring_frm_date = dtValue;
                         //}
-                      
+
                         //if (DateTime.TryParse(dsKPIModelsList.Tables[0].Rows[0]["monitoring_to_date"].ToString(), out dtValue))
                         //{
                         //    objKPIModels.monitoring_to_date = dtValue;
@@ -505,7 +493,6 @@ namespace ISOStd.Controllers
                                     monitoring_mechanism = (dsMIList.Tables[0].Rows[i]["monitoring_mechanism"].ToString()),
                                     frequency_eval = (dsMIList.Tables[0].Rows[i]["frequency_eval"].ToString()),
                                     risk = (dsMIList.Tables[0].Rows[i]["risk"].ToString()),
-                                   
                                 };
                                 DateTime dtDocDate;
                                 if (dsMIList.Tables[0].Rows[i]["monitoring_frm_date"].ToString() != ""
@@ -523,17 +510,14 @@ namespace ISOStd.Controllers
                             ViewBag.MIList = objMIList;
                         }
                     }
-                   
                 }
-               
-
             }
             catch (Exception ex)
             {
                 objGlobaldata.AddFunctionalLog("Exception in KPIEvaluationEdit: " + ex.ToString());
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
-          
+
             return View(objKPIModels);
         }
 
@@ -556,11 +540,9 @@ namespace ISOStd.Controllers
                     {
                         objKPI.established_date = dateValue;
                     }
-                  
 
                     KPIModelsList objModelsList = new KPIModelsList();
                     objModelsList.KPIMList = new List<KPIModels>();
-
 
                     for (int i = 0; i < Convert.ToInt16(form["itemcnt"]); i++)
                     {
@@ -695,12 +677,10 @@ namespace ISOStd.Controllers
         [HttpGet]
         public ActionResult AddActionPlan()
         {
-
             KPIModels objKPI = new KPIModels();
 
             try
             {
-
                 if (Request.QueryString["KPI_Id"] != null)
                 {
                     string KPI_Id = Request.QueryString["KPI_Id"];
@@ -710,17 +690,14 @@ namespace ISOStd.Controllers
 
                     if (dsModelsList.Tables.Count > 0 && dsModelsList.Tables[0].Rows.Count > 0)
                     {
-
                         objKPI = new KPIModels
                         {
-
                             KPI_Id = dsModelsList.Tables[0].Rows[0]["KPI_Id"].ToString(),
                             kpi_ref_no = dsModelsList.Tables[0].Rows[0]["kpi_ref_no"].ToString(),
                             process_monitor = dsModelsList.Tables[0].Rows[0]["process_monitor"].ToString(),
-                          
+
                             action_upload = dsModelsList.Tables[0].Rows[0]["action_upload"].ToString(),
                         };
-                      
 
                         KPIModelsList objList = new KPIModelsList();
                         objList.KPIMList = new List<KPIModels>();
@@ -759,20 +736,17 @@ namespace ISOStd.Controllers
                             }
                             ViewBag.objAttnList = objList;
                         }
-                        ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();                  
+                        ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
                         return View(objKPI);
                     }
                     else
                     {
-
                         TempData["alertdata"] = "No Data exists";
                         return RedirectToAction("KPIEvaluationList");
-
                     }
                 }
                 else
                 {
-
                     TempData["alertdata"] = "No Data exists";
                     return RedirectToAction("KPIEvaluationList");
                 }
@@ -792,7 +766,6 @@ namespace ISOStd.Controllers
         {
             try
             {
-
                 HttpPostedFileBase files = Request.Files[0];
                 string QCDelete = Request.Form["QCDocsValselectall"];
 
@@ -854,8 +827,6 @@ namespace ISOStd.Controllers
                     }
                 }
 
-              
-
                 if (objKPI.FunAddActionPlan(objKPI, objList))
                 {
                     TempData["Successdata"] = "Action Plan Added Successfully";
@@ -873,7 +844,6 @@ namespace ISOStd.Controllers
             return RedirectToAction("KPIEvaluationList");
         }
 
-
         [AllowAnonymous]
         public ActionResult AddEvaluation(int? page)
         {
@@ -882,7 +852,7 @@ namespace ISOStd.Controllers
 
             try
             {
-                if(Request.QueryString["KPI_Id"] !=null && Request.QueryString["KPI_Id"] != "")
+                if (Request.QueryString["KPI_Id"] != null && Request.QueryString["KPI_Id"] != "")
                 {
                     string KPI_Id = Request.QueryString["KPI_Id"];
                     string id_measurable = Request.QueryString["id_measurable"];
@@ -891,9 +861,9 @@ namespace ISOStd.Controllers
                     string sSqlstmt = "select id_evaluation,t.id_measurable,t.KPI_Id,kpi_ref_no,measurable_indicator,expected_value,expected_value_unit,kpi_type,monitoring_mechanism,frequency_eval,risk,FromPeriod,ToPeriod"
                     + " from t_kpi_measurable_indicator t, t_kpi_evaluation tt where t.id_measurable = tt.id_measurable and t.KPI_Id = '" + KPI_Id + "'";
 
-                    ViewBag.Unit= objGlobaldata.GetConstantValue("KPIUnit");
+                    ViewBag.Unit = objGlobaldata.GetConstantValue("KPIUnit");
                     ViewBag.Status = objGlobaldata.GetKPIEvaluationStatusList();
-                    ViewBag.YesNo= objGlobaldata.GetConstantValue("YesNo");
+                    ViewBag.YesNo = objGlobaldata.GetConstantValue("YesNo");
 
                     DataSet dsKPIModelsList = objGlobaldata.Getdetails(sSqlstmt);
                     if (dsKPIModelsList.Tables.Count > 0 && dsKPIModelsList.Tables[0].Rows.Count > 0)
@@ -911,9 +881,9 @@ namespace ISOStd.Controllers
                                     measurable_indicator = (dsKPIModelsList.Tables[0].Rows[i]["measurable_indicator"].ToString()),
                                     expected_value = (dsKPIModelsList.Tables[0].Rows[i]["expected_value"].ToString()),
                                     expected_value_unit = (dsKPIModelsList.Tables[0].Rows[i]["expected_value_unit"].ToString()),
-                                    kpi_type =objGlobaldata.GetKPITypeById(dsKPIModelsList.Tables[0].Rows[i]["kpi_type"].ToString()),
+                                    kpi_type = objGlobaldata.GetKPITypeById(dsKPIModelsList.Tables[0].Rows[i]["kpi_type"].ToString()),
                                     monitoring_mechanism =/*objGlobaldata.GetKPIMonitoringMechanismById*/(dsKPIModelsList.Tables[0].Rows[i]["monitoring_mechanism"].ToString()),
-                                    frequency_eval =objGlobaldata.GetKPIFrequencyEvaluationById(dsKPIModelsList.Tables[0].Rows[i]["frequency_eval"].ToString()),
+                                    frequency_eval = objGlobaldata.GetKPIFrequencyEvaluationById(dsKPIModelsList.Tables[0].Rows[i]["frequency_eval"].ToString()),
                                     risk = (dsKPIModelsList.Tables[0].Rows[i]["risk"].ToString()),
                                 };
 
@@ -930,11 +900,7 @@ namespace ISOStd.Controllers
                                     objKPIModels.ToPeriod = dtDocDate;
                                 }
 
-                              
                                 objKPIModelsList.KPIMList.Add(objKPIModels);
-
-                              
-                               
                             }
                             catch (Exception ex)
                             {
@@ -951,11 +917,9 @@ namespace ISOStd.Controllers
                             {
                                 kpi_ref_no = (dsKPIList.Tables[0].Rows[0]["kpi_ref_no"].ToString()),
                                 process_monitor = (dsKPIList.Tables[0].Rows[0]["process_monitor"].ToString()),
-
                             };
                             ViewBag.KPI = objModels;
                         }
-
 
                         string sql2 = "select t.id_measurable,t.KPI_Id,expected_value,FromPeriod,ToPeriod from t_kpi_measurable_indicator t, t_kpi_evaluation tt"
                         + " where t.id_measurable = tt.id_measurable and tt.id_evaluation = '" + id_evaluation + "'";
@@ -969,7 +933,6 @@ namespace ISOStd.Controllers
                                 KPI_Id = (dsMIList.Tables[0].Rows[0]["KPI_Id"].ToString()),
 
                                 expected_value = (dsMIList.Tables[0].Rows[0]["expected_value"].ToString()),
-
                             };
                             DateTime dtDocDate;
                             if (dsMIList.Tables[0].Rows[0]["FromPeriod"].ToString() != ""
@@ -984,7 +947,6 @@ namespace ISOStd.Controllers
                             }
                             ViewBag.MI = objMIModels;
                         }
-
 
                         string sql = "select id_evaluation,KPI_Id,id_measurable,evaluation_date,source_evaluate,upload,"
                                 + "method_evaluation,value_achieved,unit,kpi_status,remarks,raise_need,FromPeriod,ToPeriod from t_kpi_evaluation"
@@ -1030,7 +992,7 @@ namespace ISOStd.Controllers
                 else
                 {
                     TempData["alertdata"] = "Id Cannot be null";
-                }            
+                }
             }
             catch (Exception ex)
             {
@@ -1040,7 +1002,6 @@ namespace ISOStd.Controllers
             return View(objKPIModelsList.KPIMList.ToList());
         }
 
-
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -1048,7 +1009,6 @@ namespace ISOStd.Controllers
         {
             try
             {
-
                 HttpPostedFileBase files = Request.Files[0];
                 string QCDelete = Request.Form["QCDocsValselectall"];
 
@@ -1087,8 +1047,8 @@ namespace ISOStd.Controllers
                 else if (form["QCDocsVal"] == null && files.ContentLength == 0)
                 {
                     objKPI.upload = null;
-                }            
-                if(objKPI.id_evaluation != null)
+                }
+                if (objKPI.id_evaluation != null)
                 {
                     if (objKPI.FunUpdateKPIEvaluation(objKPI))
                     {
@@ -1110,16 +1070,14 @@ namespace ISOStd.Controllers
                         TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                     }
                 }
-               
             }
             catch (Exception ex)
             {
                 objGlobaldata.AddFunctionalLog("Exception in AddEvaluation: " + ex.ToString());
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
-            return RedirectToAction("AddEvaluation", new { KPI_Id= objKPI.KPI_Id, id_measurable = objKPI.id_measurable, id_evaluation = objKPI.id_evaluation });
+            return RedirectToAction("AddEvaluation", new { KPI_Id = objKPI.KPI_Id, id_measurable = objKPI.id_measurable, id_evaluation = objKPI.id_evaluation });
         }
-
 
         [AllowAnonymous]
         public ActionResult KPIEvaluationDetails()
@@ -1127,7 +1085,6 @@ namespace ISOStd.Controllers
             KPIModels objKPIModels = new KPIModels();
             try
             {
-
                 if (Request.QueryString["KPI_Id"] != null && Request.QueryString["KPI_Id"] != "")
                 {
                     string KPI_Id = Request.QueryString["KPI_Id"];
@@ -1141,15 +1098,14 @@ namespace ISOStd.Controllers
 
                     if (dsKPIModelsList.Tables.Count > 0 && dsKPIModelsList.Tables[0].Rows.Count > 0)
                     {
-
                         objKPIModels = new KPIModels
                         {
                             KPI_Id = (dsKPIModelsList.Tables[0].Rows[0]["KPI_Id"].ToString()),
                             kpi_ref_no = (dsKPIModelsList.Tables[0].Rows[0]["kpi_ref_no"].ToString()),
                             branch = objGlobaldata.GetCompanyBranchNameById(dsKPIModelsList.Tables[0].Rows[0]["branch"].ToString()),
                             group_name = objGlobaldata.GetDeptNameById(dsKPIModelsList.Tables[0].Rows[0]["group_name"].ToString()),
-                            process_indicator =objGlobaldata.GetKPIPerformanceIndicatorById(dsKPIModelsList.Tables[0].Rows[0]["process_indicator"].ToString()),
-                            kpi_level =objGlobaldata.GetKPILevelById(dsKPIModelsList.Tables[0].Rows[0]["kpi_level"].ToString()),
+                            process_indicator = objGlobaldata.GetKPIPerformanceIndicatorById(dsKPIModelsList.Tables[0].Rows[0]["process_indicator"].ToString()),
+                            kpi_level = objGlobaldata.GetKPILevelById(dsKPIModelsList.Tables[0].Rows[0]["kpi_level"].ToString()),
                             process_monitor = (dsKPIModelsList.Tables[0].Rows[0]["process_monitor"].ToString()),
                             //measurable_indicator = (dsKPIModelsList.Tables[0].Rows[0]["measurable_indicator"].ToString()),
                             //expected_value = (dsKPIModelsList.Tables[0].Rows[0]["expected_value"].ToString()),
@@ -1158,10 +1114,10 @@ namespace ISOStd.Controllers
                             //monitoring_mechanism = (dsKPIModelsList.Tables[0].Rows[0]["monitoring_mechanism"].ToString()),
                             //frequency_eval = (dsKPIModelsList.Tables[0].Rows[0]["frequency_eval"].ToString()),
                             //risk = (dsKPIModelsList.Tables[0].Rows[0]["risk"].ToString()),
-                            pers_resp =objGlobaldata.GetMultiHrEmpNameById(dsKPIModelsList.Tables[0].Rows[0]["pers_resp"].ToString()),
+                            pers_resp = objGlobaldata.GetMultiHrEmpNameById(dsKPIModelsList.Tables[0].Rows[0]["pers_resp"].ToString()),
                             upload = (dsKPIModelsList.Tables[0].Rows[0]["upload"].ToString()),
                             approved_by = objGlobaldata.GetEmpHrNameById(dsKPIModelsList.Tables[0].Rows[0]["approved_by"].ToString()),
-                            kpi_status =objGlobaldata.GetKPIStatusById(dsKPIModelsList.Tables[0].Rows[0]["kpi_status"].ToString()),
+                            kpi_status = objGlobaldata.GetKPIStatusById(dsKPIModelsList.Tables[0].Rows[0]["kpi_status"].ToString()),
                             status_reason = (dsKPIModelsList.Tables[0].Rows[0]["status_reason"].ToString()),
                             kpiapprv_status = (dsKPIModelsList.Tables[0].Rows[0]["kpiapprv_status"].ToString()),
                             approvedby_comments = (dsKPIModelsList.Tables[0].Rows[0]["approvedby_comments"].ToString()),
@@ -1190,17 +1146,13 @@ namespace ISOStd.Controllers
 
                         string sql2 = "select kpi_ref_no,measurable_indicator,expected_value,expected_value_unit,kpi_type,monitoring_frm_date,monitoring_to_date,monitoring_mechanism," +
                         "frequency_eval,risk,evaluation_date,source_evaluate,upload,method_evaluation,value_achieved,unit,kpi_status,remarks,raise_need,FromPeriod,ToPeriod " +
-                        "from t_kpi_measurable_indicator t left join t_kpi_evaluation tt on t.id_measurable = tt.id_measurable where t.KPI_Id ='"+ objKPIModels.KPI_Id + "'";
+                        "from t_kpi_measurable_indicator t left join t_kpi_evaluation tt on t.id_measurable = tt.id_measurable where t.KPI_Id ='" + objKPIModels.KPI_Id + "'";
                         ViewBag.MIList = objGlobaldata.Getdetails(sql2);
 
                         string sql3 = "select Action,TargetDate,PersonResponsible,remarks from t_kpi_actions where KPI_Id='" + objKPIModels.KPI_Id + "'";
                         ViewBag.ActionList = objGlobaldata.Getdetails(sql3);
-
                     }
-
                 }
-
-
             }
             catch (Exception ex)
             {
@@ -1229,7 +1181,6 @@ namespace ISOStd.Controllers
 
                     if (dsKPIModelsList.Tables.Count > 0 && dsKPIModelsList.Tables[0].Rows.Count > 0)
                     {
-
                         objKPIModels = new KPIModels
                         {
                             KPI_Id = (dsKPIModelsList.Tables[0].Rows[0]["KPI_Id"].ToString()),
@@ -1239,7 +1190,7 @@ namespace ISOStd.Controllers
                             process_indicator = objGlobaldata.GetKPIPerformanceIndicatorById(dsKPIModelsList.Tables[0].Rows[0]["process_indicator"].ToString()),
                             kpi_level = objGlobaldata.GetKPILevelById(dsKPIModelsList.Tables[0].Rows[0]["kpi_level"].ToString()),
                             process_monitor = (dsKPIModelsList.Tables[0].Rows[0]["process_monitor"].ToString()),
-                           
+
                             pers_resp = objGlobaldata.GetEmpHrNameById(dsKPIModelsList.Tables[0].Rows[0]["pers_resp"].ToString()),
                             upload = (dsKPIModelsList.Tables[0].Rows[0]["upload"].ToString()),
                             approved_by = objGlobaldata.GetEmpHrNameById(dsKPIModelsList.Tables[0].Rows[0]["approved_by"].ToString()),
@@ -1252,8 +1203,6 @@ namespace ISOStd.Controllers
                             objKPIModels.established_date = dtValue;
                         }
 
-                       
-
                         sSqlstmt = "select id_kpi_failure,KPI_Id,causes_failure from t_kpi_failure where KPI_Id='" + objKPIModels.KPI_Id + "'";
                         ViewBag.objList = objGlobaldata.Getdetails(sSqlstmt);
 
@@ -1263,7 +1212,6 @@ namespace ISOStd.Controllers
 
                         string sql3 = "select Action,TargetDate,PersonResponsible,remarks from t_kpi_actions where KPI_Id='" + objKPIModels.KPI_Id + "'";
                         ViewBag.ActionList = objGlobaldata.Getdetails(sql3);
-
                     }
                 }
             }
@@ -1280,7 +1228,6 @@ namespace ISOStd.Controllers
         {
             try
             {
-
                 if (objKPI.FunUpdateApprove(objKPI))
                 {
                     TempData["Successdata"] = "Status updated successfully";
@@ -1298,19 +1245,15 @@ namespace ISOStd.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-
         [AllowAnonymous]
         public ActionResult KPIReportPDF(FormCollection form)
         {
             KPIModels objKPIModels = new KPIModels();
             try
             {
-
                 string KPI_Id = form["KPI_Id"];
                 if (KPI_Id != null && KPI_Id != "")
                 {
-
-
                     string sSqlstmt = "select KPI_Id,kpi_ref_no,established_date,branch,group_name,process_indicator,"
                         + "kpi_level,process_monitor,pers_resp,upload,"
                         + "(CASE WHEN kpiapprv_status='0' THEN 'Pending for Approval' WHEN kpiapprv_status='1' THEN 'Rejected' WHEN kpiapprv_status='2' THEN 'Approved' END) as kpiapprv_status,"
@@ -1320,7 +1263,6 @@ namespace ISOStd.Controllers
 
                     if (dsKPIModelsList.Tables.Count > 0 && dsKPIModelsList.Tables[0].Rows.Count > 0)
                     {
-
                         objKPIModels = new KPIModels
                         {
                             KPI_Id = (dsKPIModelsList.Tables[0].Rows[0]["KPI_Id"].ToString()),
@@ -1367,12 +1309,8 @@ namespace ISOStd.Controllers
 
                         string sql3 = "select Action,TargetDate,PersonResponsible,remarks from t_kpi_actions where KPI_Id='" + objKPIModels.KPI_Id + "'";
                         ViewBag.ActionList = objGlobaldata.Getdetails(sql3);
-
                     }
-
                 }
-
-
             }
             catch (Exception ex)
             {
@@ -1388,7 +1326,7 @@ namespace ISOStd.Controllers
             string header = Server.MapPath("~/views/KPI/PrintHeader.html");//Path of PrintHeader.html File
 
             string customSwitches = string.Format("--header-html  \"{0}\" " +
-                                "--header-spacing \"0\" " + 
+                                "--header-spacing \"0\" " +
             " --header-font-size \"10\" ", header);
 
             return new ViewAsPdf("KPIReportPDF", "KPI")
@@ -1410,12 +1348,9 @@ namespace ISOStd.Controllers
             KPIModels objKPIModels = new KPIModels();
             try
             {
-
                 string KPI_Id = form["KPI_Id"];
                 if (KPI_Id != null && KPI_Id != "")
                 {
-
-
                     string sSqlstmt = "select KPI_Id,kpi_ref_no,established_date,branch,group_name,process_indicator,"
                         + "kpi_level,process_monitor,pers_resp,upload,"
                         + "(CASE WHEN kpiapprv_status='0' THEN 'Pending for Approval' WHEN kpiapprv_status='1' THEN 'Rejected' WHEN kpiapprv_status='2' THEN 'Approved' END) as kpiapprv_status,"
@@ -1425,7 +1360,6 @@ namespace ISOStd.Controllers
 
                     if (dsKPIModelsList.Tables.Count > 0 && dsKPIModelsList.Tables[0].Rows.Count > 0)
                     {
-
                         objKPIModels = new KPIModels
                         {
                             KPI_Id = (dsKPIModelsList.Tables[0].Rows[0]["KPI_Id"].ToString()),
@@ -1472,12 +1406,8 @@ namespace ISOStd.Controllers
 
                         string sql3 = "select Action,TargetDate,PersonResponsible,remarks from t_kpi_actions where KPI_Id='" + objKPIModels.KPI_Id + "'";
                         ViewBag.ActionList = objGlobaldata.Getdetails(sql3);
-
                     }
-
                 }
-
-
             }
             catch (Exception ex)
             {
@@ -1515,7 +1445,6 @@ namespace ISOStd.Controllers
             KPIModels objKPIModels = new KPIModels();
             try
             {
-
                 if (Request.QueryString["KPI_Id"] != null && Request.QueryString["KPI_Id"] != "")
                 {
                     string KPI_Id = Request.QueryString["KPI_Id"];
@@ -1528,7 +1457,6 @@ namespace ISOStd.Controllers
 
                     if (dsKPIModelsList.Tables.Count > 0 && dsKPIModelsList.Tables[0].Rows.Count > 0)
                     {
-
                         objKPIModels = new KPIModels
                         {
                             KPI_Id = (dsKPIModelsList.Tables[0].Rows[0]["KPI_Id"].ToString()),
@@ -1536,7 +1464,7 @@ namespace ISOStd.Controllers
                             branch = objGlobaldata.GetCompanyBranchNameById(dsKPIModelsList.Tables[0].Rows[0]["branch"].ToString()),
                             group_name = objGlobaldata.GetDeptNameById(dsKPIModelsList.Tables[0].Rows[0]["group_name"].ToString()),
                             process_indicator = (dsKPIModelsList.Tables[0].Rows[0]["process_indicator"].ToString()),
-                            kpi_level =objGlobaldata.GetDropdownitemById(dsKPIModelsList.Tables[0].Rows[0]["kpi_level"].ToString()),
+                            kpi_level = objGlobaldata.GetDropdownitemById(dsKPIModelsList.Tables[0].Rows[0]["kpi_level"].ToString()),
                             process_monitor = (dsKPIModelsList.Tables[0].Rows[0]["process_monitor"].ToString()),
                             //measurable_indicator = (dsKPIModelsList.Tables[0].Rows[0]["measurable_indicator"].ToString()),
                             //expected_value = (dsKPIModelsList.Tables[0].Rows[0]["expected_value"].ToString()),
@@ -1596,8 +1524,7 @@ namespace ISOStd.Controllers
                                         impact = dsList.Tables[0].Rows[i]["impact"].ToString(),
                                         mitigation_measures = dsList.Tables[0].Rows[i]["mitigation_measures"].ToString(),
                                         failure_status = dsList.Tables[0].Rows[i]["failure_status"].ToString(),
-                                      
-                                    };                    
+                                    };
                                     if (DateTime.TryParse(dsList.Tables[0].Rows[i]["target_date"].ToString(), out dtValue))
                                     {
                                         objRisk.target_date = dtValue;
@@ -1617,12 +1544,8 @@ namespace ISOStd.Controllers
                             }
                             ViewBag.objList = objModelsList;
                         }
-
                     }
-
                 }
-
-
             }
             catch (Exception ex)
             {
@@ -1639,16 +1562,14 @@ namespace ISOStd.Controllers
         {
             try
             {
-               
+                KPIModelsList objModelsList = new KPIModelsList();
+                objModelsList.KPIMList = new List<KPIModels>();
 
-                    KPIModelsList objModelsList = new KPIModelsList();
-                    objModelsList.KPIMList = new List<KPIModels>();
-
-                    for (int i = 0; i < Convert.ToInt16(form["itemcnt"]); i++)
+                for (int i = 0; i < Convert.ToInt16(form["itemcnt"]); i++)
+                {
+                    KPIModels objModels = new KPIModels();
+                    if (form["causes_failure" + i] != null && form["causes_failure" + i] != "")
                     {
-                        KPIModels objModels = new KPIModels();
-                        if (form["causes_failure" + i] != null && form["causes_failure" + i] != "")
-                        {
                         objModels.causes_failure = form["causes_failure" + i];
                         objModels.impact = form["impact" + i];
                         objModels.mitigation_measures = form["mitigation_measures" + i];
@@ -1663,8 +1584,8 @@ namespace ISOStd.Controllers
                             objModels.status_updated_date = dateValue;
                         }
                         objModelsList.KPIMList.Add(objModels);
-                        }
                     }
+                }
 
                 if (objKPI.FunAddPotentialCauses(objModelsList))
                 {
@@ -1674,7 +1595,6 @@ namespace ISOStd.Controllers
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 }
-
             }
             catch (Exception ex)
             {
@@ -1683,7 +1603,5 @@ namespace ISOStd.Controllers
             }
             return RedirectToAction("KPIEvaluationList");
         }
-
-
     }
 }

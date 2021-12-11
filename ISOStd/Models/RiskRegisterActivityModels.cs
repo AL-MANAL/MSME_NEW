@@ -404,7 +404,7 @@ namespace ISOStd.Models
             try
             {
                 RiskRegisterActivityEvaluationModels objRiskEval = new RiskRegisterActivityEvaluationModels();
-                string sInformation = "", sHeader = "";
+                string sHeader = "";
                 string sCCList = objGlobalData.GetMultiHrEmpEmailIdById(objRisk.Action_TakenBy) + "," + objGlobalData.GetHrEmpEmailIdById(objGlobalData.GetCurrentUserSession().empid);
                 sCCList = Regex.Replace(sCCList, ",+", ",");
                 sCCList = sCCList.Trim();
@@ -447,7 +447,7 @@ namespace ISOStd.Models
                 if (dsRisk.Tables.Count > 0 && dsRisk.Tables[0].Rows.Count > 0)
                 {
                     RiskRegisterActivityEvaluationModels objRiskEval = new RiskRegisterActivityEvaluationModels();
-                    string sInformation = "", sHeader = "";
+                    string sHeader = "";
                     string sCCList = objGlobalData.GetMultiHrEmpEmailIdById(dsRisk.Tables[0].Rows[0]["Action_TakenBy"].ToString()) + "," + objGlobalData.GetHrEmpEmailIdById(dsRisk.Tables[0].Rows[0]["Reviewer_QHSE"].ToString());
                     sCCList = Regex.Replace(sCCList, ",+", ",");
                     sCCList = sCCList.Trim();
@@ -535,7 +535,7 @@ namespace ISOStd.Models
             try
             {
                 RiskRegisterActivityEvaluationModels objRiskEval = new RiskRegisterActivityEvaluationModels();
-                string sInformation = "", sHeader = "";
+                string sHeader = "";
                 string sCCList = objGlobalData.GetMultiHrEmpEmailIdById(objRisk.Action_TakenBy) + "," + objGlobalData.GetHrEmpEmailIdById(objGlobalData.GetCurrentUserSession().empid);
                 sCCList = Regex.Replace(sCCList, ",+", ",");
                 sCCList = sCCList.Trim();
@@ -577,7 +577,7 @@ namespace ISOStd.Models
                 if (dsRisk.Tables.Count > 0 && dsRisk.Tables[0].Rows.Count > 0)
                 {
                     RiskRegisterActivityEvaluationModels objRiskEval = new RiskRegisterActivityEvaluationModels();
-                    string sInformation = "", sHeader = "";
+                    string sHeader = "";
                     string sCCList = objGlobalData.GetMultiHrEmpEmailIdById(dsRisk.Tables[0].Rows[0]["Action_TakenBy"].ToString()) + "," + objGlobalData.GetHrEmpEmailIdById(dsRisk.Tables[0].Rows[0]["Reviewer_QHSE"].ToString());
                     sCCList = Regex.Replace(sCCList, ",+", ",");
                     sCCList = sCCList.Trim();

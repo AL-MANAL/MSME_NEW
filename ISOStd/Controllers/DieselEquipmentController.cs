@@ -1,30 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+﻿using ISOStd.Filters;
 using ISOStd.Models;
-using System.Data;
-using System.IO;
 using PagedList;
-using PagedList.Mvc;
-using ISOStd.Filters;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Web.Mvc;
 
 namespace ISOStd.Controllers
 {
     [PreventFromUrl]
     public class DieselEquipmentController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
+        private clsGlobal objGlobaldata = new clsGlobal();
 
         public DieselEquipmentController()
         {
-            ViewBag.Menutype = "VehicleMgmt";            
+            ViewBag.Menutype = "VehicleMgmt";
         }
 
         //
         // GET: /DieselEquipment/
-         
+
         public ActionResult Index()
         {
             return View();
@@ -32,17 +29,16 @@ namespace ISOStd.Controllers
 
         //
         // GET: /DieselEquipment/AddDieselEuipment
-         
+
         [AllowAnonymous]
         public ActionResult AddDieselEuipment()
         {
             return View();
         }
 
-
         //
         // POST: /DieselEquipment/AddDieselEuipment
-         
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult AddDieselEuipment(DieselEquipmentModels objDieselEquipment, FormCollection form)
@@ -70,7 +66,6 @@ namespace ISOStd.Controllers
                     objDieselEquipment.Insurance_ExpDate = dateValue;
                 }
 
-
                 if (objDieselEquipment.FunAddDieselEquipment(objDieselEquipment))
                 {
                     TempData["Successdata"] = "Added Euipment details successfully";
@@ -91,7 +86,7 @@ namespace ISOStd.Controllers
 
         //
         // GET: /DieselEquipment/DieselEuipmentList
-         
+
         [AllowAnonymous]
         public ActionResult DieselEuipmentList(string Equip_No, int? page)
         {
@@ -135,7 +130,6 @@ namespace ISOStd.Controllers
                                 Plate_no = dsRecordsList.Tables[0].Rows[i]["Plate_no"].ToString(),
                             };
 
-                            
                             DateTime dateValue;
                             if (DateTime.TryParse(dsRecordsList.Tables[0].Rows[i]["Date_Of_Purchase"].ToString(), out dateValue))
                             {
@@ -158,17 +152,16 @@ namespace ISOStd.Controllers
                             objDieselEquipment.color_code_Reg = "#fff";
                             objDieselEquipment.color_code_Issue = "#fff";
 
-                            DateTime Today,TodayGap;
-                            Today=DateTime.Today;
-                            TodayGap=Today.AddDays(-30);
-
+                            DateTime Today, TodayGap;
+                            Today = DateTime.Today;
+                            TodayGap = Today.AddDays(-30);
 
                             if (objDieselEquipment.Insurance_ExpDate <= TodayGap || objDieselEquipment.Insurance_ExpDate <= Today)
                             {
                                 objDieselEquipment.color_code_Issue = "#ff0000";
                             }
 
-                            if ( objDieselEquipment.Reg_Expr_Date <= TodayGap || objDieselEquipment.Reg_Expr_Date <= Today)
+                            if (objDieselEquipment.Reg_Expr_Date <= TodayGap || objDieselEquipment.Reg_Expr_Date <= Today)
                             {
                                 objDieselEquipment.color_code_Reg = "#ff0000";
                             }
@@ -192,10 +185,9 @@ namespace ISOStd.Controllers
             return View(objDieselEquipmentList.lstDieselEquipment.ToList().ToPagedList(page ?? 1, 40));
         }
 
-
         //
         // GET:/DieselEquipment/DieselEuipmentDetails
-         
+
         [AllowAnonymous]
         public ActionResult DieselEuipmentDetails()
         {
@@ -211,43 +203,43 @@ namespace ISOStd.Controllers
                     DataSet dsRecordsList = objGlobaldata.Getdetails(sSqlstmt);
                     if (dsRecordsList.Tables.Count > 0)
                     {
-                                DieselEquipmentModels objDieselEquipment = new DieselEquipmentModels
-                                {
-                                    Diesel_Equip_Id = dsRecordsList.Tables[0].Rows[0]["Diesel_Equip_Id"].ToString(),
-                                    Equip_No = dsRecordsList.Tables[0].Rows[0]["Equip_No"].ToString(),
-                                    Description = dsRecordsList.Tables[0].Rows[0]["Description"].ToString(),
-                                    Make = (dsRecordsList.Tables[0].Rows[0]["Make"].ToString()),
-                                    Capacity = dsRecordsList.Tables[0].Rows[0]["Capacity"].ToString(),
-                                    Model = (dsRecordsList.Tables[0].Rows[0]["Model"].ToString()),
-                                    Chasis_No = dsRecordsList.Tables[0].Rows[0]["Chasis_No"].ToString(),
-                                    Engine_No = dsRecordsList.Tables[0].Rows[0]["Engine_No"].ToString(),
-                                    Equp_Status = dsRecordsList.Tables[0].Rows[0]["Equp_Status"].ToString(),
-                                    LoggedBy = objGlobaldata.GetEmpHrNameById(dsRecordsList.Tables[0].Rows[0]["LoggedBy"].ToString()),
-                                    Index_no = dsRecordsList.Tables[0].Rows[0]["Index_no"].ToString(),
-                                    Plate_no = dsRecordsList.Tables[0].Rows[0]["Plate_no"].ToString()
-                                };
+                        DieselEquipmentModels objDieselEquipment = new DieselEquipmentModels
+                        {
+                            Diesel_Equip_Id = dsRecordsList.Tables[0].Rows[0]["Diesel_Equip_Id"].ToString(),
+                            Equip_No = dsRecordsList.Tables[0].Rows[0]["Equip_No"].ToString(),
+                            Description = dsRecordsList.Tables[0].Rows[0]["Description"].ToString(),
+                            Make = (dsRecordsList.Tables[0].Rows[0]["Make"].ToString()),
+                            Capacity = dsRecordsList.Tables[0].Rows[0]["Capacity"].ToString(),
+                            Model = (dsRecordsList.Tables[0].Rows[0]["Model"].ToString()),
+                            Chasis_No = dsRecordsList.Tables[0].Rows[0]["Chasis_No"].ToString(),
+                            Engine_No = dsRecordsList.Tables[0].Rows[0]["Engine_No"].ToString(),
+                            Equp_Status = dsRecordsList.Tables[0].Rows[0]["Equp_Status"].ToString(),
+                            LoggedBy = objGlobaldata.GetEmpHrNameById(dsRecordsList.Tables[0].Rows[0]["LoggedBy"].ToString()),
+                            Index_no = dsRecordsList.Tables[0].Rows[0]["Index_no"].ToString(),
+                            Plate_no = dsRecordsList.Tables[0].Rows[0]["Plate_no"].ToString()
+                        };
 
-                                DateTime dateValue;
-                                if (DateTime.TryParse(dsRecordsList.Tables[0].Rows[0]["Date_Of_Purchase"].ToString(), out dateValue))
-                                {
-                                    objDieselEquipment.Date_Of_Purchase = dateValue;
-                                }
+                        DateTime dateValue;
+                        if (DateTime.TryParse(dsRecordsList.Tables[0].Rows[0]["Date_Of_Purchase"].ToString(), out dateValue))
+                        {
+                            objDieselEquipment.Date_Of_Purchase = dateValue;
+                        }
 
-                                if (DateTime.TryParse(dsRecordsList.Tables[0].Rows[0]["Reg_Issued_Date"].ToString(), out dateValue))
-                                {
-                                    objDieselEquipment.Reg_Issued_Date = dateValue;
-                                }
+                        if (DateTime.TryParse(dsRecordsList.Tables[0].Rows[0]["Reg_Issued_Date"].ToString(), out dateValue))
+                        {
+                            objDieselEquipment.Reg_Issued_Date = dateValue;
+                        }
 
-                                if (DateTime.TryParse(dsRecordsList.Tables[0].Rows[0]["Reg_Expr_Date"].ToString(), out dateValue))
-                                {
-                                    objDieselEquipment.Reg_Expr_Date = dateValue;
-                                }
-                                if (DateTime.TryParse(dsRecordsList.Tables[0].Rows[0]["Insurance_ExpDate"].ToString(), out dateValue))
-                                {
-                                    objDieselEquipment.Insurance_ExpDate = dateValue;
-                                }
+                        if (DateTime.TryParse(dsRecordsList.Tables[0].Rows[0]["Reg_Expr_Date"].ToString(), out dateValue))
+                        {
+                            objDieselEquipment.Reg_Expr_Date = dateValue;
+                        }
+                        if (DateTime.TryParse(dsRecordsList.Tables[0].Rows[0]["Insurance_ExpDate"].ToString(), out dateValue))
+                        {
+                            objDieselEquipment.Insurance_ExpDate = dateValue;
+                        }
 
-                                return View(objDieselEquipment);
+                        return View(objDieselEquipment);
                     }
                     else
                     {
@@ -270,10 +262,9 @@ namespace ISOStd.Controllers
             return RedirectToAction("DieselEuipmentList");
         }
 
-
         //
         // GET: /DieselEquipment/DieselEuipmentEdit
-         
+
         [AllowAnonymous]
         public ActionResult DieselEuipmentEdit()
         {
@@ -344,10 +335,9 @@ namespace ISOStd.Controllers
             return RedirectToAction("DieselEuipmentList");
         }
 
-
         //
         // POST: /DieselEquipment/DieselEuipmentEdit
-         
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult DieselEuipmentEdit(DieselEquipmentModels objDieselEquipment, FormCollection form)
@@ -375,7 +365,6 @@ namespace ISOStd.Controllers
                     objDieselEquipment.Insurance_ExpDate = dateValue;
                 }
 
-
                 if (objDieselEquipment.FunUpdateDieselEquipment(objDieselEquipment))
                 {
                     TempData["Successdata"] = "Updated Euipment details successfully";
@@ -396,36 +385,33 @@ namespace ISOStd.Controllers
 
         //
         // GET: /DieselEquipment/DieselEquipmentDelete
-         
+
         [HttpPost]
         public JsonResult DieselEquipmentDelete(FormCollection form)
         {
             try
             {
-
                 if (form["Diesel_Equip_Id"] != null && form["Diesel_Equip_Id"] != "")
+                {
+                    DieselEquipmentModels objEquipment = new DieselEquipmentModels();
+                    string sDiesel_Equip_Id = form["Diesel_Equip_Id"];
+
+                    if (objEquipment.FunDeleteEquipment(sDiesel_Equip_Id))
                     {
-                        DieselEquipmentModels objEquipment = new DieselEquipmentModels();
-                        string sDiesel_Equip_Id = form["Diesel_Equip_Id"];
-
-
-                        if (objEquipment.FunDeleteEquipment(sDiesel_Equip_Id))
-                        {
-                            TempData["Successdata"] = "Vehicle / Equipment details deleted successfully";
-                            return Json("Success");
-                        }
-                        else
-                        {
-                            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                            return Json("Failed");
-                        }
+                        TempData["Successdata"] = "Vehicle / Equipment details deleted successfully";
+                        return Json("Success");
                     }
                     else
                     {
-                        TempData["alertdata"] = "Equipment Id cannot be Null or empty";
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                         return Json("Failed");
                     }
-               
+                }
+                else
+                {
+                    TempData["alertdata"] = "Equipment Id cannot be Null or empty";
+                    return Json("Failed");
+                }
             }
             catch (Exception ex)
             {
@@ -435,22 +421,19 @@ namespace ISOStd.Controllers
             return Json("Failed");
         }
 
-
         //
         // GET: /DieselEquipment/DieselConsumption
-         
+
         [AllowAnonymous]
         public ActionResult DieselConsumption(string Diesel_Equip_IdSearch, int? page)
         {
             DieselEquipmentModels objDiesel = new DieselEquipmentModels();
-
 
             DieselConsumptionModelsList objDieselConsumptionList = new DieselConsumptionModelsList();
             objDieselConsumptionList.lstDieselConsumption = new List<DieselConsumptionModels>();
 
             try
             {
-
                 ViewBag.DieselEquipId = objDiesel.GetDieselEquipmentList();
                 ViewBag.CurrentQty = objDiesel.GetAvailableDieselStock();
                 string sSqlstmt = "select Consumption_Id, Diesel_Equip_Id, Qty, Issued_Date, Issued_By, LoggedBy, LoggedDate from t_diesel_consumption ";
@@ -473,7 +456,7 @@ namespace ISOStd.Controllers
                             DieselConsumptionModels objDieselConsumption = new DieselConsumptionModels
                             {
                                 Consumption_Id = dsRecordsList.Tables[0].Rows[i]["Consumption_Id"].ToString(),
-                                Diesel_Equip_Id =objDiesel.GetDieselEquipNoById(dsRecordsList.Tables[0].Rows[i]["Diesel_Equip_Id"].ToString()),
+                                Diesel_Equip_Id = objDiesel.GetDieselEquipNoById(dsRecordsList.Tables[0].Rows[i]["Diesel_Equip_Id"].ToString()),
                                 Issued_By = dsRecordsList.Tables[0].Rows[i]["Issued_By"].ToString(),
                                 LoggedBy = objGlobaldata.GetEmpHrNameById(dsRecordsList.Tables[0].Rows[i]["LoggedBy"].ToString())
                             };
@@ -511,24 +494,21 @@ namespace ISOStd.Controllers
             return View(objDieselConsumptionList.lstDieselConsumption.ToList().ToPagedList(page ?? 1, 40));
         }
 
-
         //
         // POST: /DieselEquipment/DieselConsumption
-         
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult DieselConsumption(DieselConsumptionModels objDieselConsumption, FormCollection form)
         {
             try
             {
-                
                 DateTime dateValue;
                 decimal dValue;
                 if (decimal.TryParse(form["Qty"], out dValue))
                 {
                     objDieselConsumption.Qty = dValue;
                 }
-
 
                 if (form["Issued_Date"] != null && DateTime.TryParse(form["Issued_Date"], out dateValue) == true)
                 {
@@ -557,10 +537,9 @@ namespace ISOStd.Controllers
             return RedirectToAction("DieselConsumption");
         }
 
-
         //
         // GET: /DieselEquipment/DieselStock
-         
+
         [AllowAnonymous]
         public ActionResult DieselStock(string frmDate, string toDate, int? page)
         {
@@ -584,7 +563,6 @@ namespace ISOStd.Controllers
                         + todatevalue.ToString("yyyy/MM/dd HH:mm") + "')";
                 }
 
-              
                 sSqlstmt = sSqlstmt + " order by Diesel_Rcvd_TransId desc";
 
                 DataSet dsStockList = objGlobaldata.Getdetails(sSqlstmt);
@@ -637,7 +615,7 @@ namespace ISOStd.Controllers
 
         //
         // POST: /DieselEquipment/DieselStock
-         
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult DieselStock(DieselStockModels objDieselStock, FormCollection form)

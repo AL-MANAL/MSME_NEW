@@ -1,45 +1,41 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+﻿using ISOStd.Filters;
 using ISOStd.Models;
+using System;
+using System.Collections.Generic;
 using System.Data;
-using System.Net;
-using System.IO;
-using PagedList;
-using PagedList.Mvc;
-using ISOStd.Filters;
+using System.Linq;
+using System.Web.Mvc;
 
 namespace ISOStd.Controllers
 {
     [PreventFromUrl]
     public class ChangeManagementController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
+        private clsGlobal objGlobaldata = new clsGlobal();
 
         public ChangeManagementController()
         {
             //ViewBag.Menutype = "Risk";
             ViewBag.SubMenutype = "ChangeManagement";
         }
-         
+
         public ActionResult AddChangeManagement()
         {
             return InitializeChangeManagement();
         }
-                 
+
         public ActionResult FunGetDeptEmpList(string DeptId)
         {
             MultiSelectList lstEmp = objGlobaldata.GetDeptHeadList(DeptId);
             return Json(lstEmp);
         }
-                 
+
         public ActionResult InitializeChangeManagement()
         {
             ViewBag.SubMenutype = "ChangeManagement";
             ManagementChangeModels objMgmt = new ManagementChangeModels();
-            try {
+            try
+            {
                 objMgmt.branch = objGlobaldata.GetCurrentUserSession().division;
                 objMgmt.Department = objGlobaldata.GetCurrentUserSession().DeptID;
                 objMgmt.Location = objGlobaldata.GetCurrentUserSession().Work_Location;
@@ -65,7 +61,7 @@ namespace ISOStd.Controllers
             }
             return View(objMgmt);
         }
-                
+
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -76,7 +72,7 @@ namespace ISOStd.Controllers
             try
             {
                 if (objManagement != null)
-                { 
+                {
                     objManagement.ChangeRequestedBy = form["ChangeRequestedBy"];
                     objManagement.ChangeIn = form["ChangeIn"];
                     objManagement.DetailsOfChange = form["DetailsOfChange"];
@@ -90,10 +86,9 @@ namespace ISOStd.Controllers
                     //To count the no of approver selected
 
                     objManagement.LoggedBy = objGlobaldata.GetCurrentUserSession().empid;
-                    
+
                     ChangeManagementModelsList obManagmentModelsList = new ChangeManagementModelsList();
                     obManagmentModelsList.ChangeMgmtList = new List<ManagementChangeModels>();
-
 
                     for (int i = 0; i < Convert.ToInt16(form["itemcnt"]); i++)
                     {
@@ -105,7 +100,7 @@ namespace ISOStd.Controllers
                         {
                             objManagementModels.TargetDate = dateValue;
                         }
-                      
+
                         objManagementModels.Action = form["Action" + i];
                         objManagementModels.PersonResponsible = form["PersonResponsible" + i];
                         objManagementModels.Action_Status = form["Action_Status" + i];
@@ -115,8 +110,6 @@ namespace ISOStd.Controllers
                     if (objManagement.FunAddChangeManagement(objManagement))
                     {
                         TempData["Successdata"] = "Added Change Management details successfully";
-
-                       
                     }
                     else
                     {
@@ -132,7 +125,7 @@ namespace ISOStd.Controllers
 
             return RedirectToAction("ChangeManagementList");
         }
-        
+
         [AllowAnonymous]
         [HttpGet]
         public ActionResult AddChangeManagementActions()
@@ -141,7 +134,7 @@ namespace ISOStd.Controllers
             ManagementChangeModels objManagementModels = new ManagementChangeModels();
 
             try
-            {             
+            {
                 if (Request.QueryString["IdMgmt"] != null)
                 {
                     string sIdMgmt = Request.QueryString["IdMgmt"];
@@ -162,7 +155,7 @@ namespace ISOStd.Controllers
                         objAttList.ChangeMgmtList = new List<ManagementChangeModels>();
 
                         sSqlstmt = "select Id,IdMgmt,Action,TargetDate,ActionCompletionDate,PersonResponsible,Action_Status,ActionCompletionDate"
-                       + " from t_changemanagement_actions where IdMgmt='" + sIdMgmt + "' order by Id";                 
+                       + " from t_changemanagement_actions where IdMgmt='" + sIdMgmt + "' order by Id";
                         DataSet dsActnList = objGlobaldata.Getdetails(sSqlstmt);
                         if (dsActnList.Tables.Count > 0 && dsActnList.Tables[0].Rows.Count > 0)
                         {
@@ -172,7 +165,7 @@ namespace ISOStd.Controllers
                                 {
                                     ManagementChangeModels objActn = new ManagementChangeModels
                                     {
-                                        Id =Convert.ToInt32(dsActnList.Tables[0].Rows[i]["Id"].ToString()),
+                                        Id = Convert.ToInt32(dsActnList.Tables[0].Rows[i]["Id"].ToString()),
                                         IdMgmt = Convert.ToInt32(dsActnList.Tables[0].Rows[i]["IdMgmt"].ToString()),
                                         Action = dsActnList.Tables[0].Rows[i]["Action"].ToString(),
                                         PersonResponsible = dsActnList.Tables[0].Rows[i]["PersonResponsible"].ToString(),
@@ -200,9 +193,9 @@ namespace ISOStd.Controllers
                             }
                             ViewBag.objAttnList = objAttList;
                         }
-                       // ViewBag.EmpList = objGlobaldata.GetGEmpListBymulitBDL(dsManagementModelsList.Tables[0].Rows[0]["branch"].ToString(), dsManagementModelsList.Tables[0].Rows[0]["Department"].ToString(), dsManagementModelsList.Tables[0].Rows[0]["Location"].ToString());
+                        // ViewBag.EmpList = objGlobaldata.GetGEmpListBymulitBDL(dsManagementModelsList.Tables[0].Rows[0]["branch"].ToString(), dsManagementModelsList.Tables[0].Rows[0]["Department"].ToString(), dsManagementModelsList.Tables[0].Rows[0]["Location"].ToString());
 
-                        ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();               
+                        ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
                         ViewBag.ActionStatus = objGlobaldata.GetConstantValue("Action_status");
                         return View(objManagementModels);
                     }
@@ -235,42 +228,39 @@ namespace ISOStd.Controllers
             {
                 ViewBag.SubMenutype = "ChangeManagement";
                 ChangeManagementModelsList obManagmentModelsList = new ChangeManagementModelsList();
-                    obManagmentModelsList.ChangeMgmtList = new List<ManagementChangeModels>();
+                obManagmentModelsList.ChangeMgmtList = new List<ManagementChangeModels>();
 
+                for (int i = 0; i < Convert.ToInt16(form["itemcnt"]); i++)
+                {
+                    ManagementChangeModels objManagementModels = new ManagementChangeModels();
 
-                    for (int i = 0; i < Convert.ToInt16(form["itemcnt"]); i++)
+                    DateTime dateValue;
+
+                    if (form["Action" + i] != null && form["Action" + i] != "")
                     {
-                        ManagementChangeModels objManagementModels = new ManagementChangeModels();
-
-                        DateTime dateValue;
-
-                        if (form["Action" + i] != null && form["Action" + i] != "")
+                        if (DateTime.TryParse(form["TargetDate" + i], out dateValue) == true)
                         {
-                            if (DateTime.TryParse(form["TargetDate" + i], out dateValue) == true)
-                            {
-                                objManagementModels.TargetDate = dateValue;
-                            }
-                            if (DateTime.TryParse(form["ActionCompletionDate" + i], out dateValue) == true)
-                            {
-                                objManagementModels.ActionCompletionDate = dateValue;
-                            }
-                            objManagementModels.Action = form["Action" + i];
-                            objManagementModels.PersonResponsible = form["PersonResponsible" + i];
-                            objManagementModels.Action_Status = form["Action_Status" + i];
-                            obManagmentModelsList.ChangeMgmtList.Add(objManagementModels);
+                            objManagementModels.TargetDate = dateValue;
                         }
+                        if (DateTime.TryParse(form["ActionCompletionDate" + i], out dateValue) == true)
+                        {
+                            objManagementModels.ActionCompletionDate = dateValue;
+                        }
+                        objManagementModels.Action = form["Action" + i];
+                        objManagementModels.PersonResponsible = form["PersonResponsible" + i];
+                        objManagementModels.Action_Status = form["Action_Status" + i];
+                        obManagmentModelsList.ChangeMgmtList.Add(objManagementModels);
+                    }
+                }
 
-                    }
-
-                    if (objManagement.FunAddChangeMgmtActions(obManagmentModelsList, objManagement.IdMgmt))
-                    {
-                        TempData["Successdata"] = "Added Actions successfully";
-                    }
-                    else
-                    {
-                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                    }
-                
+                if (objManagement.FunAddChangeMgmtActions(obManagmentModelsList, objManagement.IdMgmt))
+                {
+                    TempData["Successdata"] = "Added Actions successfully";
+                }
+                else
+                {
+                    TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                }
             }
             catch (Exception ex)
             {
@@ -280,165 +270,17 @@ namespace ISOStd.Controllers
 
             return RedirectToAction("ChangeManagementList");
         }
-       
+
         [AllowAnonymous]
         public ActionResult ChangeManagementList(string SearchText, string ChangeIn, string Approvestatus, int? page, string branch_name)
         {
             ViewBag.SubMenutype = "ChangeManagement";
             ChangeManagementModelsList objManagemtModelsList = new ChangeManagementModelsList();
             objManagemtModelsList.ChangeMgmtList = new List<ManagementChangeModels>();
-           
-            RiskMgmtModels objRisk = new RiskMgmtModels();
-            try
-            {
-
-                ViewBag.ChangeIn = objGlobaldata.GetDropdownList("ManagementSample");
-                ViewBag.Approvestatus = objGlobaldata.GetConstantValueKeyValuePair("DocStatus");
-                string sBranch_name = objGlobaldata.GetCurrentUserSession().division;
-                string sBranchtree = objGlobaldata.GetCurrentUserSession().BranchTree;
-                ViewBag.Branch = objGlobaldata.GetMultiBranchListByID(sBranchtree);
-
-                UserCredentials objUser = new UserCredentials();
-                objUser = objGlobaldata.GetCurrentUserSession();
-                ViewBag.User = objUser.firstname;
-                
-                //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS  
-                string sSqlstmt = "select IdMgmt,ChangeInitiatedDate,LoggedBy,ChangeRequestedBy,ChangeIn,DetailsOfChange,ResonForChange,Impact,ApprovedBy,ApproveOrRejectOn,Approvers,ChangeType,RiskLevel,"
-                    + " (case when ApproveStatus='1' then 'Approved'  when ApproveStatus='2' then 'Rejected' else 'Pending' end) as ApproveStatus,branch,Department,Location from t_changemanagement where Active=1";
-
-                string sSearchtext = "";
-
-                //if (SearchText != null && SearchText != "")
-                //{
-                //    ViewBag.SearchText = SearchText;
-                //    sSearchtext = sSearchtext + "  and (ChangeRequestNo ='" + SearchText + "' or ChangeRequestNo like '" + SearchText + "%' or ChangeRequestNo like '%" + SearchText + "%' or ChangeRequestNo='" + SearchText + "')";
-                //}
-
-                if (ChangeIn != null && ChangeIn != "Select")
-                {
-                    ViewBag.Change_In = ChangeIn;
-
-                    if (sSearchtext != "")
-                    {
-                        sSearchtext = sSearchtext + " and (ChangeIn ='" + ChangeIn + "')";
-                    }
-                    else
-                    {
-                        sSearchtext = sSearchtext + " and (ChangeIn ='" + ChangeIn + "')";
-                    }
-                }
-                if (Approvestatus != null && Approvestatus != "All" && Approvestatus != "")
-                {
-                    ViewBag.ApprovestatusVal = Approvestatus;
-                    if (sSearchtext != "" || ChangeIn !="")
-                    {
-                        sSearchtext = sSearchtext + " and (ApproveStatus ='" + Approvestatus + "')";
-                    }
-                    else
-                    {
-                        sSearchtext = sSearchtext + " and (ApproveStatus ='" + Approvestatus + "')";
-                    }
-                }
-
-                if (branch_name != null && branch_name != "")
-                {
-                    sSearchtext = sSearchtext + " and find_in_set('" + branch_name + "', branch)";
-                    ViewBag.Branch_name = branch_name;
-                }
-                else
-                {
-                    sSearchtext = sSearchtext + " and find_in_set('" + sBranch_name + "', branch)";
-                }
-
-                sSqlstmt = sSqlstmt + sSearchtext + " order by ChangeInitiatedDate desc";
-                DataSet dsManagementModelsList = objGlobaldata.Getdetails(sSqlstmt);
-
-                if (dsManagementModelsList.Tables.Count > 0 && dsManagementModelsList.Tables[0].Rows.Count > 0)
-                { 
-                    for (int i = 0; i < dsManagementModelsList.Tables[0].Rows.Count; i++)
-                    {
-                        try
-                        {
-                            ManagementChangeModels objManagementModels = new ManagementChangeModels
-                            {
-                                IdMgmt = Convert.ToInt16(dsManagementModelsList.Tables[0].Rows[i]["IdMgmt"].ToString()),
-                                
-                                LoggedBy = objGlobaldata.GetEmpHrNameById(dsManagementModelsList.Tables[0].Rows[i]["LoggedBy"].ToString()),
-                                ChangeRequestedBy = objGlobaldata.GetEmpHrNameById(dsManagementModelsList.Tables[0].Rows[i]["ChangeRequestedBy"].ToString()),
-                                ChangeIn = objGlobaldata.GetDropdownitemById(dsManagementModelsList.Tables[0].Rows[i]["ChangeIn"].ToString()),
-                                ApprovedBy = objGlobaldata.GetMultiHrEmpNameById(dsManagementModelsList.Tables[0].Rows[i]["ApprovedBy"].ToString()),
-                                ApproveStatus = dsManagementModelsList.Tables[0].Rows[i]["ApproveStatus"].ToString(),
-                            
-                                Approvers = dsManagementModelsList.Tables[0].Rows[i]["Approvers"].ToString(),
-                                RiskLevel = objGlobaldata.GetDropdownitemById(dsManagementModelsList.Tables[0].Rows[i]["RiskLevel"].ToString()),
-                                ChangeType = dsManagementModelsList.Tables[0].Rows[i]["ChangeType"].ToString(),
-                                branch = objGlobaldata.GetMultiCompanyBranchNameById(dsManagementModelsList.Tables[0].Rows[i]["branch"].ToString()),
-                                Department = objGlobaldata.GetMultiDeptNameById(dsManagementModelsList.Tables[0].Rows[i]["Department"].ToString()),
-                                Location = objGlobaldata.GetDivisionLocationById(dsManagementModelsList.Tables[0].Rows[i]["Location"].ToString()),
-                            };
-
-                            DateTime dtDocDate = new DateTime();
-                            if (dsManagementModelsList.Tables[0].Rows[0]["ChangeInitiatedDate"].ToString() != ""
-                                && DateTime.TryParse(dsManagementModelsList.Tables[0].Rows[i]["ChangeInitiatedDate"].ToString(), out dtDocDate))
-                            {
-                                objManagementModels.ChangeInitiatedDate = dtDocDate;
-                            }
-                            
-                            if (dsManagementModelsList.Tables[0].Rows[0]["ApproveOrRejectOn"].ToString() != ""
-                          && DateTime.TryParse(dsManagementModelsList.Tables[0].Rows[i]["ApproveOrRejectOn"].ToString(), out dtDocDate))
-                            {
-                                objManagementModels.ApproveOrRejectOn = dtDocDate;
-                            }
-                            string Sql = "select Action_Status from t_changemanagement_actions where IdMgmt='" + objManagementModels.IdMgmt + "'";
-                            DataSet dsData = objGlobaldata.Getdetails(Sql);
-                            string action_status = "";
-                            if (dsData.Tables.Count > 0)
-                            {
-                                for (int j = 0; j < dsData.Tables[0].Rows.Count; j++)
-                                {
-                                    if (dsData.Tables[0].Rows[j]["Action_Status"].ToString() == "Completed")
-                                    {
-                                        action_status = (dsData.Tables[0].Rows[j]["Action_Status"].ToString());
-                                    }
-                                    else
-                                    {
-                                        action_status = (dsData.Tables[0].Rows[j]["Action_Status"].ToString());
-                                        break;
-                                    }
-                                }
-                            }
-                            objManagementModels.ChangeStatus = action_status;
-                        
-                            objManagemtModelsList.ChangeMgmtList.Add(objManagementModels);
-                        }
-                        catch (Exception ex)
-                        {
-                            objGlobaldata.AddFunctionalLog("Exception in ChangeManagementList: " + ex.ToString());
-                            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                objGlobaldata.AddFunctionalLog("Exception in ChangeManagementList: " + ex.ToString());
-                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-            }
-
-            return View(objManagemtModelsList.ChangeMgmtList.ToList());
-        }
-
-        [AllowAnonymous]
-        public JsonResult ChangeManagementListSearch(string SearchText, string ChangeIn, string Approvestatus, int? page, string branch_name)
-        {
-            ViewBag.SubMenutype = "ChangeManagement";
-            ChangeManagementModelsList objManagemtModelsList = new ChangeManagementModelsList();
-            objManagemtModelsList.ChangeMgmtList = new List<ManagementChangeModels>();
 
             RiskMgmtModels objRisk = new RiskMgmtModels();
             try
             {
-
                 ViewBag.ChangeIn = objGlobaldata.GetDropdownList("ManagementSample");
                 ViewBag.Approvestatus = objGlobaldata.GetConstantValueKeyValuePair("DocStatus");
                 string sBranch_name = objGlobaldata.GetCurrentUserSession().division;
@@ -449,7 +291,7 @@ namespace ISOStd.Controllers
                 objUser = objGlobaldata.GetCurrentUserSession();
                 ViewBag.User = objUser.firstname;
 
-                //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS  
+                //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS
                 string sSqlstmt = "select IdMgmt,ChangeInitiatedDate,LoggedBy,ChangeRequestedBy,ChangeIn,DetailsOfChange,ResonForChange,Impact,ApprovedBy,ApproveOrRejectOn,Approvers,ChangeType,RiskLevel,"
                     + " (case when ApproveStatus='1' then 'Approved'  when ApproveStatus='2' then 'Rejected' else 'Pending' end) as ApproveStatus,branch,Department,Location from t_changemanagement where Active=1";
 
@@ -501,7 +343,7 @@ namespace ISOStd.Controllers
                 DataSet dsManagementModelsList = objGlobaldata.Getdetails(sSqlstmt);
 
                 if (dsManagementModelsList.Tables.Count > 0 && dsManagementModelsList.Tables[0].Rows.Count > 0)
-                {  
+                {
                     for (int i = 0; i < dsManagementModelsList.Tables[0].Rows.Count; i++)
                     {
                         try
@@ -522,7 +364,152 @@ namespace ISOStd.Controllers
                                 branch = objGlobaldata.GetMultiCompanyBranchNameById(dsManagementModelsList.Tables[0].Rows[i]["branch"].ToString()),
                                 Department = objGlobaldata.GetMultiDeptNameById(dsManagementModelsList.Tables[0].Rows[i]["Department"].ToString()),
                                 Location = objGlobaldata.GetDivisionLocationById(dsManagementModelsList.Tables[0].Rows[i]["Location"].ToString()),
+                            };
 
+                            DateTime dtDocDate = new DateTime();
+                            if (dsManagementModelsList.Tables[0].Rows[0]["ChangeInitiatedDate"].ToString() != ""
+                                && DateTime.TryParse(dsManagementModelsList.Tables[0].Rows[i]["ChangeInitiatedDate"].ToString(), out dtDocDate))
+                            {
+                                objManagementModels.ChangeInitiatedDate = dtDocDate;
+                            }
+
+                            if (dsManagementModelsList.Tables[0].Rows[0]["ApproveOrRejectOn"].ToString() != ""
+                          && DateTime.TryParse(dsManagementModelsList.Tables[0].Rows[i]["ApproveOrRejectOn"].ToString(), out dtDocDate))
+                            {
+                                objManagementModels.ApproveOrRejectOn = dtDocDate;
+                            }
+                            string Sql = "select Action_Status from t_changemanagement_actions where IdMgmt='" + objManagementModels.IdMgmt + "'";
+                            DataSet dsData = objGlobaldata.Getdetails(Sql);
+                            string action_status = "";
+                            if (dsData.Tables.Count > 0)
+                            {
+                                for (int j = 0; j < dsData.Tables[0].Rows.Count; j++)
+                                {
+                                    if (dsData.Tables[0].Rows[j]["Action_Status"].ToString() == "Completed")
+                                    {
+                                        action_status = (dsData.Tables[0].Rows[j]["Action_Status"].ToString());
+                                    }
+                                    else
+                                    {
+                                        action_status = (dsData.Tables[0].Rows[j]["Action_Status"].ToString());
+                                        break;
+                                    }
+                                }
+                            }
+                            objManagementModels.ChangeStatus = action_status;
+
+                            objManagemtModelsList.ChangeMgmtList.Add(objManagementModels);
+                        }
+                        catch (Exception ex)
+                        {
+                            objGlobaldata.AddFunctionalLog("Exception in ChangeManagementList: " + ex.ToString());
+                            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in ChangeManagementList: " + ex.ToString());
+                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+            }
+
+            return View(objManagemtModelsList.ChangeMgmtList.ToList());
+        }
+
+        [AllowAnonymous]
+        public JsonResult ChangeManagementListSearch(string SearchText, string ChangeIn, string Approvestatus, int? page, string branch_name)
+        {
+            ViewBag.SubMenutype = "ChangeManagement";
+            ChangeManagementModelsList objManagemtModelsList = new ChangeManagementModelsList();
+            objManagemtModelsList.ChangeMgmtList = new List<ManagementChangeModels>();
+
+            RiskMgmtModels objRisk = new RiskMgmtModels();
+            try
+            {
+                ViewBag.ChangeIn = objGlobaldata.GetDropdownList("ManagementSample");
+                ViewBag.Approvestatus = objGlobaldata.GetConstantValueKeyValuePair("DocStatus");
+                string sBranch_name = objGlobaldata.GetCurrentUserSession().division;
+                string sBranchtree = objGlobaldata.GetCurrentUserSession().BranchTree;
+                ViewBag.Branch = objGlobaldata.GetMultiBranchListByID(sBranchtree);
+
+                UserCredentials objUser = new UserCredentials();
+                objUser = objGlobaldata.GetCurrentUserSession();
+                ViewBag.User = objUser.firstname;
+
+                //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS
+                string sSqlstmt = "select IdMgmt,ChangeInitiatedDate,LoggedBy,ChangeRequestedBy,ChangeIn,DetailsOfChange,ResonForChange,Impact,ApprovedBy,ApproveOrRejectOn,Approvers,ChangeType,RiskLevel,"
+                    + " (case when ApproveStatus='1' then 'Approved'  when ApproveStatus='2' then 'Rejected' else 'Pending' end) as ApproveStatus,branch,Department,Location from t_changemanagement where Active=1";
+
+                string sSearchtext = "";
+
+                //if (SearchText != null && SearchText != "")
+                //{
+                //    ViewBag.SearchText = SearchText;
+                //    sSearchtext = sSearchtext + "  and (ChangeRequestNo ='" + SearchText + "' or ChangeRequestNo like '" + SearchText + "%' or ChangeRequestNo like '%" + SearchText + "%' or ChangeRequestNo='" + SearchText + "')";
+                //}
+
+                if (ChangeIn != null && ChangeIn != "Select")
+                {
+                    ViewBag.Change_In = ChangeIn;
+
+                    if (sSearchtext != "")
+                    {
+                        sSearchtext = sSearchtext + " and (ChangeIn ='" + ChangeIn + "')";
+                    }
+                    else
+                    {
+                        sSearchtext = sSearchtext + " and (ChangeIn ='" + ChangeIn + "')";
+                    }
+                }
+                if (Approvestatus != null && Approvestatus != "All" && Approvestatus != "")
+                {
+                    ViewBag.ApprovestatusVal = Approvestatus;
+                    if (sSearchtext != "" || ChangeIn != "")
+                    {
+                        sSearchtext = sSearchtext + " and (ApproveStatus ='" + Approvestatus + "')";
+                    }
+                    else
+                    {
+                        sSearchtext = sSearchtext + " and (ApproveStatus ='" + Approvestatus + "')";
+                    }
+                }
+
+                if (branch_name != null && branch_name != "")
+                {
+                    sSearchtext = sSearchtext + " and find_in_set('" + branch_name + "', branch)";
+                    ViewBag.Branch_name = branch_name;
+                }
+                else
+                {
+                    sSearchtext = sSearchtext + " and find_in_set('" + sBranch_name + "', branch)";
+                }
+
+                sSqlstmt = sSqlstmt + sSearchtext + " order by ChangeInitiatedDate desc";
+                DataSet dsManagementModelsList = objGlobaldata.Getdetails(sSqlstmt);
+
+                if (dsManagementModelsList.Tables.Count > 0 && dsManagementModelsList.Tables[0].Rows.Count > 0)
+                {
+                    for (int i = 0; i < dsManagementModelsList.Tables[0].Rows.Count; i++)
+                    {
+                        try
+                        {
+                            ManagementChangeModels objManagementModels = new ManagementChangeModels
+                            {
+                                IdMgmt = Convert.ToInt16(dsManagementModelsList.Tables[0].Rows[i]["IdMgmt"].ToString()),
+
+                                LoggedBy = objGlobaldata.GetEmpHrNameById(dsManagementModelsList.Tables[0].Rows[i]["LoggedBy"].ToString()),
+                                ChangeRequestedBy = objGlobaldata.GetEmpHrNameById(dsManagementModelsList.Tables[0].Rows[i]["ChangeRequestedBy"].ToString()),
+                                ChangeIn = objGlobaldata.GetDropdownitemById(dsManagementModelsList.Tables[0].Rows[i]["ChangeIn"].ToString()),
+                                ApprovedBy = objGlobaldata.GetMultiHrEmpNameById(dsManagementModelsList.Tables[0].Rows[i]["ApprovedBy"].ToString()),
+                                ApproveStatus = dsManagementModelsList.Tables[0].Rows[i]["ApproveStatus"].ToString(),
+
+                                Approvers = dsManagementModelsList.Tables[0].Rows[i]["Approvers"].ToString(),
+                                RiskLevel = objGlobaldata.GetDropdownitemById(dsManagementModelsList.Tables[0].Rows[i]["RiskLevel"].ToString()),
+                                ChangeType = dsManagementModelsList.Tables[0].Rows[i]["ChangeType"].ToString(),
+                                branch = objGlobaldata.GetMultiCompanyBranchNameById(dsManagementModelsList.Tables[0].Rows[i]["branch"].ToString()),
+                                Department = objGlobaldata.GetMultiDeptNameById(dsManagementModelsList.Tables[0].Rows[i]["Department"].ToString()),
+                                Location = objGlobaldata.GetDivisionLocationById(dsManagementModelsList.Tables[0].Rows[i]["Location"].ToString()),
                             };
 
                             DateTime dtDocDate = new DateTime();
@@ -566,7 +553,6 @@ namespace ISOStd.Controllers
                         }
                     }
                 }
-
             }
             catch (Exception ex)
             {
@@ -575,7 +561,7 @@ namespace ISOStd.Controllers
             }
             return Json("Success");
         }
-        
+
         [AllowAnonymous]
         public ActionResult ChangeManagementInfo(int id)
         {
@@ -588,15 +574,14 @@ namespace ISOStd.Controllers
             {
                 string sSqlstmt = "select IdMgmt,ChangeInitiatedDate,LoggedBy,ChangeRequestedBy,ChangeIn,DetailsOfChange,ResonForChange,Impact,ApprovedBy,ApproveOrRejectOn,Approvers,ChangeType,RiskLevel,"
                     + " (case when ApproveStatus='1' then 'Approved' else 'Not Approved' end) as ApproveStatus,(case when ChangeStatus='1' then 'Completed' else 'Pending' end) as ChangeStatus,branch,Department,Location"
-                + " from t_changemanagement where Active=1 and IdMgmt='"+id+"'";
+                + " from t_changemanagement where Active=1 and IdMgmt='" + id + "'";
 
                 DataSet dsManagementModelsList = objGlobaldata.Getdetails(sSqlstmt);
 
-                if(dsManagementModelsList.Tables.Count > 0 && dsManagementModelsList.Tables[0].Rows.Count > 0)
+                if (dsManagementModelsList.Tables.Count > 0 && dsManagementModelsList.Tables[0].Rows.Count > 0)
                 {
                     for (int i = 0; i < dsManagementModelsList.Tables[0].Rows.Count; i++)
                     {
-
                         try
                         {
                             ManagementChangeModels objManagementModels = new ManagementChangeModels
@@ -642,7 +627,6 @@ namespace ISOStd.Controllers
                         + " from t_changemanagement_actions where IdMgmt='" + id + "' order by Id";
                     ViewBag.ActionDetails = objGlobaldata.Getdetails(sSqlstmt);
                 }
-
             }
             catch (Exception ex)
             {
@@ -652,7 +636,7 @@ namespace ISOStd.Controllers
 
             return View(objManagemtModelsList.ChangeMgmtList.ToList());
         }
-                 
+
         [AllowAnonymous]
         [ValidateInput(false)]
         public ActionResult ChangeManagementEdit(int? page)
@@ -662,7 +646,7 @@ namespace ISOStd.Controllers
             objManagementModelsList.ChangeMgmtList = new List<ManagementChangeModels>();
             RiskMgmtModels objRisk = new RiskMgmtModels();
             ManagementChangeModels objManagementModels = new ManagementChangeModels();
-           
+
             try
             {
                 UserCredentials objUser = new UserCredentials();
@@ -679,7 +663,6 @@ namespace ISOStd.Controllers
 
                     if (dsManagementModelsList.Tables.Count > 0 && dsManagementModelsList.Tables[0].Rows.Count > 0)
                     {
-
                         objManagementModels = new ManagementChangeModels
                         {
                             IdMgmt = Convert.ToInt16(dsManagementModelsList.Tables[0].Rows[0]["IdMgmt"].ToString()),
@@ -695,8 +678,8 @@ namespace ISOStd.Controllers
                             ChangeInitiatedDate = Convert.ToDateTime(dsManagementModelsList.Tables[0].Rows[0]["ChangeInitiatedDate"].ToString()),
                             branch = (dsManagementModelsList.Tables[0].Rows[0]["branch"].ToString()),
                             Department = (dsManagementModelsList.Tables[0].Rows[0]["Department"].ToString()),
-                            Location =(dsManagementModelsList.Tables[0].Rows[0]["Location"].ToString()),
-                          };
+                            Location = (dsManagementModelsList.Tables[0].Rows[0]["Location"].ToString()),
+                        };
                         ViewBag.Branch = objGlobaldata.GetCompanyBranchListbox();
                         ViewBag.Location = objGlobaldata.GetLocationbyMultiDivision(dsManagementModelsList.Tables[0].Rows[0]["branch"].ToString());
                         ViewBag.Department = objGlobaldata.GetDepartmentList1(dsManagementModelsList.Tables[0].Rows[0]["branch"].ToString());
@@ -715,15 +698,12 @@ namespace ISOStd.Controllers
                     }
                     else
                     {
-                       
                         TempData["alertdata"] = "No Data exists";
                         return RedirectToAction("ChangeManagementList");
-
                     }
                 }
                 else
                 {
-                  
                     TempData["alertdata"] = "No Data exists";
                     return RedirectToAction("ChangeManagementList");
                 }
@@ -735,7 +715,7 @@ namespace ISOStd.Controllers
             }
             return RedirectToAction("ChangeManagementList");
         }
-                 
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         [AllowAnonymous]
@@ -756,18 +736,15 @@ namespace ISOStd.Controllers
                 objManagement.Location = form["Location"];
 
                 objManagement.LoggedBy = objGlobaldata.GetCurrentUserSession().empid;
-                
 
                 if (objManagement.FunUpdateChangeManagement(objManagement))
                 {
                     TempData["Successdata"] = "Change Management details updated successfully";
-                    
                 }
                 else
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 }
-
             }
             catch (Exception ex)
             {
@@ -776,7 +753,7 @@ namespace ISOStd.Controllers
             }
             return RedirectToAction("ChangeManagementList", new { IdMgmt = objManagement.IdMgmt });
         }
-                 
+
         [AllowAnonymous]
         public ActionResult ChangeManagementActionUpdate(ManagementChangeModels objManagementModels, FormCollection form)
         {
@@ -797,7 +774,6 @@ namespace ISOStd.Controllers
                 }
                 else
                 {
-                   
                     DateTime dateValue;
 
                     if (DateTime.TryParse(form["TargetDate"], out dateValue) == true)
@@ -809,7 +785,6 @@ namespace ISOStd.Controllers
                     objManagementModels.PersonResponsible = form["PersonResponsible"];
                     objManagementModels.Action_Status = form["Action_Status"];
 
-
                     if (objManagementModels.FunUpdateManagementChangeAction(objManagementModels))
                     {
                         TempData["Successdata"] = "Action plan updated successfully";
@@ -820,7 +795,7 @@ namespace ISOStd.Controllers
                         TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                     }
                 }
-                
+
                 //return objObjectivesModels.FunUpdateObjectivesPlan(objObjectivesModels);
             }
             catch (Exception ex)
@@ -830,7 +805,7 @@ namespace ISOStd.Controllers
             }
             return RedirectToAction("ChangeManagementEdit", new { IdMgmt = objManagementModels.IdMgmt });
         }
-                 
+
         [AllowAnonymous]
         public bool ManagementActionAdd(ManagementChangeModels objManagementModels, FormCollection form)
         {
@@ -867,20 +842,20 @@ namespace ISOStd.Controllers
                 return false;
             }
         }
-                 
+
         [AllowAnonymous]
         public ActionResult ChangeManagementDetails()
         {
             ManagementChangeModels objManagementModels = new ManagementChangeModels();
-            UserCredentials objUser = new UserCredentials();   
+            UserCredentials objUser = new UserCredentials();
             RiskMgmtModels objRisk = new RiskMgmtModels();
             try
             {
                 ViewBag.SubMenutype = "ChangeManagement";
 
                 objUser = objGlobaldata.GetCurrentUserSession();
-                    ViewBag.user = objUser.firstname;
-                
+                ViewBag.user = objUser.firstname;
+
                 if (Request.QueryString["IdMgmt"] != null && Request.QueryString["IdMgmt"] != "")
                 {
                     string sIdMgmt = Request.QueryString["IdMgmt"];
@@ -933,7 +908,6 @@ namespace ISOStd.Controllers
                         sSqlstmt = "select Id,IdMgmt,Action,TargetDate,ActionCompletionDate,PersonResponsible,Action_Status"
                          + " from t_changemanagement_actions where IdMgmt='" + sIdMgmt + "' order by Id";
                         ViewBag.ActionDetails = objGlobaldata.Getdetails(sSqlstmt);
-
                     }
                     else
                     {
@@ -953,9 +927,8 @@ namespace ISOStd.Controllers
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
             return View(objManagementModels);
-
         }
-                 
+
         [AllowAnonymous]
         public ActionResult ChangeManagementApproveReject(string IdMgmt, int iStatus, string PendingFlg)
         {
@@ -972,12 +945,10 @@ namespace ISOStd.Controllers
                 else if (iStatus == 1)
                 {
                     sStatus = "Approved";
-
                 }
                 else if (iStatus == 2)
                 {
                     sStatus = "Rejected";
-
                 }
                 if (objManagementModels.FunChangeManagementRequestApproveOrReject(IdMgmt, iStatus))
                 {
@@ -987,7 +958,6 @@ namespace ISOStd.Controllers
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 }
-
             }
             catch (Exception ex)
             {
@@ -1004,7 +974,7 @@ namespace ISOStd.Controllers
                 return RedirectToAction("ChangeManagementList");
             }
         }
-               
+
         public JsonResult ChangeManagementApproveRejectNoty(string IdMgmt, int iStatus, string PendingFlg)
         {
             try
@@ -1020,12 +990,10 @@ namespace ISOStd.Controllers
                 else if (iStatus == 1)
                 {
                     sStatus = "Approved";
-
                 }
                 else if (iStatus == 2)
                 {
                     sStatus = "Rejected";
-
                 }
                 if (objManagementModels.FunChangeManagementRequestApproveOrReject(IdMgmt, iStatus))
                 {
@@ -1035,7 +1003,6 @@ namespace ISOStd.Controllers
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 }
-
             }
             catch (Exception ex)
             {
@@ -1045,21 +1012,20 @@ namespace ISOStd.Controllers
 
             if (PendingFlg != null && PendingFlg == "true")
             {
-                return Json("Success"+ iStatus);
+                return Json("Success" + iStatus);
             }
             else
             {
                 return Json("Failed");
             }
         }
-        
+
         [AllowAnonymous]
         public ActionResult UpdateChangeManagementAction()
         {
             try
             {
                 ManagementChangeModels objMgmt = new ManagementChangeModels();
-
 
                 if (Request.QueryString["IdMgmt"] != null)
                 {
@@ -1090,28 +1056,27 @@ namespace ISOStd.Controllers
         {
             try
             {
-                    DateTime dateValue;
+                DateTime dateValue;
 
-                    if (DateTime.TryParse(form["TargetDate"], out dateValue) == true)
-                    {
-                        objManagementModels.TargetDate = dateValue;
-                    }
+                if (DateTime.TryParse(form["TargetDate"], out dateValue) == true)
+                {
+                    objManagementModels.TargetDate = dateValue;
+                }
 
-                    objManagementModels.Action = form["Action"];
-                    objManagementModels.PersonResponsible = form["PersonResponsible"];
-                    objManagementModels.Action_Status = form["Action_Status"];
+                objManagementModels.Action = form["Action"];
+                objManagementModels.PersonResponsible = form["PersonResponsible"];
+                objManagementModels.Action_Status = form["Action_Status"];
 
+                if (objManagementModels.FunUpdateManagementActionPlan(objManagementModels))
+                {
+                    TempData["Successdata"] = "Action plan updated successfully";
+                }
+                else
+                {
+                    TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                }
 
-                    if (objManagementModels.FunUpdateManagementActionPlan(objManagementModels))
-                    {
-                        TempData["Successdata"] = "Action plan updated successfully";
-                    }
-                    else
-                    {
-                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                    }
-
-                    return RedirectToAction("ChangeManagementList");
+                return RedirectToAction("ChangeManagementList");
                 //return objObjectivesModels.FunUpdateObjectivesPlan(objObjectivesModels);
             }
             catch (Exception ex)
@@ -1121,7 +1086,7 @@ namespace ISOStd.Controllers
             }
             return RedirectToAction("ChangeManagementList");
         }
-                 
+
         [AllowAnonymous]
         public JsonResult ChangeManagementDocDelete(FormCollection form)
         {
@@ -1129,29 +1094,26 @@ namespace ISOStd.Controllers
             {
                 ViewBag.SubMenutype = "ChangeManagement";
                 if (form["IdMgmt"] != null && form["IdMgmt"] != "")
-                        {
-                            ManagementChangeModels Doc = new ManagementChangeModels();
-                            string sIdMgmt = form["IdMgmt"];
+                {
+                    ManagementChangeModels Doc = new ManagementChangeModels();
+                    string sIdMgmt = form["IdMgmt"];
 
-
-                            if (Doc.FunDeleteChangeMgmtDoc(sIdMgmt))
-                            {
-                                TempData["Successdata"] = "Document deleted successfully";
-                                return Json("Success");
-                            }
-                            else
-                            {
-                                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                                return Json("Failed");
-                            }
-                        }
-                        else
-                        {
-                            TempData["alertdata"] = "Change Management Id cannot be Null or empty";
-                            return Json("Failed");
-                        }
-                   
-                
+                    if (Doc.FunDeleteChangeMgmtDoc(sIdMgmt))
+                    {
+                        TempData["Successdata"] = "Document deleted successfully";
+                        return Json("Success");
+                    }
+                    else
+                    {
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                        return Json("Failed");
+                    }
+                }
+                else
+                {
+                    TempData["alertdata"] = "Change Management Id cannot be Null or empty";
+                    return Json("Failed");
+                }
             }
             catch (Exception ex)
             {

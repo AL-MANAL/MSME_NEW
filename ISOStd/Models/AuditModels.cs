@@ -1,31 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Data;
 using System.Linq;
 using System.Web;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Data.Entity;
-using System.Globalization;
-using System.Data;
-using System.Web.Mvc;
 
 namespace ISOStd.Models
-{    
-
+{
     public class InternalAuditModels
     {
-        clsGlobal objGlobalData = new clsGlobal();
+        private clsGlobal objGlobalData = new clsGlobal();
 
         public string AuditID { get; set; }
         public string AuditTransID { get; set; }
 
         [Display(Name = "AuditNum")]
-        //[System.Web.Mvc.Remote("doesAuditNumExist", "Audit", HttpMethod = "POST", ErrorMessage = "Audit Number already exists. Please enter a different No.")]
         public string AuditNum { get; set; }
-              
+
         [Display(Name = "Audit Prepared Date")]
-        public DateTime AuditDate { get; set; }     
-               
+        public DateTime AuditDate { get; set; }
+
         [Display(Name = "Audit Date Time")]
         public string AuditTime { get; set; }
 
@@ -36,21 +30,22 @@ namespace ISOStd.Models
         [Display(Name = "Audit Time only")]
         public DateTime AuditTimeOnly { get; set; }
 
-       // [Required]
+        // [Required]
         [Display(Name = "Auditee")]
         public string Auditee { get; set; }
-        
-       // [Required]
+
+        // [Required]
         [Display(Name = "Department")]
         public string DeptName { get; set; }
 
-       // [Required]
+        // [Required]
         [Display(Name = "Auditor")]
         public string Auditor { get; set; }
 
         //[Required]
         [Display(Name = "Audit Planned by")]
         public string Audit_Prepared_by { get; set; }
+
         //[Required]
         [Display(Name = "Audit Approved by")]
         public string Audit_Approved_by { get; set; }
@@ -58,35 +53,35 @@ namespace ISOStd.Models
         //[Required]
         [Display(Name = "Audit Planned Date")]
         public DateTime Audit_Planned_Date { get; set; }
-             
+
         [Display(Name = "Audit Criteria")]
         public string AuditCriteria { get; set; }
-             
+
         [Display(Name = "Audit Comments")]
         public string AuditComment { get; set; }
-               
+
         [Display(Name = "Company Name")]
         public string CompanyId { get; set; }
 
         [Required]
         [Display(Name = "Division")]
-        public string AuditLocation { get; set; }       
-              
+        public string AuditLocation { get; set; }
+
         [Display(Name = "Audit Status")]
         public string AuditStatus { get; set; }
-               
+
         [Display(Name = "Scheduled Date")]
         public DateTime DateScheduled { get; set; }
-        
+
         [Display(Name = "Completion Date")]
         public DateTime CompletionDate { get; set; }
-                
+
         [Display(Name = "Audit Activity")]
         public string Audit_Activity { get; set; }
-        
+
         [Display(Name = "Audit Reviewed By")]
         public string Audit_Reviewed_by { get; set; }
-              
+
         [Display(Name = "Checklist")]
         public string Checklist { get; set; }
 
@@ -98,13 +93,12 @@ namespace ISOStd.Models
 
         [Display(Name = "Approved Status")]
         public string ApprvStatus { get; set; }
-        
+
         [Display(Name = "Approved Date")]
         public DateTime ApprvDate { get; set; }
 
         [Display(Name = "Audit Details")]
         public string AuditDetails { get; set; }
-
 
         public bool checkAuditNoExists(string AuditNum)
         {
@@ -161,7 +155,6 @@ namespace ISOStd.Models
                         return true;
                     }
                 }
-              
             }
             catch (Exception ex)
             {
@@ -173,7 +166,6 @@ namespace ISOStd.Models
 
         internal bool SendAuditEmail(InternalAuditModels objAudit)
         {
-
             try
             {
                 string sInformation = "", sHeader = "";
@@ -191,7 +183,6 @@ namespace ISOStd.Models
                 + " <br />"
                + "Audit Location:'" + objGlobalData.GetCompanyBranchNameById(objAudit.AuditLocation) + "'";
                 sHeader = sHeader + sInformation;
-
 
                 Dictionary<string, string> dicEmailContent = objGlobalData.FormEmailBody(sUserName, "audit", sHeader, "", "");
                 objGlobalData.Sendmail(sToEmailId, dicEmailContent["subject"], dicEmailContent["body"], "", sCCList, "");
@@ -234,7 +225,7 @@ namespace ISOStd.Models
                 DataSet dsData = objGlobalData.Getdetails(sSqlstmt);
                 if (dsData.Tables.Count > 0 && dsData.Tables[0].Rows.Count > 0)
                 {
-                    if (iStatus == 1)//approved 
+                    if (iStatus == 1)//approved
                     {
                         sToEmailId = objGlobalData.GetMultiHrEmpEmailIdById(dsData.Tables[0].Rows[0]["Audit_Prepared_by"].ToString());
                         sCCList = objGlobalData.GetHrEmpEmailIdById(dsData.Tables[0].Rows[0]["ApprovedBy"].ToString());
@@ -246,11 +237,11 @@ namespace ISOStd.Models
                             + " <br />"
                             + "Audit Criteria:'" + objGlobalData.GetIsoStdDescriptionById(dsData.Tables[0].Rows[0]["AuditCriteria"].ToString()) + "'"
                             + " <br />"
-                            + "Audit date:'" +Convert.ToDateTime(dsData.Tables[0].Rows[0]["AuditDate"].ToString()).ToString("dd/MM/yyyy") + "'"
+                            + "Audit date:'" + Convert.ToDateTime(dsData.Tables[0].Rows[0]["AuditDate"].ToString()).ToString("dd/MM/yyyy") + "'"
                             + " <br />"
                             + "Audit Location:'" + objGlobalData.GetCompanyBranchNameById(dsData.Tables[0].Rows[0]["AuditLocation"].ToString()) + "'";
                     }
-                    else if (iStatus == 2)//rescheduled 
+                    else if (iStatus == 2)//rescheduled
                     {
                         sToEmailId = objGlobalData.GetMultiHrEmpEmailIdById(dsData.Tables[0].Rows[0]["Audit_Prepared_by"].ToString());
                         sCCList = objGlobalData.GetHrEmpEmailIdById(dsData.Tables[0].Rows[0]["ApprovedBy"].ToString());
@@ -269,7 +260,6 @@ namespace ISOStd.Models
 
                     sHeader = sHeader + sInformation;
 
-
                     Dictionary<string, string> dicEmailContent = objGlobalData.FormEmailBody(sUserName, "audit", sHeader, "", "");
                     objGlobalData.Sendmail(sToEmailId, dicEmailContent["subject"], dicEmailContent["body"], "", sCCList, "");
                     return true;
@@ -281,7 +271,7 @@ namespace ISOStd.Models
             }
             return false;
         }
-        
+
         internal bool FunAddInternalAuditPlan(InternalAuditModelsList objInternalAuditModelsList, int AuditID)
         {
             try
@@ -303,7 +293,6 @@ namespace ISOStd.Models
                         sSqlstmt = sSqlstmt + "insert into t_internal_audit_trans (AuditID, DeptID, fromAuditTime, toAuditTime, Auditee, Auditor, Audit_Prepared_by, AuditStatus,ApprovedBy,Activity,"
                             + "Audit_Planned_Date, DateScheduled ";
 
-
                         if (sCompletionDate != "")
                         {
                             sSqlstmt = sSqlstmt + ", CompletionDate";
@@ -313,7 +302,7 @@ namespace ISOStd.Models
                             + AuditID + "','" + objInternalAuditModelsList.InternalAuditList[i].DeptName + "','"
                             + objInternalAuditModelsList.InternalAuditList[i].AuditTime + "','" + objInternalAuditModelsList.InternalAuditList[i].AuditToTime + "','"
                             + objInternalAuditModelsList.InternalAuditList[i].Auditee + "','" + objInternalAuditModelsList.InternalAuditList[i].Auditor + "','"
-                            + objInternalAuditModelsList.InternalAuditList[i].Audit_Prepared_by + "','" + objInternalAuditModelsList.InternalAuditList[i].AuditStatus +"','"
+                            + objInternalAuditModelsList.InternalAuditList[i].Audit_Prepared_by + "','" + objInternalAuditModelsList.InternalAuditList[i].AuditStatus + "','"
                             + objInternalAuditModelsList.InternalAuditList[i].Audit_Approved_by + "','"
                             + objInternalAuditModelsList.InternalAuditList[i].Audit_Activity + "','"
                             + sAudit_Prepared_Date + "','" + sDateScheduled + "'";
@@ -325,7 +314,7 @@ namespace ISOStd.Models
                     }
                 }
 
-               return objGlobalData.ExecuteQuery(sSqlstmt);
+                return objGlobalData.ExecuteQuery(sSqlstmt);
             }
             catch (Exception ex)
             {
@@ -384,7 +373,7 @@ namespace ISOStd.Models
                 //}
                 sSqlstmt = sSqlstmt + " where AuditTransID=" + objInternalAudit.AuditTransID;
 
-               return objGlobalData.ExecuteQuery(sSqlstmt);
+                return objGlobalData.ExecuteQuery(sSqlstmt);
             }
             catch (Exception ex)
             {
@@ -397,7 +386,7 @@ namespace ISOStd.Models
         internal bool FunUpdateAuditDetails(InternalAuditModels objInternalAudit)
         {
             try
-            {               
+            {
                 string sSqlstmt = "update t_internal_audit_trans set AuditDetails='" + objInternalAudit.AuditDetails + "' where AuditTransID=" + objInternalAudit.AuditTransID;
 
                 return objGlobalData.ExecuteQuery(sSqlstmt);
@@ -426,7 +415,7 @@ namespace ISOStd.Models
 
                 DataSet dsData = objGlobalData.Getdetails(sSqlstmt);
 
-               lstAuditNum = new List<string>();
+                lstAuditNum = new List<string>();
                 if (dsData.Tables.Count > 0 && dsData.Tables[0].Rows.Count > 0)
                 {
                     lstAuditNum = dsData.Tables[0].AsEnumerable().Select(r => r[0].ToString()).ToList();
@@ -445,7 +434,7 @@ namespace ISOStd.Models
             List<string> lstAuditDate = new List<string>();
             try
             {
-                string sSqlstmt = "SELECT distinct (DATE_FORMAT(AuditDate,'%d/%m/%Y') ) as AuditDate FROM t_internal_audit where AuditNum='"+sAuditNum+"'";
+                string sSqlstmt = "SELECT distinct (DATE_FORMAT(AuditDate,'%d/%m/%Y') ) as AuditDate FROM t_internal_audit where AuditNum='" + sAuditNum + "'";
 
                 DataSet dsData = objGlobalData.Getdetails(sSqlstmt);
 
@@ -490,23 +479,19 @@ namespace ISOStd.Models
 
         internal DataSet FunGetInternalAduitDetails(string sAuditNum, DateTime AuditDatetime, string sDeptName)
         {
-            
+            string sAuditDate = AuditDatetime.ToString("yyyy-MM-dd");
 
-                string sAuditDate = AuditDatetime.ToString("yyyy-MM-dd");
+            string sSqlstmt = "SELECT auditor, tia.auditid, auditcriteria  FROM t_internal_audit as tia where auditnum=" + sAuditNum
+                                + " and auditdate='" + sAuditDate + "' and TIA.deptid=(select deptid from t_departments where deptname='" + sDeptName + "')";
 
-                string sSqlstmt = "SELECT auditor, tia.auditid, auditcriteria  FROM t_internal_audit as tia where auditnum=" + sAuditNum
-                                    + " and auditdate='" + sAuditDate + "' and TIA.deptid=(select deptid from t_departments where deptname='" + sDeptName + "')";
-
-                return objGlobalData.Getdetails(sSqlstmt);
-           
-           
+            return objGlobalData.Getdetails(sSqlstmt);
         }
 
         internal string GetAuditIDbyAuditNum(string sAuditNum)
         {
             try
             {
-                DataSet dsEmp = objGlobalData.Getdetails("select AuditID as Id from t_internal_audit where AuditNum = '"+ sAuditNum + "' and Active = 1");
+                DataSet dsEmp = objGlobalData.Getdetails("select AuditID as Id from t_internal_audit where AuditNum = '" + sAuditNum + "' and Active = 1");
                 if (dsEmp.Tables.Count > 0 && dsEmp.Tables[0].Rows.Count > 0)
                 {
                     return (dsEmp.Tables[0].Rows[0]["Id"].ToString());
@@ -520,10 +505,9 @@ namespace ISOStd.Models
         }
     }
 
-    
     public class InternalAuditFindingsLog
     {
-        clsGlobal objGlobalData = new clsGlobal();
+        private clsGlobal objGlobalData = new clsGlobal();
 
         ////[Required]
         [Display(Name = "ID")]
@@ -533,93 +517,73 @@ namespace ISOStd.Models
         [Display(Name = "Audit Trans ID")]
         public string AuditTransID { get; set; }
 
-        
         [Display(Name = "Audit Num.")]
         public string AuditNum { get; set; }
 
-     
         [Display(Name = "Department")]
         public string DeptId { get; set; }
 
         [Display(Name = "Audit Conducted By")]
         public string AuditConductedBy { get; set; }
 
-       
         [Display(Name = "Reference")]
         public string Reference { get; set; }
 
-      
         [Display(Name = "Findings Description")]
         public string FindingDescription { get; set; }
 
-       
         [Display(Name = "NCR Num.")]
         public string NCRNo { get; set; }
 
-       
         [Display(Name = "NCR Description/Observation")]
         public string NCRDesc { get; set; }
 
         [Display(Name = "ISO Standard")]
         public string ISOstandardID { get; set; }
 
-
         [Required(ErrorMessage = "ISO Standard Clause Cannot be kept Blank")]
         [Display(Name = "ISO Standard Clause")]
-        [DataType(DataType.MultilineText)] 
+        [DataType(DataType.MultilineText)]
         public string ISO_standard_clause { get; set; }
 
-       
         [Display(Name = "Finding Category")]
         public string FindingCategory { get; set; }
 
-        
         [Display(Name = "CorrectionDate")]
         public DateTime CorrectionDate { get; set; }
 
-       
         [Display(Name = "Report Status")]
         public string ReportStatus { get; set; }
 
-        
         [Display(Name = "Report Close Date")]
         public DateTime ReportCloseDate { get; set; }
 
-     
         [Display(Name = "Reviewed By")]
         public string Reviewed_by { get; set; }
 
-      
         [Display(Name = "Corrective Action Date")]
         public DateTime CorrectiveActionDate { get; set; }
 
-     
         [Display(Name = "Follow up date")]
         public DateTime Followupdate { get; set; }
 
-     
         [Display(Name = "Correction taken, if any (To correct the detected non conformity)")]
         public string Correctiontaken { get; set; }
 
-     
-         [Display(Name = "Results of investigation to determine the root causes of the detected non conformity / potential non conformity")]
+        [Display(Name = "Results of investigation to determine the root causes of the detected non conformity / potential non conformity")]
         public string Resultsofinvestigation { get; set; }
 
-      
-         [Display(Name = "Corrective Action (To prevent the reoccurrence of detected non conformity)")]
-         public string CorrectiveAction { get; set; }
+        [Display(Name = "Corrective Action (To prevent the reoccurrence of detected non conformity)")]
+        public string CorrectiveAction { get; set; }
 
-        
-         [Display(Name = "Preventive Action (To prevent the occurrence of detected potential non conformity)")]
-         public string PreventiveAction { get; set; }
+        [Display(Name = "Preventive Action (To prevent the occurrence of detected potential non conformity)")]
+        public string PreventiveAction { get; set; }
 
-    
-         [Display(Name = "Verification of implementation of corrective action by Auditor:")]
-         public string VerificationofImplementation { get; set; }
+        [Display(Name = "Verification of implementation of corrective action by Auditor:")]
+        public string VerificationofImplementation { get; set; }
 
         public string Finding { get; set; }
 
-   
         [Display(Name = "Checklist")]
         public string Checklist { get; set; }
 
@@ -656,7 +620,6 @@ namespace ISOStd.Models
                                          + "','" + objInternalAudit.InternalAuditFindingsLogList[i].FindingCategory
                                          + "','" + objInternalAudit.InternalAuditFindingsLogList[i].AuditNum + "','" + sCorrectiveActionDate + "','" + sFollowupdate + "','" + objInternalAudit.InternalAuditFindingsLogList[i].Checklist
                                          + "','" + objInternalAudit.InternalAuditFindingsLogList[i].Audit_Details + "','" + objInternalAudit.InternalAuditFindingsLogList[i].ReportStatus + "'";
-
 
                     if (sReportCloseDate != "")
                     {
@@ -700,14 +663,13 @@ namespace ISOStd.Models
                     //    sSqlstmt = sSqlstmt + ", ReportCloseDate";
                     //}
                     sSqlstmt = sSqlstmt + ") values('"
-                                         + objInternalAudit.InternalAuditFindingsLogList[i].AuditTransID 
+                                         + objInternalAudit.InternalAuditFindingsLogList[i].AuditTransID
                                          + "','" + objInternalAudit.InternalAuditFindingsLogList[i].NCRDesc + "','" + objInternalAudit.InternalAuditFindingsLogList[i].ISOstandardID
-                                         + "','" + objInternalAudit.InternalAuditFindingsLogList[i].ISO_standard_clause 
-                                   
+                                         + "','" + objInternalAudit.InternalAuditFindingsLogList[i].ISO_standard_clause
+
                                          + "','" + objInternalAudit.InternalAuditFindingsLogList[i].Reviewed_by
                                          + "','" + objInternalAudit.InternalAuditFindingsLogList[i].FindingCategory
                                          + "','" + objInternalAudit.InternalAuditFindingsLogList[i].AuditNum + "','" + objInternalAudit.InternalAuditFindingsLogList[i].Checklist + "'";
-
 
                     //if (sReportCloseDate != "")
                     //{
@@ -736,7 +698,7 @@ namespace ISOStd.Models
                 string sCorrectiveActionDate = objInternalAudit.CorrectiveActionDate.ToString("yyyy-MM-dd HH':'mm':'ss");
                 string sFollowupdate = objInternalAudit.Followupdate.ToString("yyyy-MM-dd HH':'mm':'ss");
 
-              //  string sReportCloseDate = "";
+                //  string sReportCloseDate = "";
                 //if (objInternalAudit.ReportStatus.ToLower() == "closed")
                 //{
                 //    sReportCloseDate = DateTime.Now.ToString("yyyy-MM-dd HH':'mm':'ss");
@@ -744,15 +706,14 @@ namespace ISOStd.Models
 
                 string sSqlstmt = "update t_auditfindings set ISO_standard_ID ='" + objInternalAudit.ISOstandardID + "', NCR_Num='" + objInternalAudit.NCRNo + "', NCRDesc='"
                     + objInternalAudit.NCRDesc + "', ISO_standard_clause='" + objInternalAudit.ISO_standard_clause + "', CorrectionDate='" + sCorrectionDate + "',"
-                  +  " Reviewed_by='" + objInternalAudit.Reviewed_by
+                  + " Reviewed_by='" + objInternalAudit.Reviewed_by
                   + "', FindingCategory='" + objInternalAudit.FindingCategory + "', CorrectiveActionDate='" + sCorrectiveActionDate + "', Followupdate='" + sFollowupdate
-                  + "', Checklist='" + objInternalAudit.Checklist + "', ReportStatus='" + objInternalAudit.ReportStatus + 
+                  + "', Checklist='" + objInternalAudit.Checklist + "', ReportStatus='" + objInternalAudit.ReportStatus +
                    "', Audit_Details='" + objInternalAudit.Audit_Details + "' ";
 
-                               
                 sSqlstmt = sSqlstmt + " where AuditFindingID='" + objInternalAudit.AuditFindingID + "'";
 
-                 return objGlobalData.ExecuteQuery(sSqlstmt);
+                return objGlobalData.ExecuteQuery(sSqlstmt);
             }
             catch (Exception ex)
             {
@@ -763,12 +724,11 @@ namespace ISOStd.Models
             return false;
         }
 
-
         internal bool FunUpdateInternalAuditFindingsLog1(InternalAuditFindingsLog objInternalAudit)
         {
             try
             {
-               // string sCorrectionDate = objInternalAudit.CorrectionDate.ToString("yyyy-MM-dd HH':'mm':'ss");
+                // string sCorrectionDate = objInternalAudit.CorrectionDate.ToString("yyyy-MM-dd HH':'mm':'ss");
                 string sCorrectiveActionDate = objInternalAudit.CorrectiveActionDate.ToString("yyyy-MM-dd HH':'mm':'ss");
                 string sFollowupdate = objInternalAudit.Followupdate.ToString("yyyy-MM-dd HH':'mm':'ss");
 
@@ -782,7 +742,6 @@ namespace ISOStd.Models
                   + "', Correctiontaken='" + objInternalAudit.Correctiontaken + "', Resultsofinvestigation='" + objInternalAudit.Resultsofinvestigation
                   + "', CorrectiveAction='" + objInternalAudit.CorrectiveAction + "', PreventiveAction='" + objInternalAudit.PreventiveAction
                   + "', VerificationofImplementation='" + objInternalAudit.VerificationofImplementation + "', Audit_Details='" + objInternalAudit.Audit_Details + "' ";
-
 
                 //if (sReportCloseDate != "")
                 //{
@@ -801,7 +760,6 @@ namespace ISOStd.Models
             //DateTime.Now("yyyy-MM-dd HH':'mm':'ss");
             return false;
         }
-
     }
 
     public class InternalAuditModelsList
@@ -813,9 +771,10 @@ namespace ISOStd.Models
     {
         public List<InternalAuditFindingsLog> InternalAuditFindingsLogList { get; set; }
     }
+
     public class InternalAuditChecklistModels
     {
-        clsGlobal objGlobalData = new clsGlobal();
+        private clsGlobal objGlobalData = new clsGlobal();
 
         [Display(Name = "ID")]
         public string checklistId { get; set; }
@@ -840,7 +799,7 @@ namespace ISOStd.Models
         {
             try
             {
-              //  string sBranch = objGlobalData.GetCurrentUserSession().division;
+                //  string sBranch = objGlobalData.GetCurrentUserSession().division;
                 string sSqlstmt = "insert into t_internalauditchecklist (checklistName,DocUploadPath,AuditNo,Department) values" +
                     "('" + objChecklistModel.checklistName + "','" + objChecklistModel.DocUploadPath + "','" + objChecklistModel.AuditNo + "','" + objChecklistModel.Department + "')";
 
@@ -848,7 +807,6 @@ namespace ISOStd.Models
                 {
                     return true;
                 }
-
             }
             catch (Exception ex)
             {
@@ -871,13 +829,13 @@ namespace ISOStd.Models
             }
             return false;
         }
-
     }
 
     public class ChecklistModelsList
     {
         public List<InternalAuditChecklistModels> CheckList { get; set; }
     }
+
     public class DropdownAuditItems
     {
         public string Id { get; set; }

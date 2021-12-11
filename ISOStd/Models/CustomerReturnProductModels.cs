@@ -125,7 +125,7 @@ namespace ISOStd.Models
             try
             {
 
-                string sInformation = "", sHeader = "", sToEmailId = "", sCCList = "", sUserName = "", sUser = "";
+                string sInformation = "", sHeader = "", sToEmailId = "", sCCList = "", sUserName = "";
 
                 // string sInformation = "", sHeader = "";
                 sCCList = objGlobalData.GetMultiHrEmpEmailIdById(objGlobalData.GetCurrentUserSession().empid);

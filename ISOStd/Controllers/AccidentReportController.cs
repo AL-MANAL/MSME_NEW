@@ -12,7 +12,7 @@ namespace ISOStd.Controllers
 {
     public class AccidentReportController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
+        private clsGlobal objGlobaldata = new clsGlobal();
 
         public AccidentReportController()
         {
@@ -44,7 +44,6 @@ namespace ISOStd.Controllers
                 ViewBag.YesNo = objGlobaldata.GetConstantValue("YesNo");
                 ViewBag.AccidentType = objGlobaldata.GetDropdownList("Injuries Type");
                 ViewBag.Incident_Type = objGlobaldata.GetDropdownList("Incident Type");
-
             }
             catch (Exception ex)
             {
@@ -99,7 +98,6 @@ namespace ISOStd.Controllers
                         catch (Exception ex)
                         {
                             objGlobaldata.AddFunctionalLog("Exception in AddAccidentReport-upload: " + ex.ToString());
-
                         }
                     }
                     objAccident.upload = objAccident.upload.Trim(',');
@@ -108,7 +106,6 @@ namespace ISOStd.Controllers
                 {
                     ViewBag.Message = "You have not specified a file.";
                 }
-
 
                 AccidentReportModelsList objAccTypeList = new AccidentReportModelsList();
                 objAccTypeList.AccidentList = new List<AccidentReportModels>();
@@ -139,7 +136,6 @@ namespace ISOStd.Controllers
 
                     objAccInfoList.AccidentList.Add(AudModel);
                 }
-
 
                 if (objAccident.FunAddAccidentReport(objAccident, objAccTypeList, objAccInfoList))
                 {
@@ -230,7 +226,6 @@ namespace ISOStd.Controllers
                         }
                     }
                 }
-
             }
             catch (Exception ex)
             {
@@ -313,7 +308,6 @@ namespace ISOStd.Controllers
                         }
                     }
                 }
-
             }
             catch (Exception ex)
             {
@@ -332,7 +326,7 @@ namespace ISOStd.Controllers
             try
             {
                 IncidentReportModels objInc = new IncidentReportModels();
-                
+
                 ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
                 ViewBag.PlanTimeInHour = objGlobaldata.GetAuditTimeInHour();
                 ViewBag.PlanTimeInMin = objGlobaldata.GetAuditTimeInMin();
@@ -363,7 +357,7 @@ namespace ISOStd.Controllers
                             accident_place = dsAccidentList.Tables[0].Rows[0]["accident_place"].ToString(),
                             Incident_Type = dsAccidentList.Tables[0].Rows[0]["Incident_Type"].ToString(),
                             Actions_Taken = dsAccidentList.Tables[0].Rows[0]["Actions_Taken"].ToString(),
-                            branch =(dsAccidentList.Tables[0].Rows[0]["branch"].ToString()),
+                            branch = (dsAccidentList.Tables[0].Rows[0]["branch"].ToString()),
                             Department = (dsAccidentList.Tables[0].Rows[0]["Department"].ToString()),
                         };
                         DateTime dtDocDate;
@@ -380,11 +374,9 @@ namespace ISOStd.Controllers
                         ViewBag.Branch = objGlobaldata.GetCompanyBranchListbox();
                         ViewBag.Location = objGlobaldata.GetLocationbyMultiDivision(dsAccidentList.Tables[0].Rows[0]["branch"].ToString());
                         ViewBag.Department = objGlobaldata.GetDepartmentList1(dsAccidentList.Tables[0].Rows[0]["branch"].ToString());
-
                     }
                     else
                     {
-
                         TempData["alertdata"] = "Id cannot be Null or empty";
                         return RedirectToAction("AccidentList");
                     }
@@ -458,8 +450,7 @@ namespace ISOStd.Controllers
                             }
                         }
                         ViewBag.objReporterList = objReporterList;
-                    }                
-                    
+                    }
                 }
             }
             catch (Exception ex)
@@ -479,7 +470,7 @@ namespace ISOStd.Controllers
             try
             {
                 DateTime dateValue;
-               
+
                 string QCDelete = Request.Form["QCDocsValselectall"];
 
                 objAccident.reported_by = form["reported_by"];
@@ -498,7 +489,7 @@ namespace ISOStd.Controllers
                 }
 
                 HttpPostedFileBase files = Request.Files[0];
-             
+
                 if (upload != null && files.ContentLength > 0)
                 {
                     objAccident.upload = "";
@@ -543,7 +534,7 @@ namespace ISOStd.Controllers
                 //{
                 //    if (form["injury_type " + i] != null && form["no_person " + i] != null)
                 //    {
-                //        AccidentReportModels objAccRpt = new AccidentReportModels();                       
+                //        AccidentReportModels objAccRpt = new AccidentReportModels();
                 //        objAccRpt.injury_type = form["injury_type " + i];
                 //        objAccRpt.no_person = form["no_person " + i];
 
@@ -553,7 +544,7 @@ namespace ISOStd.Controllers
 
                 //if (objAccident.injury_type != null)
                 //{
-                //    AccidentReportModels objAccRpt = new AccidentReportModels();                  
+                //    AccidentReportModels objAccRpt = new AccidentReportModels();
                 //    objAccRpt.injury_type = form["injury_type "];
                 //    objAccRpt.no_person = form["no_person "];
 
@@ -604,7 +595,7 @@ namespace ISOStd.Controllers
                 //    AccidentReportModels AuditorModel = new AccidentReportModels();
 
                 //    AuditorModel.reported_to = form["reported_to "];
-                //    AuditorModel.comments = form["comments "];                  
+                //    AuditorModel.comments = form["comments "];
 
                 //    if (DateTime.TryParse(form["reportedon_date "], out dateValue) == true)
                 //    {
@@ -626,7 +617,7 @@ namespace ISOStd.Controllers
                                 reported_to = form["reported_to " + i],
                                 comments = form["comments " + i],
                             };
-                            if (DateTime.TryParse(form["reportedon_date "+ i], out dateValue1) == true)
+                            if (DateTime.TryParse(form["reportedon_date " + i], out dateValue1) == true)
                             {
                                 objAccRpt.reportedon_date = dateValue1;
                             }
@@ -659,117 +650,115 @@ namespace ISOStd.Controllers
             AccidentReportModels objAccidentReportModels = new AccidentReportModels();
             try
             {
-                    string sSqlstmt = "select id_accident_rept,report_no,acc_date,reported_date,reported_by,location,details,upload," +
-                    "damage,invest_need,justify,invest_reportno,Actions_Taken,branch,Department from t_accident_report where id_accident_rept ='" + id + "'";
+                string sSqlstmt = "select id_accident_rept,report_no,acc_date,reported_date,reported_by,location,details,upload," +
+                "damage,invest_need,justify,invest_reportno,Actions_Taken,branch,Department from t_accident_report where id_accident_rept ='" + id + "'";
 
-                    DataSet dsAccidentList = objGlobaldata.Getdetails(sSqlstmt);
-                    if (dsAccidentList.Tables.Count > 0 && dsAccidentList.Tables[0].Rows.Count > 0)
+                DataSet dsAccidentList = objGlobaldata.Getdetails(sSqlstmt);
+                if (dsAccidentList.Tables.Count > 0 && dsAccidentList.Tables[0].Rows.Count > 0)
+                {
+                    objAccidentReportModels = new AccidentReportModels
                     {
-                        objAccidentReportModels = new AccidentReportModels
-                        {
-                            id_accident_rept = dsAccidentList.Tables[0].Rows[0]["id_accident_rept"].ToString(),
-                            report_no = dsAccidentList.Tables[0].Rows[0]["report_no"].ToString(),
-                            reported_by = objGlobaldata.GetMultiHrEmpNameById(dsAccidentList.Tables[0].Rows[0]["reported_by"].ToString()),
-                            location = objGlobaldata.GetDivisionLocationById(dsAccidentList.Tables[0].Rows[0]["location"].ToString()),
-                            details = dsAccidentList.Tables[0].Rows[0]["details"].ToString(),
-                            upload = dsAccidentList.Tables[0].Rows[0]["upload"].ToString(),
-                            damage = dsAccidentList.Tables[0].Rows[0]["damage"].ToString(),
-                            invest_need = dsAccidentList.Tables[0].Rows[0]["invest_need"].ToString(),
-                            justify = dsAccidentList.Tables[0].Rows[0]["justify"].ToString(),
-                            invest_reportno = dsAccidentList.Tables[0].Rows[0]["invest_reportno"].ToString(),
-                            Actions_Taken = dsAccidentList.Tables[0].Rows[0]["Actions_Taken"].ToString(),
-                            branch = objGlobaldata.GetMultiCompanyBranchNameById(dsAccidentList.Tables[0].Rows[0]["branch"].ToString()),
-                            Department = objGlobaldata.GetMultiDeptNameById(dsAccidentList.Tables[0].Rows[0]["Department"].ToString()),
-                        };
-                        DateTime dtDocDate;
-                        if (dsAccidentList.Tables[0].Rows[0]["acc_date"].ToString() != ""
-                              && DateTime.TryParse(dsAccidentList.Tables[0].Rows[0]["acc_date"].ToString(), out dtDocDate))
-                        {
-                            objAccidentReportModels.acc_date = dtDocDate;
-                        }
-                        if (dsAccidentList.Tables[0].Rows[0]["reported_date"].ToString() != ""
-                          && DateTime.TryParse(dsAccidentList.Tables[0].Rows[0]["reported_date"].ToString(), out dtDocDate))
-                        {
-                            objAccidentReportModels.reported_date = dtDocDate;
-                        }
-                    }
-                    else
+                        id_accident_rept = dsAccidentList.Tables[0].Rows[0]["id_accident_rept"].ToString(),
+                        report_no = dsAccidentList.Tables[0].Rows[0]["report_no"].ToString(),
+                        reported_by = objGlobaldata.GetMultiHrEmpNameById(dsAccidentList.Tables[0].Rows[0]["reported_by"].ToString()),
+                        location = objGlobaldata.GetDivisionLocationById(dsAccidentList.Tables[0].Rows[0]["location"].ToString()),
+                        details = dsAccidentList.Tables[0].Rows[0]["details"].ToString(),
+                        upload = dsAccidentList.Tables[0].Rows[0]["upload"].ToString(),
+                        damage = dsAccidentList.Tables[0].Rows[0]["damage"].ToString(),
+                        invest_need = dsAccidentList.Tables[0].Rows[0]["invest_need"].ToString(),
+                        justify = dsAccidentList.Tables[0].Rows[0]["justify"].ToString(),
+                        invest_reportno = dsAccidentList.Tables[0].Rows[0]["invest_reportno"].ToString(),
+                        Actions_Taken = dsAccidentList.Tables[0].Rows[0]["Actions_Taken"].ToString(),
+                        branch = objGlobaldata.GetMultiCompanyBranchNameById(dsAccidentList.Tables[0].Rows[0]["branch"].ToString()),
+                        Department = objGlobaldata.GetMultiDeptNameById(dsAccidentList.Tables[0].Rows[0]["Department"].ToString()),
+                    };
+                    DateTime dtDocDate;
+                    if (dsAccidentList.Tables[0].Rows[0]["acc_date"].ToString() != ""
+                          && DateTime.TryParse(dsAccidentList.Tables[0].Rows[0]["acc_date"].ToString(), out dtDocDate))
                     {
-                        TempData["alertdata"] = "Id cannot be Null or empty";
-                        return RedirectToAction("AccidentList");
+                        objAccidentReportModels.acc_date = dtDocDate;
                     }
+                    if (dsAccidentList.Tables[0].Rows[0]["reported_date"].ToString() != ""
+                      && DateTime.TryParse(dsAccidentList.Tables[0].Rows[0]["reported_date"].ToString(), out dtDocDate))
+                    {
+                        objAccidentReportModels.reported_date = dtDocDate;
+                    }
+                }
+                else
+                {
+                    TempData["alertdata"] = "Id cannot be Null or empty";
+                    return RedirectToAction("AccidentList");
+                }
 
-                    //AccidentReportModelsList objInfoList = new AccidentReportModelsList();
-                    //objInfoList.AccidentList = new List<AccidentReportModels>();
+                //AccidentReportModelsList objInfoList = new AccidentReportModelsList();
+                //objInfoList.AccidentList = new List<AccidentReportModels>();
 
-                    //sSqlstmt = "select id_accident_info,id_accident_rept,reported_to,reportedon_date,comments from t_accident_info where id_accident_rept='" + id_accident_rept + "'";
+                //sSqlstmt = "select id_accident_info,id_accident_rept,reported_to,reportedon_date,comments from t_accident_info where id_accident_rept='" + id_accident_rept + "'";
 
-                    //DataSet dsAttnList = objGlobaldata.Getdetails(sSqlstmt);
-                    //if (dsAttnList.Tables.Count > 0 && dsAttnList.Tables[0].Rows.Count > 0)
-                    //{
-                    //    for (int i = 0; i < dsAttnList.Tables[0].Rows.Count; i++)
-                    //    {
-                    //        try
-                    //        {
-                    //            AccidentReportModels objAccTypeList = new AccidentReportModels
-                    //            {
-                    //                id_accident_info = dsAttnList.Tables[0].Rows[i]["id_accident_info"].ToString(),
-                    //                id_accident_rept = dsAttnList.Tables[0].Rows[i]["id_accident_rept"].ToString(),
-                    //                reported_to = /*objGlobaldata.GetMultiHrEmpNameById*/(dsAttnList.Tables[0].Rows[i]["reported_to"].ToString()),
-                    //                comments = dsAttnList.Tables[0].Rows[i]["comments"].ToString(),
-                    //            };
+                //DataSet dsAttnList = objGlobaldata.Getdetails(sSqlstmt);
+                //if (dsAttnList.Tables.Count > 0 && dsAttnList.Tables[0].Rows.Count > 0)
+                //{
+                //    for (int i = 0; i < dsAttnList.Tables[0].Rows.Count; i++)
+                //    {
+                //        try
+                //        {
+                //            AccidentReportModels objAccTypeList = new AccidentReportModels
+                //            {
+                //                id_accident_info = dsAttnList.Tables[0].Rows[i]["id_accident_info"].ToString(),
+                //                id_accident_rept = dsAttnList.Tables[0].Rows[i]["id_accident_rept"].ToString(),
+                //                reported_to = /*objGlobaldata.GetMultiHrEmpNameById*/(dsAttnList.Tables[0].Rows[i]["reported_to"].ToString()),
+                //                comments = dsAttnList.Tables[0].Rows[i]["comments"].ToString(),
+                //            };
 
-                    //            DateTime dtDocDate1;
-                    //            if (dsAttnList.Tables[0].Rows[0]["reportedon_date"].ToString() != ""
-                    //     && DateTime.TryParse(dsAttnList.Tables[0].Rows[0]["reportedon_date"].ToString(), out dtDocDate1))
-                    //            {
-                    //                objAccTypeList.reportedon_date = dtDocDate1;
-                    //            }
+                //            DateTime dtDocDate1;
+                //            if (dsAttnList.Tables[0].Rows[0]["reportedon_date"].ToString() != ""
+                //     && DateTime.TryParse(dsAttnList.Tables[0].Rows[0]["reportedon_date"].ToString(), out dtDocDate1))
+                //            {
+                //                objAccTypeList.reportedon_date = dtDocDate1;
+                //            }
 
-                    //            objInfoList.AccidentList.Add(objAccTypeList);
-                    //        }
-                    //        catch (Exception ex)
-                    //        {
-                    //            objGlobaldata.AddFunctionalLog("Exception in AccidentReportInfo: " + ex.ToString());
-                    //            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                    //            return RedirectToAction("AccidentList");
-                    //        }
-                    //    }
-                    //    ViewBag.objAccTypeList = objInfoList;
-                    //}
+                //            objInfoList.AccidentList.Add(objAccTypeList);
+                //        }
+                //        catch (Exception ex)
+                //        {
+                //            objGlobaldata.AddFunctionalLog("Exception in AccidentReportInfo: " + ex.ToString());
+                //            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                //            return RedirectToAction("AccidentList");
+                //        }
+                //    }
+                //    ViewBag.objAccTypeList = objInfoList;
+                //}
 
-                    //AccidentReportModelsList objReporterList = new AccidentReportModelsList();
-                    //objReporterList.AccidentList = new List<AccidentReportModels>();
+                //AccidentReportModelsList objReporterList = new AccidentReportModelsList();
+                //objReporterList.AccidentList = new List<AccidentReportModels>();
 
-                    //sSqlstmt = "select id_accident_type,id_accident_rept,injury_type,no_person from t_accident_type where id_accident_rept='" + id_accident_rept + "'";
+                //sSqlstmt = "select id_accident_type,id_accident_rept,injury_type,no_person from t_accident_type where id_accident_rept='" + id_accident_rept + "'";
 
-                    //DataSet dsReportList = objGlobaldata.Getdetails(sSqlstmt);
-                    //if (dsReportList.Tables.Count > 0 && dsReportList.Tables[0].Rows.Count > 0)
-                    //{
-                    //    for (int i = 0; i < dsReportList.Tables[0].Rows.Count; i++)
-                    //    {
-                    //        try
-                    //        {
-                    //            AccidentReportModels objAccInfoList = new AccidentReportModels
-                    //            {
-                    //                id_accident_type = dsReportList.Tables[0].Rows[i]["id_accident_type"].ToString(),
-                    //                id_accident_rept = dsReportList.Tables[0].Rows[i]["id_accident_rept"].ToString(),
-                    //                injury_type = /*objGlobaldata.GetAccidentTypeById*/(dsReportList.Tables[0].Rows[i]["injury_type"].ToString()),
-                    //                no_person = dsReportList.Tables[0].Rows[i]["no_person"].ToString(),
-                    //            };
-                    //            objReporterList.AccidentList.Add(objAccInfoList);
-                    //        }
-                    //        catch (Exception ex)
-                    //        {
-                    //            objGlobaldata.AddFunctionalLog("Exception in AccidentReportEdit: " + ex.ToString());
-                    //            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                    //            return RedirectToAction("AccidentList");
-                    //        }
-                    //    }
-                    //    ViewBag.objReporterList = objReporterList;
-                    //}
-
-               
+                //DataSet dsReportList = objGlobaldata.Getdetails(sSqlstmt);
+                //if (dsReportList.Tables.Count > 0 && dsReportList.Tables[0].Rows.Count > 0)
+                //{
+                //    for (int i = 0; i < dsReportList.Tables[0].Rows.Count; i++)
+                //    {
+                //        try
+                //        {
+                //            AccidentReportModels objAccInfoList = new AccidentReportModels
+                //            {
+                //                id_accident_type = dsReportList.Tables[0].Rows[i]["id_accident_type"].ToString(),
+                //                id_accident_rept = dsReportList.Tables[0].Rows[i]["id_accident_rept"].ToString(),
+                //                injury_type = /*objGlobaldata.GetAccidentTypeById*/(dsReportList.Tables[0].Rows[i]["injury_type"].ToString()),
+                //                no_person = dsReportList.Tables[0].Rows[i]["no_person"].ToString(),
+                //            };
+                //            objReporterList.AccidentList.Add(objAccInfoList);
+                //        }
+                //        catch (Exception ex)
+                //        {
+                //            objGlobaldata.AddFunctionalLog("Exception in AccidentReportEdit: " + ex.ToString());
+                //            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                //            return RedirectToAction("AccidentList");
+                //        }
+                //    }
+                //    ViewBag.objReporterList = objReporterList;
+                //}
             }
             catch (Exception ex)
             {
@@ -787,8 +776,7 @@ namespace ISOStd.Controllers
             AccidentReportModels objAccidentReportModels = new AccidentReportModels();
             IncidentReportModels objinc = new IncidentReportModels();
             try
-            {             
-
+            {
                 if (Request.QueryString["id_accident_rept"] != null && Request.QueryString["id_accident_rept"] != "")
                 {
                     string id_accident_rept = Request.QueryString["id_accident_rept"];
@@ -903,8 +891,7 @@ namespace ISOStd.Controllers
                             }
                         }
                         ViewBag.objReporterList = objReporterList;
-                    }            
-                  
+                    }
                 }
             }
             catch (Exception ex)
@@ -926,7 +913,6 @@ namespace ISOStd.Controllers
             IncidentReportModels objinc = new IncidentReportModels();
             try
             {
-
                 if (form["id_accident_rept"] != null && form["id_accident_rept"] != "")
                 {
                     string id_accident_rept = form["id_accident_rept"];
@@ -979,18 +965,17 @@ namespace ISOStd.Controllers
                     else
                     {
                         dsAccidentList = objGlobaldata.GetReportDetails(dsAccidentList, objAccidentReportModels.report_no, objAccidentReportModels.logged_by, "INCIDENT REPORT");
-                    }                  
+                    }
 
-                    ViewBag.CompanyInfo = dsAccidentList;                  
-                    
-                    ViewBag.objAccidentList=objAccidentReportModels;
+                    ViewBag.CompanyInfo = dsAccidentList;
+
+                    ViewBag.objAccidentList = objAccidentReportModels;
 
                     string sSqlstmt1 = "select id_accident_type,id_accident_rept,injury_type,no_person,pers_name from t_accident_type where id_accident_rept='" + id_accident_rept + "'";
-                    ViewBag.objAccTypeList = objGlobaldata.Getdetails(sSqlstmt1);                  
+                    ViewBag.objAccTypeList = objGlobaldata.Getdetails(sSqlstmt1);
 
                     string sSqlstmt2 = "select id_accident_info,id_accident_rept,reported_to,reportedon_date,comments from t_accident_info where id_accident_rept='" + id_accident_rept + "'";
                     ViewBag.objReporterList = objGlobaldata.Getdetails(sSqlstmt2);
-                   
                 }
             }
             catch (Exception ex)

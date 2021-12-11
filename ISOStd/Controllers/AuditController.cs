@@ -1,34 +1,32 @@
-﻿using System;
+﻿using ISOStd.Filters;
+using ISOStd.Models;
+using System;
 using System.Collections.Generic;
+using System.Data;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Web;
 using System.Web.Mvc;
-using ISOStd.Models;
-using System.Data;
-using System.Net;
-using System.IO;
-using PagedList;
-using PagedList.Mvc;
-using ISOStd.Filters;
 
 namespace ISOStd.Controllers
 {
     [PreventFromUrl]
     public class AuditController : Controller
     {
-        InternalAuditModels objIAudit = new InternalAuditModels();
-        clsGlobal objGlobaldata = new clsGlobal();
+        private InternalAuditModels objIAudit = new InternalAuditModels();
+        private clsGlobal objGlobaldata = new clsGlobal();
 
         public AuditController()
         {
             ViewBag.Menutype = "Audit";
             ViewBag.SubMenutype = "ScheduleAudit";
-        }             
-        
+        }
+
         public ActionResult Index()
         {
             return View();
-        }       
+        }
 
         //
         // GET: /Audit/AddInternalaudit
@@ -40,7 +38,6 @@ namespace ISOStd.Controllers
             InternalAuditModels objAudit = new InternalAuditModels();
             try
             {
-
                 objAudit.AuditLocation = objGlobaldata.GetCurrentUserSession().division;
                 ViewBag.Branch = objGlobaldata.GetCompanyBranchListbox();
 
@@ -50,8 +47,8 @@ namespace ISOStd.Controllers
                 ViewBag.IsoStdList = objGlobaldata.GetAllIsoStdListbox(); //GetISOStdList();
                 ViewBag.AuditTimeInHour = objGlobaldata.GetAuditTimeInHour();
                 ViewBag.AuditTimeInMin = objGlobaldata.GetAuditTimeInMin();
-               // ViewBag.AuditLocation = objGlobaldata.GetCompanyBranchListbox();
-                ViewBag.AuditStatus = objGlobaldata.GetDropdownList("Audit Status"); 
+                // ViewBag.AuditLocation = objGlobaldata.GetCompanyBranchListbox();
+                ViewBag.AuditStatus = objGlobaldata.GetDropdownList("Audit Status");
             }
             catch (Exception ex)
             {
@@ -60,7 +57,7 @@ namespace ISOStd.Controllers
             }
             return View(objAudit);
         }
-               
+
         [AllowAnonymous]
         public JsonResult InternalAuditDocDelete(FormCollection form)
         {
@@ -69,29 +66,26 @@ namespace ISOStd.Controllers
                 ViewBag.SubMenutype = "ScheduleAudit";
 
                 if (form["AuditID"] != null && form["AuditID"] != "")
-                        {
-                            InternalAuditModels Doc = new InternalAuditModels();
-                            string sAuditID = form["AuditID"];
+                {
+                    InternalAuditModels Doc = new InternalAuditModels();
+                    string sAuditID = form["AuditID"];
 
-
-                            if (Doc.FunDeleteInternalAuditDoc(sAuditID))
-                            {
-                                TempData["Successdata"] = "Document deleted successfully";
-                                return Json("Success");
-                            }
-                            else
-                            {
-                                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                                return Json("Failed");
-                            }
-                        }
-                        else
-                        {
-                            TempData["alertdata"] = "Internal Audit Id cannot be Null or empty";
-                            return Json("Failed");
-                        }
-                   
-                
+                    if (Doc.FunDeleteInternalAuditDoc(sAuditID))
+                    {
+                        TempData["Successdata"] = "Document deleted successfully";
+                        return Json("Success");
+                    }
+                    else
+                    {
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                        return Json("Failed");
+                    }
+                }
+                else
+                {
+                    TempData["alertdata"] = "Internal Audit Id cannot be Null or empty";
+                    return Json("Failed");
+                }
             }
             catch (Exception ex)
             {
@@ -100,9 +94,10 @@ namespace ISOStd.Controllers
             }
             return Json("Failed");
         }
+
         //
         // POST: /Audit/AddInternalaudit
-                
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult AddInternalAudit(InternalAuditModels objInterAudit, FormCollection form, HttpPostedFileBase upload)
@@ -110,10 +105,9 @@ namespace ISOStd.Controllers
             //objGlobaldata.CreateUserSession();
             ViewBag.SubMenutype = "ScheduleAudit";
             UserCredentials objUserInfo = (UserCredentials)Session["UserCredentials"];
-            
+
             try
             {
-            
                 //objInterAudit.AuditType = "12";
                 DateTime dateValue;
 
@@ -146,7 +140,6 @@ namespace ISOStd.Controllers
                 {
                     ViewBag.Message = "You have not specified a file.";
                 }
-                  
 
                 InternalAuditModelsList objInternalAuditModelsList = new InternalAuditModelsList();
                 objInternalAuditModelsList.InternalAuditList = new List<InternalAuditModels>();
@@ -156,7 +149,7 @@ namespace ISOStd.Controllers
                     InternalAuditModels objInternalAuditModels = new InternalAuditModels();
 
                     //objInterAudit.CompanyId = form["CompanyId"];//objUserInfo.CompanyId;
-                    objInternalAuditModels.DeptName = form["DeptName"+i];
+                    objInternalAuditModels.DeptName = form["DeptName" + i];
                     objInternalAuditModels.AuditTime = form["AuditFromTimeInHour" + i] + ":" + form["AuditFromTimeInMin" + i];
                     objInternalAuditModels.AuditToTime = form["AuditToTimeInHour" + i] + ":" + form["AuditToTimeInMin" + i];
                     objInternalAuditModels.Auditee = form["Auditee" + i];
@@ -166,26 +159,25 @@ namespace ISOStd.Controllers
                     objInternalAuditModels.Audit_Approved_by = form["ApprovedBy" + i];
                     objInternalAuditModels.Audit_Activity = form["AuditActivity" + i];
 
-                    if (DateTime.TryParse(form["Audit_Planned_Date"+i], out dateValue) == true)
+                    if (DateTime.TryParse(form["Audit_Planned_Date" + i], out dateValue) == true)
                     {
                         objInternalAuditModels.Audit_Planned_Date = dateValue;
                     }
-                    if (DateTime.TryParse(form["DateScheduled"+i], out dateValue) == true)
+                    if (DateTime.TryParse(form["DateScheduled" + i], out dateValue) == true)
                     {
                         objInternalAuditModels.DateScheduled = dateValue;
                     }
                     objInternalAuditModelsList.InternalAuditList.Add(objInternalAuditModels);
-              }
-            
-             if (objIAudit.FunAddInternalAudit(objInterAudit, objInternalAuditModelsList))
-             {
-                 TempData["Successdata"] = "Added Audit details successfully  with Reference Number '" + objInterAudit.AuditNum + "'";
-              
-             }
-             else
-             {
-                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-             }
+                }
+
+                if (objIAudit.FunAddInternalAudit(objInterAudit, objInternalAuditModelsList))
+                {
+                    TempData["Successdata"] = "Added Audit details successfully  with Reference Number '" + objInterAudit.AuditNum + "'";
+                }
+                else
+                {
+                    TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                }
             }
             catch (Exception ex)
             {
@@ -197,79 +189,9 @@ namespace ISOStd.Controllers
 
             //return View(objInterAudit);
         }
-                
+
         [AllowAnonymous]
         public ActionResult InternalAuditList(string branch_name)
-        {
-            ViewBag.SubMenutype = "ScheduleAudit";
-            InternalAuditModelsList objInternalAuditList =new InternalAuditModelsList();
-            objInternalAuditList.InternalAuditList = new List<InternalAuditModels>();
-
-            try
-            {
-               
-               UserCredentials objUserInfo = (UserCredentials)Session["UserCredentials"];
-
-                //string sSqlstmt = "SELECT tAudit.AuditID, AuditNum, AuditDate, AuditCriteria, AuditLocation, deptId, Audit_Planned_Date, fromAuditTime, toAuditTime"
-                //    + " FROM t_internal_audit as tAudit, t_internal_audit_trans as tiAudit where tAudit.AuditID=tiAudit.AuditID and tAudit.Active=1";
-                string sBranch_name = objGlobaldata.GetCurrentUserSession().division;
-                string sBranchtree = objGlobaldata.GetCurrentUserSession().BranchTree;
-                ViewBag.Branch = objGlobaldata.GetMultiBranchListByID(sBranchtree);
-                string sSearchtext = "";
-
-                string sSqlstmt = "SELECT AuditID,AuditNum,AuditDate,AuditCriteria,AuditLocation,Audit_Prepared_by,ApprovedBy," +
-                    "+ (case when ApprvStatus = '1' then 'Approved' when ApprvStatus = '2' then 'Resheduled' else 'Not Approved' end) as ApprvStatus from t_internal_audit where Active=1";
-
-                if (branch_name != null && branch_name != "")
-                {
-                    sSearchtext = sSearchtext + " and find_in_set('" +  branch_name + "', AuditLocation)";
-                    ViewBag.Branch_name = branch_name;
-                }
-                else
-                {
-                    sSearchtext = sSearchtext + " and find_in_set('" + sBranch_name + "', AuditLocation)";
-                }
-                sSqlstmt= sSqlstmt+ sSearchtext+ " order by AuditDate desc"; 
-
-                DataSet dsInternalAuditList = objGlobaldata.Getdetails(sSqlstmt);
-                if (dsInternalAuditList.Tables.Count > 0 && dsInternalAuditList.Tables[0].Rows.Count > 0)
-                {
-                   
-                    for (int i = 0; i < dsInternalAuditList.Tables[0].Rows.Count; i++)
-                    {
-                        DateTime dtAuditDate = Convert.ToDateTime(dsInternalAuditList.Tables[0].Rows[i]["AuditDate"].ToString());
-                     //   DateTime dtAudit_Prepared_Date = Convert.ToDateTime(dsInternalAuditList.Tables[0].Rows[i]["Audit_Planned_Date"].ToString());
-
-                        //string sAudittime = dtAudit_Prepared_Date.Date.ToString("dd/MM/yyyy") + " " + dsInternalAuditList.Tables[0].Rows[i]["fromAuditTime"].ToString()
-                        //    + " - " + dsInternalAuditList.Tables[0].Rows[i]["toAuditTime"].ToString();
-
-                        InternalAuditModels objInterAudit = new InternalAuditModels
-                        {
-                            AuditID = dsInternalAuditList.Tables[0].Rows[i]["AuditID"].ToString(),
-                            AuditNum = dsInternalAuditList.Tables[0].Rows[i]["AuditNum"].ToString(),
-                            AuditDate = dtAuditDate,
-                          //  AuditTime = sAudittime,
-                           // DeptName = objGlobaldata.GetDeptNameById(dsInternalAuditList.Tables[0].Rows[i]["deptId"].ToString()),
-                            AuditCriteria = objGlobaldata.GetIsoStdDescriptionById(dsInternalAuditList.Tables[0].Rows[i]["AuditCriteria"].ToString()),
-                            AuditLocation = objGlobaldata.GetMultiCompanyBranchNameById(dsInternalAuditList.Tables[0].Rows[i]["AuditLocation"].ToString()),
-                            Audit_Prepared_by =objGlobaldata.GetEmpHrNameById(dsInternalAuditList.Tables[0].Rows[i]["Audit_Prepared_by"].ToString()),
-                            ApprovedBy = objGlobaldata.GetEmpHrNameById(dsInternalAuditList.Tables[0].Rows[i]["ApprovedBy"].ToString()),
-                            ApprvStatus = (dsInternalAuditList.Tables[0].Rows[i]["ApprvStatus"].ToString()),
-                        };
-                        objInternalAuditList.InternalAuditList.Add(objInterAudit);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                objGlobaldata.AddFunctionalLog("Exception in AddInternalAudit: " + ex.ToString());
-                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-            }
-            return View(objInternalAuditList.InternalAuditList.ToList());
-        }
-
-        [AllowAnonymous]
-        public JsonResult InternalAuditListSearch(string branch_name)
         {
             ViewBag.SubMenutype = "ScheduleAudit";
             InternalAuditModelsList objInternalAuditList = new InternalAuditModelsList();
@@ -277,7 +199,6 @@ namespace ISOStd.Controllers
 
             try
             {
-
                 UserCredentials objUserInfo = (UserCredentials)Session["UserCredentials"];
 
                 //string sSqlstmt = "SELECT tAudit.AuditID, AuditNum, AuditDate, AuditCriteria, AuditLocation, deptId, Audit_Planned_Date, fromAuditTime, toAuditTime"
@@ -304,9 +225,74 @@ namespace ISOStd.Controllers
                 DataSet dsInternalAuditList = objGlobaldata.Getdetails(sSqlstmt);
                 if (dsInternalAuditList.Tables.Count > 0 && dsInternalAuditList.Tables[0].Rows.Count > 0)
                 {
+                    for (int i = 0; i < dsInternalAuditList.Tables[0].Rows.Count; i++)
+                    {
+                        DateTime dtAuditDate = Convert.ToDateTime(dsInternalAuditList.Tables[0].Rows[i]["AuditDate"].ToString());
+                        //   DateTime dtAudit_Prepared_Date = Convert.ToDateTime(dsInternalAuditList.Tables[0].Rows[i]["Audit_Planned_Date"].ToString());
 
-                  
+                        //string sAudittime = dtAudit_Prepared_Date.Date.ToString("dd/MM/yyyy") + " " + dsInternalAuditList.Tables[0].Rows[i]["fromAuditTime"].ToString()
+                        //    + " - " + dsInternalAuditList.Tables[0].Rows[i]["toAuditTime"].ToString();
 
+                        InternalAuditModels objInterAudit = new InternalAuditModels
+                        {
+                            AuditID = dsInternalAuditList.Tables[0].Rows[i]["AuditID"].ToString(),
+                            AuditNum = dsInternalAuditList.Tables[0].Rows[i]["AuditNum"].ToString(),
+                            AuditDate = dtAuditDate,
+                            //  AuditTime = sAudittime,
+                            // DeptName = objGlobaldata.GetDeptNameById(dsInternalAuditList.Tables[0].Rows[i]["deptId"].ToString()),
+                            AuditCriteria = objGlobaldata.GetIsoStdDescriptionById(dsInternalAuditList.Tables[0].Rows[i]["AuditCriteria"].ToString()),
+                            AuditLocation = objGlobaldata.GetMultiCompanyBranchNameById(dsInternalAuditList.Tables[0].Rows[i]["AuditLocation"].ToString()),
+                            Audit_Prepared_by = objGlobaldata.GetEmpHrNameById(dsInternalAuditList.Tables[0].Rows[i]["Audit_Prepared_by"].ToString()),
+                            ApprovedBy = objGlobaldata.GetEmpHrNameById(dsInternalAuditList.Tables[0].Rows[i]["ApprovedBy"].ToString()),
+                            ApprvStatus = (dsInternalAuditList.Tables[0].Rows[i]["ApprvStatus"].ToString()),
+                        };
+                        objInternalAuditList.InternalAuditList.Add(objInterAudit);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in AddInternalAudit: " + ex.ToString());
+                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+            }
+            return View(objInternalAuditList.InternalAuditList.ToList());
+        }
+
+        [AllowAnonymous]
+        public JsonResult InternalAuditListSearch(string branch_name)
+        {
+            ViewBag.SubMenutype = "ScheduleAudit";
+            InternalAuditModelsList objInternalAuditList = new InternalAuditModelsList();
+            objInternalAuditList.InternalAuditList = new List<InternalAuditModels>();
+
+            try
+            {
+                UserCredentials objUserInfo = (UserCredentials)Session["UserCredentials"];
+
+                //string sSqlstmt = "SELECT tAudit.AuditID, AuditNum, AuditDate, AuditCriteria, AuditLocation, deptId, Audit_Planned_Date, fromAuditTime, toAuditTime"
+                //    + " FROM t_internal_audit as tAudit, t_internal_audit_trans as tiAudit where tAudit.AuditID=tiAudit.AuditID and tAudit.Active=1";
+                string sBranch_name = objGlobaldata.GetCurrentUserSession().division;
+                string sBranchtree = objGlobaldata.GetCurrentUserSession().BranchTree;
+                ViewBag.Branch = objGlobaldata.GetMultiBranchListByID(sBranchtree);
+                string sSearchtext = "";
+
+                string sSqlstmt = "SELECT AuditID,AuditNum,AuditDate,AuditCriteria,AuditLocation,Audit_Prepared_by,ApprovedBy," +
+                    "+ (case when ApprvStatus = '1' then 'Approved' when ApprvStatus = '2' then 'Resheduled' else 'Not Approved' end) as ApprvStatus from t_internal_audit where Active=1";
+
+                if (branch_name != null && branch_name != "")
+                {
+                    sSearchtext = sSearchtext + " and find_in_set('" + branch_name + "', AuditLocation)";
+                    ViewBag.Branch_name = branch_name;
+                }
+                else
+                {
+                    sSearchtext = sSearchtext + " and find_in_set('" + sBranch_name + "', AuditLocation)";
+                }
+                sSqlstmt = sSqlstmt + sSearchtext + " order by AuditDate desc";
+
+                DataSet dsInternalAuditList = objGlobaldata.Getdetails(sSqlstmt);
+                if (dsInternalAuditList.Tables.Count > 0 && dsInternalAuditList.Tables[0].Rows.Count > 0)
+                {
                     for (int i = 0; i < dsInternalAuditList.Tables[0].Rows.Count; i++)
                     {
                         DateTime dtAuditDate = Convert.ToDateTime(dsInternalAuditList.Tables[0].Rows[i]["AuditDate"].ToString());
@@ -339,7 +325,7 @@ namespace ISOStd.Controllers
             }
             return Json("Success");
         }
-        
+
         [AllowAnonymous]
         public ActionResult InternalAuditDetails()
         {
@@ -369,7 +355,6 @@ namespace ISOStd.Controllers
                                 AuditCriteria = objGlobaldata.GetIsoStdDescriptionById(dsInternalAuditList.Tables[0].Rows[0]["AuditCriteria"].ToString()),
                                 AuditLocation = objGlobaldata.GetMultiCompanyBranchNameById(dsInternalAuditList.Tables[0].Rows[0]["AuditLocation"].ToString()),
                                 upload = dsInternalAuditList.Tables[0].Rows[0]["upload"].ToString(),
-                               
                             };
                             objInternalAuditList.InternalAuditList.Add(objInterAudit);
                         }
@@ -385,7 +370,7 @@ namespace ISOStd.Controllers
                     objGlobaldata.AddFunctionalLog("Exception in InternalAuditDetails: " + ex.ToString());
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 }
-            }        
+            }
             else
             {
                 TempData["alertdata"] = "Audit id cannot be empty";
@@ -394,7 +379,7 @@ namespace ISOStd.Controllers
 
             return View(objInternalAuditList.InternalAuditList.ToList());
         }
-                
+
         [AllowAnonymous]
         public ActionResult InternalAuditNumDetails()
         {
@@ -406,9 +391,7 @@ namespace ISOStd.Controllers
                 string AuditID = Request.QueryString["AuditID"];
                 try
                 {
-                 
-                        UserCredentials objUserInfo = (UserCredentials)Session["UserCredentials"];
-
+                    UserCredentials objUserInfo = (UserCredentials)Session["UserCredentials"];
 
                     string sSqlstmt = "SELECT AuditID,AuditNum,AuditDate,AuditCriteria,AuditLocation,Audit_Prepared_by,ApprovedBy,upload," +
                    "+ (case when ApprvStatus = '1' then 'Approved' when ApprvStatus = '2' then 'Resheduled' else 'Not Approved' end) as ApprvStatus from t_internal_audit where AuditID='" + AuditID + "'";
@@ -458,63 +441,62 @@ namespace ISOStd.Controllers
             }
             return View(objInternalAuditList.InternalAuditList.ToList());
         }
-                       
+
         [AllowAnonymous]
         public ActionResult InternalAuditNumInfo(int id)
         {
-          
-                try
-                {
+            try
+            {
                 ViewBag.SubMenutype = "ScheduleAudit";
                 string sSqlstmt = "SELECT * FROM t_internal_audit where AuditID='" + id + "'";
-                    DataSet dsInternalAuditList = objGlobaldata.Getdetails(sSqlstmt);
+                DataSet dsInternalAuditList = objGlobaldata.Getdetails(sSqlstmt);
 
-                    if (dsInternalAuditList.Tables.Count > 0 && dsInternalAuditList.Tables[0].Rows.Count > 0)
-                    {
-                        DateTime dtAuditDate = Convert.ToDateTime(dsInternalAuditList.Tables[0].Rows[0]["AuditDate"].ToString());
-
-                        InternalAuditModels objInterAudit = new InternalAuditModels
-                        {
-                            AuditID = dsInternalAuditList.Tables[0].Rows[0]["AuditID"].ToString(),
-                            AuditNum = dsInternalAuditList.Tables[0].Rows[0]["AuditNum"].ToString(),
-                            AuditDate = dtAuditDate,
-                            AuditCriteria = objGlobaldata.GetIsoStdDescriptionById(dsInternalAuditList.Tables[0].Rows[0]["AuditCriteria"].ToString()),
-                            AuditLocation = objGlobaldata.GetMultiCompanyBranchNameById(dsInternalAuditList.Tables[0].Rows[0]["AuditLocation"].ToString()),
-                            upload = dsInternalAuditList.Tables[0].Rows[0]["upload"].ToString()
-                        };
-                        sSqlstmt = "select AuditTransID, AuditID, DeptID, fromAuditTime, toAuditTime, Auditee, Auditor, Audit_Prepared_by, AuditStatus, Audit_Planned_Date,ApprovedBy,Activity,"
-                                 + "DateScheduled, CompletionDate from t_internal_audit_trans where AuditID='" + objInterAudit.AuditID + "' order by AuditTransID desc";
-                        ViewBag.PlanningDetails = objGlobaldata.Getdetails(sSqlstmt);
-                        return View(objInterAudit);
-                    }
-                    else
-                    {
-                        TempData["alertdata"] = "No Data exists";
-                        return RedirectToAction("InternalAuditList");
-                    }
-                }
-                catch (Exception ex)
+                if (dsInternalAuditList.Tables.Count > 0 && dsInternalAuditList.Tables[0].Rows.Count > 0)
                 {
-                    objGlobaldata.AddFunctionalLog("Exception in InternalAuditNumDetails: " + ex.ToString());
-                    TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                    DateTime dtAuditDate = Convert.ToDateTime(dsInternalAuditList.Tables[0].Rows[0]["AuditDate"].ToString());
+
+                    InternalAuditModels objInterAudit = new InternalAuditModels
+                    {
+                        AuditID = dsInternalAuditList.Tables[0].Rows[0]["AuditID"].ToString(),
+                        AuditNum = dsInternalAuditList.Tables[0].Rows[0]["AuditNum"].ToString(),
+                        AuditDate = dtAuditDate,
+                        AuditCriteria = objGlobaldata.GetIsoStdDescriptionById(dsInternalAuditList.Tables[0].Rows[0]["AuditCriteria"].ToString()),
+                        AuditLocation = objGlobaldata.GetMultiCompanyBranchNameById(dsInternalAuditList.Tables[0].Rows[0]["AuditLocation"].ToString()),
+                        upload = dsInternalAuditList.Tables[0].Rows[0]["upload"].ToString()
+                    };
+                    sSqlstmt = "select AuditTransID, AuditID, DeptID, fromAuditTime, toAuditTime, Auditee, Auditor, Audit_Prepared_by, AuditStatus, Audit_Planned_Date,ApprovedBy,Activity,"
+                             + "DateScheduled, CompletionDate from t_internal_audit_trans where AuditID='" + objInterAudit.AuditID + "' order by AuditTransID desc";
+                    ViewBag.PlanningDetails = objGlobaldata.Getdetails(sSqlstmt);
+                    return View(objInterAudit);
                 }
-           
+                else
+                {
+                    TempData["alertdata"] = "No Data exists";
+                    return RedirectToAction("InternalAuditList");
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in InternalAuditNumDetails: " + ex.ToString());
+                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+            }
+
             return View();
         }
-                 
+
         [AllowAnonymous]
         public ActionResult InternalAuditEdit()
         {
             ViewBag.SubMenutype = "ScheduleAudit";
             string AuditID = Request.QueryString["AuditID"];
-            //objGlobaldata.CreateUserSession();            
+            //objGlobaldata.CreateUserSession();
             InternalAuditModels objAudit = new InternalAuditModels();
             if (AuditID == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-           
-                UserCredentials objUserInfo = (UserCredentials)Session["UserCredentials"];
+
+            UserCredentials objUserInfo = (UserCredentials)Session["UserCredentials"];
 
             string sSqlstmt = "SELECT AuditID,AuditNum,AuditDate,AuditCriteria,AuditLocation,Audit_Prepared_by,ApprovedBy,upload," +
                 "(case when ApprvStatus = '1' then 'Approved' when ApprvStatus = '2' then 'Resheduled' else 'Not Approved' end) as ApprvStatus from t_internal_audit where AuditID='" + AuditID + "'";
@@ -525,7 +507,7 @@ namespace ISOStd.Controllers
             try
             {
                 ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
-                if (dsInternalAuditList.Tables.Count >0 && dsInternalAuditList.Tables[0].Rows.Count > 0)
+                if (dsInternalAuditList.Tables.Count > 0 && dsInternalAuditList.Tables[0].Rows.Count > 0)
                 {
                     //DateTime dtAuditDate = Convert.ToDateTime(dsInternalAuditList.Tables[0].Rows[0]["AuditDate"].ToString());
 
@@ -537,7 +519,7 @@ namespace ISOStd.Controllers
                         AuditCriteria = objGlobaldata.GetIsoStdDescriptionById(dsInternalAuditList.Tables[0].Rows[0]["AuditCriteria"].ToString()),
                         AuditLocation =/* objGlobaldata.GetMultiCompanyBranchNameById*/(dsInternalAuditList.Tables[0].Rows[0]["AuditLocation"].ToString()),
                         upload = dsInternalAuditList.Tables[0].Rows[0]["upload"].ToString(),
-                        Audit_Prepared_by =(dsInternalAuditList.Tables[0].Rows[0]["Audit_Prepared_by"].ToString()),
+                        Audit_Prepared_by = (dsInternalAuditList.Tables[0].Rows[0]["Audit_Prepared_by"].ToString()),
                         ApprovedBy = (dsInternalAuditList.Tables[0].Rows[0]["ApprovedBy"].ToString()),
                         ApprvStatus = (dsInternalAuditList.Tables[0].Rows[0]["ApprvStatus"].ToString()),
                     };
@@ -548,7 +530,7 @@ namespace ISOStd.Controllers
                     }
 
                     sSqlstmt = "select AuditTransID, AuditID, DeptID, fromAuditTime, toAuditTime, Auditee, Auditor, Audit_Prepared_by, AuditStatus, Audit_Planned_Date,ApprovedBy,Activity,"
-                              +"DateScheduled, CompletionDate from t_internal_audit_trans where AuditID='" + objInterAudit.AuditID + "' order by AuditTransID desc";
+                              + "DateScheduled, CompletionDate from t_internal_audit_trans where AuditID='" + objInterAudit.AuditID + "' order by AuditTransID desc";
                     ViewBag.PlanningDetails = objGlobaldata.Getdetails(sSqlstmt);
 
                     ViewBag.AuditID = objInterAudit.AuditID;
@@ -629,17 +611,16 @@ namespace ISOStd.Controllers
                     InternalAuditPlanUpdate(objInterAudit, form);
                     TempData["Successdata"] = " Audit Plan updated successfully";
                 }
-                
             }
             catch (Exception ex)
             {
                 objGlobaldata.AddFunctionalLog("Exception in InternalAuditEdit: " + ex.ToString());
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
-            
+
             return RedirectToAction("InternalAuditList");
         }
-      
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult InternalAuditPlanUpdate(InternalAuditModels objInternalAuditModels, FormCollection form)
@@ -680,9 +661,7 @@ namespace ISOStd.Controllers
                 else
                 {
                     return Json("Update Failed");
-                
                 }
-                
             }
             catch (Exception ex)
             {
@@ -691,7 +670,7 @@ namespace ISOStd.Controllers
                 return Json("Update Failed: " + ex.ToString());
             }
         }
-        
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult InternalAuditPlanAdd(InternalAuditModels objInternalAuditModels, FormCollection form)
@@ -735,7 +714,6 @@ namespace ISOStd.Controllers
                 else
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                
                 }
                 return Json("Update Success");
             }
@@ -745,7 +723,6 @@ namespace ISOStd.Controllers
                 return Json("Update Failed: " + ex.ToString());
             }
         }
-
 
         //[AllowAnonymous]
         //public ActionResult AddInternalAuditNoFindingsLog()
@@ -758,7 +735,6 @@ namespace ISOStd.Controllers
 
         //            UserCredentials objUserInfo = (UserCredentials)Session["UserCredentials"];
 
-
         //        InternalAuditModels objAudit = new InternalAuditModels();
         //        // ViewBag.AuditNumList = objInternalAuditModel.FunGetInternalAuditList(objUserInfo.CompanyId);
         //        DataSet dsIso = objGlobaldata.Getdetails("select AuditCriteria from t_internal_audit, t_internal_audit_trans where"
@@ -769,7 +745,7 @@ namespace ISOStd.Controllers
         //        ViewBag.AuditNum = Request.QueryString["AuditNum"];
         //        //ViewBag.AuditDateList = GetAuditDateList(Request.QueryString["AuditNum"]);
 
-        //       
+        //
         //        ViewBag.ReportStatus = objGlobaldata.GetDropdownList("Audit Status");
         //    }
         //    catch (Exception ex)
@@ -780,8 +756,6 @@ namespace ISOStd.Controllers
         //    return View();
         //}
 
-
-
         [AllowAnonymous]
         public ActionResult AddInternalAuditFindingsLog()
         {
@@ -791,14 +765,14 @@ namespace ISOStd.Controllers
                 //objGlobaldata.CreateUserSession();
 
                 InternalAuditModels objInternalAuditModel = new InternalAuditModels();
-               
+
                 UserCredentials objUserInfo = (UserCredentials)Session["UserCredentials"];
 
                 // ViewBag.AuditNumList = objInternalAuditModel.FunGetInternalAuditList(objUserInfo.CompanyId);
 
                 string sAuditTransID = Request.QueryString["AuditTransID"];
                 DataSet dsIso = objGlobaldata.Getdetails("select AuditCriteria,DeptID,Auditee,Auditor from t_internal_audit a, t_internal_audit_trans b where"
-                    + " a.AuditID=b.AuditID and AuditTransID='" +sAuditTransID + "'");
+                    + " a.AuditID=b.AuditID and AuditTransID='" + sAuditTransID + "'");
                 ViewBag.IsoStdList = objGlobaldata.GetIsoStdListboxIn(dsIso.Tables[0].Rows[0]["AuditCriteria"].ToString());
                 ViewBag.DeptID = objGlobaldata.GetDeptNameById(dsIso.Tables[0].Rows[0]["DeptID"].ToString());
                 ViewBag.Auditee = objGlobaldata.GetMultiHrEmpNameById(dsIso.Tables[0].Rows[0]["Auditee"].ToString());
@@ -820,7 +794,6 @@ namespace ISOStd.Controllers
             return View();
         }
 
-        
         private List<string> GetAuditDateList(string sAuditNum)
         {
             List<string> lstAuditDate = new List<string>();
@@ -834,7 +807,7 @@ namespace ISOStd.Controllers
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 objGlobaldata.AddFunctionalLog("Exception in GetAuditDateList: " + ex.ToString());
             }
-            return lstAuditDate;//Json(lstAuditDate); 
+            return lstAuditDate;//Json(lstAuditDate);
         }
 
         [AllowAnonymous]
@@ -881,7 +854,6 @@ namespace ISOStd.Controllers
             return Json(new { ISO = sISO, ISOID = sISOId, FirstName = sFirstName, EmpIds = sEmpdIds, auditid = sauditid }, JsonRequestBehavior.AllowGet);
         }
 
-        
         //[HttpPost]
         //[ValidateAntiForgeryToken]
         //public ActionResult AddInternalAuditNoFindingsLog(InternalAuditFindingsLog objInterAuditFindingsLog, FormCollection form, HttpPostedFileBase fileUploader)
@@ -960,18 +932,16 @@ namespace ISOStd.Controllers
         //                objInternalAuditFindingsLogModelsList.InternalAuditFindingsLogList.Add(objInternalAuditFindingsLog);
         //            }
 
-
         //            //InternalAuditFindingsLog objInternalAuditFindingsLog = new InternalAuditFindingsLog();
 
         //            if (objInterAuditFindingsLog.FunAddInternalAuditNoFindingsLog(objInternalAuditFindingsLogModelsList))
         //            {
-
         //                TempData["Successdata"] = "Audit findings Log updated successfully";
         //            }
         //            else
         //            {
         //                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                       
+
         //            }
         //        }
 
@@ -983,11 +953,10 @@ namespace ISOStd.Controllers
         //    }
 
         //    return RedirectToAction("InternalAuditFindingsLogList", new { AuditTransID = sAuditTransID, AuditNum = sAuditNum });
-        //    //}            
+        //    //}
         //}
         //// POST: /Audit/AddInternalAuditFindingsLog
 
-        
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ValidateInput(false)]
@@ -1045,7 +1014,6 @@ namespace ISOStd.Controllers
                         objInternalAuditFindingsLog.ReportStatus = form["ReportStatus" + i];
                         objInternalAuditFindingsLog.Audit_Details = form["Audit_Details" + i];
 
-
                         if (fileUploader != null && fileUploader.ContentLength > 0)
                         {
                             try
@@ -1071,7 +1039,6 @@ namespace ISOStd.Controllers
                         objInternalAuditFindingsLogModelsList.InternalAuditFindingsLogList.Add(objInternalAuditFindingsLog);
                     }
 
-
                     //InternalAuditFindingsLog objInternalAuditFindingsLog = new InternalAuditFindingsLog();
 
                     objInterAuditFindingsLog.FunAddInternalAuditFindingsLog(objInternalAuditFindingsLogModelsList, fileUploader);
@@ -1085,14 +1052,13 @@ namespace ISOStd.Controllers
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
 
-            return RedirectToAction("InternalAuditFindingsLogList", new { AuditTransID = sAuditTransID, AuditNum = sAuditNum, AuditId=sAuditID });
-            //}            
+            return RedirectToAction("InternalAuditFindingsLogList", new { AuditTransID = sAuditTransID, AuditNum = sAuditNum, AuditId = sAuditID });
+            //}
         }
 
         //
         // GET: /Audit/InternalAuditFindingsLogList
 
-        
         [AllowAnonymous]
         public ActionResult InternalAuditFindingsLogList()
         {
@@ -1107,9 +1073,7 @@ namespace ISOStd.Controllers
                 ViewBag.AuditID = Request.QueryString["AuditID"];
                 InternalAuditModels obj = new InternalAuditModels();
 
-                
                 UserCredentials objUserInfo = (UserCredentials)Session["UserCredentials"];
-                
 
                 string sSqlstmt = "SELECT AuditFindingID, AuditTransID, NCR_Num, NCRDesc, ISO_standard_ID, ISO_standard_clause, CorrectionDate,"
                         + "ReportStatus, ReportCloseDate, Reviewed_by, FindingCategory, CorrectiveActionDate, Followupdate, Correctiontaken, Resultsofinvestigation,"
@@ -1133,7 +1097,7 @@ namespace ISOStd.Controllers
                             NCRNo = dsInternalAuditList.Tables[0].Rows[i]["NCR_Num"].ToString(),
                             NCRDesc = dsInternalAuditList.Tables[0].Rows[i]["NCRDesc"].ToString(),
                             ISOstandardID = objGlobaldata.GetIsoStdDescriptionById(dsInternalAuditList.Tables[0].Rows[i]["ISO_standard_ID"].ToString()),
-                            ISO_standard_clause =objMgmtDocuments.GetMultiISOClauseNameById( dsInternalAuditList.Tables[0].Rows[i]["ISO_standard_clause"].ToString()),
+                            ISO_standard_clause = objMgmtDocuments.GetMultiISOClauseNameById(dsInternalAuditList.Tables[0].Rows[i]["ISO_standard_clause"].ToString()),
                             //FollowupDate = dtFollowupDate,
                             // ReportCloseDate = dtReportCloseDate,
                             Reviewed_by = objGlobaldata.GetEmpHrNameById(dsInternalAuditList.Tables[0].Rows[i]["Reviewed_by"].ToString()),
@@ -1142,7 +1106,6 @@ namespace ISOStd.Controllers
                             ReportStatus = objGlobaldata.GetDropdownitemById(dsInternalAuditList.Tables[0].Rows[i]["ReportStatus"].ToString()),
                             Checklist = dsInternalAuditList.Tables[0].Rows[i]["Checklist"].ToString(),
                             Audit_Details = dsInternalAuditList.Tables[0].Rows[i]["Audit_Details"].ToString(),
-
                         };
                         //if ( objGlobaldata.GetDropdownitemById(dsInternalAuditList.Tables[0].Rows[i]["FindingCategory"].ToString()) == "No findings")
                         //{
@@ -1159,10 +1122,9 @@ namespace ISOStd.Controllers
                     }
                 }
 
-
                 DataSet dsIso = objGlobaldata.Getdetails("select AuditCriteria,DeptID,Auditee,Auditor from t_internal_audit a, t_internal_audit_trans b where"
                     + " a.AuditID=b.AuditID and AuditTransID='" + sAuditTransID + "'");
-                if(dsIso.Tables.Count > 0 && dsIso.Tables[0].Rows.Count > 0)
+                if (dsIso.Tables.Count > 0 && dsIso.Tables[0].Rows.Count > 0)
                 {
                     ViewBag.IsoStdList = objGlobaldata.GetIsoStdListboxIn(dsIso.Tables[0].Rows[0]["AuditCriteria"].ToString());
                     ViewBag.DeptID = objGlobaldata.GetDeptNameById(dsIso.Tables[0].Rows[0]["DeptID"].ToString());
@@ -1182,9 +1144,6 @@ namespace ISOStd.Controllers
             //return View();
         }
 
-
-      
-        
         public ActionResult InternalAuditFindingsLogDetails(InternalAuditFindingsLog objInterAuditFindingsLog)
         {
             ViewBag.SubMenutype = "InternalAudit";
@@ -1202,7 +1161,6 @@ namespace ISOStd.Controllers
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
                 }
                 InternalAuditModels objAudit = new InternalAuditModels();
-               
 
                 string sSqlstmt = "SELECT AuditFindingID,  AuditTransID, NCR_Num, NCRDesc, ISO_standard_ID, ISO_standard_clause, CorrectionDate,"
                                     + "ReportStatus, ReportCloseDate, Reviewed_by, FindingCategory, CorrectiveActionDate, Followupdate, Correctiontaken, Resultsofinvestigation,"
@@ -1223,7 +1181,7 @@ namespace ISOStd.Controllers
                         //FindingDescription = dsInternalAuditList.Tables[0].Rows[0]["FindingDescription"].ToString(),
                         NCRNo = dsInternalAuditList.Tables[0].Rows[0]["NCR_Num"].ToString(),
                         NCRDesc = dsInternalAuditList.Tables[0].Rows[0]["NCRDesc"].ToString(),
-                        ISO_standard_clause =objMgmtDocuments.GetMultiISOClauseNameById(  dsInternalAuditList.Tables[0].Rows[0]["ISO_standard_clause"].ToString()),
+                        ISO_standard_clause = objMgmtDocuments.GetMultiISOClauseNameById(dsInternalAuditList.Tables[0].Rows[0]["ISO_standard_clause"].ToString()),
 
                         Reviewed_by = objGlobaldata.GetEmpHrNameById(dsInternalAuditList.Tables[0].Rows[0]["Reviewed_by"].ToString()),
                         // AuditConductedBy = objGlobaldata.GetMultiHrEmpNameById(dsInternalAuditList.Tables[0].Rows[0]["AuditConductedBy"].ToString()),
@@ -1257,8 +1215,6 @@ namespace ISOStd.Controllers
             return View(objInterAudit);
         }
 
-        
-        
         public ActionResult InternalAuditFindingsLogEdit1(InternalAuditFindingsLog objInterAuditFindingsLog)
         {
             ViewBag.SubMenutype = "InternalAudit";
@@ -1275,7 +1231,6 @@ namespace ISOStd.Controllers
                 }
 
                 UserCredentials objUserInfo = (UserCredentials)Session["UserCredentials"];
-               
 
                 string sSqlstmt = "SELECT AuditFindingID, AuditTransID, NCR_Num, NCRDesc, ISO_standard_ID, ISO_standard_clause, CorrectionDate,"
                                 + " ReportStatus, ReportCloseDate, Reviewed_by, FindingCategory, CorrectiveActionDate, Followupdate, Correctiontaken, Resultsofinvestigation,"
@@ -1300,7 +1255,7 @@ namespace ISOStd.Controllers
                         //AuditConductedBy = objGlobaldata.GetMultiHrEmpNameById(dsInternalAuditList.Tables[0].Rows[0]["AuditConductedBy"].ToString()),
                         FindingCategory = objGlobaldata.GetDropdownitemById(dsInternalAuditList.Tables[0].Rows[0]["FindingCategory"].ToString()),
                         ISOstandardID = objGlobaldata.GetIsoStdDescriptionById(dsInternalAuditList.Tables[0].Rows[0]["ISO_standard_ID"].ToString()),
-                        ReportStatus =  objGlobaldata.GetDropdownitemById(dsInternalAuditList.Tables[0].Rows[0]["ReportStatus"].ToString()),
+                        ReportStatus = objGlobaldata.GetDropdownitemById(dsInternalAuditList.Tables[0].Rows[0]["ReportStatus"].ToString()),
                         Followupdate = dtFollowupDate,
                         CorrectiveActionDate = dtCorrectiveActionDate,
                         Correctiontaken = dsInternalAuditList.Tables[0].Rows[0]["Correctiontaken"].ToString(),
@@ -1341,11 +1296,8 @@ namespace ISOStd.Controllers
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
             return View(objInterAudit);
-
         }
 
-       
-        
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult InternalAuditFindingsLogEdit1(InternalAuditFindingsLog objInterAuditFindingsLog, FormCollection form, HttpPostedFileBase file)
@@ -1358,7 +1310,7 @@ namespace ISOStd.Controllers
             try
             {
                 string sAuditNumList = form["AuditNumList"];
-                            
+
                 //string sAuditConductedBy = form["EmpIds"];
                 string sReviewed_by = form["Reviewed_by"];
                 //string sDeptId = form["AuditDepartment"];
@@ -1393,7 +1345,7 @@ namespace ISOStd.Controllers
                     try
                     {
                         string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/Audit"), Path.GetFileName(file.FileName));
-                        string sFilename = objInterAuditFindingsLog.AuditNum+ "_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath);
+                        string sFilename = objInterAuditFindingsLog.AuditNum + "_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath);
                         string sFilepath = Path.GetDirectoryName(spath);
 
                         file.SaveAs(sFilepath + "/" + sFilename);
@@ -1418,8 +1370,8 @@ namespace ISOStd.Controllers
                     TempData["Successdata"] = "Inetrnal Audit Findings log updated successfully";
                 }
                 else
-                {             
-                    TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];              
+                {
+                    TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 }
             }
             catch (Exception ex)
@@ -1429,7 +1381,6 @@ namespace ISOStd.Controllers
             }
             return RedirectToAction("InternalAuditFindingsLogList", new { AuditTransID = sAuditTransID, AuditNum = sAuditNum, AuditID = sAuditID });
         }
-
 
         [AllowAnonymous]
         public ActionResult InternalAuditFindingsLogList1()
@@ -1444,9 +1395,7 @@ namespace ISOStd.Controllers
                 string sAuditNum = Request.QueryString["AuditNum"];
                 InternalAuditModels obj = new InternalAuditModels();
 
-
                 UserCredentials objUserInfo = (UserCredentials)Session["UserCredentials"];
-
 
                 string sSqlstmt = "SELECT AuditFindingID, AuditTransID, NCR_Num, NCRDesc, ISO_standard_ID, ISO_standard_clause, CorrectionDate,"
                         + "ReportStatus, ReportCloseDate, Reviewed_by, FindingCategory, CorrectiveActionDate, Followupdate, Correctiontaken, Resultsofinvestigation,"
@@ -1482,7 +1431,6 @@ namespace ISOStd.Controllers
                             CorrectiveAction = dsInternalAuditList.Tables[0].Rows[i]["CorrectiveAction"].ToString(),
                             PreventiveAction = dsInternalAuditList.Tables[0].Rows[i]["PreventiveAction"].ToString(),
                             VerificationofImplementation = dsInternalAuditList.Tables[0].Rows[i]["VerificationofImplementation"].ToString(),
-
                         };
                         //if ( objGlobaldata.GetDropdownitemById(dsInternalAuditList.Tables[0].Rows[i]["FindingCategory"].ToString()) == "No findings")
                         //{
@@ -1499,7 +1447,6 @@ namespace ISOStd.Controllers
                     }
                 }
 
-
                 ViewBag.AuditNum = sAuditNum;
                 ViewBag.sAuditTransID = sAuditTransID;
             }
@@ -1511,8 +1458,6 @@ namespace ISOStd.Controllers
             return View(objInternalAuditList.InternalAuditFindingsLogList.ToList());
             //return View();
         }
-
-
 
         public ActionResult InternalAuditFindingsLogEdit(InternalAuditFindingsLog objInterAuditFindingsLog)
         {
@@ -1530,7 +1475,6 @@ namespace ISOStd.Controllers
                 }
 
                 UserCredentials objUserInfo = (UserCredentials)Session["UserCredentials"];
-
 
                 string sSqlstmt = "SELECT AuditFindingID, AuditTransID, NCR_Num, NCRDesc, ISO_standard_ID, ISO_standard_clause, CorrectionDate,"
                                 + " ReportStatus, ReportCloseDate, Reviewed_by, FindingCategory, CorrectiveActionDate, Followupdate, Correctiontaken, Resultsofinvestigation,"
@@ -1676,9 +1620,7 @@ namespace ISOStd.Controllers
                 }
                 else
                 {
-
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-
                 }
             }
             catch (Exception ex)
@@ -1686,15 +1628,15 @@ namespace ISOStd.Controllers
                 objGlobaldata.AddFunctionalLog("Exception in InternalAuditFindingsLogEdit: " + ex.ToString());
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
-            return RedirectToAction("InternalAuditFindingsLogList", new { AuditTransID = sAuditTransID, AuditNum = sAuditNum , AuditId = sAuditId});
+            return RedirectToAction("InternalAuditFindingsLogList", new { AuditTransID = sAuditTransID, AuditNum = sAuditNum, AuditId = sAuditId });
         }
-        
+
         [AllowAnonymous]
         public ActionResult InternalAuditChecklist(string branch_name)
         {
             AuditElementsModels obj = new AuditElementsModels();
             ChecklistModelsList objInterAudit = new ChecklistModelsList();
-            objInterAudit.CheckList=new List<InternalAuditChecklistModels>();
+            objInterAudit.CheckList = new List<InternalAuditChecklistModels>();
             ViewBag.Department = objGlobaldata.GetDepartmentListbox();
             ViewBag.AuditNo = obj.GetAuditNoListbox();
             ViewBag.SubMenutype = "InternalAuditChecklist";
@@ -1721,7 +1663,7 @@ namespace ISOStd.Controllers
                 DataSet dsCheckList = objGlobaldata.Getdetails(sSqlstmt);
 
                 if (dsCheckList.Tables.Count > 0 && dsCheckList.Tables[0].Rows.Count > 0)
-                {   
+                {
                     for (int i = 0; i < dsCheckList.Tables[0].Rows.Count; i++)
                     {
                         try
@@ -1752,7 +1694,7 @@ namespace ISOStd.Controllers
             }
             return View(objInterAudit.CheckList.ToList());
         }
-        
+
         [AllowAnonymous]
         public JsonResult InternalAuditChecklistSearch(string branch_name)
         {
@@ -1785,7 +1727,7 @@ namespace ISOStd.Controllers
                 DataSet dsCheckList = objGlobaldata.Getdetails(sSqlstmt);
 
                 if (dsCheckList.Tables.Count > 0 && dsCheckList.Tables[0].Rows.Count > 0)
-                {    
+                {
                     for (int i = 0; i < dsCheckList.Tables[0].Rows.Count; i++)
                     {
                         try
@@ -1821,7 +1763,7 @@ namespace ISOStd.Controllers
         {
             string AuditID = Request.QueryString["AuditID"];
             string AuditTransID = Request.QueryString["AuditTransID"];
-            //objGlobaldata.CreateUserSession();            
+            //objGlobaldata.CreateUserSession();
             InternalAuditModels objAudit = new InternalAuditModels();
             if (AuditID == null)
             {
@@ -1836,39 +1778,35 @@ namespace ISOStd.Controllers
 
             try
             {
-                
                 if (dsInternalAuditList.Tables.Count > 0 && dsInternalAuditList.Tables[0].Rows.Count > 0)
                 {
                     objAudit = new InternalAuditModels
                     {
                         AuditDetails = dsInternalAuditList.Tables[0].Rows[0]["AuditDetails"].ToString(),
                     };
-                    
                 }
 
+                DataSet dsIso = objGlobaldata.Getdetails("select AuditTransID,b.AuditID,AuditNum,AuditCriteria,DeptID,Auditee,Auditor,AuditDetails from t_internal_audit a, t_internal_audit_trans b where"
+                 + " a.AuditID=b.AuditID and AuditTransID='" + AuditTransID + "'");
+                if (dsIso.Tables.Count > 0 && dsIso.Tables[0].Rows.Count > 0)
+                {
+                    ViewBag.AuditTransID = dsIso.Tables[0].Rows[0]["AuditTransID"].ToString();
+                    ViewBag.AuditID = dsIso.Tables[0].Rows[0]["AuditID"].ToString();
+                    ViewBag.AuditNum = dsIso.Tables[0].Rows[0]["AuditNum"].ToString();
+                    ViewBag.IsoStdList = objGlobaldata.GetIsoStdListboxIn(dsIso.Tables[0].Rows[0]["AuditCriteria"].ToString());
+                    ViewBag.DeptID = objGlobaldata.GetDeptNameById(dsIso.Tables[0].Rows[0]["DeptID"].ToString());
+                    ViewBag.Auditee = objGlobaldata.GetMultiHrEmpNameById(dsIso.Tables[0].Rows[0]["Auditee"].ToString());
+                    ViewBag.Auditor = objGlobaldata.GetMultiHrEmpNameById(dsIso.Tables[0].Rows[0]["Auditor"].ToString());
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in AddInternalAuditDetails: " + ex.ToString());
+                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+            }
 
-                    DataSet dsIso = objGlobaldata.Getdetails("select AuditTransID,b.AuditID,AuditNum,AuditCriteria,DeptID,Auditee,Auditor,AuditDetails from t_internal_audit a, t_internal_audit_trans b where"
-                     + " a.AuditID=b.AuditID and AuditTransID='" +AuditTransID + "'");
-                    if (dsIso.Tables.Count > 0 && dsIso.Tables[0].Rows.Count > 0)
-                    {
-                        ViewBag.AuditTransID = dsIso.Tables[0].Rows[0]["AuditTransID"].ToString();
-                        ViewBag.AuditID = dsIso.Tables[0].Rows[0]["AuditID"].ToString();
-                        ViewBag.AuditNum = dsIso.Tables[0].Rows[0]["AuditNum"].ToString();
-                        ViewBag.IsoStdList = objGlobaldata.GetIsoStdListboxIn(dsIso.Tables[0].Rows[0]["AuditCriteria"].ToString());
-                        ViewBag.DeptID = objGlobaldata.GetDeptNameById(dsIso.Tables[0].Rows[0]["DeptID"].ToString());
-                        ViewBag.Auditee = objGlobaldata.GetMultiHrEmpNameById(dsIso.Tables[0].Rows[0]["Auditee"].ToString());
-                        ViewBag.Auditor = objGlobaldata.GetMultiHrEmpNameById(dsIso.Tables[0].Rows[0]["Auditor"].ToString());
-                     }
-                 }
-        
-                   catch (Exception ex)
-                   {
-                       objGlobaldata.AddFunctionalLog("Exception in AddInternalAuditDetails: " + ex.ToString());
-                       TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                   }
-                  
-                 return View(objAudit);
-           }
+            return View(objAudit);
+        }
 
         [HttpPost]
         [ValidateInput(false)]
@@ -1888,7 +1826,6 @@ namespace ISOStd.Controllers
                 //string sDeptId = form["AuditDepartment"];
                 //string sIsoStdId = form["ISOstandardID"];
 
-
                 //objInterAudit.AuditFindingID = sAuditFindingID;
                 //// objInterAudit.AuditConductedBy = sAuditConductedBy;
                 //objInterAudit.Reviewed_by = sReviewed_by;
@@ -1898,17 +1835,14 @@ namespace ISOStd.Controllers
                 ////objInterAudit.DeptId = sDeptId;
                 //objInterAudit.ReportStatus = form["ReportStatus"];
                 //objInterAudit.ISO_standard_clause = form["ISO_standard_clause"];
-               
-              
+
                 if (objInterAudit.FunUpdateAuditDetails(objInterAudit))
                 {
                     TempData["Successdata"] = "Inetrnal Audit Details updated successfully";
                 }
                 else
                 {
-
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-
                 }
             }
             catch (Exception ex)
@@ -1918,7 +1852,7 @@ namespace ISOStd.Controllers
             }
             return RedirectToAction("InternalAuditNumDetails", new { AuditTransID = sAuditTransID, AuditNum = sAuditNum, AuditId = sAuditId });
         }
-                     
+
         [AllowAnonymous]
         public ActionResult AddChecklist(InternalAuditChecklistModels objChecklistModel, FormCollection form, HttpPostedFileBase file)
         {
@@ -1965,39 +1899,33 @@ namespace ISOStd.Controllers
 
             return RedirectToAction("InternalAuditChecklist");
         }
-                 
+
         [AllowAnonymous]
         public JsonResult ChecklistDelete(FormCollection form)
         {
             try
             {
-               
-                    
-                        if (form["checklistId"] != null && form["checklistId"] != "")
-                        {
+                if (form["checklistId"] != null && form["checklistId"] != "")
+                {
+                    InternalAuditChecklistModels checklist = new InternalAuditChecklistModels();
+                    string schecklistId = form["checklistId"];
 
-                            InternalAuditChecklistModels checklist = new InternalAuditChecklistModels();
-                            string schecklistId = form["checklistId"];
-
-
-                            if (checklist.FunDeleteChecklist(schecklistId))
-                            {
-                                TempData["Successdata"] = "Checklist details deleted successfully";
-                                return Json("Success");
-                            }
-                            else
-                            {
-                                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                                return Json("Failed");
-                            }
-                        }
-                        else
-                        {
-                            TempData["alertdata"] = "Checklist Id cannot be Null or empty";
-                            return Json("Failed");
-                        }
-                   
-                
+                    if (checklist.FunDeleteChecklist(schecklistId))
+                    {
+                        TempData["Successdata"] = "Checklist details deleted successfully";
+                        return Json("Success");
+                    }
+                    else
+                    {
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                        return Json("Failed");
+                    }
+                }
+                else
+                {
+                    TempData["alertdata"] = "Checklist Id cannot be Null or empty";
+                    return Json("Failed");
+                }
             }
             catch (Exception ex)
             {
@@ -2006,7 +1934,7 @@ namespace ISOStd.Controllers
             }
             return Json("Failed");
         }
-                
+
         [HttpPost]
         public JsonResult doesAuditNumExist(string AuditNum)
         {
@@ -2036,7 +1964,6 @@ namespace ISOStd.Controllers
                 else if (iStatus == 1)
                 {
                     sStatus = "Approved";
-
                 }
                 else if (iStatus == 2)
                 {
@@ -2051,7 +1978,6 @@ namespace ISOStd.Controllers
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 }
             }
-          
             catch (Exception ex)
             {
                 objGlobaldata.AddFunctionalLog("Exception in AuditApproveReject: " + ex.ToString());
@@ -2066,7 +1992,7 @@ namespace ISOStd.Controllers
             {
                 return RedirectToAction("ListPendingForApproval", "Dashboard");
             }
-        }      
+        }
 
         public ActionResult FunGetReportStatus(string CategoryType)
         {
@@ -2093,7 +2019,6 @@ namespace ISOStd.Controllers
                 else if (iStatus == 1)
                 {
                     sStatus = "Approved";
-
                 }
                 else if (iStatus == 2)
                 {
@@ -2108,7 +2033,6 @@ namespace ISOStd.Controllers
                     return Json("Failed");
                 }
             }
-
             catch (Exception ex)
             {
                 objGlobaldata.AddFunctionalLog("Exception in AuditApproveReject: " + ex.ToString());

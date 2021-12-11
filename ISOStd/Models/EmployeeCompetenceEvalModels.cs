@@ -263,7 +263,7 @@ namespace ISOStd.Models
                 if (dsList.Tables.Count > 0 && dsList.Tables[0].Rows.Count > 0)
                 {
 
-                    string sHeader, sInformation = "", sTitle = "", sSubject = "", sContent = "", aAttachment = "", BccEmailIds = "";
+                    string sHeader, sSubject = "", sContent = "", aAttachment = "";
 
                     DataSet dsEmailXML = new DataSet();
                     dsEmailXML.ReadXml(HttpContext.Current.Server.MapPath("~/EmailTemplates.xml"));
@@ -361,7 +361,7 @@ namespace ISOStd.Models
                 if (dsList.Tables.Count > 0 && dsList.Tables[0].Rows.Count > 0)
                 {
 
-                    string sHeader, sInformation = "", sTitle = "", sSubject = "", sContent = "", aAttachment = "", BccEmailIds = "";
+                    string sHeader, sSubject = "", sContent = "", aAttachment = "";
 
                     DataSet dsEmailXML = new DataSet();
                     dsEmailXML.ReadXml(HttpContext.Current.Server.MapPath("~/EmailTemplates.xml"));
@@ -438,7 +438,7 @@ namespace ISOStd.Models
                 if (dsList.Tables.Count > 0 && dsList.Tables[0].Rows.Count > 0)
                 {
 
-                    string sHeader, sInformation = "", sTitle = "", sSubject = "", sContent = "", aAttachment = "", BccEmailIds = "";
+                    string sHeader, sSubject = "", sContent = "", aAttachment = "";
 
                     DataSet dsEmailXML = new DataSet();
                     dsEmailXML.ReadXml(HttpContext.Current.Server.MapPath("~/EmailTemplates.xml"));

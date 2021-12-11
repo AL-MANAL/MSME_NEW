@@ -1,34 +1,31 @@
-﻿using System;
+﻿using ISOStd.Filters;
+using ISOStd.Models;
+using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Data;
+using System.IO;
 using System.Web;
 using System.Web.Mvc;
-using ISOStd.Models;
-using System.Data;
-using System.Net;
-using System.IO;
 using System.Web.Script.Serialization;
-using ISOStd.Filters;
 
 namespace ISOStd.Controllers
 {
     [PreventFromUrl]
-
     public class SurveyController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
+        private clsGlobal objGlobaldata = new clsGlobal();
 
         public SurveyController()
         {
             ViewBag.Menutype = "CustomerMgmt";
             ViewBag.SubMenutype = "CustomerSurvey";
         }
-        
+
         public ActionResult Index()
         {
             return View();
         }
-       
+
         [AllowAnonymous]
         public ActionResult AddSurvey()
         {
@@ -39,7 +36,6 @@ namespace ISOStd.Controllers
                 // ViewBag.SubMenutype = "CustomerSurvey";
                 // ViewBag.dsSurvey = objSurvey.GetSurveyTypeListbox();
 
-               
                 if (Request.QueryString["Survey_TypeId"] != null && Request.QueryString["Survey_TypeId"] != "")
                 {
                     ViewBag.Survey_TypeId = Request.QueryString["Survey_TypeId"];
@@ -62,7 +58,7 @@ namespace ISOStd.Controllers
 
             return View(objSurvey);
         }
-        
+
         [HttpPost]
         public JsonResult GetSurveyQuestions(string Survey_Type)
         {
@@ -73,7 +69,7 @@ namespace ISOStd.Controllers
 
             return Json(data);
         }
-        
+
         [HttpPost]
         public JsonResult GetSurveyRatings(string Survey_Type)
         {
@@ -99,7 +95,6 @@ namespace ISOStd.Controllers
                                 Weightage = (dsRatingList.Tables[0].Rows[i]["Weightage"].ToString()),
                             };
                             objRatingList.lstSurveyRating.Add(objRating);
-
                         }
                         catch (Exception ex)
                         {
@@ -108,7 +103,6 @@ namespace ISOStd.Controllers
                         }
                     }
                 }
-
             }
             catch (Exception ex)
             {
@@ -120,7 +114,7 @@ namespace ISOStd.Controllers
 
             return Json(json);
         }
-        
+
         [HttpPost]
         public JsonResult doesQuestionExist(string Questions, string Survey_TypeId)
         {
@@ -130,7 +124,7 @@ namespace ISOStd.Controllers
 
             return Json(exists);
         }
-        
+
         [HttpPost]
         public JsonResult doesOptionExist(string RatingOptions)
         {
@@ -151,14 +145,12 @@ namespace ISOStd.Controllers
                 SurveyModels objSurvey = new SurveyModels();
                 //ViewBag.dsSurvey = objSurvey.GetSurveyTypeListbox();
 
-
                 //ViewBag.SubMenutype = "CustomerSurvey";
                 ViewBag.Survey_TypeId = objSurveyModels.Survey_TypeId;
                 objSurveyModels.Survey_TypeId1 = objSurveyModels.getSurveyIDByName(objSurveyModels.Survey_TypeId);
 
                 if (objSurveyModels.Questions != "")
                 {
-
                     if (objSurveyModels.FunAddSurvey(objSurveyModels))
                     {
                         TempData["Successdata"] = "Added Survey details successfully";
@@ -213,7 +205,6 @@ namespace ISOStd.Controllers
                 ViewBag.dsSurveyRating = objSurvey.GetSurveyRating(objSurveyModels.Survey_TypeId1);
 
                 ViewBag.dsSurveyQuestions = objSurvey.GetSurveyQuestionsListbox(objSurveyModels.Survey_TypeId1);
-
             }
             catch (Exception ex)
             {
@@ -222,20 +213,18 @@ namespace ISOStd.Controllers
             }
 
             return RedirectToAction("AddSurvey", new { Survey_TypeId = objSurveyModels.Survey_TypeId1/*, Survey_TypeId1 = objSurveyModels.Survey_TypeId1*/ });
-
         }
-        
+
         public bool AddSurveyRating(SurveyModels objSurveyModels)
         {
             //ViewBag.SubMenutype = "CustomerSurvey";
 
             return objSurveyModels.FunAddSurveyRatingFactor(objSurveyModels);
         }
-        
+
         [AllowAnonymous]
         public JsonResult SurveyQuestionUpdate(string SQId, string Questions)
         {
-
             ViewBag.SubMenutype = "CustomerSurvey";
             SurveyModels objSurveyModels = new SurveyModels();
             try
@@ -269,7 +258,6 @@ namespace ISOStd.Controllers
         [AllowAnonymous]
         public ActionResult SurveyDelete(string SQId)
         {
-
             ViewBag.SubMenutype = "CustomerSurvey";
             SurveyModels objSurveyModels = new SurveyModels();
             try
@@ -278,7 +266,6 @@ namespace ISOStd.Controllers
                 {
                     TempData["Successdata"] = "Survey details deleted successfully";
                     //return Json("Success", JsonRequestBehavior.AllowGet);
-
                 }
                 else
                 {
@@ -298,11 +285,10 @@ namespace ISOStd.Controllers
 
             return RedirectToAction("AddSurvey", new { Survey_TypeId = objSurveyModels.GetSurveyTypeIdByQuestionId(SQId) });
         }
-        
+
         [AllowAnonymous]
         public ActionResult SurveyDelete1(string SQId)
         {
-
             ViewBag.SubMenutype = "CustomerSurvey";
             SurveyModels objSurveyModels = new SurveyModels();
             try
@@ -311,7 +297,6 @@ namespace ISOStd.Controllers
                 {
                     TempData["Successdata"] = "Survey details deleted successfully";
                     return Json("Success");
-
                 }
                 else
                 {
@@ -329,13 +314,11 @@ namespace ISOStd.Controllers
             //    return RedirectToAction("AddSurvey", new { Survey_TypeId = objSurveyModels.GetSurveyTypeIdByQuestionId(SQId) });
             //}
             return Json("Failed");
-
         }
 
         [AllowAnonymous]
         public JsonResult SurveyRatingDelete(string SQ_OptionsId)
         {
-
             ViewBag.SubMenutype = "CustomerSurvey";
             SurveyModels objSurveyModels = new SurveyModels();
             try
@@ -358,11 +341,10 @@ namespace ISOStd.Controllers
 
             return Json("Failed");
         }
-        
+
         [AllowAnonymous]
         public ActionResult SurveyRatingDelete1(string SQ_OptionsId, string Survey_TypeId)
         {
-
             ViewBag.SubMenutype = "CustomerSurvey";
             SurveyModels objSurveyModels = new SurveyModels();
             try
@@ -370,7 +352,6 @@ namespace ISOStd.Controllers
                 if (objSurveyModels.FunDeleteSurveyRatingFactor(SQ_OptionsId))
                 {
                     TempData["Successdata"] = "Survey rating factor details deleted successfully";
-
                 }
                 else
                 {
@@ -382,7 +363,6 @@ namespace ISOStd.Controllers
                 objGlobaldata.AddFunctionalLog("Exception in SurveyDelete: " + ex.ToString());
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
-
 
             return RedirectToAction("AddSurvey", new { Survey_TypeId = Survey_TypeId });
         }
@@ -411,7 +391,7 @@ namespace ISOStd.Controllers
             }
             return File(Server.MapPath("~/Views/Error/AccessDenied.html"), "text/html");
         }
-         
+
         public ActionResult CustomerSurveyList(string branch_name)
         {
             try
@@ -427,7 +407,7 @@ namespace ISOStd.Controllers
                 ViewBag.SubMenutype = "CustomerSurvey";
                 //ViewBag.CustList = objGlobaldata.GetCustomerListbox();
                 ViewBag.CustList = objGlobaldata.GetCustomerListboxwithBranch(sBranch_name);
-                if(branch_name != "" && branch_name!=null)
+                if (branch_name != "" && branch_name != null)
                 {
                     ViewBag.dsCustomerSurvey = objSurveyModels.GetCustSurvey(branch_name);
                     ViewBag.Branch_name = branch_name;
@@ -436,7 +416,7 @@ namespace ISOStd.Controllers
                 {
                     ViewBag.dsCustomerSurvey = objSurveyModels.GetCustSurvey(sBranch_name);
                 }
-                
+
                 ViewBag.Survey_TypeId = objSurveyModels.getSurveyIDByName("Client Satisfaction Survey");
             }
             catch (Exception ex)
@@ -473,7 +453,7 @@ namespace ISOStd.Controllers
             }
             return Json("Success");
         }
-        
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult UploadCustomerSurvey(FormCollection form, HttpPostedFileBase CustSurveyFile)
@@ -591,7 +571,6 @@ namespace ISOStd.Controllers
             var data = objSurvey.GetSurveyRatings(Surveyname);
 
             return Json(data);
-        }       
-
+        }
     }
 }

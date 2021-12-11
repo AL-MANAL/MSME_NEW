@@ -14,7 +14,7 @@ namespace ISOStd.Controllers
     [PreventFromUrl]
     public class TrainingEffectivenessController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
+        private clsGlobal objGlobaldata = new clsGlobal();
 
         public TrainingEffectivenessController()
         {
@@ -37,7 +37,7 @@ namespace ISOStd.Controllers
                 ViewBag.PerfPeriod = objGlobaldata.GetDropdownList("Performance Monitoring Period");
                 ViewBag.ReportNo = objModel.GetTrainingReportNoList();
                 ViewBag.PlannedObjective = objGlobaldata.GetDropdownList("Training Planned Objectives");
-                ViewBag.Method = objGlobaldata.GetDropdownList("Method of Effectiveness Evaluation");            
+                ViewBag.Method = objGlobaldata.GetDropdownList("Method of Effectiveness Evaluation");
             }
             catch (Exception ex)
             {
@@ -72,19 +72,19 @@ namespace ISOStd.Controllers
                     foreach (var file in upload)
                     {
                         try
-                    {
-                        string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/Training"), Path.GetFileName(file.FileName));
-                        string sFilename = "Training_Eval" + "_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath);
-                        string sFilepath = Path.GetDirectoryName(spath);
+                        {
+                            string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/Training"), Path.GetFileName(file.FileName));
+                            string sFilename = "Training_Eval" + "_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath);
+                            string sFilepath = Path.GetDirectoryName(spath);
 
-                        file.SaveAs(sFilepath + "/" + sFilename);
-                        objModel.upload = objModel.upload + "," + "~/DataUpload/MgmtDocs/Training/" + sFilename;
+                            file.SaveAs(sFilepath + "/" + sFilename);
+                            objModel.upload = objModel.upload + "," + "~/DataUpload/MgmtDocs/Training/" + sFilename;
                         }
-                    catch (Exception ex)
-                    {
-                        objGlobaldata.AddFunctionalLog("Exception in AddTrainingEffectiveness-upload: " + ex.ToString());
-                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                    }
+                        catch (Exception ex)
+                        {
+                            objGlobaldata.AddFunctionalLog("Exception in AddTrainingEffectiveness-upload: " + ex.ToString());
+                            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                        }
                     }
                     objModel.upload = objModel.upload.Trim(',');
                 }
@@ -137,7 +137,6 @@ namespace ISOStd.Controllers
             TrainingEffectivenessModels objModel = new TrainingEffectivenessModels();
             try
             {
-                
                 string sBranch_name = objGlobaldata.GetCurrentUserSession().division;
                 string sBranchtree = objGlobaldata.GetCurrentUserSession().BranchTree;
                 ViewBag.Branch = objGlobaldata.GetMultiBranchListByID(sBranchtree);
@@ -210,7 +209,6 @@ namespace ISOStd.Controllers
             TrainingEffectivenessModels objModel = new TrainingEffectivenessModels();
             try
             {
-               
                 string sBranch_name = objGlobaldata.GetCurrentUserSession().division;
                 string sBranchtree = objGlobaldata.GetCurrentUserSession().BranchTree;
                 ViewBag.Branch = objGlobaldata.GetMultiBranchListByID(sBranchtree);
@@ -271,7 +269,7 @@ namespace ISOStd.Controllers
             }
             return Json("Success");
         }
-        
+
         [AllowAnonymous]
         public ActionResult TrainingEffectivenessEdit()
         {
@@ -279,7 +277,7 @@ namespace ISOStd.Controllers
             {
                 ViewBag.SubMenutype = "TrainingEffectiveness";
                 TrainingEffectivenessModels objModel = new TrainingEffectivenessModels();
-                              
+
                 if (Request.QueryString["id_training_evalution"] != null && Request.QueryString["id_training_evalution"] != "")
                 {
                     string sid_training_evalution = Request.QueryString["id_training_evalution"];
@@ -291,7 +289,7 @@ namespace ISOStd.Controllers
 
                     if (dsTraining.Tables.Count > 0 && dsTraining.Tables[0].Rows.Count > 0)
                     {
-                         objModel = new TrainingEffectivenessModels
+                        objModel = new TrainingEffectivenessModels
                         {
                             id_training_evalution = dsTraining.Tables[0].Rows[0]["id_training_evalution"].ToString(),
                             report_no = objModel.GetTrainingReportNoById(dsTraining.Tables[0].Rows[0]["report_no"].ToString()),
@@ -302,10 +300,9 @@ namespace ISOStd.Controllers
                             emp_perf_improved = dsTraining.Tables[0].Rows[0]["emp_perf_improved"].ToString(),
                             action_taken = (dsTraining.Tables[0].Rows[0]["action_taken"].ToString()),
                             planned_objective = /*objModel.GetPlannedObjectivesById*/(dsTraining.Tables[0].Rows[0]["planned_objective"].ToString()),
-                             method_eval = (dsTraining.Tables[0].Rows[0]["method_eval"].ToString()),
-                             further_training = (dsTraining.Tables[0].Rows[0]["further_training"].ToString()),
-
-                         };
+                            method_eval = (dsTraining.Tables[0].Rows[0]["method_eval"].ToString()),
+                            further_training = (dsTraining.Tables[0].Rows[0]["further_training"].ToString()),
+                        };
 
                         //DateTime dtValue;
                         //if (DateTime.TryParse(dsSupplier.Tables[0].Rows[0]["evalu_date"].ToString(), out dtValue))
@@ -500,7 +497,7 @@ namespace ISOStd.Controllers
                             Training_Topic = objModel.GetTrainingTopicByReportNo(dsTraining.Tables[0].Rows[0]["report_no"].ToString()),
                             Sourceof_Training = TrainingModel.GetTrainingSourceNameById(objModel.GetSorceofTrainingByReportNo(dsTraining.Tables[0].Rows[0]["report_no"].ToString())),
                             //Trainer_Name =/* objModel.GetTrainingReportNoById*/(dsTraining.Tables[0].Rows[0]["report_no"].ToString()),
-                            method_eval =objGlobaldata.GetDropdownitemById(dsTraining.Tables[0].Rows[0]["method_eval"].ToString()),
+                            method_eval = objGlobaldata.GetDropdownitemById(dsTraining.Tables[0].Rows[0]["method_eval"].ToString()),
                             further_training = (dsTraining.Tables[0].Rows[0]["further_training"].ToString()),
                         };
 
@@ -536,7 +533,6 @@ namespace ISOStd.Controllers
 
                         ViewBag.PerformanceElement = objList;
                         ViewBag.dicPerformanceElement = dicPerformanceElements;
-                                               
 
                         return View(objModel);
                     }
@@ -568,64 +564,63 @@ namespace ISOStd.Controllers
                 ViewBag.SubMenutype = "TrainingEffectiveness";
                 TrainingsModels TrainingModel = new TrainingsModels();
                 TrainingEffectivenessModels objModel = new TrainingEffectivenessModels();
-                               
-                 string sSqlstmt = "select id_training_evalution, report_no, perf_monitor_period, emp_name, upload,comments," +
-                    "emp_perf_improved,action_taken,planned_objective,logged_by from t_trainings_evalution where id_training_evalution='" + Id + "'";
 
-                    DataSet dsTraining = objGlobaldata.Getdetails(sSqlstmt);
+                string sSqlstmt = "select id_training_evalution, report_no, perf_monitor_period, emp_name, upload,comments," +
+                   "emp_perf_improved,action_taken,planned_objective,logged_by from t_trainings_evalution where id_training_evalution='" + Id + "'";
 
-                    if (dsTraining.Tables.Count > 0 && dsTraining.Tables[0].Rows.Count > 0)
+                DataSet dsTraining = objGlobaldata.Getdetails(sSqlstmt);
+
+                if (dsTraining.Tables.Count > 0 && dsTraining.Tables[0].Rows.Count > 0)
+                {
+                    objModel = new TrainingEffectivenessModels
                     {
-                        objModel = new TrainingEffectivenessModels
+                        id_training_evalution = dsTraining.Tables[0].Rows[0]["id_training_evalution"].ToString(),
+                        report_no = objModel.GetTrainingReportNoById(dsTraining.Tables[0].Rows[0]["report_no"].ToString()),
+                        perf_monitor_period = objGlobaldata.GetDropdownitemById(dsTraining.Tables[0].Rows[0]["perf_monitor_period"].ToString()),
+                        emp_name = objGlobaldata.GetEmpHrNameById(dsTraining.Tables[0].Rows[0]["emp_name"].ToString()),
+                        upload = dsTraining.Tables[0].Rows[0]["upload"].ToString(),
+                        comments = (dsTraining.Tables[0].Rows[0]["comments"].ToString()),
+                        emp_perf_improved = dsTraining.Tables[0].Rows[0]["emp_perf_improved"].ToString(),
+                        action_taken = (dsTraining.Tables[0].Rows[0]["action_taken"].ToString()),
+                        planned_objective = objGlobaldata.GetDropdownitemById(dsTraining.Tables[0].Rows[0]["planned_objective"].ToString()),
+                        Training_Topic = objModel.GetTrainingTopicByReportNo(dsTraining.Tables[0].Rows[0]["report_no"].ToString()),
+                        Sourceof_Training = TrainingModel.GetTrainingSourceNameById(objModel.GetSorceofTrainingByReportNo(dsTraining.Tables[0].Rows[0]["report_no"].ToString())),
+                        //Trainer_Name =/* objModel.GetTrainingReportNoById*/(dsTraining.Tables[0].Rows[0]["report_no"].ToString()),
+                    };
+
+                    sSqlstmt = "SELECT id_train_trans, id_training_evalution, SQId, SQ_OptionsId FROM t_trainings_evalution_trans where id_training_evalution='" + Id + "'";
+                    DataSet dsPerformanceElement = objGlobaldata.Getdetails(sSqlstmt);
+
+                    TrainingEffectivenessModelsList objList = new TrainingEffectivenessModelsList();
+                    objList.TrainList = new List<TrainingEffectivenessModels>();
+
+                    SurveyModels objSurvey = new SurveyModels();
+
+                    Dictionary<string, string> dicPerformanceElements = new Dictionary<string, string>();
+
+                    for (int i = 0; dsPerformanceElement.Tables.Count > 0 && i < dsPerformanceElement.Tables[0].Rows.Count; i++)
+                    {
+                        TrainingEffectivenessModels objElements = new TrainingEffectivenessModels
                         {
-                            id_training_evalution = dsTraining.Tables[0].Rows[0]["id_training_evalution"].ToString(),
-                            report_no = objModel.GetTrainingReportNoById(dsTraining.Tables[0].Rows[0]["report_no"].ToString()),
-                            perf_monitor_period = objGlobaldata.GetDropdownitemById(dsTraining.Tables[0].Rows[0]["perf_monitor_period"].ToString()),
-                            emp_name = objGlobaldata.GetEmpHrNameById(dsTraining.Tables[0].Rows[0]["emp_name"].ToString()),
-                            upload = dsTraining.Tables[0].Rows[0]["upload"].ToString(),
-                            comments = (dsTraining.Tables[0].Rows[0]["comments"].ToString()),
-                            emp_perf_improved = dsTraining.Tables[0].Rows[0]["emp_perf_improved"].ToString(),
-                            action_taken = (dsTraining.Tables[0].Rows[0]["action_taken"].ToString()),
-                            planned_objective = objGlobaldata.GetDropdownitemById(dsTraining.Tables[0].Rows[0]["planned_objective"].ToString()),
-                            Training_Topic = objModel.GetTrainingTopicByReportNo(dsTraining.Tables[0].Rows[0]["report_no"].ToString()),
-                            Sourceof_Training = TrainingModel.GetTrainingSourceNameById(objModel.GetSorceofTrainingByReportNo(dsTraining.Tables[0].Rows[0]["report_no"].ToString())),
-                            //Trainer_Name =/* objModel.GetTrainingReportNoById*/(dsTraining.Tables[0].Rows[0]["report_no"].ToString()),
-                        };                       
+                            id_train_trans = dsPerformanceElement.Tables[0].Rows[i]["id_train_trans"].ToString(),
+                            SQId = objSurvey.GetSurveyQuestionNameById(dsPerformanceElement.Tables[0].Rows[i]["SQId"].ToString()),
+                            SQ_OptionsId = objSurvey.GetSurveyRatingNameById(dsPerformanceElement.Tables[0].Rows[i]["SQ_OptionsId"].ToString())
+                        };
 
-                        sSqlstmt = "SELECT id_train_trans, id_training_evalution, SQId, SQ_OptionsId FROM t_trainings_evalution_trans where id_training_evalution='" + Id + "'";
-                        DataSet dsPerformanceElement = objGlobaldata.Getdetails(sSqlstmt);
-
-                        TrainingEffectivenessModelsList objList = new TrainingEffectivenessModelsList();
-                        objList.TrainList = new List<TrainingEffectivenessModels>();
-
-                        SurveyModels objSurvey = new SurveyModels();
-
-                        Dictionary<string, string> dicPerformanceElements = new Dictionary<string, string>();
-
-                        for (int i = 0; dsPerformanceElement.Tables.Count > 0 && i < dsPerformanceElement.Tables[0].Rows.Count; i++)
-                        {
-                            TrainingEffectivenessModels objElements = new TrainingEffectivenessModels
-                            {
-                                id_train_trans = dsPerformanceElement.Tables[0].Rows[i]["id_train_trans"].ToString(),
-                                SQId = objSurvey.GetSurveyQuestionNameById(dsPerformanceElement.Tables[0].Rows[i]["SQId"].ToString()),
-                                SQ_OptionsId = objSurvey.GetSurveyRatingNameById(dsPerformanceElement.Tables[0].Rows[i]["SQ_OptionsId"].ToString())
-                            };
-
-                            dicPerformanceElements.Add(dsPerformanceElement.Tables[0].Rows[i]["SQId"].ToString(), dsPerformanceElement.Tables[0].Rows[i]["SQ_OptionsId"].ToString());
-                            objList.TrainList.Add(objElements);
-                        }
-
-                        ViewBag.PerformanceElement = objList;
-                        ViewBag.dicPerformanceElement = dicPerformanceElements;
-
-
-                        return View(objModel);
+                        dicPerformanceElements.Add(dsPerformanceElement.Tables[0].Rows[i]["SQId"].ToString(), dsPerformanceElement.Tables[0].Rows[i]["SQ_OptionsId"].ToString());
+                        objList.TrainList.Add(objElements);
                     }
-                    else
-                    {
-                        TempData["alertdata"] = "No data exists";
-                        return RedirectToAction("TrainingEffectivenessList");
-                    }              
+
+                    ViewBag.PerformanceElement = objList;
+                    ViewBag.dicPerformanceElement = dicPerformanceElements;
+
+                    return View(objModel);
+                }
+                else
+                {
+                    TempData["alertdata"] = "No data exists";
+                    return RedirectToAction("TrainingEffectivenessList");
+                }
             }
             catch (Exception ex)
             {
@@ -643,7 +638,7 @@ namespace ISOStd.Controllers
                 ViewBag.SubMenutype = "TrainingEffectiveness";
                 TrainingsModels TrainingModel = new TrainingsModels();
                 TrainingEffectivenessModels objModel = new TrainingEffectivenessModels();
-                                
+
                 if (form["id_training_evalution"] != null && form["id_training_evalution"] != "")
                 {
                     string sid_training_evalution = form["id_training_evalution"];
@@ -674,9 +669,8 @@ namespace ISOStd.Controllers
                         sSqlstmt = "SELECT id_train_trans, id_training_evalution, SQId, SQ_OptionsId FROM t_trainings_evalution_trans where id_training_evalution='"
                              + sid_training_evalution + "'";
                         ViewBag.PerformanceElement = objGlobaldata.Getdetails(sSqlstmt);
-                                                
-                        ViewBag.Evaluation = objModel;                                             
-                       
+
+                        ViewBag.Evaluation = objModel;
                     }
                     else
                     {
@@ -775,8 +769,8 @@ namespace ISOStd.Controllers
         public ActionResult FunGetEmployeeList(string report_no)
         {
             TrainingEffectivenessModels objModel = new TrainingEffectivenessModels();
-           MultiSelectList lstDept = objModel.GetTainingEmpList(report_no);
-           return Json(lstDept);
+            MultiSelectList lstDept = objModel.GetTainingEmpList(report_no);
+            return Json(lstDept);
         }
 
         //Training Effective Evaluation Questions
@@ -788,7 +782,7 @@ namespace ISOStd.Controllers
             SurveyModels objSurvey = new SurveyModels();
             try
             {
-                 //ViewBag.Survey_Type = objSurvey.getSurveyIDByName("Training Effectiveness Survey");
+                //ViewBag.Survey_Type = objSurvey.getSurveyIDByName("Training Effectiveness Survey");
             }
             catch (Exception ex)
             {
@@ -807,7 +801,7 @@ namespace ISOStd.Controllers
             {
                 SurveyModels objSurvey = new SurveyModels();
                 ViewBag.dsSurvey = objSurvey.GetSurveyTypeListbox();
-                               
+
                 ViewBag.Survey_Type = objSurveyModels.Survey_TypeId;
                 ViewBag.Survey_TypeId = objSurvey.getSurveyIDByName(objSurveyModels.Survey_TypeId);
                 objSurveyModels.Survey_TypeId1 = objSurvey.getSurveyIDByName(objSurveyModels.Survey_TypeId);
@@ -841,7 +835,7 @@ namespace ISOStd.Controllers
         public ActionResult EvaluationQuestionsDelete(string SQId)
         {
             ViewBag.SubMenutype = "TrainingEffectiveness";
-            
+
             SurveyModels objSurveyModels = new SurveyModels();
             try
             {
@@ -866,7 +860,6 @@ namespace ISOStd.Controllers
         [AllowAnonymous]
         public ActionResult EvaluationQuestionsDelete1(string SQId)
         {
-
             ViewBag.SubMenutype = "TrainingEffectiveness";
             SurveyModels objSurveyModels = new SurveyModels();
             try
@@ -875,7 +868,6 @@ namespace ISOStd.Controllers
                 {
                     TempData["Successdata"] = "Survey details deleted successfully";
                     return Json("Success");
-
                 }
                 else
                 {
@@ -963,7 +955,7 @@ namespace ISOStd.Controllers
                 {
                     TempData["alertdata"] = "Id is required.";
                 }
-               // ViewBag.dsSurveyRating = objSurvey.GetSurveyRating(objSurveyModels.Survey_TypeId);               
+                // ViewBag.dsSurveyRating = objSurvey.GetSurveyRating(objSurveyModels.Survey_TypeId);
             }
             catch (Exception ex)
             {
@@ -976,7 +968,6 @@ namespace ISOStd.Controllers
         [AllowAnonymous]
         public ActionResult EvaluationRatingsDelete(string SQ_OptionsId)
         {
-
             ViewBag.SubMenutype = "TrainingEffectiveness";
             SurveyModels objSurveyModels = new SurveyModels();
             try
@@ -1002,7 +993,6 @@ namespace ISOStd.Controllers
         [AllowAnonymous]
         public ActionResult EvaluationRatingsDelete1(string SQ_OptionsId)
         {
-
             ViewBag.SubMenutype = "TrainingEffectiveness";
             SurveyModels objSurveyModels = new SurveyModels();
             try
@@ -1011,7 +1001,6 @@ namespace ISOStd.Controllers
                 {
                     TempData["Successdata"] = "Survey details deleted successfully";
                     return Json("Success");
-
                 }
                 else
                 {

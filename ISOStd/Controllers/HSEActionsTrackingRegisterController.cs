@@ -1,23 +1,19 @@
-﻿using System;
+﻿using ISOStd.Filters;
+using ISOStd.Models;
+using System;
 using System.Collections.Generic;
+using System.Data;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using ISOStd.Models;
-using System.Data;
-using System.Net;
-using System.IO;
-using PagedList;
-using PagedList.Mvc;
-using ISOStd.Filters;
 
 namespace ISOStd.Controllers
 {
     [PreventFromUrl]
     public class HSEActionsTrackingRegisterController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
-
+        private clsGlobal objGlobaldata = new clsGlobal();
 
         public HSEActionsTrackingRegisterController()
         {
@@ -45,23 +41,22 @@ namespace ISOStd.Controllers
                 objHSE.branch = objGlobaldata.GetCurrentUserSession().division;
                 objHSE.Resp_Dept = objGlobaldata.GetCurrentUserSession().DeptID;
                 objHSE.Applicable_Site = objGlobaldata.GetCurrentUserSession().Work_Location;
-                
+
                 //ViewBag.ReviewerList = objGlobaldata.GetGRoleList(objHSE.branch, objHSE.Resp_Dept, objHSE.Applicable_Site, "Reviewer");
-              //  ViewBag.ApproverList = objGlobaldata.GetGRoleList(objHSE.branch, objHSE.Resp_Dept, objHSE.Applicable_Site, "Approver");
+                //  ViewBag.ApproverList = objGlobaldata.GetGRoleList(objHSE.branch, objHSE.Resp_Dept, objHSE.Applicable_Site, "Approver");
                 //ViewBag.EmpList= objGlobaldata.GetGEmpListBymulitBDL(objHSE.branch, objHSE.Resp_Dept, objHSE.Applicable_Site);
                 ViewBag.Branch = objGlobaldata.GetCompanyBranchListbox();
                 ViewBag.Department = objGlobaldata.GetDepartmentListbox(objHSE.branch);
                 ViewBag.Location = objGlobaldata.GetDivisionLocationList(objHSE.branch);
                 ViewBag.Action_Status = objHSE.GetMultiHSEStatusList();
                 ViewBag.ShortFallSource = objHSE.GetMultiShortFallSourceList();
-                ViewBag.RiskRank = objHSE.GetMultiRiskRankList();              
+                ViewBag.RiskRank = objHSE.GetMultiRiskRankList();
                 ViewBag.HSECategory = objGlobaldata.GetAllIsoStdListbox();
                 ViewBag.ReviewerList = objGlobaldata.GetReviewer();
                 ViewBag.ApproverList = objGlobaldata.GetApprover();
-                ViewBag.EmpLists = objGlobaldata.GetHrEmployeeListbox();              
+                ViewBag.EmpLists = objGlobaldata.GetHrEmployeeListbox();
                 ViewBag.NotificationPeriod = objGlobaldata.GetConstantValueKeyValuePair("NotificationPeriod");
                 ViewBag.IsoStdList = objGlobaldata.GetAllIsoStdListbox();
-               
             }
             catch (Exception ex)
             {
@@ -180,39 +175,33 @@ namespace ISOStd.Controllers
 
             return RedirectToAction("HSEActionsTrackingRegisterList");
         }
-        
+
         [AllowAnonymous]
         public JsonResult HSEDocDelete(FormCollection form)
         {
             try
             {
+                if (form["Actions_TrackingReg_Id"] != null && form["Actions_TrackingReg_Id"] != "")
+                {
+                    HSEActionsTrackingRegisterModels Doc = new HSEActionsTrackingRegisterModels();
+                    string sActions_TrackingReg_Id = form["Actions_TrackingReg_Id"];
 
-                
-                    if (form["Actions_TrackingReg_Id"] != null && form["Actions_TrackingReg_Id"] != "")
+                    if (Doc.FunDeleteSafetyVoilationLogDoc(sActions_TrackingReg_Id))
                     {
-
-                        HSEActionsTrackingRegisterModels Doc = new HSEActionsTrackingRegisterModels();
-                        string sActions_TrackingReg_Id = form["Actions_TrackingReg_Id"];
-
-
-                        if (Doc.FunDeleteSafetyVoilationLogDoc(sActions_TrackingReg_Id))
-                        {
-                            TempData["Successdata"] = "Document deleted successfully";
-                            return Json("Success");
-                        }
-                        else
-                        {
-                            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                            return Json("Failed");
-                        }
+                        TempData["Successdata"] = "Document deleted successfully";
+                        return Json("Success");
                     }
                     else
                     {
-                        TempData["alertdata"] = "HSE Tracking Id cannot be Null or empty";
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                         return Json("Failed");
                     }
-             
-
+                }
+                else
+                {
+                    TempData["alertdata"] = "HSE Tracking Id cannot be Null or empty";
+                    return Json("Failed");
+                }
             }
             catch (Exception ex)
             {
@@ -221,7 +210,7 @@ namespace ISOStd.Controllers
             }
             return Json("Failed");
         }
-                
+
         [AllowAnonymous]
         public ActionResult HSEActionsTrackingRegisterList(string Short_Fall_Source, string HSEfromDate, string HSEtoDate, int? page, string branch_name)
         {
@@ -281,7 +270,7 @@ namespace ISOStd.Controllers
                 sSqlstmt = sSqlstmt + sSearchtext + " order by Actions_TrackingReg_Id desc";
                 DataSet dsHSEActionsTracking = objGlobaldata.Getdetails(sSqlstmt);
                 if (dsHSEActionsTracking.Tables.Count > 0)
-                {  
+                {
                     for (int i = 0; i < dsHSEActionsTracking.Tables[0].Rows.Count; i++)
                     {
                         try
@@ -337,7 +326,6 @@ namespace ISOStd.Controllers
                             objGlobaldata.AddFunctionalLog("Exception in HSEActionsTrackingRegisterList: " + ex.ToString());
                             TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                         }
-
                     }
                 }
             }
@@ -409,8 +397,7 @@ namespace ISOStd.Controllers
                 sSqlstmt = sSqlstmt + sSearchtext + " order by Actions_TrackingReg_Id desc";
                 DataSet dsHSEActionsTracking = objGlobaldata.Getdetails(sSqlstmt);
                 if (dsHSEActionsTracking.Tables.Count > 0)
-                {                  
-
+                {
                     for (int i = 0; i < dsHSEActionsTracking.Tables[0].Rows.Count; i++)
                     {
                         try
@@ -466,7 +453,6 @@ namespace ISOStd.Controllers
                             objGlobaldata.AddFunctionalLog("Exception in HSEActionsTrackingRegisterListSearch: " + ex.ToString());
                             TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                         }
-
                     }
                 }
             }
@@ -477,7 +463,7 @@ namespace ISOStd.Controllers
             }
             return Json("Success");
         }
-               
+
         [AllowAnonymous]
         public ActionResult HSEActionsTrackingRegisterDetails()
         {
@@ -495,7 +481,6 @@ namespace ISOStd.Controllers
                     DataSet dsHSEActionsTracking = objGlobaldata.Getdetails(sSqlstmt);
                     if (dsHSEActionsTracking.Tables.Count > 0)
                     {
-
                         HSEActionsTrackingRegisterModels objPPEIssueLog = new HSEActionsTrackingRegisterModels
                         {
                             Actions_TrackingReg_Id = dsHSEActionsTracking.Tables[0].Rows[0]["Actions_TrackingReg_Id"].ToString(),
@@ -545,7 +530,6 @@ namespace ISOStd.Controllers
                         }
 
                         return View(objPPEIssueLog);
-
                     }
                     else
                     {
@@ -567,7 +551,7 @@ namespace ISOStd.Controllers
 
             return RedirectToAction("HSEActionsTrackingRegisterList");
         }
-        
+
         [AllowAnonymous]
         public ActionResult HSEActionsTrackingRegisterInfo(int id)
         {
@@ -582,7 +566,6 @@ namespace ISOStd.Controllers
                 DataSet dsHSEActionsTracking = objGlobaldata.Getdetails(sSqlstmt);
                 if (dsHSEActionsTracking.Tables.Count > 0)
                 {
-
                     HSEActionsTrackingRegisterModels objPPEIssueLog = new HSEActionsTrackingRegisterModels
                     {
                         Actions_TrackingReg_Id = dsHSEActionsTracking.Tables[0].Rows[0]["Actions_TrackingReg_Id"].ToString(),
@@ -632,7 +615,6 @@ namespace ISOStd.Controllers
                     }
 
                     return View(objPPEIssueLog);
-
                 }
                 else
                 {
@@ -694,7 +676,6 @@ namespace ISOStd.Controllers
                             NotificationValue = dsHSEActionsTracking.Tables[0].Rows[0]["NotificationValue"].ToString(),
                             branch = (dsHSEActionsTracking.Tables[0].Rows[0]["branch"].ToString()),
                             Applicable_Site = (dsHSEActionsTracking.Tables[0].Rows[0]["Applicable_Site"].ToString()),
-
                         };
 
                         DateTime dateValue;
@@ -720,10 +701,10 @@ namespace ISOStd.Controllers
 
                         ViewBag.Location = objGlobaldata.GetLocationbyMultiDivision(dsHSEActionsTracking.Tables[0].Rows[0]["branch"].ToString());
                         ViewBag.Department = objGlobaldata.GetDepartmentList1(dsHSEActionsTracking.Tables[0].Rows[0]["branch"].ToString());
-                      //  ViewBag.EmpLists = objGlobaldata.GetGEmpListBymulitBDL(dsHSEActionsTracking.Tables[0].Rows[0]["branch"].ToString(), dsHSEActionsTracking.Tables[0].Rows[0]["Resp_Dept"].ToString(), dsHSEActionsTracking.Tables[0].Rows[0]["Applicable_Site"].ToString());
-                      //  ViewBag.ReviewerList = objGlobaldata.GetGRoleList(dsHSEActionsTracking.Tables[0].Rows[0]["branch"].ToString(), dsHSEActionsTracking.Tables[0].Rows[0]["Resp_Dept"].ToString(), dsHSEActionsTracking.Tables[0].Rows[0]["Applicable_Site"].ToString(), "Reviewer");
-                      //  ViewBag.ApproverList = objGlobaldata.GetGRoleList(dsHSEActionsTracking.Tables[0].Rows[0]["branch"].ToString(), dsHSEActionsTracking.Tables[0].Rows[0]["Resp_Dept"].ToString(), dsHSEActionsTracking.Tables[0].Rows[0]["Applicable_Site"].ToString(), "Approver");
-                        
+                        //  ViewBag.EmpLists = objGlobaldata.GetGEmpListBymulitBDL(dsHSEActionsTracking.Tables[0].Rows[0]["branch"].ToString(), dsHSEActionsTracking.Tables[0].Rows[0]["Resp_Dept"].ToString(), dsHSEActionsTracking.Tables[0].Rows[0]["Applicable_Site"].ToString());
+                        //  ViewBag.ReviewerList = objGlobaldata.GetGRoleList(dsHSEActionsTracking.Tables[0].Rows[0]["branch"].ToString(), dsHSEActionsTracking.Tables[0].Rows[0]["Resp_Dept"].ToString(), dsHSEActionsTracking.Tables[0].Rows[0]["Applicable_Site"].ToString(), "Reviewer");
+                        //  ViewBag.ApproverList = objGlobaldata.GetGRoleList(dsHSEActionsTracking.Tables[0].Rows[0]["branch"].ToString(), dsHSEActionsTracking.Tables[0].Rows[0]["Resp_Dept"].ToString(), dsHSEActionsTracking.Tables[0].Rows[0]["Applicable_Site"].ToString(), "Approver");
+
                         ViewBag.Action_Status = objHSE.GetMultiHSEStatusList();
                         ViewBag.ShortFallSource = objHSE.GetMultiShortFallSourceList();
                         ViewBag.Branch = objGlobaldata.GetCompanyBranchListbox();
@@ -890,11 +871,9 @@ namespace ISOStd.Controllers
             return RedirectToAction("HSEActionsTrackingRegisterList");
         }
 
-
         [AllowAnonymous]
         public ActionResult ShortFallSourceChart(string HSEfromDate, string HSEtoDate)
         {
-
             ProductShareBarchartList objProductshareList = new ProductShareBarchartList();
             objProductshareList.lstProductSharechart = new List<ProductShareBarchart>();
             try
@@ -918,7 +897,6 @@ namespace ISOStd.Controllers
                         };
                         objProductshareList.lstProductSharechart.Add(objProduct);
                     }
-
                 }
             }
             catch (Exception ex)

@@ -1,28 +1,27 @@
-﻿using System.Web.UI;
+﻿using ISOStd.Filters;
+using ISOStd.Models;
+using PagedList;
+using Rotativa;
 using System;
 using System.Collections.Generic;
+using System.Data;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using ISOStd.Models;
-using System.IO;
-using System.Data;
-using PagedList;
-using PagedList.Mvc;
-using Rotativa;
-using ISOStd.Filters;
 
 namespace ISOStd.Controllers
 {
     [PreventFromUrl]
     public class WorkPermitController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
+        private clsGlobal objGlobaldata = new clsGlobal();
 
         public WorkPermitController()
         {
             ViewBag.Menutype = "HSE";
         }
+
         public ActionResult AddAccessPermit()
         {
             ViewBag.SubMenutype = "AccessPermit";
@@ -39,7 +38,6 @@ namespace ISOStd.Controllers
                 ViewBag.Approvers = objGlobaldata.GetApprover();
                 ViewBag.TimeInHour = objGlobaldata.GetAuditTimeInHour();
                 ViewBag.TimeInMin = objGlobaldata.GetAuditTimeInMin();
-
             }
             catch (Exception ex)
             {
@@ -105,7 +103,6 @@ namespace ISOStd.Controllers
                         objOutList.PermitList.Add(OutModel);
                     }
                 }
-
 
                 if (objPermit.FunAddAccessPermit(objPermit, objInList, objOutList))
                 {
@@ -179,7 +176,6 @@ namespace ISOStd.Controllers
                     }
                     else
                     {
-
                         TempData["alertdata"] = "Id cannot be Null or empty";
                         return RedirectToAction("AccessPermitList");
                     }
@@ -267,7 +263,7 @@ namespace ISOStd.Controllers
             }
             return View(objPermit);
         }
-        
+
         [HttpPost]
         [AllowAnonymous]
         [ValidateInput(false)]
@@ -324,7 +320,6 @@ namespace ISOStd.Controllers
                         objOutList.PermitList.Add(OutModel);
                     }
                 }
-
 
                 if (objPermit.FunUpdateAccessPermit(objPermit, objInList, objOutList))
                 {
@@ -390,7 +385,6 @@ namespace ISOStd.Controllers
                     }
                     else
                     {
-
                         TempData["alertdata"] = "Id cannot be Null or empty";
                         return RedirectToAction("AccessPermitList");
                     }
@@ -494,8 +488,6 @@ namespace ISOStd.Controllers
             {
                 DateTime dateValue;
 
-
-
                 WorkPermitModelsList objOutList = new WorkPermitModelsList();
                 objOutList.PermitList = new List<WorkPermitModels>();
                 for (int i = 0; i < Convert.ToInt16(form["itemcnts"]); i++)
@@ -545,7 +537,6 @@ namespace ISOStd.Controllers
 
             try
             {
-
                 string sSqlstmt = "select id_access_permit,permitno,requestor,company,contactno,area,location,date_issued,date_expired,"
                 + " (case when approve_status = '0' then 'Pending'  when approve_status = '1' then 'Approved' else 'Rejected' end) as approve_status,branch,Department"
                 + " from t_access_permit where active=1";
@@ -568,7 +559,7 @@ namespace ISOStd.Controllers
 
                 DataSet dsPermitList = objGlobaldata.Getdetails(sSqlstmt);
                 if (dsPermitList.Tables.Count > 0 && dsPermitList.Tables[0].Rows.Count > 0)
-                {                  
+                {
                     for (int i = 0; i < dsPermitList.Tables[0].Rows.Count; i++)
                     {
                         try
@@ -580,7 +571,7 @@ namespace ISOStd.Controllers
                                 requestor = dsPermitList.Tables[0].Rows[i]["requestor"].ToString(),
                                 company = dsPermitList.Tables[0].Rows[i]["company"].ToString(),
                                 contactno = dsPermitList.Tables[0].Rows[i]["contactno"].ToString(),
-                                area = dsPermitList.Tables[0].Rows[i]["area"].ToString(),                                
+                                area = dsPermitList.Tables[0].Rows[i]["area"].ToString(),
                                 approve_status = dsPermitList.Tables[0].Rows[i]["approve_status"].ToString(),
                                 branch = objGlobaldata.GetMultiCompanyBranchNameById(dsPermitList.Tables[0].Rows[i]["branch"].ToString()),
                                 Department = objGlobaldata.GetMultiDeptNameById(dsPermitList.Tables[0].Rows[i]["Department"].ToString()),
@@ -606,7 +597,6 @@ namespace ISOStd.Controllers
                         }
                     }
                 }
-
             }
             catch (Exception ex)
             {
@@ -626,7 +616,6 @@ namespace ISOStd.Controllers
 
             try
             {
-
                 string sSqlstmt = "select id_access_permit,permitno,requestor,company,contactno,area,location,date_issued,date_expired,"
                 + " (case when approve_status = '0' then 'Pending'  when approve_status = '1' then 'Approved' else 'Rejected' end) as approve_status,branch,Department"
                 + " from t_access_permit where active=1";
@@ -642,7 +631,7 @@ namespace ISOStd.Controllers
                 }
                 else
                 {
-                    sSearchtext = sSearchtext + " and find_in_set('" + sBranch_name + "', branch)"; 
+                    sSearchtext = sSearchtext + " and find_in_set('" + sBranch_name + "', branch)";
                 }
 
                 sSqlstmt = sSqlstmt + sSearchtext + " order by id_access_permit desc";
@@ -650,7 +639,6 @@ namespace ISOStd.Controllers
                 DataSet dsPermitList = objGlobaldata.Getdetails(sSqlstmt);
                 if (dsPermitList.Tables.Count > 0 && dsPermitList.Tables[0].Rows.Count > 0)
                 {
-                    
                     for (int i = 0; i < dsPermitList.Tables[0].Rows.Count; i++)
                     {
                         try
@@ -667,7 +655,6 @@ namespace ISOStd.Controllers
                                 branch = objGlobaldata.GetMultiCompanyBranchNameById(dsPermitList.Tables[0].Rows[i]["branch"].ToString()),
                                 Department = objGlobaldata.GetMultiDeptNameById(dsPermitList.Tables[0].Rows[i]["Department"].ToString()),
                                 location = objGlobaldata.GetDivisionLocationById(dsPermitList.Tables[0].Rows[i]["location"].ToString()),
-
                             };
                             DateTime dtDocDate;
                             if (dsPermitList.Tables[0].Rows[i]["date_issued"].ToString() != ""
@@ -689,7 +676,6 @@ namespace ISOStd.Controllers
                         }
                     }
                 }
-
             }
             catch (Exception ex)
             {
@@ -728,7 +714,6 @@ namespace ISOStd.Controllers
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 }
             }
-
             catch (Exception ex)
             {
                 objGlobaldata.AddFunctionalLog("Exception in AccessPermitApproveReject: " + ex.ToString());
@@ -744,7 +729,7 @@ namespace ISOStd.Controllers
                 return RedirectToAction("WorkPermitList");
             }
         }
-                            
+
         [AllowAnonymous]
         public ActionResult AccessPermitDetail()
         {
@@ -777,7 +762,6 @@ namespace ISOStd.Controllers
                             branch = objGlobaldata.GetMultiCompanyBranchNameById(dsPermitList.Tables[0].Rows[0]["branch"].ToString()),
                             Department = objGlobaldata.GetMultiDeptNameById(dsPermitList.Tables[0].Rows[0]["Department"].ToString()),
                             location = objGlobaldata.GetDivisionLocationById(dsPermitList.Tables[0].Rows[0]["location"].ToString()),
-
                         };
                         DateTime dtDocDate;
                         if (dsPermitList.Tables[0].Rows[0]["date_issued"].ToString() != ""
@@ -793,7 +777,6 @@ namespace ISOStd.Controllers
                     }
                     else
                     {
-
                         TempData["alertdata"] = "Id cannot be Null or empty";
                         return RedirectToAction("AccessPermitList");
                     }
@@ -898,7 +881,6 @@ namespace ISOStd.Controllers
                 string id_access_permit = form["id_access_permit"];
                 if (id_access_permit != null && id_access_permit != "")
                 {
-
                     string sSqlstmt = "select id_access_permit,permitno,requestor,company,contactno,area,location,description,approved_by,"
                         + " (case when approve_status = '0' then 'Pending'  when approve_status = '1' then 'Approved' else 'Rejected' end) as approve_status,"
                     + "date_issued,date_expired,loggedby,date_submitted,approved_date,branch,Department from t_access_permit where id_access_permit='" + id_access_permit + "'";
@@ -921,7 +903,6 @@ namespace ISOStd.Controllers
                             branch = objGlobaldata.GetMultiCompanyBranchNameById(dsPermitList.Tables[0].Rows[0]["branch"].ToString()),
                             Department = objGlobaldata.GetMultiDeptNameById(dsPermitList.Tables[0].Rows[0]["Department"].ToString()),
                             location = objGlobaldata.GetDivisionLocationById(dsPermitList.Tables[0].Rows[0]["location"].ToString()),
-
                         };
                         DateTime dtDocDate;
                         if (dsPermitList.Tables[0].Rows[0]["date_issued"].ToString() != ""
@@ -955,7 +936,6 @@ namespace ISOStd.Controllers
                     }
                     else
                     {
-
                         TempData["alertdata"] = "Id cannot be Null or empty";
                         return RedirectToAction("AccessPermitList");
                     }
@@ -1060,7 +1040,6 @@ namespace ISOStd.Controllers
                 Cookies = cookieCollection,
                 CustomSwitches = footer
             };
-
         }
 
         [HttpGet]
@@ -1070,7 +1049,6 @@ namespace ISOStd.Controllers
             WorkPermitModels objPermit = new WorkPermitModels();
             try
             {
-
                 objPermit.branch = objGlobaldata.GetCurrentUserSession().division;
                 objPermit.dept = objGlobaldata.GetCurrentUserSession().DeptID;
                 objPermit.location = objGlobaldata.GetCurrentUserSession().Work_Location;
@@ -1087,7 +1065,7 @@ namespace ISOStd.Controllers
                 ViewBag.Rating = objGlobaldata.GetPermitRating();
                 ViewBag.work = objGlobaldata.GetConstantValue("Permitworktype");
                 ViewBag.HydroTest = objGlobaldata.getPermitQuestionList("Hydro Test");
-               // ViewBag.Dept = objGlobaldata.GetDepartmentListbox();
+                // ViewBag.Dept = objGlobaldata.GetDepartmentListbox();
                 ViewBag.PermitLocation = objGlobaldata.GetDropdownList("Work Permit Location");
 
                 ViewBag.Pneumatic = objGlobaldata.getPermitQuestionList("Pneumatic");
@@ -1111,7 +1089,6 @@ namespace ISOStd.Controllers
                 ViewBag.ShaftWorkSite = objGlobaldata.getPermitSectionQuestionList("Shaft Work", "Work Site Precautions");
 
                 ViewBag.Confined = objGlobaldata.getPermitQuestionList("Confined");
-
             }
             catch (Exception ex)
             {
@@ -1166,30 +1143,30 @@ namespace ISOStd.Controllers
                 if (Request.Files.Count > 0)
                 {
                     HttpPostedFileBase files = Request.Files[0];
-                if (upload != null && files.ContentLength > 0)
-                {
-                    objPermit.upload = "";
-                    foreach (var file in upload)
+                    if (upload != null && files.ContentLength > 0)
                     {
-                        try
+                        objPermit.upload = "";
+                        foreach (var file in upload)
                         {
-                            string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/Permit"), Path.GetFileName(file.FileName));
-                            string sFilename = "Permit" + "_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath), sFilepath = Path.GetDirectoryName(spath);
-                            file.SaveAs(sFilepath + "/" + sFilename);
-                            objPermit.upload = objPermit.upload + "," + "~/DataUpload/MgmtDocs/Permit/" + sFilename;
+                            try
+                            {
+                                string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/Permit"), Path.GetFileName(file.FileName));
+                                string sFilename = "Permit" + "_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath), sFilepath = Path.GetDirectoryName(spath);
+                                file.SaveAs(sFilepath + "/" + sFilename);
+                                objPermit.upload = objPermit.upload + "," + "~/DataUpload/MgmtDocs/Permit/" + sFilename;
+                            }
+                            catch (Exception ex)
+                            {
+                                objGlobaldata.AddFunctionalLog("Exception in AddWorkPermit-upload: " + ex.ToString());
+                            }
                         }
-                        catch (Exception ex)
-                        {
-                            objGlobaldata.AddFunctionalLog("Exception in AddWorkPermit-upload: " + ex.ToString());
-                        }
+                        objPermit.upload = objPermit.upload.Trim(',');
                     }
-                    objPermit.upload = objPermit.upload.Trim(',');
+                    else
+                    {
+                        ViewBag.Message = "You have not specified a file.";
+                    }
                 }
-                else
-                {
-                    ViewBag.Message = "You have not specified a file.";
-                }
-            }
                 WorkPermitModelsList objInList = new WorkPermitModelsList();
                 objInList.PermitList = new List<WorkPermitModels>();
                 for (int i = 0; i < Convert.ToInt16(form["itemcnt"]); i++)
@@ -1587,7 +1564,6 @@ namespace ISOStd.Controllers
                     z++;
                 }
 
-
                 if (objPermit.FunAddWorkPermit(objPermit, objInList, objHydroList, objExcvHazardList, objExcvSiteList, objExcvSafetyList, objHotTypeList, objHotHazardList, objHotWelfareList, objHotSiteList, objHotSafetyList, objFalseHazardList, objFalseSiteList, objFalseSafetyList, objShaftHazardList, objShaftSiteList, objShaftSafetyList, objPneumaticList, objElectricalList, objConfinedList))
                 {
                     TempData["Successdata"] = "Added Work Permit successfully with Permit No '" + objPermit.permitno + "'";
@@ -1634,11 +1610,9 @@ namespace ISOStd.Controllers
 
                 sSqlstmt = sSqlstmt + sSearchtext + " order by id_work_permit desc";
 
-
                 DataSet dsPermitList = objGlobaldata.Getdetails(sSqlstmt);
                 if (dsPermitList.Tables.Count > 0 && dsPermitList.Tables[0].Rows.Count > 0)
                 {
-                  
                     for (int i = 0; i < dsPermitList.Tables[0].Rows.Count; i++)
                     {
                         try
@@ -1680,7 +1654,6 @@ namespace ISOStd.Controllers
                         }
                     }
                 }
-
             }
             catch (Exception ex)
             {
@@ -1719,11 +1692,9 @@ namespace ISOStd.Controllers
 
                 sSqlstmt = sSqlstmt + sSearchtext + " order by id_work_permit desc";
 
-
                 DataSet dsPermitList = objGlobaldata.Getdetails(sSqlstmt);
                 if (dsPermitList.Tables.Count > 0 && dsPermitList.Tables[0].Rows.Count > 0)
                 {
-                  
                     for (int i = 0; i < dsPermitList.Tables[0].Rows.Count; i++)
                     {
                         try
@@ -1765,7 +1736,6 @@ namespace ISOStd.Controllers
                         }
                     }
                 }
-
             }
             catch (Exception ex)
             {
@@ -1859,8 +1829,7 @@ namespace ISOStd.Controllers
                             add_comments = dsPermitList.Tables[0].Rows[0]["add_comments"].ToString(),
                             work_type = dsPermitList.Tables[0].Rows[0]["work_type"].ToString(),
                             branch = (dsPermitList.Tables[0].Rows[0]["branch"].ToString()),
-                            permit_location =objGlobaldata.GetDropdownitemById(dsPermitList.Tables[0].Rows[0]["permit_location"].ToString()),
-
+                            permit_location = objGlobaldata.GetDropdownitemById(dsPermitList.Tables[0].Rows[0]["permit_location"].ToString()),
                         };
                         DateTime dtDocDate;
                         if (dsPermitList.Tables[0].Rows[0]["start_date"].ToString() != ""
@@ -1881,11 +1850,9 @@ namespace ISOStd.Controllers
                         ViewBag.Branch = objGlobaldata.GetCompanyBranchListbox();
                         ViewBag.Location = objGlobaldata.GetLocationbyMultiDivision(dsPermitList.Tables[0].Rows[0]["branch"].ToString());
                         ViewBag.Department = objGlobaldata.GetDepartmentList1(dsPermitList.Tables[0].Rows[0]["branch"].ToString());
-
                     }
                     else
                     {
-
                         TempData["alertdata"] = "Id cannot be Null or empty";
                         return RedirectToAction("WorkPermitList");
                     }
@@ -2507,8 +2474,6 @@ namespace ISOStd.Controllers
                 MultiSelectList ShaftHazard = objGlobaldata.getPermitSectionQuestionList("Shaft Work", "Hazards Identified");
                 MultiSelectList ShaftWorkSite = objGlobaldata.getPermitSectionQuestionList("Shaft Work", "Work Site Precautions");
 
-
-
                 //Confined
                 WorkPermitModelsList objConfinedList = new WorkPermitModelsList();
                 objConfinedList.PermitList = new List<WorkPermitModels>();
@@ -2859,7 +2824,6 @@ namespace ISOStd.Controllers
                     z++;
                 }
 
-
                 if (objPermit.FunUpdateWorkPermit(objPermit, objInList, objHydroList, objExcvHazardList, objExcvSiteList, objExcvSafetyList, objHotTypeList, objHotHazardList, objHotWelfareList, objHotSiteList, objHotSafetyList, objFalseHazardList, objFalseSiteList, objFalseSafetyList, objShaftHazardList, objShaftSiteList, objShaftSafetyList, objPneumaticList, objElectricalList, objConfinedList))
                 {
                     TempData["Successdata"] = "Updated successfully";
@@ -2915,7 +2879,6 @@ namespace ISOStd.Controllers
                 string id_work_permit = form["id_work_permit"];
                 if (id_work_permit != null && id_work_permit != "")
                 {
-
                     string sSqlstmt = "select id_work_permit,permit_type,permitno,area,location,job_performer,contractor,contactno,section,equipment,"
                     + "jobno,workorder,access_level,no_person,no_days,resp_pers,date_submitted,dept,start_date,finish_date,resp_section,description" +
                     ",upload,pressure,IA,drawings,method_state,rescue_plan,work_level,comments,loggedby,work_status,work_safe,add_comments,completion_date,work_type,branch,permit_location from t_work_permit where id_work_permit='" + id_work_permit + "'";
@@ -2959,7 +2922,6 @@ namespace ISOStd.Controllers
                             dept = objGlobaldata.GetMultiDeptNameById(dsPermitList.Tables[0].Rows[0]["dept"].ToString()),
                             location = objGlobaldata.GetDivisionLocationById(dsPermitList.Tables[0].Rows[0]["location"].ToString()),
                             loggedby = dsPermitList.Tables[0].Rows[0]["loggedby"].ToString(),
-                            
                         };
                         DateTime dtDocDate;
                         if (dsPermitList.Tables[0].Rows[0]["start_date"].ToString() != ""
@@ -2983,7 +2945,6 @@ namespace ISOStd.Controllers
                             objPermit.completion_date = dtDocDate;
                         }
 
-
                         CompanyModels objCompany = new CompanyModels();
                         dsPermitList = objCompany.GetCompanyDetailsForReport(dsPermitList);
 
@@ -2994,7 +2955,6 @@ namespace ISOStd.Controllers
                     }
                     else
                     {
-
                         TempData["alertdata"] = "Id cannot be Null or empty";
                         return RedirectToAction("WorkPermitList");
                     }
@@ -3459,7 +3419,6 @@ namespace ISOStd.Controllers
                     }
                     ViewBag.ElectricalList = ElectricalList;
                     ViewBag.dicElectricalList = dicElectricalList;
-
                 }
             }
             catch (Exception ex)
@@ -3551,7 +3510,7 @@ namespace ISOStd.Controllers
             }
             return Json("Failed");
         }
-        
+
         public JsonResult AccessPermitApproveRejectNoty(string id_access_permit, string iStatus, string PendingFlg, string approver_comment)
         {
             try
@@ -3560,14 +3519,13 @@ namespace ISOStd.Controllers
 
                 if (objModel.FunAccessPermitApproveOrReject(id_access_permit, iStatus, approver_comment))
                 {
-                    return Json("Success"+ iStatus);
+                    return Json("Success" + iStatus);
                 }
                 else
                 {
                     return Json("Failed");
                 }
             }
-
             catch (Exception ex)
             {
                 objGlobaldata.AddFunctionalLog("Exception in AccessPermitApproveReject: " + ex.ToString());
@@ -3583,6 +3541,5 @@ namespace ISOStd.Controllers
                 return Json("Failed");
             }
         }
-
     }
 }

@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
-using Dapper;
-using DataAccess.Contract;
+﻿using DataAccess.Contract;
 using DataAccess.Models;
 using HA.HALoG5BWService.DatabaseAccess.Impl;
-using MySql.Data.MySqlClient;
+using System;
+using System.Collections.Generic;
 
 namespace DataAccess.Impl
 {
@@ -20,7 +16,8 @@ namespace DataAccess.Impl
         {
             this._connectionString = Constants.DbConnectionString;
         }
-        #endregion
+
+        #endregion Constructor
 
         //#region DB methods
 
@@ -30,7 +27,7 @@ namespace DataAccess.Impl
             {
                 PDep = dep,
                 PStatus = status,
-                PFromDate = fromDate.HasValue ? fromDate.Value.ToString("yyyy-MM-dd"):DateTime.Now.AddYears(-5).ToString("yyyy-MM-dd"),
+                PFromDate = fromDate.HasValue ? fromDate.Value.ToString("yyyy-MM-dd") : DateTime.Now.AddYears(-5).ToString("yyyy-MM-dd"),
                 PToDate = toDate.HasValue ? toDate.Value.ToString("yyyy-MM-dd") : DateTime.Now.ToString("yyyy-MM-dd"),
                 PCustomerPo = customerPo,
                 PSupplierPo = supplierPo,
@@ -153,6 +150,7 @@ namespace DataAccess.Impl
 
             return (int)base.Insert(parameters, "insert_expeditor_order_item");
         }
+
         //#endregion
     }
 
@@ -166,7 +164,8 @@ namespace DataAccess.Impl
         {
             this._connectionString = Constants.DbConnectionString;
         }
-        #endregion
+
+        #endregion Constructor
 
         public List<ExpeditorOrderItemModel> GetOrderLineItemsById(int id)
         {

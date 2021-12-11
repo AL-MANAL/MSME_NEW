@@ -1,35 +1,34 @@
 ﻿using ISOStd.Models;
+using PagedList;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
-using PagedList;
 using System.Web.UI.WebControls;
 
 namespace ISOStd.Controllers
 {
     public class AccessTreeController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
+        private clsGlobal objGlobaldata = new clsGlobal();
 
         [AllowAnonymous]
-        public ActionResult AddAccessTree(int? page,string RoleId, FormCollection form)
+        public ActionResult AddAccessTree(int? page, string RoleId, FormCollection form)
         {
             AccessTreeModelsList objList = new AccessTreeModelsList();
             objList.TreeList = new List<AccessTreeModels>();
             try
             {
                 AccessTreeModels obj = new AccessTreeModels();
-              
+
                 string sSqlstmt = "";
                 //  string sSearchtext = "";
 
                 //if (Request.QueryString["appl_branch"] != null && Request.QueryString["appl_branch"] != "" && Request.QueryString["RoleId"] != null && Request.QueryString["RoleId"] != "" && Request.QueryString["branch_id"] != null && Request.QueryString["branch_id"] != "")
-                if ( Request.QueryString["RoleId"] != null && Request.QueryString["RoleId"] != "")
+                if (Request.QueryString["RoleId"] != null && Request.QueryString["RoleId"] != "")
                 {
-                    string appl_branch=Request.QueryString["appl_branch"];
+                    string appl_branch = Request.QueryString["appl_branch"];
                     string sRoleID = Request.QueryString["RoleId"];
                     string sbranch_id = Request.QueryString["branch_id"];
                     ViewBag.role_id = sRoleID;
@@ -43,7 +42,7 @@ namespace ISOStd.Controllers
                     //      ViewBag.Role = String.Concat(role, "-", branch);
                     //}
                     //else{
-                          ViewBag.Role = String.Concat(role);
+                    ViewBag.Role = String.Concat(role);
                     //}
 
                     //sSqlstmt = "SELECT Id_access,a.id,parent_level,BranchName,BranchTree FROM t_company_branch a," +
@@ -53,7 +52,6 @@ namespace ISOStd.Controllers
                         " t_access b where active=1 and role_id ='" + sRoleID + "' order by parent_level,a.id asc ";
                     DataSet dsTreeList = objGlobaldata.Getdetails(sSqlstmt);
 
-                  
                     if (dsTreeList.Tables.Count > 0 && dsTreeList.Tables[0].Rows.Count > 0)
                     {
                         for (int i = 0; i < dsTreeList.Tables[0].Rows.Count; i++)
@@ -68,7 +66,7 @@ namespace ISOStd.Controllers
 
                                     BranchName = (dsTreeList.Tables[0].Rows[i]["BranchName"].ToString()),
                                     BranchTree = (dsTreeList.Tables[0].Rows[i]["BranchTree"].ToString()),
-                                   // Levels = dsTreeList.Tables[0].Rows[0]["levels"].ToString()
+                                    // Levels = dsTreeList.Tables[0].Rows[0]["levels"].ToString()
                                 };
                                 ViewBag.Id = objModels.Id_access;
                                 objList.TreeList.Add(objModels);
@@ -90,7 +88,6 @@ namespace ISOStd.Controllers
             return View(objList.TreeList.ToList().ToPagedList(page ?? 1, 10000));
         }
 
-
         [AllowAnonymous]
         public JsonResult UpdateAccessTree(string selected, string Id, string role_id)
         {
@@ -98,10 +95,10 @@ namespace ISOStd.Controllers
             bool IssueNo = false;
             //if (selected != null)
             //{
-                IssueNo = objAccessList.FunUpdateAccessTree(selected, Id, role_id);
+            IssueNo = objAccessList.FunUpdateAccessTree(selected, Id, role_id);
             //}
 
             return Json(IssueNo);
-        }       
+        }
     }
-    }
+}

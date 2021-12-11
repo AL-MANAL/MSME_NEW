@@ -25,6 +25,43 @@ namespace ISOStd.Models
         private object fileUploader;
         private object mail;
 
+        //q&a department employees and Top mgmt employees
+        public MultiSelectList GetQADeptandTopmgmtEmployeeList()
+        {
+            EmployeeList emplist = new EmployeeList();
+            emplist.EmpList = new List<Employee>();
+            try
+            {
+                string Emp_Id = GetCurrentUserSession().empid;
+                string sSqlstmt = "select concat(emp_firstname,' ',ifnull(emp_middlename,' '),' ',ifnull(emp_lastname,' ')) as Empname, emp_no as Empid from t_hr_employee t,t_departments tt"
+                +" where emp_status = 1 and t.Dept_Id = tt.DeptId and DeptName like '%QA/QC' or '%QA/QC%' or 'QA/QC%' or '%QA/QC' or '%QA/QC%' or 'QA/QC%' UNION select concat(emp_firstname, ' ', ifnull(emp_middlename, ' '), ' ', ifnull(emp_lastname, ' '))"
+                +" as Empname, emp_no as Empid from t_hr_employee t ,roles r where t.emp_status = 1 and FIND_IN_SET(id, Role) and RoleName = 'Top Management'";
+
+                DataSet dsEmp = Getdetails(sSqlstmt);
+                if (dsEmp.Tables.Count > 0 && dsEmp.Tables[0].Rows.Count > 0)
+                {
+                    for (int i = 0; i < dsEmp.Tables[0].Rows.Count; i++)
+                    {
+                        Employee emp = new Employee()
+                        {
+                            Empid = dsEmp.Tables[0].Rows[i]["Empid"].ToString(),
+                            Empname = Regex.Replace(dsEmp.Tables[0].Rows[i]["Empname"].ToString(), " +", " ")
+                        };
+                        emp.Empname = emp.Empname.Trim();
+                        emplist.EmpList.Add(emp);
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                AddFunctionalLog("Exception in GetQADeptandTopmgmtEmployeeList: " + ex.ToString());
+            }
+
+            return new MultiSelectList(emplist.EmpList, "Empid", "Empname");
+
+        }
+
         //to get the id of the dropdown item
         public string GetDropdownitemId(string header_id, string item_desc)
         {
@@ -10812,7 +10849,7 @@ namespace ISOStd.Models
             {
                 if (sLegalRequirement_Id != "")
                 {
-                    DataSet dsLaw = Getdetails("Select lawNo from t_legalregister where LegalRequirement_Id='" + sLegalRequirement_Id + "'");
+                    DataSet dsLaw = Getdetails("Select lawNo from t_compliance_obligation where id_law='" + sLegalRequirement_Id + "'");
                     if (dsLaw.Tables.Count > 0 && dsLaw.Tables[0].Rows.Count > 0)
                     {
                         return (dsLaw.Tables[0].Rows[0]["lawNo"].ToString());
@@ -10833,7 +10870,7 @@ namespace ISOStd.Models
             list.LegalRegisterList = new List<LeagalRegister>();
             try
             {
-                DataSet dsLaw = Getdetails("select LegalRequirement_Id,lawNo from t_legalregister where Active=1");
+                DataSet dsLaw = Getdetails("select id_law,lawNo from t_compliance_obligation where Active=1");
 
                 if (dsLaw.Tables.Count > 0 && dsLaw.Tables[0].Rows.Count > 0)
                 {
@@ -10841,7 +10878,7 @@ namespace ISOStd.Models
                     {
                         LeagalRegister Legal = new LeagalRegister()
                         {
-                            LegalRequirement_Id = dsLaw.Tables[0].Rows[i]["LegalRequirement_Id"].ToString(),
+                            LegalRequirement_Id = dsLaw.Tables[0].Rows[i]["id_law"].ToString(),
                             lawNo = dsLaw.Tables[0].Rows[i]["lawNo"].ToString()
                         };
                         list.LegalRegisterList.Add(Legal);

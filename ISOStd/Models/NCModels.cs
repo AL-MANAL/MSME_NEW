@@ -418,7 +418,7 @@ namespace ISOStd.Models
                     //    objIssueList.lstNC[0].id_nc = iid_nc.ToString();
                     //    FunAddNCIssue(objIssueList);
                     //}
-                    if(supplier_name != "")
+                    if(supplier_name != "" && supplier_name != null)
                     {
                         sql = "insert into t_external_provider_discrepancylog(ext_provider_name,id_nc,branch,Department,Location";
 
@@ -919,7 +919,7 @@ namespace ISOStd.Models
 
                 string sSqlstmt = "update t_nc set  rca_technique='" + objModels.rca_technique + "', "
                     + "rca_details  ='" + objModels.rca_details + "', rca_upload='" + objModels.rca_upload + "', rca_action='" + objModels.rca_action
-                    + "', rca_justify='" + objModels.rca_justify + "', rca_reportedby='" + objModels.rca_reportedby + "', rca_notifiedto='" + objModels.rca_notifiedto + "'";
+                    + "', rca_justify='" + objModels.rca_justify + "', rca_reportedby='" + objModels.rca_reportedby + "', rca_notifiedto='" + objModels.rca_notifiedto + "', ca_proposed_by='" + objModels.ca_proposed_by + "'";
 
                 if (objModels.rca_startedon != null && objModels.rca_startedon > Convert.ToDateTime("01/01/0001"))
                 {
@@ -928,6 +928,10 @@ namespace ISOStd.Models
                 if (objModels.rca_reporteddate != null && objModels.rca_reporteddate > Convert.ToDateTime("01/01/0001"))
                 {
                     sSqlstmt = sSqlstmt + ", rca_reporteddate ='" + objModels.rca_reporteddate.ToString("yyyy/MM/dd") + "'";
+                }
+                if (objModels.ca_verfiry_duedate != null && objModels.ca_verfiry_duedate > Convert.ToDateTime("01/01/0001"))
+                {
+                    sSqlstmt = sSqlstmt + ", ca_verfiry_duedate ='" + objModels.ca_verfiry_duedate.ToString("yyyy/MM/dd") + "'";
                 }
                 sSqlstmt = sSqlstmt + " where id_nc='" + objModels.id_nc + "'";
                 if (objGlobaldata.ExecuteQuery(sSqlstmt))
@@ -1229,7 +1233,7 @@ namespace ISOStd.Models
                 else
                 {
                     //string Sql1 = "update t_nc set nc_issuedto_status='" + objModel.nc_stauts + "',nc_issuer_rejector= concat(nc_issuer_rejector,',','" + user + "') where id_nc='" + sid_nc + "'";
-                    string Sql1 = "update t_nc set nc_issuer_rejector= concat(nc_issuer_rejector,',','" + user + "') where id_nc='" + sid_nc + "'";
+                    string Sql1 = "update t_nc set nc_issuedto_status='" + objModel.nc_stauts + "',nc_issuer_rejector= concat(nc_issuer_rejector,',','" + user + "') where id_nc='" + sid_nc + "'";
                     objGlobaldata.ExecuteQuery(Sql1);
                     SendNCApprovalmail(sid_nc, 2);
                     return true;

@@ -68,6 +68,7 @@ namespace ISOStd.Controllers
         {
             try
             {
+                objHazard.notified_to = form["notified_to"];
                 objHazard.consequences = form["consequences"];
                 if (objHazard.FunAddHazard(objHazard))
                 {
@@ -100,7 +101,10 @@ namespace ISOStd.Controllers
                 ViewBag.Branch = objGlobaldata.GetMultiBranchListByID(sBranchtree);
                 string sSearchtext = "";
                 ViewBag.IssueCategory = objGlobaldata.GetDropdownList("Issue Category Type");
-                string sSqlstmt = "select id_hazard,hazard_refno,impact_id,like_id,dept,branch_id,Location,source_id,activity_type,consequences,injury,activity,hazards,notified_to,reported_by,reported_date from t_hazard where Active=1";
+                string sSqlstmt = "select T1.id_hazard,T1.hazard_refno,T1.impact_id,T1.like_id,T1.dept,T1.branch_id,T1.Location,T1.source_id,T1.activity_type,T1.consequences,T1.injury,T1.activity,T1.hazards,T1.notified_to,T1.reported_by,T1.reported_date,"
+                +" (select impact_id from t_hazard_trans T2 where T1.id_hazard = T2.id_hazard order by id_hazard_trans desc limit 1) as curr_impact_id,"
+                +" (select like_id from t_hazard_trans T2 where T1.id_hazard = T2.id_hazard order by id_hazard_trans desc limit 1) as curr_like_id"
+                +" from t_hazard T1 where T1.Active = 1";
                 if (branch_name != null && branch_name != "")
                 {
                     sSearchtext = sSearchtext + " and find_in_set('" + branch_name + "', branch_id)";
@@ -120,11 +124,17 @@ namespace ISOStd.Controllers
                     for (int i = 0; i < dsHazardModels.Tables[0].Rows.Count; i++)
                     {
                         Dictionary<string, string> dicRatings = new Dictionary<string, string>();
+                        Dictionary<string, string> dicRatings_curr = new Dictionary<string, string>();
 
                         if (dsHazardModels.Tables[0].Rows[i]["impact_id"].ToString() != "" && dsHazardModels.Tables[0].Rows[i]["like_id"].ToString() != "")
                         {
                             dicRatings = objSafety.GetRiskRatings(dsHazardModels.Tables[0].Rows[i]["impact_id"].ToString(),
                             dsHazardModels.Tables[0].Rows[i]["like_id"].ToString());
+                        }
+                        if (dsHazardModels.Tables[0].Rows[i]["curr_impact_id"].ToString() != "" && dsHazardModels.Tables[0].Rows[i]["curr_like_id"].ToString() != "")
+                        {
+                            dicRatings_curr = objSafety.GetRiskRatings(dsHazardModels.Tables[0].Rows[i]["curr_impact_id"].ToString(),
+                            dsHazardModels.Tables[0].Rows[i]["curr_like_id"].ToString());
                         }
 
                         try
@@ -155,7 +165,11 @@ namespace ISOStd.Controllers
                                 objHazard.RiskRating = dicRatings.FirstOrDefault().Key;
                                 objHazard.color_code = dicRatings.FirstOrDefault().Value;
                             }
-
+                            if (dicRatings_curr != null && dicRatings_curr.Count > 0)
+                            {
+                                objHazard.RiskRating_curr = dicRatings_curr.FirstOrDefault().Key;
+                                objHazard.color_code_curr = dicRatings_curr.FirstOrDefault().Value;
+                            }
                             string sql = "select t.mit_id from t_hazard_mitigations t,t_hazard tt where t.id_hazard = tt.id_hazard and"
                             + " t.id_hazard = '" + dsHazardModels.Tables[0].Rows[i]["id_hazard"].ToString() + "'";
                             DataSet dsRisk = objGlobaldata.Getdetails(sSqlstmt);
@@ -239,7 +253,7 @@ namespace ISOStd.Controllers
                             legal = (dsRiskModels.Tables[0].Rows[0]["legal"].ToString()),
                             legal_voilation = (dsRiskModels.Tables[0].Rows[0]["legal_voilation"].ToString()),
                             evaluated_by = objGlobaldata.GetMultiHrEmpNameById(dsRiskModels.Tables[0].Rows[0]["evaluated_by"].ToString()),
-                            eval_notified_to = objGlobaldata.GetMultiHrEmpNameById(dsRiskModels.Tables[0].Rows[0]["eval_notified_to"].ToString()),
+                            eval_notified_to = (dsRiskModels.Tables[0].Rows[0]["eval_notified_to"].ToString()),
                           
                         };
                         DateTime dtValue;
@@ -270,7 +284,8 @@ namespace ISOStd.Controllers
         {
             try
             {
-                if(objHazard.op_control1 != "" && objHazard.op_control1 != null)
+                objHazard.eval_notified_to = form["eval_notified_to"];
+                if (objHazard.op_control1 != "" && objHazard.op_control1 != null)
                 {
                     objHazard.op_control = String.Concat("Engineering");
                 }
@@ -472,7 +487,7 @@ namespace ISOStd.Controllers
         {
             try
             {
-
+                objRiskMgmt.mit_notified_to = form["mit_notified_to"];
                 HealthSafetyModelsList objRiskList = new HealthSafetyModelsList();
                 objRiskList.lstHazard = new List<HealthSafetyModels>();
 
@@ -573,7 +588,7 @@ namespace ISOStd.Controllers
                             legal = (dsRiskModels.Tables[0].Rows[0]["legal"].ToString()),
                             legal_voilation = (dsRiskModels.Tables[0].Rows[0]["legal_voilation"].ToString()),
                             evaluated_by = objGlobaldata.GetMultiHrEmpNameById(dsRiskModels.Tables[0].Rows[0]["evaluated_by"].ToString()),
-                            eval_notified_to = objGlobaldata.GetMultiHrEmpNameById(dsRiskModels.Tables[0].Rows[0]["eval_notified_to"].ToString()),
+                            eval_notified_to = (dsRiskModels.Tables[0].Rows[0]["eval_notified_to"].ToString()),
                             initimpact_id = (dsRiskModels.Tables[0].Rows[0]["initimpact_id"].ToString()),
                             initlike_id = (dsRiskModels.Tables[0].Rows[0]["initlike_id"].ToString()),
                         };
@@ -672,6 +687,7 @@ namespace ISOStd.Controllers
         {
             try
             {
+                objHazard.eval_notified_to = form["eval_notified_to"];
                 if (objHazard.op_control1 != "" && objHazard.op_control1 != null)
                 {
                     objHazard.op_control = String.Concat("Engineering");
@@ -901,7 +917,7 @@ namespace ISOStd.Controllers
         {
             try
             {
-
+                objRiskMgmt.mit_notified_to = form["mit_notified_to"];
                 HealthSafetyModelsList objRiskList = new HealthSafetyModelsList();
                 objRiskList.lstHazard = new List<HealthSafetyModels>();
 
@@ -1128,6 +1144,7 @@ namespace ISOStd.Controllers
         {
             try
             {
+                objHazard.notified_to = form["notified_to"];
                 objHazard.consequences = form["consequences"];
                 if (objHazard.FunUpdateHazard(objHazard))
                 {

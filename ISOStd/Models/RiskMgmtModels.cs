@@ -175,6 +175,12 @@ namespace ISOStd.Models
 
         public DateTime init_reeval_due_date { get; set; }
 
+        [Display(Name = "Risk Rating(Severity*Probability)")]
+        public string RiskRating_curr { get; set; }
+
+        [Display(Name = "Color Code")]
+        public string color_code_curr { get; set; }
+
         internal bool FunUpdateApprove(RiskMgmtModels objManagement)
         {
             try

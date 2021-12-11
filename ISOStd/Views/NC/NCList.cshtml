@@ -196,18 +196,7 @@
                         @Html.DisplayFor(modelItem => item.nc_issueto_dept)
                     </td>
                     <td>
-                        @if (item.nc_issuedto_statusId == "1" || item.nc_issuedto_statusId == "2")
-                        {
-                            @Html.DisplayFor(modelItem => item.nc_issuedto_status)
-                        }
-                        else if (item.nc_issuedto_statusId == "0")
-                        {
-                            <text>Pending</text>
-                        }
-                        else
-                        {
-                            <text>Partially Accepted</text>
-                        }
+                        @Html.DisplayFor(modelItem => item.nc_issuedto_status)
 
                     </td>
                     @*<td>
@@ -221,9 +210,9 @@
                                 </a>
 
                                 <div class="dropdown-menu dropdown-menu-right">
-                                    @if (item.nc_initial_statusId == "1")
+                                    @if (item.nc_issuedto_statusId == "1")
                                     {
-                                        if (item.nc_issuetoId.Contains(Obj.GetCurrentUserSession().empid))
+                                        if (item.nc_issuetoId.Split(',').Contains(Obj.GetCurrentUserSession().empid))
                                         {
                                         <a class="dropdown-item" href='@Url.Action("AddDisposition", "NC", new { id_nc = item.id_nc.ToString() })' title="Immediate Actions(Disposition)" onclick="HyperLinkProgressIconFunction()">
                                             <i class="icon-history"></i>Immediate Actions
@@ -234,11 +223,14 @@
                                         <a class="dropdown-item" href='@Url.Action("AddRCA", "NC", new { id_nc = item.id_nc.ToString() })' title="Root Cause Analysis" onclick="HyperLinkProgressIconFunction()">
                                             <i class="icon-history"></i>Root Cause Analysis
                                         </a>
+                                            if (item.rca_action == "Yes")
+                                            {
                                         <a class="dropdown-item" href='@Url.Action("AddCA", "NC", new { id_nc = item.id_nc.ToString() })' title="Corrective Action" onclick="HyperLinkProgressIconFunction()">
                                             <i class="icon-history"></i>Corrective Action
                                         </a>
+                                            }
                                         }
-                                        if (item.ca_verfiry_duedate.ToString() != "" && item.ca_verfiry_duedate > Convert.ToDateTime("01/01/0001") && item.ca_proposed_by.Contains(Obj.GetCurrentUserSession().empid))
+                                        if (item.ca_verfiry_duedate.ToString() != "" && item.ca_verfiry_duedate > Convert.ToDateTime("01/01/0001") && item.ca_proposed_by.Split(',').Contains(Obj.GetCurrentUserSession().empid))
                                         {
                                             <a class="dropdown-item" href='@Url.Action("AddVerification", "NC", new { id_nc = item.id_nc.ToString() })' title="Verification" onclick="HyperLinkProgressIconFunction()">
                                                 <i class="icon-history"></i>Verification

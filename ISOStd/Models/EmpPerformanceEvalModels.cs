@@ -52,7 +52,7 @@ namespace ISOStd.Models
 
         [Required]
         [DataType(DataType.MultilineText)]
-        [Display(Name = "Weakness")]
+        [Display(Name = "Improvement area")]
         public string Weakness { get; set; }
 
         [Required]

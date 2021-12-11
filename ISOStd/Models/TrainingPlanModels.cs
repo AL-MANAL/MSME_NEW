@@ -93,7 +93,7 @@ namespace ISOStd.Models
         [Display(Name = "Reason for Reschedule")]
         public string reason_reschedule { get; set; }
 
-        [Display(Name = "Reason for Cancell")]
+        [Display(Name = "Reason for Cancel")]
         public string reason_cancell { get; set; }
 
         [Display(Name = "Training Status")]

@@ -42,7 +42,7 @@ namespace ISOStd.Models
         [Display(Name = "Products / machines associated")]
         public string product { get; set; }
 
-        [Display(Name = "E. Aspects Identified")]
+        [Display(Name = "Environmental Aspects Identified")]
         public string aspects { get; set; }
 
         [Display(Name = "Environmental Impact")]
@@ -72,7 +72,7 @@ namespace ISOStd.Models
         [Display(Name = "Mitigation Measures Proposed")]
         public string mitmeasure { get; set; }
 
-        [Display(Name = "Further E.Aspects identified")]
+        [Display(Name = "Further Environmental Aspects identified")]
         public string further_consequences { get; set; }
 
         [Display(Name = "Type of Operational Control")]
@@ -156,6 +156,14 @@ namespace ISOStd.Models
 
         [Display(Name = "Risk due to")]
         public string Issue { get; set; }
+
+
+        [Display(Name = "Risk Rating(Severity*Probability)")]
+        public string RiskRating_curr { get; set; }
+
+        [Display(Name = "Color Code")]
+        public string color_code_curr { get; set; }
+
 
         internal Dictionary<string, string> GetRiskRatings(string sImp_id, string sLikeliId)
         {

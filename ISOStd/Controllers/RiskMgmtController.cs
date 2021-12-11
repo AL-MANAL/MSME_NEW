@@ -359,13 +359,18 @@ namespace ISOStd.Controllers
                     for (int i = 0; i < dsRiskModels.Tables[0].Rows.Count; i++)
                     {
                         Dictionary<string, string> dicRatings = new Dictionary<string, string>();
+                        Dictionary<string, string> dicRatings_curr = new Dictionary<string, string>();
 
                         if (dsRiskModels.Tables[0].Rows[i]["impact_id"].ToString() != "" && dsRiskModels.Tables[0].Rows[i]["like_id"].ToString() != "")
                         {
                             dicRatings = objRisk.GetRiskRatings(dsRiskModels.Tables[0].Rows[i]["impact_id"].ToString(),
                             dsRiskModels.Tables[0].Rows[i]["like_id"].ToString());
                         }
-
+                        if (dsRiskModels.Tables[0].Rows[i]["curr_impact_id"].ToString() != "" && dsRiskModels.Tables[0].Rows[i]["curr_like_id"].ToString() != "")
+                        {
+                            dicRatings_curr = objRisk.GetRiskRatings(dsRiskModels.Tables[0].Rows[i]["curr_impact_id"].ToString(),
+                            dsRiskModels.Tables[0].Rows[i]["curr_like_id"].ToString());
+                        }
                         try
                         {
                             RiskMgmtModels objRiskMgmtModels = new RiskMgmtModels
@@ -411,6 +416,11 @@ namespace ISOStd.Controllers
                             {
                                 objRiskMgmtModels.RiskRating = dicRatings.FirstOrDefault().Key;
                                 objRiskMgmtModels.color_code = dicRatings.FirstOrDefault().Value;
+                            }
+                            if (dicRatings_curr != null && dicRatings_curr.Count > 0)
+                            {
+                                objRiskMgmtModels.RiskRating_curr = dicRatings_curr.FirstOrDefault().Key;
+                                objRiskMgmtModels.color_code_curr = dicRatings_curr.FirstOrDefault().Value;
                             }
 
                             string sql = "select t.mit_id from risk_mitigations t,risk_register tt where t.risk_id = tt.risk_id and"
@@ -1325,6 +1335,7 @@ namespace ISOStd.Controllers
             {
                 RiskMitigationModels objMitigation = new RiskMitigationModels();
 
+               
                 objMitigation.risk_id = form["risk_id"];
                 objMitigation.eval_id = form["eval_id"];
                 objMitigation.effort_id = form["effort_id"];
@@ -1555,7 +1566,9 @@ namespace ISOStd.Controllers
                     string risk_id = Request.QueryString["risk_id"];
                     ViewBag.impact_id = objGlobaldata.GetDropdownList("Risk-Severity");
                     ViewBag.like_id = objGlobaldata.GetDropdownList("Risk-likelihood");
-                    // ViewBag.Issue = objRisk.GetIsssuesNo();
+
+                    ViewBag.EvaluatedBy = objGlobaldata.GetDeptHeadbyDivisionList();
+                    // ViewBag.Issue = objRisk.GetIsssuesNo();                   
                     ViewBag.risk_id = risk_id;
                     string sSqlstmt = "select dept,branch_id,Location,risk_id,impact_id,like_id,risk_manager,Issue,evaluation_date,eval_notified_to  from risk_register where risk_id='"
                         + risk_id + "'";
@@ -1582,7 +1595,7 @@ namespace ISOStd.Controllers
                             objRiskMgmtModels.evaluation_date = dtValue;
                         }
 
-                        ViewBag.EvaluatedBy = objGlobaldata.GetDeptHeadbyDivisionList();
+                    
                         ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
                         //ViewBag.Approver = objGlobaldata.GetGRoleList(dsRiskModels.Tables[0].Rows[0]["branch_id"].ToString(), dsRiskModels.Tables[0].Rows[0]["dept"].ToString(), dsRiskModels.Tables[0].Rows[0]["Location"].ToString(), "Approver");
                         //ViewBag.EmpList = objGlobaldata.GetGEmpListBymulitBDL(dsRiskModels.Tables[0].Rows[0]["branch_id"].ToString(), dsRiskModels.Tables[0].Rows[0]["dept"].ToString(), dsRiskModels.Tables[0].Rows[0]["Location"].ToString());
@@ -1608,6 +1621,9 @@ namespace ISOStd.Controllers
         {
             try
             {
+
+                objRiskMgmt.eval_notified_to = form["eval_notified_to"];
+
                 if (objRiskMgmt.FunUpdateRiskEvaluation(objRiskMgmt))
                 {
                     TempData["Successdata"] = "Added Initial Risk Evaluation Successfully";
@@ -1734,6 +1750,7 @@ namespace ISOStd.Controllers
         {
             try
             {
+                objRiskMgmt.mit_notified_to = form["mit_notified_to"];
                 RiskMgmtModelsList objRiskList = new RiskMgmtModelsList();
                 objRiskList.lstRiskMgmtModels = new List<RiskMgmtModels>();
 
@@ -1896,6 +1913,9 @@ namespace ISOStd.Controllers
         {
             try
             {
+               
+                objRiskMgmt.eval_notified_to = form["eval_notified_to"];
+
                 if (objRiskMgmt.FunUpdateRiskReEvaluation(objRiskMgmt))
                 {
                     TempData["Successdata"] = "Added Risk ReEvaluation Successfully";
@@ -2047,6 +2067,8 @@ namespace ISOStd.Controllers
         {
             try
             {
+                objRiskMgmt.mit_notified_to = form["mit_notified_to"];
+
                 RiskMgmtModelsList objRiskList = new RiskMgmtModelsList();
                 objRiskList.lstRiskMgmtModels = new List<RiskMgmtModels>();
 

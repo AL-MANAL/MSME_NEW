@@ -185,6 +185,67 @@
                         </div>
                     </div>
 
+
+                    <div class="card" id="hidden card2">
+
+                        <div class="card-body scrollbar-container">
+
+                            <div class="card card-table table-responsive shadow-0 mb-0 scrollbar">
+
+                                <table class="table" id="team-list2">
+                                    <tr class="bg-blue">
+                                    
+                                        <th>Type of Training</th>
+                                        <th>Training Duration in Days</th>
+                                        <th>Training Completed On</th>
+                                        <th>Document(s)</th>
+
+                                    </tr>
+                                    @if (objTList.EmployeeList != null && objTList.EmployeeList.Count > 0)
+                                    {
+                                        for (int index = 0; index < objTList.EmployeeList.Count; index++)
+                                        {
+                                            <tr>
+                                               
+                                                <td>
+                                                    @objTList.EmployeeList[index].training_type
+                                                </td>
+                                                <td>
+                                                    @objTList.EmployeeList[index].duration
+                                                </td>
+                                                <td>
+                                                    @if (objTList.EmployeeList[index].completed_date != null && objTList.EmployeeList[index].completed_date > Convert.ToDateTime("01/01/0001"))
+                                                    {
+                                                        @objTList.EmployeeList[index].completed_date.ToString("yyyy-MM-dd")
+                                                        
+                                                    }
+                                                   
+                                                </td>
+                                                <td>
+                                                  
+                                                    @if (objTList.EmployeeList[index].training_upload != null && objTList.EmployeeList[index].training_upload != "" && objTList.EmployeeList[index].training_upload.Length > 0)
+                                                    {
+                                                        foreach (var docs in objTList.EmployeeList[index].training_upload.Trim(',').Split(','))
+                                                        {
+                                                            <div class="form-check">
+                                                                <label class="form-check-label">
+                                                                    <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" class="text-orange">
+                                                                        Preview
+                                                                    </a>
+                                                                </label>
+                                                            </div>
+                                                        }
+                                                    }
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                 
+
                 </fieldset>
 
             </div>

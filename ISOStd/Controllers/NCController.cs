@@ -37,7 +37,7 @@ namespace ISOStd.Controllers
                 objModel.nc_reportedby = objGlobaldata.GetCurrentUserSession().empid;
 
                 ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
-                ViewBag.ReportedBy = objGlobaldata.GetQADeptEmployeeList();
+                ViewBag.ReportedBy = objGlobaldata.GetQADeptandTopmgmtEmployeeList();
                 ViewBag.RiskLevel = objGlobaldata.GetDropdownList("NC Risklevel");
                 ViewBag.Category = objGlobaldata.GetDropdownList("NC Category");
                 ViewBag.RelatedAspect = objGlobaldata.GetDropdownList("NC Related Aspect");
@@ -216,7 +216,7 @@ namespace ISOStd.Controllers
 
                 string sSqlstmt = "select id_nc, nc_no, nc_reported_date, nc_detected_date, nc_category, nc_description, nc_activity, nc_performed, nc_pnc, nc_upload,"
                     + "nc_impact, nc_risk, risklevel, nc_reportedby,  nc_notifiedto, nc_division, division, department, location,nc_audit,audit_no,nc_raise_dueto," +
-                    "(case when nc_issuedto_status=1 then 'Accepted' end) as nc_issuedto_status,nc_issuedto_status as nc_issuedto_statusId,nc_initial_status as nc_initial_statusId,ca_verfiry_duedate,nc_issueto,ca_proposed_by from t_nc where Active=1";
+                    "(case when nc_issuedto_status=0 then 'Pending' when nc_issuedto_status=1 then 'Accepted' when nc_issuedto_status=2 then 'Rejected' end) as nc_issuedto_status,nc_issuedto_status as nc_issuedto_statusId,nc_initial_status as nc_initial_statusId,ca_verfiry_duedate,nc_issueto,ca_proposed_by,rca_action from t_nc where Active=1";
                 string sSearchtext = "";
 
                 if (branch_name != null && branch_name != "")
@@ -270,6 +270,8 @@ namespace ISOStd.Controllers
                                 nc_reportedby_dept = objGlobaldata.GetMultiDeptNameById(objGlobaldata.GetDeptIdByHrEmpId(dsNCModels.Tables[0].Rows[i]["nc_reportedby"].ToString())),
                                 nc_issueto_dept = objGlobaldata.GetMultiDeptNameById(objGlobaldata.GetDeptIdByHrEmpId(dsNCModels.Tables[0].Rows[i]["nc_issueto"].ToString())),
                                 ca_proposed_by = dsNCModels.Tables[0].Rows[i]["ca_proposed_by"].ToString(),
+                                rca_action= dsNCModels.Tables[0].Rows[i]["rca_action"].ToString(),
+
                             };
 
                             DateTime dtValue;
@@ -338,7 +340,7 @@ namespace ISOStd.Controllers
             try
             {
                 ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
-                ViewBag.ReportedBy = objGlobaldata.GetQADeptEmployeeList();
+                ViewBag.ReportedBy = objGlobaldata.GetQADeptandTopmgmtEmployeeList();
                 ViewBag.RiskLevel = objGlobaldata.GetDropdownList("NC Risklevel");
                 ViewBag.Category = objGlobaldata.GetDropdownList("NC Category");
                 ViewBag.RelatedAspect = objGlobaldata.GetDropdownList("NC Related Aspect");
@@ -1063,7 +1065,7 @@ namespace ISOStd.Controllers
                     ViewBag.YesNo = objGlobaldata.GetConstantValue("YesNo");
 
                     string sSqlstmt = "select id_nc,nc_no,nc_reported_date,nc_description,division,department,location,nc_issueto,nc_activity,nc_performed,nc_upload," +
-                        "rca_technique,rca_details,rca_upload,rca_action,rca_justify,rca_reportedby,rca_notifiedto,rca_reporteddate,rca_startedon from t_nc where id_nc='" + sid_nc + "'";
+                        "rca_technique,rca_details,rca_upload,rca_action,rca_justify,rca_reportedby,rca_notifiedto,rca_reporteddate,rca_startedon,ca_proposed_by,ca_verfiry_duedate from t_nc where id_nc='" + sid_nc + "'";
                     DataSet dsNCModels = objGlobaldata.Getdetails(sSqlstmt);
 
                     if (dsNCModels.Tables.Count > 0 && dsNCModels.Tables[0].Rows.Count > 0)
@@ -1090,6 +1092,8 @@ namespace ISOStd.Controllers
                             rca_justify = (dsNCModels.Tables[0].Rows[0]["rca_justify"].ToString()),
                             rca_reportedby = (dsNCModels.Tables[0].Rows[0]["rca_reportedby"].ToString()),
                             rca_notifiedto = (dsNCModels.Tables[0].Rows[0]["rca_notifiedto"].ToString()),
+
+                            ca_proposed_by = (dsNCModels.Tables[0].Rows[0]["ca_proposed_by"].ToString()),
                         };
 
                         if (dsNCModels.Tables[0].Rows[0]["rca_reportedby"].ToString() != "")
@@ -1119,7 +1123,10 @@ namespace ISOStd.Controllers
                         {
                             objModel.rca_reporteddate = dtValue;
                         }
-
+                        if (DateTime.TryParse(dsNCModels.Tables[0].Rows[0]["ca_verfiry_duedate"].ToString(), out dtValue))
+                        {
+                            objModel.ca_verfiry_duedate = dtValue;
+                        }
                         return View(objModel);
                     }
                     else
@@ -2028,7 +2035,7 @@ namespace ISOStd.Controllers
                     ViewBag.Team = dsTeamModel;
 
                     //RCA
-                    string sSqlstmt14 = "select rca_technique,rca_details,rca_upload,rca_action,rca_justify,rca_reportedby,rca_notifiedto,rca_reporteddate,rca_startedon from t_nc where id_nc='" + sid_nc + "'";
+                    string sSqlstmt14 = "select rca_technique,rca_details,rca_upload,rca_action,rca_justify,rca_reportedby,rca_notifiedto,rca_reporteddate,rca_startedon,ca_proposed_by,ca_verfiry_duedate from t_nc where id_nc='" + sid_nc + "'";
                     DataSet dsRCAModels = objGlobaldata.Getdetails(sSqlstmt14);
                     ViewBag.RCA = dsRCAModels;
 
@@ -2196,7 +2203,7 @@ namespace ISOStd.Controllers
                             ViewBag.Team = dsTeamModel;
 
                             //RCA
-                            string sSqlstmt14 = "select rca_technique,rca_details,rca_upload,rca_action,rca_justify,rca_reportedby,rca_notifiedto,rca_reporteddate,rca_startedon from t_nc where id_nc='" + sid_nc + "'";
+                            string sSqlstmt14 = "select rca_technique,rca_details,rca_upload,rca_action,rca_justify,rca_reportedby,rca_notifiedto,rca_reporteddate,rca_startedon,ca_proposed_by,ca_verfiry_duedate from t_nc where id_nc='" + sid_nc + "'";
                             DataSet dsRCAModels = objGlobaldata.Getdetails(sSqlstmt14);
                             ViewBag.RCA = dsRCAModels;
 

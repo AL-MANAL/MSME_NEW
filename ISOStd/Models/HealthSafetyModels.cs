@@ -161,6 +161,14 @@ namespace ISOStd.Models
         [Display(Name = "Risk due to")]
         public string Issue { get; set; }
 
+
+        [Display(Name = "Risk Rating(Severity*Probability)")]
+        public string RiskRating_curr { get; set; }
+
+        [Display(Name = "Color Code")]
+        public string color_code_curr { get; set; }
+
+
         internal Dictionary<string, string> GetRiskRatings(string sImp_id, string sLikeliId)
         {
             Dictionary<string, string> lstRatings = new Dictionary<string, string>();

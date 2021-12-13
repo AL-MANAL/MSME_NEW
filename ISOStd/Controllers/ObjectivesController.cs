@@ -1,24 +1,20 @@
-﻿using System;
+﻿using ISOStd.Filters;
+using ISOStd.Models;
+using Rotativa;
+using System;
 using System.Collections.Generic;
+using System.Data;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using ISOStd.Models;
-using System.Data;
-using System.Net;
-using System.IO;
-using PagedList;
-using PagedList.Mvc;
-using Microsoft.Reporting.WebForms;
-using ISOStd.Filters;
-using Rotativa;
 
 namespace ISOStd.Controllers
 {
     [PreventFromUrl]
     public class ObjectivesController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
+        private clsGlobal objGlobaldata = new clsGlobal();
 
         public ObjectivesController()
         {
@@ -41,7 +37,7 @@ namespace ISOStd.Controllers
         {
             ObjectivesModels objObjectives = new ObjectivesModels();
             try
-            {               
+            {
                 ViewBag.View = Request.QueryString["View"];
                 if (ViewBag.View == "1")
                 {
@@ -81,7 +77,7 @@ namespace ISOStd.Controllers
 
             return View(objObjectives);
         }
-        
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult AddObjectives(ObjectivesModels objObjectives, FormCollection form, HttpPostedFileBase fileUploader)
@@ -121,7 +117,6 @@ namespace ISOStd.Controllers
 
                     ObjectivesModelsList objObjectivesModelsList = new ObjectivesModelsList();
                     objObjectivesModelsList.ObjectivesMList = new List<ObjectivesModels>();
-
 
                     if (fileUploader != null && fileUploader.ContentLength > 0)
                     {
@@ -181,12 +176,10 @@ namespace ISOStd.Controllers
                         objObjectivesModels.obj_inline = form["obj_inline" + i];
 
                         objObjectivesModelsList.ObjectivesMList.Add(objObjectivesModels);
-
                     }
 
                     if (objObjectives.FunAddObjectives(objObjectives, objObjectivesModelsList, fileUploader))
                     {
-
                         TempData["Successdata"] = "Added Objective details successfully  with Reference Number '" + objObjectives.Obj_Ref + "'";
                     }
                     else
@@ -203,7 +196,7 @@ namespace ISOStd.Controllers
 
             return RedirectToAction("ObjectivesList", new { View = sView });
         }
-               
+
         [AllowAnonymous]
         public ActionResult ObjectivesList(string branch_name)
         {
@@ -212,7 +205,7 @@ namespace ISOStd.Controllers
             objObjectivesModelsList.ObjectivesMList = new List<ObjectivesModels>();
 
             ObjectivesModels objObjective = new ObjectivesModels();
-            
+
             try
             {
                 ViewBag.View = Request.QueryString["View"];
@@ -322,7 +315,6 @@ namespace ISOStd.Controllers
                                 objObjective.ApprovedDate = dtDocDate;
                             }
 
-
                             //ObjectivesModelsList evallist = new ObjectivesModelsList();
                             //evallist.ObjectivesMList = new List<ObjectivesModels>();
 
@@ -422,7 +414,6 @@ namespace ISOStd.Controllers
                         }
                     }
                 }
-
             }
             catch (Exception ex)
             {
@@ -435,7 +426,7 @@ namespace ISOStd.Controllers
 
             return View(objObjectivesModelsList.ObjectivesMList.ToList());
         }
-        
+
         [AllowAnonymous]
         public ActionResult ObjectivesDetails()
         {
@@ -478,7 +469,7 @@ namespace ISOStd.Controllers
                     DataSet dsObjectivesModelsList = objGlobaldata.Getdetails(sSqlstmt);
                     if (dsObjectivesModelsList.Tables.Count > 0 && dsObjectivesModelsList.Tables[0].Rows.Count > 0)
                     {
-                         {
+                        {
                             objObjectivesModels = new ObjectivesModels
                             {
                                 Objectives_Id = Convert.ToInt16(dsObjectivesModelsList.Tables[0].Rows[0]["Objectives_Id"].ToString()),
@@ -510,7 +501,6 @@ namespace ISOStd.Controllers
                                 Approved_Status_id = dsObjectivesModelsList.Tables[0].Rows[0]["Approved_StatusId"].ToString(),
                                 obj_reject_comment = dsObjectivesModelsList.Tables[0].Rows[0]["obj_reject_comment"].ToString(),
                                 obj_reject_upload = dsObjectivesModelsList.Tables[0].Rows[0]["obj_reject_upload"].ToString(),
-
                             };
 
                             DateTime dtDocDate = new DateTime();
@@ -537,7 +527,7 @@ namespace ISOStd.Controllers
 
                         string sSqlstmtPCFF = "select id_potential, ObjectivesTrans_Id,potential_causes,impact,mitigation_measure,targeted_on,updated_on,potential_status,logged_by,Pcff_Notify " +
                             "from t_objectives_potential where ObjectivesTrans_Id  = '" + sObjectivesTrans_Id + "' and pot_active=1";
-                       
+
                         DataSet dsPCFFList = objGlobaldata.Getdetails(sSqlstmtPCFF);
                         if (dsPCFFList.Tables.Count > 0 && dsPCFFList.Tables[0].Rows.Count > 0)
                         {
@@ -577,14 +567,13 @@ namespace ISOStd.Controllers
                             }
                         }
 
-
                         //Action Plan
                         ObjectivesModelsList objList = new ObjectivesModelsList();
                         objList.ObjectivesMList = new List<ObjectivesModels>();
 
                         string sSqlstmtplan = "select id_objective_action, ObjectivesTrans_Id,actionplan,begin_date,end_date,upload,resource,resp_person,action_ref_no,action_status,reason_notcomplete,status_updated_on " +
                             "from t_objectives_actionplan where ObjectivesTrans_Id  = '" + sObjectivesTrans_Id + "' and active=1";
-                        
+
                         DataSet dsplanList = objGlobaldata.Getdetails(sSqlstmtplan);
                         if (dsplanList.Tables.Count > 0 && dsplanList.Tables[0].Rows.Count > 0)
                         {
@@ -604,7 +593,6 @@ namespace ISOStd.Controllers
 
                                         action_status = objGlobaldata.GetDropdownitemById(dsplanList.Tables[0].Rows[i]["action_status"].ToString()),
                                         reason_notcomplete = (dsplanList.Tables[0].Rows[i]["reason_notcomplete"].ToString()),
-
                                     };
                                     DateTime dtDocDate;
                                     if (dsplanList.Tables[0].Rows[i]["begin_date"].ToString() != ""
@@ -622,7 +610,7 @@ namespace ISOStd.Controllers
                                     {
                                         objplanModels.status_updated_on = dtDocDate;
                                     }
-                                    
+
                                     objList.ObjectivesMList.Add(objplanModels);
                                     ViewBag.ObjectPlan = objList;
                                 }
@@ -641,14 +629,13 @@ namespace ISOStd.Controllers
 
                         string sSqlstmtEval = "select ObjectivesEval_Id, ObjectivesTrans_Id, Obj_Eval_On, FromPeriod, ToPeriod, Obj_Achieved_Val, Trend, NCR_Ref, Evidence,Status_Obj_Eval," +
                               " Source_data,Method_eval,Remark,Notified_to from t_objectives_evaluation where ObjectivesTrans_Id = '" + sObjectivesTrans_Id + "'";
-                       
+
                         DataSet dsEvalList = objGlobaldata.Getdetails(sSqlstmtEval);
 
                         if (dsEvalList.Tables.Count > 0 && dsEvalList.Tables[0].Rows.Count > 0)
                         {
                             for (int i = 0; i < dsEvalList.Tables[0].Rows.Count; i++)
                             {
-
                                 DateTime dtFromPeriod = Convert.ToDateTime(dsEvalList.Tables[0].Rows[i]["FromPeriod"].ToString());
                                 DateTime dtToPeriod = Convert.ToDateTime(dsEvalList.Tables[0].Rows[i]["ToPeriod"].ToString());
 
@@ -696,7 +683,7 @@ namespace ISOStd.Controllers
                         }
 
                         return View(objObjectivesModels);
-                    } 
+                    }
                 }
                 else
                 {
@@ -723,7 +710,7 @@ namespace ISOStd.Controllers
             {
                 UserCredentials objUser = new UserCredentials();
                 objUser = objGlobaldata.GetCurrentUserSession();
-                
+
                 if (id > 0)
                 {
                     if (ViewBag.View == "1")
@@ -788,7 +775,7 @@ namespace ISOStd.Controllers
                             {
                                 objObjectivesModels.Target_Date = dtDocDate;
                             }
-                        }                 
+                        }
                     }
                     return View(objObjectivesModels);
                 }
@@ -938,7 +925,6 @@ namespace ISOStd.Controllers
                             }
                         }
 
-
                         //Action Plan
 
                         ObjectivesModelsList objList = new ObjectivesModelsList();
@@ -965,7 +951,6 @@ namespace ISOStd.Controllers
 
                                         action_status = objGlobaldata.GetDropdownitemById(dsplanList.Tables[0].Rows[i]["action_status"].ToString()),
                                         reason_notcomplete = dsplanList.Tables[0].Rows[i]["reason_notcomplete"].ToString(),
-
                                     };
                                     DateTime dtDocDate;
                                     if (dsplanList.Tables[0].Rows[i]["begin_date"].ToString() != ""
@@ -1008,7 +993,6 @@ namespace ISOStd.Controllers
                         {
                             for (int i = 0; i < dsEvalList.Tables[0].Rows.Count; i++)
                             {
-
                                 DateTime dtFromPeriod = Convert.ToDateTime(dsEvalList.Tables[0].Rows[i]["FromPeriod"].ToString());
                                 DateTime dtToPeriod = Convert.ToDateTime(dsEvalList.Tables[0].Rows[i]["ToPeriod"].ToString());
 
@@ -1037,7 +1021,6 @@ namespace ISOStd.Controllers
                                     }
                                     objEvalList.ObjectivesMList.Add(objEvalModels);
                                     ViewBag.EvalList = objEvalList;
-
                                 }
                                 catch (Exception ex)
                                 {
@@ -1052,10 +1035,9 @@ namespace ISOStd.Controllers
                                 {
                                     ViewBag.Objectives_Id = dsObjectives_Id.Tables[0].Rows[0]["Objectives_Id"].ToString();
                                 }
-                            }                           
-                        }                        
+                            }
+                        }
                     }
-
 
                     ViewBag.ObjectivesDetails = objObjectivesModels;
 
@@ -1064,7 +1046,6 @@ namespace ISOStd.Controllers
                     dsObjectivesModelsList = objGlobaldata.GetReportDetails(dsObjectivesModelsList, objObjectivesModels.Obj_Ref, objGlobaldata.GetCurrentUserSession().empid, "OBJECTIVE REPORT");
 
                     ViewBag.CompanyInfo = dsObjectivesModelsList;
-
                 }
                 else
                 {
@@ -1126,7 +1107,6 @@ namespace ISOStd.Controllers
                         ViewBag.SubMenutype = "Objectives3";
                     }
 
-                                       
                     string sSqlstmt = "select a.Objectives_Id,ObjectivesTrans_Id, Obj_Ref, Dept, Audit_Criteria, Estld_by,"
               + "CreatedBy,DocUploadPath,objective_level,branch,Location,Obj_Estld_On,Objectives_val,Obj_Target,Base_Line_Value," +
               "Monitoring_Mechanism,Target_Date,Action_Plan,Freq_of_Eval,Accepted_Value,Risk_ifObjFails,baseline_data,unit,obj_inline,Approved_By,Approved_Status,branch_view from t_objectives a, t_objectives_trans b"
@@ -1192,31 +1172,30 @@ namespace ISOStd.Controllers
                                 ViewBag.Estld_byArray = (dsObjectivesModelsList.Tables[0].Rows[0]["Estld_by"].ToString()).Split(',');
                             }
                         }
-                             
-                            ViewBag.Approver = objGlobaldata.GetApprover();
-                            //ViewBag.Approver = objGlobaldata.GetGRoleList(dsObjectivesModelsList.Tables[0].Rows[0]["branch"].ToString(), dsObjectivesModelsList.Tables[0].Rows[0]["Dept"].ToString(), dsObjectivesModelsList.Tables[0].Rows[0]["Location"].ToString(), "Approver");
-                            ViewBag.userbranch = objGlobaldata.GetCurrentUserSession().division;
-                            ViewBag.DeptList = objGlobaldata.GetDepartmentListbox();
-                            ViewBag.Freq_of_Eval = objGlobaldata.GetDropdownList("Objective Frequency Evaluation");
-                            ViewBag.Status_Obj_Eval = objObjectivesModels.GetMultiObjectiveStatusList();
-                            ViewBag.RespPerson = objGlobaldata.GetHrEmployeeListbox();
-                            ViewBag.EmpLists = objGlobaldata.GetDeptHeadList();
-                            ViewBag.Objlevel = objGlobaldata.GetDropdownList("Objective Level");
-                            ViewBag.Branch = objGlobaldata.GetCompanyBranchListbox();
-                            ViewBag.ObjectInlineWith = objObjectivesModels.GetObjectiveInlineList();
-                            ViewBag.Unit = objObjectivesModels.GetObjectiveUnitList();
-                            ViewBag.Location = objGlobaldata.GetLocationListBox();
 
-                            return View(objObjectivesModels);
-                        }
+                        ViewBag.Approver = objGlobaldata.GetApprover();
+                        //ViewBag.Approver = objGlobaldata.GetGRoleList(dsObjectivesModelsList.Tables[0].Rows[0]["branch"].ToString(), dsObjectivesModelsList.Tables[0].Rows[0]["Dept"].ToString(), dsObjectivesModelsList.Tables[0].Rows[0]["Location"].ToString(), "Approver");
+                        ViewBag.userbranch = objGlobaldata.GetCurrentUserSession().division;
+                        ViewBag.DeptList = objGlobaldata.GetDepartmentListbox();
+                        ViewBag.Freq_of_Eval = objGlobaldata.GetDropdownList("Objective Frequency Evaluation");
+                        ViewBag.Status_Obj_Eval = objObjectivesModels.GetMultiObjectiveStatusList();
+                        ViewBag.RespPerson = objGlobaldata.GetHrEmployeeListbox();
+                        ViewBag.EmpLists = objGlobaldata.GetDeptHeadList();
+                        ViewBag.Objlevel = objGlobaldata.GetDropdownList("Objective Level");
+                        ViewBag.Branch = objGlobaldata.GetCompanyBranchListbox();
+                        ViewBag.ObjectInlineWith = objObjectivesModels.GetObjectiveInlineList();
+                        ViewBag.Unit = objObjectivesModels.GetObjectiveUnitList();
+                        ViewBag.Location = objGlobaldata.GetLocationListBox();
 
+                        return View(objObjectivesModels);
                     }
-                    else
-                    {
-                        ViewBag.UserRole = objGlobaldata.GetRoleName(objUser.role);
-                        TempData["alertdata"] = "No Data exists";
-                        return RedirectToAction("ObjectivesList", new { View = ViewBag.View });
-                    }  
+                }
+                else
+                {
+                    ViewBag.UserRole = objGlobaldata.GetRoleName(objUser.role);
+                    TempData["alertdata"] = "No Data exists";
+                    return RedirectToAction("ObjectivesList", new { View = ViewBag.View });
+                }
             }
             catch (Exception ex)
             {
@@ -1247,23 +1226,22 @@ namespace ISOStd.Controllers
                 objModel.obj_inline = form["obj_inline"];
                 objModel.branch_view = form["branch_view"];
 
-                if (objModel.branch != null) 
+                if (objModel.branch != null)
                 {
                     if (objModel.branch_view.Contains(","))
-                    { 
-                        if( ! objModel.branch_view.ToString().Split(',').Contains(objModel.branch))
-                        {
-                            objModel.branch_view = objModel.branch_view + "," + objModel.branch;
-                        }                        
-                    }
-                    else
                     {
-                        if ( ! objModel.branch_view.ToString().Contains(objModel.branch))
+                        if (!objModel.branch_view.ToString().Split(',').Contains(objModel.branch))
                         {
                             objModel.branch_view = objModel.branch_view + "," + objModel.branch;
                         }
                     }
-                    
+                    else
+                    {
+                        if (!objModel.branch_view.ToString().Contains(objModel.branch))
+                        {
+                            objModel.branch_view = objModel.branch_view + "," + objModel.branch;
+                        }
+                    }
                 }
 
                 //Estld_by
@@ -1401,93 +1379,90 @@ namespace ISOStd.Controllers
             return Json("Failed");
         }
 
-
         // ----------------Objective Evaluation------
         [AllowAnonymous]
         public ActionResult AddObjectiveEvaluation()
-{
-    ObjectivesModelsList objObjectivesModelsList = new ObjectivesModelsList();
-    objObjectivesModelsList.ObjectivesMList = new List<ObjectivesModels>();
-    ObjectivesModels objObjectivesModels = new ObjectivesModels();
-    UserCredentials objUser = new UserCredentials();
-    objUser = objGlobaldata.GetCurrentUserSession();
-    ViewBag.UserRole = objGlobaldata.GetRoleName(objUser.role);
-    ViewBag.EvalStatus = objObjectivesModels.GetMultiObjectiveStatusList();
-    ViewBag.Evaluation = objObjectivesModels.GetMultiObjectiveEvaluation();
-    ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
-
-    try
-    {
-        ViewBag.View = Request.QueryString["View"];
-        string sObjectivesTrans_Id = Request.QueryString["ObjectivesTrans_Id"];
-        if (sObjectivesTrans_Id != null)
         {
+            ObjectivesModelsList objObjectivesModelsList = new ObjectivesModelsList();
+            objObjectivesModelsList.ObjectivesMList = new List<ObjectivesModels>();
+            ObjectivesModels objObjectivesModels = new ObjectivesModels();
+            UserCredentials objUser = new UserCredentials();
+            objUser = objGlobaldata.GetCurrentUserSession();
+            ViewBag.UserRole = objGlobaldata.GetRoleName(objUser.role);
+            ViewBag.EvalStatus = objObjectivesModels.GetMultiObjectiveStatusList();
+            ViewBag.Evaluation = objObjectivesModels.GetMultiObjectiveEvaluation();
+            ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
 
-            //string sSqlstmt = "select b.Obj_Ref,c.Objectives_Id,Obj_Estld_On, ObjectivesEval_Id, a.ObjectivesTrans_Id, Obj_Eval_On, FromPeriod, ToPeriod, Obj_Achieved_Val, Trend, NCR_Ref, Evidence,Status_Obj_Eval," +
-            //    " Obj_Target,Base_Line_Value,Monitoring_Mechanism,Target_Date,Objectives_val,Source_data,Method_eval,Remark,Notified_to from t_objectives_evaluation a, t_objectives_trans b,t_objectives c where a.ObjectivesTrans_Id = b.ObjectivesTrans_Id " +
-            //    "and b.ObjectivesTrans_Id  = '" + sObjectivesTrans_Id + "' and c.Objectives_Id=b.Objectives_Id ";
-             string sSqlstmt = "select ObjectivesEval_Id, ObjectivesTrans_Id, Obj_Eval_On, FromPeriod, ToPeriod, Obj_Achieved_Val, Trend, NCR_Ref, Evidence,Status_Obj_Eval," +
-                                " Source_data,Method_eval,Remark,Notified_to from t_objectives_evaluation where ObjectivesTrans_Id = '" + sObjectivesTrans_Id + "'" +
-                                " order by FromPeriod asc";
-
-            ViewBag.ObjectivesTrans_Id = sObjectivesTrans_Id;
-
-            DataSet dsObjectivesModelsList = objGlobaldata.Getdetails(sSqlstmt);
-
-            if (dsObjectivesModelsList.Tables.Count > 0 && dsObjectivesModelsList.Tables[0].Rows.Count > 0)
-            {               
-                for (int i = 0; i < dsObjectivesModelsList.Tables[0].Rows.Count; i++)
+            try
+            {
+                ViewBag.View = Request.QueryString["View"];
+                string sObjectivesTrans_Id = Request.QueryString["ObjectivesTrans_Id"];
+                if (sObjectivesTrans_Id != null)
                 {
-                            
-                    DateTime dtFromPeriod = Convert.ToDateTime(dsObjectivesModelsList.Tables[0].Rows[i]["FromPeriod"].ToString());
-                    DateTime dtToPeriod = Convert.ToDateTime(dsObjectivesModelsList.Tables[0].Rows[i]["ToPeriod"].ToString());
+                    //string sSqlstmt = "select b.Obj_Ref,c.Objectives_Id,Obj_Estld_On, ObjectivesEval_Id, a.ObjectivesTrans_Id, Obj_Eval_On, FromPeriod, ToPeriod, Obj_Achieved_Val, Trend, NCR_Ref, Evidence,Status_Obj_Eval," +
+                    //    " Obj_Target,Base_Line_Value,Monitoring_Mechanism,Target_Date,Objectives_val,Source_data,Method_eval,Remark,Notified_to from t_objectives_evaluation a, t_objectives_trans b,t_objectives c where a.ObjectivesTrans_Id = b.ObjectivesTrans_Id " +
+                    //    "and b.ObjectivesTrans_Id  = '" + sObjectivesTrans_Id + "' and c.Objectives_Id=b.Objectives_Id ";
+                    string sSqlstmt = "select ObjectivesEval_Id, ObjectivesTrans_Id, Obj_Eval_On, FromPeriod, ToPeriod, Obj_Achieved_Val, Trend, NCR_Ref, Evidence,Status_Obj_Eval," +
+                                       " Source_data,Method_eval,Remark,Notified_to from t_objectives_evaluation where ObjectivesTrans_Id = '" + sObjectivesTrans_Id + "'" +
+                                       " order by FromPeriod asc";
 
-                    try
+                    ViewBag.ObjectivesTrans_Id = sObjectivesTrans_Id;
+
+                    DataSet dsObjectivesModelsList = objGlobaldata.Getdetails(sSqlstmt);
+
+                    if (dsObjectivesModelsList.Tables.Count > 0 && dsObjectivesModelsList.Tables[0].Rows.Count > 0)
                     {
-                        objObjectivesModels = new ObjectivesModels
+                        for (int i = 0; i < dsObjectivesModelsList.Tables[0].Rows.Count; i++)
                         {
-                            ObjectivesEval_Id = Convert.ToInt16(dsObjectivesModelsList.Tables[0].Rows[i]["ObjectivesEval_Id"].ToString()),
-                            ObjectivesTrans_Id = Convert.ToInt16(dsObjectivesModelsList.Tables[0].Rows[i]["ObjectivesTrans_Id"].ToString()),                            
-                            FromPeriod = dtFromPeriod,
-                            ToPeriod = dtToPeriod,
-                            Obj_Achieved_Val = dsObjectivesModelsList.Tables[0].Rows[i]["Obj_Achieved_Val"].ToString(),
-                            Trend = objObjectivesModels.GetMultiObjectiveEvaluationById(dsObjectivesModelsList.Tables[0].Rows[i]["Trend"].ToString()),
-                            NCR_Ref = objGlobaldata.GetNCRNumberById(dsObjectivesModelsList.Tables[0].Rows[i]["NCR_Ref"].ToString()),
-                            Evidence = dsObjectivesModelsList.Tables[0].Rows[i]["Evidence"].ToString(),
-                            Status_Obj_Eval = objObjectivesModels.GetObjectiveStatusNameById(dsObjectivesModelsList.Tables[0].Rows[i]["Status_Obj_Eval"].ToString()),
-                            Source_data = dsObjectivesModelsList.Tables[0].Rows[i]["Source_data"].ToString(),
-                            Method_eval = dsObjectivesModelsList.Tables[0].Rows[i]["Method_eval"].ToString(),
-                            Remark = dsObjectivesModelsList.Tables[0].Rows[i]["Remark"].ToString(),
-                            Notified_to = dsObjectivesModelsList.Tables[0].Rows[i]["Notified_to"].ToString(),
-                        };
-                                
+                            DateTime dtFromPeriod = Convert.ToDateTime(dsObjectivesModelsList.Tables[0].Rows[i]["FromPeriod"].ToString());
+                            DateTime dtToPeriod = Convert.ToDateTime(dsObjectivesModelsList.Tables[0].Rows[i]["ToPeriod"].ToString());
+
+                            try
+                            {
+                                objObjectivesModels = new ObjectivesModels
+                                {
+                                    ObjectivesEval_Id = Convert.ToInt16(dsObjectivesModelsList.Tables[0].Rows[i]["ObjectivesEval_Id"].ToString()),
+                                    ObjectivesTrans_Id = Convert.ToInt16(dsObjectivesModelsList.Tables[0].Rows[i]["ObjectivesTrans_Id"].ToString()),
+                                    FromPeriod = dtFromPeriod,
+                                    ToPeriod = dtToPeriod,
+                                    Obj_Achieved_Val = dsObjectivesModelsList.Tables[0].Rows[i]["Obj_Achieved_Val"].ToString(),
+                                    Trend = objObjectivesModels.GetMultiObjectiveEvaluationById(dsObjectivesModelsList.Tables[0].Rows[i]["Trend"].ToString()),
+                                    NCR_Ref = objGlobaldata.GetNCRNumberById(dsObjectivesModelsList.Tables[0].Rows[i]["NCR_Ref"].ToString()),
+                                    Evidence = dsObjectivesModelsList.Tables[0].Rows[i]["Evidence"].ToString(),
+                                    Status_Obj_Eval = objObjectivesModels.GetObjectiveStatusNameById(dsObjectivesModelsList.Tables[0].Rows[i]["Status_Obj_Eval"].ToString()),
+                                    Source_data = dsObjectivesModelsList.Tables[0].Rows[i]["Source_data"].ToString(),
+                                    Method_eval = dsObjectivesModelsList.Tables[0].Rows[i]["Method_eval"].ToString(),
+                                    Remark = dsObjectivesModelsList.Tables[0].Rows[i]["Remark"].ToString(),
+                                    Notified_to = dsObjectivesModelsList.Tables[0].Rows[i]["Notified_to"].ToString(),
+                                };
+
                                 if (dsObjectivesModelsList.Tables[0].Rows[i]["Obj_Eval_On"].ToString() != "")
                                 {
                                     objObjectivesModels.Obj_Eval_On = Convert.ToDateTime(dsObjectivesModelsList.Tables[0].Rows[i]["Obj_Eval_On"].ToString());
                                 }
                                 objObjectivesModelsList.ObjectivesMList.Add(objObjectivesModels);
-                    }
-                    catch (Exception ex)
-                    {
-                        objGlobaldata.AddFunctionalLog("Exception in ObjectiveEvaluationList: " + ex.ToString());
-                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                    }
-                }
-                if (sObjectivesTrans_Id != "")
-                {
-                    DataSet dsObjectives_Id = objGlobaldata.Getdetails("select Objectives_Id from t_objectives_trans where ObjectivesTrans_Id='" + sObjectivesTrans_Id + "'");
-                    if (dsObjectives_Id.Tables.Count > 0 && dsObjectives_Id.Tables[0].Rows.Count > 0)
-                    {
-                        ViewBag.Objectives_Id = dsObjectives_Id.Tables[0].Rows[0]["Objectives_Id"].ToString();
-                    }
-                }
+                            }
+                            catch (Exception ex)
+                            {
+                                objGlobaldata.AddFunctionalLog("Exception in ObjectiveEvaluationList: " + ex.ToString());
+                                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                            }
+                        }
+                        if (sObjectivesTrans_Id != "")
+                        {
+                            DataSet dsObjectives_Id = objGlobaldata.Getdetails("select Objectives_Id from t_objectives_trans where ObjectivesTrans_Id='" + sObjectivesTrans_Id + "'");
+                            if (dsObjectives_Id.Tables.Count > 0 && dsObjectives_Id.Tables[0].Rows.Count > 0)
+                            {
+                                ViewBag.Objectives_Id = dsObjectives_Id.Tables[0].Rows[0]["Objectives_Id"].ToString();
+                            }
+                        }
                         ViewBag.Visible = "Not visible";
-            }
-            else
-            {
-                TempData["alertdata"] = "No data exists";
-                return RedirectToAction("ObjectivesList", new { View = ViewBag.View });
-            }
+                    }
+                    else
+                    {
+                        TempData["alertdata"] = "No data exists";
+                        return RedirectToAction("ObjectivesList", new { View = ViewBag.View });
+                    }
 
                     string sObjectivesEval_Id = Request.QueryString["ObjectivesEval_Id"];
                     if (sObjectivesEval_Id != null)
@@ -1515,7 +1490,7 @@ namespace ISOStd.Controllers
                             ViewBag.Method_eval = dsEvalList.Tables[0].Rows[0]["Method_eval"].ToString();
                             ViewBag.Remark = dsEvalList.Tables[0].Rows[0]["Remark"].ToString();
                             ViewBag.Notified_to = dsEvalList.Tables[0].Rows[0]["Notified_to"].ToString();
-                            
+
                             if (dsEvalList.Tables[0].Rows[0]["Obj_Eval_On"].ToString() != "")
                             {
                                 ViewBag.Obj_Eval_On = Convert.ToDateTime(dsEvalList.Tables[0].Rows[0]["Obj_Eval_On"].ToString());
@@ -1533,46 +1508,44 @@ namespace ISOStd.Controllers
                         }
                     }
                 }
-        else
-        {
-            TempData["alertdata"] = "Objectives Trans Id cannot be null";
-            return RedirectToAction("ObjectivesList", new { View = ViewBag.View });
+                else
+                {
+                    TempData["alertdata"] = "Objectives Trans Id cannot be null";
+                    return RedirectToAction("ObjectivesList", new { View = ViewBag.View });
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in ObjectiveEvaluationList: " + ex.ToString());
+                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+            }
+            return View(objObjectivesModelsList.ObjectivesMList.ToList());
         }
-    }
-    catch (Exception ex)
-    {
-        objGlobaldata.AddFunctionalLog("Exception in ObjectiveEvaluationList: " + ex.ToString());
-        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-    }
-    return View(objObjectivesModelsList.ObjectivesMList.ToList());
-}
 
-
-[HttpPost]
-[ValidateAntiForgeryToken]
-public ActionResult AddObjectiveEvaluation(ObjectivesModels objObjectivesModels, FormCollection form, HttpPostedFileBase Evidence)
-{
-    ViewBag.View = form["view"];
-    objObjectivesModels.Notified_to = form["Notified_to"];
-
-    try
-    {
-        DateTime dateValue;
-
-        if (DateTime.TryParse(form["Obj_Eval_On"], out dateValue) == true)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult AddObjectiveEvaluation(ObjectivesModels objObjectivesModels, FormCollection form, HttpPostedFileBase Evidence)
         {
-            objObjectivesModels.Obj_Eval_On = dateValue;
-        }
-        //if (DateTime.TryParse(form["FromPeriod"], out dateValue) == true)
-        //{
-        //    objObjectivesModels.FromPeriod = dateValue;
-        //}
-        //if (DateTime.TryParse(form["ToPeriod"], out dateValue) == true)
-        //{
-        //    objObjectivesModels.ToPeriod = dateValue;
-        //}
-        objObjectivesModels.ObjectivesTrans_Id = Convert.ToInt16(form["ObjectivesTrans_Id"]);
+            ViewBag.View = form["view"];
+            objObjectivesModels.Notified_to = form["Notified_to"];
 
+            try
+            {
+                DateTime dateValue;
+
+                if (DateTime.TryParse(form["Obj_Eval_On"], out dateValue) == true)
+                {
+                    objObjectivesModels.Obj_Eval_On = dateValue;
+                }
+                //if (DateTime.TryParse(form["FromPeriod"], out dateValue) == true)
+                //{
+                //    objObjectivesModels.FromPeriod = dateValue;
+                //}
+                //if (DateTime.TryParse(form["ToPeriod"], out dateValue) == true)
+                //{
+                //    objObjectivesModels.ToPeriod = dateValue;
+                //}
+                objObjectivesModels.ObjectivesTrans_Id = Convert.ToInt16(form["ObjectivesTrans_Id"]);
 
                 //Notified To
                 for (int i = 0; i < Convert.ToInt16(form["itemcnt1"]); i++)
@@ -1587,299 +1560,294 @@ public ActionResult AddObjectiveEvaluation(ObjectivesModels objObjectivesModels,
                     objObjectivesModels.Notified_to = objObjectivesModels.Notified_to.Trim(',');
                 }
                 if (Evidence != null && Evidence.ContentLength > 0)
-        {
-            try
-            {
-                string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/Objectives"), Path.GetFileName(Evidence.FileName));
-                string sFilename = "Evidence" + "_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath);
-                string sFilepath = Path.GetDirectoryName(spath);
-
-                Evidence.SaveAs(sFilepath + "/" + sFilename);
-                objObjectivesModels.Evidence = "~/DataUpload/MgmtDocs/Objectives/" + sFilename;
-                ViewBag.Message = "File uploaded successfully";
-            }
-            catch (Exception ex)
-            {
-                ViewBag.Message = "ERROR:" + ex.Message.ToString();
-            }
-        }
-        else
-        {
-            ViewBag.Message = "You have not specified a file.";
-        }
-
-        if (objObjectivesModels.FunAddObjectivesEvaluation(objObjectivesModels))
-        {
-            TempData["Successdata"] = "Added Objective Evaluation details successfully";
-        }
-        else
-        {
-            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-        }
-    }
-    catch (Exception ex)
-    {
-        objGlobaldata.AddFunctionalLog("Exception in AddObjectiveEvaluation: " + ex.ToString());
-        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-    }
-    return RedirectToAction("AddObjectiveEvaluation", new { ObjectivesTrans_Id = objObjectivesModels.ObjectivesTrans_Id, View = ViewBag.View });
-}
-
-[AllowAnonymous]
-public ActionResult ObjectiveEvaluationDetails()
-{
-    ObjectivesModels objObjectivesModels = new ObjectivesModels();
-    ObjectivesModels objObjectivesModels2 = new ObjectivesModels();
-    UserCredentials objUser = new UserCredentials();
-    objUser = objGlobaldata.GetCurrentUserSession();
-
-    try
-    {
-        string sObjectivesTrans_Id = Request.QueryString["ObjectivesTrans_Id"];
-
-        if (sObjectivesTrans_Id != null && sObjectivesTrans_Id != "")
-        {
-
-            string sSqlstmt = "select ObjectivesEval_Id, ObjectivesTrans_Id, Obj_Eval_On, FromPeriod, ToPeriod, Obj_Achieved_Val, Trend, NCR_Ref, Evidence,Status_Obj_Eval "
-                                + "from t_objectives_evaluation where ObjectivesTrans_Id=" + sObjectivesTrans_Id;
-
-            DataSet dsObjectivesModelsList = objGlobaldata.Getdetails(sSqlstmt);
-
-            if (dsObjectivesModelsList.Tables[0].Rows.Count > 0)
-            {
-                DateTime dtObj_Eval_On = Convert.ToDateTime(dsObjectivesModelsList.Tables[0].Rows[0]["Obj_Eval_On"].ToString());
-                DateTime dtFromPeriod = Convert.ToDateTime(dsObjectivesModelsList.Tables[0].Rows[0]["FromPeriod"].ToString());
-                DateTime dtToPeriod = Convert.ToDateTime(dsObjectivesModelsList.Tables[0].Rows[0]["ToPeriod"].ToString());
-
-                objObjectivesModels = new ObjectivesModels
                 {
-                    ObjectivesEval_Id = Convert.ToInt16(dsObjectivesModelsList.Tables[0].Rows[0]["ObjectivesEval_Id"].ToString()),
-                    ObjectivesTrans_Id = Convert.ToInt16(dsObjectivesModelsList.Tables[0].Rows[0]["ObjectivesTrans_Id"].ToString()),
-                    Obj_Eval_On = dtObj_Eval_On,
-                    FromPeriod = dtFromPeriod,
-                    ToPeriod = dtToPeriod,
-                    Obj_Achieved_Val = dsObjectivesModelsList.Tables[0].Rows[0]["Obj_Achieved_Val"].ToString(),
-                    Trend = objObjectivesModels2.GetMultiObjectiveEvaluationById(dsObjectivesModelsList.Tables[0].Rows[0]["Trend"].ToString()),
-                    NCR_Ref = objGlobaldata.GetNCRNumberById(dsObjectivesModelsList.Tables[0].Rows[0]["NCR_Ref"].ToString()),
-                    Evidence = dsObjectivesModelsList.Tables[0].Rows[0]["Evidence"].ToString(),
-                    Status_Obj_Eval = objObjectivesModels.GetObjectiveStatusNameById(dsObjectivesModelsList.Tables[0].Rows[0]["Status_Obj_Eval"].ToString())
-                };
+                    try
+                    {
+                        string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/Objectives"), Path.GetFileName(Evidence.FileName));
+                        string sFilename = "Evidence" + "_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath);
+                        string sFilepath = Path.GetDirectoryName(spath);
 
-                DataSet dsObjectives_Id = objGlobaldata.Getdetails("select Objectives_Id from t_objectives_trans where ObjectivesTrans_Id='"
-                    + objObjectivesModels.ObjectivesTrans_Id + "'");
-                ViewBag.Objectives_Id = dsObjectives_Id.Tables[0].Rows[0]["Objectives_Id"].ToString();
-            }
-            else if (Request.QueryString["Objectives_Id"] != null)
-            {
-                TempData["alertdata"] = "No data exists";
-                return RedirectToAction("ObjectivesDetails", new { Objectives_Id = Request.QueryString["Objectives_Id"], View = ViewBag.View });
-            }
-            else
-            {
-                return RedirectToAction("AddObjectiveEvaluation", new { ObjectivesTrans_Id = sObjectivesTrans_Id, View = ViewBag.View });
-            }
-        }
-        else if (Request.QueryString["Objectives_Id"] != null)
-        {
-            TempData["alertdata"] = "No data exists";
-            return RedirectToAction("ObjectivesDetails", new { Objectives_Id = Request.QueryString["Objectives_Id"], View = ViewBag.View });
-        }
-        else
-        {
-            ViewBag.UserRole = objGlobaldata.GetRoleName(objUser.role);
-            TempData["alertdata"] = "No data exists";
-            return RedirectToAction("ObjectivesList", new { View = ViewBag.View });
-        }
-    }
-    catch (Exception ex)
-    {
-        objGlobaldata.AddFunctionalLog("Exception in ObjectiveEvaluationDetails: " + ex.ToString());
-        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-    }
-    return View(objObjectivesModels);
-
-}
-
-[AllowAnonymous]
-public ActionResult ObjectiveEvaluationEdit()
-{
-    ObjectivesModels objObjectivesModels = new ObjectivesModels();
-
-    try
-    {
-        UserCredentials objUser = new UserCredentials();
-        objUser = objGlobaldata.GetCurrentUserSession();
-        ViewBag.UserRole = objGlobaldata.GetRoleName(objUser.role);
-        ViewBag.Evaluation = objObjectivesModels.GetMultiObjectiveEvaluation();
-        ViewBag.Status_Obj_Eval = objObjectivesModels.GetMultiObjectiveStatusList();
-        ViewBag.NcrRef = objGlobaldata.GetNCRNumberList();
-        string sObjectivesEval_Id = Request.QueryString["ObjectivesEval_Id"];
-        ViewBag.View = Request.QueryString["View"];
-        if (sObjectivesEval_Id != null && sObjectivesEval_Id != "")
-        {
-
-            string sSqlstmt = "select ObjectivesEval_Id, a.ObjectivesTrans_Id, Obj_Eval_On, FromPeriod, ToPeriod, Obj_Achieved_Val, Trend, NCR_Ref, Evidence,Status_Obj_Eval," +
-                             " Obj_Target,Base_Line_Value,Monitoring_Mechanism,Target_Date from t_objectives_evaluation a, t_objectives_trans b where" +
-                             " a.ObjectivesTrans_Id = b.ObjectivesTrans_Id and ObjectivesEval_Id = '" + sObjectivesEval_Id + "'";
-
-            DataSet dsObjectivesModelsList = objGlobaldata.Getdetails(sSqlstmt);
-
-            if (dsObjectivesModelsList.Tables.Count > 0 && dsObjectivesModelsList.Tables[0].Rows.Count > 0)
-            {
-                DateTime dtObj_Eval_On = Convert.ToDateTime(dsObjectivesModelsList.Tables[0].Rows[0]["Obj_Eval_On"].ToString());
-                DateTime dtFromPeriod = Convert.ToDateTime(dsObjectivesModelsList.Tables[0].Rows[0]["FromPeriod"].ToString());
-                DateTime dtToPeriod = Convert.ToDateTime(dsObjectivesModelsList.Tables[0].Rows[0]["ToPeriod"].ToString());
-                DateTime dtTarget_Date = Convert.ToDateTime(dsObjectivesModelsList.Tables[0].Rows[0]["Target_Date"].ToString());
-
-                objObjectivesModels = new ObjectivesModels
+                        Evidence.SaveAs(sFilepath + "/" + sFilename);
+                        objObjectivesModels.Evidence = "~/DataUpload/MgmtDocs/Objectives/" + sFilename;
+                        ViewBag.Message = "File uploaded successfully";
+                    }
+                    catch (Exception ex)
+                    {
+                        ViewBag.Message = "ERROR:" + ex.Message.ToString();
+                    }
+                }
+                else
                 {
-                    ObjectivesEval_Id = Convert.ToInt16(dsObjectivesModelsList.Tables[0].Rows[0]["ObjectivesEval_Id"].ToString()),
-                    ObjectivesTrans_Id = Convert.ToInt16(dsObjectivesModelsList.Tables[0].Rows[0]["ObjectivesTrans_Id"].ToString()),
-                    Obj_Eval_On = dtObj_Eval_On,
-                    FromPeriod = dtFromPeriod,
-                    ToPeriod = dtToPeriod,
-                    Obj_Achieved_Val = dsObjectivesModelsList.Tables[0].Rows[0]["Obj_Achieved_Val"].ToString(),
-                    Trend = dsObjectivesModelsList.Tables[0].Rows[0]["Trend"].ToString(),
-                    NCR_Ref = /*objGlobaldata.GetNCRNumberById*/(dsObjectivesModelsList.Tables[0].Rows[0]["NCR_Ref"].ToString()),
-                    Evidence = dsObjectivesModelsList.Tables[0].Rows[0]["Evidence"].ToString(),
-                    Status_Obj_Eval = dsObjectivesModelsList.Tables[0].Rows[0]["Status_Obj_Eval"].ToString(),
-                    Obj_Target = dsObjectivesModelsList.Tables[0].Rows[0]["Obj_Target"].ToString(),
-                    Base_Line_Value = dsObjectivesModelsList.Tables[0].Rows[0]["Base_Line_Value"].ToString(),
-                    Monitoring_Mechanism = dsObjectivesModelsList.Tables[0].Rows[0]["Monitoring_Mechanism"].ToString(),
-                    Target_Date = dtTarget_Date,
-                };
-                ViewBag.ObjectivesTrans_Id = objObjectivesModels.ObjectivesTrans_Id;
-                ViewBag.ObjectivesEval_Id = objObjectivesModels.ObjectivesEval_Id;
-                DataSet dsObjectives_Id = objGlobaldata.Getdetails("select Objectives_Id,Target_Date,Obj_Estld_On from t_objectives_trans where ObjectivesTrans_Id='"
-                    + objObjectivesModels.ObjectivesTrans_Id + "'");
+                    ViewBag.Message = "You have not specified a file.";
+                }
 
-                if (dsObjectives_Id.Tables.Count > 0 && dsObjectives_Id.Tables[0].Rows.Count > 0)
+                if (objObjectivesModels.FunAddObjectivesEvaluation(objObjectivesModels))
                 {
-                    objObjectivesModels.Target_Date = Convert.ToDateTime(dsObjectives_Id.Tables[0].Rows[0]["Target_Date"].ToString());
-                    objObjectivesModels.Obj_Estld_On = Convert.ToDateTime(dsObjectives_Id.Tables[0].Rows[0]["Obj_Estld_On"].ToString());
+                    TempData["Successdata"] = "Added Objective Evaluation details successfully";
+                }
+                else
+                {
+                    TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 }
             }
-            else if (Request.QueryString["Objectives_Id"] != null)
+            catch (Exception ex)
             {
-                TempData["alertdata"] = "No data exists";
-                return RedirectToAction("ObjectivesDetails", new { Objectives_Id = Request.QueryString["Objectives_Id"], View = ViewBag.View });
+                objGlobaldata.AddFunctionalLog("Exception in AddObjectiveEvaluation: " + ex.ToString());
+                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
-            else
-            {
-                TempData["alertdata"] = "No data exists";
-                return RedirectToAction("ObjectivesList", new { View = ViewBag.View });
-            }
+            return RedirectToAction("AddObjectiveEvaluation", new { ObjectivesTrans_Id = objObjectivesModels.ObjectivesTrans_Id, View = ViewBag.View });
         }
-        else if (Request.QueryString["Objectives_Id"] != null)
+
+        [AllowAnonymous]
+        public ActionResult ObjectiveEvaluationDetails()
         {
-            TempData["alertdata"] = "No data exists";
-            return RedirectToAction("ObjectivesDetails", new { Objectives_Id = Request.QueryString["Objectives_Id"], View = ViewBag.View });
-        }
-        else
-        {
-            TempData["alertdata"] = "No data exists";
-            return RedirectToAction("ObjectivesList", new { View = ViewBag.View });
-        }
-    }
-    catch (Exception ex)
-    {
-        objGlobaldata.AddFunctionalLog("Exception in ObjectiveEvaluationEdit: " + ex.ToString());
-        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-    }
+            ObjectivesModels objObjectivesModels = new ObjectivesModels();
+            ObjectivesModels objObjectivesModels2 = new ObjectivesModels();
+            UserCredentials objUser = new UserCredentials();
+            objUser = objGlobaldata.GetCurrentUserSession();
 
-    return View(objObjectivesModels);
-}
-
-[HttpPost]
-[ValidateAntiForgeryToken]
-public ActionResult ObjectiveEvaluationEdit(ObjectivesModels objObjectivesModels, FormCollection form, HttpPostedFileBase Evidence)
-{
-    try
-    {
-        DateTime dateValue;
-
-        ViewBag.View = form["view"];
-
-        if (DateTime.TryParse(form["Obj_Eval_On"], out dateValue) == true)
-        {
-            objObjectivesModels.Obj_Eval_On = dateValue;
-        }
-        if (DateTime.TryParse(form["FromPeriod"], out dateValue) == true)
-        {
-            objObjectivesModels.FromPeriod = dateValue;
-        }
-        if (DateTime.TryParse(form["ToPeriod"], out dateValue) == true)
-        {
-            objObjectivesModels.ToPeriod = dateValue;
-        }
-        objObjectivesModels.ObjectivesEval_Id = Convert.ToInt16(form["ObjectivesEval_Id"]);
-        objObjectivesModels.ObjectivesTrans_Id = Convert.ToInt16(form["ObjectivesTrans_Id"]);
-
-        objObjectivesModels.CreatedBy = objGlobaldata.GetCurrentUserSession().empid;
-
-
-        if (Evidence != null && Evidence.ContentLength > 0)
-        {
             try
             {
-                string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/Objectives"), Path.GetFileName(Evidence.FileName));
-                string sFilename = "Evidence" + "_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath);
-                string sFilepath = Path.GetDirectoryName(spath);
+                string sObjectivesTrans_Id = Request.QueryString["ObjectivesTrans_Id"];
 
-                Evidence.SaveAs(sFilepath + "/" + sFilename);
-                objObjectivesModels.Evidence = "~/DataUpload/MgmtDocs/Objectives/" + sFilename;
-                ViewBag.Message = "File uploaded successfully";
+                if (sObjectivesTrans_Id != null && sObjectivesTrans_Id != "")
+                {
+                    string sSqlstmt = "select ObjectivesEval_Id, ObjectivesTrans_Id, Obj_Eval_On, FromPeriod, ToPeriod, Obj_Achieved_Val, Trend, NCR_Ref, Evidence,Status_Obj_Eval "
+                                        + "from t_objectives_evaluation where ObjectivesTrans_Id=" + sObjectivesTrans_Id;
+
+                    DataSet dsObjectivesModelsList = objGlobaldata.Getdetails(sSqlstmt);
+
+                    if (dsObjectivesModelsList.Tables[0].Rows.Count > 0)
+                    {
+                        DateTime dtObj_Eval_On = Convert.ToDateTime(dsObjectivesModelsList.Tables[0].Rows[0]["Obj_Eval_On"].ToString());
+                        DateTime dtFromPeriod = Convert.ToDateTime(dsObjectivesModelsList.Tables[0].Rows[0]["FromPeriod"].ToString());
+                        DateTime dtToPeriod = Convert.ToDateTime(dsObjectivesModelsList.Tables[0].Rows[0]["ToPeriod"].ToString());
+
+                        objObjectivesModels = new ObjectivesModels
+                        {
+                            ObjectivesEval_Id = Convert.ToInt16(dsObjectivesModelsList.Tables[0].Rows[0]["ObjectivesEval_Id"].ToString()),
+                            ObjectivesTrans_Id = Convert.ToInt16(dsObjectivesModelsList.Tables[0].Rows[0]["ObjectivesTrans_Id"].ToString()),
+                            Obj_Eval_On = dtObj_Eval_On,
+                            FromPeriod = dtFromPeriod,
+                            ToPeriod = dtToPeriod,
+                            Obj_Achieved_Val = dsObjectivesModelsList.Tables[0].Rows[0]["Obj_Achieved_Val"].ToString(),
+                            Trend = objObjectivesModels2.GetMultiObjectiveEvaluationById(dsObjectivesModelsList.Tables[0].Rows[0]["Trend"].ToString()),
+                            NCR_Ref = objGlobaldata.GetNCRNumberById(dsObjectivesModelsList.Tables[0].Rows[0]["NCR_Ref"].ToString()),
+                            Evidence = dsObjectivesModelsList.Tables[0].Rows[0]["Evidence"].ToString(),
+                            Status_Obj_Eval = objObjectivesModels.GetObjectiveStatusNameById(dsObjectivesModelsList.Tables[0].Rows[0]["Status_Obj_Eval"].ToString())
+                        };
+
+                        DataSet dsObjectives_Id = objGlobaldata.Getdetails("select Objectives_Id from t_objectives_trans where ObjectivesTrans_Id='"
+                            + objObjectivesModels.ObjectivesTrans_Id + "'");
+                        ViewBag.Objectives_Id = dsObjectives_Id.Tables[0].Rows[0]["Objectives_Id"].ToString();
+                    }
+                    else if (Request.QueryString["Objectives_Id"] != null)
+                    {
+                        TempData["alertdata"] = "No data exists";
+                        return RedirectToAction("ObjectivesDetails", new { Objectives_Id = Request.QueryString["Objectives_Id"], View = ViewBag.View });
+                    }
+                    else
+                    {
+                        return RedirectToAction("AddObjectiveEvaluation", new { ObjectivesTrans_Id = sObjectivesTrans_Id, View = ViewBag.View });
+                    }
+                }
+                else if (Request.QueryString["Objectives_Id"] != null)
+                {
+                    TempData["alertdata"] = "No data exists";
+                    return RedirectToAction("ObjectivesDetails", new { Objectives_Id = Request.QueryString["Objectives_Id"], View = ViewBag.View });
+                }
+                else
+                {
+                    ViewBag.UserRole = objGlobaldata.GetRoleName(objUser.role);
+                    TempData["alertdata"] = "No data exists";
+                    return RedirectToAction("ObjectivesList", new { View = ViewBag.View });
+                }
             }
             catch (Exception ex)
             {
-                ViewBag.Message = "ERROR:" + ex.Message.ToString();
+                objGlobaldata.AddFunctionalLog("Exception in ObjectiveEvaluationDetails: " + ex.ToString());
+                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
-        }
-        else
-        {
-            ViewBag.Message = "You have not specified a file.";
+            return View(objObjectivesModels);
         }
 
-        if (objObjectivesModels.FunUpdateObjectivesEvaluation(objObjectivesModels))
+        [AllowAnonymous]
+        public ActionResult ObjectiveEvaluationEdit()
         {
-            TempData["Successdata"] = "Objective Evaluation details updated successfully";
+            ObjectivesModels objObjectivesModels = new ObjectivesModels();
+
+            try
+            {
+                UserCredentials objUser = new UserCredentials();
+                objUser = objGlobaldata.GetCurrentUserSession();
+                ViewBag.UserRole = objGlobaldata.GetRoleName(objUser.role);
+                ViewBag.Evaluation = objObjectivesModels.GetMultiObjectiveEvaluation();
+                ViewBag.Status_Obj_Eval = objObjectivesModels.GetMultiObjectiveStatusList();
+                ViewBag.NcrRef = objGlobaldata.GetNCRNumberList();
+                string sObjectivesEval_Id = Request.QueryString["ObjectivesEval_Id"];
+                ViewBag.View = Request.QueryString["View"];
+                if (sObjectivesEval_Id != null && sObjectivesEval_Id != "")
+                {
+                    string sSqlstmt = "select ObjectivesEval_Id, a.ObjectivesTrans_Id, Obj_Eval_On, FromPeriod, ToPeriod, Obj_Achieved_Val, Trend, NCR_Ref, Evidence,Status_Obj_Eval," +
+                                     " Obj_Target,Base_Line_Value,Monitoring_Mechanism,Target_Date from t_objectives_evaluation a, t_objectives_trans b where" +
+                                     " a.ObjectivesTrans_Id = b.ObjectivesTrans_Id and ObjectivesEval_Id = '" + sObjectivesEval_Id + "'";
+
+                    DataSet dsObjectivesModelsList = objGlobaldata.Getdetails(sSqlstmt);
+
+                    if (dsObjectivesModelsList.Tables.Count > 0 && dsObjectivesModelsList.Tables[0].Rows.Count > 0)
+                    {
+                        DateTime dtObj_Eval_On = Convert.ToDateTime(dsObjectivesModelsList.Tables[0].Rows[0]["Obj_Eval_On"].ToString());
+                        DateTime dtFromPeriod = Convert.ToDateTime(dsObjectivesModelsList.Tables[0].Rows[0]["FromPeriod"].ToString());
+                        DateTime dtToPeriod = Convert.ToDateTime(dsObjectivesModelsList.Tables[0].Rows[0]["ToPeriod"].ToString());
+                        DateTime dtTarget_Date = Convert.ToDateTime(dsObjectivesModelsList.Tables[0].Rows[0]["Target_Date"].ToString());
+
+                        objObjectivesModels = new ObjectivesModels
+                        {
+                            ObjectivesEval_Id = Convert.ToInt16(dsObjectivesModelsList.Tables[0].Rows[0]["ObjectivesEval_Id"].ToString()),
+                            ObjectivesTrans_Id = Convert.ToInt16(dsObjectivesModelsList.Tables[0].Rows[0]["ObjectivesTrans_Id"].ToString()),
+                            Obj_Eval_On = dtObj_Eval_On,
+                            FromPeriod = dtFromPeriod,
+                            ToPeriod = dtToPeriod,
+                            Obj_Achieved_Val = dsObjectivesModelsList.Tables[0].Rows[0]["Obj_Achieved_Val"].ToString(),
+                            Trend = dsObjectivesModelsList.Tables[0].Rows[0]["Trend"].ToString(),
+                            NCR_Ref = /*objGlobaldata.GetNCRNumberById*/(dsObjectivesModelsList.Tables[0].Rows[0]["NCR_Ref"].ToString()),
+                            Evidence = dsObjectivesModelsList.Tables[0].Rows[0]["Evidence"].ToString(),
+                            Status_Obj_Eval = dsObjectivesModelsList.Tables[0].Rows[0]["Status_Obj_Eval"].ToString(),
+                            Obj_Target = dsObjectivesModelsList.Tables[0].Rows[0]["Obj_Target"].ToString(),
+                            Base_Line_Value = dsObjectivesModelsList.Tables[0].Rows[0]["Base_Line_Value"].ToString(),
+                            Monitoring_Mechanism = dsObjectivesModelsList.Tables[0].Rows[0]["Monitoring_Mechanism"].ToString(),
+                            Target_Date = dtTarget_Date,
+                        };
+                        ViewBag.ObjectivesTrans_Id = objObjectivesModels.ObjectivesTrans_Id;
+                        ViewBag.ObjectivesEval_Id = objObjectivesModels.ObjectivesEval_Id;
+                        DataSet dsObjectives_Id = objGlobaldata.Getdetails("select Objectives_Id,Target_Date,Obj_Estld_On from t_objectives_trans where ObjectivesTrans_Id='"
+                            + objObjectivesModels.ObjectivesTrans_Id + "'");
+
+                        if (dsObjectives_Id.Tables.Count > 0 && dsObjectives_Id.Tables[0].Rows.Count > 0)
+                        {
+                            objObjectivesModels.Target_Date = Convert.ToDateTime(dsObjectives_Id.Tables[0].Rows[0]["Target_Date"].ToString());
+                            objObjectivesModels.Obj_Estld_On = Convert.ToDateTime(dsObjectives_Id.Tables[0].Rows[0]["Obj_Estld_On"].ToString());
+                        }
+                    }
+                    else if (Request.QueryString["Objectives_Id"] != null)
+                    {
+                        TempData["alertdata"] = "No data exists";
+                        return RedirectToAction("ObjectivesDetails", new { Objectives_Id = Request.QueryString["Objectives_Id"], View = ViewBag.View });
+                    }
+                    else
+                    {
+                        TempData["alertdata"] = "No data exists";
+                        return RedirectToAction("ObjectivesList", new { View = ViewBag.View });
+                    }
+                }
+                else if (Request.QueryString["Objectives_Id"] != null)
+                {
+                    TempData["alertdata"] = "No data exists";
+                    return RedirectToAction("ObjectivesDetails", new { Objectives_Id = Request.QueryString["Objectives_Id"], View = ViewBag.View });
+                }
+                else
+                {
+                    TempData["alertdata"] = "No data exists";
+                    return RedirectToAction("ObjectivesList", new { View = ViewBag.View });
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in ObjectiveEvaluationEdit: " + ex.ToString());
+                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+            }
+
+            return View(objObjectivesModels);
         }
-        else
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult ObjectiveEvaluationEdit(ObjectivesModels objObjectivesModels, FormCollection form, HttpPostedFileBase Evidence)
         {
-            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+            try
+            {
+                DateTime dateValue;
+
+                ViewBag.View = form["view"];
+
+                if (DateTime.TryParse(form["Obj_Eval_On"], out dateValue) == true)
+                {
+                    objObjectivesModels.Obj_Eval_On = dateValue;
+                }
+                if (DateTime.TryParse(form["FromPeriod"], out dateValue) == true)
+                {
+                    objObjectivesModels.FromPeriod = dateValue;
+                }
+                if (DateTime.TryParse(form["ToPeriod"], out dateValue) == true)
+                {
+                    objObjectivesModels.ToPeriod = dateValue;
+                }
+                objObjectivesModels.ObjectivesEval_Id = Convert.ToInt16(form["ObjectivesEval_Id"]);
+                objObjectivesModels.ObjectivesTrans_Id = Convert.ToInt16(form["ObjectivesTrans_Id"]);
+
+                objObjectivesModels.CreatedBy = objGlobaldata.GetCurrentUserSession().empid;
+
+                if (Evidence != null && Evidence.ContentLength > 0)
+                {
+                    try
+                    {
+                        string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/Objectives"), Path.GetFileName(Evidence.FileName));
+                        string sFilename = "Evidence" + "_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath);
+                        string sFilepath = Path.GetDirectoryName(spath);
+
+                        Evidence.SaveAs(sFilepath + "/" + sFilename);
+                        objObjectivesModels.Evidence = "~/DataUpload/MgmtDocs/Objectives/" + sFilename;
+                        ViewBag.Message = "File uploaded successfully";
+                    }
+                    catch (Exception ex)
+                    {
+                        ViewBag.Message = "ERROR:" + ex.Message.ToString();
+                    }
+                }
+                else
+                {
+                    ViewBag.Message = "You have not specified a file.";
+                }
+
+                if (objObjectivesModels.FunUpdateObjectivesEvaluation(objObjectivesModels))
+                {
+                    TempData["Successdata"] = "Objective Evaluation details updated successfully";
+                }
+                else
+                {
+                    TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in ObjectiveEvaluationEdit: " + ex.ToString());
+                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+            }
+            return RedirectToAction("ObjectiveEvaluationList", new { ObjectivesTrans_Id = objObjectivesModels.ObjectivesTrans_Id, View = ViewBag.View });
         }
-    }
-    catch (Exception ex)
-    {
-        objGlobaldata.AddFunctionalLog("Exception in ObjectiveEvaluationEdit: " + ex.ToString());
-        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-    }
-    return RedirectToAction("ObjectiveEvaluationList", new { ObjectivesTrans_Id = objObjectivesModels.ObjectivesTrans_Id, View = ViewBag.View });
-}
 
         // ----------------End Objective Evaluation------
 
         // ----------------Start Objective ActionPlan------
 
         [AllowAnonymous]
-public ActionResult AddObjectiveActionPlan()
-{
-
-    ObjectivesModelsList objObjectivesModelsList = new ObjectivesModelsList();
-    objObjectivesModelsList.ObjectivesMList = new List<ObjectivesModels>();
-    ObjectivesModels objObjectivesModels = new ObjectivesModels();
-    UserCredentials objUser = new UserCredentials();
-    objUser = objGlobaldata.GetCurrentUserSession();
-    ViewBag.UserRole = objGlobaldata.GetRoleName(objUser.role);
-    ViewBag.Evaluation = objObjectivesModels.GetMultiObjectiveEvaluation();
-    ViewBag.Status = objGlobaldata.GetDropdownList("Equipment Activity Status");
-    ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
-    try
-    {
-        ViewBag.View = Request.QueryString["View"];
-        if (Request.QueryString["ObjectivesTrans_Id"] != null)
+        public ActionResult AddObjectiveActionPlan()
         {
-            string sObjectivesTrans_Id = Request.QueryString["ObjectivesTrans_Id"];
+            ObjectivesModelsList objObjectivesModelsList = new ObjectivesModelsList();
+            objObjectivesModelsList.ObjectivesMList = new List<ObjectivesModels>();
+            ObjectivesModels objObjectivesModels = new ObjectivesModels();
+            UserCredentials objUser = new UserCredentials();
+            objUser = objGlobaldata.GetCurrentUserSession();
+            ViewBag.UserRole = objGlobaldata.GetRoleName(objUser.role);
+            ViewBag.Evaluation = objObjectivesModels.GetMultiObjectiveEvaluation();
+            ViewBag.Status = objGlobaldata.GetDropdownList("Equipment Activity Status");
+            ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
+            try
+            {
+                ViewBag.View = Request.QueryString["View"];
+                if (Request.QueryString["ObjectivesTrans_Id"] != null)
+                {
+                    string sObjectivesTrans_Id = Request.QueryString["ObjectivesTrans_Id"];
                     int count = 0;
                     string sSql = "select id_objective_action from t_objectives_actionplan where ObjectivesTrans_Id  = '" + sObjectivesTrans_Id + "'";
                     DataSet dsList = objGlobaldata.Getdetails(sSql);
@@ -1895,15 +1863,14 @@ public ActionResult AddObjectiveActionPlan()
 
                     if (dsObjectivesList.Tables.Count > 0 && dsObjectivesList.Tables[0].Rows.Count > 0)
                     {
-
-                        ViewBag.Obj_ref = dsObjectivesList.Tables[0].Rows[0]["Obj_Ref"].ToString() + "-AP"+ count;
+                        ViewBag.Obj_ref = dsObjectivesList.Tables[0].Rows[0]["Obj_Ref"].ToString() + "-AP" + count;
                         ViewBag.Objectives_Id = dsObjectivesList.Tables[0].Rows[0]["Objectives_Id"].ToString();
                         ViewBag.Obj_Estld_On = Convert.ToDateTime(dsObjectivesList.Tables[0].Rows[0]["Obj_Estld_On"].ToString()).ToString("dd/MM/yyyy");
                         ViewBag.Base_Line_Value = dsObjectivesList.Tables[0].Rows[0]["Base_Line_Value"].ToString();
                         ViewBag.Target_Date = Convert.ToDateTime(dsObjectivesList.Tables[0].Rows[0]["Target_Date"].ToString()).ToString("dd/MM/yyyy");
                         ViewBag.Obj_Target = dsObjectivesList.Tables[0].Rows[0]["Obj_Target"].ToString();
                         ViewBag.Monitoring_Mechanism = dsObjectivesList.Tables[0].Rows[0]["Monitoring_Mechanism"].ToString();
-                        ViewBag.Objectives_val = dsObjectivesList.Tables[0].Rows[0]["Objectives_val"].ToString();                       
+                        ViewBag.Objectives_val = dsObjectivesList.Tables[0].Rows[0]["Objectives_val"].ToString();
                     }
 
                     //    string sSqlstmt = "select Obj_Ref, c.Objectives_Id,Obj_Estld_On,id_objective_action, a.ObjectivesTrans_Id,id_objective_action,actionplan,begin_date,end_date,upload,resource,resp_person, " +
@@ -1914,152 +1881,150 @@ public ActionResult AddObjectiveActionPlan()
 
                     ViewBag.ObjectivesTrans_Id = sObjectivesTrans_Id;
 
-            DataSet dsObjectivesModelsList = objGlobaldata.Getdetails(sSqlstmt);
+                    DataSet dsObjectivesModelsList = objGlobaldata.Getdetails(sSqlstmt);
 
-            if (dsObjectivesModelsList.Tables.Count > 0 && dsObjectivesModelsList.Tables[0].Rows.Count > 0)
-            {
-                for (int i = 0; i < dsObjectivesModelsList.Tables[0].Rows.Count; i++)
-                {
-                    try
+                    if (dsObjectivesModelsList.Tables.Count > 0 && dsObjectivesModelsList.Tables[0].Rows.Count > 0)
                     {
-                        objObjectivesModels = new ObjectivesModels
+                        for (int i = 0; i < dsObjectivesModelsList.Tables[0].Rows.Count; i++)
                         {
-                            id_objective_action = (dsObjectivesModelsList.Tables[0].Rows[i]["id_objective_action"].ToString()),
-                            ObjectivesTrans_Id = Convert.ToInt16(dsObjectivesModelsList.Tables[0].Rows[i]["ObjectivesTrans_Id"].ToString()),
-                            actionplan = dsObjectivesModelsList.Tables[0].Rows[i]["actionplan"].ToString(),
-                            upload = dsObjectivesModelsList.Tables[0].Rows[i]["upload"].ToString(),
-                            resource = dsObjectivesModelsList.Tables[0].Rows[i]["resource"].ToString(),
-                            //action_status = objGlobaldata.getEquipmentActionTypeById(dsObjectivesModelsList.Tables[0].Rows[i]["action_status"].ToString()),
-                            resp_person = objGlobaldata.GetMultiHrEmpNameById(dsObjectivesModelsList.Tables[0].Rows[i]["resp_person"].ToString()),
-                            action_ref_no = dsObjectivesModelsList.Tables[0].Rows[i]["action_ref_no"].ToString(),
-                        };
-                        DateTime dtDocDate;
-                        if (dsObjectivesModelsList.Tables[0].Rows[i]["begin_date"].ToString() != ""
-                           && DateTime.TryParse(dsObjectivesModelsList.Tables[0].Rows[i]["begin_date"].ToString(), out dtDocDate))
-                        {
-                            objObjectivesModels.begin_date = dtDocDate;
+                            try
+                            {
+                                objObjectivesModels = new ObjectivesModels
+                                {
+                                    id_objective_action = (dsObjectivesModelsList.Tables[0].Rows[i]["id_objective_action"].ToString()),
+                                    ObjectivesTrans_Id = Convert.ToInt16(dsObjectivesModelsList.Tables[0].Rows[i]["ObjectivesTrans_Id"].ToString()),
+                                    actionplan = dsObjectivesModelsList.Tables[0].Rows[i]["actionplan"].ToString(),
+                                    upload = dsObjectivesModelsList.Tables[0].Rows[i]["upload"].ToString(),
+                                    resource = dsObjectivesModelsList.Tables[0].Rows[i]["resource"].ToString(),
+                                    //action_status = objGlobaldata.getEquipmentActionTypeById(dsObjectivesModelsList.Tables[0].Rows[i]["action_status"].ToString()),
+                                    resp_person = objGlobaldata.GetMultiHrEmpNameById(dsObjectivesModelsList.Tables[0].Rows[i]["resp_person"].ToString()),
+                                    action_ref_no = dsObjectivesModelsList.Tables[0].Rows[i]["action_ref_no"].ToString(),
+                                };
+                                DateTime dtDocDate;
+                                if (dsObjectivesModelsList.Tables[0].Rows[i]["begin_date"].ToString() != ""
+                                   && DateTime.TryParse(dsObjectivesModelsList.Tables[0].Rows[i]["begin_date"].ToString(), out dtDocDate))
+                                {
+                                    objObjectivesModels.begin_date = dtDocDate;
+                                }
+                                if (dsObjectivesModelsList.Tables[0].Rows[i]["end_date"].ToString() != ""
+                                  && DateTime.TryParse(dsObjectivesModelsList.Tables[0].Rows[i]["end_date"].ToString(), out dtDocDate))
+                                {
+                                    objObjectivesModels.end_date = dtDocDate;
+                                }
+                                objObjectivesModelsList.ObjectivesMList.Add(objObjectivesModels);
+                            }
+                            catch (Exception ex)
+                            {
+                                objGlobaldata.AddFunctionalLog("Exception in AddObjectiveActionPlan: " + ex.ToString());
+                                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                            }
                         }
-                        if (dsObjectivesModelsList.Tables[0].Rows[i]["end_date"].ToString() != ""
-                          && DateTime.TryParse(dsObjectivesModelsList.Tables[0].Rows[i]["end_date"].ToString(), out dtDocDate))
+                        if (sObjectivesTrans_Id != "")
                         {
-                            objObjectivesModels.end_date = dtDocDate;
+                            DataSet dsObjectives_Id = objGlobaldata.Getdetails("select Objectives_Id from t_objectives_trans where ObjectivesTrans_Id='" + sObjectivesTrans_Id + "'");
+                            if (dsObjectives_Id.Tables.Count > 0 && dsObjectives_Id.Tables[0].Rows.Count > 0)
+                            {
+                                ViewBag.Objectives_Id = dsObjectives_Id.Tables[0].Rows[0]["Objectives_Id"].ToString();
+                            }
                         }
-                        objObjectivesModelsList.ObjectivesMList.Add(objObjectivesModels);
                     }
-                    catch (Exception ex)
-                    {
-                        objGlobaldata.AddFunctionalLog("Exception in AddObjectiveActionPlan: " + ex.ToString());
-                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                    }
+                    //else if (Request.QueryString["Objectives_Id"] != null)
+                    //{
+                    //    TempData["alertdata"] = "No data exists";
+                    //    return RedirectToAction("ObjectivesDetails", new { Objectives_Id = Request.QueryString["Objectives_Id"], View = ViewBag.View });
+                    //}
+                    //else
+                    //{
+                    //    TempData["alertdata"] = "No data exists";
+                    //    return RedirectToAction("ObjectivesList", new { View = ViewBag.View });
+                    //}
                 }
-                if (sObjectivesTrans_Id != "")
+                else
                 {
-                    DataSet dsObjectives_Id = objGlobaldata.Getdetails("select Objectives_Id from t_objectives_trans where ObjectivesTrans_Id='" + sObjectivesTrans_Id + "'");
-                    if (dsObjectives_Id.Tables.Count > 0 && dsObjectives_Id.Tables[0].Rows.Count > 0)
-                    {
-                        ViewBag.Objectives_Id = dsObjectives_Id.Tables[0].Rows[0]["Objectives_Id"].ToString();
-                    }
+                    TempData["alertdata"] = "Objectives Trans Id cannot be null";
+                    return RedirectToAction("ObjectivesList", new { View = ViewBag.View });
                 }
-            }
-            //else if (Request.QueryString["Objectives_Id"] != null)
-            //{
-            //    TempData["alertdata"] = "No data exists";
-            //    return RedirectToAction("ObjectivesDetails", new { Objectives_Id = Request.QueryString["Objectives_Id"], View = ViewBag.View });
-            //}
-            //else
-            //{
-            //    TempData["alertdata"] = "No data exists";
-            //    return RedirectToAction("ObjectivesList", new { View = ViewBag.View });
-            //}
-        }
-        else
-        {
-            TempData["alertdata"] = "Objectives Trans Id cannot be null";
-            return RedirectToAction("ObjectivesList", new { View = ViewBag.View });
-        }
-    }
-    catch (Exception ex)
-    {
-        objGlobaldata.AddFunctionalLog("Exception in AddObjectiveActionPlan: " + ex.ToString());
-        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-    }
-    return View(objObjectivesModelsList.ObjectivesMList.ToList());
-}
-
-[HttpPost]
-[AllowAnonymous]
-public ActionResult AddObjectiveActionPlan(FormCollection form, ObjectivesModels objObjectivesModels, HttpPostedFileBase upload)
-{
-    try
-    {
-        DateTime dateValue;
-
-        ViewBag.View = form["view"];
-        if (DateTime.TryParse(form["begin_date"], out dateValue) == true)
-        {
-            objObjectivesModels.begin_date = dateValue;
-        }
-        if (DateTime.TryParse(form["end_date"], out dateValue) == true)
-        {
-            objObjectivesModels.end_date = dateValue;
-        }
-
-        objObjectivesModels.action_ref_no = form["action_ref_no"];
-        objObjectivesModels.actionplan = form["actionplan"];
-        objObjectivesModels.resource = form["resource"];
-        objObjectivesModels.resp_person = form["resp_person"];
-        objObjectivesModels.Objectives_Id = Convert.ToInt16(form["Objectives_Id"]);
-        objObjectivesModels.ObjectivesTrans_Id = Convert.ToInt16(form["ObjectivesTrans_Id"]);
-
-        if (upload != null && upload.ContentLength > 0)
-        {
-            try
-            {
-                string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/Objectives"), Path.GetFileName(upload.FileName));
-                string sFilename = "Upload" + "_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath);
-                string sFilepath = Path.GetDirectoryName(spath);
-
-                upload.SaveAs(sFilepath + "/" + sFilename);
-                objObjectivesModels.upload = "~/DataUpload/MgmtDocs/Objectives/" + sFilename;
-                ViewBag.Message = "File uploaded successfully";
             }
             catch (Exception ex)
             {
-                ViewBag.Message = "ERROR:" + ex.Message.ToString();
+                objGlobaldata.AddFunctionalLog("Exception in AddObjectiveActionPlan: " + ex.ToString());
+                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
-        }
-        else
-        {
-            ViewBag.Message = "You have not specified a file.";
+            return View(objObjectivesModelsList.ObjectivesMList.ToList());
         }
 
-        if (objObjectivesModels.FunAddActionPlanTrans(objObjectivesModels))
+        [HttpPost]
+        [AllowAnonymous]
+        public ActionResult AddObjectiveActionPlan(FormCollection form, ObjectivesModels objObjectivesModels, HttpPostedFileBase upload)
         {
-            TempData["Successdata"] = "Added Objective Plan details successfully";
-        }
-        else
-        {
-            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-        }
-    }
-    catch (Exception ex)
-    {
-        objGlobaldata.AddFunctionalLog("Exception in AddObjectiveActionPlan: " + ex.ToString());
-        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-    }
-    return RedirectToAction("AddObjectiveActionPlan", new { ObjectivesTrans_Id = objObjectivesModels.ObjectivesTrans_Id, /*Objectives_Id = objObjectivesModels.Objectives_Id,*/ View = ViewBag.View });
-}
+            try
+            {
+                DateTime dateValue;
 
+                ViewBag.View = form["view"];
+                if (DateTime.TryParse(form["begin_date"], out dateValue) == true)
+                {
+                    objObjectivesModels.begin_date = dateValue;
+                }
+                if (DateTime.TryParse(form["end_date"], out dateValue) == true)
+                {
+                    objObjectivesModels.end_date = dateValue;
+                }
+
+                objObjectivesModels.action_ref_no = form["action_ref_no"];
+                objObjectivesModels.actionplan = form["actionplan"];
+                objObjectivesModels.resource = form["resource"];
+                objObjectivesModels.resp_person = form["resp_person"];
+                objObjectivesModels.Objectives_Id = Convert.ToInt16(form["Objectives_Id"]);
+                objObjectivesModels.ObjectivesTrans_Id = Convert.ToInt16(form["ObjectivesTrans_Id"]);
+
+                if (upload != null && upload.ContentLength > 0)
+                {
+                    try
+                    {
+                        string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/Objectives"), Path.GetFileName(upload.FileName));
+                        string sFilename = "Upload" + "_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath);
+                        string sFilepath = Path.GetDirectoryName(spath);
+
+                        upload.SaveAs(sFilepath + "/" + sFilename);
+                        objObjectivesModels.upload = "~/DataUpload/MgmtDocs/Objectives/" + sFilename;
+                        ViewBag.Message = "File uploaded successfully";
+                    }
+                    catch (Exception ex)
+                    {
+                        ViewBag.Message = "ERROR:" + ex.Message.ToString();
+                    }
+                }
+                else
+                {
+                    ViewBag.Message = "You have not specified a file.";
+                }
+
+                if (objObjectivesModels.FunAddActionPlanTrans(objObjectivesModels))
+                {
+                    TempData["Successdata"] = "Added Objective Plan details successfully";
+                }
+                else
+                {
+                    TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in AddObjectiveActionPlan: " + ex.ToString());
+                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+            }
+            return RedirectToAction("AddObjectiveActionPlan", new { ObjectivesTrans_Id = objObjectivesModels.ObjectivesTrans_Id, /*Objectives_Id = objObjectivesModels.Objectives_Id,*/ View = ViewBag.View });
+        }
 
         [AllowAnonymous]
         public ActionResult AddObjectiveActionPlanStatus()
         {
-
             ObjectivesModelsList ObjectivesList = new ObjectivesModelsList();
             ObjectivesList.ObjectivesMList = new List<ObjectivesModels>();
-            
+
             ObjectivesModels objObjectivesModels = new ObjectivesModels();
-            
+
             try
             {
                 ViewBag.View = Request.QueryString["View"];
@@ -2077,7 +2042,6 @@ public ActionResult AddObjectiveActionPlan(FormCollection form, ObjectivesModels
 
                     //     if (dsObjectivesList.Tables.Count > 0 && dsObjectivesList.Tables[0].Rows.Count > 0)
                     //     {
-
                     //         ViewBag.Obj_ref = dsObjectivesList.Tables[0].Rows[0]["Obj_Ref"].ToString() + "-AP" + count;
                     //         ViewBag.Objectives_Id = dsObjectivesList.Tables[0].Rows[0]["Objectives_Id"].ToString();
                     //         ViewBag.Obj_Estld_On = Convert.ToDateTime(dsObjectivesList.Tables[0].Rows[0]["Obj_Estld_On"].ToString()).ToString("dd/MM/yyyy");
@@ -2150,7 +2114,7 @@ public ActionResult AddObjectiveActionPlan(FormCollection form, ObjectivesModels
                                 ViewBag.Objectives_Id = dsObjectives_Id.Tables[0].Rows[0]["Objectives_Id"].ToString();
                             }
                         }
-                    }                    
+                    }
                 }
                 else
                 {
@@ -2174,7 +2138,7 @@ public ActionResult AddObjectiveActionPlan(FormCollection form, ObjectivesModels
 
             ViewBag.View = form["view"];
             try
-            {     
+            {
                 ObjectivesModelsList objList = new ObjectivesModelsList();
                 objList.ObjectivesMList = new List<ObjectivesModels>();
 
@@ -2189,11 +2153,11 @@ public ActionResult AddObjectiveActionPlan(FormCollection form, ObjectivesModels
                             objModel = new ObjectivesModels()
                             {
                                 id_objective_action = form["id_objective_action " + i],
-                           
+
                                 action_status = form["action_status " + i],
                                 reason_notcomplete = form["reason_notcomplete " + i]
                             };
-                            
+
                             if (DateTime.TryParse(form["status_updated_on " + i], out dateValue1) == true)
                             {
                                 objModel.status_updated_on = dateValue1;
@@ -2222,183 +2186,178 @@ public ActionResult AddObjectiveActionPlan(FormCollection form, ObjectivesModels
             return RedirectToAction("ObjectivesList", new { View = ViewBag.View });
         }
 
-
-
         [AllowAnonymous]
-public ActionResult ObjectiveActionPlanEdit()
-{
-    ObjectivesModelsList objObjectivesModelsList = new ObjectivesModelsList();
-    objObjectivesModelsList.ObjectivesMList = new List<ObjectivesModels>();
-    ObjectivesModels objObjectivesModels = new ObjectivesModels();
-    UserCredentials objUser = new UserCredentials();
-    objUser = objGlobaldata.GetCurrentUserSession();
-    ViewBag.UserRole = objGlobaldata.GetRoleName(objUser.role);
-    ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
-    string sObjectivesTrans_Id = "";
-    try
-    {
-        ViewBag.View = Request.QueryString["View"];
-        if (Request.QueryString["id_objective_action"] != null)
+        public ActionResult ObjectiveActionPlanEdit()
         {
-            ViewBag.Status = objGlobaldata.GetDropdownList("Equipment Activity Status");
-            string id_objective_action = Request.QueryString["id_objective_action"];
-
-            //string sSqlstmt = "select b.Obj_Ref, id_objective_action, a.ObjectivesTrans_Id,id_objective_action,actionplan,begin_date,end_date,upload,resource,resp_person, " +
-            //    " Obj_Target,Base_Line_Value,Monitoring_Mechanism,Target_Date,Objectives_val from t_objectives_actionplan a, t_objectives_trans b,t_objectives c where a.ObjectivesTrans_Id = b.ObjectivesTrans_Id " +
-            //    " and  c.Objectives_Id = b.Objectives_Id  and id_objective_action  = '" + id_objective_action + "'";
-            string sSqlstmt = "select id_objective_action, ObjectivesTrans_Id,actionplan,begin_date,end_date,upload,resource,resp_person,action_ref_no " +
-                    "from t_objectives_actionplan where id_objective_action  = '" + id_objective_action + "'";
-
-            DataSet dsObjectivesModelsList = objGlobaldata.Getdetails(sSqlstmt);
-
-            if (dsObjectivesModelsList.Tables.Count > 0 && dsObjectivesModelsList.Tables[0].Rows.Count > 0)
+            ObjectivesModelsList objObjectivesModelsList = new ObjectivesModelsList();
+            objObjectivesModelsList.ObjectivesMList = new List<ObjectivesModels>();
+            ObjectivesModels objObjectivesModels = new ObjectivesModels();
+            UserCredentials objUser = new UserCredentials();
+            objUser = objGlobaldata.GetCurrentUserSession();
+            ViewBag.UserRole = objGlobaldata.GetRoleName(objUser.role);
+            ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
+            string sObjectivesTrans_Id = "";
+            try
             {
-                //ViewBag.Base_Line_Value = dsObjectivesModelsList.Tables[0].Rows[0]["Base_Line_Value"].ToString();
-                //ViewBag.Target_Date = Convert.ToDateTime(dsObjectivesModelsList.Tables[0].Rows[0]["Target_Date"].ToString()).ToString("dd/MM/yyyy");
-                //ViewBag.Obj_Target = dsObjectivesModelsList.Tables[0].Rows[0]["Obj_Target"].ToString();
-                //ViewBag.Monitoring_Mechanism = dsObjectivesModelsList.Tables[0].Rows[0]["Monitoring_Mechanism"].ToString();
-                //ViewBag.Objectives_val = dsObjectivesModelsList.Tables[0].Rows[0]["Objectives_val"].ToString();
-                //ViewBag.Obj_Ref = dsObjectivesModelsList.Tables[0].Rows[0]["Obj_Ref"].ToString();
-
-                try
+                ViewBag.View = Request.QueryString["View"];
+                if (Request.QueryString["id_objective_action"] != null)
                 {
-                    objObjectivesModels = new ObjectivesModels
-                    {
-                        id_objective_action = (dsObjectivesModelsList.Tables[0].Rows[0]["id_objective_action"].ToString()),
-                        ObjectivesTrans_Id = Convert.ToInt16(dsObjectivesModelsList.Tables[0].Rows[0]["ObjectivesTrans_Id"].ToString()),
-                        actionplan = dsObjectivesModelsList.Tables[0].Rows[0]["actionplan"].ToString(),
-                        upload = dsObjectivesModelsList.Tables[0].Rows[0]["upload"].ToString(),
-                        resource = dsObjectivesModelsList.Tables[0].Rows[0]["resource"].ToString(),
-                        //action_status = (dsObjectivesModelsList.Tables[0].Rows[0]["action_status"].ToString()),
-                        resp_person = (dsObjectivesModelsList.Tables[0].Rows[0]["resp_person"].ToString()),
-                        action_ref_no= dsObjectivesModelsList.Tables[0].Rows[0]["action_ref_no"].ToString()
-                    };
-                    DateTime dtDocDate;
-                    if (dsObjectivesModelsList.Tables[0].Rows[0]["begin_date"].ToString() != ""
-                       && DateTime.TryParse(dsObjectivesModelsList.Tables[0].Rows[0]["begin_date"].ToString(), out dtDocDate))
-                    {
-                        objObjectivesModels.begin_date = dtDocDate;
-                    }
-                    if (dsObjectivesModelsList.Tables[0].Rows[0]["end_date"].ToString() != ""
-                      && DateTime.TryParse(dsObjectivesModelsList.Tables[0].Rows[0]["end_date"].ToString(), out dtDocDate))
-                    {
-                        objObjectivesModels.end_date = dtDocDate;
-                    }
+                    ViewBag.Status = objGlobaldata.GetDropdownList("Equipment Activity Status");
+                    string id_objective_action = Request.QueryString["id_objective_action"];
 
-                    ViewBag.ObjectivesTrans_Id = objObjectivesModels.ObjectivesTrans_Id;
-                    sObjectivesTrans_Id = Convert.ToString(objObjectivesModels.ObjectivesTrans_Id);
+                    //string sSqlstmt = "select b.Obj_Ref, id_objective_action, a.ObjectivesTrans_Id,id_objective_action,actionplan,begin_date,end_date,upload,resource,resp_person, " +
+                    //    " Obj_Target,Base_Line_Value,Monitoring_Mechanism,Target_Date,Objectives_val from t_objectives_actionplan a, t_objectives_trans b,t_objectives c where a.ObjectivesTrans_Id = b.ObjectivesTrans_Id " +
+                    //    " and  c.Objectives_Id = b.Objectives_Id  and id_objective_action  = '" + id_objective_action + "'";
+                    string sSqlstmt = "select id_objective_action, ObjectivesTrans_Id,actionplan,begin_date,end_date,upload,resource,resp_person,action_ref_no " +
+                            "from t_objectives_actionplan where id_objective_action  = '" + id_objective_action + "'";
+
+                    DataSet dsObjectivesModelsList = objGlobaldata.Getdetails(sSqlstmt);
+
+                    if (dsObjectivesModelsList.Tables.Count > 0 && dsObjectivesModelsList.Tables[0].Rows.Count > 0)
+                    {
+                        //ViewBag.Base_Line_Value = dsObjectivesModelsList.Tables[0].Rows[0]["Base_Line_Value"].ToString();
+                        //ViewBag.Target_Date = Convert.ToDateTime(dsObjectivesModelsList.Tables[0].Rows[0]["Target_Date"].ToString()).ToString("dd/MM/yyyy");
+                        //ViewBag.Obj_Target = dsObjectivesModelsList.Tables[0].Rows[0]["Obj_Target"].ToString();
+                        //ViewBag.Monitoring_Mechanism = dsObjectivesModelsList.Tables[0].Rows[0]["Monitoring_Mechanism"].ToString();
+                        //ViewBag.Objectives_val = dsObjectivesModelsList.Tables[0].Rows[0]["Objectives_val"].ToString();
+                        //ViewBag.Obj_Ref = dsObjectivesModelsList.Tables[0].Rows[0]["Obj_Ref"].ToString();
+
+                        try
+                        {
+                            objObjectivesModels = new ObjectivesModels
+                            {
+                                id_objective_action = (dsObjectivesModelsList.Tables[0].Rows[0]["id_objective_action"].ToString()),
+                                ObjectivesTrans_Id = Convert.ToInt16(dsObjectivesModelsList.Tables[0].Rows[0]["ObjectivesTrans_Id"].ToString()),
+                                actionplan = dsObjectivesModelsList.Tables[0].Rows[0]["actionplan"].ToString(),
+                                upload = dsObjectivesModelsList.Tables[0].Rows[0]["upload"].ToString(),
+                                resource = dsObjectivesModelsList.Tables[0].Rows[0]["resource"].ToString(),
+                                //action_status = (dsObjectivesModelsList.Tables[0].Rows[0]["action_status"].ToString()),
+                                resp_person = (dsObjectivesModelsList.Tables[0].Rows[0]["resp_person"].ToString()),
+                                action_ref_no = dsObjectivesModelsList.Tables[0].Rows[0]["action_ref_no"].ToString()
+                            };
+                            DateTime dtDocDate;
+                            if (dsObjectivesModelsList.Tables[0].Rows[0]["begin_date"].ToString() != ""
+                               && DateTime.TryParse(dsObjectivesModelsList.Tables[0].Rows[0]["begin_date"].ToString(), out dtDocDate))
+                            {
+                                objObjectivesModels.begin_date = dtDocDate;
+                            }
+                            if (dsObjectivesModelsList.Tables[0].Rows[0]["end_date"].ToString() != ""
+                              && DateTime.TryParse(dsObjectivesModelsList.Tables[0].Rows[0]["end_date"].ToString(), out dtDocDate))
+                            {
+                                objObjectivesModels.end_date = dtDocDate;
+                            }
+
+                            ViewBag.ObjectivesTrans_Id = objObjectivesModels.ObjectivesTrans_Id;
+                            sObjectivesTrans_Id = Convert.ToString(objObjectivesModels.ObjectivesTrans_Id);
+                        }
+                        catch (Exception ex)
+                        {
+                            objGlobaldata.AddFunctionalLog("Exception in ObjectiveActionPlanEdit" + ex.ToString());
+                            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                        }
+
+                        if (sObjectivesTrans_Id != "")
+                        {
+                            DataSet dsObjectives_Id = objGlobaldata.Getdetails("select Objectives_Id from t_objectives_trans where ObjectivesTrans_Id='" + sObjectivesTrans_Id + "'");
+                            if (dsObjectives_Id.Tables.Count > 0 && dsObjectives_Id.Tables[0].Rows.Count > 0)
+                            {
+                                ViewBag.Objectives_Id = dsObjectives_Id.Tables[0].Rows[0]["Objectives_Id"].ToString();
+                            }
+                        }
+                    }
+                    else
+                    {
+                        TempData["alertdata"] = "No data exists";
+                        return RedirectToAction("ObjectivesList", new { View = ViewBag.View });
+                    }
                 }
-                catch (Exception ex)
+                else
                 {
-                    objGlobaldata.AddFunctionalLog("Exception in ObjectiveActionPlanEdit" + ex.ToString());
+                    TempData["alertdata"] = "Objectives Trans Id cannot be null";
+                    return RedirectToAction("ObjectivesList", new { View = ViewBag.View });
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in ObjectiveActionPlanEdit: " + ex.ToString());
+                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+            }
+
+            return View(objObjectivesModels);
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public ActionResult ObjectiveActionPlanEdit(FormCollection form, ObjectivesModels objObjectivesModels, IEnumerable<HttpPostedFileBase> upload)
+        {
+            try
+            {
+                HttpPostedFileBase files = Request.Files[0];
+                string QCDelete = Request.Form["QCDocsValselectall"];
+                ViewBag.View = form["view"];
+                if (upload != null && files.ContentLength > 0)
+                {
+                    objObjectivesModels.upload = "";
+                    foreach (var file in upload)
+                    {
+                        try
+                        {
+                            string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/Objectives"), Path.GetFileName(file.FileName));
+                            string sFilename = "ActionPlan" + "_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath), sFilepath = Path.GetDirectoryName(spath);
+                            file.SaveAs(sFilepath + "/" + sFilename);
+                            objObjectivesModels.upload = objObjectivesModels.upload + "," + "~/DataUpload/MgmtDocs/Objectives/" + sFilename;
+                        }
+                        catch (Exception ex)
+                        {
+                            objGlobaldata.AddFunctionalLog("Exception in ObjectiveActionPlanEdit-upload: " + ex.ToString());
+                            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                        }
+                    }
+                    objObjectivesModels.upload = objObjectivesModels.upload.Trim(',');
+                }
+                else
+                {
+                    ViewBag.Message = "You have not specified a file.";
+                }
+                if (form["QCDocsVal"] != null && form["QCDocsVal"] != "")
+                {
+                    objObjectivesModels.upload = objObjectivesModels.upload + "," + form["QCDocsVal"];
+                    objObjectivesModels.upload = objObjectivesModels.upload.Trim(',');
+                }
+                else if (form["QCDocsVal"] == null && QCDelete != null && files.ContentLength == 0)
+                {
+                    objObjectivesModels.upload = null;
+                }
+                else if (form["QCDocsVal"] == null && files.ContentLength == 0)
+                {
+                    objObjectivesModels.upload = null;
+                }
+
+                if (objObjectivesModels.FunUpdateActionPlanTrans(objObjectivesModels))
+                {
+                    TempData["Successdata"] = "Updated successfully";
+                }
+                else
+                {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 }
-
-                if (sObjectivesTrans_Id != "")
-                {
-                    DataSet dsObjectives_Id = objGlobaldata.Getdetails("select Objectives_Id from t_objectives_trans where ObjectivesTrans_Id='" + sObjectivesTrans_Id + "'");
-                    if (dsObjectives_Id.Tables.Count > 0 && dsObjectives_Id.Tables[0].Rows.Count > 0)
-                    {
-                        ViewBag.Objectives_Id = dsObjectives_Id.Tables[0].Rows[0]["Objectives_Id"].ToString();
-                    }
-                }
             }
-            else
+            catch (Exception ex)
             {
-                TempData["alertdata"] = "No data exists";
-                return RedirectToAction("ObjectivesList", new { View = ViewBag.View });
+                objGlobaldata.AddFunctionalLog("Exception in ObjectiveActionPlanEdit: " + ex.ToString());
+                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
+            return RedirectToAction("AddObjectiveActionPlan", new { ObjectivesTrans_Id = objObjectivesModels.ObjectivesTrans_Id, View = ViewBag.View });
         }
-        else
-        {
-            TempData["alertdata"] = "Objectives Trans Id cannot be null";
-            return RedirectToAction("ObjectivesList", new { View = ViewBag.View });
-        }
-    }
-    catch (Exception ex)
-    {
-        objGlobaldata.AddFunctionalLog("Exception in ObjectiveActionPlanEdit: " + ex.ToString());
-        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-    }
-
-    return View(objObjectivesModels);
-}
-
-[HttpPost]
-[AllowAnonymous]
-public ActionResult ObjectiveActionPlanEdit(FormCollection form, ObjectivesModels objObjectivesModels, IEnumerable<HttpPostedFileBase> upload)
-{
-    try
-    {
-        HttpPostedFileBase files = Request.Files[0];
-        string QCDelete = Request.Form["QCDocsValselectall"];
-        ViewBag.View = form["view"];
-        if (upload != null && files.ContentLength > 0)
-        {
-            objObjectivesModels.upload = "";
-            foreach (var file in upload)
-            {
-                try
-                {
-                    string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/Objectives"), Path.GetFileName(file.FileName));
-                    string sFilename = "ActionPlan" + "_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath), sFilepath = Path.GetDirectoryName(spath);
-                    file.SaveAs(sFilepath + "/" + sFilename);
-                    objObjectivesModels.upload = objObjectivesModels.upload + "," + "~/DataUpload/MgmtDocs/Objectives/" + sFilename;
-                }
-                catch (Exception ex)
-                {
-                    objGlobaldata.AddFunctionalLog("Exception in ObjectiveActionPlanEdit-upload: " + ex.ToString());
-                    TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                }
-            }
-            objObjectivesModels.upload = objObjectivesModels.upload.Trim(',');
-        }
-        else
-        {
-            ViewBag.Message = "You have not specified a file.";
-        }
-        if (form["QCDocsVal"] != null && form["QCDocsVal"] != "")
-        {
-            objObjectivesModels.upload = objObjectivesModels.upload + "," + form["QCDocsVal"];
-            objObjectivesModels.upload = objObjectivesModels.upload.Trim(',');
-        }
-        else if (form["QCDocsVal"] == null && QCDelete != null && files.ContentLength == 0)
-        {
-            objObjectivesModels.upload = null;
-        }
-        else if (form["QCDocsVal"] == null && files.ContentLength == 0)
-        {
-            objObjectivesModels.upload = null;
-        }
-
-        if (objObjectivesModels.FunUpdateActionPlanTrans(objObjectivesModels))
-        {
-            TempData["Successdata"] = "Updated successfully";
-        }
-        else
-        {
-            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-        }
-    }
-    catch (Exception ex)
-    {
-        objGlobaldata.AddFunctionalLog("Exception in ObjectiveActionPlanEdit: " + ex.ToString());
-        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-    }
-    return RedirectToAction("AddObjectiveActionPlan", new { ObjectivesTrans_Id = objObjectivesModels.ObjectivesTrans_Id, View = ViewBag.View });
-}
-
 
         [AllowAnonymous]
         public JsonResult ObjectiveActionPlanDelete(string id_objective_action)
         {
             try
             {
-
                 if (id_objective_action != null && id_objective_action != "")
                 {
-                    ObjectivesModels Doc = new ObjectivesModels();                
-
+                    ObjectivesModels Doc = new ObjectivesModels();
 
                     if (Doc.FunDeleteObjectivePlan(id_objective_action))
                     {
@@ -2427,7 +2386,6 @@ public ActionResult ObjectiveActionPlanEdit(FormCollection form, ObjectivesModel
 
         // ----------------End Objective ActionPlan------
 
-
         //-------start potential------------------
 
         [AllowAnonymous]
@@ -2437,7 +2395,6 @@ public ActionResult ObjectiveActionPlanEdit(FormCollection form, ObjectivesModel
 
             try
             {
-
                 ObjectivesModelsList objObjectivesModelsList = new ObjectivesModelsList();
                 objObjectivesModelsList.ObjectivesMList = new List<ObjectivesModels>();
 
@@ -2445,7 +2402,6 @@ public ActionResult ObjectiveActionPlanEdit(FormCollection form, ObjectivesModel
                 ViewBag.PotentialImpact = objModels.GetObjectivePotentialImpactList();
                 ViewBag.DeptHead = objGlobaldata.GetDeptHeadList();
                 ViewBag.View = Request.QueryString["View"];
-
 
                 if (Request.QueryString["ObjectivesTrans_Id"] != null)
                 {
@@ -2582,7 +2538,7 @@ public ActionResult ObjectiveActionPlanEdit(FormCollection form, ObjectivesModel
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
             return RedirectToAction("AddObjectivePotential", new { ObjectivesTrans_Id = objObjectivesModels.ObjectivesTrans_Id, Objectives_Id = objObjectivesModels.Objectives_Id, View = ViewBag.View });
-        }      
+        }
 
         [AllowAnonymous]
         public ActionResult ObjectivePotentialEdit()
@@ -2627,7 +2583,7 @@ public ActionResult ObjectiveActionPlanEdit(FormCollection form, ObjectivesModel
                                 impact = dsObjectivesModelsList.Tables[0].Rows[0]["impact"].ToString(),
                                 mitigation_measure = dsObjectivesModelsList.Tables[0].Rows[0]["mitigation_measure"].ToString(),
                                 potential_status = (dsObjectivesModelsList.Tables[0].Rows[0]["potential_status"].ToString()),
-                                Pcff_Notify= (dsObjectivesModelsList.Tables[0].Rows[0]["Pcff_Notify"].ToString())
+                                Pcff_Notify = (dsObjectivesModelsList.Tables[0].Rows[0]["Pcff_Notify"].ToString())
                             };
                             DateTime dtDocDate;
                             if (dsObjectivesModelsList.Tables[0].Rows[0]["targeted_on"].ToString() != ""
@@ -2768,7 +2724,7 @@ public ActionResult ObjectiveActionPlanEdit(FormCollection form, ObjectivesModel
             }
             return Json("Failed");
         }
-        
+
         //-----------End Potential
 
         [AllowAnonymous]
@@ -2791,7 +2747,6 @@ public ActionResult ObjectiveActionPlanEdit(FormCollection form, ObjectivesModel
                 else if (iStatus == 1)
                 {
                     sStatus = "Approved";
-
                 }
                 else if (iStatus == 2)
                 {
@@ -2811,7 +2766,6 @@ public ActionResult ObjectiveActionPlanEdit(FormCollection form, ObjectivesModel
                 //{
                 //    TempData["alertdata"] = "Access Denied";
                 //}
-
             }
             catch (Exception ex)
             {
@@ -2838,7 +2792,7 @@ public ActionResult ObjectiveActionPlanEdit(FormCollection form, ObjectivesModel
                 ObjectivesModels objObjectives = new ObjectivesModels();
                 objObjectives.ObjectivesTrans_Id = Convert.ToInt32(form["ObjectivesTrans_Id"]);
                 objObjectives.Approved_Status = form["obj_status"];
-                objObjectives.obj_reject_comment = form["obj_reject_comment"];  
+                objObjectives.obj_reject_comment = form["obj_reject_comment"];
 
                 if (obj_reject_upload != null && obj_reject_upload.ContentLength > 0)
                 {
@@ -2871,7 +2825,6 @@ public ActionResult ObjectiveActionPlanEdit(FormCollection form, ObjectivesModel
                 else if (objObjectives.Approved_Status == "1")
                 {
                     sStatus = "Approved";
-
                 }
                 else if (objObjectives.Approved_Status == "2")
                 {
@@ -2885,8 +2838,7 @@ public ActionResult ObjectiveActionPlanEdit(FormCollection form, ObjectivesModel
                 else
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                }              
-
+                }
             }
             catch (Exception ex)
             {
@@ -2915,7 +2867,6 @@ public ActionResult ObjectiveActionPlanEdit(FormCollection form, ObjectivesModel
                 else if (iStatus == 1)
                 {
                     sStatus = "Approved";
-
                 }
                 else if (iStatus == 2)
                 {
@@ -2935,12 +2886,10 @@ public ActionResult ObjectiveActionPlanEdit(FormCollection form, ObjectivesModel
                 //{
                 //    TempData["alertdata"] = "Access Denied";
                 //}
-
             }
             catch (Exception ex)
             {
                 objGlobaldata.AddFunctionalLog("Exception in ObjectivesApprove: " + ex.ToString());
-
             }
 
             if (PendingFlg != null && PendingFlg == "true")
@@ -3009,6 +2958,7 @@ public ActionResult ObjectiveActionPlanEdit(FormCollection form, ObjectivesModel
 
             return Json(Objective);
         }
+
         [HttpPost]
         public JsonResult UploadDocument1()
         {
@@ -3022,7 +2972,6 @@ public ActionResult ObjectiveActionPlanEdit(FormCollection form, ObjectivesModel
                 file.SaveAs(sFilepath + "/" + "ActionPlan" + DateTime.Now.ToString("ddMMyyyyHHmm") + sFilename);
                 //return Json("~/DataUpload/MgmtDocs/Surveillance/" + "Surveillance" + DateTime.Now.ToString("ddMMyyyyHHmm") + sFilename);
                 obj.upload = obj.upload + "," + "~/DataUpload/MgmtDocs/Objectives/" + "ActionPlan" + DateTime.Now.ToString("ddMMyyyyHHmm") + sFilename;
-
             }
             obj.upload = obj.upload.Trim(',');
             return Json(obj.upload);
@@ -3033,6 +2982,5 @@ public ActionResult ObjectiveActionPlanEdit(FormCollection form, ObjectivesModel
             MultiSelectList NCRNo = objGlobaldata.GetNCRNumberList();
             return Json(NCRNo);
         }
-
     }
 }

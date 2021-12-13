@@ -1,26 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+﻿using ISOStd.Filters;
 using ISOStd.Models;
+using System;
+using System.Collections.Generic;
 using System.Data;
-using System.Net;
-using System.IO;
-using PagedList;
-using PagedList.Mvc;
-using Rotativa;
-using ISOStd.Filters;
+using System.Linq;
+using System.Web.Mvc;
 
 namespace ISOStd.Controllers
 {
     [PreventFromUrl]
     public class ActionTrackingRegisterController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
+        private clsGlobal objGlobaldata = new clsGlobal();
 
-        
-public ActionTrackingRegisterController()
+        public ActionTrackingRegisterController()
         {
             ViewBag.Menutype = "Actions";
             ViewBag.SubMenutype = "ActionTrackingRegister";
@@ -45,7 +38,6 @@ public ActionTrackingRegisterController()
             }
             return View();
         }
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -94,7 +86,6 @@ public ActionTrackingRegisterController()
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 }
-
             }
             catch (Exception ex)
             {
@@ -104,11 +95,9 @@ public ActionTrackingRegisterController()
             return RedirectToAction("ActionTrackingRegisterList");
         }
 
-
         [AllowAnonymous]
         public ActionResult ActionTrackingRegisterList(int? page, string chkAll, string source_id, string Status, string command, string branch_name)
         {
-
             ViewBag.SubMenutype = "ActionTrackingRegister";
 
             string currentuser = "";
@@ -122,14 +111,13 @@ public ActionTrackingRegisterController()
 
             try
             {
-
                 currentuser = objGlobaldata.GetCurrentUserSession().empid;
                 string role = objGlobaldata.GetCurrentUserSession().role;
                 string sBranch_name = objGlobaldata.GetCurrentUserSession().division;
                 string sBranchtree = objGlobaldata.GetCurrentUserSession().BranchTree;
                 ViewBag.Branch = objGlobaldata.GetMultiBranchListByID(sBranchtree);
                 //employeeid = objGlobaldata.GetEmployeeCompEmpIdByEmpId(currentuser);
-                
+
                 string sSqlstmt = "select id_action,Action_name,Target_date,Due_date,Completion_date,ActionBy,Status,Remarks,NotificationDays,NotificationPeriod,NotificationValue,source_id,report_no"
                 + " from t_action_tracking_register where Active=1 ";
 
@@ -170,12 +158,11 @@ public ActionTrackingRegisterController()
                 {
                     sSearchtext = sSearchtext + " and branch='" + sBranch_name + "' ";
                 }
-                sSqlstmt = sSqlstmt + sSearchtext + "  order by Status"; 
+                sSqlstmt = sSqlstmt + sSearchtext + "  order by Status";
                 DataSet dsActionList = objGlobaldata.Getdetails(sSqlstmt);
 
                 if (dsActionList.Tables.Count > 0 && dsActionList.Tables[0].Rows.Count > 0)
-                {                   
-
+                {
                     for (int i = 0; i < dsActionList.Tables[0].Rows.Count; i++)
                     {
                         try
@@ -228,7 +215,6 @@ public ActionTrackingRegisterController()
         [AllowAnonymous]
         public JsonResult ActionTrackingRegisterListSearch(int? page, string chkAll, string source_id, string Status, string command, string branch_name)
         {
-
             ViewBag.SubMenutype = "ActionTrackingRegister";
 
             string currentuser = "";
@@ -242,7 +228,6 @@ public ActionTrackingRegisterController()
 
             try
             {
-
                 currentuser = objGlobaldata.GetCurrentUserSession().empid;
                 string role = objGlobaldata.GetCurrentUserSession().role;
                 string sBranch_name = objGlobaldata.GetCurrentUserSession().division;
@@ -295,8 +280,6 @@ public ActionTrackingRegisterController()
 
                 if (dsActionList.Tables.Count > 0 && dsActionList.Tables[0].Rows.Count > 0)
                 {
-
-
                     for (int i = 0; i < dsActionList.Tables[0].Rows.Count; i++)
                     {
                         try
@@ -349,7 +332,6 @@ public ActionTrackingRegisterController()
         [AllowAnonymous]
         public ActionResult ActionTrackingRegisterInfo(int id)
         {
-
             ViewBag.SubMenutype = "ActionTrackingRegister";
 
             ActionTrackingRegisterModels objTrackingModels = new ActionTrackingRegisterModels();
@@ -391,7 +373,6 @@ public ActionTrackingRegisterController()
                             {
                                 objTrackingModels.Completion_date = dtValue;
                             }
-
                         }
                         catch (Exception ex)
                         {
@@ -409,11 +390,9 @@ public ActionTrackingRegisterController()
             return View(objTrackingModels);
         }
 
-
         [AllowAnonymous]
         public ActionResult ActionTrackingRegisterEdit()
         {
-
             ViewBag.SubMenutype = "ActionTrackingRegister";
 
             ActionTrackingRegisterModels objTrackModels = new ActionTrackingRegisterModels();
@@ -433,10 +412,8 @@ public ActionTrackingRegisterController()
 
                     DataSet dsTrackingList = objGlobaldata.Getdetails(sSqlstmt);
 
-
                     if (dsTrackingList.Tables.Count > 0 && dsTrackingList.Tables[0].Rows.Count > 0)
                     {
-
                         objTrackModels = new ActionTrackingRegisterModels
                         {
                             id_action = Convert.ToInt16(dsTrackingList.Tables[0].Rows[0]["id_action"].ToString()),
@@ -465,14 +442,12 @@ public ActionTrackingRegisterController()
                     }
                     else
                     {
-
                         TempData["alertdata"] = "ActionID cannot be Null or empty";
                         return RedirectToAction("ActionTrackingRegisterList");
                     }
                 }
                 else
                 {
-
                     TempData["alertdata"] = "ActionID cannot be Null or empty";
                     return RedirectToAction("ActionTrackingRegisterList");
                 }
@@ -485,7 +460,6 @@ public ActionTrackingRegisterController()
             }
             return View(objTrackModels);
         }
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -545,39 +519,34 @@ public ActionTrackingRegisterController()
             return RedirectToAction("ActionTrackingRegisterList");
         }
 
-
         [AllowAnonymous]
         public JsonResult ActionTrackingRegisterDelete(FormCollection form)
         {
             try
             {
-
                 ViewBag.SubMenutype = "ActionTrackingRegister";
 
-              
-                    if (form["id_action"] != null && form["id_action"] != "")
+                if (form["id_action"] != null && form["id_action"] != "")
+                {
+                    ActionTrackingRegisterModels Doc = new ActionTrackingRegisterModels();
+                    string sid_action = form["id_action"];
+
+                    if (Doc.FunDeleteActionTrackingRegister(sid_action))
                     {
-
-                        ActionTrackingRegisterModels Doc = new ActionTrackingRegisterModels();
-                        string sid_action = form["id_action"];
-
-                        if (Doc.FunDeleteActionTrackingRegister(sid_action))
-                        {
-                            TempData["Successdata"] = "Document deleted successfully";
-                            return Json("Success");
-                        }
-                        else
-                        {
-                            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                            return Json("Failed");
-                        }
+                        TempData["Successdata"] = "Document deleted successfully";
+                        return Json("Success");
                     }
                     else
                     {
-                        TempData["alertdata"] = "Action Tracking Id cannot be Null or empty";
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                         return Json("Failed");
                     }
-           
+                }
+                else
+                {
+                    TempData["alertdata"] = "Action Tracking Id cannot be Null or empty";
+                    return Json("Failed");
+                }
             }
             catch (Exception ex)
             {
@@ -586,6 +555,5 @@ public ActionTrackingRegisterController()
             }
             return Json("Failed");
         }
-
     }
 }

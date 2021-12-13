@@ -3,14 +3,13 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 
 namespace ISOStd.Controllers
 {
     public class DocumentReviewController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
+        private clsGlobal objGlobaldata = new clsGlobal();
 
         public DocumentReviewController()
         {
@@ -25,7 +24,7 @@ namespace ISOStd.Controllers
             try
             {
                 objReview.division = objGlobaldata.GetCurrentUserSession().division;
-               
+
                 //ViewBag.EmpLists = objGlobaldata.GetHrEmployeeListbox();
                 ViewBag.DocLevel = objGlobaldata.GetDocLevelsList();
                 ViewBag.Frequency = objReview.GetDocReviewFrequencyList();
@@ -45,15 +44,14 @@ namespace ISOStd.Controllers
         public ActionResult AddDocumentReview(DocumentReviewModels objReview, FormCollection form)
         {
             try
-            {              
-              
+            {
                 objReview.approvedby = form["approvedby"];
-              
+
                 DateTime dateValue;
                 if (DateTime.TryParse(form["review_date"], out dateValue) == true)
                 {
                     objReview.review_date = dateValue;
-                }                               
+                }
 
                 if (objReview.FunAddDocReview(objReview))
                 {
@@ -72,7 +70,6 @@ namespace ISOStd.Controllers
 
             return RedirectToAction("DocumentReviewList");
         }
-
 
         [AllowAnonymous]
         public JsonResult DocReviewDelete(FormCollection form)
@@ -161,7 +158,7 @@ namespace ISOStd.Controllers
                             if (DateTime.TryParse(dsReviewList.Tables[0].Rows[i]["review_date"].ToString(), out dateValue))
                             {
                                 objReview.review_date = dateValue;
-                            }                           
+                            }
                             objRList.ReviewList.Add(objReview);
                         }
                         catch (Exception ex)
@@ -183,47 +180,46 @@ namespace ISOStd.Controllers
         [AllowAnonymous]
         public ActionResult DocumentReviewEdit()
         {
-           DocumentReviewModels objReview = new DocumentReviewModels();
+            DocumentReviewModels objReview = new DocumentReviewModels();
             try
             {
                 string sid_doc_review = Request.QueryString["id_doc_review"];
                 if (sid_doc_review != null && sid_doc_review != "")
                 {
                     string sSqlstmt = "select id_doc_review,review_date, doc_level, doc_type, frequency, " +
-                        "criteria, approvedby, division from t_document_review where id_doc_review='"+ sid_doc_review + "'";
-                                      
+                        "criteria, approvedby, division from t_document_review where id_doc_review='" + sid_doc_review + "'";
+
                     DataSet dsReviewList = objGlobaldata.Getdetails(sSqlstmt);
                     if (dsReviewList.Tables.Count > 0 && dsReviewList.Tables[0].Rows.Count > 0)
                     {
                         try
+                        {
+                            objReview = new DocumentReviewModels
                             {
-                                objReview = new DocumentReviewModels
-                                {
-                                    id_doc_review = dsReviewList.Tables[0].Rows[0]["id_doc_review"].ToString(),
-                                    doc_level = objGlobaldata.GetDocumentLevelbyId(dsReviewList.Tables[0].Rows[0]["doc_level"].ToString()),
-                                    doc_type = objGlobaldata.GetDocumentTypebyId(dsReviewList.Tables[0].Rows[0]["doc_type"].ToString()),
-                                    frequency = /*objReview.GetDocReviewFrequencyById*/(dsReviewList.Tables[0].Rows[0]["frequency"].ToString()),
-                                    criteria = /*objReview.GetDocReviewCriteriaById*/(dsReviewList.Tables[0].Rows[0]["criteria"].ToString()),
-                                    approvedby = /*objGlobaldata.GetMultiHrEmpNameById*/(dsReviewList.Tables[0].Rows[0]["approvedby"].ToString()),
-                                    division = /*objGlobaldata.GetMultiCompanyBranchNameById*/(dsReviewList.Tables[0].Rows[0]["division"].ToString()),
-                                };
+                                id_doc_review = dsReviewList.Tables[0].Rows[0]["id_doc_review"].ToString(),
+                                doc_level = objGlobaldata.GetDocumentLevelbyId(dsReviewList.Tables[0].Rows[0]["doc_level"].ToString()),
+                                doc_type = objGlobaldata.GetDocumentTypebyId(dsReviewList.Tables[0].Rows[0]["doc_type"].ToString()),
+                                frequency = /*objReview.GetDocReviewFrequencyById*/(dsReviewList.Tables[0].Rows[0]["frequency"].ToString()),
+                                criteria = /*objReview.GetDocReviewCriteriaById*/(dsReviewList.Tables[0].Rows[0]["criteria"].ToString()),
+                                approvedby = /*objGlobaldata.GetMultiHrEmpNameById*/(dsReviewList.Tables[0].Rows[0]["approvedby"].ToString()),
+                                division = /*objGlobaldata.GetMultiCompanyBranchNameById*/(dsReviewList.Tables[0].Rows[0]["division"].ToString()),
+                            };
 
-                                DateTime dateValue;
-                                if (DateTime.TryParse(dsReviewList.Tables[0].Rows[0]["review_date"].ToString(), out dateValue))
-                                {
-                                    objReview.review_date = dateValue;
-                                }
+                            DateTime dateValue;
+                            if (DateTime.TryParse(dsReviewList.Tables[0].Rows[0]["review_date"].ToString(), out dateValue))
+                            {
+                                objReview.review_date = dateValue;
+                            }
                             ViewBag.Branch = objGlobaldata.GetCompanyBranchListbox();
                             ViewBag.EmpLists = objGlobaldata.GetHrEmpListByDivision(dsReviewList.Tables[0].Rows[0]["division"].ToString());
                             ViewBag.Frequency = objReview.GetDocReviewFrequencyList();
                             ViewBag.Criteria = objReview.GetDocReviewCriteriaList();
-
                         }
                         catch (Exception ex)
-                            {
-                                objGlobaldata.AddFunctionalLog("Exception in DocumentReviewEdit: " + ex.ToString());
-                                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                            }
+                        {
+                            objGlobaldata.AddFunctionalLog("Exception in DocumentReviewEdit: " + ex.ToString());
+                            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                        }
                     }
                     return View(objReview);
                 }
@@ -235,7 +231,7 @@ namespace ISOStd.Controllers
             }
             return RedirectToAction("DocumentReviewList");
         }
-        
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult DocumentReviewEdit(DocumentReviewModels objReview, FormCollection form)
@@ -327,7 +323,6 @@ namespace ISOStd.Controllers
             return RedirectToAction("DocumentReviewList");
         }
 
-
         [AllowAnonymous]
         public ActionResult DocumentLogList(FormCollection form, string branch_name)
         {
@@ -356,7 +351,7 @@ namespace ISOStd.Controllers
                 else
                 {
                     sSearchtext = sSearchtext + " and find_in_set('" + sBranch_name + "', division)";
-                }               
+                }
                 sSqlstmt = sSqlstmt + sSearchtext + " order by doc_type";
 
                 DataSet dsReviewList = objGlobaldata.Getdetails(sSqlstmt);
@@ -364,11 +359,11 @@ namespace ISOStd.Controllers
                 {
                     for (int i = 0; i < dsReviewList.Tables[0].Rows.Count; i++)
                     {
-                         try
+                        try
                         {
                             objReview = new DocumentReviewModels
                             {
-                                id_doc_review =dsReviewList.Tables[0].Rows[i]["id_doc_review"].ToString(),
+                                id_doc_review = dsReviewList.Tables[0].Rows[i]["id_doc_review"].ToString(),
                                 doc_level = objGlobaldata.GetDocumentLevelbyId(dsReviewList.Tables[0].Rows[i]["doc_level"].ToString()),
                                 doc_type = objGlobaldata.GetDocumentTypebyId(dsReviewList.Tables[0].Rows[i]["doc_type"].ToString()),
                                 frequency = objReview.GetDocReviewFrequencyById(dsReviewList.Tables[0].Rows[i]["frequency"].ToString()),
@@ -379,7 +374,6 @@ namespace ISOStd.Controllers
                                 DocName = dsReviewList.Tables[0].Rows[i]["DocName"].ToString(),
                                 IssueNo = dsReviewList.Tables[0].Rows[i]["IssueNo"].ToString(),
                                 RevNo = dsReviewList.Tables[0].Rows[i]["RevNo"].ToString(),
-
                             };
 
                             DateTime dateValue;
@@ -394,13 +388,13 @@ namespace ISOStd.Controllers
                             }
 
                             string sFrequency = objReview.GetDocReviewFrequencyById(dsReviewList.Tables[0].Rows[i]["frequency"].ToString());
-                                if (sFrequency == "Semi Annually")
+                            if (sFrequency == "Semi Annually")
+                            {
+                                if (DateTime.TryParse(dsReviewList.Tables[0].Rows[i]["DocDate"].ToString(), out dateValue))
                                 {
-                                    if (DateTime.TryParse(dsReviewList.Tables[0].Rows[i]["DocDate"].ToString(), out dateValue))
-                                    {
-                                      objReview.next_review_date = objReview.DocDate.AddMonths(6);                                       
-                                    }
+                                    objReview.next_review_date = objReview.DocDate.AddMonths(6);
                                 }
+                            }
                             else if (sFrequency == "Annually")
                             {
                                 if (DateTime.TryParse(dsReviewList.Tables[0].Rows[i]["DocDate"].ToString(), out dateValue))
@@ -439,7 +433,7 @@ namespace ISOStd.Controllers
         {
             try
             {
-                DocumentReviewModels objReview = new DocumentReviewModels();              
+                DocumentReviewModels objReview = new DocumentReviewModels();
                 string sStatus = "";
 
                 if (iStatus == 0)
@@ -449,12 +443,10 @@ namespace ISOStd.Controllers
                 else if (iStatus == 1)
                 {
                     sStatus = "Approved";
-
                 }
                 else if (iStatus == 2)
                 {
                     sStatus = "Rejected";
-
                 }
                 if (objReview.FunDocReviewFreApproveOrReject(id_doc_review, iStatus))
                 {
@@ -465,7 +457,6 @@ namespace ISOStd.Controllers
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 }
-
             }
             catch (Exception ex)
             {
@@ -493,8 +484,7 @@ namespace ISOStd.Controllers
             }
         }
 
-
-        public JsonResult FunGetExistDoc(string DocLevels,string DocType)
+        public JsonResult FunGetExistDoc(string DocLevels, string DocType)
         {
             try
             {
@@ -504,11 +494,11 @@ namespace ISOStd.Controllers
                     string stmt = "Select id_doc_review from t_document_review" +
                         " where doc_level='" + DocLevels + "' and doc_type ='" + DocType + "' and active=1";
                     DataSet dsDoc = objGlobaldata.Getdetails(stmt);
-                    if(dsDoc.Tables[0].Rows != null && dsDoc.Tables[0].Rows.Count >0)
+                    if (dsDoc.Tables[0].Rows != null && dsDoc.Tables[0].Rows.Count > 0)
                     {
                         Exist = dsDoc.Tables[0].Rows[0]["id_doc_review"].ToString();
                         return Json("true");
-                    }                    
+                    }
                 }
             }
             catch (Exception ex)
@@ -516,7 +506,7 @@ namespace ISOStd.Controllers
                 objGlobaldata.AddFunctionalLog("Exceptiion in FunGetExistDoc", ex.ToString());
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
-            return Json ("false");
+            return Json("false");
         }
     }
 }

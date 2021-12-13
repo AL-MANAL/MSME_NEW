@@ -1,5 +1,4 @@
-﻿using System.Web;
-using System.Web.Optimization;
+﻿using System.Web.Optimization;
 
 namespace ISOStd
 {
@@ -8,8 +7,6 @@ namespace ISOStd
         // For more information on Bundling, visit http://go.microsoft.com/fwlink/?LinkId=254725
         public static void RegisterBundles(BundleCollection bundles)
         {
-
-           
             bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
                         "~/Scripts/jquery-{version}.js"));
 
@@ -19,8 +16,6 @@ namespace ISOStd
             bundles.Add(new ScriptBundle("~/bundles/jqueryval").Include(
                         "~/Scripts/jquery.unobtrusive*",
                         "~/Scripts/jquery.validate*"));
-
-   
 
             bundles.Add(new ScriptBundle("~/bundles/ckeditor").Include(
                        "~/Scripts/ckeditor.js",
@@ -32,7 +27,7 @@ namespace ISOStd
                      ));
 
             bundles.Add(new ScriptBundle("~/bundles/datatables").Include(
-                       //"~/DataTables/datatables.min.js",
+                         //"~/DataTables/datatables.min.js",
                          "~/DataTables/DataTables-1.10.18/js/jquery.dataTables.min.js",
                         "~/DataTables/DataTables-1.10.18/js/dataTables.jqueryui.min.js",
                         "~/DataTables/dataTables.responsive.min.js",
@@ -51,8 +46,8 @@ namespace ISOStd
                      "~/Charts/js/columns_waterfalls.js",
                        "~/Charts/js/echarts.min.js",
                           "~/Charts/js/app.js"
-                                 //"~/Charts/js/blockui.min.js"
-                                        //"~/Charts/js/bootstrap.bundle.min.js"
+                     //"~/Charts/js/blockui.min.js"
+                     //"~/Charts/js/bootstrap.bundle.min.js"
                      ));
 
             bundles.Add(new ScriptBundle("~/bundles/ajax").Include(
@@ -96,18 +91,18 @@ namespace ISOStd
                       //"~/DataTables/DataTables-1.10.18/css/dataTables.bootstrap4.min.css",
                       //"~/DataTables/DataTables-1.10.18/css/dataTables.foundation.min.css",
                       "~/DataTables/DataTables-1.10.18/css/dataTables.jqueryui.min.css",
-                      //"~/DataTables/DataTables-1.10.18/css/dataTables.semanticui.min.css",
+                       //"~/DataTables/DataTables-1.10.18/css/dataTables.semanticui.min.css",
                        "~/DataTables/DataTables-1.10.18/css/jquery.dataTables.min.css",
                        "~/DataTables/responsive.dataTables.min.css",
-                        //"~/DataTables/DataTables-1.10.19/media/css/jquery.dataTables.min.css",
+                         //"~/DataTables/DataTables-1.10.19/media/css/jquery.dataTables.min.css",
                          "~/DataTables/DataTables-1.10.19/extensions/Buttons/css/buttons.dataTables.min.css",
                           "~/DataTables/DataTables-1.10.19/extensions/ColReorder/css/colReorder.dataTables.min.css",
                           "~/DataTables/DataTables-1.10.19/extensions/FixedHeader/css/fixedHeader.dataTables.min.css",
-                            //"~/Charts/css/bootstrap.min.css",
-                              //"~/Charts/css/bootstrap_limitless.min.css",
+                                //"~/Charts/css/bootstrap.min.css",
+                                //"~/Charts/css/bootstrap_limitless.min.css",
                                 "~/Charts/css/colors.min.css",
                                    "~/Charts/css/components.css"
-                                  //"~/Charts/css/components.min.css"
+                          //"~/Charts/css/components.min.css"
 
                           ));
         }

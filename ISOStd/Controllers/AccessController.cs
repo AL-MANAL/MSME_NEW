@@ -1,24 +1,22 @@
-﻿using ISOStd.Filters;
-using ISOStd.Models;
+﻿using ISOStd.Models;
 using PagedList;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
-     
+
 namespace ISOStd.Controllers
 {
- public class AccessController : Controller
+    public class AccessController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
+        private clsGlobal objGlobaldata = new clsGlobal();
+
         public AccessController()
         {
             ViewBag.Menutype = "Access Privileges";
             ViewBag.SubMenutype = "Access Privileges";
         }
-
 
         [AllowAnonymous]
         public JsonResult UpdateAccess(string selected, int status, string role_id)
@@ -33,25 +31,23 @@ namespace ISOStd.Controllers
             return Json(IssueNo);
         }
 
-
         public ActionResult AccessList(int? page, string chkAll, string RoleId, FormCollection form)
         {
             AccessModelsList objAccessList = new AccessModelsList();
             objAccessList.AccessList = new List<AccessModels>();
             try
             {
-               
                 string sSqlstmt = "";
                 string sSearchtext = "";
 
                 //if (Request.QueryString["appl_branch"] != null && Request.QueryString["appl_branch"] != "" && Request.QueryString["RoleId"] != null && Request.QueryString["RoleId"] != "" && Request.QueryString["branch_id"] != null && Request.QueryString["branch_id"] != "")
-                if ( Request.QueryString["RoleId"] != null && Request.QueryString["RoleId"] != "")
+                if (Request.QueryString["RoleId"] != null && Request.QueryString["RoleId"] != "")
                 {
                     string appl_branch = Request.QueryString["appl_branch"];
                     string sRoleID = Request.QueryString["RoleId"];
                     string sbranch_id = Request.QueryString["branch_id"];
-                    string role=objGlobaldata.GetRolesNameById(sRoleID);
-                    string branch=objGlobaldata.GetCompanyBranchNameById(sbranch_id);
+                    string role = objGlobaldata.GetRolesNameById(sRoleID);
+                    string branch = objGlobaldata.GetCompanyBranchNameById(sbranch_id);
 
                     //if (appl_branch == "Yes")
                     //{
@@ -202,17 +198,14 @@ namespace ISOStd.Controllers
             return View(objAccessList.AccessList.ToList().ToPagedList(page ?? 1, 1000));
         }
 
-
         public JsonResult FungetAccessList(string RoleId, string branch_id)
         {
             AccessModels objAccess = new AccessModels();
-            
+
             AccessModelsList objAccessList = new AccessModelsList();
             objAccessList.AccessList = new List<AccessModels>();
             try
             {
-                
-               
                 string sSqlstmt = "";
                 string sSearchtext = "";
 

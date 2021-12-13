@@ -1,41 +1,40 @@
-﻿using System;
+﻿using ISOStd.Filters;
+using ISOStd.Models;
+using PagedList;
+using System;
 using System.Collections.Generic;
+using System.Data;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using ISOStd.Models;
-using System.IO;
-using System.Data;
-using System.Net;
-using PagedList;
-using PagedList.Mvc;
-using ISOStd.Filters;
 
 namespace ISOStd.Controllers
 {
     [PreventFromUrl]
     public class NCRCAPAController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
+        private clsGlobal objGlobaldata = new clsGlobal();
 
         public NCRCAPAController()
         {
             ViewBag.Menutype = "Audit";
             ViewBag.SubMenutype = "NCRCAPAList";
         }
+
         //
         // GET: /NCRCAPA/
-         
+
         public ActionResult Index()
         {
             return View();
         }
 
-        //Start: NCRLog 
+        //Start: NCRLog
 
         //
         // GET: /NCRCAPA/AddNCRLog
-         
+
         [AllowAnonymous]
         public ActionResult AddNCRLog()
         {
@@ -62,14 +61,14 @@ namespace ISOStd.Controllers
         }
 
         // GET: /NCRCAPA/InitilizeAddNCRLog
-         
+
         private ActionResult InitilizeAddNCRLog()
         {
             return View();
         }
 
         // POST: /NCRCAPA/AddNCRLog
-         
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult AddNCRLog(NCRLogModels objNCRLog, FormCollection form)
@@ -125,7 +124,7 @@ namespace ISOStd.Controllers
         }
 
         // GET: /NCRCAPA/NCRLogList
-         
+
         [AllowAnonymous]
         public ActionResult NCRLogList()
         {
@@ -142,7 +141,7 @@ namespace ISOStd.Controllers
 
                 UserCredentials objUserInfo = (UserCredentials)Session["UserCredentials"];
 
-                //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS  
+                //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS
                 string sSqlstmt = "SELECT idt_NCR_Log, NCRNo, Ncr_logDate, NCR_Details, NCR_Dept, DeptName , Correction_Date, Corrective_Action_date, FollowupDate, ReportStatus, "
                     + "Report_Close_Date, Correction_Details from t_NCR_Log as TNRLog, t_departments as dept where TNRLog. NCR_Dept=dept.DeptId "
                     + " and NCRNo='" + sNCRNo + "' order by idt_NCR_Log desc";
@@ -153,8 +152,6 @@ namespace ISOStd.Controllers
                 {
                     for (int i = 0; i < dsNCRLogList.Tables[0].Rows.Count; i++)
                     {
-                        
-
                         try
                         {
                             NCRLogModels objNCRLogModels = new NCRLogModels
@@ -173,7 +170,7 @@ namespace ISOStd.Controllers
                             {
                                 objNCRLogModels.Ncr_logDate = dateValue;
                             }
-                          
+
                             if (DateTime.TryParse(dsNCRLogList.Tables[0].Rows[i]["Correction_Date"].ToString(), out dateValue))
                             {
                                 objNCRLogModels.Correction_Date = dateValue;
@@ -211,7 +208,7 @@ namespace ISOStd.Controllers
         }
 
         // GET: /NCRCAPA/NCRLogDetails
-         
+
         [AllowAnonymous]
         public ActionResult NCRLogDetails()
         {
@@ -223,14 +220,14 @@ namespace ISOStd.Controllers
             {
                 UserCredentials objUserInfo = (UserCredentials)Session["UserCredentials"];
 
-                //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS  
+                //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS
                 string sSqlstmt = "SELECT idt_NCR_Log, NCRNo, Ncr_logDate, NCR_Details, NCR_Dept, DeptName, Correction_Date, Corrective_Action_date, FollowupDate, ReportStatus, "
                     + "Report_Close_Date, Correction_Details from t_NCR_Log as TNRLog, t_departments as dept where TNRLog. NCR_Dept=dept.DeptId and idt_NCR_Log='"
                     + sidt_NCR_Log + "'";
 
                 DataSet dsNCRLogList = objGlobaldata.Getdetails(sSqlstmt);
 
-                if (dsNCRLogList.Tables.Count >0 && dsNCRLogList.Tables[0].Rows.Count > 0)
+                if (dsNCRLogList.Tables.Count > 0 && dsNCRLogList.Tables[0].Rows.Count > 0)
                 {
                     objNCRLogModels = new NCRLogModels
                     {
@@ -279,7 +276,7 @@ namespace ISOStd.Controllers
                         int.TryParse(dsNCRDetails.Tables[0].Rows[0]["CAR_ID"].ToString(), out iCarID);
 
                         ViewBag.CAR_ID = iCarID;
-                    }                    
+                    }
                 }
             }
             catch (Exception ex)
@@ -291,87 +288,87 @@ namespace ISOStd.Controllers
         }
 
         // GET: /NCRCAPA/NCRLogEdit
-        
+
         [AllowAnonymous]
         public ActionResult NCRLogEdit()
         {
-             NCRLogModels objNCRLogModels = new NCRLogModels();
+            NCRLogModels objNCRLogModels = new NCRLogModels();
 
-             try
-             {
-                 string sidt_NCR_Log = Request.QueryString["idt_NCR_Log"];
-                 UserCredentials objUserInfo = (UserCredentials)Session["UserCredentials"];
+            try
+            {
+                string sidt_NCR_Log = Request.QueryString["idt_NCR_Log"];
+                UserCredentials objUserInfo = (UserCredentials)Session["UserCredentials"];
 
-                 //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS  
-                 string sSqlstmt = "SELECT idt_NCR_Log, NCRNo, Ncr_logDate, NCR_Details, NCR_Dept, DeptName, Correction_Date, Corrective_Action_date, FollowupDate, ReportStatus, "
-                     + "Report_Close_Date, Correction_Details from t_NCR_Log as TNRLog, t_departments as dept where TNRLog. NCR_Dept=dept.DeptId and idt_NCR_Log='"
-                     + sidt_NCR_Log + "'";
+                //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS
+                string sSqlstmt = "SELECT idt_NCR_Log, NCRNo, Ncr_logDate, NCR_Details, NCR_Dept, DeptName, Correction_Date, Corrective_Action_date, FollowupDate, ReportStatus, "
+                    + "Report_Close_Date, Correction_Details from t_NCR_Log as TNRLog, t_departments as dept where TNRLog. NCR_Dept=dept.DeptId and idt_NCR_Log='"
+                    + sidt_NCR_Log + "'";
 
-                 DataSet dsNCRLogList = objGlobaldata.Getdetails(sSqlstmt);
+                DataSet dsNCRLogList = objGlobaldata.Getdetails(sSqlstmt);
 
-                 if (dsNCRLogList.Tables.Count>0 && dsNCRLogList.Tables[0].Rows.Count > 0)
-                 {
-                     objNCRLogModels = new NCRLogModels
-                     {
-                         idt_NCR_Log = Convert.ToInt16(dsNCRLogList.Tables[0].Rows[0]["idt_NCR_Log"].ToString()),
-                         NCRNo = dsNCRLogList.Tables[0].Rows[0]["NCRNo"].ToString(),
-                         NCR_Details = dsNCRLogList.Tables[0].Rows[0]["NCR_Details"].ToString(),
-                         NCR_Dept = dsNCRLogList.Tables[0].Rows[0]["DeptName"].ToString(),
-                         ReportStatus = dsNCRLogList.Tables[0].Rows[0]["ReportStatus"].ToString(),
-                         Correction_Details = dsNCRLogList.Tables[0].Rows[0]["Correction_Details"].ToString()
-                     };
+                if (dsNCRLogList.Tables.Count > 0 && dsNCRLogList.Tables[0].Rows.Count > 0)
+                {
+                    objNCRLogModels = new NCRLogModels
+                    {
+                        idt_NCR_Log = Convert.ToInt16(dsNCRLogList.Tables[0].Rows[0]["idt_NCR_Log"].ToString()),
+                        NCRNo = dsNCRLogList.Tables[0].Rows[0]["NCRNo"].ToString(),
+                        NCR_Details = dsNCRLogList.Tables[0].Rows[0]["NCR_Details"].ToString(),
+                        NCR_Dept = dsNCRLogList.Tables[0].Rows[0]["DeptName"].ToString(),
+                        ReportStatus = dsNCRLogList.Tables[0].Rows[0]["ReportStatus"].ToString(),
+                        Correction_Details = dsNCRLogList.Tables[0].Rows[0]["Correction_Details"].ToString()
+                    };
 
-                     DateTime dateValue;
+                    DateTime dateValue;
 
-                     if (DateTime.TryParse(dsNCRLogList.Tables[0].Rows[0]["Ncr_logDate"].ToString(), out dateValue))
-                     {
-                         objNCRLogModels.Ncr_logDate = dateValue;
-                     }
+                    if (DateTime.TryParse(dsNCRLogList.Tables[0].Rows[0]["Ncr_logDate"].ToString(), out dateValue))
+                    {
+                        objNCRLogModels.Ncr_logDate = dateValue;
+                    }
 
-                     if (DateTime.TryParse(dsNCRLogList.Tables[0].Rows[0]["Correction_Date"].ToString(), out dateValue))
-                     {
-                         objNCRLogModels.Correction_Date = dateValue;
-                     }
+                    if (DateTime.TryParse(dsNCRLogList.Tables[0].Rows[0]["Correction_Date"].ToString(), out dateValue))
+                    {
+                        objNCRLogModels.Correction_Date = dateValue;
+                    }
 
-                     if (DateTime.TryParse(dsNCRLogList.Tables[0].Rows[0]["Corrective_Action_date"].ToString(), out dateValue))
-                     {
-                         objNCRLogModels.Corrective_Action_date = dateValue;
-                     }
+                    if (DateTime.TryParse(dsNCRLogList.Tables[0].Rows[0]["Corrective_Action_date"].ToString(), out dateValue))
+                    {
+                        objNCRLogModels.Corrective_Action_date = dateValue;
+                    }
 
-                     if (DateTime.TryParse(dsNCRLogList.Tables[0].Rows[0]["FollowupDate"].ToString(), out dateValue))
-                     {
-                         objNCRLogModels.FollowupDate = dateValue;
-                     }
+                    if (DateTime.TryParse(dsNCRLogList.Tables[0].Rows[0]["FollowupDate"].ToString(), out dateValue))
+                    {
+                        objNCRLogModels.FollowupDate = dateValue;
+                    }
 
-                     if (DateTime.TryParse(dsNCRLogList.Tables[0].Rows[0]["Report_Close_Date"].ToString(), out dateValue))
-                     {
-                         objNCRLogModels.Report_Close_Date = dateValue;
-                     }
+                    if (DateTime.TryParse(dsNCRLogList.Tables[0].Rows[0]["Report_Close_Date"].ToString(), out dateValue))
+                    {
+                        objNCRLogModels.Report_Close_Date = dateValue;
+                    }
 
-                     int iCarID = 0;
+                    int iCarID = 0;
 
-                     DataSet dsNCRDetails = objGlobaldata.Getdetails("select CAR_ID from t_ncr_capa as tnc, t_ncr_log as tnl where NCR_Num=NCRNo and NCR_Dept=issuedtodept "
-                         + "and idt_NCR_Log='" + objNCRLogModels.idt_NCR_Log + "'");
-                     if (dsNCRDetails.Tables.Count > 0 && dsNCRDetails.Tables[0].Rows.Count > 0)
-                     {
-                         int.TryParse(dsNCRDetails.Tables[0].Rows[0]["CAR_ID"].ToString(), out iCarID);
+                    DataSet dsNCRDetails = objGlobaldata.Getdetails("select CAR_ID from t_ncr_capa as tnc, t_ncr_log as tnl where NCR_Num=NCRNo and NCR_Dept=issuedtodept "
+                        + "and idt_NCR_Log='" + objNCRLogModels.idt_NCR_Log + "'");
+                    if (dsNCRDetails.Tables.Count > 0 && dsNCRDetails.Tables[0].Rows.Count > 0)
+                    {
+                        int.TryParse(dsNCRDetails.Tables[0].Rows[0]["CAR_ID"].ToString(), out iCarID);
 
-                         ViewBag.CAR_ID = iCarID;
-                     }
-                 }
-             }
-             catch (Exception ex)
-             {
-                 objGlobaldata.AddFunctionalLog("Exception in NCRLogEdit: " + ex.ToString());
-                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-             }
-             ViewBag.ReportStatus = new string[] { "Open", "Closed" };
+                        ViewBag.CAR_ID = iCarID;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in NCRLogEdit: " + ex.ToString());
+                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+            }
+            ViewBag.ReportStatus = new string[] { "Open", "Closed" };
 
-             return View(objNCRLogModels);          
+            return View(objNCRLogModels);
         }
 
         //POST: /NCRCAPA/NCRLogEdit
-         
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult NCRLogEdit(NCRLogModels objNCRLogModels, FormCollection form)
@@ -379,7 +376,6 @@ namespace ISOStd.Controllers
             try
             {
                 string sidt_NCR_Log = Request.QueryString["idt_NCR_Log"];
-
 
                 objNCRLogModels.NCR_Dept = form["NCR_Dept"];
                 objNCRLogModels.ReportStatus = form["ReportStatus"];
@@ -430,11 +426,12 @@ namespace ISOStd.Controllers
 
             return RedirectToAction("NCRLogList", new { CAR_ID = form["CAR_ID"] });
         }
+
         //End
 
         //
         // GET: /NCRCAPA/AddNCRCAPA
-         
+
         [AllowAnonymous]
         public ActionResult AddNCRCAPA()
         {
@@ -442,7 +439,7 @@ namespace ISOStd.Controllers
             {
                 ViewBag.AuditNumList = objGlobaldata.GetAuditNumList();
                 ViewBag.EmpLists = objGlobaldata.GetHrEmployeeListbox();
-                ViewBag.DiscrepancyRelatedList = new string[] { "Documentation", "Employee", "Procedure", "Equipment", "Materials", "Supplier", "Service Provider", "Management","Process" };
+                ViewBag.DiscrepancyRelatedList = new string[] { "Documentation", "Employee", "Procedure", "Equipment", "Materials", "Supplier", "Service Provider", "Management", "Process" };
             }
             catch (Exception ex)
             {
@@ -452,14 +449,13 @@ namespace ISOStd.Controllers
             return View();
         }
 
-         
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult AddNCRCAPA(NCRCAPAModels objNCRCAPA, FormCollection form, IEnumerable<HttpPostedFileBase> upload)
         {
             try
             {
-                string[] sDiscrepancy_Related = new string[] { "Documentation", "Employee", "Procedure", "Equipment", "Materials", "Supplier", "Service Provider", "Management" , "Process" };
+                string[] sDiscrepancy_Related = new string[] { "Documentation", "Employee", "Procedure", "Equipment", "Materials", "Supplier", "Service Provider", "Management", "Process" };
                 HttpPostedFileBase files = Request.Files[0];
 
                 objNCRCAPA.IssuedBy = form["IssuedBy"];
@@ -511,14 +507,12 @@ namespace ISOStd.Controllers
                 }
                 if (objNCRCAPA.FunAddNCRCAPA(objNCRCAPA))
                 {
-
-                    TempData["Successdata"] = "Added NCR-CAPA details successfully  with Reference Number '" + objNCRCAPA.NC_Num + "'"; 
+                    TempData["Successdata"] = "Added NCR-CAPA details successfully  with Reference Number '" + objNCRCAPA.NC_Num + "'";
                 }
                 else
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 }
-
             }
             catch (Exception ex)
             {
@@ -559,9 +553,6 @@ namespace ISOStd.Controllers
                 DataSet dsNCRCAPAList = objGlobaldata.Getdetails(sSqlstmt);
                 if (dsNCRCAPAList.Tables.Count > 0 && dsNCRCAPAList.Tables[0].Rows.Count > 0)
                 {
-                   
-                        
-                    
                     for (int i = 0; i < dsNCRCAPAList.Tables[0].Rows.Count; i++)
                     {
                         try
@@ -579,7 +570,7 @@ namespace ISOStd.Controllers
                                 FindingType = dsNCRCAPAList.Tables[0].Rows[i]["FindingType"].ToString(),
                                 upload = dsNCRCAPAList.Tables[0].Rows[i]["upload"].ToString(),
                                 FindingIdentified = dsNCRCAPAList.Tables[0].Rows[i]["FindingIdentified"].ToString(),
-                                AuditNum =objGlobaldata.GetAuditNumById(dsNCRCAPAList.Tables[0].Rows[i]["AuditNum"].ToString()),
+                                AuditNum = objGlobaldata.GetAuditNumById(dsNCRCAPAList.Tables[0].Rows[i]["AuditNum"].ToString()),
                             };
 
                             DateTime dateValue;
@@ -604,7 +595,6 @@ namespace ISOStd.Controllers
             }
             return View(NCRCAPAModelsList.NCRCAPAMList.ToList());
         }
-
 
         [AllowAnonymous]
         public JsonResult NCRCAPAListSearch(string branch_name)
@@ -636,9 +626,6 @@ namespace ISOStd.Controllers
                 DataSet dsNCRCAPAList = objGlobaldata.Getdetails(sSqlstmt);
                 if (dsNCRCAPAList.Tables.Count > 0 && dsNCRCAPAList.Tables[0].Rows.Count > 0)
                 {
-
-                   
-
                     for (int i = 0; i < dsNCRCAPAList.Tables[0].Rows.Count; i++)
                     {
                         try
@@ -704,7 +691,6 @@ namespace ISOStd.Controllers
                     DataSet dsNCRCAPAList = objGlobaldata.Getdetails(sSqlstmt);
                     if (dsNCRCAPAList.Tables.Count > 0 && dsNCRCAPAList.Tables[0].Rows.Count > 0)
                     {
-
                         objNCRCAPAModels = new NCRCAPAModels
                         {
                             CAR_ID = Convert.ToInt16(dsNCRCAPAList.Tables[0].Rows[0]["CAR_ID"].ToString()),
@@ -753,12 +739,11 @@ namespace ISOStd.Controllers
         }
 
         //POST: /NCRCAPA/NCRCAPAEdit
-           
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult NCRCAPAEdit(NCRCAPAModels objNCRCAPAModels, FormCollection form, IEnumerable<HttpPostedFileBase> upload)
         {
-
             try
             {
                 HttpPostedFileBase files = Request.Files[0];
@@ -802,7 +787,6 @@ namespace ISOStd.Controllers
                         catch (Exception ex)
                         {
                             objGlobaldata.AddFunctionalLog("Exception in BiddingEdit-upload: " + ex.ToString());
-
                         }
                     }
                     objNCRCAPAModels.upload = objNCRCAPAModels.upload.Trim(',');
@@ -839,14 +823,12 @@ namespace ISOStd.Controllers
             return RedirectToAction("NCRCAPAList");//View();
         }
 
-           
         [AllowAnonymous]
         public ActionResult ActionNCRCAPA()
         {
             NCRCAPAModels objNCRCAPAModels = new NCRCAPAModels();
             try
             {
-              
                 if (Request.QueryString["CAR_ID"] != null && Request.QueryString["CAR_ID"] != "")
                 {
                     string CAR_ID = Request.QueryString["CAR_ID"];
@@ -869,7 +851,6 @@ namespace ISOStd.Controllers
                     TempData["Successdata"] = "ID cannot be null";
                     return RedirectToAction("NCRCAPAList");
                 }
-                
             }
             catch (Exception ex)
             {
@@ -879,14 +860,12 @@ namespace ISOStd.Controllers
             return View(objNCRCAPAModels);
         }
 
-           
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult ActionNCRCAPA(NCRCAPAModels objNCRCAPA, FormCollection form, IEnumerable<HttpPostedFileBase> upload)
         {
             try
             {
-
                 HttpPostedFileBase files = Request.Files[0];
 
                 objNCRCAPA.Correction_taken_by = form["Correction_taken_by"];
@@ -935,7 +914,6 @@ namespace ISOStd.Controllers
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 }
-
             }
             catch (Exception ex)
             {
@@ -946,7 +924,6 @@ namespace ISOStd.Controllers
             return RedirectToAction("NCRActionList", new { objNCRCAPA.CAR_ID });
         }
 
-           
         [AllowAnonymous]
         public ActionResult NCRActionList()
         {
@@ -963,9 +940,6 @@ namespace ISOStd.Controllers
                     DataSet dsNCRCAPAList = objGlobaldata.Getdetails(sSqlstmt);
                     if (dsNCRCAPAList.Tables.Count > 0 && dsNCRCAPAList.Tables[0].Rows.Count > 0)
                     {
-                       
-                          
-                        
                         for (int i = 0; i < dsNCRCAPAList.Tables[0].Rows.Count; i++)
                         {
                             try
@@ -1017,7 +991,6 @@ namespace ISOStd.Controllers
             return View(NCRCAPAModelsList.NCRCAPAMList.ToList());
         }
 
-          
         [AllowAnonymous]
         public ActionResult ActionNCRCAPAEdit()
         {
@@ -1038,7 +1011,6 @@ namespace ISOStd.Controllers
                     DataSet dsNCRCAPAList = objGlobaldata.Getdetails(sSqlstmt);
                     if (dsNCRCAPAList.Tables.Count > 0 && dsNCRCAPAList.Tables[0].Rows.Count > 0)
                     {
-
                         objNCRCAPAModels = new NCRCAPAModels
                         {
                             NC_Num = dsNCRCAPAList.Tables[0].Rows[0]["NC_Num"].ToString(),
@@ -1051,7 +1023,7 @@ namespace ISOStd.Controllers
                             CAPA_Need = dsNCRCAPAList.Tables[0].Rows[0]["CAPA_Need"].ToString(),
                             CAPA_DESC = dsNCRCAPAList.Tables[0].Rows[0]["CAPA_DESC"].ToString(),
                             CA_Proposed_By = objGlobaldata.GetEmpHrNameById(dsNCRCAPAList.Tables[0].Rows[0]["CA_Proposed_By"].ToString()),
-                            upload = dsNCRCAPAList.Tables[0].Rows[0]["upload"].ToString()    
+                            upload = dsNCRCAPAList.Tables[0].Rows[0]["upload"].ToString()
                         };
                         DateTime dateValue;
                         if (DateTime.TryParse(dsNCRCAPAList.Tables[0].Rows[0]["Correction_taken_on"].ToString(), out dateValue))
@@ -1073,12 +1045,10 @@ namespace ISOStd.Controllers
             return View(objNCRCAPAModels);
         }
 
-           
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult ActionNCRCAPAEdit(NCRCAPAModels objNCRCAPA, FormCollection form, IEnumerable<HttpPostedFileBase> upload)
         {
-
             try
             {
                 HttpPostedFileBase files = Request.Files[0];
@@ -1113,7 +1083,6 @@ namespace ISOStd.Controllers
                         catch (Exception ex)
                         {
                             objGlobaldata.AddFunctionalLog("Exception in BiddingEdit-upload: " + ex.ToString());
-
                         }
                     }
                     objNCRCAPA.upload = objNCRCAPA.upload.Trim(',');
@@ -1153,7 +1122,6 @@ namespace ISOStd.Controllers
             return RedirectToAction("NCRActionList", new { objNCRCAPA.CAR_ID });//View();
         }
 
-           
         [AllowAnonymous]
         public ActionResult AddNCRClose()
         {
@@ -1183,7 +1151,7 @@ namespace ISOStd.Controllers
                 {
                     TempData["Successdata"] = "ID cannot be null";
                     return RedirectToAction("");
-                } 
+                }
             }
             catch (Exception ex)
             {
@@ -1193,14 +1161,12 @@ namespace ISOStd.Controllers
             return View(objNCRCAPAModels);
         }
 
-           
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult AddNCRClose(NCRCAPAModels objNCRCAPA, FormCollection form, IEnumerable<HttpPostedFileBase> upload)
         {
             try
             {
-
                 HttpPostedFileBase files = Request.Files[0];
 
                 objNCRCAPA.NCR_Status = form["NCR_Status"];
@@ -1249,7 +1215,6 @@ namespace ISOStd.Controllers
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 }
-
             }
             catch (Exception ex)
             {
@@ -1260,7 +1225,6 @@ namespace ISOStd.Controllers
             return RedirectToAction("NCRCloseList", new { objNCRCAPA.id_ncr_action });
         }
 
-           
         [AllowAnonymous]
         public ActionResult NCRCloseList(int? page)
         {
@@ -1277,9 +1241,6 @@ namespace ISOStd.Controllers
                     DataSet dsNCRCAPAList = objGlobaldata.Getdetails(sSqlstmt);
                     if (dsNCRCAPAList.Tables.Count > 0 && dsNCRCAPAList.Tables[0].Rows.Count > 0)
                     {
-                       
-                          
-
                         for (int i = 0; i < dsNCRCAPAList.Tables[0].Rows.Count; i++)
                         {
                             try
@@ -1331,8 +1292,6 @@ namespace ISOStd.Controllers
             return View(NCRCAPAModelsList.NCRCAPAMList.ToList().ToPagedList(page ?? 1, 40));
         }
 
-
-           
         [AllowAnonymous]
         public ActionResult NCRCloseEdit()
         {
@@ -1354,7 +1313,6 @@ namespace ISOStd.Controllers
                     DataSet dsNCRCAPAList = objGlobaldata.Getdetails(sSqlstmt);
                     if (dsNCRCAPAList.Tables.Count > 0 && dsNCRCAPAList.Tables[0].Rows.Count > 0)
                     {
-
                         objNCRCAPAModels = new NCRCAPAModels
                         {
                             NC_Num = dsNCRCAPAList.Tables[0].Rows[0]["NC_Num"].ToString(),
@@ -1387,12 +1345,10 @@ namespace ISOStd.Controllers
             return View(objNCRCAPAModels);
         }
 
-           
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult NCRCloseEdit(NCRCAPAModels objNCRCAPA, FormCollection form, IEnumerable<HttpPostedFileBase> upload)
         {
-
             try
             {
                 HttpPostedFileBase files = Request.Files[0];
@@ -1411,7 +1367,6 @@ namespace ISOStd.Controllers
                     objNCRCAPA.Report_Closed_On = dateValue;
                 }
 
-
                 string QCDelete = Request.Form["QCDocsValselectall"];
                 if (upload != null && files.ContentLength > 0)
                 {
@@ -1428,7 +1383,6 @@ namespace ISOStd.Controllers
                         catch (Exception ex)
                         {
                             objGlobaldata.AddFunctionalLog("Exception in BiddingEdit-upload: " + ex.ToString());
-
                         }
                     }
                     objNCRCAPA.upload = objNCRCAPA.upload.Trim(',');
@@ -1465,7 +1419,6 @@ namespace ISOStd.Controllers
             return RedirectToAction("NCRCloseList", new { objNCRCAPA.id_ncr_action });//View();
         }
 
-           
         [AllowAnonymous]
         public ActionResult NCRActionDetails()
         {
@@ -1483,7 +1436,6 @@ namespace ISOStd.Controllers
                     DataSet dsNCRCAPAList = objGlobaldata.Getdetails(sSqlstmt);
                     if (dsNCRCAPAList.Tables.Count > 0 && dsNCRCAPAList.Tables[0].Rows.Count > 0)
                     {
-
                         objNCRCAPAModels = new NCRCAPAModels
                         {
                             NC_Num = dsNCRCAPAList.Tables[0].Rows[0]["NC_Num"].ToString(),
@@ -1526,42 +1478,34 @@ namespace ISOStd.Controllers
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
             return View(objNCRCAPAModels);
-
         }
 
-           
         [AllowAnonymous]
         public JsonResult NCRCAPADocDelete(FormCollection form)
         {
             try
             {
-               
-                   
-                        if (form["CAR_ID"] != null && form["CAR_ID"] != "")
-                        {
+                if (form["CAR_ID"] != null && form["CAR_ID"] != "")
+                {
+                    NCRCAPAModels Doc = new NCRCAPAModels();
+                    string sCAR_ID = form["CAR_ID"];
 
-                            NCRCAPAModels Doc = new NCRCAPAModels();
-                            string sCAR_ID = form["CAR_ID"];
-
-
-                            if (Doc.FunDeleteNCRCAPADoc(sCAR_ID))
-                            {
-                                TempData["Successdata"] = "Document deleted successfully";
-                                return Json("Success");
-                            }
-                            else
-                            {
-                                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                                return Json("Failed");
-                            }
-                        }
-                        else
-                        {
-                            TempData["alertdata"] = "NCRCAPA Id cannot be Null or empty";
-                            return Json("Failed");
-                        }
-                  
-                
+                    if (Doc.FunDeleteNCRCAPADoc(sCAR_ID))
+                    {
+                        TempData["Successdata"] = "Document deleted successfully";
+                        return Json("Success");
+                    }
+                    else
+                    {
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                        return Json("Failed");
+                    }
+                }
+                else
+                {
+                    TempData["alertdata"] = "NCRCAPA Id cannot be Null or empty";
+                    return Json("Failed");
+                }
             }
             catch (Exception ex)
             {
@@ -1571,39 +1515,32 @@ namespace ISOStd.Controllers
             return Json("Failed");
         }
 
-         
         [AllowAnonymous]
         public JsonResult NCRActionDocDelete(FormCollection form)
         {
             try
             {
-               
-                    
-                        if (form["id_ncr_action"] != null && form["id_ncr_action"] != "")
-                        {
+                if (form["id_ncr_action"] != null && form["id_ncr_action"] != "")
+                {
+                    NCRCAPAModels Doc = new NCRCAPAModels();
+                    string sid_ncr_action = form["id_ncr_action"];
 
-                            NCRCAPAModels Doc = new NCRCAPAModels();
-                            string sid_ncr_action = form["id_ncr_action"];
-
-
-                            if (Doc.FunDeleteNCRActionDoc(sid_ncr_action))
-                            {
-                                TempData["Successdata"] = "Document deleted successfully";
-                                return Json("Success");
-                            }
-                            else
-                            {
-                                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                                return Json("Failed");
-                            }
-                        }
-                        else
-                        {
-                            TempData["alertdata"] = "NCRCAPA Id cannot be Null or empty";
-                            return Json("Failed");
-                        }
-                   
-                
+                    if (Doc.FunDeleteNCRActionDoc(sid_ncr_action))
+                    {
+                        TempData["Successdata"] = "Document deleted successfully";
+                        return Json("Success");
+                    }
+                    else
+                    {
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                        return Json("Failed");
+                    }
+                }
+                else
+                {
+                    TempData["alertdata"] = "NCRCAPA Id cannot be Null or empty";
+                    return Json("Failed");
+                }
             }
             catch (Exception ex)
             {
@@ -1613,39 +1550,32 @@ namespace ISOStd.Controllers
             return Json("Failed");
         }
 
-         
         [AllowAnonymous]
         public JsonResult NCRCloseDocDelete(FormCollection form)
         {
             try
             {
-               
-                   
-                        if (form["id_ncr_close"] != null && form["id_ncr_close"] != "")
-                        {
+                if (form["id_ncr_close"] != null && form["id_ncr_close"] != "")
+                {
+                    NCRCAPAModels Doc = new NCRCAPAModels();
+                    string sid_ncr_close = form["id_ncr_close"];
 
-                            NCRCAPAModels Doc = new NCRCAPAModels();
-                            string sid_ncr_close = form["id_ncr_close"];
-
-
-                            if (Doc.FunDeleteNCRCloseDoc(sid_ncr_close))
-                            {
-                                TempData["Successdata"] = "Document deleted successfully";
-                                return Json("Success");
-                            }
-                            else
-                            {
-                                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                                return Json("Failed");
-                            }
-                        }
-                        else
-                        {
-                            TempData["alertdata"] = "NCRCAPA Id cannot be Null or empty";
-                            return Json("Failed");
-                        }
-                    
-                
+                    if (Doc.FunDeleteNCRCloseDoc(sid_ncr_close))
+                    {
+                        TempData["Successdata"] = "Document deleted successfully";
+                        return Json("Success");
+                    }
+                    else
+                    {
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                        return Json("Failed");
+                    }
+                }
+                else
+                {
+                    TempData["alertdata"] = "NCRCAPA Id cannot be Null or empty";
+                    return Json("Failed");
+                }
             }
             catch (Exception ex)
             {
@@ -1655,7 +1585,6 @@ namespace ISOStd.Controllers
             return Json("Failed");
         }
 
-         
         [AllowAnonymous]
         public ActionResult NCRCAPADetails()
         {
@@ -1663,13 +1592,12 @@ namespace ISOStd.Controllers
 
             try
             {
-               
                 if (Request.QueryString["CAR_ID"] != null && Request.QueryString["CAR_ID"] != "")
                 {
                     string sCAR_ID = Request.QueryString["CAR_ID"];
                     string sSqlstmt = "select CAR_ID,NC_Num,IssuedOn,IssuedBy,IssuedByPosition,IssuedByDept,issuedTo,Discrepancy_Details,"
-             + "Discrepancy_Related,FindingType,upload,FindingIdentified,AuditNum from t_ncr_raise where CAR_ID='" + sCAR_ID + "'";  
-                    DataSet dsNCRCAPAList = objGlobaldata.Getdetails(sSqlstmt);      
+             + "Discrepancy_Related,FindingType,upload,FindingIdentified,AuditNum from t_ncr_raise where CAR_ID='" + sCAR_ID + "'";
+                    DataSet dsNCRCAPAList = objGlobaldata.Getdetails(sSqlstmt);
                     if (dsNCRCAPAList.Tables.Count > 0 && dsNCRCAPAList.Tables[0].Rows.Count > 0)
                     {
                         objNCRCAPAModels = new NCRCAPAModels
@@ -1701,9 +1629,9 @@ namespace ISOStd.Controllers
                         }
                     }
                     string SqlStmt = "Select NC_Num,Correction_taken_by,Correction_taken_on,CAPA_Need,CA_Impl_On,CA_Proposed_By,"
-                    +"verified_on,NCR_Status,Report_Closed_On,VerifiedBy FROM t_ncr_raise t LEFT JOIN t_ncr_action tt"
+                    + "verified_on,NCR_Status,Report_Closed_On,VerifiedBy FROM t_ncr_raise t LEFT JOIN t_ncr_action tt"
                     + " ON tt.CAR_ID = t.CAR_ID LEFT JOIN t_ncr_close ttt ON t.CAR_ID = ttt.CAR_ID where t.CAR_ID = '" + sCAR_ID + "'";
-                
+
                     DataSet dsNCRCAPA = objGlobaldata.Getdetails(SqlStmt);
                     ViewBag.CAPADetails = dsNCRCAPA;
                 }
@@ -1712,7 +1640,6 @@ namespace ISOStd.Controllers
                     TempData["alertdata"] = "CAR Id cannot be Null or empty";
                     return RedirectToAction("NCRCAPAList");
                 }
-                
             }
             catch (Exception ex)
             {
@@ -1720,10 +1647,8 @@ namespace ISOStd.Controllers
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
             return View(objNCRCAPAModels);
-
         }
 
-         
         [AllowAnonymous]
         public ActionResult NCRCAPAInfo(int id)
         {
@@ -1731,39 +1656,38 @@ namespace ISOStd.Controllers
 
             try
             {
-                    string sSqlstmt = "select CAR_ID,NC_Num,IssuedOn,IssuedBy,IssuedByPosition,IssuedByDept,issuedTo,Discrepancy_Details,"
-             + "Discrepancy_Related,FindingType,upload,FindingIdentified,AuditNum from t_ncr_raise where CAR_ID='" + id + "'";
-                    DataSet dsNCRCAPAList = objGlobaldata.Getdetails(sSqlstmt);
-                    if (dsNCRCAPAList.Tables.Count > 0 && dsNCRCAPAList.Tables[0].Rows.Count > 0)
+                string sSqlstmt = "select CAR_ID,NC_Num,IssuedOn,IssuedBy,IssuedByPosition,IssuedByDept,issuedTo,Discrepancy_Details,"
+         + "Discrepancy_Related,FindingType,upload,FindingIdentified,AuditNum from t_ncr_raise where CAR_ID='" + id + "'";
+                DataSet dsNCRCAPAList = objGlobaldata.Getdetails(sSqlstmt);
+                if (dsNCRCAPAList.Tables.Count > 0 && dsNCRCAPAList.Tables[0].Rows.Count > 0)
+                {
+                    objNCRCAPAModels = new NCRCAPAModels
                     {
-                        objNCRCAPAModels = new NCRCAPAModels
-                        {
-                            CAR_ID = Convert.ToInt16(dsNCRCAPAList.Tables[0].Rows[0]["CAR_ID"].ToString()),
-                            NC_Num = dsNCRCAPAList.Tables[0].Rows[0]["NC_Num"].ToString(),
-                            IssuedBy = objGlobaldata.GetEmpHrNameById(dsNCRCAPAList.Tables[0].Rows[0]["IssuedBy"].ToString()),
-                            IssuedByPosition = dsNCRCAPAList.Tables[0].Rows[0]["IssuedByPosition"].ToString(),
-                            IssuedByDept = objGlobaldata.GetDeptNameById(dsNCRCAPAList.Tables[0].Rows[0]["IssuedByDept"].ToString()),
-                            issuedTo = objGlobaldata.GetMultiHrEmpNameById(dsNCRCAPAList.Tables[0].Rows[0]["issuedTo"].ToString()),
-                            Discrepancy_Details = dsNCRCAPAList.Tables[0].Rows[0]["Discrepancy_Details"].ToString(),
-                            Discrepancy_Related = dsNCRCAPAList.Tables[0].Rows[0]["Discrepancy_Related"].ToString(),
-                            FindingType = dsNCRCAPAList.Tables[0].Rows[0]["FindingType"].ToString(),
-                            upload = dsNCRCAPAList.Tables[0].Rows[0]["upload"].ToString(),
-                            FindingIdentified = dsNCRCAPAList.Tables[0].Rows[0]["FindingIdentified"].ToString(),
-                            AuditNum = objGlobaldata.GetAuditNumById(dsNCRCAPAList.Tables[0].Rows[0]["AuditNum"].ToString()),
-                        };
-                        DateTime dateValue;
-                        if (DateTime.TryParse(dsNCRCAPAList.Tables[0].Rows[0]["IssuedOn"].ToString(), out dateValue))
-                        {
-                            objNCRCAPAModels.IssuedOn = dateValue;
-                        }
+                        CAR_ID = Convert.ToInt16(dsNCRCAPAList.Tables[0].Rows[0]["CAR_ID"].ToString()),
+                        NC_Num = dsNCRCAPAList.Tables[0].Rows[0]["NC_Num"].ToString(),
+                        IssuedBy = objGlobaldata.GetEmpHrNameById(dsNCRCAPAList.Tables[0].Rows[0]["IssuedBy"].ToString()),
+                        IssuedByPosition = dsNCRCAPAList.Tables[0].Rows[0]["IssuedByPosition"].ToString(),
+                        IssuedByDept = objGlobaldata.GetDeptNameById(dsNCRCAPAList.Tables[0].Rows[0]["IssuedByDept"].ToString()),
+                        issuedTo = objGlobaldata.GetMultiHrEmpNameById(dsNCRCAPAList.Tables[0].Rows[0]["issuedTo"].ToString()),
+                        Discrepancy_Details = dsNCRCAPAList.Tables[0].Rows[0]["Discrepancy_Details"].ToString(),
+                        Discrepancy_Related = dsNCRCAPAList.Tables[0].Rows[0]["Discrepancy_Related"].ToString(),
+                        FindingType = dsNCRCAPAList.Tables[0].Rows[0]["FindingType"].ToString(),
+                        upload = dsNCRCAPAList.Tables[0].Rows[0]["upload"].ToString(),
+                        FindingIdentified = dsNCRCAPAList.Tables[0].Rows[0]["FindingIdentified"].ToString(),
+                        AuditNum = objGlobaldata.GetAuditNumById(dsNCRCAPAList.Tables[0].Rows[0]["AuditNum"].ToString()),
+                    };
+                    DateTime dateValue;
+                    if (DateTime.TryParse(dsNCRCAPAList.Tables[0].Rows[0]["IssuedOn"].ToString(), out dateValue))
+                    {
+                        objNCRCAPAModels.IssuedOn = dateValue;
                     }
-                    string SqlStmt = "Select NC_Num,Correction_taken_by,Correction_taken_on,CAPA_Need,CA_Impl_On,CA_Proposed_By,"
-                    + "verified_on,NCR_Status,Report_Closed_On,VerifiedBy FROM t_ncr_raise t LEFT JOIN t_ncr_action tt"
-                    + " ON tt.CAR_ID = t.CAR_ID LEFT JOIN t_ncr_close ttt ON t.CAR_ID = ttt.CAR_ID where t.CAR_ID = '" + id + "'";
+                }
+                string SqlStmt = "Select NC_Num,Correction_taken_by,Correction_taken_on,CAPA_Need,CA_Impl_On,CA_Proposed_By,"
+                + "verified_on,NCR_Status,Report_Closed_On,VerifiedBy FROM t_ncr_raise t LEFT JOIN t_ncr_action tt"
+                + " ON tt.CAR_ID = t.CAR_ID LEFT JOIN t_ncr_close ttt ON t.CAR_ID = ttt.CAR_ID where t.CAR_ID = '" + id + "'";
 
-                    DataSet dsNCRCAPA = objGlobaldata.Getdetails(SqlStmt);
-                    ViewBag.CAPADetails = dsNCRCAPA;
- 
+                DataSet dsNCRCAPA = objGlobaldata.Getdetails(SqlStmt);
+                ViewBag.CAPADetails = dsNCRCAPA;
             }
             catch (Exception ex)
             {
@@ -1772,13 +1696,13 @@ namespace ISOStd.Controllers
             }
             return View(objNCRCAPAModels);
         }
-    
+
         public JsonResult GetDivisionDetailsbyAuditNum(string AuditNum)
         {
             string Branch = "";
             string sql = "Select AuditLocation from t_internal_audit where AuditID = '" + AuditNum + "'";
             DataSet dsAuditList = objGlobaldata.Getdetails(sql);
-            if(dsAuditList.Tables.Count>0 && dsAuditList.Tables[0].Rows.Count >0)
+            if (dsAuditList.Tables.Count > 0 && dsAuditList.Tables[0].Rows.Count > 0)
             {
                 Branch = objGlobaldata.GetMultiCompanyBranchNameById(dsAuditList.Tables[0].Rows[0]["AuditLocation"].ToString());
             }

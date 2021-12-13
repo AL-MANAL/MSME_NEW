@@ -1,24 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+﻿using ISOStd.Filters;
 using ISOStd.Models;
-using System.Data;
-using System.Net;
-using System.IO;
-using PagedList;
-using PagedList.Mvc;
 using Rotativa;
-using ISOStd.Filters;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Web.Mvc;
 
 namespace ISOStd.Controllers
 {
     [PreventFromUrl]
-    public class HSEStatisticsController:Controller
+    public class HSEStatisticsController : Controller
     {
-
-        clsGlobal objGlobaldata = new clsGlobal();
+        private clsGlobal objGlobaldata = new clsGlobal();
 
         [AllowAnonymous]
         public ActionResult HSEStatisticsReport()
@@ -38,7 +31,7 @@ namespace ISOStd.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public ActionResult HSEStatisticsReport(FormCollection form, string Vyear, string VMonth,string command)
+        public ActionResult HSEStatisticsReport(FormCollection form, string Vyear, string VMonth, string command)
         {
             //  WasteManagementModelsList objdisp = new WasteManagementModelsList();
 
@@ -78,7 +71,6 @@ namespace ISOStd.Controllers
                     //FileName = "HSEStatisticsReport.pdf",
                     Cookies = cookieCollection,
                     PageOrientation = Rotativa.Options.Orientation.Landscape
-                  
                 };
             }
             return View();

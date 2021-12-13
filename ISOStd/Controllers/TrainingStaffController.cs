@@ -12,7 +12,7 @@ namespace ISOStd.Controllers
 {
     public class TrainingStaffController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
+        private clsGlobal objGlobaldata = new clsGlobal();
 
         public TrainingStaffController()
         {
@@ -52,7 +52,7 @@ namespace ISOStd.Controllers
             try
             {
                 DateTime dateValue;
-                               
+
                 objMdl.dept_head = form["dept_head"];
 
                 if (form["date_taining"] != null && DateTime.TryParse(form["date_taining"], out dateValue) == true)
@@ -168,7 +168,6 @@ namespace ISOStd.Controllers
             TrainingStaffModels objTrainingMdl = new TrainingStaffModels();
             try
             {
-               
                 if (Request.QueryString["id_training"] != "" && Request.QueryString["id_training"] != null)
                 {
                     string sid_training = Request.QueryString["id_training"];
@@ -179,7 +178,7 @@ namespace ISOStd.Controllers
                     {
                         try
                         {
-                             objTrainingMdl = new TrainingStaffModels
+                            objTrainingMdl = new TrainingStaffModels
                             {
                                 id_training = dsTrainingList.Tables[0].Rows[0]["id_training"].ToString(),
                                 employee = /*objGlobaldata.GetMultiHrEmpNameById*/(dsTrainingList.Tables[0].Rows[0]["employee"].ToString()),
@@ -193,7 +192,6 @@ namespace ISOStd.Controllers
                             {
                                 objTrainingMdl.date_taining = dtDocDate;
                             }
-                            
                         }
                         catch (Exception ex)
                         {
@@ -208,15 +206,15 @@ namespace ISOStd.Controllers
                     string Ssqlstmt1 = "select id_training_trans,id_training,training_type,justification,scheduled_date,criticality " +
                         "from t_training_staff_trans where id_training = '" + sid_training + "'";
                     DataSet dsTrainList = objGlobaldata.Getdetails(Ssqlstmt1);
-                    if(dsTrainList.Tables.Count>0 && dsTrainList.Tables[0].Rows.Count>0)
+                    if (dsTrainList.Tables.Count > 0 && dsTrainList.Tables[0].Rows.Count > 0)
                     {
                         try
                         {
-                            for(int i = 0; i < dsTrainList.Tables[0].Rows.Count; i++)
+                            for (int i = 0; i < dsTrainList.Tables[0].Rows.Count; i++)
                             {
                                 TrainingStaffModels objtrain = new TrainingStaffModels
                                 {
-                                    id_training_trans=dsTrainList.Tables[0].Rows[i]["id_training_trans"].ToString(),
+                                    id_training_trans = dsTrainList.Tables[0].Rows[i]["id_training_trans"].ToString(),
                                     training_type = dsTrainList.Tables[0].Rows[i]["training_type"].ToString(),
                                     criticality = dsTrainList.Tables[0].Rows[i]["criticality"].ToString(),
                                     justification = dsTrainList.Tables[0].Rows[i]["justification"].ToString(),
@@ -231,7 +229,7 @@ namespace ISOStd.Controllers
                             }
                             ViewBag.TrainDetails = objList;
                         }
-                        catch(Exception ex)
+                        catch (Exception ex)
                         {
                             objGlobaldata.AddFunctionalLog("Exception in TrainingStaffEdit: " + ex.ToString());
                             TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
@@ -239,7 +237,6 @@ namespace ISOStd.Controllers
                     }
                 }
             }
-           
             catch (Exception ex)
             {
                 objGlobaldata.AddFunctionalLog("Exception in TrainingStaffEdit: " + ex.ToString());
@@ -305,7 +302,6 @@ namespace ISOStd.Controllers
             TrainingStaffModels objTrainingMdl = new TrainingStaffModels();
             try
             {
-
                 if (Request.QueryString["id_training"] != "" && Request.QueryString["id_training"] != null)
                 {
                     string sid_training = Request.QueryString["id_training"];
@@ -331,7 +327,6 @@ namespace ISOStd.Controllers
                             {
                                 objTrainingMdl.date_taining = dtDocDate;
                             }
-
                         }
                         catch (Exception ex)
                         {
@@ -379,7 +374,6 @@ namespace ISOStd.Controllers
                     }
                 }
             }
-
             catch (Exception ex)
             {
                 objGlobaldata.AddFunctionalLog("Exception in TrainingDeptHeadEdit: " + ex.ToString());
@@ -419,7 +413,6 @@ namespace ISOStd.Controllers
                         if (DateTime.TryParse(form["scheduled_date " + i], out dateValue) == true)
                         {
                             objTrainingMdl.scheduled_date = dateValue;
-
                         }
                         objList.TrainList.Add(objTrainingMdl);
                     }
@@ -441,14 +434,13 @@ namespace ISOStd.Controllers
             }
             return RedirectToAction("TrainingStaffList");
         }
-        
+
         [AllowAnonymous]
         public ActionResult TrainingStaffDetails()
         {
             TrainingStaffModels objTrainingMdl = new TrainingStaffModels();
             try
             {
-
                 if (Request.QueryString["id_training"] != "" && Request.QueryString["id_training"] != null)
                 {
                     string sid_training = Request.QueryString["id_training"];
@@ -465,7 +457,7 @@ namespace ISOStd.Controllers
                                 dept_head = objGlobaldata.GetMultiHrEmpNameById(dsTrainingList.Tables[0].Rows[0]["dept_head"].ToString()),
                                 comments = (dsTrainingList.Tables[0].Rows[0]["comments"].ToString()),
                                 comment_head = (dsTrainingList.Tables[0].Rows[0]["comment_head"].ToString()),
-                             };
+                            };
 
                             DateTime dtDocDate;
                             if (dsTrainingList.Tables[0].Rows[0]["date_taining"].ToString() != ""
@@ -479,11 +471,10 @@ namespace ISOStd.Controllers
                             DataSet dsEmpList = objGlobaldata.Getdetails(stmt);
                             if (dsEmpList.Tables.Count > 0 && dsEmpList.Tables[0].Rows.Count > 0)
                             {
-                                    objTrainingMdl.division = objGlobaldata.GetCompanyBranchNameById(dsEmpList.Tables[0].Rows[0]["division"].ToString());
-                                    objTrainingMdl.dept = objGlobaldata.GetDeptNameById(dsEmpList.Tables[0].Rows[0]["Dept_Id"].ToString());
-                                    objTrainingMdl.designation = dsEmpList.Tables[0].Rows[0]["Designation"].ToString();
+                                objTrainingMdl.division = objGlobaldata.GetCompanyBranchNameById(dsEmpList.Tables[0].Rows[0]["division"].ToString());
+                                objTrainingMdl.dept = objGlobaldata.GetDeptNameById(dsEmpList.Tables[0].Rows[0]["Dept_Id"].ToString());
+                                objTrainingMdl.designation = dsEmpList.Tables[0].Rows[0]["Designation"].ToString();
                             }
-
                         }
                         catch (Exception ex)
                         {
@@ -531,7 +522,6 @@ namespace ISOStd.Controllers
                     }
                 }
             }
-
             catch (Exception ex)
             {
                 objGlobaldata.AddFunctionalLog("Exception in TrainingStaffDetails: " + ex.ToString());
@@ -579,7 +569,6 @@ namespace ISOStd.Controllers
                                 objTrainingMdl.dept = objGlobaldata.GetDeptNameById(dsEmpList.Tables[0].Rows[0]["Dept_Id"].ToString());
                                 objTrainingMdl.designation = dsEmpList.Tables[0].Rows[0]["Designation"].ToString();
                             }
-
                         }
                         catch (Exception ex)
                         {
@@ -626,7 +615,6 @@ namespace ISOStd.Controllers
                     //}
                 }
             }
-
             catch (Exception ex)
             {
                 objGlobaldata.AddFunctionalLog("Exception in TrainingStaffInfo: " + ex.ToString());
@@ -641,7 +629,6 @@ namespace ISOStd.Controllers
             TrainingStaffModels objTrainingMdl = new TrainingStaffModels();
             try
             {
-
                 if (form["id_training"] != "" && form["id_training"] != null)
                 {
                     string sid_training = form["id_training"];
@@ -730,7 +717,6 @@ namespace ISOStd.Controllers
                     }
                 }
             }
-
             catch (Exception ex)
             {
                 objGlobaldata.AddFunctionalLog("Exception in TrainingStaffPDF: " + ex.ToString());
@@ -757,7 +743,6 @@ namespace ISOStd.Controllers
             TrainingStaffModels objTrainingMdl = new TrainingStaffModels();
             try
             {
-
                 if (Request.QueryString["id_training"] != "" && Request.QueryString["id_training"] != null)
                 {
                     string sid_training = Request.QueryString["id_training"];
@@ -818,7 +803,6 @@ namespace ISOStd.Controllers
                                 objTrainingMdl.dept = objGlobaldata.GetDeptNameById(dsEmpList.Tables[0].Rows[0]["Dept_Id"].ToString());
                                 objTrainingMdl.designation = dsEmpList.Tables[0].Rows[0]["Designation"].ToString();
                             }
-                            
                         }
                         catch (Exception ex)
                         {
@@ -871,7 +855,6 @@ namespace ISOStd.Controllers
                     ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
                 }
             }
-
             catch (Exception ex)
             {
                 objGlobaldata.AddFunctionalLog("Exception in GenerateTrainingReport: " + ex.ToString());
@@ -884,7 +867,6 @@ namespace ISOStd.Controllers
         [AllowAnonymous]
         public ActionResult GenerateTrainingReport(FormCollection form, TrainingStaffModels objTraining, IEnumerable<HttpPostedFileBase> upload)
         {
-            
             try
             {
                 DateTime dateValue;
@@ -892,7 +874,7 @@ namespace ISOStd.Controllers
                 string QCDelete = Request.Form["QCDocsValselectall"];
 
                 objTraining.conducted_by = form["conducted_by"];
-                objTraining.notify_to = form["notify_to"];            
+                objTraining.notify_to = form["notify_to"];
 
                 if (DateTime.TryParse(form["start_date"], out dateValue) == true)
                 {
@@ -946,7 +928,7 @@ namespace ISOStd.Controllers
                 {
                     objTraining.upload = null;
                 }
-                
+
                 if (objTraining.FunUpdateStaffTrainingReport(objTraining))
                 {
                     TempData["Successdata"] = "Staff training Report updated successfully";
@@ -970,7 +952,6 @@ namespace ISOStd.Controllers
             TrainingStaffModels objTrainingMdl = new TrainingStaffModels();
             try
             {
-
                 if (form["id_training"] != "" && form["id_training"] != null)
                 {
                     string sid_training = form["id_training"];
@@ -997,7 +978,7 @@ namespace ISOStd.Controllers
                                 recommendation = dsTrainingList.Tables[0].Rows[0]["recommendation"].ToString(),
                                 traing_required = dsTrainingList.Tables[0].Rows[0]["traing_required"].ToString(),
                                 notify_to = objGlobaldata.GetMultiHrEmpNameById(dsTrainingList.Tables[0].Rows[0]["notify_to"].ToString()),
-                                training_status = objGlobaldata.GetDropdownitemById(dsTrainingList.Tables[0].Rows[0]["training_status"].ToString()),                                
+                                training_status = objGlobaldata.GetDropdownitemById(dsTrainingList.Tables[0].Rows[0]["training_status"].ToString()),
                             };
 
                             DateTime dtDocDate;
@@ -1084,9 +1065,8 @@ namespace ISOStd.Controllers
                     //        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                     //    }
                     //}
-                 }
+                }
             }
-
             catch (Exception ex)
             {
                 objGlobaldata.AddFunctionalLog("Exception in GenerateTrainingReportPDF: " + ex.ToString());
@@ -1148,7 +1128,7 @@ namespace ISOStd.Controllers
             string stmt = "Select division as division,Dept_Id,Designation" +
                 " from t_hr_employee where emp_no ='" + EmpId + "'";
             DataSet dsTrainingList = objGlobaldata.Getdetails(stmt);
-            if(dsTrainingList.Tables.Count>0 && dsTrainingList.Tables[0].Rows.Count>0)
+            if (dsTrainingList.Tables.Count > 0 && dsTrainingList.Tables[0].Rows.Count > 0)
             {
                 objMdl = new EmployeeModels
                 {

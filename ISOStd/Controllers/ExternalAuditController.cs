@@ -1,36 +1,33 @@
-﻿using System;
+﻿using ISOStd.Filters;
+using ISOStd.Models;
+using Rotativa;
+using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
+using System.Net;
 using System.Web;
 using System.Web.Mvc;
-using ISOStd.Models;
-using System.Data;
-using System.Net;
-using PagedList;
-using System.IO;
-using PagedList.Mvc;
-using iTextSharp.text.pdf.parser;
-using ISOStd.Filters;
-using Rotativa;
 
 namespace ISOStd.Controllers
 {
     [PreventFromUrl]
     public class ExternalAuditController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
-        ExternalAuditorModels objEAudit = new ExternalAuditorModels();
-        CertificationBodyModels objCertBody = new CertificationBodyModels();
+        private clsGlobal objGlobaldata = new clsGlobal();
+        private ExternalAuditorModels objEAudit = new ExternalAuditorModels();
+        private CertificationBodyModels objCertBody = new CertificationBodyModels();
+
         public ExternalAuditController()
         {
             ViewBag.Menutype = "Audit";
-           
         }
-           
+
         public ActionResult Index()
         {
             return View();
         }
+
         //-------------------------------------------------------------------------------------
         [AllowAnonymous]
         public ActionResult AddExternalAudit()
@@ -38,7 +35,6 @@ namespace ISOStd.Controllers
             ExternalAuditModels objAudit = new ExternalAuditModels();
             try
             {
-
                 objAudit.directorate = objGlobaldata.GetCurrentUserSession().division;
                 objAudit.group_name = objGlobaldata.GetCurrentUserSession().DeptID;
                 //objAudit.team = objGlobaldata.GetCurrentUserSession().team;
@@ -131,13 +127,12 @@ namespace ISOStd.Controllers
 
                 if (objModel.FunAddExternalAudit(objModel, objAudit, objAudit1))
                 {
-                   TempData["Successdata"] = "External audit details Addded successfully";
+                    TempData["Successdata"] = "External audit details Addded successfully";
                 }
                 else
                 {
-                   TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                    TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 }
-               
             }
             catch (Exception ex)
             {
@@ -147,14 +142,12 @@ namespace ISOStd.Controllers
             return RedirectToAction("ExternalAuditList");
         }
 
-     
         [AllowAnonymous]
         public ActionResult ExternalAuditList(string branch_name)
         {
             ExternalAuditModelsList objExternalAuditModelsList = new ExternalAuditModelsList();
             objExternalAuditModelsList.ExternalAuditList = new List<ExternalAuditModels>();
             ViewBag.SubMenutype = "ExtAuditList";
-
 
             try
             {
@@ -195,12 +188,12 @@ namespace ISOStd.Controllers
                             //team = objGlobaldata.GetTeamNameByID(dsAuditList.Tables[0].Rows[i]["team"].ToString()),
                             //location = objGlobaldata.GetDivisionLocationById(dsAuditList.Tables[0].Rows[i]["location"].ToString()),
                             entity_name = dsAuditList.Tables[0].Rows[i]["entity_name"].ToString(),
-                            audit_status =objGlobaldata.GetDropdownitemById(dsAuditList.Tables[0].Rows[i]["audit_status"].ToString()),
+                            audit_status = objGlobaldata.GetDropdownitemById(dsAuditList.Tables[0].Rows[i]["audit_status"].ToString()),
                             major_nc = dsAuditList.Tables[0].Rows[i]["major_nc"].ToString(),
                             minor_nc = dsAuditList.Tables[0].Rows[i]["minor_nc"].ToString(),
                             no_observation = dsAuditList.Tables[0].Rows[i]["no_observation"].ToString(),
                             no_noteworthy = dsAuditList.Tables[0].Rows[i]["no_noteworthy"].ToString(),
-                            notification_to =objGlobaldata.GetMultiHrEmpNameById(dsAuditList.Tables[0].Rows[i]["notification_to"].ToString()),
+                            notification_to = objGlobaldata.GetMultiHrEmpNameById(dsAuditList.Tables[0].Rows[i]["notification_to"].ToString()),
                             company_name = dsAuditList.Tables[0].Rows[i]["company_name"].ToString(),
                             logged_by = dsAuditList.Tables[0].Rows[i]["logged_by"].ToString(),
                         };
@@ -242,12 +235,10 @@ namespace ISOStd.Controllers
         {
             try
             {
-
                 if (form["Id"] != null && form["Id"] != "")
                 {
                     ExternalAuditModels Doc = new ExternalAuditModels();
                     string sid_external_audit = form["Id"];
-
 
                     if (Doc.FunDeleteExternalDoc(sid_external_audit))
                     {
@@ -265,8 +256,6 @@ namespace ISOStd.Controllers
                     TempData["alertdata"] = "External Id cannot be Null or empty";
                     return Json("Failed");
                 }
-
-
             }
             catch (Exception ex)
             {
@@ -279,12 +268,10 @@ namespace ISOStd.Controllers
         [AllowAnonymous]
         public ActionResult ExternalAuditEdit()
         {
-
             ExternalAuditModels objModel = new ExternalAuditModels();
 
             try
             {
-
                 if (Request.QueryString["id_external_audit"] != null && Request.QueryString["id_external_audit"] != "")
                 {
                     string id_external_audit = Request.QueryString["id_external_audit"];
@@ -295,7 +282,6 @@ namespace ISOStd.Controllers
 
                     if (dsAuditList.Tables.Count > 0 && dsAuditList.Tables[0].Rows.Count > 0)
                     {
-
                         objModel = new ExternalAuditModels
                         {
                             id_external_audit = dsAuditList.Tables[0].Rows[0]["id_external_audit"].ToString(),
@@ -353,7 +339,7 @@ namespace ISOStd.Controllers
                                         contact_no = dsList.Tables[0].Rows[i]["contact_no"].ToString(),
                                         email_address = dsList.Tables[0].Rows[i]["email_address"].ToString(),
                                     };
-                                   
+
                                     objAudit.ExternalAuditList.Add(objAuditModel);
                                 }
                                 catch (Exception ex)
@@ -400,10 +386,7 @@ namespace ISOStd.Controllers
                             ViewBag.Auditee = objAudit1;
                         }
                     }
-
                 }
-
-
             }
             catch (Exception ex)
             {
@@ -411,7 +394,6 @@ namespace ISOStd.Controllers
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
             return View(objModel);
-
         }
 
         [HttpPost]
@@ -460,7 +442,7 @@ namespace ISOStd.Controllers
                 }
                 IList<HttpPostedFileBase> upload_List = (IList<HttpPostedFileBase>)upload;
                 string QCDelete = Request.Form["QCDocsValselectall"];
-               
+
                 if (upload_List[0] != null)
                 {
                     objModel.upload = "";
@@ -506,7 +488,6 @@ namespace ISOStd.Controllers
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 }
-
             }
             catch (Exception ex)
             {
@@ -515,11 +496,11 @@ namespace ISOStd.Controllers
             }
             return RedirectToAction("ExternalAuditList");
         }
+
         //Auditee List
         [AllowAnonymous]
         public ActionResult AuditeeListInfo(int id)
         {
-
             try
             {
                 if (id > 0)
@@ -541,7 +522,6 @@ namespace ISOStd.Controllers
         [AllowAnonymous]
         public ActionResult AuditorListInfo(int id)
         {
-
             try
             {
                 if (id > 0)
@@ -559,7 +539,7 @@ namespace ISOStd.Controllers
             return View();
         }
 
-        //Audit Status    
+        //Audit Status
         [AllowAnonymous]
         public ActionResult AuditStatusUpdate()
         {
@@ -578,10 +558,9 @@ namespace ISOStd.Controllers
 
                     if (dsAuditList.Tables.Count > 0 && dsAuditList.Tables[0].Rows.Count > 0)
                     {
-
                         objModel = new ExternalAuditModels
                         {
-                            id_external_audit = dsAuditList.Tables[0].Rows[0]["id_external_audit"].ToString(),                
+                            id_external_audit = dsAuditList.Tables[0].Rows[0]["id_external_audit"].ToString(),
                             audit_no = dsAuditList.Tables[0].Rows[0]["audit_no"].ToString(),
                             audit_type = objGlobaldata.GetAuidtTypeById(dsAuditList.Tables[0].Rows[0]["audit_type"].ToString()),
                             audit_criteria = objGlobaldata.GetIsoStdDescriptionById(dsAuditList.Tables[0].Rows[0]["audit_criteria"].ToString()),
@@ -631,7 +610,6 @@ namespace ISOStd.Controllers
             try
             {
                 DateTime dateValue;
-             
 
                 IList<HttpPostedFileBase> upload_List = (IList<HttpPostedFileBase>)status_upload;
                 string QCDelete = Request.Form["QCDocsValselectall"];
@@ -700,7 +678,6 @@ namespace ISOStd.Controllers
             ExternalAuditModels objModel = new ExternalAuditModels();
             try
             {
-
                 if (Request.QueryString["id_external_audit"] != null && Request.QueryString["id_external_audit"] != "")
                 {
                     string id_external_audit = Request.QueryString["id_external_audit"];
@@ -713,7 +690,6 @@ namespace ISOStd.Controllers
 
                     if (dsAuditList.Tables.Count > 0 && dsAuditList.Tables[0].Rows.Count > 0)
                     {
-
                         objModel = new ExternalAuditModels
                         {
                             id_external_audit = dsAuditList.Tables[0].Rows[0]["id_external_audit"].ToString(),
@@ -750,8 +726,7 @@ namespace ISOStd.Controllers
                         {
                             objModel.audit_status_date = dtValue;
                         }
-                        
-                       
+
                         sSqlstmt = "select id_external_auditor,id_external_audit,auditor_name,auditor_level,contact_no,email_address from t_external_auditor where id_external_audit='" + id_external_audit + "'";
                         DataSet dsList = objGlobaldata.Getdetails(sSqlstmt);
                         ViewBag.Auditor = dsList;
@@ -759,7 +734,6 @@ namespace ISOStd.Controllers
                         sSqlstmt = "select id_external_auditee,id_external_audit,directorate,group_name,location from t_external_auditee where id_external_audit='" + id_external_audit + "'";
                         DataSet dsList1 = objGlobaldata.Getdetails(sSqlstmt);
                         ViewBag.Auditee = dsList1;
-
                     }
                 }
             }
@@ -769,7 +743,6 @@ namespace ISOStd.Controllers
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
             return View(objModel);
-
         }
 
         [AllowAnonymous]
@@ -778,11 +751,10 @@ namespace ISOStd.Controllers
             ExternalAuditModels objModel = new ExternalAuditModels();
             try
             {
-
                 if (form["id_external_audit"] != null && form["id_external_audit"] != "")
                 {
                     string id_external_audit = form["id_external_audit"];
-                  
+
                     string sSqlstmt = "select id_external_audit,audit_category,audit_no,audit_start_date,audit_type,audit_criteria,upload,entity_name,"
                        + "audit_status,remarks,major_nc,minor_nc,no_observation,no_noteworthy,status_upload,audit_status_date,audit_complete_date,notification_to"
                         + " from t_external_audit where id_external_audit=" + id_external_audit;
@@ -791,7 +763,6 @@ namespace ISOStd.Controllers
 
                     if (dsAuditList.Tables.Count > 0 && dsAuditList.Tables[0].Rows.Count > 0)
                     {
-
                         objModel = new ExternalAuditModels
                         {
                             id_external_audit = dsAuditList.Tables[0].Rows[0]["id_external_audit"].ToString(),
@@ -866,25 +837,24 @@ namespace ISOStd.Controllers
                 PageMargins = { Left = 20, Bottom = 20, Right = 20, Top = 35 },
                 // PageMargins = new Rotativa.Options.Margins(0, 3, 32, 3),
             };
-
         }
 
         [AllowAnonymous]
         public ActionResult RaiseNCList()
         {
-            ViewBag.SubMenutype ="ExtNCList";
+            ViewBag.SubMenutype = "ExtNCList";
             ExternalAuditModelsList objExternalAuditModelsList = new ExternalAuditModelsList();
             objExternalAuditModelsList.ExternalAuditList = new List<ExternalAuditModels>();
 
             try
-            {         
+            {
                 string sSqlstmt = "select  t.id_external_audit,audit_no,audit_start_date,entity_name,audit_status_date,"
                 + "(select group_concat(auditor_name, '-', email_address) from t_external_auditor t3 where t.id_external_audit = t3.id_external_audit) as auditor_name,"
                 + "(select group_concat(directorate) from t_external_auditee t3 where t.id_external_audit = t3.id_external_audit) as directorate,"
-                +" (select group_concat(group_name) from t_external_auditee t3 where t.id_external_audit = t3.id_external_audit) as group_name,"
-                +" (select group_concat(location) from t_external_auditee t3 where t.id_external_audit = t3.id_external_audit) as location,"
-                +" t.id_external_audit,audit_no,audit_start_date,entity_name,audit_status_date"
-                +" from t_external_audit t, dropdownitems d  where  t.audit_status = d.item_id and item_desc = 'Completed' and active = 1";
+                + " (select group_concat(group_name) from t_external_auditee t3 where t.id_external_audit = t3.id_external_audit) as group_name,"
+                + " (select group_concat(location) from t_external_auditee t3 where t.id_external_audit = t3.id_external_audit) as location,"
+                + " t.id_external_audit,audit_no,audit_start_date,entity_name,audit_status_date"
+                + " from t_external_audit t, dropdownitems d  where  t.audit_status = d.item_id and item_desc = 'Completed' and active = 1";
 
                 DataSet dsAuditList = objGlobaldata.Getdetails(sSqlstmt);
 
@@ -894,7 +864,7 @@ namespace ISOStd.Controllers
                     {
                         ExternalAuditModels objModels = new ExternalAuditModels
                         {
-                            id_external_audit = dsAuditList.Tables[0].Rows[i]["id_external_audit"].ToString(),                    
+                            id_external_audit = dsAuditList.Tables[0].Rows[i]["id_external_audit"].ToString(),
                             audit_no = dsAuditList.Tables[0].Rows[i]["audit_no"].ToString(),
                             auditor_name = dsAuditList.Tables[0].Rows[i]["auditor_name"].ToString(),
                             directorate = objGlobaldata.GetMultiCompanyBranchNameById(dsAuditList.Tables[0].Rows[i]["directorate"].ToString()),
@@ -930,7 +900,7 @@ namespace ISOStd.Controllers
             return View(objExternalAuditModelsList.ExternalAuditList.ToList());
         }
 
-        //Raise NC    
+        //Raise NC
         [AllowAnonymous]
         public ActionResult RaiseNonconformity()
         {
@@ -940,7 +910,7 @@ namespace ISOStd.Controllers
                 if (Request.QueryString["id_external_audit"] != null && Request.QueryString["id_external_audit"] != "")
                 {
                     string id_external_audit = Request.QueryString["id_external_audit"];
-                    
+
                     string sSqlstmt = "select t.id_external_audit,audit_category,audit_no,audit_start_date,"
                        + " (select group_concat(directorate) from t_external_auditee t3 where t.id_external_audit = t3.id_external_audit) as directorate,"
                 + " (select group_concat(group_name) from t_external_auditee t3 where t.id_external_audit = t3.id_external_audit) as group_name"
@@ -965,7 +935,6 @@ namespace ISOStd.Controllers
                         }
                     }
                     ViewBag.Category = objGlobaldata.GetAuditNCList();
-                   
                 }
             }
             catch (Exception ex)
@@ -976,7 +945,7 @@ namespace ISOStd.Controllers
             return View(objModel);
         }
 
-        //Raise NC 
+        //Raise NC
         [HttpPost]
         [AllowAnonymous]
         public ActionResult RaiseNonconformity(ExternalAuditModels objModel, FormCollection form, IEnumerable<HttpPostedFileBase> upload)
@@ -984,7 +953,6 @@ namespace ISOStd.Controllers
             try
             {
                 DateTime dateValue;
-              
 
                 if (DateTime.TryParse(form["corrective_agreed_date"], out dateValue) == true)
                 {
@@ -1039,7 +1007,7 @@ namespace ISOStd.Controllers
         {
             ExternalAuditModelsList objAttList = new ExternalAuditModelsList();
             objAttList.ExternalAuditList = new List<ExternalAuditModels>();
-           
+
             try
             {
                 if (Request.QueryString["id_external_audit"] != null && Request.QueryString["id_external_audit"] != "")
@@ -1066,7 +1034,6 @@ namespace ISOStd.Controllers
                                     upload = dsList.Tables[0].Rows[i]["upload"].ToString(),
                                     finding_category = objGlobaldata.GetAuditNCById(dsList.Tables[0].Rows[i]["finding_category"].ToString()),
                                     nc_status = objGlobaldata.GetDropdownitemById(dsList.Tables[0].Rows[i]["nc_status"].ToString()),
-
                                 };
                                 DateTime dtDocDate;
                                 if (dsList.Tables[0].Rows[i]["corrective_agreed_date"].ToString() != ""
@@ -1093,13 +1060,12 @@ namespace ISOStd.Controllers
                                 ExternalAuditModels objNC = new ExternalAuditModels
                                 {
                                     id_nc = dsNCList.Tables[0].Rows[0]["id_nc"].ToString(),
-                                    id_external_audit = dsNCList.Tables[0].Rows[0]["id_external_audit"].ToString(),                                  
+                                    id_external_audit = dsNCList.Tables[0].Rows[0]["id_external_audit"].ToString(),
                                     nc_no = dsNCList.Tables[0].Rows[0]["nc_no"].ToString(),
                                     finding_details = dsNCList.Tables[0].Rows[0]["finding_details"].ToString(),
                                     upload = dsNCList.Tables[0].Rows[0]["upload"].ToString(),
                                     finding_category = (dsNCList.Tables[0].Rows[0]["finding_category"].ToString()),
                                     why_finding = (dsNCList.Tables[0].Rows[0]["why_finding"].ToString()),
-                                
                                 };
                                 DateTime dtDocDate;
                                 if (dsNCList.Tables[0].Rows[0]["corrective_agreed_date"].ToString() != ""
@@ -1114,7 +1080,6 @@ namespace ISOStd.Controllers
                                 objGlobaldata.AddFunctionalLog("Exception in NonconformityList: " + ex.ToString());
                                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                             }
-                            
                         }
                     }
                     else
@@ -1123,14 +1088,12 @@ namespace ISOStd.Controllers
                         return RedirectToAction("RaiseNCList");
                     }
                     ViewBag.Category = objGlobaldata.GetAuditNCList();
-                 
                 }
                 else
                 {
                     TempData["alertdata"] = "Id Cannot be null";
                     return RedirectToAction("RaiseNCList");
                 }
-
             }
             catch (Exception ex)
             {
@@ -1151,7 +1114,6 @@ namespace ISOStd.Controllers
                 string QCDelete = Request.Form["QCDocsValselectall"];
 
                 DateTime dateValue;
-             
 
                 if (upload != null && files.ContentLength > 0)
                 {
@@ -1194,7 +1156,6 @@ namespace ISOStd.Controllers
                     objModel.corrective_agreed_date = dateValue;
                 }
 
-
                 if (objModel.FunUpdateNonconformity(objModel))
                 {
                     TempData["Successdata"] = "External audit finding updated successfully";
@@ -1217,10 +1178,9 @@ namespace ISOStd.Controllers
         public ActionResult NonconformityDetails()
         {
             ExternalAuditModels objModel = new ExternalAuditModels();
-          
+
             try
             {
-
                 if (Request.QueryString["id_nc"] != null && Request.QueryString["id_nc"] != "")
                 {
                     string sid_nc = Request.QueryString["id_nc"];
@@ -1249,7 +1209,7 @@ namespace ISOStd.Controllers
                             nc_no = dsAuditList.Tables[0].Rows[0]["nc_no"].ToString(),
                             finding_details = dsAuditList.Tables[0].Rows[0]["finding_details"].ToString(),
                             upload = dsAuditList.Tables[0].Rows[0]["upload"].ToString(),
-                            finding_category =objGlobaldata.GetAuditNCById(dsAuditList.Tables[0].Rows[0]["finding_category"].ToString()),
+                            finding_category = objGlobaldata.GetAuditNCById(dsAuditList.Tables[0].Rows[0]["finding_category"].ToString()),
                             why_finding = (dsAuditList.Tables[0].Rows[0]["why_finding"].ToString()),
                             logged_by = objGlobaldata.GetEmpHrNameById(dsAuditList.Tables[0].Rows[0]["logged_by"].ToString()),
                             nc_status = objGlobaldata.GetDropdownitemById(dsAuditList.Tables[0].Rows[0]["nc_status"].ToString()),
@@ -1287,7 +1247,7 @@ namespace ISOStd.Controllers
             return View(objModel);
         }
 
-        //NC Update    
+        //NC Update
         [AllowAnonymous]
         public ActionResult NCStatus()
         {
@@ -1319,8 +1279,6 @@ namespace ISOStd.Controllers
                             finding_details = dsModelsList.Tables[0].Rows[0]["finding_details"].ToString(),
                             nc_status = dsModelsList.Tables[0].Rows[0]["nc_status"].ToString(),
                             nc_status_remarks = dsModelsList.Tables[0].Rows[0]["nc_status_remarks"].ToString(),
-
-
                         };
                         DateTime dtValue;
                         if (DateTime.TryParse(dsModelsList.Tables[0].Rows[0]["audit_start_date"].ToString(), out dtValue))
@@ -1333,7 +1291,6 @@ namespace ISOStd.Controllers
                         }
                     }
                     ViewBag.Category = objGlobaldata.GetAuditNCList();
-
                 }
             }
             catch (Exception ex)
@@ -1364,9 +1321,8 @@ namespace ISOStd.Controllers
                 objGlobaldata.AddFunctionalLog("Exception in NCStatus: " + ex.ToString());
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
-            return RedirectToAction("NonconformityList",new { id_external_audit = obj.id_external_audit });
+            return RedirectToAction("NonconformityList", new { id_external_audit = obj.id_external_audit });
         }
-
 
         [AllowAnonymous]
         public ActionResult AuditLogList(string branch_name)
@@ -1379,7 +1335,6 @@ namespace ISOStd.Controllers
                 string sBranch_name = objGlobaldata.GetCurrentUserSession().division;
                 string sBranchtree = objGlobaldata.GetCurrentUserSession().BranchTree;
                 ViewBag.Branch = objGlobaldata.GetMultiBranchListByID(sBranchtree);
-              
 
                 string sSqlstmt = "select id_nc,audit_no,nc_no,audit_start_date,audit_status,finding_category,risk_level,rca_details,ca_notifiedto,nc_team,"
                 + "(select group_concat(auditor_name, '-', email_address) from t_external_auditor t3 where T1.id_external_audit = t3.id_external_audit) as auditor_name,"
@@ -1388,7 +1343,7 @@ namespace ISOStd.Controllers
                 + " (select group_concat(location) from t_external_auditee t3 where T1.id_external_audit = t3.id_external_audit) as location"
 
                     + " from t_external_audit T1,t_external_audit_nc T2"
-                +" where T1.id_external_audit = T2.id_external_audit and active = 1";
+                + " where T1.id_external_audit = T2.id_external_audit and active = 1";
 
                 //if (branch_name != null && branch_name != "")
                 //{
@@ -1400,7 +1355,6 @@ namespace ISOStd.Controllers
                 //    sSqlstmt = sSqlstmt + " and find_in_set('" + sBranch_name + "', directorate)";
                 //    ViewBag.Branch_name = sBranch_name;
                 //}
-                
 
                 sSqlstmt = sSqlstmt + " order by id_nc desc";
 
@@ -1427,7 +1381,6 @@ namespace ISOStd.Controllers
                                 rca_details = dsList.Tables[0].Rows[i]["rca_details"].ToString(),
                                 ca_notifiedto = dsList.Tables[0].Rows[i]["ca_notifiedto"].ToString(),
                                 nc_team = dsList.Tables[0].Rows[i]["nc_team"].ToString(),
-
                             };
 
                             DateTime dtDocDate;
@@ -1436,7 +1389,7 @@ namespace ISOStd.Controllers
                             {
                                 objScheduleMdl.audit_start_date = dtDocDate;
                             }
-                         
+
                             objAttList.LogList.Add(objScheduleMdl);
                         }
                         catch (Exception ex)
@@ -1551,7 +1504,6 @@ namespace ISOStd.Controllers
                         }
                         return View(objModel);
                     }
-
                 }
             }
             catch (Exception ex)
@@ -1561,54 +1513,55 @@ namespace ISOStd.Controllers
             }
             return RedirectToAction("AuditLogList");
         }
+
         [HttpPost]
         [AllowAnonymous]
         public ActionResult AddDisposition(AuditLogModels objModel, FormCollection form, IEnumerable<HttpPostedFileBase> disp_upload)
         {
             try
             {
-               if(Request.Files.Count > 0)
+                if (Request.Files.Count > 0)
                 {
-                HttpPostedFileBase files = Request.Files[0];
-                string QCDelete = Request.Form["QCDocsValselectall"];
+                    HttpPostedFileBase files = Request.Files[0];
+                    string QCDelete = Request.Form["QCDocsValselectall"];
 
-                if (disp_upload != null && files.ContentLength > 0)
-                {
-                    objModel.disp_upload = "";
-                    foreach (var file in disp_upload)
+                    if (disp_upload != null && files.ContentLength > 0)
                     {
-                        try
+                        objModel.disp_upload = "";
+                        foreach (var file in disp_upload)
                         {
-                            string spath = System.IO.Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/NC"), System.IO.Path.GetFileName(file.FileName));
-                            string sFilename = "NC" + "_" + DateTime.Now.ToString("ddMMyyyyHHmm") + System.IO.Path.GetFileName(spath), sFilepath = System.IO.Path.GetDirectoryName(spath);
-                            file.SaveAs(sFilepath + "/" + sFilename);
-                            objModel.disp_upload = objModel.disp_upload + "," + "~/DataUpload/MgmtDocs/NC/" + sFilename;
+                            try
+                            {
+                                string spath = System.IO.Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/NC"), System.IO.Path.GetFileName(file.FileName));
+                                string sFilename = "NC" + "_" + DateTime.Now.ToString("ddMMyyyyHHmm") + System.IO.Path.GetFileName(spath), sFilepath = System.IO.Path.GetDirectoryName(spath);
+                                file.SaveAs(sFilepath + "/" + sFilename);
+                                objModel.disp_upload = objModel.disp_upload + "," + "~/DataUpload/MgmtDocs/NC/" + sFilename;
+                            }
+                            catch (Exception ex)
+                            {
+                                objGlobaldata.AddFunctionalLog("Exception in AddDisposition-upload: " + ex.ToString());
+                            }
                         }
-                        catch (Exception ex)
-                        {
-                            objGlobaldata.AddFunctionalLog("Exception in AddDisposition-upload: " + ex.ToString());
-                        }
+                        objModel.disp_upload = objModel.disp_upload.Trim(',');
                     }
-                    objModel.disp_upload = objModel.disp_upload.Trim(',');
+                    else
+                    {
+                        ViewBag.Message = "You have not specified a file.";
+                    }
+                    if (form["QCDocsVal"] != null && form["QCDocsVal"] != "")
+                    {
+                        objModel.disp_upload = objModel.disp_upload + "," + form["QCDocsVal"];
+                        objModel.disp_upload = objModel.disp_upload.Trim(',');
+                    }
+                    else if (form["QCDocsVal"] == null && QCDelete != null && files.ContentLength == 0)
+                    {
+                        objModel.disp_upload = null;
+                    }
+                    else if (form["QCDocsVal"] == null && files.ContentLength == 0)
+                    {
+                        objModel.disp_upload = null;
+                    }
                 }
-                else
-                {
-                    ViewBag.Message = "You have not specified a file.";
-                }
-                if (form["QCDocsVal"] != null && form["QCDocsVal"] != "")
-                {
-                    objModel.disp_upload = objModel.disp_upload + "," + form["QCDocsVal"];
-                    objModel.disp_upload = objModel.disp_upload.Trim(',');
-                }
-                else if (form["QCDocsVal"] == null && QCDelete != null && files.ContentLength == 0)
-                {
-                    objModel.disp_upload = null;
-                }
-                else if (form["QCDocsVal"] == null && files.ContentLength == 0)
-                {
-                    objModel.disp_upload = null;
-                }
-            }
                 AuditLogModelsList objModelList = new AuditLogModelsList();
                 objModelList.LogList = new List<AuditLogModels>();
 
@@ -1618,7 +1571,6 @@ namespace ISOStd.Controllers
                 {
                     objModel.disp_notifeddate = dateValue;
                 }
-
 
                 //Notified To
                 for (int i = 0; i < Convert.ToInt16(form["itemcnt1"]); i++)
@@ -1665,7 +1617,6 @@ namespace ISOStd.Controllers
             return Json(true);
         }
 
-
         //RCA
         public ActionResult AddRCA()
         {
@@ -1681,7 +1632,6 @@ namespace ISOStd.Controllers
                     ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
                     ViewBag.YesNo = objGlobaldata.GetConstantValue("YesNo");
 
-
                     string sSqlstmt = "select id_nc,audit_no,nc_no,audit_start_date,audit_status,finding_category,corrective_agreed_date,finding_details,"
                         + "rca_technique,rca_details,rca_upload,rca_action,rca_justify,rca_reportedby,rca_notifiedto,rca_reporteddate,rca_started_date,"
                          + " (select group_concat(directorate) from t_external_auditee t3 where T1.id_external_audit = t3.id_external_audit) as directorate,"
@@ -1689,7 +1639,6 @@ namespace ISOStd.Controllers
                 + " (select group_concat(location) from t_external_auditee t3 where T1.id_external_audit = t3.id_external_audit) as location"
 
                         + " from t_external_audit T1,t_external_audit_nc T2 where T1.id_external_audit = T2.id_external_audit  and active = 1 and id_nc='" + sid_nc + "'";
-
 
                     DataSet dsNCModels = objGlobaldata.Getdetails(sSqlstmt);
 
@@ -1736,8 +1685,7 @@ namespace ISOStd.Controllers
                         {
                             objModel.corrective_agreed_date = dtValue;
                         }
-                       
-                       
+
                         if (dsNCModels.Tables[0].Rows[0]["rca_started_date"].ToString() != ""
                         && DateTime.TryParse(dsNCModels.Tables[0].Rows[0]["rca_started_date"].ToString(), out dtValue))
                         {
@@ -1837,7 +1785,6 @@ namespace ISOStd.Controllers
                     objModel.rca_reportedby = objModel.rca_reportedby.Trim(',');
                 }
 
-
                 //Notifed To
                 for (int i = 0; i < Convert.ToInt16(form["itemcnts"]); i++)
                 {
@@ -1859,7 +1806,6 @@ namespace ISOStd.Controllers
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 }
-
             }
             catch (Exception ex)
             {
@@ -1944,7 +1890,6 @@ namespace ISOStd.Controllers
                             objModel.ca_notifed_date = dtValue;
                         }
 
-
                         AuditLogModelsList CAList = new AuditLogModelsList();
                         CAList.LogList = new List<AuditLogModels>();
 
@@ -1976,8 +1921,6 @@ namespace ISOStd.Controllers
                                     }
 
                                     CAList.LogList.Add(objNCModels);
-
-
                                 }
                                 catch (Exception ex)
                                 {
@@ -2026,7 +1969,6 @@ namespace ISOStd.Controllers
                     objModel.ca_notifed_date = dateValue;
                 }
 
-
                 //Reported By
                 for (int i = 0; i < Convert.ToInt16(form["itemcnt1"]); i++)
                 {
@@ -2039,7 +1981,6 @@ namespace ISOStd.Controllers
                 {
                     objModel.ca_proposed_by = objModel.ca_proposed_by.Trim(',');
                 }
-
 
                 //Notifed To
                 for (int i = 0; i < Convert.ToInt16(form["itemcnts"]); i++)
@@ -2083,7 +2024,6 @@ namespace ISOStd.Controllers
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 }
-
             }
             catch (Exception ex)
             {
@@ -2106,7 +2046,6 @@ namespace ISOStd.Controllers
 
                     ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
 
-
                     string sSqlstmt = "select id_nc,audit_no,nc_no,audit_start_date,audit_status,finding_category,corrective_agreed_date,finding_details,"
                         + "nc_team,team_approvedby,team_notifiedto,team_targetdate,"
                           + " (select group_concat(directorate) from t_external_auditee t3 where T1.id_external_audit = t3.id_external_audit) as directorate,"
@@ -2114,7 +2053,6 @@ namespace ISOStd.Controllers
                 + " (select group_concat(location) from t_external_auditee t3 where T1.id_external_audit = t3.id_external_audit) as location"
 
                         + " from t_external_audit T1,t_external_audit_nc T2 where T1.id_external_audit = T2.id_external_audit  and active = 1 and id_nc='" + sid_nc + "'";
-
 
                     DataSet dsNCModels = objGlobaldata.Getdetails(sSqlstmt);
 
@@ -2225,7 +2163,6 @@ namespace ISOStd.Controllers
                     objModel.team_approvedby = objModel.team_approvedby.Trim(',');
                 }
 
-
                 //Notified To
                 for (int i = 0; i < Convert.ToInt16(form["itemcnts"]); i++)
                 {
@@ -2247,7 +2184,6 @@ namespace ISOStd.Controllers
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 }
-
             }
             catch (Exception ex)
             {
@@ -2256,6 +2192,7 @@ namespace ISOStd.Controllers
             }
             return Json(true);
         }
+
         //Verification
         public ActionResult AddVerification()
         {
@@ -2282,7 +2219,6 @@ namespace ISOStd.Controllers
                  + " (select group_concat(location) from t_external_auditee t3 where T1.id_external_audit = t3.id_external_audit) as location"
 
                          + " from t_external_audit T1,t_external_audit_nc T2 where T1.id_external_audit = T2.id_external_audit  and active = 1 and id_nc='" + sid_nc + "'";
-
 
                     DataSet dsNCModels = objGlobaldata.Getdetails(sSqlstmt);
 
@@ -2319,7 +2255,6 @@ namespace ISOStd.Controllers
                             v_amend_docref = (dsNCModels.Tables[0].Rows[0]["v_amend_docref"].ToString()),
                             v_amend_docname = (dsNCModels.Tables[0].Rows[0]["v_amend_docname"].ToString()),
                             v_ncr_reason = (dsNCModels.Tables[0].Rows[0]["v_ncr_reason"].ToString()),
-
                         };
 
                         if (dsNCModels.Tables[0].Rows[0]["v_verifiedto"].ToString() != "")
@@ -2406,7 +2341,6 @@ namespace ISOStd.Controllers
                         TempData["alertdata"] = "No Data exists";
                         return RedirectToAction("AuditLogList");
                     }
-
                 }
             }
             catch (Exception ex)
@@ -2485,7 +2419,6 @@ namespace ISOStd.Controllers
                     objModel.v_verifiedto = objModel.v_verifiedto.Trim(',');
                 }
 
-
                 //Notifed To
                 for (int i = 0; i < Convert.ToInt16(form["itemcnts"]); i++)
                 {
@@ -2498,7 +2431,6 @@ namespace ISOStd.Controllers
                 {
                     objModel.v_notifiedto = objModel.v_notifiedto.Trim(',');
                 }
-
 
                 for (int i = 0; i < Convert.ToInt16(form["itemcount"]); i++)
                 {
@@ -2532,7 +2464,6 @@ namespace ISOStd.Controllers
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 }
-
             }
             catch (Exception ex)
             {
@@ -2547,10 +2478,8 @@ namespace ISOStd.Controllers
         {
             try
             {
-
                 if (form["id_audit_nc_ca"] != null && form["id_audit_nc_ca"] != "")
                 {
-
                     AuditLogModels Doc = new AuditLogModels();
                     string sid_audit_nc_ca = form["id_audit_nc_ca"];
 
@@ -2588,16 +2517,14 @@ namespace ISOStd.Controllers
             MgmtDocumentsModels objMgmt = new MgmtDocumentsModels();
             try
             {
-
                 string sid_nc = form["id_nc"];
                 if (sid_nc != null && sid_nc != "")
                 {
-
                     string sSqlstmt = "select audit_no,audit_start_date,audit_type,T1.audit_criteria,"
                     + "entity_name,T2.logged_by,T2.logged_date,audit_status,remarks,audit_status_date,nc_no,corrective_agreed_date,finding_details,why_finding,finding_category,"
                     + "disp_action_taken,disp_explain,risk_nc,risk_level,rca_details,rca_technique,rca_reporteddate,rca_action,rca_justify,ca_proposed_by,"
-                    +"v_verifiedto,v_verified_date,v_implement,v_implement_explain,v_rca,v_rca_explain,v_discrepancies,v_discrep_explain,v_eleminate_root_cause,v_risk_reduce,"
-                    +"v_risk_reduce_reason,v_process_amended,v_document_amended,v_amend_docref,v_amend_docname,v_amend_docdate,v_ncr_reason,v_status,v_closed_date,"
+                    + "v_verifiedto,v_verified_date,v_implement,v_implement_explain,v_rca,v_rca_explain,v_discrepancies,v_discrep_explain,v_eleminate_root_cause,v_risk_reduce,"
+                    + "v_risk_reduce_reason,v_process_amended,v_document_amended,v_amend_docref,v_amend_docname,v_amend_docdate,v_ncr_reason,v_status,v_closed_date,"
                      + " (select group_concat(directorate) from t_external_auditee t3 where T1.id_external_audit = t3.id_external_audit) as directorate,"
                 + " (select group_concat(group_name) from t_external_auditee t3 where T1.id_external_audit = t3.id_external_audit) as group_name,"
                  + " (select group_concat(location) from t_external_auditee t3 where T1.id_external_audit = t3.id_external_audit) as location"
@@ -2678,8 +2605,7 @@ namespace ISOStd.Controllers
                         {
                             objModel.v_closed_date = dtDocDate;
                         }
-                       
-                        
+
                         if (dsList.Tables[0].Rows[0]["rca_reporteddate"].ToString() != ""
                         && DateTime.TryParse(dsList.Tables[0].Rows[0]["rca_reporteddate"].ToString(), out dtDocDate))
                         {
@@ -2691,7 +2617,6 @@ namespace ISOStd.Controllers
                             objModel.v_verified_date = dtDocDate;
                         }
                         ViewBag.Audit = objModel;
-
 
                         string sql1 = "select disp_action,disp_resp_person,disp_complete_date from t_external_audit_nc_disp_action where id_nc='" + sid_nc + "'";
                         ViewBag.ImAction = objGlobaldata.Getdetails(sql1);
@@ -2738,7 +2663,6 @@ namespace ISOStd.Controllers
             MgmtDocumentsModels objMgmt = new MgmtDocumentsModels();
             try
             {
-
                 if (Request.QueryString["id_nc"] != null && Request.QueryString["id_nc"] != "")
                 {
                     string sid_nc = Request.QueryString["id_nc"];
@@ -2829,7 +2753,6 @@ namespace ISOStd.Controllers
                             objModel.v_closed_date = dtDocDate;
                         }
 
-
                         if (dsList.Tables[0].Rows[0]["rca_reporteddate"].ToString() != ""
                         && DateTime.TryParse(dsList.Tables[0].Rows[0]["rca_reporteddate"].ToString(), out dtDocDate))
                         {
@@ -2857,6 +2780,7 @@ namespace ISOStd.Controllers
             }
             return View(objModel);
         }
+
         //[HttpPost]
         //[ValidateAntiForgeryToken]
         //public ActionResult ExternalAuditEdit(ExternalAuditModels objExternalAudit, FormCollection form, IEnumerable<HttpPostedFileBase> upload)
@@ -2876,7 +2800,6 @@ namespace ISOStd.Controllers
         //            //objExternalAudit.nc_status = form["nc_status"];
         //            objExternalAudit.AuditID = form["AuditID"];
         //            objExternalAudit.AuditLocation = form["AuditLocation"];
-
 
         //            DateTime dateValue;
 
@@ -2934,7 +2857,6 @@ namespace ISOStd.Controllers
         //        }
         //        else if (Request["button"].Equals("Save"))
         //        {
-
         //            if (ExternalAuditFindingsAdd(objExternalAudit, form))
         //            {
         //                TempData["Successdata"] = "Added External audit Findings details successfully";
@@ -2965,14 +2887,13 @@ namespace ISOStd.Controllers
         //    return RedirectToAction("ExternalAuditList");
         //}
 
-        //--------------------------------------------------------------------------------------    
+        //--------------------------------------------------------------------------------------
         [AllowAnonymous]
         public ActionResult AddCertificationBody()
-        {           
+        {
             return View();
         }
-          
-       
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult AddCertificationBody(CertificationBodyModels objCertificationBody)
@@ -2983,7 +2904,7 @@ namespace ISOStd.Controllers
             }
             return RedirectToAction("CertificationBodyList");
         }
-                  
+
         [AllowAnonymous]
         public ActionResult CertificationBodyList()
         {
@@ -3032,121 +2953,119 @@ namespace ISOStd.Controllers
             }
             return View(objCertificationBodyList.CertificationBodyList.ToList());
         }
-          
-         [AllowAnonymous]
-         public ActionResult CertificationBodyDetails()
-         {
-             CertificationBodyModels objCertificationBody = new CertificationBodyModels();
 
-             try
-             {
-                 if (Request.QueryString["CertID"] != null && Request.QueryString["CertID"] != "")
-                 {
-                     string sCertID = Request.QueryString["CertID"];
+        [AllowAnonymous]
+        public ActionResult CertificationBodyDetails()
+        {
+            CertificationBodyModels objCertificationBody = new CertificationBodyModels();
 
-                     string sSqlstmt = "SELECT * FROM t_certification_body where CertID='" + sCertID + "'";
-                     DataSet dsCertificationBodyList = objGlobaldata.Getdetails(sSqlstmt);
-                     if (dsCertificationBodyList.Tables.Count > 0 && dsCertificationBodyList.Tables[0].Rows.Count > 0)
-                     {
-                         objCertificationBody = new CertificationBodyModels
-                         {
-                             CertName = dsCertificationBodyList.Tables[0].Rows[0]["CertName"].ToString(),
-                             Location = dsCertificationBodyList.Tables[0].Rows[0]["Location"].ToString(),
-                             address = dsCertificationBodyList.Tables[0].Rows[0]["address"].ToString(),
-                             emailaddress = dsCertificationBodyList.Tables[0].Rows[0]["emailaddress"].ToString(),
-                             contact_name = dsCertificationBodyList.Tables[0].Rows[0]["contact_name"].ToString(),
-                             PhoneNumber = dsCertificationBodyList.Tables[0].Rows[0]["PhoneNumber"].ToString(),
-                             FaxNumber = dsCertificationBodyList.Tables[0].Rows[0]["FaxNumber"].ToString()
-                         };
-                     }
-                 }
-             }
-             catch (Exception ex)
-             {
-                 objGlobaldata.AddFunctionalLog("Exception in CertificationBodyDetails: " + ex.ToString());
-                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-             }
-             return View(objCertificationBody);
-         }
-  
-         [AllowAnonymous]
-         public ActionResult CertificationBodyEdit()
-         {
-             CertificationBodyModels objCertificationBody = new CertificationBodyModels();
+            try
+            {
+                if (Request.QueryString["CertID"] != null && Request.QueryString["CertID"] != "")
+                {
+                    string sCertID = Request.QueryString["CertID"];
 
-             try
-             {
-                 if (Request.QueryString["CertID"] != null && Request.QueryString["CertID"] != "")
-                 {
-                     string sCertID = Request.QueryString["CertID"];                    
+                    string sSqlstmt = "SELECT * FROM t_certification_body where CertID='" + sCertID + "'";
+                    DataSet dsCertificationBodyList = objGlobaldata.Getdetails(sSqlstmt);
+                    if (dsCertificationBodyList.Tables.Count > 0 && dsCertificationBodyList.Tables[0].Rows.Count > 0)
+                    {
+                        objCertificationBody = new CertificationBodyModels
+                        {
+                            CertName = dsCertificationBodyList.Tables[0].Rows[0]["CertName"].ToString(),
+                            Location = dsCertificationBodyList.Tables[0].Rows[0]["Location"].ToString(),
+                            address = dsCertificationBodyList.Tables[0].Rows[0]["address"].ToString(),
+                            emailaddress = dsCertificationBodyList.Tables[0].Rows[0]["emailaddress"].ToString(),
+                            contact_name = dsCertificationBodyList.Tables[0].Rows[0]["contact_name"].ToString(),
+                            PhoneNumber = dsCertificationBodyList.Tables[0].Rows[0]["PhoneNumber"].ToString(),
+                            FaxNumber = dsCertificationBodyList.Tables[0].Rows[0]["FaxNumber"].ToString()
+                        };
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in CertificationBodyDetails: " + ex.ToString());
+                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+            }
+            return View(objCertificationBody);
+        }
 
-                     string sSqlstmt = "SELECT * FROM t_certification_body where CertID='" + sCertID + "'";
-                     DataSet dsCertificationBodyList = objGlobaldata.Getdetails(sSqlstmt);
+        [AllowAnonymous]
+        public ActionResult CertificationBodyEdit()
+        {
+            CertificationBodyModels objCertificationBody = new CertificationBodyModels();
 
-                     if (dsCertificationBodyList.Tables[0].Rows.Count > 0)
-                     {
-                         objCertificationBody = new CertificationBodyModels
-                         {
-                             CertID = dsCertificationBodyList.Tables[0].Rows[0]["CertID"].ToString(),
-                             CertName = dsCertificationBodyList.Tables[0].Rows[0]["CertName"].ToString(),
-                             Location = dsCertificationBodyList.Tables[0].Rows[0]["Location"].ToString(),
-                             address = dsCertificationBodyList.Tables[0].Rows[0]["address"].ToString(),
-                             emailaddress = dsCertificationBodyList.Tables[0].Rows[0]["emailaddress"].ToString(),
-                             contact_name = dsCertificationBodyList.Tables[0].Rows[0]["contact_name"].ToString(),
-                             PhoneNumber = dsCertificationBodyList.Tables[0].Rows[0]["PhoneNumber"].ToString(),
-                             FaxNumber = dsCertificationBodyList.Tables[0].Rows[0]["FaxNumber"].ToString()
-                         };
-                     }
-                 }
-             }
-             catch (Exception ex)
-             {
-                 objGlobaldata.AddFunctionalLog("Exception in CertificationBodyEdit: " + ex.ToString());
-                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-             }
-             return View(objCertificationBody);
+            try
+            {
+                if (Request.QueryString["CertID"] != null && Request.QueryString["CertID"] != "")
+                {
+                    string sCertID = Request.QueryString["CertID"];
 
-         }
-  
-         [HttpPost]
-         [ValidateAntiForgeryToken]
-         public ActionResult CertificationBodyEdit(CertificationBodyModels objCertificationBodyModels)
-         {
-             try
-             {
-                 string sCertID = Request.QueryString["CertID"];
+                    string sSqlstmt = "SELECT * FROM t_certification_body where CertID='" + sCertID + "'";
+                    DataSet dsCertificationBodyList = objGlobaldata.Getdetails(sSqlstmt);
 
-                 if (objCertificationBodyModels.FunUpdateCertificationBody(objCertificationBodyModels))
-                 {
-                     TempData["Successdata"] = "Certification body details updated successfully";
-                 }
-                 else
-                 {
-                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                 }
-             }
-             catch (Exception ex)
-             {
-                 objGlobaldata.AddFunctionalLog("Exception in CertificationBodyEdit: " + ex.ToString());
-                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-             }
-             return View();
-         }
-   
+                    if (dsCertificationBodyList.Tables[0].Rows.Count > 0)
+                    {
+                        objCertificationBody = new CertificationBodyModels
+                        {
+                            CertID = dsCertificationBodyList.Tables[0].Rows[0]["CertID"].ToString(),
+                            CertName = dsCertificationBodyList.Tables[0].Rows[0]["CertName"].ToString(),
+                            Location = dsCertificationBodyList.Tables[0].Rows[0]["Location"].ToString(),
+                            address = dsCertificationBodyList.Tables[0].Rows[0]["address"].ToString(),
+                            emailaddress = dsCertificationBodyList.Tables[0].Rows[0]["emailaddress"].ToString(),
+                            contact_name = dsCertificationBodyList.Tables[0].Rows[0]["contact_name"].ToString(),
+                            PhoneNumber = dsCertificationBodyList.Tables[0].Rows[0]["PhoneNumber"].ToString(),
+                            FaxNumber = dsCertificationBodyList.Tables[0].Rows[0]["FaxNumber"].ToString()
+                        };
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in CertificationBodyEdit: " + ex.ToString());
+                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+            }
+            return View(objCertificationBody);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult CertificationBodyEdit(CertificationBodyModels objCertificationBodyModels)
+        {
+            try
+            {
+                string sCertID = Request.QueryString["CertID"];
+
+                if (objCertificationBodyModels.FunUpdateCertificationBody(objCertificationBodyModels))
+                {
+                    TempData["Successdata"] = "Certification body details updated successfully";
+                }
+                else
+                {
+                    TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in CertificationBodyEdit: " + ex.ToString());
+                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+            }
+            return View();
+        }
+
         [AllowAnonymous]
         public ActionResult AddExternalAuditor()
         {
             return InitilizeAddExternalAuditor();
         }
-      
+
         [AllowAnonymous]
         private ActionResult InitilizeAddExternalAuditor()
         {
             ViewBag.CertBodyList = objCertBody.FunGetCertificateList();
-            
 
             return View();
-        } 
+        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -3155,7 +3074,7 @@ namespace ISOStd.Controllers
             objExternalAuditor.CertID = form["CertId"];
 
             //if (ModelState.IsValid)
-            {               
+            {
                 objEAudit.FunAddInternalAuditor(objExternalAuditor);
             }
             return RedirectToAction("ExternalAuditorList");
@@ -3169,7 +3088,6 @@ namespace ISOStd.Controllers
 
             try
             {
-                
                 UserCredentials objUserInfo = (UserCredentials)Session["UserCredentials"];
 
                 string sSqlstmt = "SELECT TEA.CertID, CertName, tea.auditor_name, tea.PhoneNumber, tea.emailaddress FROM t_external_auditor as TEA, t_certification_body "
@@ -3197,7 +3115,7 @@ namespace ISOStd.Controllers
             }
             return View(objCertificationBodyList.ExternalAuditorList.ToList());
         }
-    
+
         [AllowAnonymous]
         public ActionResult ExternalAuditorDetails()
         {
@@ -3232,9 +3150,9 @@ namespace ISOStd.Controllers
                 objGlobaldata.AddFunctionalLog("Exception in ExternalAuditorDetails:" + ex.ToString());
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
-            return View();            
+            return View();
         }
-        
+
         public ActionResult ExternalAuditorEdit()
         {
             try
@@ -3273,7 +3191,7 @@ namespace ISOStd.Controllers
             }
             return View();
         }
-   
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult ExternalAuditorEdit(ExternalAuditorModels objExternalAuditorModels, FormCollection form)
@@ -3286,15 +3204,13 @@ namespace ISOStd.Controllers
             }
 
             objExternalAuditorModels.auditor_name = sauditor_name;
-            objExternalAuditorModels.CertID=form["CertId"];
+            objExternalAuditorModels.CertID = form["CertId"];
 
             objEAudit.FunUpdateExternalAuditor(objExternalAuditorModels);
 
             return View();
         }
-   
-       
-         
+
         [AllowAnonymous]
         public ActionResult AddExternalAuditWithNoFindings()
         {
@@ -3317,7 +3233,7 @@ namespace ISOStd.Controllers
             }
             return View(obj);
         }
-                  
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult AddExternalAuditWithNoFindings(ExternalAuditModels objExternalAudit, FormCollection form, HttpPostedFileBase upload)
@@ -3327,12 +3243,11 @@ namespace ISOStd.Controllers
                 //if (ModelState.IsValid)
                 if (objExternalAudit != null)
                 {
-
                     string sCertBodyList = form["CertID"];
                     string sauditor_name = form["auditor_name"];
 
                     objExternalAudit.CertID = sCertBodyList;
-                    objExternalAudit.auditor_name = sauditor_name;                    
+                    objExternalAudit.auditor_name = sauditor_name;
                     objExternalAudit.AuditLocation = form["AuditLocation"];
 
                     DateTime dateValue;
@@ -3382,22 +3297,21 @@ namespace ISOStd.Controllers
             }
             return RedirectToAction("ExternalAuditList");
         }
-                  
+
         private ActionResult InitilizeAddExternalAudit()
         {
             ExternalAuditModels obj = new ExternalAuditModels();
 
             try
             {
-                 //ViewBag.CertBodyList = objCertBody.FunGetCertificateList();
+                //ViewBag.CertBodyList = objCertBody.FunGetCertificateList();
                 ViewBag.nc_status = obj.GetMultiAuditStatusList();
                 ViewBag.EmpLists = objGlobaldata.GetHrEmployeeListbox();
                 ViewBag.DeptList = objGlobaldata.GetDepartmentWithIdListbox();
                 ViewBag.Findingcategory = obj.GetMultiFindingCategoryList();
-                
+
                 obj.AuditLocation = objGlobaldata.GetCurrentUserSession().division;
                 ViewBag.Branch = objGlobaldata.GetCompanyBranchListbox();
-
             }
             catch (Exception ex)
             {
@@ -3406,17 +3320,15 @@ namespace ISOStd.Controllers
             }
             return View(obj);
         }
-        
+
         public ActionResult FunGetExternalAuditorsList(string sCertId)
         {
             ExternalAuditModels objExternalAuditModels = new ExternalAuditModels();
 
             List<string> lstAuditors = objExternalAuditModels.FunGetExternalAuditorsListbox(sCertId);
-            return Json(lstAuditors); 
+            return Json(lstAuditors);
         }
 
-       
-       
         [AllowAnonymous]
         public JsonResult ExternalAuditListSearch(string branch_name)
         {
@@ -3450,8 +3362,6 @@ namespace ISOStd.Controllers
 
                 for (int i = 0; i < dsCertificationBodyList.Tables[0].Rows.Count; i++)
                 {
-
-
                     DateTime AuditDateVal = Convert.ToDateTime(dsCertificationBodyList.Tables[0].Rows[i]["AuditDate"].ToString());
                     int MajorFindingsNo = 0, MinorFindingNo = 0, ObservationNo = 0;
 
@@ -3491,11 +3401,10 @@ namespace ISOStd.Controllers
             }
             return Json("Success");
         }
-        
+
         //[AllowAnonymous]
         //public ActionResult ExternalAuditDetails()
         //{
-
         //    ExternalAuditModels objExternalAuditorModels = new ExternalAuditModels();
         //    try
         //    {
@@ -3505,7 +3414,7 @@ namespace ISOStd.Controllers
 
         //            UserCredentials objUserInfo = (UserCredentials)Session["UserCredentials"];
 
-        //            //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS  
+        //            //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS
         //            string sSqlstmt = "SELECT  AuditID, AuditNum, CertID, AuditDate, auditor_name, MajorFindingsNo, MinorFindingNo, ObservationNo, AuditLocation,remarks,upload FROM t_external_audit as TEA"
         //                + " where AuditID=" + sAuditID;
 
@@ -3554,47 +3463,46 @@ namespace ISOStd.Controllers
         //    }
         //    return View(objExternalAuditorModels);
         //}
-                
+
         [AllowAnonymous]
         public ActionResult ExternalAuditInfo(int id)
         {
-
             ExternalAuditModels objExternalAuditorModels = new ExternalAuditModels();
             try
             {
-                    string sSqlstmt = "SELECT  AuditID, AuditNum, CertID, AuditDate, auditor_name, MajorFindingsNo, MinorFindingNo, ObservationNo, AuditLocation,remarks FROM t_external_audit as TEA"
-                        + " where AuditID=" + id;
+                string sSqlstmt = "SELECT  AuditID, AuditNum, CertID, AuditDate, auditor_name, MajorFindingsNo, MinorFindingNo, ObservationNo, AuditLocation,remarks FROM t_external_audit as TEA"
+                    + " where AuditID=" + id;
 
-                    DataSet dsCertificationBodyList = objGlobaldata.Getdetails(sSqlstmt);
-                    if (dsCertificationBodyList.Tables.Count > 0 && dsCertificationBodyList.Tables[0].Rows.Count > 0)
+                DataSet dsCertificationBodyList = objGlobaldata.Getdetails(sSqlstmt);
+                if (dsCertificationBodyList.Tables.Count > 0 && dsCertificationBodyList.Tables[0].Rows.Count > 0)
+                {
+                    DateTime AuditDateVal = Convert.ToDateTime(dsCertificationBodyList.Tables[0].Rows[0]["AuditDate"].ToString());
+                    int MajorFindingsNo = 0, MinorFindingNo = 0, ObservationNo = 0;
+
+                    int.TryParse(dsCertificationBodyList.Tables[0].Rows[0]["MajorFindingsNo"].ToString(), out MajorFindingsNo);
+                    int.TryParse(dsCertificationBodyList.Tables[0].Rows[0]["MinorFindingNo"].ToString(), out MinorFindingNo);
+                    int.TryParse(dsCertificationBodyList.Tables[0].Rows[0]["ObservationNo"].ToString(), out ObservationNo);
+
+                    objExternalAuditorModels = new ExternalAuditModels
                     {
-                        DateTime AuditDateVal = Convert.ToDateTime(dsCertificationBodyList.Tables[0].Rows[0]["AuditDate"].ToString());
-                        int MajorFindingsNo = 0, MinorFindingNo = 0, ObservationNo = 0;
+                        AuditLocation = objGlobaldata.GetMultiCompanyBranchNameById(dsCertificationBodyList.Tables[0].Rows[0]["AuditLocation"].ToString()),
+                        AuditID = dsCertificationBodyList.Tables[0].Rows[0]["AuditID"].ToString(),
+                        CertID = dsCertificationBodyList.Tables[0].Rows[0]["CertID"].ToString(),
+                        AuditNum = dsCertificationBodyList.Tables[0].Rows[0]["AuditNum"].ToString(),
+                        auditor_name = dsCertificationBodyList.Tables[0].Rows[0]["auditor_name"].ToString(),
+                        remarks = dsCertificationBodyList.Tables[0].Rows[0]["remarks"].ToString(),
+                        AuditDate = AuditDateVal,
+                        MajorFindingsNo = MajorFindingsNo,
+                        MinorFindingNo = MinorFindingNo,
+                        ObservationNo = ObservationNo
+                    };
 
-                        int.TryParse(dsCertificationBodyList.Tables[0].Rows[0]["MajorFindingsNo"].ToString(), out MajorFindingsNo);
-                        int.TryParse(dsCertificationBodyList.Tables[0].Rows[0]["MinorFindingNo"].ToString(), out MinorFindingNo);
-                        int.TryParse(dsCertificationBodyList.Tables[0].Rows[0]["ObservationNo"].ToString(), out ObservationNo);
+                    sSqlstmt = "select ExtAuditTransID, ExternalAuditID, NCNo, tsat.DeptId,  AuditFindingDesc,FindingCategory,"
+                    + "CorrectionTaken, CorrectionDate,ProposedcorrectiveAction,CorrectiveActionDate, Action_taken_by, nc_status,"
+                    + "reviewed_by from t_external_audit_trans as tsat where ExternalAuditID='" + objExternalAuditorModels.AuditID + "' order by ExtAuditTransID desc;";
 
-                        objExternalAuditorModels = new ExternalAuditModels
-                        {
-                            AuditLocation = objGlobaldata.GetMultiCompanyBranchNameById(dsCertificationBodyList.Tables[0].Rows[0]["AuditLocation"].ToString()),
-                            AuditID = dsCertificationBodyList.Tables[0].Rows[0]["AuditID"].ToString(),
-                            CertID = dsCertificationBodyList.Tables[0].Rows[0]["CertID"].ToString(),
-                            AuditNum = dsCertificationBodyList.Tables[0].Rows[0]["AuditNum"].ToString(),
-                            auditor_name = dsCertificationBodyList.Tables[0].Rows[0]["auditor_name"].ToString(),
-                            remarks = dsCertificationBodyList.Tables[0].Rows[0]["remarks"].ToString(),
-                            AuditDate = AuditDateVal,
-                            MajorFindingsNo = MajorFindingsNo,
-                            MinorFindingNo = MinorFindingNo,
-                            ObservationNo = ObservationNo
-                        };
-
-                        sSqlstmt = "select ExtAuditTransID, ExternalAuditID, NCNo, tsat.DeptId,  AuditFindingDesc,FindingCategory,"
-                        +"CorrectionTaken, CorrectionDate,ProposedcorrectiveAction,CorrectiveActionDate, Action_taken_by, nc_status,"
-                        + "reviewed_by from t_external_audit_trans as tsat where ExternalAuditID='" + objExternalAuditorModels.AuditID + "' order by ExtAuditTransID desc;";
-                      
-                        ViewBag.FindingsDetails = objGlobaldata.Getdetails(sSqlstmt);
-                    }
+                    ViewBag.FindingsDetails = objGlobaldata.Getdetails(sSqlstmt);
+                }
             }
             catch (Exception ex)
             {
@@ -3603,10 +3511,9 @@ namespace ISOStd.Controllers
             }
             return View(objExternalAuditorModels);
         }
- 
-     
+
         //POST: /ExternalAudit/ExternalAuditUpdate
-         
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public bool ExternalAuditFindingsUpdate(ExternalAuditModels objExternalAuditModels, FormCollection form)
@@ -3637,9 +3544,8 @@ namespace ISOStd.Controllers
             return false;
         }
 
-
         //POST: /ExternalAudit/ExternalAuditUpdate
-         
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public bool ExternalAuditFindingsAdd(ExternalAuditModels objExternalAuditModels, FormCollection form)
@@ -3648,12 +3554,11 @@ namespace ISOStd.Controllers
             {
                 ExternalAuditModelsList objExternalAuditModelsList = new ExternalAuditModelsList();
                 objExternalAuditModelsList.ExternalAuditList = new List<ExternalAuditModels>();
-              
 
                 objExternalAuditModels.AuditID = form["AuditID"];
-                
+
                 objExternalAuditModels.DeptId = form["DeptId"];
-               // objExternalAuditModels.ExternalAuditID = form["ExtAuditTransID"];
+                // objExternalAuditModels.ExternalAuditID = form["ExtAuditTransID"];
 
                 objExternalAuditModelsList.ExternalAuditList.Add(objExternalAuditModels);
                 //ExternalAuditModels objExternalAuditModels = new ExternalAuditModels();

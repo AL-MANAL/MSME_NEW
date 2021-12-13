@@ -1,17 +1,16 @@
-﻿using System;
+﻿using ISOStd.Models;
+using Rotativa;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
-using ISOStd.Models;
-using Rotativa;
 
 namespace ISOStd.Controllers
 {
     public class SuppliedMaterialController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
+        private clsGlobal objGlobaldata = new clsGlobal();
 
         public SuppliedMaterialController()
         {
@@ -48,7 +47,7 @@ namespace ISOStd.Controllers
 
         public void Initilization()
         {
-            ViewBag.Division = objGlobaldata.GetCompanyBranchListbox();            
+            ViewBag.Division = objGlobaldata.GetCompanyBranchListbox();
             ViewBag.YesNo = objGlobaldata.GetConstantValue("YesNo");
             ViewBag.ProviderType = objGlobaldata.GetDropdownList("Provider Type");
             ViewBag.Supplier = objGlobaldata.GetSupplierList();
@@ -73,7 +72,7 @@ namespace ISOStd.Controllers
                 if (form["order_date"] != null && DateTime.TryParse(form["order_date"], out dateValue) == true)
                 {
                     objMdl.order_date = dateValue;
-                }                
+                }
 
                 SuppliedMaterialModelsList objList = new SuppliedMaterialModelsList();
                 objList.MaterialList = new List<SuppliedMaterialModels>();
@@ -84,13 +83,13 @@ namespace ISOStd.Controllers
                     {
                         objFireMdl.operation_type = form["operation_type" + i];
                         objFireMdl.quantity = Convert.ToInt32(form["quantity" + i]);
-                        objFireMdl.done_by = form["done_by" + i];                       
-                                         
+                        objFireMdl.done_by = form["done_by" + i];
+
                         if (DateTime.TryParse(form["qty_date" + i], out dateValue) == true)
                         {
                             objFireMdl.qty_date = dateValue;
                         }
-                       
+
                         objList.MaterialList.Add(objFireMdl);
                     }
                 }
@@ -166,7 +165,7 @@ namespace ISOStd.Controllers
                             {
                                 objFireMdl.order_date = dtDocDate;
                             }
-                            
+
                             objList.MaterialList.Add(objFireMdl);
                         }
                         catch (Exception ex)
@@ -176,7 +175,6 @@ namespace ISOStd.Controllers
                         }
                     }
                 }
-
             }
             catch (Exception ex)
             {
@@ -250,7 +248,6 @@ namespace ISOStd.Controllers
                         }
                     }
                 }
-
             }
             catch (Exception ex)
             {
@@ -303,50 +300,48 @@ namespace ISOStd.Controllers
             SuppliedMaterialModels objFireMdl = new SuppliedMaterialModels();
             ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
             try
-            {               
-
+            {
                 if (Request.QueryString["id_materials"] != "" && Request.QueryString["id_materials"] != null)
                 {
                     string sid_materials = Request.QueryString["id_materials"];
                     string sSqlstmt = "select id_materials,orderno,order_date,provider_type,supplier_name,customer_name,remark,branch,details,Department,Location" +
-                        " from t_supplied_materials where id_materials='"+ sid_materials + "'";
+                        " from t_supplied_materials where id_materials='" + sid_materials + "'";
 
                     DataSet dsFireList = objGlobaldata.Getdetails(sSqlstmt);
                     if (dsFireList.Tables.Count > 0 && dsFireList.Tables[0].Rows.Count > 0)
                     {
-                           try
+                        try
+                        {
+                            objFireMdl = new SuppliedMaterialModels
                             {
-                                 objFireMdl = new SuppliedMaterialModels
-                                {
-                                    id_materials = dsFireList.Tables[0].Rows[0]["id_materials"].ToString(),
-                                    orderno = dsFireList.Tables[0].Rows[0]["orderno"].ToString(),
-                                    provider_type = (dsFireList.Tables[0].Rows[0]["provider_type"].ToString()),
-                                    supplier_name =/* objGlobaldata.GetSupplierNameById*/(dsFireList.Tables[0].Rows[0]["supplier_name"].ToString()),
-                                    customer_name =/* objGlobaldata.GetCustomerNameById*/(dsFireList.Tables[0].Rows[0]["customer_name"].ToString()),
-                                    remark = (dsFireList.Tables[0].Rows[0]["remark"].ToString()),
-                                    details = dsFireList.Tables[0].Rows[0]["details"].ToString(),
-                                     branch = (dsFireList.Tables[0].Rows[0]["branch"].ToString()),
-                                     Department = (dsFireList.Tables[0].Rows[0]["Department"].ToString()),
-                                     Location = (dsFireList.Tables[0].Rows[0]["Location"].ToString()),
-                                 };
+                                id_materials = dsFireList.Tables[0].Rows[0]["id_materials"].ToString(),
+                                orderno = dsFireList.Tables[0].Rows[0]["orderno"].ToString(),
+                                provider_type = (dsFireList.Tables[0].Rows[0]["provider_type"].ToString()),
+                                supplier_name =/* objGlobaldata.GetSupplierNameById*/(dsFireList.Tables[0].Rows[0]["supplier_name"].ToString()),
+                                customer_name =/* objGlobaldata.GetCustomerNameById*/(dsFireList.Tables[0].Rows[0]["customer_name"].ToString()),
+                                remark = (dsFireList.Tables[0].Rows[0]["remark"].ToString()),
+                                details = dsFireList.Tables[0].Rows[0]["details"].ToString(),
+                                branch = (dsFireList.Tables[0].Rows[0]["branch"].ToString()),
+                                Department = (dsFireList.Tables[0].Rows[0]["Department"].ToString()),
+                                Location = (dsFireList.Tables[0].Rows[0]["Location"].ToString()),
+                            };
 
-                                DateTime dtDocDate;
-                                if (dsFireList.Tables[0].Rows[0]["order_date"].ToString() != ""
-                                   && DateTime.TryParse(dsFireList.Tables[0].Rows[0]["order_date"].ToString(), out dtDocDate))
-                                {
-                                    objFireMdl.order_date = dtDocDate;
-                                }
-                           // ViewBag.EmpList = objGlobaldata.GetGEmpListBymulitBDL(dsFireList.Tables[0].Rows[0]["branch"].ToString(), dsFireList.Tables[0].Rows[0]["Department"].ToString(), dsFireList.Tables[0].Rows[0]["Location"].ToString());
+                            DateTime dtDocDate;
+                            if (dsFireList.Tables[0].Rows[0]["order_date"].ToString() != ""
+                               && DateTime.TryParse(dsFireList.Tables[0].Rows[0]["order_date"].ToString(), out dtDocDate))
+                            {
+                                objFireMdl.order_date = dtDocDate;
+                            }
+                            // ViewBag.EmpList = objGlobaldata.GetGEmpListBymulitBDL(dsFireList.Tables[0].Rows[0]["branch"].ToString(), dsFireList.Tables[0].Rows[0]["Department"].ToString(), dsFireList.Tables[0].Rows[0]["Location"].ToString());
                             ViewBag.Branch = objGlobaldata.GetCompanyBranchListbox();
                             ViewBag.Location = objGlobaldata.GetLocationbyMultiDivision(dsFireList.Tables[0].Rows[0]["branch"].ToString());
                             ViewBag.Department = objGlobaldata.GetDepartmentList1(dsFireList.Tables[0].Rows[0]["branch"].ToString());
-
                         }
                         catch (Exception ex)
-                            {
-                                objGlobaldata.AddFunctionalLog("Exception in SuppliedMaterialEdit: " + ex.ToString());
-                                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                            }                      
+                        {
+                            objGlobaldata.AddFunctionalLog("Exception in SuppliedMaterialEdit: " + ex.ToString());
+                            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                        }
                     }
                     Initilization();
 
@@ -371,7 +366,7 @@ namespace ISOStd.Controllers
                                 };
                                 int qty = Convert.ToInt32(dsMaterial.Tables[0].Rows[i]["quantity"].ToString());
                                 string optype = dsMaterial.Tables[0].Rows[i]["operation_type"].ToString();
-                                if (optype == "Issued" && optype !="")
+                                if (optype == "Issued" && optype != "")
                                 {
                                     Bal = Bal - qty;
                                 }
@@ -380,7 +375,6 @@ namespace ISOStd.Controllers
                                     Bal = Bal + qty;
                                 }
 
-                               
                                 DateTime dtDate;
                                 if (dsMaterial.Tables[0].Rows[i]["qty_date"].ToString() != ""
                                    && DateTime.TryParse(dsMaterial.Tables[0].Rows[i]["qty_date"].ToString(), out dtDate))
@@ -392,14 +386,13 @@ namespace ISOStd.Controllers
                             }
                             objFireMdl.balance = Bal;
                             ViewBag.SuppliedMaterial = objSuppliedList;
-                                                       
                         }
                         catch (Exception ex)
                         {
                             objGlobaldata.AddFunctionalLog("Exception in SuppliedMaterialEdit: " + ex.ToString());
                             TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                         }
-                    }                   
+                    }
                 }
             }
             catch (Exception ex)
@@ -478,7 +471,6 @@ namespace ISOStd.Controllers
             {
                 if (Request.QueryString["id_materials"] != "" && Request.QueryString["id_materials"] != null)
                 {
-
                     string sid_materials = Request.QueryString["id_materials"];
                     string sSqlstmt = "select id_materials,orderno,order_date,provider_type,supplier_name,customer_name,remark,branch,details,Department,Location" +
                         " from t_supplied_materials where id_materials='" + sid_materials + "'";
@@ -500,7 +492,6 @@ namespace ISOStd.Controllers
                                 branch = objGlobaldata.GetMultiCompanyBranchNameById(dsFireList.Tables[0].Rows[0]["branch"].ToString()),
                                 Department = objGlobaldata.GetMultiDeptNameById(dsFireList.Tables[0].Rows[0]["Department"].ToString()),
                                 Location = objGlobaldata.GetDivisionLocationById(dsFireList.Tables[0].Rows[0]["Location"].ToString()),
-
                             };
 
                             DateTime dtDocDate;
@@ -515,7 +506,7 @@ namespace ISOStd.Controllers
                             objGlobaldata.AddFunctionalLog("Exception in SuppliedMaterialEdit: " + ex.ToString());
                             TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                         }
-                    }                   
+                    }
 
                     SuppliedMaterialModelsList objSuppliedList = new SuppliedMaterialModelsList();
                     objSuppliedList.MaterialList = new List<SuppliedMaterialModels>();
@@ -525,7 +516,6 @@ namespace ISOStd.Controllers
                     DataSet dsMaterial = objGlobaldata.Getdetails(sSqlstmt1);
                     if (dsMaterial.Tables.Count > 0 && dsMaterial.Tables[0].Rows.Count > 0)
                     {
-
                         try
                         {
                             for (int i = 0; i < dsMaterial.Tables[0].Rows.Count; i++)
@@ -575,7 +565,6 @@ namespace ISOStd.Controllers
             return View(objFireMdl);
         }
 
-
         [AllowAnonymous]
         public ActionResult SuppliedMaterialInfo(int id)
         {
@@ -609,7 +598,6 @@ namespace ISOStd.Controllers
                                 branch = objGlobaldata.GetMultiCompanyBranchNameById(dsFireList.Tables[0].Rows[0]["branch"].ToString()),
                                 Department = objGlobaldata.GetMultiDeptNameById(dsFireList.Tables[0].Rows[0]["Department"].ToString()),
                                 Location = objGlobaldata.GetDivisionLocationById(dsFireList.Tables[0].Rows[0]["Location"].ToString()),
-
                             };
 
                             DateTime dtDocDate;
@@ -624,7 +612,7 @@ namespace ISOStd.Controllers
                             objGlobaldata.AddFunctionalLog("Exception in SuppliedMaterialEdit: " + ex.ToString());
                             TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                         }
-                    }                   
+                    }
 
                     SuppliedMaterialModelsList objSuppliedList = new SuppliedMaterialModelsList();
                     objSuppliedList.MaterialList = new List<SuppliedMaterialModels>();
@@ -634,7 +622,6 @@ namespace ISOStd.Controllers
                     DataSet dsMaterial = objGlobaldata.Getdetails(sSqlstmt1);
                     if (dsMaterial.Tables.Count > 0 && dsMaterial.Tables[0].Rows.Count > 0)
                     {
-
                         try
                         {
                             for (int i = 0; i < dsMaterial.Tables[0].Rows.Count; i++)
@@ -684,7 +671,6 @@ namespace ISOStd.Controllers
             return View(objFireMdl);
         }
 
-
         [AllowAnonymous]
         public ActionResult SuppliedMaterialPDF(FormCollection form)
         {
@@ -718,7 +704,6 @@ namespace ISOStd.Controllers
                                 branch = objGlobaldata.GetMultiCompanyBranchNameById(dsFireList.Tables[0].Rows[0]["branch"].ToString()),
                                 Department = objGlobaldata.GetMultiDeptNameById(dsFireList.Tables[0].Rows[0]["Department"].ToString()),
                                 Location = objGlobaldata.GetDivisionLocationById(dsFireList.Tables[0].Rows[0]["Location"].ToString()),
-
                             };
 
                             DateTime dtDocDate;
@@ -733,7 +718,6 @@ namespace ISOStd.Controllers
                             string loggedby = objGlobaldata.GetCurrentUserSession().empid;
                             dsFireList = objGlobaldata.GetReportDetails(dsFireList, objFireMdl.orderno, loggedby, "PURCHASE DETAILS REPORT");
                             ViewBag.CompanyInfo = dsFireList;
-
                         }
                         catch (Exception ex)
                         {
@@ -750,7 +734,6 @@ namespace ISOStd.Controllers
                     DataSet dsMaterial = objGlobaldata.Getdetails(sSqlstmt1);
                     if (dsMaterial.Tables.Count > 0 && dsMaterial.Tables[0].Rows.Count > 0)
                     {
-
                         try
                         {
                             for (int i = 0; i < dsMaterial.Tables[0].Rows.Count; i++)
@@ -761,7 +744,7 @@ namespace ISOStd.Controllers
                                     operation_type = dsMaterial.Tables[0].Rows[i]["operation_type"].ToString(),
                                     quantity = Convert.ToInt32(dsMaterial.Tables[0].Rows[i]["quantity"].ToString()),
                                     done_by = dsMaterial.Tables[0].Rows[i]["done_by"].ToString(),
-                                };                                
+                                };
 
                                 DateTime dtDate;
                                 if (dsMaterial.Tables[0].Rows[i]["qty_date"].ToString() != ""
@@ -770,7 +753,7 @@ namespace ISOStd.Controllers
                                     objMdl.qty_date = dtDate;
                                 }
                                 objSuppliedList.MaterialList.Add(objMdl);
-                            }                           
+                            }
                             ViewBag.SuppliedMaterial = objSuppliedList;
                         }
                         catch (Exception ex)
@@ -800,5 +783,5 @@ namespace ISOStd.Controllers
                 CustomSwitches = footer
             };
         }
-    }    
+    }
 }

@@ -1,28 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+﻿using ISOStd.Filters;
 using ISOStd.Models;
-using System.Data;
-using System.IO;
 using PagedList;
-using PagedList.Mvc;
-using ISOStd.Filters;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Web.Mvc;
 
 namespace ISOStd.Controllers
 {
     [PreventFromUrl]
     public class RiskRegisterActivityController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
+        private clsGlobal objGlobaldata = new clsGlobal();
 
         public RiskRegisterActivityController()
         {
             ViewBag.Menutype = "Risk";
             ViewBag.SubMenutype = "RiskRegisterActivity";
         }
-       
+
         public ActionResult Index()
         {
             return View();
@@ -52,7 +49,7 @@ namespace ISOStd.Controllers
             }
             return View(obj);
         }
-                
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult AddRiskRegisterActivity(RiskRegisterActivityModels objRiskRegisterActivity, FormCollection form)
@@ -80,34 +77,33 @@ namespace ISOStd.Controllers
 
             return RedirectToAction("RiskRegisterActivityList");
         }
-        
+
         [AllowAnonymous]
         public JsonResult RiskRegisterActivityDocDelete(FormCollection form)
         {
             try
             {
-                  if (form["Risk_Reg_Activity_Id"] != null && form["Risk_Reg_Activity_Id"] != "")
+                if (form["Risk_Reg_Activity_Id"] != null && form["Risk_Reg_Activity_Id"] != "")
+                {
+                    RiskRegisterActivityModels Doc = new RiskRegisterActivityModels();
+                    string sRisk_Reg_Activity_Id = form["Risk_Reg_Activity_Id"];
+
+                    if (Doc.FunDeleteRiskActivityDoc(sRisk_Reg_Activity_Id))
                     {
-                        RiskRegisterActivityModels Doc = new RiskRegisterActivityModels();
-                        string sRisk_Reg_Activity_Id = form["Risk_Reg_Activity_Id"];
-                    
-                        if (Doc.FunDeleteRiskActivityDoc(sRisk_Reg_Activity_Id))
-                        {
-                            TempData["Successdata"] = "Document deleted successfully";
-                            return Json("Success");
-                        }
-                        else
-                        {
-                            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                            return Json("Failed");
-                        }
+                        TempData["Successdata"] = "Document deleted successfully";
+                        return Json("Success");
                     }
                     else
                     {
-                        TempData["alertdata"] = "Id cannot be Null or empty";
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                         return Json("Failed");
                     }
-               
+                }
+                else
+                {
+                    TempData["alertdata"] = "Id cannot be Null or empty";
+                    return Json("Failed");
+                }
             }
             catch (Exception ex)
             {
@@ -116,37 +112,33 @@ namespace ISOStd.Controllers
             }
             return Json("Failed");
         }
-        
+
         [AllowAnonymous]
         public JsonResult RiskRegisterHRRDelete(FormCollection form)
         {
             try
-            {               
-                    if (form["risk_hrr_id"] != null && form["risk_hrr_id"] != "")
+            {
+                if (form["risk_hrr_id"] != null && form["risk_hrr_id"] != "")
+                {
+                    RiskRegisterActivityModels Doc = new RiskRegisterActivityModels();
+                    string srisk_hrr_id = form["risk_hrr_id"];
+
+                    if (Doc.FunDeleteRiskActivityHRRDoc(srisk_hrr_id))
                     {
-
-                        RiskRegisterActivityModels Doc = new RiskRegisterActivityModels();
-                        string srisk_hrr_id = form["risk_hrr_id"];
-
-
-                        if (Doc.FunDeleteRiskActivityHRRDoc(srisk_hrr_id))
-                        {
-                            TempData["Successdata"] = "Document deleted successfully";
-                            return Json("Success");
-                        }
-                        else
-                        {
-                            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                            return Json("Failed");
-                        }
+                        TempData["Successdata"] = "Document deleted successfully";
+                        return Json("Success");
                     }
                     else
                     {
-                        TempData["alertdata"] = "Id cannot be Null or empty";
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                         return Json("Failed");
                     }
-                
-
+                }
+                else
+                {
+                    TempData["alertdata"] = "Id cannot be Null or empty";
+                    return Json("Failed");
+                }
             }
             catch (Exception ex)
             {
@@ -161,32 +153,27 @@ namespace ISOStd.Controllers
         {
             try
             {
-                
-                    if (form["Reg_Activity_eval_Id"] != null && form["Reg_Activity_eval_Id"] != "")
+                if (form["Reg_Activity_eval_Id"] != null && form["Reg_Activity_eval_Id"] != "")
+                {
+                    RiskRegisterActivityModels Doc = new RiskRegisterActivityModels();
+                    string sReg_Activity_eval_Id = form["Reg_Activity_eval_Id"];
+
+                    if (Doc.FunDeleteRiskActivityEvlDoc(sReg_Activity_eval_Id))
                     {
-
-                        RiskRegisterActivityModels Doc = new RiskRegisterActivityModels();
-                        string sReg_Activity_eval_Id = form["Reg_Activity_eval_Id"];
-
-
-                        if (Doc.FunDeleteRiskActivityEvlDoc(sReg_Activity_eval_Id))
-                        {
-                            TempData["Successdata"] = "Document deleted successfully";
-                            return Json("Success");
-                        }
-                        else
-                        {
-                            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                            return Json("Failed");
-                        }
+                        TempData["Successdata"] = "Document deleted successfully";
+                        return Json("Success");
                     }
                     else
                     {
-                        TempData["alertdata"] = "Id cannot be Null or empty";
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                         return Json("Failed");
                     }
-              
-
+                }
+                else
+                {
+                    TempData["alertdata"] = "Id cannot be Null or empty";
+                    return Json("Failed");
+                }
             }
             catch (Exception ex)
             {
@@ -195,12 +182,12 @@ namespace ISOStd.Controllers
             }
             return Json("Failed");
         }
+
         //
         // GET: /RiskRegisterActivity/RiskRegisterActivityList
 
         public ActionResult RiskRegisterActivityHistoryList(string SearchText, int? page, string Risk_Reg_Activity_Id)
         {
-
             RiskRegisterActivityModelsList objRiskRegisterActivityList = new RiskRegisterActivityModelsList();
             objRiskRegisterActivityList.lstRiskRegisterActivity = new List<RiskRegisterActivityModels>();
             RiskRegisterActivityModels objreg = new RiskRegisterActivityModels();
@@ -221,8 +208,6 @@ namespace ISOStd.Controllers
                 DataSet dsRiskRegisterActivityList = objGlobaldata.Getdetails(sSqlstmt);
                 if (dsRiskRegisterActivityList.Tables.Count > 0)
                 {
-
-                    
                     for (int i = 0; i < dsRiskRegisterActivityList.Tables[0].Rows.Count; i++)
                     {
                         try
@@ -265,7 +250,7 @@ namespace ISOStd.Controllers
             RiskRegisterActivityModelsList objRiskRegisterActivityList = new RiskRegisterActivityModelsList();
             objRiskRegisterActivityList.lstRiskRegisterActivity = new List<RiskRegisterActivityModels>();
             RiskRegisterActivityModels objreg = new RiskRegisterActivityModels();
-           
+
             try
             {
                 ViewBag.View = Request.QueryString["View"];
@@ -363,7 +348,7 @@ namespace ISOStd.Controllers
             RiskRegisterActivityModelsList objRiskRegisterActivityList = new RiskRegisterActivityModelsList();
             objRiskRegisterActivityList.lstRiskRegisterActivity = new List<RiskRegisterActivityModels>();
             RiskRegisterActivityModels objreg = new RiskRegisterActivityModels();
-            
+
             try
             {
                 ViewBag.View = Request.QueryString["View"];
@@ -417,7 +402,7 @@ namespace ISOStd.Controllers
 
                 DataSet dsRiskRegisterActivityList = objGlobaldata.Getdetails(sSqlstmt);
                 if (dsRiskRegisterActivityList.Tables.Count > 0)
-                { 
+                {
                     for (int i = 0; i < dsRiskRegisterActivityList.Tables[0].Rows.Count; i++)
                     {
                         try
@@ -475,7 +460,6 @@ namespace ISOStd.Controllers
         //            sSqlstmt = sSqlstmt + " and (Activity like '" + SearchText + "%' or Activity like '%" + SearchText + "%' or Activity like '%" + SearchText + "')";
         //        }
 
-
         //        if (Session["state"].ToString() == "2")
         //        {
         //            sSqlstmt = sSqlstmt + " and Risk_Type =  '" + RiskType + "'";
@@ -495,8 +479,7 @@ namespace ISOStd.Controllers
         //        DataSet dsRiskRegisterActivityList = objGlobaldata.Getdetails(sSqlstmt);
         //        if (dsRiskRegisterActivityList.Tables.Count > 0)
         //        {
-
-        //            
+        //
 
         //            for (int i = 0; i < dsRiskRegisterActivityList.Tables[0].Rows.Count; i++)
         //            {
@@ -532,8 +515,6 @@ namespace ISOStd.Controllers
 
         //    return View(objRiskRegisterActivityList.lstRiskRegisterActivity.ToList().ToPagedList(page ?? 1, 40));
         //}
-
-
 
         [AllowAnonymous]
         public ActionResult RiskRegisterActivityInfo(int id)
@@ -585,13 +566,13 @@ namespace ISOStd.Controllers
 
             return View(objRiskRegisterActivityList.lstRiskRegisterActivity.ToList());
         }
-        
+
         public ActionResult EnvironmentalMatrix()
         {
             try
             {
                 RiskRegisterActivityEvaluationModels objRiskRegister = new RiskRegisterActivityEvaluationModels();
-                //matrix array 
+                //matrix array
                 string[,] SevArray = new string[10, 10];
                 ViewBag.MatrixProbability = objGlobaldata.GetDropdownList("ENV-Probability");
                 ViewBag.MatrixSeverity = objGlobaldata.GetDropdownList("ENV-Severity");
@@ -637,7 +618,7 @@ namespace ISOStd.Controllers
                 DataSet dsMatrixcolor;
 
                 sqlstmtss1 = "delete from rmatrix ";
-                objGlobaldata.Getdetails(sqlstmtss1);               
+                objGlobaldata.Getdetails(sqlstmtss1);
 
                 foreach (var item in ViewBag.Matrix)
                 {
@@ -646,7 +627,6 @@ namespace ISOStd.Controllers
                     dsMatrixcolor = objGlobaldata.Getdetails(sqlstmtss);
                     objRiskRegister.GetEVNMatrixColordetails();
                 }
-
 
                 Dictionary<string, string> dsMatcolor = new Dictionary<string, string>();
 
@@ -677,13 +657,13 @@ namespace ISOStd.Controllers
             }
             return View();
         }
-        
+
         public ActionResult HRRMatrix()
         {
             try
             {
                 RiskRegisterActivityEvaluationModels objRiskRegister = new RiskRegisterActivityEvaluationModels();
-                //matrix array 
+                //matrix array
                 string[,] SevArray = new string[10, 10];
                 ViewBag.MatrixProbability = objGlobaldata.GetDropdownList("HRR-Probability");
                 ViewBag.MatrixSeverity = objRiskRegister.GetMultiHRRRiskSeveirtyForMatrix();
@@ -742,7 +722,6 @@ namespace ISOStd.Controllers
                     }
                     ViewBag.Matrix = result;
 
-
                     string sqlstmtss1;
                     string sqlstmtss;
                     int count = 0;
@@ -758,7 +737,6 @@ namespace ISOStd.Controllers
                         dsMatrixcolor = objGlobaldata.Getdetails(sqlstmtss);
                         objRiskRegister.GetHRRMatrixColordetails();
                     }
-
 
                     Dictionary<string, string> dsMatcolor = new Dictionary<string, string>();
 
@@ -778,7 +756,6 @@ namespace ISOStd.Controllers
                 }
                 else
                 {
-
                     string sqlstmt = "select item_id as Id, item_fulldesc as severity from dropdownitems, dropdownheader"
                        + " where dropdownheader.header_id=dropdownitems.header_id and header_desc='HRR-Severity' order by severity desc";
                     DataSet dsSeverity = objGlobaldata.Getdetails(sqlstmt);
@@ -811,7 +788,6 @@ namespace ISOStd.Controllers
                     }
                     ViewBag.Matrix1 = result;
 
-
                     string sqlstmtss1;
                     string sqlstmtss;
                     int count = 0;
@@ -828,7 +804,6 @@ namespace ISOStd.Controllers
                         objRiskRegister.GetHRRMatrixColordetails();
                     }
 
-
                     Dictionary<string, string> dsMatcolor = new Dictionary<string, string>();
 
                     DataSet dsMatclr = objGlobaldata.Getdetails("Select id,matvalue,color from rmatrix");
@@ -844,7 +819,6 @@ namespace ISOStd.Controllers
                         }
                     }
                     ViewBag.dsMatcolors = dsMatcolor;
-
                 }
                 string sql = "select from_value,to_value,rate_desc from risk_ratings_hrr";
                 DataSet dsRating = objGlobaldata.Getdetails(sql);
@@ -859,6 +833,7 @@ namespace ISOStd.Controllers
             }
             return View();
         }
+
         //
         // GET: /RiskRegisterActivity/RiskRegisterActivityDetails
 
@@ -928,7 +903,6 @@ namespace ISOStd.Controllers
                     DataSet dsRiskRegisterActivityList = objGlobaldata.Getdetails(sSqlstmt);
                     if (dsRiskRegisterActivityList.Tables.Count > 0)
                     {
-
                         RiskRegisterActivityModels objRiskRegisterActivity = new RiskRegisterActivityModels
                         {
                             Risk_Reg_Activity_Id_trans = dsRiskRegisterActivityList.Tables[0].Rows[0]["Risk_Reg_Activity_Id_trans"].ToString(),
@@ -964,7 +938,7 @@ namespace ISOStd.Controllers
 
             return RedirectToAction("RiskRegisterActivityList");
         }
-        
+
         [AllowAnonymous]
         public ActionResult RiskRegisterActivityEdit()
         {
@@ -1163,7 +1137,6 @@ namespace ISOStd.Controllers
             return RedirectToAction("RiskRegisterActivityEvaluationList", new { Risk_Reg_Activity_Id = objRiskRegisterActivityEval.Risk_Reg_Activity_Id });
         }
 
-
         [AllowAnonymous]
         public ActionResult AddHRRActivityEvaluation()
         {
@@ -1223,14 +1196,12 @@ namespace ISOStd.Controllers
             return RedirectToAction("RiskRegisterActivityList");
         }
 
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult AddHRRActivityEvaluation(RiskRegisterActivityEvaluationModels objRiskRegisterActivityEval, FormCollection form)
         {
             try
             {
-
                 DateTime dateValue;
 
                 if (form["Eval_Date"] != null && DateTime.TryParse(form["Eval_Date"], out dateValue) == true)
@@ -1261,7 +1232,6 @@ namespace ISOStd.Controllers
             return RedirectToAction("RiskRegisterHRREvaluationList", new { Risk_Reg_Activity_Id = objRiskRegisterActivityEval.Risk_Reg_Activity_Id });
         }
 
-
         [AllowAnonymous]
         public ActionResult RiskRegisterHRREvaluationList(string SearchText, int? page)
         {
@@ -1282,14 +1252,12 @@ namespace ISOStd.Controllers
                     + "Cur_Opt_Ctrl,Person_resp,Eval_Date,ReEval_Date,Action_TakenBy,Reviewer_QHSE,ApprovedBy from t_risk_register_hrrevaluation tt"
                     + " where Risk_Reg_Activity_Id='" + sRisk_Reg_Activity_Id + "' and tt.Active=1 ";
 
-
                     DataSet dsRiskRegisterActivityList = objGlobaldata.Getdetails(sSqlstmt);
 
                     RiskRegisterActivityEvaluationModels objRiskActivityEval = new RiskRegisterActivityEvaluationModels();
 
                     if (dsRiskRegisterActivityList.Tables.Count > 0 && dsRiskRegisterActivityList.Tables[0].Rows.Count > 0)
                     {
-                       
                         for (int i = 0; i < dsRiskRegisterActivityList.Tables[0].Rows.Count; i++)
                         {
                             try
@@ -1310,7 +1278,6 @@ namespace ISOStd.Controllers
                                     Reviewer_QHSE = objGlobaldata.GetEmpHrNameById(dsRiskRegisterActivityList.Tables[0].Rows[i]["Reviewer_QHSE"].ToString()),
                                     ApprovedBy = objGlobaldata.GetEmpHrNameById(dsRiskRegisterActivityList.Tables[0].Rows[i]["ApprovedBy"].ToString()),
                                 };
-
 
                                 DateTime dateValue;
                                 if (DateTime.TryParse(dsRiskRegisterActivityList.Tables[0].Rows[i]["Eval_Date"].ToString(), out dateValue))
@@ -1344,12 +1311,9 @@ namespace ISOStd.Controllers
                                     {
                                         objRiskRegisterActivityEval.Risk_Rating = objGlobaldata.GetRiskRatingForExposure(iProbability * iSeverity * 1);
                                     }
-
                                 }
 
                                 objRiskRegisterActivityEvalList.lstRiskRegisterActivityEval.Add(objRiskRegisterActivityEval);
-
-
                             }
                             catch (Exception ex)
                             { }
@@ -1370,7 +1334,6 @@ namespace ISOStd.Controllers
 
             return View(objRiskRegisterActivityEvalList.lstRiskRegisterActivityEval.ToList());
         }
-
 
         [AllowAnonymous]
         public ActionResult RiskActivityApproved(string Regeval_Id, string PendingFlg)
@@ -1402,9 +1365,6 @@ namespace ISOStd.Controllers
                 return RedirectToAction("RiskRegisterActivityEvaluationHistoryList");
             }
         }
-
-       
-
 
         [AllowAnonymous]
         public ActionResult RiskActivityReviewed(string Regeval_Id, string PendingFlg)
@@ -1438,7 +1398,6 @@ namespace ISOStd.Controllers
             }
         }
 
-
         [AllowAnonymous]
         public ActionResult RiskActivityHRRReviewed(string risk_hrr_id, string PendingFlg)
         {
@@ -1471,7 +1430,6 @@ namespace ISOStd.Controllers
             }
         }
 
-
         [AllowAnonymous]
         public ActionResult RiskActivityHRRApproved(string risk_hrr_id, string PendingFlg)
         {
@@ -1503,9 +1461,6 @@ namespace ISOStd.Controllers
                 return RedirectToAction("RiskRegisterActivityEvaluationHistoryList");
             }
         }
-
-
-       
 
         [AllowAnonymous]
         public ActionResult RiskRegisterHRRActivityEvaluationEdit()
@@ -1594,14 +1549,12 @@ namespace ISOStd.Controllers
             return RedirectToAction("RiskRegisterHRREvaluationList");
         }
 
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult RiskRegisterHRRActivityEvaluationEdit(RiskRegisterActivityEvaluationModels objRiskRegisterActivityEval, FormCollection form)
         {
             try
             {
-
                 DateTime dateValue;
 
                 if (form["Eval_Date"] != null && DateTime.TryParse(form["Eval_Date"], out dateValue) == true)
@@ -1632,11 +1585,9 @@ namespace ISOStd.Controllers
             return RedirectToAction("RiskRegisterHRREvaluationList", new { Risk_Reg_Activity_Id = objRiskRegisterActivityEval.Risk_Reg_Activity_Id });
         }
 
-
         [AllowAnonymous]
         public ActionResult RiskRegisterHRRActivityEvalDetails()
         {
-
             RiskRegisterActivityModels objRiskActivity = new RiskRegisterActivityModels();
 
             try
@@ -1701,7 +1652,6 @@ namespace ISOStd.Controllers
                             {
                                 objRiskRegisterActivityEval.Risk_Rating = objGlobaldata.GetRiskRatingForExposure(iProbability * iSeverity * 1);
                             }
-
                         }
                         ViewBag.ActivityId = dsRiskRegisterActivityList.Tables[0].Rows[0]["Risk_Reg_Activity_Id"].ToString();
 
@@ -1745,17 +1695,13 @@ namespace ISOStd.Controllers
             return RedirectToAction("RiskRegisterHRREvaluationList");
         }
 
-
         [AllowAnonymous]
         public ActionResult RiskRegisterHRRActivityEvalInfo(int id)
         {
-
             RiskRegisterActivityModels objRiskActivity = new RiskRegisterActivityModels();
 
             try
             {
-
-
                 string sSqlstmt = "select DeptId,Activity,Activity_Category,Risk_Type,Activity_Status,risk_hrr_id,"
                 + "t.Risk_Reg_Activity_Id,hazard,Severity,Probability,Exposure_id,Evaluation_status,Cur_Opt_Ctrl,Person_resp,"
                 + " (case when Approve_status='1' then 'Approved' else 'Not Approved' end) as Approve_status,"
@@ -1811,7 +1757,6 @@ namespace ISOStd.Controllers
                         {
                             objRiskRegisterActivityEval.Risk_Rating = objGlobaldata.GetRiskRatingForExposure(iProbability * iSeverity * 1);
                         }
-
                     }
                     ViewBag.ActivityId = dsRiskRegisterActivityList.Tables[0].Rows[0]["Risk_Reg_Activity_Id"].ToString();
 
@@ -1833,7 +1778,6 @@ namespace ISOStd.Controllers
                     ViewBag.objRiskRegisterActivity = objRiskRegisterActivityEval;
 
                     return View(objRiskRegisterActivityEval);
-
                 }
                 else
                 {
@@ -1876,7 +1820,6 @@ namespace ISOStd.Controllers
                             + "t_risk_register_activity as tract where trEval.Risk_Reg_Activity_Id = tract.Risk_Reg_Activity_Id and tract.Risk_Reg_Activity_Id='"
                             + sRisk_Reg_Activity_Id + "' and trEval.Active=1";
 
-
                     if (SearchText != null && SearchText != "")
                     {
                         sSqlstmt = sSqlstmt + " and Activity like '" + SearchText + "%' or Activity like '%" + SearchText + "%' or Activity like '%" + SearchText + "'";
@@ -1890,7 +1833,6 @@ namespace ISOStd.Controllers
 
                     if (dsRiskRegisterActivityList.Tables.Count > 0 && dsRiskRegisterActivityList.Tables[0].Rows.Count > 0)
                     {
-                        
                         for (int i = 0; i < dsRiskRegisterActivityList.Tables[0].Rows.Count; i++)
                         {
                             try
@@ -1915,7 +1857,6 @@ namespace ISOStd.Controllers
                                     Comments = dsRiskRegisterActivityList.Tables[0].Rows[i]["Comments"].ToString(),
                                     Appl_law = objGlobaldata.GetLawNoById(dsRiskRegisterActivityList.Tables[0].Rows[0]["Appl_law"].ToString())
                                 };
-
 
                                 DateTime dateValue;
                                 if (DateTime.TryParse(dsRiskRegisterActivityList.Tables[0].Rows[i]["Eval_Date"].ToString(), out dateValue))
@@ -1942,8 +1883,6 @@ namespace ISOStd.Controllers
                                     objRiskRegisterActivityEval.Risk_Rating = objGlobaldata.GetRiskRatingForEnv(iProbability * iSeverity);
                                 }
                                 objRiskRegisterActivityEvalList.lstRiskRegisterActivityEval.Add(objRiskRegisterActivityEval);
-
-
                             }
                             catch (Exception ex)
                             { }
@@ -1965,7 +1904,6 @@ namespace ISOStd.Controllers
             return View(objRiskRegisterActivityEvalList.lstRiskRegisterActivityEval.ToList());
         }
 
-
         [AllowAnonymous]
         public ActionResult RiskRegisterActivityEvaluationInfo(int id)
         {
@@ -1982,7 +1920,6 @@ namespace ISOStd.Controllers
                         + " DeptId, Activity_No, Activity, Activity_Category, Risk_Type,Appl_law, Activity_Status,hazard, Comments,Exposure_id from t_risk_register_activity_eval as trEval, "
                         + "t_risk_register_activity as tract where trEval.Risk_Reg_Activity_Id = tract.Risk_Reg_Activity_Id and trEval.Reg_Activity_eval_Id='"
                         + id + "'";
-
 
                 DataSet dsRiskRegisterActivityList = objGlobaldata.Getdetails(sSqlstmt);
 
@@ -2015,7 +1952,6 @@ namespace ISOStd.Controllers
                                 hazard = dsRiskRegisterActivityList.Tables[0].Rows[i]["hazard"].ToString(),
                                 Appl_law = objGlobaldata.GetLawNoById(dsRiskRegisterActivityList.Tables[0].Rows[0]["Appl_law"].ToString())
                             };
-
 
                             DateTime dateValue;
                             if (DateTime.TryParse(dsRiskRegisterActivityList.Tables[0].Rows[i]["Eval_Date"].ToString(), out dateValue))
@@ -2051,14 +1987,11 @@ namespace ISOStd.Controllers
                                 objRiskRegisterActivityEval.Risk_Rating = objGlobaldata.GetRiskRatingForExposure(iProbability * iSeverity * iExposure);
                             }
                             objRiskRegisterActivityEvalList.lstRiskRegisterActivityEval.Add(objRiskRegisterActivityEval);
-
-
                         }
                         catch (Exception ex)
                         { }
                     }
                 }
-
             }
             catch (Exception ex)
             {
@@ -2092,7 +2025,6 @@ namespace ISOStd.Controllers
                             + " DeptId, Activity_No, Activity, Activity_Category, Risk_Type, Activity_Status, trEval.Comments from t_risk_register_activity_eval as trEval, "
                             + "t_risk_register_activity as tract where trEval.Risk_Reg_Activity_Id = tract.Risk_Reg_Activity_Id and tract.Risk_Reg_Activity_Id='"
                             + sRisk_Reg_Activity_Id + "'";
-
 
                     if (SearchText != null && SearchText != "")
                     {
@@ -2130,7 +2062,6 @@ namespace ISOStd.Controllers
                                     Comments = dsRiskRegisterActivityList.Tables[0].Rows[i]["Comments"].ToString()
                                 };
 
-
                                 DateTime dateValue;
                                 if (DateTime.TryParse(dsRiskRegisterActivityList.Tables[0].Rows[i]["Eval_Date"].ToString(), out dateValue))
                                 {
@@ -2157,8 +2088,6 @@ namespace ISOStd.Controllers
                                 }
 
                                 objRiskRegisterActivityEvalList.lstRiskRegisterActivityEval.Add(objRiskRegisterActivityEval);
-
-
                             }
                             catch (Exception ex)
                             { }
@@ -2179,7 +2108,6 @@ namespace ISOStd.Controllers
 
             return View(objRiskRegisterActivityEvalList.lstRiskRegisterActivityEval.ToList().ToPagedList(page ?? 1, 40));
         }
-
 
         //
         // GET: /RiskRegisterActivity/RiskRegisterActivityEvaluationDetails
@@ -2294,7 +2222,6 @@ namespace ISOStd.Controllers
             return RedirectToAction("RiskRegisterActivityEvaluationList");
         }
 
-
         //
         // GET: /RiskRegisterActivity/RiskRegisterActivityEvaluationDetails
 
@@ -2396,7 +2323,6 @@ namespace ISOStd.Controllers
             return RedirectToAction("RiskRegisterActivityEvaluationList");
         }
 
-
         //
         // GET: /RiskRegisterActivity/RiskRegisterActivityEvaluationEdit
 
@@ -2416,7 +2342,6 @@ namespace ISOStd.Controllers
                             + " Probability, Risk_Rating, Add_Opt_Ctrl, Opt_Ctrl_Implt, Desc_Opt_ctrl,  Due_Date, ReEval_Date, Action_TakenBy, "
                             + " DeptId, Activity_No, Activity, Activity_Category,Appl_law, Risk_Type, Activity_Status, trEval.Comments,Exposure_id from t_risk_register_activity_eval as trEval, "
                             + "t_risk_register_activity as tract where trEval.Risk_Reg_Activity_Id = tract.Risk_Reg_Activity_Id and Reg_Activity_eval_Id='" + sReg_Activity_eval_Id + "'";
-
 
                     DataSet dsRiskRegisterActivityList = objGlobaldata.Getdetails(sSqlstmt);
 
@@ -2503,7 +2428,6 @@ namespace ISOStd.Controllers
             return RedirectToAction("RiskRegisterActivityEvaluationList");
         }
 
-
         //
         // POST: /RiskRegisterActivity/RiskRegisterActivityEvaluationEdit
         [HttpPost]
@@ -2549,6 +2473,7 @@ namespace ISOStd.Controllers
 
             return RedirectToAction("RiskRegisterActivityEvaluationList", new { Risk_Reg_Activity_Id = objRiskRegisterActivityEval.Risk_Reg_Activity_Id });
         }
+
         public JsonResult RiskActivityHRRApprovedNoty(string risk_hrr_id, string PendingFlg)
         {
             try
@@ -2579,7 +2504,6 @@ namespace ISOStd.Controllers
                 return Json("Failed");
             }
         }
-
 
         public JsonResult RiskActivityApprovedNoty(string Regeval_Id, string PendingFlg)
         {
@@ -2642,7 +2566,6 @@ namespace ISOStd.Controllers
             }
         }
 
-
         public JsonResult RiskActivityHRRReviewedNoty(string risk_hrr_id, string PendingFlg)
         {
             try
@@ -2673,6 +2596,5 @@ namespace ISOStd.Controllers
                 return Json("Failed");
             }
         }
-
     }
 }

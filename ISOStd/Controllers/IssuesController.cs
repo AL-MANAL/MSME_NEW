@@ -1,38 +1,33 @@
-﻿using System;
+﻿using ISOStd.Filters;
+using ISOStd.Models;
+using Rotativa;
+using System;
 using System.Collections.Generic;
+using System.Data;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using ISOStd.Models;
-using System.Data;
-using System.Net;
-using System.IO;
-using PagedList;
-using PagedList.Mvc;
-using System.Security.Principal;
-using ISOStd.Filters;
-using Rotativa;
 
 namespace ISOStd.Controllers
 {
     [PreventFromUrl]
     public class IssuesController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
+        private clsGlobal objGlobaldata = new clsGlobal();
 
         public IssuesController()
         {
             ViewBag.Menutype = "PartiesIssues";
             ViewBag.SubMenutype = "Issues";
         }
-         
+
         [AllowAnonymous]
         public ActionResult AddIssues()
         {
             IssuesModels objIssues = new IssuesModels();
             try
             {
-
                 ViewBag.User = User.Identity.Name;
                 objIssues.branch = objGlobaldata.GetCurrentUserSession().division;
                 objIssues.Deptid = objGlobaldata.GetCurrentUserSession().DeptID;
@@ -45,7 +40,7 @@ namespace ISOStd.Controllers
                 ViewBag.IssueType = objGlobaldata.GetConstantValue("IssueType");
                 ViewBag.Impact = objGlobaldata.GetConstantValue("IssueImpact");
                 ViewBag.ISOStds = objGlobaldata.GetAllIsoStdListbox();
-               // ViewBag.Department = objGlobaldata.GetDepartmentListbox();
+                // ViewBag.Department = objGlobaldata.GetDepartmentListbox();
                 ViewBag.IssueCategory = objGlobaldata.GetDropdownList("Issue Category Type");
                 ViewBag.IssueEffect = objGlobaldata.GetDropdownList("Issue Effect Type");
                 ViewBag.Branch = objGlobaldata.GetCompanyBranchListbox();
@@ -62,7 +57,7 @@ namespace ISOStd.Controllers
             }
             return View(objIssues);
         }
-                 
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult AddIssues(IssuesModels objIssues, FormCollection form, IEnumerable<HttpPostedFileBase> Evidence)
@@ -121,7 +116,6 @@ namespace ISOStd.Controllers
                     objIssues.Evidence = "";
                     foreach (var file in Evidence)
                     {
-
                         try
                         {
                             string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/Issues"), Path.GetFileName(file.FileName));
@@ -139,7 +133,7 @@ namespace ISOStd.Controllers
                 else
                 {
                     ViewBag.Message = "You have not specified a file.";
-                }              
+                }
 
                 if (objIssues.FunAddIssues(objIssues))
                 {
@@ -158,14 +152,14 @@ namespace ISOStd.Controllers
 
             return RedirectToAction("IssuesList");
         }
-        
-        [AllowAnonymous]
-        public ActionResult IssuesList(FormCollection form,int? page, string branch_name)
-        {
-             ViewBag.SubMenutype = "Issues";
 
-             IssuesModelsList objIssueList = new IssuesModelsList();
-             objIssueList.IssueList = new List<IssuesModels>();
+        [AllowAnonymous]
+        public ActionResult IssuesList(FormCollection form, int? page, string branch_name)
+        {
+            ViewBag.SubMenutype = "Issues";
+
+            IssuesModelsList objIssueList = new IssuesModelsList();
+            objIssueList.IssueList = new List<IssuesModels>();
 
             try
             {
@@ -191,9 +185,9 @@ namespace ISOStd.Controllers
                 DataSet dsIssueList = objGlobaldata.Getdetails(sSqlstmt);
 
                 if (dsIssueList.Tables.Count > 0 && dsIssueList.Tables[0].Rows.Count > 0)
-                {  
+                {
                     for (int i = 0; i < dsIssueList.Tables[0].Rows.Count; i++)
-                    {  
+                    {
                         try
                         {
                             IssuesModels objIssueModels = new IssuesModels
@@ -207,7 +201,7 @@ namespace ISOStd.Controllers
                                 Evidence = dsIssueList.Tables[0].Rows[i]["Evidence"].ToString(),
                                 ImpactDesc = dsIssueList.Tables[0].Rows[i]["ImpactDesc"].ToString(),
                                 Effect = objGlobaldata.GetDropdownitemById(dsIssueList.Tables[0].Rows[i]["Effect"].ToString()),
-                                Deptid =objGlobaldata.GetMultiDeptNameById(dsIssueList.Tables[0].Rows[i]["Deptid"].ToString()),
+                                Deptid = objGlobaldata.GetMultiDeptNameById(dsIssueList.Tables[0].Rows[i]["Deptid"].ToString()),
                                 Issue_Category = objGlobaldata.GetDropdownitemById(dsIssueList.Tables[0].Rows[i]["Issue_Category"].ToString()),
                                 branch = objGlobaldata.GetMultiCompanyBranchNameById(dsIssueList.Tables[0].Rows[i]["branch"].ToString()),
                                 Location = objGlobaldata.GetDivisionLocationById(dsIssueList.Tables[0].Rows[i]["Location"].ToString()),
@@ -216,7 +210,7 @@ namespace ISOStd.Controllers
                                 issue_status = objGlobaldata.GetDropdownitemById(dsIssueList.Tables[0].Rows[i]["issue_status"].ToString()),
                                 loggedby = dsIssueList.Tables[0].Rows[i]["loggedby"].ToString(),
                                 reporting_toId = (dsIssueList.Tables[0].Rows[i]["reporting_to"].ToString()),
-                                ISOStds =objGlobaldata.GetIsoStdNameById(dsIssueList.Tables[0].Rows[i]["ISOStds"].ToString()),
+                                ISOStds = objGlobaldata.GetIsoStdNameById(dsIssueList.Tables[0].Rows[i]["ISOStds"].ToString()),
                             };
                             DateTime dtValue;
                             if (DateTime.TryParse(dsIssueList.Tables[0].Rows[i]["issue_date"].ToString(), out dtValue))
@@ -231,9 +225,7 @@ namespace ISOStd.Controllers
                             TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                         }
                     }
-
                 }
-       
             }
             catch (Exception ex)
             {
@@ -276,7 +268,7 @@ namespace ISOStd.Controllers
         //        DataSet dsIssueList = objGlobaldata.Getdetails(sSqlstmt);
 
         //        if (dsIssueList.Tables.Count > 0 && dsIssueList.Tables[0].Rows.Count > 0)
-        //        {                  
+        //        {
         //            for (int i = 0; i < dsIssueList.Tables[0].Rows.Count; i++)
         //            {
         //                try
@@ -317,7 +309,7 @@ namespace ISOStd.Controllers
         //    }
         //    return Json("Success");
         //}
-               
+
         [AllowAnonymous]
         public ActionResult IssuesInfo(int id)
         {
@@ -330,48 +322,48 @@ namespace ISOStd.Controllers
             {
                 string sSqlstmt = "select Issue_refno,id_issue,Issue,IssueType,Impact,Isostd,Evidence," +
                     "ImpactDesc,Effect,Deptid,Issue_Category,branch,Location,issue_date,reporting_to,notified_to,Impact_detail,Repet_Issue,additional_details  from t_issues where Active=1"
-                + " and id_issue='"+id+"' order by id_issue desc";
+                + " and id_issue='" + id + "' order by id_issue desc";
                 DataSet dsIssueList = objGlobaldata.Getdetails(sSqlstmt);
 
                 if (dsIssueList.Tables.Count > 0 && dsIssueList.Tables[0].Rows.Count > 0)
-                {    try
+                {
+                    try
+                    {
+                        IssuesModels objIssueModels = new IssuesModels
                         {
-                            IssuesModels objIssueModels = new IssuesModels
-                            {
-                                id_issue = Convert.ToInt16(dsIssueList.Tables[0].Rows[0]["id_issue"].ToString()),
-                                Issue = dsIssueList.Tables[0].Rows[0]["Issue"].ToString(),
-                                IssueType = dsIssueList.Tables[0].Rows[0]["IssueType"].ToString(),
-                                Impact = dsIssueList.Tables[0].Rows[0]["Impact"].ToString(),
-                                Isostd = objGlobaldata.GetIsoStdDescriptionById(dsIssueList.Tables[0].Rows[0]["Isostd"].ToString()),
-                                Evidence = dsIssueList.Tables[0].Rows[0]["Evidence"].ToString(),
-                                ImpactDesc = dsIssueList.Tables[0].Rows[0]["ImpactDesc"].ToString(),
-                                Effect = objGlobaldata.GetDropdownitemById(dsIssueList.Tables[0].Rows[0]["Effect"].ToString()),
-                                Issue_refno = dsIssueList.Tables[0].Rows[0]["Issue_refno"].ToString(),
-                                Deptid = objGlobaldata.GetMultiDeptNameById(dsIssueList.Tables[0].Rows[0]["Deptid"].ToString()),
-                                Issue_Category = objGlobaldata.GetDropdownitemById(dsIssueList.Tables[0].Rows[0]["Issue_Category"].ToString()),
-                                branch = objGlobaldata.GetMultiCompanyBranchNameById(dsIssueList.Tables[0].Rows[0]["branch"].ToString()),
-                                Location = objGlobaldata.GetDivisionLocationById(dsIssueList.Tables[0].Rows[0]["Location"].ToString()),
-                                reporting_to = objGlobaldata.GetMultiHrEmpNameById(dsIssueList.Tables[0].Rows[0]["reporting_to"].ToString()),
-                                notified_to = objGlobaldata.GetMultiHrEmpNameById(dsIssueList.Tables[0].Rows[0]["notified_to"].ToString()),
-                                Impact_detail= objGlobaldata.GetDropdownitemById(dsIssueList.Tables[0].Rows[0]["Impact_detail"].ToString()),
-                                Repet_Issue= objGlobaldata.GetIssueRefnobyId(dsIssueList.Tables[0].Rows[0]["Repet_Issue"].ToString()),
-                                Repet_Issue_detail = objGlobaldata.GetIssueRefnobyId(dsIssueList.Tables[0].Rows[0]["Repet_Issue"].ToString()),
-                                additional_details= dsIssueList.Tables[0].Rows[0]["additional_details"].ToString(),
-                            };
+                            id_issue = Convert.ToInt16(dsIssueList.Tables[0].Rows[0]["id_issue"].ToString()),
+                            Issue = dsIssueList.Tables[0].Rows[0]["Issue"].ToString(),
+                            IssueType = dsIssueList.Tables[0].Rows[0]["IssueType"].ToString(),
+                            Impact = dsIssueList.Tables[0].Rows[0]["Impact"].ToString(),
+                            Isostd = objGlobaldata.GetIsoStdDescriptionById(dsIssueList.Tables[0].Rows[0]["Isostd"].ToString()),
+                            Evidence = dsIssueList.Tables[0].Rows[0]["Evidence"].ToString(),
+                            ImpactDesc = dsIssueList.Tables[0].Rows[0]["ImpactDesc"].ToString(),
+                            Effect = objGlobaldata.GetDropdownitemById(dsIssueList.Tables[0].Rows[0]["Effect"].ToString()),
+                            Issue_refno = dsIssueList.Tables[0].Rows[0]["Issue_refno"].ToString(),
+                            Deptid = objGlobaldata.GetMultiDeptNameById(dsIssueList.Tables[0].Rows[0]["Deptid"].ToString()),
+                            Issue_Category = objGlobaldata.GetDropdownitemById(dsIssueList.Tables[0].Rows[0]["Issue_Category"].ToString()),
+                            branch = objGlobaldata.GetMultiCompanyBranchNameById(dsIssueList.Tables[0].Rows[0]["branch"].ToString()),
+                            Location = objGlobaldata.GetDivisionLocationById(dsIssueList.Tables[0].Rows[0]["Location"].ToString()),
+                            reporting_to = objGlobaldata.GetMultiHrEmpNameById(dsIssueList.Tables[0].Rows[0]["reporting_to"].ToString()),
+                            notified_to = objGlobaldata.GetMultiHrEmpNameById(dsIssueList.Tables[0].Rows[0]["notified_to"].ToString()),
+                            Impact_detail = objGlobaldata.GetDropdownitemById(dsIssueList.Tables[0].Rows[0]["Impact_detail"].ToString()),
+                            Repet_Issue = objGlobaldata.GetIssueRefnobyId(dsIssueList.Tables[0].Rows[0]["Repet_Issue"].ToString()),
+                            Repet_Issue_detail = objGlobaldata.GetIssueRefnobyId(dsIssueList.Tables[0].Rows[0]["Repet_Issue"].ToString()),
+                            additional_details = dsIssueList.Tables[0].Rows[0]["additional_details"].ToString(),
+                        };
                         DateTime dtValue;
                         if (DateTime.TryParse(dsIssueList.Tables[0].Rows[0]["issue_date"].ToString(), out dtValue))
                         {
                             objIssueModels.issue_date = dtValue;
                         }
                         objIssueList.IssueList.Add(objIssueModels);
-                        }
-                        catch (Exception ex)
-                        {
-                            objGlobaldata.AddFunctionalLog("Exception in IssuesInfo: " + ex.ToString());
-                            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        objGlobaldata.AddFunctionalLog("Exception in IssuesInfo: " + ex.ToString());
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                    }
                 }
-
             }
             catch (Exception ex)
             {
@@ -386,13 +378,14 @@ namespace ISOStd.Controllers
         public ActionResult IssuesDetail()
         {
             ViewBag.SubMenutype = "Issues";
-            
+
             IssuesModels objIssueModels = new IssuesModels();
 
             try
             {
                 string sid_issue = Request.QueryString["id_issue"];
-                if (sid_issue != null && sid_issue != "") {
+                if (sid_issue != null && sid_issue != "")
+                {
                     string sSqlstmt = "select Issue_refno,id_issue,Issue,IssueType,Impact,Isostd,Evidence," +
                         "ImpactDesc,Effect,Deptid,Issue_Category,branch,Location,issue_date,reporting_to,notified_to," +
                         "Impact_detail,Repet_Issue,additional_details,issue_status,status_date,action_taken,status_notifiedto,status_upload,ISOStds  from t_issues where Active=1"
@@ -403,7 +396,7 @@ namespace ISOStd.Controllers
                     {
                         try
                         {
-                             objIssueModels = new IssuesModels
+                            objIssueModels = new IssuesModels
                             {
                                 id_issue = Convert.ToInt16(dsIssueList.Tables[0].Rows[0]["id_issue"].ToString()),
                                 Issue = dsIssueList.Tables[0].Rows[0]["Issue"].ToString(),
@@ -429,7 +422,7 @@ namespace ISOStd.Controllers
                                 status_notifiedto = objGlobaldata.GetMultiHrEmpNameById(dsIssueList.Tables[0].Rows[0]["status_notifiedto"].ToString()),
                                 status_upload = dsIssueList.Tables[0].Rows[0]["status_upload"].ToString(),
                                 ISOStds = objGlobaldata.GetIsoStdNameById(dsIssueList.Tables[0].Rows[0]["ISOStds"].ToString()),
-                             };
+                            };
                             DateTime dtValue;
                             if (DateTime.TryParse(dsIssueList.Tables[0].Rows[0]["issue_date"].ToString(), out dtValue))
                             {
@@ -439,7 +432,6 @@ namespace ISOStd.Controllers
                             {
                                 objIssueModels.status_date = dtValue;
                             }
-                           
                         }
                         catch (Exception ex)
                         {
@@ -526,7 +518,6 @@ namespace ISOStd.Controllers
                             dsIssueList = objCompany.GetCompanyDetailsForReport(dsIssueList);
                             dsIssueList = objGlobaldata.GetReportDetails(dsIssueList, objIssueModels.Issue_refno, objGlobaldata.GetCurrentUserSession().empid, "ISSUE REPORT");
                             ViewBag.CompanyInfo = dsIssueList;
-
                         }
                         catch (Exception ex)
                         {
@@ -564,38 +555,32 @@ namespace ISOStd.Controllers
             };
         }
 
-
         [AllowAnonymous]
         public JsonResult IssueDocDelete(FormCollection form)
         {
             try
             {
-                  
-                        if (form["id_issue"] != null && form["id_issue"] != "")
-                        {
+                if (form["id_issue"] != null && form["id_issue"] != "")
+                {
+                    IssuesModels Doc = new IssuesModels();
+                    string sid_issue = form["id_issue"];
 
-                            IssuesModels Doc = new IssuesModels();
-                            string sid_issue = form["id_issue"];
-
-
-                            if (Doc.FunDeleteIssueDoc(sid_issue))
-                            {
-                                TempData["Successdata"] = "Document deleted successfully";
-                                return Json("Success");
-                            }
-                            else
-                            {
-                                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                                return Json("Failed");
-                            }
-                        }
-                        else
-                        {
-                            TempData["alertdata"] = "Issue Id cannot be Null or empty";
-                            return Json("Failed");
-                        }                  
-                   
-                
+                    if (Doc.FunDeleteIssueDoc(sid_issue))
+                    {
+                        TempData["Successdata"] = "Document deleted successfully";
+                        return Json("Success");
+                    }
+                    else
+                    {
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                        return Json("Failed");
+                    }
+                }
+                else
+                {
+                    TempData["alertdata"] = "Issue Id cannot be Null or empty";
+                    return Json("Failed");
+                }
             }
             catch (Exception ex)
             {
@@ -604,7 +589,7 @@ namespace ISOStd.Controllers
             }
             return Json("Failed");
         }
-                 
+
         [AllowAnonymous]
         public ActionResult IssueEdit()
         {
@@ -613,7 +598,7 @@ namespace ISOStd.Controllers
 
             try
             {
-               // ViewBag.Department = objGlobaldata.GetDepartmentListbox();
+                // ViewBag.Department = objGlobaldata.GetDepartmentListbox();
                 ViewBag.IssueType = objGlobaldata.GetConstantValue("IssueType");
                 ViewBag.Impact = objGlobaldata.GetConstantValue("IssueImpact");
                 ViewBag.ISOStds = objGlobaldata.GetAllIsoStdListbox();
@@ -634,7 +619,6 @@ namespace ISOStd.Controllers
                     DataSet dsIssueList = objGlobaldata.Getdetails(sSqlstmt);
                     if (dsIssueList.Tables.Count > 0 && dsIssueList.Tables[0].Rows.Count > 0)
                     {
-
                         objIssueModels = new IssuesModels
                         {
                             id_issue = Convert.ToInt16(dsIssueList.Tables[0].Rows[0]["id_issue"].ToString()),
@@ -653,8 +637,8 @@ namespace ISOStd.Controllers
                             Location = objGlobaldata.GetDivisionLocationById(dsIssueList.Tables[0].Rows[0]["Location"].ToString()),
                             reporting_to = (dsIssueList.Tables[0].Rows[0]["reporting_to"].ToString()),
                             notified_to = (dsIssueList.Tables[0].Rows[0]["notified_to"].ToString()),
-                            Impact_detail= (dsIssueList.Tables[0].Rows[0]["Impact_detail"].ToString()),
-                            Repet_Issue= (dsIssueList.Tables[0].Rows[0]["Repet_Issue"].ToString()),
+                            Impact_detail = (dsIssueList.Tables[0].Rows[0]["Impact_detail"].ToString()),
+                            Repet_Issue = (dsIssueList.Tables[0].Rows[0]["Repet_Issue"].ToString()),
                             additional_details = (dsIssueList.Tables[0].Rows[0]["additional_details"].ToString()),
                             ISOStds = (dsIssueList.Tables[0].Rows[0]["ISOStds"].ToString())
                         };
@@ -681,7 +665,6 @@ namespace ISOStd.Controllers
                         }
                         ViewBag.Repet_Issue = objGlobaldata.GetAllIssueList(dsIssueList.Tables[0].Rows[0]["Deptid"].ToString());
 
-
                         if (dsIssueList.Tables[0].Rows[0]["notified_to"].ToString() != "")
                         {
                             ViewBag.notified_Array = (dsIssueList.Tables[0].Rows[0]["notified_to"].ToString()).Split(',');
@@ -702,7 +685,7 @@ namespace ISOStd.Controllers
                     }
                 }
                 else
-                {                  
+                {
                     TempData["alertdata"] = "issueId cannot be Null or empty";
                     return RedirectToAction("IssuesList");
                 }
@@ -715,7 +698,7 @@ namespace ISOStd.Controllers
             }
             return View(objIssueModels);
         }
-                
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult IssueEdit(IssuesModels objIssues, FormCollection form, IEnumerable<HttpPostedFileBase> Evidence)
@@ -732,7 +715,7 @@ namespace ISOStd.Controllers
                 objIssues.notified_to = form["notified_to"];
                 objIssues.Effect = form["Effect"];
                 objIssues.Impact_detail = form["Impact_detail"];
-                 objIssues.branch = form["branchId"];
+                objIssues.branch = form["branchId"];
                 //   objIssues.Deptid = form["Deptid"];
                 // objIssues.Location = form["Location"];
                 //  objIssues.Issue_refno = form["Issue_refno"];
@@ -771,7 +754,7 @@ namespace ISOStd.Controllers
 
                 HttpPostedFileBase files = Request.Files[0];
                 string QCDelete = Request.Form["QCDocsValselectall"];
-              
+
                 if (Evidence != null && files.ContentLength > 0)
                 {
                     objIssues.Evidence = "";
@@ -825,9 +808,9 @@ namespace ISOStd.Controllers
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 return RedirectToAction("IssuesList");
             }
-            return RedirectToAction("IssuesList");     
+            return RedirectToAction("IssuesList");
         }
-        
+
         [ValidateAntiForgeryToken]
         [HttpPost]
         public JsonResult doesIssueRefNoExist(string Issue_refno)
@@ -839,10 +822,10 @@ namespace ISOStd.Controllers
         }
 
         public JsonResult FunGetIssueImpactTypeList(string Impact_type)
-        {           
+        {
             if (Impact_type != null && Impact_type != "")
             {
-                if(Impact_type.ToLower() == "low")
+                if (Impact_type.ToLower() == "low")
                 {
                     MultiSelectList ImpactList = objGlobaldata.GetDropdownList("Issue Impact Low");
                     return Json(ImpactList);
@@ -863,27 +846,26 @@ namespace ISOStd.Controllers
                     return Json(ImpactList);
                 }
             }
-            return Json ("");
-           
+            return Json("");
         }
 
         public JsonResult FunGetIssueDetailbyRefNo(string Issue_id)
         {
             try
-            {                
-                if(Issue_id != "")
+            {
+                if (Issue_id != "")
                 {
                     string Detail = "";
-                    string Sqlstmt= "Select Issue from t_issues where id_issue = '"+ Issue_id + "'";
+                    string Sqlstmt = "Select Issue from t_issues where id_issue = '" + Issue_id + "'";
                     DataSet dsIssue = objGlobaldata.Getdetails(Sqlstmt);
-                    if(dsIssue.Tables.Count>0 && dsIssue.Tables[0].Rows.Count>0)
+                    if (dsIssue.Tables.Count > 0 && dsIssue.Tables[0].Rows.Count > 0)
                     {
                         Detail = dsIssue.Tables[0].Rows[0]["Issue"].ToString();
                     }
                     return Json(Detail);
-                }               
+                }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 objGlobaldata.AddFunctionalLog("Exception in FunGetIssueDetailbyRefNo: " + ex.ToString());
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
@@ -891,7 +873,7 @@ namespace ISOStd.Controllers
             return Json("");
         }
 
-        // Status    
+        // Status
         [AllowAnonymous]
         public ActionResult StatusUpdate()
         {
@@ -899,7 +881,6 @@ namespace ISOStd.Controllers
 
             try
             {
-
                 if (Request.QueryString["id_issue"] != null && Request.QueryString["id_issue"] != "")
                 {
                     string id_issue = Request.QueryString["id_issue"];
@@ -911,7 +892,6 @@ namespace ISOStd.Controllers
 
                     if (dsModelsList.Tables.Count > 0 && dsModelsList.Tables[0].Rows.Count > 0)
                     {
-
                         objModel = new IssuesModels
                         {
                             id_issue = Convert.ToInt32(dsModelsList.Tables[0].Rows[0]["id_issue"].ToString()),
@@ -922,7 +902,7 @@ namespace ISOStd.Controllers
                             issue_status = dsModelsList.Tables[0].Rows[0]["issue_status"].ToString(),
                             action_taken = dsModelsList.Tables[0].Rows[0]["action_taken"].ToString(),
                             status_notifiedto = dsModelsList.Tables[0].Rows[0]["status_notifiedto"].ToString(),
-                            status_upload= dsModelsList.Tables[0].Rows[0]["status_upload"].ToString(),
+                            status_upload = dsModelsList.Tables[0].Rows[0]["status_upload"].ToString(),
                             Impact = dsModelsList.Tables[0].Rows[0]["Impact"].ToString(),
                             Impact_detail = objGlobaldata.GetDropdownitemById(dsModelsList.Tables[0].Rows[0]["Impact_detail"].ToString()),
                         };
@@ -958,12 +938,11 @@ namespace ISOStd.Controllers
                 DateTime dateValue;
                 obj.issue_status = form["issue_status"];
                 obj.action_taken = form["action_taken"];
-                
+
                 if (DateTime.TryParse(form["status_date"], out dateValue) == true)
                 {
                     obj.status_date = dateValue;
                 }
-
 
                 //notified_to
                 for (int i = 0; i < Convert.ToInt16(form["itemcnt1"]); i++)

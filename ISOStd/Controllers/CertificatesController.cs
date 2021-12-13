@@ -1,26 +1,25 @@
-﻿using System;
+﻿using ISOStd.Filters;
+using ISOStd.Models;
+using System;
 using System.Collections.Generic;
+using System.Data;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using ISOStd.Models;
-using System.Data;
-using System.IO;
-using PagedList;
-using PagedList.Mvc;
-using ISOStd.Filters;
-
 
 namespace ISOStd.Controllers
 {
     [PreventFromUrl]
     public class CertificatesController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
+        private clsGlobal objGlobaldata = new clsGlobal();
+
         public CertificatesController()
         {
             ViewBag.Menutype = "LegalRegister";
         }
+
         // GET: Certificates
 
         public ActionResult Index()
@@ -91,7 +90,7 @@ namespace ISOStd.Controllers
                                 DocUploadPath = dsCertList.Tables[0].Rows[i]["DocUploadPath"].ToString(),
                                 Department = objGlobaldata.GetMultiDeptNameById(dsCertList.Tables[0].Rows[i]["Department"].ToString()),
                                 Location = objGlobaldata.GetDivisionLocationById(dsCertList.Tables[0].Rows[i]["Location"].ToString()),
-                                branch = objGlobaldata.GetMultiCompanyBranchNameById( dsCertList.Tables[0].Rows[i]["branch"].ToString()),
+                                branch = objGlobaldata.GetMultiCompanyBranchNameById(dsCertList.Tables[0].Rows[i]["branch"].ToString()),
                             };
                             DateTime dtDocDate;
                             if (dsCertList.Tables[0].Rows[i]["expiry_date"].ToString() != ""
@@ -117,7 +116,6 @@ namespace ISOStd.Controllers
 
             return View(objCertModelList.CertificateList.ToList());
         }
-
 
         [AllowAnonymous]
         public JsonResult CertificateSearch(string chkAll, string SearchText, int? page, string branch_name)
@@ -206,16 +204,16 @@ namespace ISOStd.Controllers
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
 
-            return Json ("Success");
+            return Json("Success");
         }
-       
+
         [AllowAnonymous]
         public ActionResult AddCertificates(CertificatesModels objCertModel, FormCollection form, HttpPostedFileBase file)
         {
             try
             {
                 objCertModel.branch = form["branch"];
-                objCertModel.Location= form["Location"];
+                objCertModel.Location = form["Location"];
                 objCertModel.Department = form["Department"];
                 DateTime dateValue;
                 if (DateTime.TryParse(form["expiry_date"], out dateValue) == true)
@@ -251,7 +249,6 @@ namespace ISOStd.Controllers
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 }
-
             }
             catch (Exception ex)
             {
@@ -260,39 +257,33 @@ namespace ISOStd.Controllers
             }
             return RedirectToAction("Certificate");
         }
-        
+
         [AllowAnonymous]
         public JsonResult CertificateDelete(FormCollection form)
         {
             try
             {
+                if (form["certId"] != null && form["certId"] != "")
+                {
+                    CertificatesModels cert = new CertificatesModels();
+                    string scertId = form["certId"];
 
-                
-                   if (form["certId"] != null && form["certId"] != "")
+                    if (cert.FunDeleteCertificate(scertId))
                     {
-
-                        CertificatesModels cert = new CertificatesModels();
-                        string scertId = form["certId"];
-
-
-                        if (cert.FunDeleteCertificate(scertId))
-                        {
-                            TempData["Successdata"] = "Certificate details deleted successfully";
-                            return Json("Success");
-                        }
-                        else
-                        {
-                            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                            return Json("Failed");
-                        }
+                        TempData["Successdata"] = "Certificate details deleted successfully";
+                        return Json("Success");
                     }
                     else
                     {
-                        TempData["alertdata"] = "Certificate Id cannot be Null or empty";
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                         return Json("Failed");
                     }
-
-              
+                }
+                else
+                {
+                    TempData["alertdata"] = "Certificate Id cannot be Null or empty";
+                    return Json("Failed");
+                }
             }
             catch (Exception ex)
             {
@@ -301,13 +292,12 @@ namespace ISOStd.Controllers
             }
             return Json("Failed");
         }
-        
+
         public ActionResult CertificateEdit()
         {
             CertificatesModels objCertificate = new CertificatesModels();
             try
             {
-
                 if (Request.QueryString["certId"] != null && Request.QueryString["certId"] != "")
                 {
                     string scertId = Request.QueryString["certId"];
@@ -316,7 +306,6 @@ namespace ISOStd.Controllers
                     DataSet dsCertList = objGlobaldata.Getdetails(sSqlstmt);
                     if (dsCertList.Tables.Count > 0 && dsCertList.Tables[0].Rows.Count > 0)
                     {
-
                         objCertificate = new CertificatesModels
                         {
                             certId = (dsCertList.Tables[0].Rows[0]["certId"].ToString()),
@@ -361,7 +350,6 @@ namespace ISOStd.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult CertificateEdit(CertificatesModels obj, FormCollection form, HttpPostedFileBase file)
         {
-
             try
             {
                 obj.branch = form["branch"];
@@ -403,7 +391,6 @@ namespace ISOStd.Controllers
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 }
-
             }
             catch (Exception ex)
             {

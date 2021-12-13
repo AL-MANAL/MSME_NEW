@@ -1,24 +1,21 @@
-﻿using System;
+﻿using ISOStd.Filters;
+using ISOStd.Models;
+using Rotativa;
+using System;
 using System.Collections.Generic;
+using System.Data;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using ISOStd.Models;
-using System.Data;
-using System.Net;
-using System.IO;
-using PagedList;
-using PagedList.Mvc;
-using Rotativa;
-using ISOStd.Filters;
 
 namespace ISOStd.Controllers
 {
     [PreventFromUrl]
-    public class TrainingEventsController:Controller
+    public class TrainingEventsController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
-        TrainingsModels objTrainings = new TrainingsModels();
+        private clsGlobal objGlobaldata = new clsGlobal();
+        private TrainingsModels objTrainings = new TrainingsModels();
 
         public TrainingEventsController()
         {
@@ -40,10 +37,10 @@ namespace ISOStd.Controllers
                 string sBranchtree = objGlobaldata.GetCurrentUserSession().BranchTree;
                 ViewBag.Branch = objGlobaldata.GetMultiBranchListByID(sBranchtree);
 
-                 string sSqlstmt = "SELECT TrainingID, Attendees, DeptId, Training_Topic, Traning_BeforeDate, Training_Requested_By, Reasonfor_Training, Training_Status,Attended_no, "
-                    + " (case when RequestStatus='0' then 'Registration Phase Completed' when (RequestStatus='1' and (Training_Actual_Date <='01/01/0001'|| Training_Actual_Date is null)) then 'Training Approved'"
-                    + " when(RequestStatus = '1' and Training_Actual_Date > '01/01/0001') then 'Training Completed' when RequestStatus = '2' then 'Training Rejected' end) as RequestStatus"
-                    + ", ApprovedBy,Training_Status,report_no from t_trainings where Active=1";
+                string sSqlstmt = "SELECT TrainingID, Attendees, DeptId, Training_Topic, Traning_BeforeDate, Training_Requested_By, Reasonfor_Training, Training_Status,Attended_no, "
+                   + " (case when RequestStatus='0' then 'Registration Phase Completed' when (RequestStatus='1' and (Training_Actual_Date <='01/01/0001'|| Training_Actual_Date is null)) then 'Training Approved'"
+                   + " when(RequestStatus = '1' and Training_Actual_Date > '01/01/0001') then 'Training Completed' when RequestStatus = '2' then 'Training Rejected' end) as RequestStatus"
+                   + ", ApprovedBy,Training_Status,report_no from t_trainings where Active=1";
 
                 UserCredentials objUser = new UserCredentials();
                 objUser = objGlobaldata.GetCurrentUserSession();
@@ -54,7 +51,7 @@ namespace ISOStd.Controllers
                 ViewBag.Approvestatus = objGlobaldata.GetConstantValueKeyValuePair("RequestStatus");
                 ViewBag.Training_Topic = objGlobaldata.GetDropdownList("Training Topic");
 
-                string sSearchtext = "";            
+                string sSearchtext = "";
 
                 if (branch_name != null && branch_name != "")
                 {
@@ -71,11 +68,8 @@ namespace ISOStd.Controllers
 
                 if (dsTrainingsList.Tables.Count > 0 && dsTrainingsList.Tables[0].Rows.Count > 0)
                 {
-
-
                     for (int i = 0; i < dsTrainingsList.Tables[0].Rows.Count; i++)
                     {
-
                         TrainingsModels objTrainingsModels = new TrainingsModels
                         {
                             TrainingID = dsTrainingsList.Tables[0].Rows[i]["TrainingID"].ToString(),
@@ -154,11 +148,8 @@ namespace ISOStd.Controllers
 
                 if (dsTrainingsList.Tables.Count > 0 && dsTrainingsList.Tables[0].Rows.Count > 0)
                 {
-
-
                     for (int i = 0; i < dsTrainingsList.Tables[0].Rows.Count; i++)
                     {
-
                         TrainingsModels objTrainingsModels = new TrainingsModels
                         {
                             TrainingID = dsTrainingsList.Tables[0].Rows[i]["TrainingID"].ToString(),
@@ -191,7 +182,6 @@ namespace ISOStd.Controllers
             }
             return Json("Success");
         }
-
 
         [AllowAnonymous]
         public ActionResult TrainingEventsEdit()
@@ -284,16 +274,16 @@ namespace ISOStd.Controllers
                         {
                             objTrainingsModels.Expected_Date_Completion = dtDatetime;
                         }
-                       // if (objTrainingsModels.Training_Start_Date.ToString("dd/MM/yyyy") == objTrainingsModels.Expected_Date_Completion.ToString("dd/MM/yyyy"))
-                       //     { 
-                       // int Start_time = Convert.ToInt32(objTrainingsModels.Training_Start_Date.ToString("HH")) * 60 + Convert.ToInt32(objTrainingsModels.Training_Start_Date.ToString("mm"));
-                       // int End_time = Convert.ToInt32(objTrainingsModels.Expected_Date_Completion.ToString("HH")) * 60 + Convert.ToInt32(objTrainingsModels.Expected_Date_Completion.ToString("mm"));
-                       // decimal duration = (End_time - Start_time);
-                       // int minutes = Convert.ToInt32(duration) / 60;
-                       // decimal seconds = duration % 60;
-                       // ViewBag.minutes = minutes;
-                       // ViewBag.seconds = seconds;
-                       //}
+                        // if (objTrainingsModels.Training_Start_Date.ToString("dd/MM/yyyy") == objTrainingsModels.Expected_Date_Completion.ToString("dd/MM/yyyy"))
+                        //     {
+                        // int Start_time = Convert.ToInt32(objTrainingsModels.Training_Start_Date.ToString("HH")) * 60 + Convert.ToInt32(objTrainingsModels.Training_Start_Date.ToString("mm"));
+                        // int End_time = Convert.ToInt32(objTrainingsModels.Expected_Date_Completion.ToString("HH")) * 60 + Convert.ToInt32(objTrainingsModels.Expected_Date_Completion.ToString("mm"));
+                        // decimal duration = (End_time - Start_time);
+                        // int minutes = Convert.ToInt32(duration) / 60;
+                        // decimal seconds = duration % 60;
+                        // ViewBag.minutes = minutes;
+                        // ViewBag.seconds = seconds;
+                        //}
                         var result = objTrainingsModels.Expected_Date_Completion - objTrainingsModels.Training_Start_Date;
                         ViewBag.days = result.Days;
                         ViewBag.minutes = result.Hours;
@@ -310,23 +300,23 @@ namespace ISOStd.Controllers
                         //    }
 
                         if (DateTime.TryParse(dsTrainingsList.Tables[0].Rows[0]["Training_Actual_Date"].ToString(), out dtDatetime))
-                            {
-                                objTrainingsModels.Training_Actual_Date = dtDatetime;
-                            }
-                            if (DateTime.TryParse(dsTrainingsList.Tables[0].Rows[0]["Training_Actual_Completion_Date"].ToString(), out dtDatetime))
-                            {
-                                objTrainingsModels.Training_Actual_Completion_Date = dtDatetime;
-                            }
+                        {
+                            objTrainingsModels.Training_Actual_Date = dtDatetime;
+                        }
+                        if (DateTime.TryParse(dsTrainingsList.Tables[0].Rows[0]["Training_Actual_Completion_Date"].ToString(), out dtDatetime))
+                        {
+                            objTrainingsModels.Training_Actual_Completion_Date = dtDatetime;
+                        }
 
-                          //  ViewBag.RequestStatus = objGlobaldata.GetConstantValue("RequestStatus");
-                            ViewBag.Training_Cert_Status = objTrainingsModels.GetMultiTrainingCertificateStatusList();
-                           // ViewBag.Training_Attendance = objGlobaldata.GetConstantValue("YesNo");
-                          //  ViewBag.Training_Effect_Eval_Method = objTrainingsModels.GetMultiTrainingEvaluationList();
-                          //  ViewBag.EmpLists = objGlobaldata.GetHrEmployeeListbox();
-                            ViewBag.EmpLists = objGlobaldata.GetHrEmpListByDept(dsTrainingsList.Tables[0].Rows[0]["DeptId"].ToString());
+                        //  ViewBag.RequestStatus = objGlobaldata.GetConstantValue("RequestStatus");
+                        ViewBag.Training_Cert_Status = objTrainingsModels.GetMultiTrainingCertificateStatusList();
+                        // ViewBag.Training_Attendance = objGlobaldata.GetConstantValue("YesNo");
+                        //  ViewBag.Training_Effect_Eval_Method = objTrainingsModels.GetMultiTrainingEvaluationList();
+                        //  ViewBag.EmpLists = objGlobaldata.GetHrEmployeeListbox();
+                        ViewBag.EmpLists = objGlobaldata.GetHrEmpListByDept(dsTrainingsList.Tables[0].Rows[0]["DeptId"].ToString());
 
-                          // ViewBag.ApprovedBy = objGlobaldata.GetReviewer();//Reviewer
-                          //  ViewBag.Training_Status = objTrainingsModels.GetMultiTrainingStatusList();
+                        // ViewBag.ApprovedBy = objGlobaldata.GetReviewer();//Reviewer
+                        //  ViewBag.Training_Status = objTrainingsModels.GetMultiTrainingStatusList();
 
                         if ((dsTrainingsList.Tables[0].Rows[0]["DeptId"].ToString() == "" || dsTrainingsList.Tables[0].Rows[0]["DeptId"].ToString() == null)
                             && dsTrainingsList.Tables[0].Rows[0]["Attendees"].ToString() != "")
@@ -334,7 +324,7 @@ namespace ISOStd.Controllers
                             ViewBag.chkAll = true;
                         }
 
-                        return View(objTrainingsModels);                    
+                        return View(objTrainingsModels);
                     }
                     else
                     {
@@ -356,7 +346,6 @@ namespace ISOStd.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        //[ValidateAntiForgeryToken]
         public ActionResult TrainingEventsEdit(TrainingsModels objTrainingsModels, FormCollection form, IEnumerable<HttpPostedFileBase> Upload, IEnumerable<HttpPostedFileBase> Attendees_Upload)
         {
             try
@@ -457,43 +446,42 @@ namespace ISOStd.Controllers
                 if (Attendees_UploadList != null)
                 {
                     if (Attendees_UploadList[0] != null)
-                {
-                    objTrainingsModels.Attendees_Upload = "";
-                    foreach (var file in Attendees_Upload)
                     {
-                        try
+                        objTrainingsModels.Attendees_Upload = "";
+                        foreach (var file in Attendees_Upload)
                         {
-                            string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/Training"), Path.GetFileName(file.FileName));
-                            string sFilename = "Training" + "_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath), sFilepath = Path.GetDirectoryName(spath);
-                            file.SaveAs(sFilepath + "/" + sFilename);
-                            objTrainingsModels.Attendees_Upload = objTrainingsModels.Attendees_Upload + "," + "~/DataUpload/MgmtDocs/Training/" + sFilename;
+                            try
+                            {
+                                string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/Training"), Path.GetFileName(file.FileName));
+                                string sFilename = "Training" + "_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath), sFilepath = Path.GetDirectoryName(spath);
+                                file.SaveAs(sFilepath + "/" + sFilename);
+                                objTrainingsModels.Attendees_Upload = objTrainingsModels.Attendees_Upload + "," + "~/DataUpload/MgmtDocs/Training/" + sFilename;
+                            }
+                            catch (Exception ex)
+                            {
+                                objGlobaldata.AddFunctionalLog("Exception in AddIncidentReport: " + ex.ToString());
+                            }
                         }
-                        catch (Exception ex)
-                        {
-                            objGlobaldata.AddFunctionalLog("Exception in AddIncidentReport: " + ex.ToString());
-                        }
+                        objTrainingsModels.Attendees_Upload = objTrainingsModels.Attendees_Upload.Trim(',');
                     }
-                    objTrainingsModels.Attendees_Upload = objTrainingsModels.Attendees_Upload.Trim(',');
+                    else
+                    {
+                        ViewBag.Message = "You have not specified a file.";
+                    }
+                    if (form["QCDocsVal1"] != null && form["QCDocsVal1"] != "")
+                    {
+                        objTrainingsModels.Attendees_Upload = objTrainingsModels.Attendees_Upload + "," + form["QCDocsVal1"];
+                        objTrainingsModels.Attendees_Upload = objTrainingsModels.Attendees_Upload.Trim(',');
+                    }
+                    else if (form["QCDocsVal1"] == null && QCDelete1 != null && Attendees_UploadList[0] == null)
+                    {
+                        objTrainingsModels.Attendees_Upload = null;
+                    }
+                    else if (form["QCDocsVal1"] == null && Attendees_UploadList[0] == null)
+                    {
+                        objTrainingsModels.Attendees_Upload = null;
+                    }
                 }
-                else
-                {
-                    ViewBag.Message = "You have not specified a file.";
-                }
-                if (form["QCDocsVal1"] != null && form["QCDocsVal1"] != "")
-                {
-                    objTrainingsModels.Attendees_Upload = objTrainingsModels.Attendees_Upload + "," + form["QCDocsVal1"];
-                    objTrainingsModels.Attendees_Upload = objTrainingsModels.Attendees_Upload.Trim(',');
-                }
-                else if (form["QCDocsVal1"] == null && QCDelete1 != null && Attendees_UploadList[0] == null)
-                {
-                    objTrainingsModels.Attendees_Upload = null;
-                }
-                else if (form["QCDocsVal1"] == null && Attendees_UploadList[0] == null)
-                {
-                    objTrainingsModels.Attendees_Upload = null;
-                }
-                         
-            }
                 if (objTrainingsModels.FunUpdateTrainingEvents(objTrainingsModels))
                 {
                     TempData["Successdata"] = "Traning details updated successfully";
@@ -517,103 +505,103 @@ namespace ISOStd.Controllers
         {
             TrainingsModels objTrainingsModels = new TrainingsModels();
             try
-            {                
-                    UserCredentials objUser = new UserCredentials();
-                    objUser = objGlobaldata.GetCurrentUserSession();
-                    string sRolename = objGlobaldata.GetRoleName(objUser.role);
+            {
+                UserCredentials objUser = new UserCredentials();
+                objUser = objGlobaldata.GetCurrentUserSession();
+                string sRolename = objGlobaldata.GetRoleName(objUser.role);
 
-                    //ViewBag.Role = sRolename;
-                    //ViewBag.CurrentEmpName = objUser.firstname;
-                    //ViewBag.Approvestatus = objGlobaldata.GetConstantValueKeyValuePair("RequestStatus");
-                    string sTrainingID = Request.QueryString["TrainingID"];
+                //ViewBag.Role = sRolename;
+                //ViewBag.CurrentEmpName = objUser.firstname;
+                //ViewBag.Approvestatus = objGlobaldata.GetConstantValueKeyValuePair("RequestStatus");
+                string sTrainingID = Request.QueryString["TrainingID"];
 
-                    UserCredentials objUserInfo = (UserCredentials)Session["UserCredentials"];
+                UserCredentials objUserInfo = (UserCredentials)Session["UserCredentials"];
 
-                    string sSqlstmt = "SELECT TrainingID, Attendees, Training_Topic,TopicContent ,Training_Planned_Date, Training_Start_Date, Expected_Date_Completion, Expected_Duration,"
-                                + "Training_Requested_By, Reasonfor_Training, Sourceof_Training, Trainer_Name, Venue, Training_Status, Training_Cert_Status, Training_Attendance, "
-                                + "Reasons_for_Not_Completed, Training_ReSchedule_Date, Training_Effect_Eval_Plan_Date, Training_Effect_Eval_Method, Training_Effect_Eval_Record_Ref"
-                                + ",Training_Actual_Date,Course_Material, Training_Actual_Completion_Date, ApprovedBy, Traning_BeforeDate,DeptId,Category,Service_provider,Ext_Trainer_Name," +
-                                "Upload,Attendees_Upload,RequestStatus,report_no from t_trainings where TrainingID='" + id + "'";
+                string sSqlstmt = "SELECT TrainingID, Attendees, Training_Topic,TopicContent ,Training_Planned_Date, Training_Start_Date, Expected_Date_Completion, Expected_Duration,"
+                            + "Training_Requested_By, Reasonfor_Training, Sourceof_Training, Trainer_Name, Venue, Training_Status, Training_Cert_Status, Training_Attendance, "
+                            + "Reasons_for_Not_Completed, Training_ReSchedule_Date, Training_Effect_Eval_Plan_Date, Training_Effect_Eval_Method, Training_Effect_Eval_Record_Ref"
+                            + ",Training_Actual_Date,Course_Material, Training_Actual_Completion_Date, ApprovedBy, Traning_BeforeDate,DeptId,Category,Service_provider,Ext_Trainer_Name," +
+                            "Upload,Attendees_Upload,RequestStatus,report_no from t_trainings where TrainingID='" + id + "'";
 
-                    DataSet dsTrainingsList = objGlobaldata.Getdetails(sSqlstmt);
+                DataSet dsTrainingsList = objGlobaldata.Getdetails(sSqlstmt);
 
-                    if (dsTrainingsList.Tables.Count > 0 && dsTrainingsList.Tables[0].Rows.Count > 0)
+                if (dsTrainingsList.Tables.Count > 0 && dsTrainingsList.Tables[0].Rows.Count > 0)
+                {
+                    DateTime dtDatetime;
+
+                    objTrainingsModels = new TrainingsModels
                     {
-                        DateTime dtDatetime;
+                        TrainingID = dsTrainingsList.Tables[0].Rows[0]["TrainingID"].ToString(),
+                        Attendees = objGlobaldata.GetMultiHrEmpNameById(dsTrainingsList.Tables[0].Rows[0]["Attendees"].ToString()),
+                        Training_Topic = (dsTrainingsList.Tables[0].Rows[0]["Training_Topic"].ToString()),
+                        Training_Requested_By = objGlobaldata.GetMultiHrEmpNameById(dsTrainingsList.Tables[0].Rows[0]["Training_Requested_By"].ToString()),
+                        ApprovedBy = objGlobaldata.GetMultiHrEmpNameById(dsTrainingsList.Tables[0].Rows[0]["ApprovedBy"].ToString()),
+                        RequestStatus = dsTrainingsList.Tables[0].Rows[0]["RequestStatus"].ToString(),
+                        Reasonfor_Training = dsTrainingsList.Tables[0].Rows[0]["Reasonfor_Training"].ToString(),
+                        Sourceof_Training = objTrainingsModels.GetTrainingSourceNameById(dsTrainingsList.Tables[0].Rows[0]["Sourceof_Training"].ToString()),
+                        Trainer_Name = objGlobaldata.GetEmpHrNameById(dsTrainingsList.Tables[0].Rows[0]["Trainer_Name"].ToString()),
+                        Venue = dsTrainingsList.Tables[0].Rows[0]["Venue"].ToString(),
+                        TopicContent = dsTrainingsList.Tables[0].Rows[0]["TopicContent"].ToString(),
+                        DeptId = objGlobaldata.GetMultiDeptNameById(dsTrainingsList.Tables[0].Rows[0]["DeptId"].ToString()),
+                        Category = objGlobaldata.GetDropdownitemById(dsTrainingsList.Tables[0].Rows[0]["Category"].ToString()),
+                        Service_provider = dsTrainingsList.Tables[0].Rows[0]["Service_provider"].ToString(),
+                        Ext_Trainer_Name = dsTrainingsList.Tables[0].Rows[0]["Ext_Trainer_Name"].ToString(),
+                        Upload = dsTrainingsList.Tables[0].Rows[0]["Upload"].ToString(),
+                        Attendees_Upload = dsTrainingsList.Tables[0].Rows[0]["Attendees_Upload"].ToString(),
+                        report_no = dsTrainingsList.Tables[0].Rows[0]["report_no"].ToString(),
+                    };
 
-                        objTrainingsModels = new TrainingsModels
-                        {
-                            TrainingID = dsTrainingsList.Tables[0].Rows[0]["TrainingID"].ToString(),
-                            Attendees = objGlobaldata.GetMultiHrEmpNameById(dsTrainingsList.Tables[0].Rows[0]["Attendees"].ToString()),
-                            Training_Topic = (dsTrainingsList.Tables[0].Rows[0]["Training_Topic"].ToString()),
-                            Training_Requested_By = objGlobaldata.GetMultiHrEmpNameById(dsTrainingsList.Tables[0].Rows[0]["Training_Requested_By"].ToString()),
-                            ApprovedBy = objGlobaldata.GetMultiHrEmpNameById(dsTrainingsList.Tables[0].Rows[0]["ApprovedBy"].ToString()),
-                            RequestStatus = dsTrainingsList.Tables[0].Rows[0]["RequestStatus"].ToString(),
-                            Reasonfor_Training = dsTrainingsList.Tables[0].Rows[0]["Reasonfor_Training"].ToString(),
-                            Sourceof_Training = objTrainingsModels.GetTrainingSourceNameById(dsTrainingsList.Tables[0].Rows[0]["Sourceof_Training"].ToString()),
-                            Trainer_Name = objGlobaldata.GetEmpHrNameById(dsTrainingsList.Tables[0].Rows[0]["Trainer_Name"].ToString()),
-                            Venue = dsTrainingsList.Tables[0].Rows[0]["Venue"].ToString(),
-                            TopicContent = dsTrainingsList.Tables[0].Rows[0]["TopicContent"].ToString(),
-                            DeptId = objGlobaldata.GetMultiDeptNameById(dsTrainingsList.Tables[0].Rows[0]["DeptId"].ToString()),
-                            Category = objGlobaldata.GetDropdownitemById(dsTrainingsList.Tables[0].Rows[0]["Category"].ToString()),
-                            Service_provider = dsTrainingsList.Tables[0].Rows[0]["Service_provider"].ToString(),
-                            Ext_Trainer_Name = dsTrainingsList.Tables[0].Rows[0]["Ext_Trainer_Name"].ToString(),
-                            Upload = dsTrainingsList.Tables[0].Rows[0]["Upload"].ToString(),
-                            Attendees_Upload = dsTrainingsList.Tables[0].Rows[0]["Attendees_Upload"].ToString(),
-                            report_no = dsTrainingsList.Tables[0].Rows[0]["report_no"].ToString(),
-                        };
+                    string[] AttedeesCount = (dsTrainingsList.Tables[0].Rows[0]["Attendees"].ToString()).Split(',');
+                    objTrainingsModels.Attended_no = AttedeesCount.Length;
 
-                        string[] AttedeesCount = (dsTrainingsList.Tables[0].Rows[0]["Attendees"].ToString()).Split(',');
-                        objTrainingsModels.Attended_no = AttedeesCount.Length;
-
-                        if (DateTime.TryParse(dsTrainingsList.Tables[0].Rows[0]["Traning_BeforeDate"].ToString(), out dtDatetime))
-                        {
-                            objTrainingsModels.Traning_BeforeDate = dtDatetime;
-                        }
-                        if (DateTime.TryParse(dsTrainingsList.Tables[0].Rows[0]["Training_Planned_Date"].ToString(), out dtDatetime))
-                        {
-                            objTrainingsModels.Training_Planned_Date = dtDatetime;
-                        }
-
-                        if (DateTime.TryParse(dsTrainingsList.Tables[0].Rows[0]["Training_Start_Date"].ToString(), out dtDatetime))
-                        {
-                            objTrainingsModels.Training_Start_Date = dtDatetime;
-                        }
-
-                        if (DateTime.TryParse(dsTrainingsList.Tables[0].Rows[0]["Expected_Date_Completion"].ToString(), out dtDatetime))
-                        {
-                            objTrainingsModels.Expected_Date_Completion = dtDatetime;
-                        }
-
-                        var result = objTrainingsModels.Expected_Date_Completion - objTrainingsModels.Training_Start_Date;
-                        ViewBag.days = result.Days;
-                        ViewBag.minutes = result.Hours;
-                        ViewBag.seconds = result.Minutes;
-
-                        if (DateTime.TryParse(dsTrainingsList.Tables[0].Rows[0]["Training_Effect_Eval_Plan_Date"].ToString(), out dtDatetime))
-                        {
-                            objTrainingsModels.Training_Effect_Eval_Plan_Date = dtDatetime;
-                        }
-                        if (DateTime.TryParse(dsTrainingsList.Tables[0].Rows[0]["Training_Actual_Date"].ToString(), out dtDatetime))
-                        {
-                            objTrainingsModels.Training_Actual_Date = dtDatetime;
-                        }
-                        if (DateTime.TryParse(dsTrainingsList.Tables[0].Rows[0]["Training_Actual_Completion_Date"].ToString(), out dtDatetime))
-                        {
-                            objTrainingsModels.Training_Actual_Completion_Date = dtDatetime;
-                        }
-                        //if ((dsTrainingsList.Tables[0].Rows[0]["DeptId"].ToString() == "" || dsTrainingsList.Tables[0].Rows[0]["DeptId"].ToString() == null)
-                        //    && dsTrainingsList.Tables[0].Rows[0]["Attendees"].ToString() != "")
-                        //{
-                        //    ViewBag.chkAll = true;
-                        //}
-
-                        return View(objTrainingsModels);
+                    if (DateTime.TryParse(dsTrainingsList.Tables[0].Rows[0]["Traning_BeforeDate"].ToString(), out dtDatetime))
+                    {
+                        objTrainingsModels.Traning_BeforeDate = dtDatetime;
                     }
-                    else
+                    if (DateTime.TryParse(dsTrainingsList.Tables[0].Rows[0]["Training_Planned_Date"].ToString(), out dtDatetime))
                     {
-                        TempData["alertdata"] = "No data exists";
-                    }  
+                        objTrainingsModels.Training_Planned_Date = dtDatetime;
+                    }
+
+                    if (DateTime.TryParse(dsTrainingsList.Tables[0].Rows[0]["Training_Start_Date"].ToString(), out dtDatetime))
+                    {
+                        objTrainingsModels.Training_Start_Date = dtDatetime;
+                    }
+
+                    if (DateTime.TryParse(dsTrainingsList.Tables[0].Rows[0]["Expected_Date_Completion"].ToString(), out dtDatetime))
+                    {
+                        objTrainingsModels.Expected_Date_Completion = dtDatetime;
+                    }
+
+                    var result = objTrainingsModels.Expected_Date_Completion - objTrainingsModels.Training_Start_Date;
+                    ViewBag.days = result.Days;
+                    ViewBag.minutes = result.Hours;
+                    ViewBag.seconds = result.Minutes;
+
+                    if (DateTime.TryParse(dsTrainingsList.Tables[0].Rows[0]["Training_Effect_Eval_Plan_Date"].ToString(), out dtDatetime))
+                    {
+                        objTrainingsModels.Training_Effect_Eval_Plan_Date = dtDatetime;
+                    }
+                    if (DateTime.TryParse(dsTrainingsList.Tables[0].Rows[0]["Training_Actual_Date"].ToString(), out dtDatetime))
+                    {
+                        objTrainingsModels.Training_Actual_Date = dtDatetime;
+                    }
+                    if (DateTime.TryParse(dsTrainingsList.Tables[0].Rows[0]["Training_Actual_Completion_Date"].ToString(), out dtDatetime))
+                    {
+                        objTrainingsModels.Training_Actual_Completion_Date = dtDatetime;
+                    }
+                    //if ((dsTrainingsList.Tables[0].Rows[0]["DeptId"].ToString() == "" || dsTrainingsList.Tables[0].Rows[0]["DeptId"].ToString() == null)
+                    //    && dsTrainingsList.Tables[0].Rows[0]["Attendees"].ToString() != "")
+                    //{
+                    //    ViewBag.chkAll = true;
+                    //}
+
+                    return View(objTrainingsModels);
+                }
+                else
+                {
+                    TempData["alertdata"] = "No data exists";
+                }
             }
             catch (Exception ex)
             {
@@ -641,7 +629,7 @@ namespace ISOStd.Controllers
                     string sTrainingID = Request.QueryString["TrainingID"];
 
                     UserCredentials objUserInfo = (UserCredentials)Session["UserCredentials"];
-                                      
+
                     string sSqlstmt = "SELECT TrainingID, Attendees, Training_Topic,TopicContent ,Training_Planned_Date, Training_Start_Date, Expected_Date_Completion, Expected_Duration,"
                                 + "Training_Requested_By, Reasonfor_Training, Sourceof_Training, Trainer_Name, Venue, Training_Status, Training_Cert_Status, Training_Attendance, "
                                 + "Reasons_for_Not_Completed, Training_ReSchedule_Date, Training_Effect_Eval_Plan_Date, Training_Effect_Eval_Method, Training_Effect_Eval_Record_Ref"
@@ -697,7 +685,7 @@ namespace ISOStd.Controllers
                         {
                             objTrainingsModels.Expected_Date_Completion = dtDatetime;
                         }
-                        
+
                         var result = objTrainingsModels.Expected_Date_Completion - objTrainingsModels.Training_Start_Date;
                         ViewBag.days = result.Days;
                         ViewBag.minutes = result.Hours;
@@ -706,7 +694,7 @@ namespace ISOStd.Controllers
                         if (DateTime.TryParse(dsTrainingsList.Tables[0].Rows[0]["Training_Effect_Eval_Plan_Date"].ToString(), out dtDatetime))
                         {
                             objTrainingsModels.Training_Effect_Eval_Plan_Date = dtDatetime;
-                        }                        
+                        }
                         if (DateTime.TryParse(dsTrainingsList.Tables[0].Rows[0]["Training_Actual_Date"].ToString(), out dtDatetime))
                         {
                             objTrainingsModels.Training_Actual_Date = dtDatetime;
@@ -749,91 +737,89 @@ namespace ISOStd.Controllers
             string sTrainingID = form["TrainingID"];
             try
             {
-                
                 //UserCredentials objUser = new UserCredentials();
                 //    objUser = objGlobaldata.GetCurrentUserSession();
                 //    string sRolename = objGlobaldata.GetRoleName(objUser.role);
 
-                    //ViewBag.Role = sRolename;
-                    //ViewBag.CurrentEmpName = objUser.firstname;
-                    //ViewBag.Approvestatus = objGlobaldata.GetConstantValueKeyValuePair("RequestStatus");
-                   
+                //ViewBag.Role = sRolename;
+                //ViewBag.CurrentEmpName = objUser.firstname;
+                //ViewBag.Approvestatus = objGlobaldata.GetConstantValueKeyValuePair("RequestStatus");
 
-                    UserCredentials objUserInfo = (UserCredentials)Session["UserCredentials"];
+                UserCredentials objUserInfo = (UserCredentials)Session["UserCredentials"];
 
-                    string sSqlstmt = "SELECT TrainingID, Attendees, Training_Topic,TopicContent ,Training_Planned_Date, Training_Start_Date, Expected_Date_Completion, Expected_Duration,"
-                                + "Training_Requested_By, Reasonfor_Training, Sourceof_Training, Trainer_Name, Venue, Training_Status, Training_Cert_Status, Training_Attendance, "
-                                + "Reasons_for_Not_Completed, Training_ReSchedule_Date, Training_Effect_Eval_Plan_Date, Training_Effect_Eval_Method, Training_Effect_Eval_Record_Ref"
-                                + ",Training_Actual_Date,Course_Material, Training_Actual_Completion_Date, ApprovedBy, Traning_BeforeDate,DeptId,Category,Service_provider,Ext_Trainer_Name," +
-                                "Upload,Attendees_Upload,RequestStatus,report_no from t_trainings where TrainingID='" + sTrainingID + "'";
+                string sSqlstmt = "SELECT TrainingID, Attendees, Training_Topic,TopicContent ,Training_Planned_Date, Training_Start_Date, Expected_Date_Completion, Expected_Duration,"
+                            + "Training_Requested_By, Reasonfor_Training, Sourceof_Training, Trainer_Name, Venue, Training_Status, Training_Cert_Status, Training_Attendance, "
+                            + "Reasons_for_Not_Completed, Training_ReSchedule_Date, Training_Effect_Eval_Plan_Date, Training_Effect_Eval_Method, Training_Effect_Eval_Record_Ref"
+                            + ",Training_Actual_Date,Course_Material, Training_Actual_Completion_Date, ApprovedBy, Traning_BeforeDate,DeptId,Category,Service_provider,Ext_Trainer_Name," +
+                            "Upload,Attendees_Upload,RequestStatus,report_no from t_trainings where TrainingID='" + sTrainingID + "'";
 
-                    DataSet dsTrainingsList = objGlobaldata.Getdetails(sSqlstmt);
+                DataSet dsTrainingsList = objGlobaldata.Getdetails(sSqlstmt);
 
-                    if (dsTrainingsList.Tables.Count > 0 && dsTrainingsList.Tables[0].Rows.Count > 0)
+                if (dsTrainingsList.Tables.Count > 0 && dsTrainingsList.Tables[0].Rows.Count > 0)
+                {
+                    DateTime dtDatetime;
+
+                    objTrainingsModels = new TrainingsModels
                     {
-                        DateTime dtDatetime;
+                        TrainingID = dsTrainingsList.Tables[0].Rows[0]["TrainingID"].ToString(),
+                        Attendees = objGlobaldata.GetMultiHrEmpNameById(dsTrainingsList.Tables[0].Rows[0]["Attendees"].ToString()),
+                        Training_Topic = (dsTrainingsList.Tables[0].Rows[0]["Training_Topic"].ToString()),
+                        Training_Requested_By = objGlobaldata.GetMultiHrEmpNameById(dsTrainingsList.Tables[0].Rows[0]["Training_Requested_By"].ToString()),
+                        ApprovedBy = objGlobaldata.GetMultiHrEmpNameById(dsTrainingsList.Tables[0].Rows[0]["ApprovedBy"].ToString()),
+                        RequestStatus = dsTrainingsList.Tables[0].Rows[0]["RequestStatus"].ToString(),
+                        Reasonfor_Training = dsTrainingsList.Tables[0].Rows[0]["Reasonfor_Training"].ToString(),
+                        Sourceof_Training = objTrainingsModels.GetTrainingSourceNameById(dsTrainingsList.Tables[0].Rows[0]["Sourceof_Training"].ToString()),
+                        Trainer_Name = objGlobaldata.GetEmpHrNameById(dsTrainingsList.Tables[0].Rows[0]["Trainer_Name"].ToString()),
+                        Venue = dsTrainingsList.Tables[0].Rows[0]["Venue"].ToString(),
+                        TopicContent = dsTrainingsList.Tables[0].Rows[0]["TopicContent"].ToString(),
+                        DeptId = objGlobaldata.GetMultiDeptNameById(dsTrainingsList.Tables[0].Rows[0]["DeptId"].ToString()),
+                        Category = objGlobaldata.GetDropdownitemById(dsTrainingsList.Tables[0].Rows[0]["Category"].ToString()),
+                        Service_provider = dsTrainingsList.Tables[0].Rows[0]["Service_provider"].ToString(),
+                        Ext_Trainer_Name = dsTrainingsList.Tables[0].Rows[0]["Ext_Trainer_Name"].ToString(),
+                        Upload = dsTrainingsList.Tables[0].Rows[0]["Upload"].ToString(),
+                        Attendees_Upload = dsTrainingsList.Tables[0].Rows[0]["Attendees_Upload"].ToString(),
+                        report_no = dsTrainingsList.Tables[0].Rows[0]["report_no"].ToString(),
+                    };
 
-                        objTrainingsModels = new TrainingsModels
-                        {
-                            TrainingID = dsTrainingsList.Tables[0].Rows[0]["TrainingID"].ToString(),
-                            Attendees = objGlobaldata.GetMultiHrEmpNameById(dsTrainingsList.Tables[0].Rows[0]["Attendees"].ToString()),
-                            Training_Topic = (dsTrainingsList.Tables[0].Rows[0]["Training_Topic"].ToString()),
-                            Training_Requested_By = objGlobaldata.GetMultiHrEmpNameById(dsTrainingsList.Tables[0].Rows[0]["Training_Requested_By"].ToString()),
-                            ApprovedBy = objGlobaldata.GetMultiHrEmpNameById(dsTrainingsList.Tables[0].Rows[0]["ApprovedBy"].ToString()),
-                            RequestStatus = dsTrainingsList.Tables[0].Rows[0]["RequestStatus"].ToString(),
-                            Reasonfor_Training = dsTrainingsList.Tables[0].Rows[0]["Reasonfor_Training"].ToString(),
-                            Sourceof_Training = objTrainingsModels.GetTrainingSourceNameById(dsTrainingsList.Tables[0].Rows[0]["Sourceof_Training"].ToString()),
-                            Trainer_Name = objGlobaldata.GetEmpHrNameById(dsTrainingsList.Tables[0].Rows[0]["Trainer_Name"].ToString()),
-                            Venue = dsTrainingsList.Tables[0].Rows[0]["Venue"].ToString(),
-                            TopicContent = dsTrainingsList.Tables[0].Rows[0]["TopicContent"].ToString(),
-                            DeptId = objGlobaldata.GetMultiDeptNameById(dsTrainingsList.Tables[0].Rows[0]["DeptId"].ToString()),
-                            Category = objGlobaldata.GetDropdownitemById(dsTrainingsList.Tables[0].Rows[0]["Category"].ToString()),
-                            Service_provider = dsTrainingsList.Tables[0].Rows[0]["Service_provider"].ToString(),
-                            Ext_Trainer_Name = dsTrainingsList.Tables[0].Rows[0]["Ext_Trainer_Name"].ToString(),
-                            Upload = dsTrainingsList.Tables[0].Rows[0]["Upload"].ToString(),
-                            Attendees_Upload = dsTrainingsList.Tables[0].Rows[0]["Attendees_Upload"].ToString(),
-                            report_no = dsTrainingsList.Tables[0].Rows[0]["report_no"].ToString(),
-                        };
+                    string[] AttedeesCount = (dsTrainingsList.Tables[0].Rows[0]["Attendees"].ToString()).Split(',');
+                    objTrainingsModels.Attended_no = AttedeesCount.Length;
 
-                        string[] AttedeesCount = (dsTrainingsList.Tables[0].Rows[0]["Attendees"].ToString()).Split(',');
-                        objTrainingsModels.Attended_no = AttedeesCount.Length;
+                    if (DateTime.TryParse(dsTrainingsList.Tables[0].Rows[0]["Traning_BeforeDate"].ToString(), out dtDatetime))
+                    {
+                        objTrainingsModels.Traning_BeforeDate = dtDatetime;
+                    }
+                    if (DateTime.TryParse(dsTrainingsList.Tables[0].Rows[0]["Training_Planned_Date"].ToString(), out dtDatetime))
+                    {
+                        objTrainingsModels.Training_Planned_Date = dtDatetime;
+                    }
 
-                        if (DateTime.TryParse(dsTrainingsList.Tables[0].Rows[0]["Traning_BeforeDate"].ToString(), out dtDatetime))
-                        {
-                            objTrainingsModels.Traning_BeforeDate = dtDatetime;
-                        }
-                        if (DateTime.TryParse(dsTrainingsList.Tables[0].Rows[0]["Training_Planned_Date"].ToString(), out dtDatetime))
-                        {
-                            objTrainingsModels.Training_Planned_Date = dtDatetime;
-                        }
+                    if (DateTime.TryParse(dsTrainingsList.Tables[0].Rows[0]["Training_Start_Date"].ToString(), out dtDatetime))
+                    {
+                        objTrainingsModels.Training_Start_Date = dtDatetime;
+                    }
 
-                        if (DateTime.TryParse(dsTrainingsList.Tables[0].Rows[0]["Training_Start_Date"].ToString(), out dtDatetime))
-                        {
-                            objTrainingsModels.Training_Start_Date = dtDatetime;
-                        }
+                    if (DateTime.TryParse(dsTrainingsList.Tables[0].Rows[0]["Expected_Date_Completion"].ToString(), out dtDatetime))
+                    {
+                        objTrainingsModels.Expected_Date_Completion = dtDatetime;
+                    }
 
-                        if (DateTime.TryParse(dsTrainingsList.Tables[0].Rows[0]["Expected_Date_Completion"].ToString(), out dtDatetime))
-                        {
-                            objTrainingsModels.Expected_Date_Completion = dtDatetime;
-                        }
+                    var result = objTrainingsModels.Expected_Date_Completion - objTrainingsModels.Training_Start_Date;
+                    ViewBag.days = result.Days;
+                    ViewBag.minutes = result.Hours;
+                    ViewBag.seconds = result.Minutes;
 
-                        var result = objTrainingsModels.Expected_Date_Completion - objTrainingsModels.Training_Start_Date;
-                        ViewBag.days = result.Days;
-                        ViewBag.minutes = result.Hours;
-                        ViewBag.seconds = result.Minutes;
-
-                        if (DateTime.TryParse(dsTrainingsList.Tables[0].Rows[0]["Training_Effect_Eval_Plan_Date"].ToString(), out dtDatetime))
-                        {
-                            objTrainingsModels.Training_Effect_Eval_Plan_Date = dtDatetime;
-                        }
-                        if (DateTime.TryParse(dsTrainingsList.Tables[0].Rows[0]["Training_Actual_Date"].ToString(), out dtDatetime))
-                        {
-                            objTrainingsModels.Training_Actual_Date = dtDatetime;
-                        }
-                        if (DateTime.TryParse(dsTrainingsList.Tables[0].Rows[0]["Training_Actual_Completion_Date"].ToString(), out dtDatetime))
-                        {
-                            objTrainingsModels.Training_Actual_Completion_Date = dtDatetime;
-                        }
+                    if (DateTime.TryParse(dsTrainingsList.Tables[0].Rows[0]["Training_Effect_Eval_Plan_Date"].ToString(), out dtDatetime))
+                    {
+                        objTrainingsModels.Training_Effect_Eval_Plan_Date = dtDatetime;
+                    }
+                    if (DateTime.TryParse(dsTrainingsList.Tables[0].Rows[0]["Training_Actual_Date"].ToString(), out dtDatetime))
+                    {
+                        objTrainingsModels.Training_Actual_Date = dtDatetime;
+                    }
+                    if (DateTime.TryParse(dsTrainingsList.Tables[0].Rows[0]["Training_Actual_Completion_Date"].ToString(), out dtDatetime))
+                    {
+                        objTrainingsModels.Training_Actual_Completion_Date = dtDatetime;
+                    }
 
                     string logged_Id = objGlobaldata.GetCurrentUserSession().empid;
 
@@ -845,18 +831,17 @@ namespace ISOStd.Controllers
 
                     ViewBag.CompanyInfo = dsTrainingsList;
                     ViewBag.objTraining = objTrainingsModels;
-                  }
-                    else
-                    {
-                        TempData["alertdata"] = "No data exists";
-                    }               
+                }
+                else
+                {
+                    TempData["alertdata"] = "No data exists";
+                }
             }
             catch (Exception ex)
             {
                 objGlobaldata.AddFunctionalLog("Exception in TrainingEventsDetails: " + ex.ToString());
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
-           
 
             Dictionary<string, string> cookieCollection = new Dictionary<string, string>();
 
@@ -882,7 +867,7 @@ namespace ISOStd.Controllers
                 string user = "";
 
                 user = objGlobaldata.GetCurrentUserSession().firstname;
-                               
+
                 string sStatus = "";
                 if (iStatus == 0)
                 {
@@ -895,7 +880,6 @@ namespace ISOStd.Controllers
                 else if (iStatus == 2)
                 {
                     sStatus = "Rejected";
-
                 }
                 if (objTrainingsModels.FunTrainingEventApproveOrReject(TrainingID, iStatus))
                 {
@@ -906,7 +890,6 @@ namespace ISOStd.Controllers
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 }
             }
-           
             catch (Exception ex)
             {
                 objGlobaldata.AddFunctionalLog("Exception in TrainingEventsApproveReject: " + ex.ToString());
@@ -922,7 +905,7 @@ namespace ISOStd.Controllers
                 return RedirectToAction("TrainingEventsList");
             }
         }
-      
+
         public JsonResult TrainingEventsApproveRejectNoty(string TrainingID, string ApprovedBy, int iStatus, string PendingFlg)
         {
             try
@@ -936,7 +919,7 @@ namespace ISOStd.Controllers
                 else
                 {
                     return Json("Failed");
-                }              
+                }
             }
             catch (Exception ex)
             {
@@ -953,6 +936,5 @@ namespace ISOStd.Controllers
                 return Json("Failed");
             }
         }
-               
     }
 }

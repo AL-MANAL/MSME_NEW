@@ -1,22 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using ISOStd.Models;
+using System;
 using System.Web.Mvc;
-using ISOStd.Models;
-using System.Data;
-using System.Net;
-using System.IO;
-using PagedList;
-using PagedList.Mvc;
-using Rotativa;
-using ISOStd.Filters;
 
 namespace ISOStd.Controllers
 {
     public class DocumentLevelsController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
+        private clsGlobal objGlobaldata = new clsGlobal();
 
         public ActionResult AddDocumentLevel(string sDocLevelId)
         {
@@ -24,8 +14,8 @@ namespace ISOStd.Controllers
             {
                 DocumentLevelsModels objDocType = new DocumentLevelsModels();
                 ViewBag.DocumentLevels = objDocType.GetDocLevelListbox();
-               
-              if (sDocLevelId != null && sDocLevelId != "")
+
+                if (sDocLevelId != null && sDocLevelId != "")
                 {
                     string sql = "Select id_levels_details,id_doc_level,description from t_document_levels_details where id_doc_level='" + sDocLevelId + "' and active=1";
                     ViewBag.dsDoclevelDetails = objGlobaldata.Getdetails(sql);
@@ -88,7 +78,7 @@ namespace ISOStd.Controllers
         //public ActionResult AddDirectoratecode()
         //{
         //    try
-        //    {             
+        //    {
         //            string sql = "Select * from t_company_branch where active=1;";
 
         //            ViewBag.dsDirectorate = objGlobaldata.Getdetails(sql);
@@ -106,7 +96,7 @@ namespace ISOStd.Controllers
         //public ActionResult AddDirectoratecode(DirectorateModels obj, FormCollection form)
         //{
         //    try
-        //    {            
+        //    {
         //            if (obj.FunAddDirectorate(obj))
         //            {
         //                TempData["Successdata"] = "Added Directorate details successfully";
@@ -132,7 +122,7 @@ namespace ISOStd.Controllers
         //    try
         //    {
         //        string sql = "Select * from t_company_branch;";
-        //        ViewBag.dsDirectorate = objGlobaldata.Getdetails(sql);                
+        //        ViewBag.dsDirectorate = objGlobaldata.Getdetails(sql);
         //    }
         //    catch (Exception ex)
         //    {
@@ -145,7 +135,6 @@ namespace ISOStd.Controllers
         //[AllowAnonymous]
         //public JsonResult DocDirectorateUpdate(string id_element, string Type_Desc, string Type_Details)
         //{
-
         //    DirectorateModels obj = new DirectorateModels();
         //    obj.Directorate_id = id_element;
         //    obj.Type_Desc = Type_Desc;
@@ -198,7 +187,6 @@ namespace ISOStd.Controllers
         //}
 
         ////--------------- End Directorate-----------------
-
 
         ////--------------- Start Group-----------------
 
@@ -257,7 +245,6 @@ namespace ISOStd.Controllers
 
         //    if (Directorate_id != null && Directorate_id != "")
         //    {
-
         //        string sql = "Select * from t_departments where branch='" + Directorate_id + "'";
 
         //        ViewBag.dsDirectorateGroup = objGlobaldata.Getdetails(sql);
@@ -272,7 +259,6 @@ namespace ISOStd.Controllers
         //[AllowAnonymous]
         //public JsonResult DocGroupUpdate(string id_element, string Type_Desc, string Type_Details)
         //{
-
         //    DirectorateGroupModels obj = new DirectorateGroupModels();
         //    obj.Group_id = id_element;
         //    obj.Type_Desc = Type_Desc;
@@ -306,7 +292,7 @@ namespace ISOStd.Controllers
         //    {
         //        if (obj.FunDeleteGroup(obj))
         //        {
-        //            TempData["Successdata"] = " Document Group deleted successfully";                   
+        //            TempData["Successdata"] = " Document Group deleted successfully";
         //        }
         //        else
         //        {
@@ -323,16 +309,11 @@ namespace ISOStd.Controllers
         //}
 
         ////--------------- End Group-----------------
-                          
-
 
         //public bool AddDocLevelDetails(DocLevelDetailsModels obj)
-        //{  
-        //    return obj.FunAdd(obj);         
+        //{
+        //    return obj.FunAdd(obj);
         //}
-
-
-
 
         [AllowAnonymous]
         public ActionResult DocLevelUpdate(DocumentLevelsModels objLevel)
@@ -399,19 +380,16 @@ namespace ISOStd.Controllers
         //    GroupTeamModels obj = new GroupTeamModels();
         //    return Json(obj.GetDocTeamListbox(sDocId));
         //}
-    
+
         //[AllowAnonymous]
         //public JsonResult DocTeamUpdate(string id_element, string Type_Desc, string Type_Details)
         //{
-
         //    GroupTeamModels obj = new GroupTeamModels();
         //    obj.Team_id = id_element;
         //    obj.Type_Desc = Type_Desc;
         //    obj.Type_Details = Type_Details;
         //    try
         //    {
-
-
         //        if (obj.FunUpdate(obj))
         //        {
         //            TempData["Successdata"] = "Updated Team details successfully";
@@ -433,19 +411,14 @@ namespace ISOStd.Controllers
         //[AllowAnonymous]
         //public JsonResult TeamDelete(string id_element)
         //{
-
         //    GroupTeamModels obj = new GroupTeamModels();
         //    obj.Team_id = id_element;
 
         //    try
         //    {
-
-
         //        if (obj.FunDelete(obj))
         //        {
         //            TempData["Successdata"] = " Document Team deleted successfully";
-
-
 
         //            //AddMeetingType(objMeetingAgenda.MeetingType);
         //        }
@@ -471,7 +444,7 @@ namespace ISOStd.Controllers
 
             {
                 objModels.id_doc_level = form["id_doc_level"];
-                objModels.description = form["description"];               
+                objModels.description = form["description"];
 
                 if (objModels.FunAddDocLevelDetails(objModels))
                 {
@@ -498,7 +471,7 @@ namespace ISOStd.Controllers
             DocumentLevelsModels obj = new DocumentLevelsModels();
             obj.id_levels_details = id_element;
             obj.description = description;
-         
+
             try
             {
                 if (obj.FunUpdateDocLevelDetails(obj))
@@ -521,9 +494,8 @@ namespace ISOStd.Controllers
         [AllowAnonymous]
         public JsonResult DocDetailsDelete(string id_element)
         {
-
             DocumentLevelsModels obj = new DocumentLevelsModels();
-            obj.id_levels_details = id_element;          
+            obj.id_levels_details = id_element;
             try
             {
                 if (obj.FunDeleteDocLevelDetails(obj))
@@ -550,6 +522,6 @@ namespace ISOStd.Controllers
             var user = obj.CheckForDocNameExists(Document_Level);
 
             return Json(user);
-        } 
+        }
     }
 }

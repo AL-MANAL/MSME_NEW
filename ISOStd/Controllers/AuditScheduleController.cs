@@ -11,7 +11,7 @@ namespace ISOStd.Controllers
 {
     public class AuditScheduleController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
+        private clsGlobal objGlobaldata = new clsGlobal();
 
         public AuditScheduleController()
         {
@@ -36,14 +36,13 @@ namespace ISOStd.Controllers
                 ViewBag.EntityType = objGlobaldata.GetDropdownList("Schedule Entity Type");
                 ViewBag.EntityNo = objGlobaldata.GetDropdownList("Schedule Entity Number");
                 ViewBag.AuditCriteria = objGlobaldata.GetAllIsoStdListbox();
-                ViewBag.AuditCriticality= objGlobaldata.GetDropdownList("Schedule Audit Criticality");
+                ViewBag.AuditCriticality = objGlobaldata.GetDropdownList("Schedule Audit Criticality");
                 ViewBag.AuditScope = objGlobaldata.GetDropdownList("Schedule Audit Scope");
                 ViewBag.PlanTimeInHour = objGlobaldata.GetAuditTimeInHour();
                 ViewBag.PlanTimeInMin = objGlobaldata.GetAuditTimeInMin();
-                ViewBag.CheckList = objGlobaldata.GetChecklistType();            
+                ViewBag.CheckList = objGlobaldata.GetChecklistType();
                 ViewBag.Availability = objGlobaldata.GetConstantValue("Availability");
                 ViewBag.Auditor = objGlobaldata.GetAuditor();
-
             }
             catch (Exception ex)
             {
@@ -104,7 +103,6 @@ namespace ISOStd.Controllers
                     ViewBag.Message = "You have not specified a file.";
                 }
 
-
                 //AuditScheduleModelsList objAccTypeList = new AuditScheduleModelsList();
                 //objAccTypeList.AccidentList = new List<AuditScheduleModels>();
                 //for (int i = 0; i < Convert.ToInt16(form["itemcnt"]); i++)
@@ -123,7 +121,7 @@ namespace ISOStd.Controllers
                 {
                     AuditScheduleModels AudModel = new AuditScheduleModels();
 
-                    AudModel.auditor_name = form["auditor_name" + i];                  
+                    AudModel.auditor_name = form["auditor_name" + i];
                     AudModel.audit_dept = form["audit_dept" + i];
                     AudModel.audit_loc = form["audit_loc" + i];
                     AudModel.focused_area = form["focused_area" + i];
@@ -144,12 +142,11 @@ namespace ISOStd.Controllers
                     objAuditList.ScheculeList.Add(AudModel);
                 }
 
-
                 if (objSchedule.FunAddAuditSchedule(objSchedule, objAuditList))
                 {
                     TempData["Successdata"] = "Added Audit Schedule details successfully with Audit Number '" + objSchedule.audit_no + "'";
                     //Send MOM email
-                    //AuditScheduleModels objAudit = new AuditScheduleModels();                    
+                    //AuditScheduleModels objAudit = new AuditScheduleModels();
                 }
                 else
                 {
@@ -222,7 +219,7 @@ namespace ISOStd.Controllers
                             //{
                             //    objScheduleMdl.acc_date = dtDocDate;
                             //}
-                            
+
                             objAttList.ScheculeList.Add(objScheduleMdl);
                         }
                         catch (Exception ex)
@@ -232,7 +229,6 @@ namespace ISOStd.Controllers
                         }
                     }
                 }
-
             }
             catch (Exception ex)
             {
@@ -311,7 +307,6 @@ namespace ISOStd.Controllers
                         }
                     }
                 }
-
             }
             catch (Exception ex)
             {
@@ -321,7 +316,6 @@ namespace ISOStd.Controllers
 
             return Json("Success");
         }
-
 
         [AllowAnonymous]
         public ActionResult AuditScheduleEdit()
@@ -355,17 +349,17 @@ namespace ISOStd.Controllers
                         objModel = new AuditScheduleModels
                         {
                             id_audit_schedule = dsAccidentList.Tables[0].Rows[0]["id_audit_schedule"].ToString(),
-                            audit_type =(dsAccidentList.Tables[0].Rows[0]["audit_type"].ToString()),
+                            audit_type = (dsAccidentList.Tables[0].Rows[0]["audit_type"].ToString()),
                             audit_no = (dsAccidentList.Tables[0].Rows[0]["audit_no"].ToString()),
                             entity_type = (dsAccidentList.Tables[0].Rows[0]["entity_type"].ToString()),
                             entity_no = (dsAccidentList.Tables[0].Rows[0]["entity_no"].ToString()),
                             audit_scope = (dsAccidentList.Tables[0].Rows[0]["audit_scope"].ToString()),
                             audit_criticallty = (dsAccidentList.Tables[0].Rows[0]["audit_criticallty"].ToString()),
-                            audit_criteria =(dsAccidentList.Tables[0].Rows[0]["audit_criteria"].ToString()),
+                            audit_criteria = (dsAccidentList.Tables[0].Rows[0]["audit_criteria"].ToString()),
                             contractual_agreement = dsAccidentList.Tables[0].Rows[0]["contractual_agreement"].ToString(),
                             purpose = dsAccidentList.Tables[0].Rows[0]["purpose"].ToString(),
                             site_access = dsAccidentList.Tables[0].Rows[0]["site_access"].ToString(),
-                            schedule_by =(dsAccidentList.Tables[0].Rows[0]["schedule_by"].ToString()),
+                            schedule_by = (dsAccidentList.Tables[0].Rows[0]["schedule_by"].ToString()),
                             approvedby = (dsAccidentList.Tables[0].Rows[0]["approvedby"].ToString()),
                             branch = (dsAccidentList.Tables[0].Rows[0]["branch"].ToString()),
                         };
@@ -374,15 +368,13 @@ namespace ISOStd.Controllers
                         //      && DateTime.TryParse(dsAccidentList.Tables[0].Rows[0]["acc_date"].ToString(), out dtDocDate))
                         //{
                         //    objModel.acc_date = dtDocDate;
-                        //}                       
+                        //}
                         ViewBag.EmpList = objGlobaldata.GetHrEmpListByDivision(dsAccidentList.Tables[0].Rows[0]["branch"].ToString());
                         ViewBag.Location = objGlobaldata.GetLocationbyMultiDivision(dsAccidentList.Tables[0].Rows[0]["branch"].ToString());
                         ViewBag.Dept = objGlobaldata.GetDepartmentList1(dsAccidentList.Tables[0].Rows[0]["branch"].ToString());
-
                     }
                     else
                     {
-
                         TempData["alertdata"] = "Id cannot be Null or empty";
                         return RedirectToAction("AuditScheduleList");
                     }
@@ -417,7 +409,7 @@ namespace ISOStd.Controllers
                                 if (dsScheduleList.Tables[0].Rows[i]["scheduled_time_date"].ToString() != ""
                          && DateTime.TryParse(dsScheduleList.Tables[0].Rows[i]["scheduled_time_date"].ToString(), out dtDocDate1))
                                 {
-                                    objTeamMdl.scheduled_time_date = dtDocDate1;                                   
+                                    objTeamMdl.scheduled_time_date = dtDocDate1;
                                 }
 
                                 objList.ScheculeList.Add(objTeamMdl);
@@ -430,7 +422,7 @@ namespace ISOStd.Controllers
                             }
                         }
                         ViewBag.objAuditList = objList;
-                    }  
+                    }
                 }
             }
             catch (Exception ex)
@@ -447,8 +439,7 @@ namespace ISOStd.Controllers
         public ActionResult AuditScheduleEdit(FormCollection form, AuditScheduleModels objSchedule, IEnumerable<HttpPostedFileBase> contractual_agreement)
         {
             try
-            {              
-
+            {
                 string QCDelete = Request.Form["QCDocsValselectall"];
 
                 objSchedule.audit_criteria = form["audit_criteria"];
@@ -463,7 +454,6 @@ namespace ISOStd.Controllers
 
                 if (Request.Files.Count > 0)
                 {
-
                     if (contractual_agreement != null && files.ContentLength > 0)
                     {
                         objSchedule.contractual_agreement = "";
@@ -488,21 +478,20 @@ namespace ISOStd.Controllers
                     {
                         ViewBag.Message = "You have not specified a file.";
                     }
-                 }
-                    if (form["QCDocsVal"] != null && form["QCDocsVal"] != "")
-                    {
-                        objSchedule.contractual_agreement = objSchedule.contractual_agreement + "," + form["QCDocsVal"];
-                        objSchedule.contractual_agreement = objSchedule.contractual_agreement.Trim(',');
-                    }
-                    else if (form["QCDocsVal"] == null && QCDelete != null && files.ContentLength == 0)
-                    {
-                        objSchedule.contractual_agreement = null;
-                    }
-                    else if (form["QCDocsVal"] == null && files.ContentLength == 0)
-                    {
-                        objSchedule.contractual_agreement = null;
-                    }
-                
+                }
+                if (form["QCDocsVal"] != null && form["QCDocsVal"] != "")
+                {
+                    objSchedule.contractual_agreement = objSchedule.contractual_agreement + "," + form["QCDocsVal"];
+                    objSchedule.contractual_agreement = objSchedule.contractual_agreement.Trim(',');
+                }
+                else if (form["QCDocsVal"] == null && QCDelete != null && files.ContentLength == 0)
+                {
+                    objSchedule.contractual_agreement = null;
+                }
+                else if (form["QCDocsVal"] == null && files.ContentLength == 0)
+                {
+                    objSchedule.contractual_agreement = null;
+                }
 
                 AuditScheduleModelsList objTeamList = new AuditScheduleModelsList();
                 objTeamList.ScheculeList = new List<AuditScheduleModels>();
@@ -511,7 +500,7 @@ namespace ISOStd.Controllers
                 //{
                 //    if (form["injury_type " + i] != null && form["no_person " + i] != null)
                 //    {
-                //        AuditScheduleModels objAccRpt = new AuditScheduleModels();                       
+                //        AuditScheduleModels objAccRpt = new AuditScheduleModels();
                 //        objAccRpt.injury_type = form["injury_type " + i];
                 //        objAccRpt.no_person = form["no_person " + i];
 
@@ -521,14 +510,13 @@ namespace ISOStd.Controllers
 
                 //if (objSchedule.injury_type != null)
                 //{
-                //    AuditScheduleModels objAccRpt = new AuditScheduleModels();                  
+                //    AuditScheduleModels objAccRpt = new AuditScheduleModels();
                 //    objAccRpt.injury_type = form["injury_type "];
                 //    objAccRpt.no_person = form["no_person "];
 
                 //    objAccTypeList.AccidentList.Add(objAccRpt);
-                //}             
+                //}
 
-               
                 int iCnt = 0;
                 DateTime dateValue;
                 if (form["itemcnt"] != null && form["itemcnt"] != "" && int.TryParse(form["itemcnt"], out iCnt))
@@ -546,7 +534,7 @@ namespace ISOStd.Controllers
                                 focused_area = form["focused_area " + i],
                                 checklist_id = form["checklist_id " + i],
                                 auditor_availability = form["auditor_availability " + i],
-                                next_availability = form["next_availability " + i],                               
+                                next_availability = form["next_availability " + i],
                             };
                             if (DateTime.TryParse(form["scheduled_time_date " + i], out dateValue) == true)
                             {
@@ -560,7 +548,7 @@ namespace ISOStd.Controllers
                                 }
                                 //int iHr ,iMin;
                                 //if (form["PlanTimeInHour " + i] != null  &&
-                                //    form["PlanTimeInMin " + i] != null) 
+                                //    form["PlanTimeInMin " + i] != null)
                                 //{
                                 //    iHr = Convert.ToInt32(form["PlanTimeInHour " + i]);
                                 //    iMin = Convert.ToInt32(form["PlanTimeInMin " + i]);
@@ -598,85 +586,83 @@ namespace ISOStd.Controllers
                 string sSqlstmt = "select id_audit_schedule,audit_type,audit_no,entity_type,entity_no,audit_scope,audit_criticallty,audit_criteria," +
                     "contractual_agreement,purpose,site_access,schedule_by,approvedby,branch from t_audit_schedule where id_audit_schedule ='" + id + "'";
 
-                    DataSet dsAccidentList = objGlobaldata.Getdetails(sSqlstmt);
-                    if (dsAccidentList.Tables.Count > 0 && dsAccidentList.Tables[0].Rows.Count > 0)
+                DataSet dsAccidentList = objGlobaldata.Getdetails(sSqlstmt);
+                if (dsAccidentList.Tables.Count > 0 && dsAccidentList.Tables[0].Rows.Count > 0)
+                {
+                    objModel = new AuditScheduleModels
                     {
-                        objModel = new AuditScheduleModels
-                        {
-                            id_audit_schedule = dsAccidentList.Tables[0].Rows[0]["id_audit_schedule"].ToString(),
-                            audit_type = objGlobaldata.GetDropdownitemById(dsAccidentList.Tables[0].Rows[0]["audit_type"].ToString()),
-                            audit_no = (dsAccidentList.Tables[0].Rows[0]["audit_no"].ToString()),
-                            entity_type = objGlobaldata.GetDropdownitemById(dsAccidentList.Tables[0].Rows[0]["entity_type"].ToString()),
-                            entity_no = objGlobaldata.GetDropdownitemById(dsAccidentList.Tables[0].Rows[0]["entity_no"].ToString()),
-                            audit_scope = objGlobaldata.GetDropdownitemById(dsAccidentList.Tables[0].Rows[0]["audit_scope"].ToString()),
-                            audit_criticallty = objGlobaldata.GetDropdownitemById(dsAccidentList.Tables[0].Rows[0]["audit_criticallty"].ToString()),
-                            audit_criteria = objGlobaldata.GetIsoStdDescriptionById(dsAccidentList.Tables[0].Rows[0]["audit_criteria"].ToString()),
-                            contractual_agreement = dsAccidentList.Tables[0].Rows[0]["contractual_agreement"].ToString(),
-                            purpose = dsAccidentList.Tables[0].Rows[0]["purpose"].ToString(),
-                            site_access = dsAccidentList.Tables[0].Rows[0]["site_access"].ToString(),
-                            schedule_by = objGlobaldata.GetMultiHrEmpNameById(dsAccidentList.Tables[0].Rows[0]["schedule_by"].ToString()),
-                            approvedby = objGlobaldata.GetMultiHrEmpNameById(dsAccidentList.Tables[0].Rows[0]["approvedby"].ToString()),
-                            branch = objGlobaldata.GetMultiCompanyBranchNameById(dsAccidentList.Tables[0].Rows[0]["branch"].ToString()),
-                        };
-                        //DateTime dtDocDate;
-                        //if (dsAccidentList.Tables[0].Rows[0]["acc_date"].ToString() != ""
-                        //      && DateTime.TryParse(dsAccidentList.Tables[0].Rows[0]["acc_date"].ToString(), out dtDocDate))
-                        //{
-                        //    objModel.acc_date = dtDocDate;
-                        //}                       
-
-                    }
-                    else
-                    {
-
-                        TempData["alertdata"] = "Id cannot be Null or empty";
-                        return RedirectToAction("AuditScheduleList");
-                    }
-
-                    //AuditScheduleModelsList objList = new AuditScheduleModelsList();
-                    //objList.ScheculeList = new List<AuditScheduleModels>();
-
-                    //sSqlstmt = "select id_audit_schedule_trans,id_audit_schedule,auditor_name,audit_dept,audit_loc,focused_area,scheduled_time_date,checklist_id," +
-                    //    "auditor_availability,next_availability from t_audit_schedule_trans where id_audit_schedule='" + id_audit_schedule + "'";
-
-                    //DataSet dsScheduleList = objGlobaldata.Getdetails(sSqlstmt);
-                    //if (dsScheduleList.Tables.Count > 0 && dsScheduleList.Tables[0].Rows.Count > 0)
+                        id_audit_schedule = dsAccidentList.Tables[0].Rows[0]["id_audit_schedule"].ToString(),
+                        audit_type = objGlobaldata.GetDropdownitemById(dsAccidentList.Tables[0].Rows[0]["audit_type"].ToString()),
+                        audit_no = (dsAccidentList.Tables[0].Rows[0]["audit_no"].ToString()),
+                        entity_type = objGlobaldata.GetDropdownitemById(dsAccidentList.Tables[0].Rows[0]["entity_type"].ToString()),
+                        entity_no = objGlobaldata.GetDropdownitemById(dsAccidentList.Tables[0].Rows[0]["entity_no"].ToString()),
+                        audit_scope = objGlobaldata.GetDropdownitemById(dsAccidentList.Tables[0].Rows[0]["audit_scope"].ToString()),
+                        audit_criticallty = objGlobaldata.GetDropdownitemById(dsAccidentList.Tables[0].Rows[0]["audit_criticallty"].ToString()),
+                        audit_criteria = objGlobaldata.GetIsoStdDescriptionById(dsAccidentList.Tables[0].Rows[0]["audit_criteria"].ToString()),
+                        contractual_agreement = dsAccidentList.Tables[0].Rows[0]["contractual_agreement"].ToString(),
+                        purpose = dsAccidentList.Tables[0].Rows[0]["purpose"].ToString(),
+                        site_access = dsAccidentList.Tables[0].Rows[0]["site_access"].ToString(),
+                        schedule_by = objGlobaldata.GetMultiHrEmpNameById(dsAccidentList.Tables[0].Rows[0]["schedule_by"].ToString()),
+                        approvedby = objGlobaldata.GetMultiHrEmpNameById(dsAccidentList.Tables[0].Rows[0]["approvedby"].ToString()),
+                        branch = objGlobaldata.GetMultiCompanyBranchNameById(dsAccidentList.Tables[0].Rows[0]["branch"].ToString()),
+                    };
+                    //DateTime dtDocDate;
+                    //if (dsAccidentList.Tables[0].Rows[0]["acc_date"].ToString() != ""
+                    //      && DateTime.TryParse(dsAccidentList.Tables[0].Rows[0]["acc_date"].ToString(), out dtDocDate))
                     //{
-                    //    for (int i = 0; i < dsScheduleList.Tables[0].Rows.Count; i++)
-                    //    {
-                    //        try
-                    //        {
-                    //            AuditScheduleModels objTeamMdl = new AuditScheduleModels
-                    //            {
-                    //                id_audit_schedule_trans = dsScheduleList.Tables[0].Rows[i]["id_audit_schedule_trans"].ToString(),
-                    //                id_audit_schedule = dsScheduleList.Tables[0].Rows[i]["id_audit_schedule"].ToString(),
-                    //                auditor_name = /*objGlobaldata.GetMultiHrEmpNameById*/(dsScheduleList.Tables[0].Rows[i]["auditor_name"].ToString()),
-                    //                audit_dept = dsScheduleList.Tables[0].Rows[i]["audit_dept"].ToString(),
-                    //                audit_loc = dsScheduleList.Tables[0].Rows[i]["audit_loc"].ToString(),
-                    //                focused_area = dsScheduleList.Tables[0].Rows[i]["focused_area"].ToString(),
-                    //                checklist_id = dsScheduleList.Tables[0].Rows[i]["checklist_id"].ToString(),
-                    //                auditor_availability = dsScheduleList.Tables[0].Rows[i]["auditor_availability"].ToString(),
-                    //                next_availability = dsScheduleList.Tables[0].Rows[i]["next_availability"].ToString(),
-                    //            };
+                    //    objModel.acc_date = dtDocDate;
+                    //}
+                }
+                else
+                {
+                    TempData["alertdata"] = "Id cannot be Null or empty";
+                    return RedirectToAction("AuditScheduleList");
+                }
 
-                    //            DateTime dtDocDate1;
-                    //            if (dsScheduleList.Tables[0].Rows[i]["scheduled_time_date"].ToString() != ""
-                    //     && DateTime.TryParse(dsScheduleList.Tables[0].Rows[i]["scheduled_time_date"].ToString(), out dtDocDate1))
-                    //            {
-                    //                objTeamMdl.scheduled_time_date = dtDocDate1;
-                    //            }
+                //AuditScheduleModelsList objList = new AuditScheduleModelsList();
+                //objList.ScheculeList = new List<AuditScheduleModels>();
 
-                    //            objList.ScheculeList.Add(objTeamMdl);
-                    //        }
-                    //        catch (Exception ex)
-                    //        {
-                    //            objGlobaldata.AddFunctionalLog("Exception in AuditScheduleEdit: " + ex.ToString());
-                    //            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                    //            return RedirectToAction("AuditScheduleList");
-                    //        }
-                    //    }
-                    //    ViewBag.objAuditList = objList;
-                    //}                
+                //sSqlstmt = "select id_audit_schedule_trans,id_audit_schedule,auditor_name,audit_dept,audit_loc,focused_area,scheduled_time_date,checklist_id," +
+                //    "auditor_availability,next_availability from t_audit_schedule_trans where id_audit_schedule='" + id_audit_schedule + "'";
+
+                //DataSet dsScheduleList = objGlobaldata.Getdetails(sSqlstmt);
+                //if (dsScheduleList.Tables.Count > 0 && dsScheduleList.Tables[0].Rows.Count > 0)
+                //{
+                //    for (int i = 0; i < dsScheduleList.Tables[0].Rows.Count; i++)
+                //    {
+                //        try
+                //        {
+                //            AuditScheduleModels objTeamMdl = new AuditScheduleModels
+                //            {
+                //                id_audit_schedule_trans = dsScheduleList.Tables[0].Rows[i]["id_audit_schedule_trans"].ToString(),
+                //                id_audit_schedule = dsScheduleList.Tables[0].Rows[i]["id_audit_schedule"].ToString(),
+                //                auditor_name = /*objGlobaldata.GetMultiHrEmpNameById*/(dsScheduleList.Tables[0].Rows[i]["auditor_name"].ToString()),
+                //                audit_dept = dsScheduleList.Tables[0].Rows[i]["audit_dept"].ToString(),
+                //                audit_loc = dsScheduleList.Tables[0].Rows[i]["audit_loc"].ToString(),
+                //                focused_area = dsScheduleList.Tables[0].Rows[i]["focused_area"].ToString(),
+                //                checklist_id = dsScheduleList.Tables[0].Rows[i]["checklist_id"].ToString(),
+                //                auditor_availability = dsScheduleList.Tables[0].Rows[i]["auditor_availability"].ToString(),
+                //                next_availability = dsScheduleList.Tables[0].Rows[i]["next_availability"].ToString(),
+                //            };
+
+                //            DateTime dtDocDate1;
+                //            if (dsScheduleList.Tables[0].Rows[i]["scheduled_time_date"].ToString() != ""
+                //     && DateTime.TryParse(dsScheduleList.Tables[0].Rows[i]["scheduled_time_date"].ToString(), out dtDocDate1))
+                //            {
+                //                objTeamMdl.scheduled_time_date = dtDocDate1;
+                //            }
+
+                //            objList.ScheculeList.Add(objTeamMdl);
+                //        }
+                //        catch (Exception ex)
+                //        {
+                //            objGlobaldata.AddFunctionalLog("Exception in AuditScheduleEdit: " + ex.ToString());
+                //            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                //            return RedirectToAction("AuditScheduleList");
+                //        }
+                //    }
+                //    ViewBag.objAuditList = objList;
+                //}
             }
             catch (Exception ex)
             {
@@ -693,7 +679,6 @@ namespace ISOStd.Controllers
             AuditScheduleModels objModel = new AuditScheduleModels();
             try
             {
-                
                 if (Request.QueryString["id_audit_schedule"] != null && Request.QueryString["id_audit_schedule"] != "")
                 {
                     string id_audit_schedule = Request.QueryString["id_audit_schedule"];
@@ -720,12 +705,10 @@ namespace ISOStd.Controllers
                             schedule_by = objGlobaldata.GetMultiHrEmpNameById(dsAccidentList.Tables[0].Rows[0]["schedule_by"].ToString()),
                             approvedby = objGlobaldata.GetMultiHrEmpNameById(dsAccidentList.Tables[0].Rows[0]["approvedby"].ToString()),
                             branch = objGlobaldata.GetMultiCompanyBranchNameById(dsAccidentList.Tables[0].Rows[0]["branch"].ToString()),
-
                         };
                     }
                     else
                     {
-
                         TempData["alertdata"] = "Id cannot be Null or empty";
                         return RedirectToAction("AuditScheduleList");
                     }

@@ -1,23 +1,20 @@
 ﻿using ISOStd.Filters;
 using ISOStd.Models;
-using PagedList;
+using Rotativa;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using ISOStd.Filters;
-using Rotativa;
-using System.IO;
-using Microsoft.Web.Helpers;
 
 namespace Role.Controllers
 {
     [PreventFromUrl]
     public class RoleController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
+        private clsGlobal objGlobaldata = new clsGlobal();
 
         public RoleController()
         {
@@ -62,8 +59,6 @@ namespace Role.Controllers
                 ViewBag.YesNo = objGlobaldata.GetConstantValue("YesNo");
                 if (dsList.Tables.Count > 0 && dsList.Tables[0].Rows.Count > 0)
                 {
-
-                   
                     for (int i = 0; i < dsList.Tables[0].Rows.Count; i++)
                     {
                         try
@@ -94,7 +89,6 @@ namespace Role.Controllers
             }
 
             return View(obj.RoleList.ToList());
-
         }
 
         public ActionResult RoleEdit()
@@ -102,7 +96,6 @@ namespace Role.Controllers
             RoleModels obj = new RoleModels();
             try
             {
-
                 if (Request.QueryString["RoleId"] != null && Request.QueryString["RoleId"] != "")
                 {
                     string sId = Request.QueryString["RoleId"];
@@ -120,7 +113,6 @@ namespace Role.Controllers
                     }
                     else
                     {
-
                         TempData["alertdata"] = "Id cannot be Null or empty";
                         return RedirectToAction("RoleList");
                     }
@@ -146,7 +138,6 @@ namespace Role.Controllers
         {
             try
             {
-
                 if (obj.FunUpdateRole(obj))
                 {
                     TempData["Successdata"] = "Role details updated successfully";
@@ -155,7 +146,6 @@ namespace Role.Controllers
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 }
-
             }
             catch (Exception ex)
             {
@@ -171,31 +161,27 @@ namespace Role.Controllers
         {
             try
             {
-
                 if (form["Id"] != null && form["Id"] != "")
+                {
+                    RoleModels objmdl = new RoleModels();
+                    string sId = form["Id"];
+
+                    if (objmdl.FunDeleteRole(sId))
                     {
-
-                        RoleModels objmdl = new RoleModels();
-                        string sId = form["Id"];
-
-                        if (objmdl.FunDeleteRole(sId))
-                        {
-                            TempData["Successdata"] = "Role deleted successfully";
-                            return Json("Success");
-                        }
-                        else
-                        {
-                            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                            return Json("Failed");
-                        }
+                        TempData["Successdata"] = "Role deleted successfully";
+                        return Json("Success");
                     }
                     else
                     {
-                        TempData["alertdata"] = "Id cannot be Null or empty";
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                         return Json("Failed");
                     }
-
-               
+                }
+                else
+                {
+                    TempData["alertdata"] = "Id cannot be Null or empty";
+                    return Json("Failed");
+                }
             }
             catch (Exception ex)
             {
@@ -215,7 +201,7 @@ namespace Role.Controllers
             {
                 string sSqlstmt = "select role_id,branch_id,concat(RoleName,' - ',BranchCode) as Role,RoleName,appl_branch from t_access t,t_company_branch b,roles r"
                 + " where t.role_id=r.Id and t.branch_id=b.id order by role_id , branch_id asc";
-               // string sSqlstmt = " select role_id,branch_id,RoleName,appl_branch from t_access t,roles r  where t.role_id = r.Id and r.active=1 order by role_id asc";
+                // string sSqlstmt = " select role_id,branch_id,RoleName,appl_branch from t_access t,roles r  where t.role_id = r.Id and r.active=1 order by role_id asc";
 
                 DataSet dsList = objGlobaldata.Getdetails(sSqlstmt);
 
@@ -251,7 +237,6 @@ namespace Role.Controllers
                                     objstd.appl_branch = (dsList.Tables[0].Rows[i]["appl_branch"].ToString());
                                     obj.RoleList.Add(objstd);
                                 }
-
                             }
                             else
                             {
@@ -279,7 +264,6 @@ namespace Role.Controllers
             }
 
             return View(obj.RoleList.ToList());
-
         }
 
         [HttpGet]
@@ -289,10 +273,8 @@ namespace Role.Controllers
             RoleModels objRoleModel = new RoleModels();
             try
             {
-               
                 if (Request.QueryString["RoleId"] != null && Request.QueryString["RoleId"] != "")
                 {
-                  
                     string RoleId = Request.QueryString["RoleId"];
                     ViewBag.DeptList = objGlobaldata.GetDepartmentListbox();
                     ViewBag.RolesList = objGlobaldata.GetRolesForJD(RoleId);
@@ -301,7 +283,7 @@ namespace Role.Controllers
                     ViewBag.RoleId = RoleId;
 
                     string sSqlstmt = "select id_role_jd,role_id,deptid,report_to,supervises,responsibility,authorities,interfaces_internal,interfaces_external,"
-                        +"accountable,academic_mandatory,academic_optional,trade_mandatory,trade_optional,experience_mandatory,experience_optional,trainings_mandatory,"
+                        + "accountable,academic_mandatory,academic_optional,trade_mandatory,trade_optional,experience_mandatory,experience_optional,trainings_mandatory,"
                         + "trainings_optional,skills_mandatory,skills_optional,jd_date,revised_date,approved_by,rev_no,reviewed_by from t_role_jd where role_id='" + RoleId + "'";
 
                     DataSet dsRole = objGlobaldata.Getdetails(sSqlstmt);
@@ -346,7 +328,6 @@ namespace Role.Controllers
                         }
 
                         return View(objRoleModel);
-
                     }
                 }
                 else
@@ -369,24 +350,21 @@ namespace Role.Controllers
         [ValidateInput(false)]
         public ActionResult RoleJD(RoleModels objModel, FormCollection form)
         {
-
             try
             {
                 objModel.reviewed_by = form["reviewed_by"];
                 objModel.approved_by = form["approved_by"];
                 if (objModel.id_role_jd != null && objModel.id_role_jd != "")
                 {
-                   
                     if (objModel.FunUpdateJD(objModel))
                     {
-                        return RedirectToAction("RoleJDPdf", new { role_id = objModel.role_id,flag=0 });
+                        return RedirectToAction("RoleJDPdf", new { role_id = objModel.role_id, flag = 0 });
                     }
                     else
                     {
                         TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                     }
                 }
-              
                 else
                 {
                     if (objModel.FunAddJD(objModel))
@@ -398,9 +376,6 @@ namespace Role.Controllers
                         TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                     }
                 }
-
-            
-               
             }
             catch (Exception ex)
             {
@@ -418,7 +393,6 @@ namespace Role.Controllers
             RoleModels objRoleModel = new RoleModels();
             try
             {
-
                 if (Request.QueryString["RoleId"] != null && Request.QueryString["RoleId"] != "")
                 {
                     string id_role_jd = Request.QueryString["id_role_jd"];
@@ -437,7 +411,7 @@ namespace Role.Controllers
                         {
                             id_role_jd = dsRole.Tables[0].Rows[0]["id_role_jd"].ToString(),
                             role_id = dsRole.Tables[0].Rows[0]["role_id"].ToString(),
-                            deptid =objGlobaldata.GetDeptNameById(dsRole.Tables[0].Rows[0]["deptid"].ToString()),
+                            deptid = objGlobaldata.GetDeptNameById(dsRole.Tables[0].Rows[0]["deptid"].ToString()),
                             report_to = objGlobaldata.GetRolesNameById(dsRole.Tables[0].Rows[0]["report_to"].ToString()),
                             supervises = dsRole.Tables[0].Rows[0]["supervises"].ToString(),
                             responsibility = dsRole.Tables[0].Rows[0]["responsibility"].ToString(),
@@ -476,7 +450,7 @@ namespace Role.Controllers
                          + " from t_role_jd where approve_status = 0"
                          + " and (find_in_set('" + user + "', reviewed_by) and not find_in_set('" + user + "', Reviewers))"
                          + " and (find_in_set('" + user + "', reviewed_by) and not find_in_set('" + user + "', ReviewRejector))";
-                        DataSet dsApprovalList =objGlobaldata.Getdetails(sSqlstmt1);
+                        DataSet dsApprovalList = objGlobaldata.Getdetails(sSqlstmt1);
                         if (dsApprovalList.Tables.Count > 0 && dsApprovalList.Tables[0].Rows.Count > 0)
                         {
                             ViewBag.ReviewStatus = true;
@@ -500,7 +474,6 @@ namespace Role.Controllers
                         ViewBag.dsApprove = objGlobaldata.Getdetails(sql);
 
                         return View(objRoleModel);
-
                     }
                 }
                 else
@@ -525,7 +498,6 @@ namespace Role.Controllers
             {
                 if (role_id != null && role_id != "")
                 {
-
                     string sSqlstmt = "select id_role_jd,role_id,deptid,report_to,supervises,responsibility,authorities,interfaces_internal,interfaces_external,"
                         + "accountable,academic_mandatory,academic_optional,trade_mandatory,trade_optional,experience_mandatory,experience_optional,trainings_mandatory,"
                         + "trainings_optional,skills_mandatory,skills_optional,jd_date,revised_date,approved_by from t_role_jd where role_id='" + role_id + "'";
@@ -624,6 +596,7 @@ namespace Role.Controllers
 
             return RedirectToAction("RoleList");
         }
+
         [AllowAnonymous]
         public ActionResult JDReviewOrReject(FormCollection form, RoleModels objModel)
         {
@@ -638,7 +611,6 @@ namespace Role.Controllers
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 }
             }
-
             catch (Exception ex)
             {
                 objGlobaldata.AddFunctionalLog("Exception in JDApproveReject: " + ex.ToString());
@@ -647,8 +619,9 @@ namespace Role.Controllers
 
             return RedirectToAction("Index", "Home");
         }
+
         [AllowAnonymous]
-        public ActionResult JDApproveReject(FormCollection form,RoleModels objModel)
+        public ActionResult JDApproveReject(FormCollection form, RoleModels objModel)
         {
             try
             {
@@ -661,7 +634,6 @@ namespace Role.Controllers
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 }
             }
-
             catch (Exception ex)
             {
                 objGlobaldata.AddFunctionalLog("Exception in JDApproveReject: " + ex.ToString());
@@ -702,8 +674,8 @@ namespace Role.Controllers
         //        return Json("Failed");
         //    }
         //}
-
     }
+
     public class MemoryPostedFile : HttpPostedFileBase
     {
         private readonly byte[] fileBytes;
@@ -714,7 +686,6 @@ namespace Role.Controllers
             this.FileName = fileName;
             this.InputStream = new MemoryStream(fileBytes);
             this.ContentType = "application/pdf";
-
         }
 
         public override int ContentLength => fileBytes.Length;
@@ -727,7 +698,6 @@ namespace Role.Controllers
 
         public override void SaveAs(string filename)
         {
-
         }
     }
 }

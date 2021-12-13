@@ -1,29 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+﻿using ISOStd.Filters;
 using ISOStd.Models;
-using System.Data;
-using System.Net;
-using System.IO;
 using PagedList;
-using PagedList.Mvc;
 using Rotativa;
-using ISOStd.Filters;
-
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Web.Mvc;
 
 namespace ISOStd.Controllers
 {
     [PreventFromUrl]
     public class ManHourController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
+        private clsGlobal objGlobaldata = new clsGlobal();
+
         public ManHourController()
         {
             ViewBag.Menutype = "Human Resources";
             ViewBag.SubMenutype = "ManHour";
         }
+
         public ActionResult AddManPower()
         {
             try
@@ -72,7 +69,6 @@ namespace ISOStd.Controllers
 
         public ActionResult ManPowerList(int? page, string branch_name)
         {
-
             ManHourModelsList objList = new ManHourModelsList();
             objList.ManHrList = new List<ManHourModels>();
 
@@ -104,8 +100,6 @@ namespace ISOStd.Controllers
 
                 if (dsManHrList.Tables.Count > 0)
                 {
-                    
-
                     for (int i = 0; i < dsManHrList.Tables[0].Rows.Count; i++)
                     {
                         try
@@ -134,7 +128,7 @@ namespace ISOStd.Controllers
                                 reviewedby = objGlobaldata.GetEmpHrNameById(dsManHrList.Tables[0].Rows[i]["reviewedby"].ToString()),
                                 comments = dsManHrList.Tables[0].Rows[i]["comments"].ToString(),
                             };
-                            
+
                             objList.ManHrList.Add(objManHr);
                         }
                         catch (Exception ex)
@@ -153,11 +147,9 @@ namespace ISOStd.Controllers
 
             return View(objList.ManHrList.ToList().ToPagedList(page ?? 1, 40));
         }
-              
 
         public JsonResult ManPowerListSearch(int? page, string branch_name)
         {
-
             ManHourModelsList objList = new ManHourModelsList();
             objList.ManHrList = new List<ManHourModels>();
 
@@ -189,8 +181,6 @@ namespace ISOStd.Controllers
 
                 if (dsManHrList.Tables.Count > 0)
                 {
-
-
                     for (int i = 0; i < dsManHrList.Tables[0].Rows.Count; i++)
                     {
                         try
@@ -218,7 +208,6 @@ namespace ISOStd.Controllers
                                 preparedby = objGlobaldata.GetEmpHrNameById(dsManHrList.Tables[0].Rows[i]["preparedby"].ToString()),
                                 reviewedby = objGlobaldata.GetEmpHrNameById(dsManHrList.Tables[0].Rows[i]["reviewedby"].ToString()),
                                 comments = dsManHrList.Tables[0].Rows[i]["comments"].ToString(),
-
                             };
 
                             objList.ManHrList.Add(objManHr);
@@ -242,8 +231,6 @@ namespace ISOStd.Controllers
 
         public ActionResult ManPowerEdit()
         {
-           
-
             ManHourModels objManHr = new ManHourModels();
             try
             {
@@ -263,13 +250,12 @@ namespace ISOStd.Controllers
                     string sid_man_hour = Request.QueryString["id_man_hour"];
 
                     string sSqlstmt = "SELECT id_man_hour,project, location,t_month,t_year,man_power,man_hour,man_hour_ot,restrict_days," +
-                    "fuel_consump,fuelunit,water_consump,waterunit,paper_consump,paperunit,electricity_consump,qty_solid,solidunit,preparedby,reviewedby,comments  from t_man_hour where active='1' and  id_man_hour = '"+ sid_man_hour + "'";
+                    "fuel_consump,fuelunit,water_consump,waterunit,paper_consump,paperunit,electricity_consump,qty_solid,solidunit,preparedby,reviewedby,comments  from t_man_hour where active='1' and  id_man_hour = '" + sid_man_hour + "'";
 
                     DataSet dsManHrList = objGlobaldata.Getdetails(sSqlstmt);
 
                     if (dsManHrList.Tables.Count > 0 && dsManHrList.Tables[0].Rows.Count > 0)
                     {
-                       
                         objManHr = new ManHourModels
                         {
                             id_man_hour = dsManHrList.Tables[0].Rows[0]["id_man_hour"].ToString(),
@@ -294,7 +280,7 @@ namespace ISOStd.Controllers
                             reviewedby = dsManHrList.Tables[0].Rows[0]["reviewedby"].ToString(),
                             comments = dsManHrList.Tables[0].Rows[0]["comments"].ToString(),
                         };
-                        
+
                         return View(objManHr);
                     }
                     else
@@ -323,7 +309,6 @@ namespace ISOStd.Controllers
         {
             try
             {
-
                 if (objManHr.FunUpdateManHour(objManHr))
                 {
                     TempData["Successdata"] = "Updated ManPower details successfully";
@@ -346,8 +331,7 @@ namespace ISOStd.Controllers
         {
             ManHourModels objManHr = new ManHourModels();
             try
-            {              
-
+            {
                 if (Request.QueryString["id_man_hour"] != null && Request.QueryString["id_man_hour"] != "")
                 {
                     string sid_man_hour = Request.QueryString["id_man_hour"];
@@ -359,7 +343,6 @@ namespace ISOStd.Controllers
 
                     if (dsManHrList.Tables.Count > 0 && dsManHrList.Tables[0].Rows.Count > 0)
                     {
-
                         objManHr = new ManHourModels
                         {
                             id_man_hour = dsManHrList.Tables[0].Rows[0]["id_man_hour"].ToString(),
@@ -412,47 +395,45 @@ namespace ISOStd.Controllers
             ManHourModels objManHr = new ManHourModels();
             try
             {
-
                 string sSqlstmt = "SELECT id_man_hour,project, location,t_month,t_year,man_power,man_hour,man_hour_ot,restrict_days," +
               "fuel_consump,fuelunit,water_consump,waterunit,paper_consump,paperunit,electricity_consump,qty_solid,solidunit,preparedby,reviewedby,comments  from t_man_hour where active='1' and  id_man_hour= '" + id + "'";
 
                 DataSet dsManHrList = objGlobaldata.Getdetails(sSqlstmt);
 
-                    if (dsManHrList.Tables.Count > 0 && dsManHrList.Tables[0].Rows.Count > 0)
+                if (dsManHrList.Tables.Count > 0 && dsManHrList.Tables[0].Rows.Count > 0)
+                {
+                    objManHr = new ManHourModels
                     {
+                        id_man_hour = dsManHrList.Tables[0].Rows[0]["id_man_hour"].ToString(),
+                        location = (dsManHrList.Tables[0].Rows[0]["location"].ToString()),
+                        project = objGlobaldata.GetDropdownitemById(dsManHrList.Tables[0].Rows[0]["project"].ToString()),
+                        man_power = Convert.ToInt32(dsManHrList.Tables[0].Rows[0]["man_power"].ToString()),
+                        man_hour = Convert.ToInt32(dsManHrList.Tables[0].Rows[0]["man_hour"].ToString()),
+                        t_month = dsManHrList.Tables[0].Rows[0]["t_month"].ToString(),
+                        t_year = objGlobaldata.GetDropdownitemById(dsManHrList.Tables[0].Rows[0]["t_year"].ToString()),
+                        man_hour_ot = Convert.ToInt32(dsManHrList.Tables[0].Rows[0]["man_hour_ot"].ToString()),
+                        restrict_days = Convert.ToInt32(dsManHrList.Tables[0].Rows[0]["restrict_days"].ToString()),
+                        fuel_consump = Convert.ToInt32(dsManHrList.Tables[0].Rows[0]["fuel_consump"].ToString()),
+                        water_consump = Convert.ToInt32(dsManHrList.Tables[0].Rows[0]["water_consump"].ToString()),
+                        paper_consump = Convert.ToInt32(dsManHrList.Tables[0].Rows[0]["paper_consump"].ToString()),
+                        electricity_consump = Convert.ToInt32(dsManHrList.Tables[0].Rows[0]["electricity_consump"].ToString()),
+                        qty_solid = Convert.ToInt32(dsManHrList.Tables[0].Rows[0]["qty_solid"].ToString()),
+                        fuelunit = objGlobaldata.GetDropdownitemById(dsManHrList.Tables[0].Rows[0]["fuelunit"].ToString()),
+                        waterunit = objGlobaldata.GetDropdownitemById(dsManHrList.Tables[0].Rows[0]["waterunit"].ToString()),
+                        paperunit = objGlobaldata.GetDropdownitemById(dsManHrList.Tables[0].Rows[0]["paperunit"].ToString()),
+                        solidunit = objGlobaldata.GetDropdownitemById(dsManHrList.Tables[0].Rows[0]["solidunit"].ToString()),
+                        preparedby = objGlobaldata.GetEmpHrNameById(dsManHrList.Tables[0].Rows[0]["preparedby"].ToString()),
+                        reviewedby = objGlobaldata.GetEmpHrNameById(dsManHrList.Tables[0].Rows[0]["reviewedby"].ToString()),
+                        comments = dsManHrList.Tables[0].Rows[0]["comments"].ToString(),
+                    };
 
-                        objManHr = new ManHourModels
-                        {
-                            id_man_hour = dsManHrList.Tables[0].Rows[0]["id_man_hour"].ToString(),
-                            location = (dsManHrList.Tables[0].Rows[0]["location"].ToString()),
-                            project = objGlobaldata.GetDropdownitemById(dsManHrList.Tables[0].Rows[0]["project"].ToString()),
-                            man_power = Convert.ToInt32(dsManHrList.Tables[0].Rows[0]["man_power"].ToString()),
-                            man_hour = Convert.ToInt32(dsManHrList.Tables[0].Rows[0]["man_hour"].ToString()),
-                            t_month = dsManHrList.Tables[0].Rows[0]["t_month"].ToString(),
-                            t_year = objGlobaldata.GetDropdownitemById(dsManHrList.Tables[0].Rows[0]["t_year"].ToString()),
-                            man_hour_ot = Convert.ToInt32(dsManHrList.Tables[0].Rows[0]["man_hour_ot"].ToString()),
-                            restrict_days = Convert.ToInt32(dsManHrList.Tables[0].Rows[0]["restrict_days"].ToString()),
-                            fuel_consump = Convert.ToInt32(dsManHrList.Tables[0].Rows[0]["fuel_consump"].ToString()),
-                            water_consump = Convert.ToInt32(dsManHrList.Tables[0].Rows[0]["water_consump"].ToString()),
-                            paper_consump = Convert.ToInt32(dsManHrList.Tables[0].Rows[0]["paper_consump"].ToString()),
-                            electricity_consump = Convert.ToInt32(dsManHrList.Tables[0].Rows[0]["electricity_consump"].ToString()),
-                            qty_solid = Convert.ToInt32(dsManHrList.Tables[0].Rows[0]["qty_solid"].ToString()),
-                            fuelunit = objGlobaldata.GetDropdownitemById(dsManHrList.Tables[0].Rows[0]["fuelunit"].ToString()),
-                            waterunit = objGlobaldata.GetDropdownitemById(dsManHrList.Tables[0].Rows[0]["waterunit"].ToString()),
-                            paperunit = objGlobaldata.GetDropdownitemById(dsManHrList.Tables[0].Rows[0]["paperunit"].ToString()),
-                            solidunit = objGlobaldata.GetDropdownitemById(dsManHrList.Tables[0].Rows[0]["solidunit"].ToString()),
-                            preparedby = objGlobaldata.GetEmpHrNameById(dsManHrList.Tables[0].Rows[0]["preparedby"].ToString()),
-                            reviewedby = objGlobaldata.GetEmpHrNameById(dsManHrList.Tables[0].Rows[0]["reviewedby"].ToString()),
-                            comments = dsManHrList.Tables[0].Rows[0]["comments"].ToString(),
-                        };
-
-                        return View(objManHr);
-                    }
-                    else
-                    {
-                        TempData["alertdata"] = "No data exists";
-                        return RedirectToAction("ManPowerList");                    }
-                
+                    return View(objManHr);
+                }
+                else
+                {
+                    TempData["alertdata"] = "No data exists";
+                    return RedirectToAction("ManPowerList");
+                }
             }
             catch (Exception ex)
             {
@@ -467,30 +448,27 @@ namespace ISOStd.Controllers
         {
             try
             {
-                   if (form["id_man_hour"] != null && form["id_man_hour"] != "")
+                if (form["id_man_hour"] != null && form["id_man_hour"] != "")
+                {
+                    ManHourModels Doc = new ManHourModels();
+                    string sid_man_hour = form["id_man_hour"];
+
+                    if (Doc.FunDeleteManHour(sid_man_hour))
                     {
-
-                        ManHourModels Doc = new ManHourModels();
-                        string sid_man_hour = form["id_man_hour"];
-
-                        if (Doc.FunDeleteManHour(sid_man_hour))
-                        {
-                            TempData["Successdata"] = "Document deleted successfully";
-                            return Json("Success");
-                        }
-                        else
-                        {
-                            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                            return Json("Failed");
-                        }
+                        TempData["Successdata"] = "Document deleted successfully";
+                        return Json("Success");
                     }
                     else
                     {
-                        TempData["alertdata"] = "Man Hour Id cannot be Null or empty";
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                         return Json("Failed");
                     }
-                
-
+                }
+                else
+                {
+                    TempData["alertdata"] = "Man Hour Id cannot be Null or empty";
+                    return Json("Failed");
+                }
             }
             catch (Exception ex)
             {
@@ -503,15 +481,13 @@ namespace ISOStd.Controllers
         [AllowAnonymous]
         public ActionResult ManPowerReportToPDF(FormCollection form)
         {
-          
             try
             {
                 ManHourModels objManHr = new ManHourModels();
                 string sid_man_hour = form["id_man_hour"];
 
                 if (sid_man_hour != null && sid_man_hour != "")
-                {                 
-
+                {
                     string sSqlstmt = "SELECT id_man_hour,project, location,t_month,t_year,man_power,man_hour,man_hour_ot,restrict_days," +
                     "fuel_consump,fuelunit,water_consump,waterunit,paper_consump,paperunit,electricity_consump,qty_solid,solidunit,preparedby,reviewedby,comments  from t_man_hour where active='1' and  id_man_hour = '" + sid_man_hour + "'";
 
@@ -519,7 +495,6 @@ namespace ISOStd.Controllers
 
                     if (dsManHrList.Tables.Count > 0 && dsManHrList.Tables[0].Rows.Count > 0)
                     {
-
                         objManHr = new ManHourModels
                         {
                             id_man_hour = dsManHrList.Tables[0].Rows[0]["id_man_hour"].ToString(),
@@ -545,7 +520,7 @@ namespace ISOStd.Controllers
                             comments = dsManHrList.Tables[0].Rows[0]["comments"].ToString(),
                         };
 
-                        ViewBag.Manpower=objManHr;
+                        ViewBag.Manpower = objManHr;
                     }
                     else
                     {
@@ -564,7 +539,7 @@ namespace ISOStd.Controllers
                 objGlobaldata.AddFunctionalLog("Exception in ManPowerReportToPDF: " + ex.ToString());
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
-            
+
             Dictionary<string, string> cookieCollection = new Dictionary<string, string>();
 
             foreach (var key in Request.Cookies.AllKeys)
@@ -580,6 +555,7 @@ namespace ISOStd.Controllers
                 CustomSwitches = footer
             };
         }
+
         [HttpPost]
         public JsonResult FunGetTotalEmp()
         {
@@ -600,6 +576,5 @@ namespace ISOStd.Controllers
             }
             return Json(count);
         }
-
     }
 }

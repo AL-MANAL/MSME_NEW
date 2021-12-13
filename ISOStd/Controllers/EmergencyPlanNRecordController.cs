@@ -1,33 +1,30 @@
-﻿using System;
+﻿using ISOStd.Filters;
+using ISOStd.Models;
+using PagedList;
+using System;
 using System.Collections.Generic;
+using System.Data;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using ISOStd.Models;
-using System.Data;
-using System.IO;
-using PagedList;
-using PagedList.Mvc;
-using ISOStd.Filters;
-
 
 namespace ISOStd.Controllers
 {
     [PreventFromUrl]
     public class EmergencyPlanNRecordController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
+        private clsGlobal objGlobaldata = new clsGlobal();
 
         public EmergencyPlanNRecordController()
         {
-
             ViewBag.Menutype = "HSE";
             ViewBag.SubMenutype = "EmergencyPlanNRecord";
         }
 
         //
         // GET: /EmergencyPlanNRecord/
-        
+
         public ActionResult Index()
         {
             return View();
@@ -35,7 +32,7 @@ namespace ISOStd.Controllers
 
         //
         // GET: /EmergencyPlanNRecord/AddEmergencyPlanNRecord
-        
+
         [AllowAnonymous]
         public ActionResult AddEmergencyPlanNRecord()
         {
@@ -69,7 +66,7 @@ namespace ISOStd.Controllers
 
         //
         // POST: /EmergencyPlanNRecord/AddEmergencyPlanNRecord
-        
+
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -124,7 +121,7 @@ namespace ISOStd.Controllers
                         form["PlanTimeInMin"] != null && int.TryParse(form["PlanTimeInMin"], out iMin))
                     {
                         objEmergencyPlanNRecord.Plan_Date_Time = DateTime.Parse(dateValue.ToString("dd/MM/yyyy") + " " + iHr + ":" + iMin + ":00");
-                    } 
+                    }
                 }
 
                 EmergencyPlanNRecordModelsList objPlanList = new EmergencyPlanNRecordModelsList();
@@ -147,10 +144,9 @@ namespace ISOStd.Controllers
                     }
                 }
 
-
                 if (objEmergencyPlanNRecord.FunAddEmergencyPlan(objEmergencyPlanNRecord, objPlanList))
                 {
-                    TempData["Successdata"] = "Added Emerygency Plan details successfully  with Reference Number '" + objEmergencyPlanNRecord.ReportNo + "'"; 
+                    TempData["Successdata"] = "Added Emerygency Plan details successfully  with Reference Number '" + objEmergencyPlanNRecord.ReportNo + "'";
                 }
                 else
                 {
@@ -166,38 +162,32 @@ namespace ISOStd.Controllers
             return RedirectToAction("EmergencyPlanNRecordList");
         }
 
-        
         [AllowAnonymous]
         public JsonResult EmergencyReportDocDelete(FormCollection form)
         {
             try
             {
-               
-                       if (form["Emergency_Plan_Id"] != null && form["Emergency_Plan_Id"] != "")
-                        {
+                if (form["Emergency_Plan_Id"] != null && form["Emergency_Plan_Id"] != "")
+                {
+                    EmergencyPlanNRecordModels Doc = new EmergencyPlanNRecordModels();
+                    string sEmergency_Plan_Id = form["Emergency_Plan_Id"];
 
-                            EmergencyPlanNRecordModels Doc = new EmergencyPlanNRecordModels();
-                            string sEmergency_Plan_Id = form["Emergency_Plan_Id"];
-
-
-                            if (Doc.FunDeleteEmergencyPlanDoc(sEmergency_Plan_Id))
-                            {
-                                TempData["Successdata"] = "Document deleted successfully";
-                                return Json("Success");
-                            }
-                            else
-                            {
-                                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                                return Json("Failed");
-                            }
-                        }
-                        else
-                        {
-                            TempData["alertdata"] = "Emergency plan Id cannot be Null or empty";
-                            return Json("Failed");
-                        }
-                    
-                
+                    if (Doc.FunDeleteEmergencyPlanDoc(sEmergency_Plan_Id))
+                    {
+                        TempData["Successdata"] = "Document deleted successfully";
+                        return Json("Success");
+                    }
+                    else
+                    {
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                        return Json("Failed");
+                    }
+                }
+                else
+                {
+                    TempData["alertdata"] = "Emergency plan Id cannot be Null or empty";
+                    return Json("Failed");
+                }
             }
             catch (Exception ex)
             {
@@ -206,7 +196,7 @@ namespace ISOStd.Controllers
             }
             return Json("Failed");
         }
-        
+
         [AllowAnonymous]
         public ActionResult EmergencyPlanNRecordList(string SearchText, int? page, string branch_name)
         {
@@ -221,7 +211,7 @@ namespace ISOStd.Controllers
                 ViewBag.Branch = objGlobaldata.GetMultiBranchListByID(sBranchtree);
                 string sSearchtext = "";
                 string sSqlstmt = "select Emergency_Plan_Id, emp_id, Plan_From, Plan_To, Emergency_Type, Plan_Date_Time, Drill_Location, Incharge, Need_Reporting, "
-                    +" Plan_Status, Performance, Remarks, ReportNo, Upload_Report, LoggedBy, ReviewedBy, ApprovedBy,branch,Department,Location from t_emergency_plan_record where Active=1";
+                    + " Plan_Status, Performance, Remarks, ReportNo, Upload_Report, LoggedBy, ReviewedBy, ApprovedBy,branch,Department,Location from t_emergency_plan_record where Active=1";
 
                 if (branch_name != null && branch_name != "")
                 {
@@ -236,7 +226,7 @@ namespace ISOStd.Controllers
                 sSqlstmt = sSqlstmt + sSearchtext + " order by Plan_From desc";
                 DataSet dsCompetenceList = objGlobaldata.Getdetails(sSqlstmt);
                 if (dsCompetenceList.Tables.Count > 0)
-                {   
+                {
                     for (int i = 0; i < dsCompetenceList.Tables[0].Rows.Count; i++)
                     {
                         try
@@ -245,12 +235,12 @@ namespace ISOStd.Controllers
                             {
                                 Emergency_Plan_Id = dsCompetenceList.Tables[0].Rows[i]["Emergency_Plan_Id"].ToString(),
                                 emp_id = objGlobaldata.GetEmpHrNameById(dsCompetenceList.Tables[0].Rows[i]["emp_id"].ToString()),
-                                Emergency_Type =objem.GetEmergencyTypeNameById(dsCompetenceList.Tables[0].Rows[i]["Emergency_Type"].ToString()),
+                                Emergency_Type = objem.GetEmergencyTypeNameById(dsCompetenceList.Tables[0].Rows[i]["Emergency_Type"].ToString()),
                                 Drill_Location = objGlobaldata.GetCompanyBranchNameById(dsCompetenceList.Tables[0].Rows[i]["Drill_Location"].ToString()),
                                 Incharge = dsCompetenceList.Tables[0].Rows[i]["Incharge"].ToString(),
                                 Need_Reporting = (dsCompetenceList.Tables[0].Rows[i]["Need_Reporting"].ToString()),
-                                Plan_Status =objem.GetHSEPerformanceNameById(dsCompetenceList.Tables[0].Rows[i]["Plan_Status"].ToString()),
-                                Performance =objem.GetDrillPerformanceNameById(dsCompetenceList.Tables[0].Rows[i]["Performance"].ToString()),
+                                Plan_Status = objem.GetHSEPerformanceNameById(dsCompetenceList.Tables[0].Rows[i]["Plan_Status"].ToString()),
+                                Performance = objem.GetDrillPerformanceNameById(dsCompetenceList.Tables[0].Rows[i]["Performance"].ToString()),
                                 Remarks = (dsCompetenceList.Tables[0].Rows[i]["Remarks"].ToString()),
                                 ReportNo = dsCompetenceList.Tables[0].Rows[i]["ReportNo"].ToString(),
                                 Upload_Report = (dsCompetenceList.Tables[0].Rows[i]["Upload_Report"].ToString()),
@@ -326,7 +316,7 @@ namespace ISOStd.Controllers
                 sSqlstmt = sSqlstmt + sSearchtext + " order by Plan_From desc";
                 DataSet dsCompetenceList = objGlobaldata.Getdetails(sSqlstmt);
                 if (dsCompetenceList.Tables.Count > 0)
-                { 
+                {
                     for (int i = 0; i < dsCompetenceList.Tables[0].Rows.Count; i++)
                     {
                         try
@@ -385,7 +375,7 @@ namespace ISOStd.Controllers
             }
             return Json("Success");
         }
-              
+
         [AllowAnonymous]
         public ActionResult EmergencyPlanNRecordDetails()
         {
@@ -406,121 +396,8 @@ namespace ISOStd.Controllers
                         {
                             Emergency_Plan_Id = dsCompetenceList.Tables[0].Rows[0]["Emergency_Plan_Id"].ToString(),
                             emp_id = objGlobaldata.GetEmpHrNameById(dsCompetenceList.Tables[0].Rows[0]["emp_id"].ToString()),
-                            Emergency_Type =objem.GetEmergencyTypeNameById(dsCompetenceList.Tables[0].Rows[0]["Emergency_Type"].ToString()),
-                            Drill_Location = objGlobaldata.GetCompanyBranchNameById(dsCompetenceList.Tables[0].Rows[0]["Drill_Location"].ToString()),
-                            Incharge = objGlobaldata.GetEmpHrNameById(dsCompetenceList.Tables[0].Rows[0]["Incharge"].ToString()),
-                            Need_Reporting = (dsCompetenceList.Tables[0].Rows[0]["Need_Reporting"].ToString()),
-                            Plan_Status =objem.GetHSEPerformanceNameById(dsCompetenceList.Tables[0].Rows[0]["Plan_Status"].ToString()),
-                            Performance =objem.GetDrillPerformanceNameById(dsCompetenceList.Tables[0].Rows[0]["Performance"].ToString()),
-                            Remarks = (dsCompetenceList.Tables[0].Rows[0]["Remarks"].ToString()),
-                            ReportNo = dsCompetenceList.Tables[0].Rows[0]["ReportNo"].ToString(),
-                            Upload_Report = (dsCompetenceList.Tables[0].Rows[0]["Upload_Report"].ToString()),
-                            ReviewedBy = objGlobaldata.GetEmpHrNameById(dsCompetenceList.Tables[0].Rows[0]["ReviewedBy"].ToString()),
-                            ApprovedBy = objGlobaldata.GetEmpHrNameById(dsCompetenceList.Tables[0].Rows[0]["ApprovedBy"].ToString()),
-                            LoggedBy = objGlobaldata.GetEmpHrNameById(dsCompetenceList.Tables[0].Rows[0]["LoggedBy"].ToString()),
-                            Observation = (dsCompetenceList.Tables[0].Rows[0]["Observation"].ToString()),
-                            No_Emp = (dsCompetenceList.Tables[0].Rows[0]["No_Emp"].ToString()),
-                            branch = objGlobaldata.GetMultiCompanyBranchNameById(dsCompetenceList.Tables[0].Rows[0]["branch"].ToString()),
-                            Department = objGlobaldata.GetMultiDeptNameById(dsCompetenceList.Tables[0].Rows[0]["Department"].ToString()),
-                            Location = objGlobaldata.GetDivisionLocationById(dsCompetenceList.Tables[0].Rows[0]["Location"].ToString()),
-                        };
-
-                        DateTime dateValue;
-                        if (DateTime.TryParse(dsCompetenceList.Tables[0].Rows[0]["Plan_From"].ToString(), out dateValue))
-                        {
-                            objEmployeeCompetence.Plan_From = dateValue;
-                        }
-
-                        if (DateTime.TryParse(dsCompetenceList.Tables[0].Rows[0]["Plan_To"].ToString(), out dateValue))
-                        {
-                            objEmployeeCompetence.Plan_To = dateValue;
-                        }
-
-                        if (DateTime.TryParse(dsCompetenceList.Tables[0].Rows[0]["Plan_Date_Time"].ToString(), out dateValue))
-                        {
-                            objEmployeeCompetence.Plan_Date_Time = dateValue;
-                        }
-
-                        EmergencyPlanNRecordModelsList objPlanList = new EmergencyPlanNRecordModelsList();
-                        objPlanList.lstEmergencyPlanNRecord = new List<EmergencyPlanNRecordModels>();
-
-                        sSqlstmt = "SELECT id_emergency_trans,Emergency_Plan_Id,Corrrective_action,Target_date FROM t_emergency_plan_record_trans where Emergency_Plan_Id='" + sEmergency_Plan_Id
-                            + "' order by id_emergency_trans asc";
-
-                        dsCompetenceList = objGlobaldata.Getdetails(sSqlstmt);
-                        if (dsCompetenceList.Tables.Count > 0 && dsCompetenceList.Tables[0].Rows.Count > 0)
-                        {
-                            for (int i = 0; i < dsCompetenceList.Tables[0].Rows.Count; i++)
-                            {
-                                try
-                                {
-                                    EmergencyPlanNRecordModels objIncident = new EmergencyPlanNRecordModels
-                                    {
-                                        id_emergency_trans = Convert.ToInt32(dsCompetenceList.Tables[0].Rows[i]["id_emergency_trans"].ToString()),
-                                        Emergency_Plan_Id = dsCompetenceList.Tables[0].Rows[i]["Emergency_Plan_Id"].ToString(),
-                                        Corrrective_action = dsCompetenceList.Tables[0].Rows[i]["Corrrective_action"].ToString()
-
-                                    };
-                                    if (DateTime.TryParse(dsCompetenceList.Tables[0].Rows[i]["Target_date"].ToString(), out dateValue))
-                                    {
-                                        objIncident.Target_date = dateValue;
-                                    }
-                                    objPlanList.lstEmergencyPlanNRecord.Add(objIncident);
-                                }
-                                catch (Exception ex)
-                                {
-                                    objGlobaldata.AddFunctionalLog("Exception in EmergencyPlanNRecordEdit: " + ex.ToString());
-                                    TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-
-                                }
-                            }
-                            ViewBag.objEmergency = objPlanList;
-                        }
-
-                        return View(objEmployeeCompetence);
-                    }
-                    else
-                    {
-                        TempData["alertdata"] = "No data exists";
-                        return RedirectToAction("EmergencyPlanNRecordList");
-                    }
-                }
-                else
-                {
-                    TempData["alertdata"] = "Plan Id cannot be null";
-                    return RedirectToAction("EmergencyPlanNRecordList");
-                }
-            }
-            catch (Exception ex)
-            {
-                objGlobaldata.AddFunctionalLog("Exception in EmergencyPlanNRecordDetails: " + ex.ToString());
-                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-            }
-
-            return RedirectToAction("EmergencyPlanNRecordList");
-        }
-                
-        [AllowAnonymous]
-        public ActionResult EmergencyPlanNRecordInfo(int id)
-        {
-            try
-            {
-                EmergencyPlanNRecordModels objem = new EmergencyPlanNRecordModels();
-               
-                    string sSqlstmt = "select Emergency_Plan_Id, emp_id, Plan_From, Plan_To, Emergency_Type, Plan_Date_Time, Drill_Location, Incharge, Need_Reporting, "
-                        + " Plan_Status, Performance, Remarks, ReportNo, Upload_Report, LoggedBy, ReviewedBy, ApprovedBy,Observation,No_Emp,branch,Department,Location from t_emergency_plan_record where "
-                        + "Emergency_Plan_Id='" + id + "'";
-
-                    DataSet dsCompetenceList = objGlobaldata.Getdetails(sSqlstmt);
-                    if (dsCompetenceList.Tables.Count > 0)
-                    {
-
-                        EmergencyPlanNRecordModels objEmployeeCompetence = new EmergencyPlanNRecordModels
-                        {
-                            Emergency_Plan_Id = dsCompetenceList.Tables[0].Rows[0]["Emergency_Plan_Id"].ToString(),
-                            emp_id = objGlobaldata.GetEmpHrNameById(dsCompetenceList.Tables[0].Rows[0]["emp_id"].ToString()),
                             Emergency_Type = objem.GetEmergencyTypeNameById(dsCompetenceList.Tables[0].Rows[0]["Emergency_Type"].ToString()),
-                            Drill_Location =objGlobaldata.GetCompanyBranchNameById(dsCompetenceList.Tables[0].Rows[0]["Drill_Location"].ToString()),
+                            Drill_Location = objGlobaldata.GetCompanyBranchNameById(dsCompetenceList.Tables[0].Rows[0]["Drill_Location"].ToString()),
                             Incharge = objGlobaldata.GetEmpHrNameById(dsCompetenceList.Tables[0].Rows[0]["Incharge"].ToString()),
                             Need_Reporting = (dsCompetenceList.Tables[0].Rows[0]["Need_Reporting"].ToString()),
                             Plan_Status = objem.GetHSEPerformanceNameById(dsCompetenceList.Tables[0].Rows[0]["Plan_Status"].ToString()),
@@ -557,7 +434,7 @@ namespace ISOStd.Controllers
                         EmergencyPlanNRecordModelsList objPlanList = new EmergencyPlanNRecordModelsList();
                         objPlanList.lstEmergencyPlanNRecord = new List<EmergencyPlanNRecordModels>();
 
-                        sSqlstmt = "SELECT id_emergency_trans,Emergency_Plan_Id,Corrrective_action,Target_date FROM t_emergency_plan_record_trans where Emergency_Plan_Id='" + id
+                        sSqlstmt = "SELECT id_emergency_trans,Emergency_Plan_Id,Corrrective_action,Target_date FROM t_emergency_plan_record_trans where Emergency_Plan_Id='" + sEmergency_Plan_Id
                             + "' order by id_emergency_trans asc";
 
                         dsCompetenceList = objGlobaldata.Getdetails(sSqlstmt);
@@ -572,7 +449,6 @@ namespace ISOStd.Controllers
                                         id_emergency_trans = Convert.ToInt32(dsCompetenceList.Tables[0].Rows[i]["id_emergency_trans"].ToString()),
                                         Emergency_Plan_Id = dsCompetenceList.Tables[0].Rows[i]["Emergency_Plan_Id"].ToString(),
                                         Corrrective_action = dsCompetenceList.Tables[0].Rows[i]["Corrrective_action"].ToString()
-
                                     };
                                     if (DateTime.TryParse(dsCompetenceList.Tables[0].Rows[i]["Target_date"].ToString(), out dateValue))
                                     {
@@ -584,7 +460,6 @@ namespace ISOStd.Controllers
                                 {
                                     objGlobaldata.AddFunctionalLog("Exception in EmergencyPlanNRecordEdit: " + ex.ToString());
                                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-
                                 }
                             }
                             ViewBag.objEmergency = objPlanList;
@@ -597,7 +472,12 @@ namespace ISOStd.Controllers
                         TempData["alertdata"] = "No data exists";
                         return RedirectToAction("EmergencyPlanNRecordList");
                     }
-             
+                }
+                else
+                {
+                    TempData["alertdata"] = "Plan Id cannot be null";
+                    return RedirectToAction("EmergencyPlanNRecordList");
+                }
             }
             catch (Exception ex)
             {
@@ -607,14 +487,118 @@ namespace ISOStd.Controllers
 
             return RedirectToAction("EmergencyPlanNRecordList");
         }
-               
+
+        [AllowAnonymous]
+        public ActionResult EmergencyPlanNRecordInfo(int id)
+        {
+            try
+            {
+                EmergencyPlanNRecordModels objem = new EmergencyPlanNRecordModels();
+
+                string sSqlstmt = "select Emergency_Plan_Id, emp_id, Plan_From, Plan_To, Emergency_Type, Plan_Date_Time, Drill_Location, Incharge, Need_Reporting, "
+                    + " Plan_Status, Performance, Remarks, ReportNo, Upload_Report, LoggedBy, ReviewedBy, ApprovedBy,Observation,No_Emp,branch,Department,Location from t_emergency_plan_record where "
+                    + "Emergency_Plan_Id='" + id + "'";
+
+                DataSet dsCompetenceList = objGlobaldata.Getdetails(sSqlstmt);
+                if (dsCompetenceList.Tables.Count > 0)
+                {
+                    EmergencyPlanNRecordModels objEmployeeCompetence = new EmergencyPlanNRecordModels
+                    {
+                        Emergency_Plan_Id = dsCompetenceList.Tables[0].Rows[0]["Emergency_Plan_Id"].ToString(),
+                        emp_id = objGlobaldata.GetEmpHrNameById(dsCompetenceList.Tables[0].Rows[0]["emp_id"].ToString()),
+                        Emergency_Type = objem.GetEmergencyTypeNameById(dsCompetenceList.Tables[0].Rows[0]["Emergency_Type"].ToString()),
+                        Drill_Location = objGlobaldata.GetCompanyBranchNameById(dsCompetenceList.Tables[0].Rows[0]["Drill_Location"].ToString()),
+                        Incharge = objGlobaldata.GetEmpHrNameById(dsCompetenceList.Tables[0].Rows[0]["Incharge"].ToString()),
+                        Need_Reporting = (dsCompetenceList.Tables[0].Rows[0]["Need_Reporting"].ToString()),
+                        Plan_Status = objem.GetHSEPerformanceNameById(dsCompetenceList.Tables[0].Rows[0]["Plan_Status"].ToString()),
+                        Performance = objem.GetDrillPerformanceNameById(dsCompetenceList.Tables[0].Rows[0]["Performance"].ToString()),
+                        Remarks = (dsCompetenceList.Tables[0].Rows[0]["Remarks"].ToString()),
+                        ReportNo = dsCompetenceList.Tables[0].Rows[0]["ReportNo"].ToString(),
+                        Upload_Report = (dsCompetenceList.Tables[0].Rows[0]["Upload_Report"].ToString()),
+                        ReviewedBy = objGlobaldata.GetEmpHrNameById(dsCompetenceList.Tables[0].Rows[0]["ReviewedBy"].ToString()),
+                        ApprovedBy = objGlobaldata.GetEmpHrNameById(dsCompetenceList.Tables[0].Rows[0]["ApprovedBy"].ToString()),
+                        LoggedBy = objGlobaldata.GetEmpHrNameById(dsCompetenceList.Tables[0].Rows[0]["LoggedBy"].ToString()),
+                        Observation = (dsCompetenceList.Tables[0].Rows[0]["Observation"].ToString()),
+                        No_Emp = (dsCompetenceList.Tables[0].Rows[0]["No_Emp"].ToString()),
+                        branch = objGlobaldata.GetMultiCompanyBranchNameById(dsCompetenceList.Tables[0].Rows[0]["branch"].ToString()),
+                        Department = objGlobaldata.GetMultiDeptNameById(dsCompetenceList.Tables[0].Rows[0]["Department"].ToString()),
+                        Location = objGlobaldata.GetDivisionLocationById(dsCompetenceList.Tables[0].Rows[0]["Location"].ToString()),
+                    };
+
+                    DateTime dateValue;
+                    if (DateTime.TryParse(dsCompetenceList.Tables[0].Rows[0]["Plan_From"].ToString(), out dateValue))
+                    {
+                        objEmployeeCompetence.Plan_From = dateValue;
+                    }
+
+                    if (DateTime.TryParse(dsCompetenceList.Tables[0].Rows[0]["Plan_To"].ToString(), out dateValue))
+                    {
+                        objEmployeeCompetence.Plan_To = dateValue;
+                    }
+
+                    if (DateTime.TryParse(dsCompetenceList.Tables[0].Rows[0]["Plan_Date_Time"].ToString(), out dateValue))
+                    {
+                        objEmployeeCompetence.Plan_Date_Time = dateValue;
+                    }
+
+                    EmergencyPlanNRecordModelsList objPlanList = new EmergencyPlanNRecordModelsList();
+                    objPlanList.lstEmergencyPlanNRecord = new List<EmergencyPlanNRecordModels>();
+
+                    sSqlstmt = "SELECT id_emergency_trans,Emergency_Plan_Id,Corrrective_action,Target_date FROM t_emergency_plan_record_trans where Emergency_Plan_Id='" + id
+                        + "' order by id_emergency_trans asc";
+
+                    dsCompetenceList = objGlobaldata.Getdetails(sSqlstmt);
+                    if (dsCompetenceList.Tables.Count > 0 && dsCompetenceList.Tables[0].Rows.Count > 0)
+                    {
+                        for (int i = 0; i < dsCompetenceList.Tables[0].Rows.Count; i++)
+                        {
+                            try
+                            {
+                                EmergencyPlanNRecordModels objIncident = new EmergencyPlanNRecordModels
+                                {
+                                    id_emergency_trans = Convert.ToInt32(dsCompetenceList.Tables[0].Rows[i]["id_emergency_trans"].ToString()),
+                                    Emergency_Plan_Id = dsCompetenceList.Tables[0].Rows[i]["Emergency_Plan_Id"].ToString(),
+                                    Corrrective_action = dsCompetenceList.Tables[0].Rows[i]["Corrrective_action"].ToString()
+                                };
+                                if (DateTime.TryParse(dsCompetenceList.Tables[0].Rows[i]["Target_date"].ToString(), out dateValue))
+                                {
+                                    objIncident.Target_date = dateValue;
+                                }
+                                objPlanList.lstEmergencyPlanNRecord.Add(objIncident);
+                            }
+                            catch (Exception ex)
+                            {
+                                objGlobaldata.AddFunctionalLog("Exception in EmergencyPlanNRecordEdit: " + ex.ToString());
+                                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                            }
+                        }
+                        ViewBag.objEmergency = objPlanList;
+                    }
+
+                    return View(objEmployeeCompetence);
+                }
+                else
+                {
+                    TempData["alertdata"] = "No data exists";
+                    return RedirectToAction("EmergencyPlanNRecordList");
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in EmergencyPlanNRecordDetails: " + ex.ToString());
+                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+            }
+
+            return RedirectToAction("EmergencyPlanNRecordList");
+        }
+
         [AllowAnonymous]
         public ActionResult EmergencyPlanNRecordEdit()
         {
             try
             {
                 EmergencyPlanNRecordModels objem = new EmergencyPlanNRecordModels();
-               
+
                 if (Request.QueryString["Emergency_Plan_Id"] != null && Request.QueryString["Emergency_Plan_Id"] != "")
                 {
                     string sEmergency_Plan_Id = Request.QueryString["Emergency_Plan_Id"];
@@ -625,17 +609,16 @@ namespace ISOStd.Controllers
                     DataSet dsCompetenceList = objGlobaldata.Getdetails(sSqlstmt);
                     if (dsCompetenceList.Tables.Count > 0)
                     {
-
                         EmergencyPlanNRecordModels objEmployeeCompetence = new EmergencyPlanNRecordModels
                         {
                             Emergency_Plan_Id = dsCompetenceList.Tables[0].Rows[0]["Emergency_Plan_Id"].ToString(),
                             emp_id = (dsCompetenceList.Tables[0].Rows[0]["emp_id"].ToString()),
-                            Emergency_Type =objem.GetEmergencyTypeNameById(dsCompetenceList.Tables[0].Rows[0]["Emergency_Type"].ToString()),
+                            Emergency_Type = objem.GetEmergencyTypeNameById(dsCompetenceList.Tables[0].Rows[0]["Emergency_Type"].ToString()),
                             Drill_Location = dsCompetenceList.Tables[0].Rows[0]["Drill_Location"].ToString(),
                             Incharge = dsCompetenceList.Tables[0].Rows[0]["Incharge"].ToString(),
                             Need_Reporting = (dsCompetenceList.Tables[0].Rows[0]["Need_Reporting"].ToString()),
-                            Plan_Status =objem.GetHSEPerformanceNameById(dsCompetenceList.Tables[0].Rows[0]["Plan_Status"].ToString()),
-                            Performance =objem.GetDrillPerformanceNameById(dsCompetenceList.Tables[0].Rows[0]["Performance"].ToString()),
+                            Plan_Status = objem.GetHSEPerformanceNameById(dsCompetenceList.Tables[0].Rows[0]["Plan_Status"].ToString()),
+                            Performance = objem.GetDrillPerformanceNameById(dsCompetenceList.Tables[0].Rows[0]["Performance"].ToString()),
                             Remarks = (dsCompetenceList.Tables[0].Rows[0]["Remarks"].ToString()),
                             ReportNo = dsCompetenceList.Tables[0].Rows[0]["ReportNo"].ToString(),
                             Upload_Report = (dsCompetenceList.Tables[0].Rows[0]["Upload_Report"].ToString()),
@@ -662,13 +645,13 @@ namespace ISOStd.Controllers
 
                         if (DateTime.TryParse(dsCompetenceList.Tables[0].Rows[0]["Plan_Date_Time"].ToString(), out dateValue))
                         {
-                            objEmployeeCompetence.Plan_Date_Time = dateValue;                            
+                            objEmployeeCompetence.Plan_Date_Time = dateValue;
                         }
                         ViewBag.Location = objGlobaldata.GetLocationbyMultiDivision(dsCompetenceList.Tables[0].Rows[0]["branch"].ToString());
                         ViewBag.Department = objGlobaldata.GetDepartmentList1(dsCompetenceList.Tables[0].Rows[0]["branch"].ToString());
                         ViewBag.Branch = objGlobaldata.GetCompanyBranchListbox();
 
-                                                EmergencyPlanNRecordModelsList objPlanList = new EmergencyPlanNRecordModelsList();
+                        EmergencyPlanNRecordModelsList objPlanList = new EmergencyPlanNRecordModelsList();
                         objPlanList.lstEmergencyPlanNRecord = new List<EmergencyPlanNRecordModels>();
 
                         sSqlstmt = "SELECT id_emergency_trans,Emergency_Plan_Id,Corrrective_action,Target_date FROM t_emergency_plan_record_trans where Emergency_Plan_Id='" + sEmergency_Plan_Id
@@ -683,23 +666,21 @@ namespace ISOStd.Controllers
                                 {
                                     EmergencyPlanNRecordModels objIncident = new EmergencyPlanNRecordModels
                                     {
-                                        id_emergency_trans =Convert.ToInt32(dsCompetenceList.Tables[0].Rows[i]["id_emergency_trans"].ToString()),
+                                        id_emergency_trans = Convert.ToInt32(dsCompetenceList.Tables[0].Rows[i]["id_emergency_trans"].ToString()),
                                         Emergency_Plan_Id = dsCompetenceList.Tables[0].Rows[i]["Emergency_Plan_Id"].ToString(),
                                         Corrrective_action = dsCompetenceList.Tables[0].Rows[i]["Corrrective_action"].ToString()
-                                        
                                     };
                                     if (DateTime.TryParse(dsCompetenceList.Tables[0].Rows[i]["Target_date"].ToString(), out dateValue))
                                     {
                                         objIncident.Target_date = dateValue;
                                     }
-                                  
+
                                     objPlanList.lstEmergencyPlanNRecord.Add(objIncident);
                                 }
                                 catch (Exception ex)
                                 {
                                     objGlobaldata.AddFunctionalLog("Exception in EmergencyPlanNRecordEdit: " + ex.ToString());
                                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                                
                                 }
                             }
                             ViewBag.objEmergency = objPlanList;
@@ -736,7 +717,7 @@ namespace ISOStd.Controllers
 
             return RedirectToAction("EmergencyPlanNRecordList");
         }
-         
+
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -792,7 +773,7 @@ namespace ISOStd.Controllers
                         form["PlanTimeInMin"] != null && int.TryParse(form["PlanTimeInMin"], out iMin))
                     {
                         objEmergencyPlanNRecord.Plan_Date_Time = DateTime.Parse(dateValue.ToString("dd/MM/yyyy") + " " + iHr + ":" + iMin + ":00");
-                    }                    
+                    }
                 }
                 EmergencyPlanNRecordModelsList objPlanList = new EmergencyPlanNRecordModelsList();
                 objPlanList.lstEmergencyPlanNRecord = new List<EmergencyPlanNRecordModels>();

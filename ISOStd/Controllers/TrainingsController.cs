@@ -1,29 +1,27 @@
-﻿using System;
+﻿using ISOStd.Filters;
+using ISOStd.Models;
+using Rotativa;
+using System;
 using System.Collections.Generic;
+using System.Data;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using ISOStd.Models;
-using System.Data;
-using System.Net;
-using System.IO;
-using PagedList;
-using PagedList.Mvc;
-using Rotativa;
-using ISOStd.Filters;
 
 namespace ISOStd.Controllers
 {
     [PreventFromUrl]
     public class TrainingsController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
-        TrainingsModels objTrainings = new TrainingsModels();
+        private clsGlobal objGlobaldata = new clsGlobal();
+        private TrainingsModels objTrainings = new TrainingsModels();
 
         public TrainingsController()
         {
             ViewBag.Menutype = "Trainings";
         }
+
         //
         // GET: /Trainings/
 
@@ -68,7 +66,6 @@ namespace ISOStd.Controllers
             MultiSelectList lstEmp = objGlobaldata.GetHrEmpListByDept(DeptId);
             return Json(lstEmp);
         }
-
 
         public ActionResult FunAllEmpList()
         {
@@ -124,7 +121,6 @@ namespace ISOStd.Controllers
             return RedirectToAction("TrainingsList");
         }
 
-
         // GET: /Trainings/TrainingsList
 
         [AllowAnonymous]
@@ -141,7 +137,7 @@ namespace ISOStd.Controllers
                 string sBranchtree = objGlobaldata.GetCurrentUserSession().BranchTree;
                 ViewBag.Branch = objGlobaldata.GetMultiBranchListByID(sBranchtree);
 
-                //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS  
+                //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS
                 string sSqlstmt = "SELECT TrainingID, Attendees, DeptId, Training_Topic, Traning_BeforeDate, Training_Requested_By, Reasonfor_Training, Training_Status,Attended_no, "
                     + " (case when RequestStatus='0' then 'Pending' when RequestStatus='1' then 'Approved' when RequestStatus='2' then 'Rejected' end) as RequestStatus"
                     + ", ApprovedBy,Training_Status from t_trainings where Active=1";
@@ -165,7 +161,6 @@ namespace ISOStd.Controllers
                         ViewBag.Training_TopicVal = Training_Topic;
                         sSearchtext = sSearchtext + " ( FIND_IN_SET (" + Training_Topic + ",Training_Topic) )";
                     }
-
 
                     if (sSearchtext != "")
                     {
@@ -218,11 +213,8 @@ namespace ISOStd.Controllers
 
                 if (dsTrainingsList.Tables.Count > 0 && dsTrainingsList.Tables[0].Rows.Count > 0)
                 {
-
-                    
                     for (int i = 0; i < dsTrainingsList.Tables[0].Rows.Count; i++)
                     {
-
                         TrainingsModels objTrainingsModels = new TrainingsModels
                         {
                             TrainingID = dsTrainingsList.Tables[0].Rows[i]["TrainingID"].ToString(),
@@ -267,7 +259,7 @@ namespace ISOStd.Controllers
                 string sBranchtree = objGlobaldata.GetCurrentUserSession().BranchTree;
                 ViewBag.Branch = objGlobaldata.GetMultiBranchListByID(sBranchtree);
 
-                //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS  
+                //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS
                 string sSqlstmt = "SELECT TrainingID, Attendees, DeptId, Training_Topic, Traning_BeforeDate, Training_Requested_By, Reasonfor_Training, Training_Status,Attended_no, "
                     + " (case when RequestStatus='0' then 'Pending' when RequestStatus='1' then 'Approved' when RequestStatus='2' then 'Rejected' end) as RequestStatus"
                     + ", ApprovedBy,Training_Status from t_trainings where Active=1";
@@ -291,7 +283,6 @@ namespace ISOStd.Controllers
                         ViewBag.Training_TopicVal = Training_Topic;
                         sSearchtext = sSearchtext + " ( FIND_IN_SET (" + Training_Topic + ",Training_Topic) )";
                     }
-
 
                     if (sSearchtext != "")
                     {
@@ -344,12 +335,8 @@ namespace ISOStd.Controllers
 
                 if (dsTrainingsList.Tables.Count > 0 && dsTrainingsList.Tables[0].Rows.Count > 0)
                 {
-
-                   
-
                     for (int i = 0; i < dsTrainingsList.Tables[0].Rows.Count; i++)
                     {
-
                         TrainingsModels objTrainingsModels = new TrainingsModels
                         {
                             TrainingID = dsTrainingsList.Tables[0].Rows[i]["TrainingID"].ToString(),
@@ -379,7 +366,7 @@ namespace ISOStd.Controllers
             }
             return Json("Success");
         }
-        
+
         public ActionResult TrainingsApproveReject(string TrainingID, string ApprovedBy, int iStatus, string PendingFlg)
         {
             try
@@ -399,12 +386,10 @@ namespace ISOStd.Controllers
                      else if (iStatus == 1)
                      {
                          sStatus = "Approved";
-
                      }
                      else if (iStatus == 2)
                      {
                          sStatus = "Rejected";
-
                      }*/
                 string sStatus = "";
                 if (iStatus == 0)
@@ -414,12 +399,10 @@ namespace ISOStd.Controllers
                 else if (iStatus == 1)
                 {
                     sStatus = "Approved";
-
                 }
                 else if (iStatus == 2)
                 {
                     sStatus = "Rejected";
-
                 }
                 if (objTrainingsModels.FunTrainingsApproveOrReject(TrainingID, iStatus))
                 {
@@ -441,12 +424,10 @@ namespace ISOStd.Controllers
                 else if (iStatus == 1)
                 {
                     sStatus = "Approved";
-
                 }
                 else if (iStatus == 2)
                 {
                     sStatus = "Rejected";
-
                 }
                 if (objTrainingsModels.FunTrainingsApproveOrReject(TrainingID, iStatus))
                 {
@@ -462,7 +443,6 @@ namespace ISOStd.Controllers
             {
                 TempData["alertdata"] = "Access Denied";
             }
-
         }*/
             catch (Exception ex)
             {
@@ -479,7 +459,6 @@ namespace ISOStd.Controllers
                 return RedirectToAction("TrainingsList");
             }
         }
-            
 
         // GET: /Trainings/TrainingsRequestEdit
 
@@ -495,7 +474,7 @@ namespace ISOStd.Controllers
                     UserCredentials objUser = new UserCredentials();
                     objUser = objGlobaldata.GetCurrentUserSession();
 
-                    //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS  
+                    //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS
                     string sSqlstmt = "SELECT TrainingID, Attendees, DeptId, Training_Topic, Traning_BeforeDate, Training_Requested_By, Reasonfor_Training, RequestStatus,"
                         + " ApprovedBy,TopicContent,Attended_no from t_trainings where TrainingID='" + sTrainingID + "'";
 
@@ -554,7 +533,6 @@ namespace ISOStd.Controllers
                     TempData["alertdata"] = "Training Id cannot be null";
                     return RedirectToAction("TrainingsList");
                 }
-
             }
             catch (Exception ex)
             {
@@ -562,7 +540,6 @@ namespace ISOStd.Controllers
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
             return RedirectToAction("TrainingsList");
-
         }
 
         //POST: /Trainings/TrainingsRequestEdit
@@ -723,7 +700,6 @@ namespace ISOStd.Controllers
             return RedirectToAction("TrainingsList");
         }
 
-
         [AllowAnonymous]
         public ActionResult TrainingsInfo(int id)
         {
@@ -813,7 +789,6 @@ namespace ISOStd.Controllers
                     TempData["alertdata"] = "No data exists";
                     return RedirectToAction("TrainingsList");
                 }
-
             }
             catch (Exception ex)
             {
@@ -822,7 +797,6 @@ namespace ISOStd.Controllers
             }
             return RedirectToAction("TrainingsList");
         }
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -912,13 +886,11 @@ namespace ISOStd.Controllers
                     else
                     {
                         TempData["alertdata"] = "No data exists";
-
                     }
                 }
                 else
                 {
                     TempData["alertdata"] = "Training Id cannot be null";
-
                 }
             }
             catch (Exception ex)
@@ -941,9 +913,7 @@ namespace ISOStd.Controllers
                 Cookies = cookieCollection,
                 CustomSwitches = footer
             };
-
         }
-
 
         [AllowAnonymous]
         public ActionResult TrainingsDetailsToPDF(string sTrainingID)
@@ -1052,13 +1022,12 @@ namespace ISOStd.Controllers
             }
             return View();
         }
-        // GET: /Trainings/TrainingsEdit
 
+        // GET: /Trainings/TrainingsEdit
 
         [AllowAnonymous]
         public ActionResult TrainingsEdit()
         {
-
             TrainingsModels objTrainingsModels = new TrainingsModels();
 
             try
@@ -1187,7 +1156,6 @@ namespace ISOStd.Controllers
                 objGlobaldata.AddFunctionalLog("Exception in TrainingsEdit: " + ex.ToString());
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
-
 
             return RedirectToAction("TrainingsList");
         }
@@ -1333,37 +1301,33 @@ namespace ISOStd.Controllers
             List<string> lstAuditee = objTrainings.GetAttendeesList(TrainingId);
             return Json(lstAuditee);
         }
-        
+
         [AllowAnonymous]
         public JsonResult TrainingDocDelete(FormCollection form)
         {
             try
             {
+                if (form["TrainingID"] != null && form["TrainingID"] != "")
+                {
+                    TrainingsModels Doc = new TrainingsModels();
+                    string sTrainingID = form["TrainingID"];
 
-                   if (form["TrainingID"] != null && form["TrainingID"] != "")
+                    if (Doc.FunDeleteTrainingDoc(sTrainingID))
                     {
-
-                        TrainingsModels Doc = new TrainingsModels();
-                        string sTrainingID = form["TrainingID"];
-
-
-                        if (Doc.FunDeleteTrainingDoc(sTrainingID))
-                        {
-                            TempData["Successdata"] = "Document deleted successfully";
-                            return Json("Success");
-                        }
-                        else
-                        {
-                            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                            return Json("Failed");
-                        }
+                        TempData["Successdata"] = "Document deleted successfully";
+                        return Json("Success");
                     }
                     else
                     {
-                        TempData["alertdata"] = "MgmtDoc Id cannot be Null or empty";
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                         return Json("Failed");
                     }
-               
+                }
+                else
+                {
+                    TempData["alertdata"] = "MgmtDoc Id cannot be Null or empty";
+                    return Json("Failed");
+                }
             }
             catch (Exception ex)
             {
@@ -1372,7 +1336,7 @@ namespace ISOStd.Controllers
             }
             return Json("Failed");
         }
-         
+
         public JsonResult TrainingsApproveRejectNoty(string TrainingID, string ApprovedBy, int iStatus, string PendingFlg)
         {
             try
@@ -1392,12 +1356,10 @@ namespace ISOStd.Controllers
                      else if (iStatus == 1)
                      {
                          sStatus = "Approved";
-
                      }
                      else if (iStatus == 2)
                      {
                          sStatus = "Rejected";
-
                      }*/
                 string sStatus = "";
                 if (iStatus == 0)
@@ -1407,12 +1369,10 @@ namespace ISOStd.Controllers
                 else if (iStatus == 1)
                 {
                     sStatus = "Approved";
-
                 }
                 else if (iStatus == 2)
                 {
                     sStatus = "Rejected";
-
                 }
                 if (objTrainingsModels.FunTrainingsApproveOrReject(TrainingID, iStatus))
                 {
@@ -1434,12 +1394,10 @@ namespace ISOStd.Controllers
                 else if (iStatus == 1)
                 {
                     sStatus = "Approved";
-
                 }
                 else if (iStatus == 2)
                 {
                     sStatus = "Rejected";
-
                 }
                 if (objTrainingsModels.FunTrainingsApproveOrReject(TrainingID, iStatus))
                 {
@@ -1455,7 +1413,6 @@ namespace ISOStd.Controllers
             {
                 TempData["alertdata"] = "Access Denied";
             }
-
         }*/
             catch (Exception ex)
             {
@@ -1564,14 +1521,14 @@ namespace ISOStd.Controllers
             TrainingCertificatesModelsList objTrainingCertificatesModelsList = new TrainingCertificatesModelsList();
             objTrainingCertificatesModelsList.TrainingCertificatesList = new List<TrainingCertificatesModels>();
 
-            //string sTrainingId = Request.QueryString["TrainingID"]; 
+            //string sTrainingId = Request.QueryString["TrainingID"];
             UserCredentials objUserInfo = (UserCredentials)Session["UserCredentials"];
 
             try
             {
                 ViewBag.TrainingID = TrainingID;
-             
-                //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS  
+
+                //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS
                 string sSqlstmt = "select t_trainings.Training_Topic, ttc.*  from t_trainings , t_training_certificate as ttc where t_trainings.TrainingID=ttc.TrainingID "
                     + "and ttc.TrainingID='" + TrainingID + "'";
 
@@ -1627,7 +1584,6 @@ namespace ISOStd.Controllers
                             TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                         }
                     }
-
                 }
             }
             catch (Exception ex)
@@ -1635,7 +1591,6 @@ namespace ISOStd.Controllers
                 objGlobaldata.AddFunctionalLog("Exception in TrainingCertificateList: " + ex.ToString());
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
-
 
             return View(objTrainingCertificatesModelsList.TrainingCertificatesList.ToList());
         }
@@ -1752,6 +1707,5 @@ namespace ISOStd.Controllers
             }
             return RedirectToAction("TrainingCertificateList", "Trainings", new { TrainingID = objCertificates.TrainingId });
         }
-
     }
 }

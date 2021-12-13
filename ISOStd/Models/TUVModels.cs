@@ -646,7 +646,6 @@ namespace ISOStd.Models
         {
             try
             {
-                string sColumn = "", sValues = "";
                 string sSqlstmt = "insert into t_supplier_tuv (id_project,SupplierCode, SupplierName, SupplyScope, ApprovalCriteria, Remarks, Added_Updated_By, ApprovedOn,"
                     + " City,Country, ContactPerson, ContactNo, Address, FaxNo, PO_No,UpdatedOn,Email,VatNo,RefNo,Supplier_type,Payment_term";
                 string UpdateOn = DateTime.Now.ToString("yyyy/MM/dd HH:mm");

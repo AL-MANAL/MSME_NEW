@@ -1,30 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+﻿using ISOStd.Filters;
 using ISOStd.Models;
+using System;
+using System.Collections.Generic;
 using System.Data;
-using System.Net;
-using System.IO;
-using PagedList;
-using PagedList.Mvc;
-using ISOStd.Filters;
-
+using System.Linq;
+using System.Web.Mvc;
 
 namespace ISOStd.Controllers
 {
     [PreventFromUrl]
     public class PartiesController : Controller
     {
-      clsGlobal objGlobaldata = new clsGlobal();
+        private clsGlobal objGlobaldata = new clsGlobal();
 
-      public PartiesController()
+        public PartiesController()
         {
             ViewBag.Menutype = "PartiesIssues";
             ViewBag.SubMenutype = "Parties";
         }
-         
+
         [AllowAnonymous]
         public ActionResult AddParties()
         {
@@ -42,12 +36,10 @@ namespace ISOStd.Controllers
                 ViewBag.ISOStds = objGlobaldata.GetAllIsoStdListbox();
                 ViewBag.Priority = objGlobaldata.GetDropdownList("Priority");
                 ViewBag.Interest = objGlobaldata.GetDropdownList("Priority");
-                
 
                 ViewBag.Branch = objGlobaldata.GetCompanyBranchListbox();
                 ViewBag.Department = objGlobaldata.GetDepartmentListbox(objParties.branch);
                 ViewBag.Location = objGlobaldata.GetDivisionLocationList(objParties.branch);
-
             }
             catch (Exception ex)
             {
@@ -56,7 +48,7 @@ namespace ISOStd.Controllers
             }
             return View(objParties);
         }
-         
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult AddParties(PartiesModel objParties, FormCollection form)
@@ -93,7 +85,7 @@ namespace ISOStd.Controllers
 
             return RedirectToAction("PartiesList");
         }
-         
+
         [AllowAnonymous]
         public ActionResult PartiesList(FormCollection form, int? page, string branch_name)
         {
@@ -117,7 +109,7 @@ namespace ISOStd.Controllers
 
                 if (branch_name != null && branch_name != "")
                 {
-                    sSearchtext = sSearchtext + " and find_in_set('" + branch_name + "', branch)"; 
+                    sSearchtext = sSearchtext + " and find_in_set('" + branch_name + "', branch)";
                     ViewBag.Branch_name = branch_name;
                 }
                 else
@@ -138,7 +130,7 @@ namespace ISOStd.Controllers
                 DataSet dsPartiesList = objGlobaldata.Getdetails(sSqlstmt);
 
                 if (dsPartiesList.Tables.Count > 0 && dsPartiesList.Tables[0].Rows.Count > 0)
-                {  
+                {
                     for (int i = 0; i < dsPartiesList.Tables[0].Rows.Count; i++)
                     {
                         try
@@ -210,7 +202,7 @@ namespace ISOStd.Controllers
         //        DataSet dsPartiesList = objGlobaldata.Getdetails(sSqlstmt);
 
         //        if (dsPartiesList.Tables.Count > 0 && dsPartiesList.Tables[0].Rows.Count > 0)
-        //        {   
+        //        {
         //            for (int i = 0; i < dsPartiesList.Tables[0].Rows.Count; i++)
         //            {
         //                try
@@ -264,11 +256,11 @@ namespace ISOStd.Controllers
             {
                 string sSqlstmt = "select Ref_no,id_parties,PartyName,PartyType,Expectations,Impact," +
                     "Isostd,Issues,priority,monit_mech,pi_rank,interest_level,branch,Location,Department from t_parties where Active=1"
-                + " and id_parties='"+id+"' order by id_parties desc";
+                + " and id_parties='" + id + "' order by id_parties desc";
                 DataSet dsPartiesList = objGlobaldata.Getdetails(sSqlstmt);
 
                 if (dsPartiesList.Tables.Count > 0 && dsPartiesList.Tables[0].Rows.Count > 0)
-                {     
+                {
                     for (int i = 0; i < dsPartiesList.Tables[0].Rows.Count; i++)
                     {
                         try
@@ -291,7 +283,7 @@ namespace ISOStd.Controllers
                                 Location = objGlobaldata.GetDivisionLocationById(dsPartiesList.Tables[0].Rows[i]["Location"].ToString()),
                                 Department = objGlobaldata.GetMultiDeptNameById(dsPartiesList.Tables[0].Rows[i]["Department"].ToString()),
                             };
-                            
+
                             objPartiesList.PartiesList.Add(objPartiesModels);
                         }
                         catch (Exception ex)
@@ -309,38 +301,33 @@ namespace ISOStd.Controllers
             }
             return View(objPartiesList.PartiesList.ToList());
         }
-         
+
         [AllowAnonymous]
         public JsonResult PartiesDocDelete(FormCollection form)
         {
             try
             {
-               
-                      if (form["id_parties"] != null && form["id_parties"] != "")
-                        {
+                if (form["id_parties"] != null && form["id_parties"] != "")
+                {
+                    PartiesModel Doc = new PartiesModel();
+                    string sid_parties = form["id_parties"];
 
-                            PartiesModel Doc = new PartiesModel();
-                            string sid_parties = form["id_parties"];
-
-
-                            if (Doc.FunDeletePartiesDoc(sid_parties))
-                            {
-                                TempData["Successdata"] = "Document deleted successfully";
-                                return Json("Success");
-                            }
-                            else
-                            {
-                                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                                return Json("Failed");
-                            }
-                        }
-                        else
-                        {
-                            TempData["alertdata"] = "Parties Id cannot be Null or empty";
-                            return Json("Failed");
-                        }
-                   
-                
+                    if (Doc.FunDeletePartiesDoc(sid_parties))
+                    {
+                        TempData["Successdata"] = "Document deleted successfully";
+                        return Json("Success");
+                    }
+                    else
+                    {
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                        return Json("Failed");
+                    }
+                }
+                else
+                {
+                    TempData["alertdata"] = "Parties Id cannot be Null or empty";
+                    return Json("Failed");
+                }
             }
             catch (Exception ex)
             {
@@ -350,7 +337,6 @@ namespace ISOStd.Controllers
             return Json("Failed");
         }
 
-         
         [AllowAnonymous]
         public ActionResult PartiesEdit()
         {
@@ -365,13 +351,12 @@ namespace ISOStd.Controllers
                 ViewBag.Priority = objGlobaldata.GetDropdownList("Priority");
                 ViewBag.PI_rank = objGlobaldata.GetDropdownList("PI Rank Value");
 
-
                 if (Request.QueryString["id_parties"] != null && Request.QueryString["id_parties"] != "")
                 {
                     string id_parties = Request.QueryString["id_parties"];
 
                     ViewBag.id_parties = id_parties;
-                    
+
                     string sSqlstmt = "select Ref_no,id_parties,PartyName,PartyType,Expectations,Impact,Isostd," +
                         "Issues,priority,monit_mech,pi_rank,interest_level,branch,Location,Department from t_parties where id_parties='" + id_parties + "'";
 
@@ -393,7 +378,7 @@ namespace ISOStd.Controllers
                             interest_level = objGlobaldata.GetDropdownitemById(dsPartiesList.Tables[0].Rows[0]["interest_level"].ToString()),
                             monit_mech = dsPartiesList.Tables[0].Rows[0]["monit_mech"].ToString(),
                             pi_rank = (dsPartiesList.Tables[0].Rows[0]["pi_rank"].ToString()),
-                            branch =(dsPartiesList.Tables[0].Rows[0]["branch"].ToString()),
+                            branch = (dsPartiesList.Tables[0].Rows[0]["branch"].ToString()),
                             Location = (dsPartiesList.Tables[0].Rows[0]["Location"].ToString()),
                             Department = (dsPartiesList.Tables[0].Rows[0]["Department"].ToString()),
                         };
@@ -421,14 +406,13 @@ namespace ISOStd.Controllers
             }
             return View(objPartiesModels);
         }
-         
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult PartiesEdit(PartiesModel objParties, FormCollection form)
         {
             try
             {
-
                 objParties.PartyName = form["PartyName"];
                 objParties.PartyType = form["PartyType"];
                 objParties.Expectations = form["Expectations"];
@@ -460,7 +444,7 @@ namespace ISOStd.Controllers
 
             return RedirectToAction("PartiesList");
         }
-         
+
         [HttpPost]
         public JsonResult doesPartiesRefNoExist(string Ref_no)
         {
@@ -473,16 +457,14 @@ namespace ISOStd.Controllers
         public JsonResult funGetPIRank(string priority, string interest)
         {
             string PI = "";
-            if (priority != "" && interest !="")
+            if (priority != "" && interest != "")
             {
-
                 string sqlstmt = "select pi_value from t_pi_rank where priority='" + priority + "' and interest='" + interest + "' ";
                 DataSet dsData = objGlobaldata.Getdetails(sqlstmt);
                 if (dsData.Tables.Count > 0 && dsData.Tables[0].Rows.Count > 0)
                 {
                     PI = dsData.Tables[0].Rows[0]["pi_value"].ToString();
                 }
-               
             }
             return Json(PI);
         }

@@ -346,7 +346,7 @@ namespace ISOStd.Models
 
                 if (dsIndList.Tables.Count > 0 && dsIndList.Tables[0].Rows.Count > 0)
                 {
-                    string sHeader, sInformation = "", sTitle = "", sSubject = "", sContent = "", aAttachment = "", BccEmailIds = "";
+                    string sHeader, sInformation = "", sSubject = "", sContent = "", aAttachment = "";
 
                     //Form the Email Subject and Body content
                     DataSet dsEmailXML = new DataSet();
@@ -553,7 +553,7 @@ namespace ISOStd.Models
 
                 if (dsIndList.Tables.Count > 0 && dsIndList.Tables[0].Rows.Count > 0)
                 {
-                    string sHeader, sInformation = "", sTitle = "", sSubject = "", sContent = "", aAttachment = "", BccEmailIds = "";
+                    string sHeader, sInformation = "", sSubject = "", sContent = "", aAttachment = "";
 
                     //Form the Email Subject and Body content
                     DataSet dsEmailXML = new DataSet();

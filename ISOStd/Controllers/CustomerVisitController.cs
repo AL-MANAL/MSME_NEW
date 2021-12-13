@@ -1,33 +1,30 @@
-﻿using System.Web.UI;
+﻿using ISOStd.Filters;
+using ISOStd.Models;
 using System;
 using System.Collections.Generic;
+using System.Data;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using ISOStd.Models;
-using System.IO;
-using System.Data;
-using PagedList;
-using PagedList.Mvc;
-using ISOStd.Filters;
 
 namespace ISOStd.Controllers
 {
     [PreventFromUrl]
     public class CustomerVisitController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
+        private clsGlobal objGlobaldata = new clsGlobal();
 
         public CustomerVisitController()
         {
             ViewBag.Menutype = "CustomerMgmt";
             ViewBag.SubMenutype = "CustomerVisit";
-        }      
+        }
 
         public ActionResult Index()
         {
             return View();
-        }        
+        }
 
         [AllowAnonymous]
         public ActionResult AddCustomerVisit()
@@ -56,32 +53,28 @@ namespace ISOStd.Controllers
         public JsonResult CustomerVisitDocDelete(FormCollection form)
         {
             try
-            {                
-                    if (form["CustomerVisitId"] != null && form["CustomerVisitId"] != "")
+            {
+                if (form["CustomerVisitId"] != null && form["CustomerVisitId"] != "")
+                {
+                    CustomerVisitModels Doc = new CustomerVisitModels();
+                    string sCustomerVisitId = form["CustomerVisitId"];
+
+                    if (Doc.FunDeleteCustomerVisitDoc(sCustomerVisitId))
                     {
-
-                        CustomerVisitModels Doc = new CustomerVisitModels();
-                        string sCustomerVisitId = form["CustomerVisitId"];
-
-
-                        if (Doc.FunDeleteCustomerVisitDoc(sCustomerVisitId))
-                        {
-                            TempData["Successdata"] = "Document deleted successfully";
-                            return Json("Success");
-                        }
-                        else
-                        {
-                            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                            return Json("Failed");
-                        }
-                   
+                        TempData["Successdata"] = "Document deleted successfully";
+                        return Json("Success");
+                    }
+                    else
+                    {
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                        return Json("Failed");
+                    }
                 }
                 else
                 {
                     TempData["alertdata"] = "Access Denied";
                     return Json("Access Denied");
                 }
-
             }
             catch (Exception ex)
             {
@@ -90,7 +83,7 @@ namespace ISOStd.Controllers
             }
             return Json("Failed");
         }
-       
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult AddCustomerVisit(CustomerVisitModels objCustomerVisitModels, FormCollection form, HttpPostedFileBase file)
@@ -143,7 +136,6 @@ namespace ISOStd.Controllers
                     ViewBag.Message = "You have not specified a file.";
                 }
 
-
                 if (objCustomerVisitModels.FunAddCustomerVisit(objCustomerVisitModels))
                 {
                     TempData["Successdata"] = "Added Visit details successfully";
@@ -160,7 +152,7 @@ namespace ISOStd.Controllers
             }
             return RedirectToAction("CustomerVisitList");
         }
-               
+
         [AllowAnonymous]
         public ActionResult CustomerVisitList(string SearchText, string PlanfromDate, string PlanToDate, string chkAll, int? Page, string branch_name)
         {
@@ -191,8 +183,7 @@ namespace ISOStd.Controllers
                     if (sSearchtext != "")
                     {
                         sSearchtext = " and " + sSearchtext;
-                    }                    
-
+                    }
 
                     if (branch_name != null && branch_name != "")
                     {
@@ -231,7 +222,7 @@ namespace ISOStd.Controllers
                 for (int i = 0; dsCustomer.Tables.Count > 0 && i < dsCustomer.Tables[0].Rows.Count; i++)
                 {
                     try
-                    {  
+                    {
                         CustomerVisitModels objCustomer = new CustomerVisitModels
                         {
                             CustomerVisitId = dsCustomer.Tables[0].Rows[i]["CustomerVisitId"].ToString(),
@@ -281,7 +272,6 @@ namespace ISOStd.Controllers
             }
 
             return View(objCustomerVisitList.lstCustomerVisit.ToList());
-
         }
 
         public JsonResult CustomerVisitListSearch(string SearchText, string PlanfromDate, string PlanToDate, string chkAll, int? Page, string branch_name)
@@ -314,7 +304,7 @@ namespace ISOStd.Controllers
                     {
                         sSearchtext = " and " + sSearchtext;
                     }
-                    
+
                     if (branch_name != null && branch_name != "")
                     {
                         sSearchtext = sSearchtext + " and find_in_set('" + branch_name + "', branch)";
@@ -352,7 +342,7 @@ namespace ISOStd.Controllers
                 for (int i = 0; dsCustomer.Tables.Count > 0 && i < dsCustomer.Tables[0].Rows.Count; i++)
                 {
                     try
-                    {   
+                    {
                         CustomerVisitModels objCustomer = new CustomerVisitModels
                         {
                             CustomerVisitId = dsCustomer.Tables[0].Rows[i]["CustomerVisitId"].ToString(),
@@ -454,7 +444,6 @@ namespace ISOStd.Controllers
                         ViewBag.Branch = objGlobaldata.GetCompanyBranchListbox();
 
                         return View(objCustomer);
-
                     }
                     else
                     {
@@ -524,7 +513,6 @@ namespace ISOStd.Controllers
                     }
 
                     return View(objCustomer);
-
                 }
                 else
                 {
@@ -596,7 +584,6 @@ namespace ISOStd.Controllers
                         ViewBag.Product_id = objGlobaldata.GetDropdownList("Product desc");
 
                         return View(objCustomer);
-
                     }
                     else
                     {

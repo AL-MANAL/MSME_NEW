@@ -1,24 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-using ISOStd.Models;
-using System.Data;
-using System.Net;
-using System.IO;
-using PagedList;
-using PagedList.Mvc;
+﻿using ISOStd.Models;
 using Newtonsoft.Json;
-using ISOStd.Filters;
+using PagedList;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Web.Mvc;
 
 namespace ISOStd.Controllers
 {
-   
     public class HomeController : Controller
     {
-      
-        clsGlobal objGlobaldata = new clsGlobal(); 
+        private clsGlobal objGlobaldata = new clsGlobal();
 
         public ActionResult Index()
         {
@@ -34,7 +27,6 @@ namespace ISOStd.Controllers
                 ViewBag.Type = objGlobaldata.GetDropdownList("Calendar Event Type");
                 ViewBag.Priority = objGlobaldata.GetDropdownList("Calendar Event Priority");
 
-
                 ViewBag.Branch_name = objGlobaldata.GetCurrentUserSession().division;
                 string sBranchtree = objGlobaldata.GetCurrentUserSession().BranchTree;
                 ViewBag.Branch = objGlobaldata.GetMultiBranchListByID(sBranchtree);
@@ -46,29 +38,25 @@ namespace ISOStd.Controllers
             }
             return View();
         }
-        //dashboard report
 
+        //dashboard report
 
         public ActionResult QHSE()
         {
-           
             HomeModels objModels = new HomeModels();
             HomeModelsList lst = new HomeModelsList();
             lst.HomeModelList = new List<HomeModels>();
             try
-            {           
-            
-
+            {
             }
             catch (Exception ex)
             {
                 objGlobaldata.AddFunctionalLog("Exception in QHSE: " + ex.ToString());
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-
             }
             return View();
-
         }
+
         public ActionResult QMS(int? page)
         {
             HomeModels objModels = new HomeModels();
@@ -80,7 +68,6 @@ namespace ISOStd.Controllers
 
                 if (dsObjModelsList.Tables.Count > 0 && dsObjModelsList.Tables[0].Rows.Count > 0)
                 {
-
                     for (int i = 0; i < dsObjModelsList.Tables[0].Rows.Count; i++)
                     {
                         try
@@ -109,27 +96,27 @@ namespace ISOStd.Controllers
                         }
                     }
                 }
-
             }
             catch (Exception ex)
             {
                 objGlobaldata.AddFunctionalLog("Exception in QMS: " + ex.ToString());
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-
             }
             return View(lst.HomeModelList.ToList().ToPagedList(page ?? 1, 1000));
-
         }
+
         public JsonResult FunGetNearMissDashboard()
         {
             var data = objGlobaldata.GetNearMissDashboardData();
             return Json(data);
         }
+
         public JsonResult FunGetMockDrillDashboard()
         {
             var data = objGlobaldata.GetMockDrillDashboardData();
             return Json(data);
         }
+
         public JsonResult FunGetToolBoxDashboard()
         {
             var data = objGlobaldata.GetToolboxDashboardData();
@@ -145,7 +132,7 @@ namespace ISOStd.Controllers
             {
                 var sempid = objGlobaldata.GetCurrentUserSession().empid;
                 //==========================SYSTME DOCUMENTS======================================
-             
+
                 string sSqlstmt = "select * from t_mgmt_documents where Status= 1 and Approved_Status=0 and Reviewed_Status=1 and" +
                               " ( find_in_set('" + sempid + "',ApprovedBy) and not find_in_set('" + sempid + "',Approvers)) "
                              + "and ( find_in_set('" + sempid + "',ApprovedBy) and not find_in_set('" + sempid + "',ApprovalRejector))";
@@ -157,7 +144,6 @@ namespace ISOStd.Controllers
                 {
                     ViewBag.dsMgmtDocument = dsApprovalList;
                 }
-
 
                 //==========================SYSTME DOCUMENTS-review======================================
                 string sSqlstmt1 = "select * from t_mgmt_documents where Status= 1 and Approved_Status=0 and Reviewed_Status=0 and " +
@@ -211,7 +197,6 @@ namespace ISOStd.Controllers
                     ViewBag.dslegalregister = dsApprovalList;
                 }
 
-
                 //==========================DOCUMENT CHANGE REQUEST======================================
 
                 sSqlstmt = "select * from t_documentchangerequest where ApproveStatus=0 and ( find_in_set('" + objGlobaldata.GetCurrentUserSession().empid + "',ApprovedBy) and not find_in_set('" + objGlobaldata.GetCurrentUserSession().empid + "',Approvers))"
@@ -223,12 +208,9 @@ namespace ISOStd.Controllers
                     ViewBag.dsDocChangeRequest = dsApprovalList;
                 }
 
-
-
                 //==========================CHANGE MANAGEMENT REQUEST======================================
 
                 sSqlstmt = "select * from t_changemanagement where ApproveStatus=0 and ( find_in_set('" + objGlobaldata.GetCurrentUserSession().empid + "',ApprovedBy) and not find_in_set('" + objGlobaldata.GetCurrentUserSession().empid + "',Approvers))";
-
 
                 dsApprovalList = objGlobaldata.Getdetails(sSqlstmt);
                 apprcount = apprcount + dsApprovalList.Tables[0].Rows.Count;
@@ -276,14 +258,12 @@ namespace ISOStd.Controllers
                 sSqlstmt = "select leave_id,t.emp_no,fr_date,to_date,leave_type,duration,approver,applied_date,reason_leave,bal_annual_leave,bal_sick_leave,bal_other_leave"
                  + " from t_leavetrans t,t_leavemaster tt where t.emp_no=tt.emp_no and  t.syear=tt.syear and approved_status=0 and t.Active=1 and tt.Active=1 and approver ='" + objGlobaldata.GetCurrentUserSession().empid + "'";
 
-
                 dsApprovalList = objGlobaldata.Getdetails(sSqlstmt);
                 apprcount = apprcount + dsApprovalList.Tables[0].Rows.Count;
                 if (dsApprovalList.Tables.Count > 0 && dsApprovalList.Tables[0].Rows.Count > 0)
                 {
                     ViewBag.dsLeaveList = dsApprovalList;
                 }
-
 
                 //==========================SUPPLIER======================================
                 sSqlstmt = "select SupplierID,SupplierCode,SupplierName,City,ContactPerson,ContactNo,Address,SupplyScope,ApprovalCriteria from t_supplier where"
@@ -321,9 +301,8 @@ namespace ISOStd.Controllers
                 if (dsApprovalList.Tables.Count > 0 && dsApprovalList.Tables[0].Rows.Count > 0)
                 {
                     ViewBag.dsRiskHRRActivity = dsApprovalList;
-                }                              
+                }
 
-                
                 //==========================LEGAL  REGISTER======================================
 
                 sSqlstmt = "select LegalRequirement_Id, lawNo, lawTitle, initialdevelopmentdate, origin_of_requirement , document_storage_location,frequency_of_evaluation, activeStatus, updatedOn,"
@@ -374,7 +353,7 @@ namespace ISOStd.Controllers
                     ViewBag.dsRiskHRRActivity = dsApprovalList;
                 }
 
-                //==========================ANNEXURE======================================               
+                //==========================ANNEXURE======================================
                 sSqlstmt = "select idAnnexure,MgmtId,DocRef,DocName,IssueNo,RevNo,PreparedBy,ApprovedBy,DocDate,DocUploadPath"
                    + " from t_mgmt_annexure where Status=1 and ApprovedStatus=0 and ( find_in_set('" + objGlobaldata.GetCurrentUserSession().empid + "',ApprovedBy))";
 
@@ -470,19 +449,16 @@ namespace ISOStd.Controllers
 
         public JsonResult GetSummaryReport()
         {
-
             DataSet dsReport = new DataSet();
             try
             {
                 dsReport = objGlobaldata.GetDashboard();
-
             }
             catch (Exception ex)
             {
                 objGlobaldata.AddFunctionalLog("Exception in GetSummaryReport: " + ex.ToString());
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
-          
 
             var json = JsonConvert.SerializeObject(dsReport, Formatting.Indented);
             return Json(json);
@@ -492,7 +468,7 @@ namespace ISOStd.Controllers
         {
             return View();
         }
-         
+
         public JsonResult GetEvents(string branch, string event_status, string event_priority, string event_type, string Person_responsible)
         {
             QHSEPlannerModelsList objPlanList = new QHSEPlannerModelsList();
@@ -507,7 +483,6 @@ namespace ISOStd.Controllers
                 if (branch != null && branch != "")
                 {
                     sSearchtext = sSearchtext + " and branch='" + branch + "' ";
-
                 }
                 else
                 {
@@ -516,22 +491,18 @@ namespace ISOStd.Controllers
                 if (event_status != null && event_status != "")
                 {
                     sSearchtext = sSearchtext + " and event_status='" + event_status + "' ";
-
                 }
                 if (event_priority != null && event_priority != "")
                 {
                     sSearchtext = sSearchtext + " and event_priority='" + event_priority + "' ";
-
                 }
                 if (event_type != null && event_type != "")
                 {
                     sSearchtext = sSearchtext + " and event_type='" + event_type + "' ";
-
                 }
                 if (Person_responsible != null && Person_responsible != "")
                 {
                     sSearchtext = sSearchtext + " and Person_responsible='" + Person_responsible + "' ";
-
                 }
                 sSqlstmt = sSqlstmt + sSearchtext;
                 DataSet dsEventList = objGlobaldata.Getdetails(sSqlstmt);
@@ -545,7 +516,6 @@ namespace ISOStd.Controllers
                         {
                             QHSEPlannerModels objModels = new QHSEPlannerModels
                             {
-
                                 id_event = Convert.ToInt32(dsEventList.Tables[0].Rows[i]["id_event"].ToString()),
                                 subject = dsEventList.Tables[0].Rows[i]["subject"].ToString(),
                                 description = dsEventList.Tables[0].Rows[i]["description"].ToString(),
@@ -563,7 +533,7 @@ namespace ISOStd.Controllers
                                 sevent_type = objGlobaldata.GetDropdownitemById(dsEventList.Tables[0].Rows[i]["event_type"].ToString()),
                                 sevent_priority = objGlobaldata.GetDropdownitemById(dsEventList.Tables[0].Rows[i]["event_priority"].ToString()),
                                 notification_to = (dsEventList.Tables[0].Rows[i]["notification_to"].ToString()),
-                                Logged_Id =(dsEventList.Tables[0].Rows[i]["Logged_by"].ToString()),
+                                Logged_Id = (dsEventList.Tables[0].Rows[i]["Logged_by"].ToString()),
                             };
                             DateTime dtValue;
                             if (DateTime.TryParse(dsEventList.Tables[0].Rows[i]["start_date"].ToString(), out dtValue))
@@ -613,7 +583,6 @@ namespace ISOStd.Controllers
                             TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                         }
                     }
-
                 }
             }
             catch (Exception ex)
@@ -623,6 +592,7 @@ namespace ISOStd.Controllers
             }
             return new JsonResult { Data = objPlanList.lstPlan.ToList(), JsonRequestBehavior = JsonRequestBehavior.AllowGet };
         }
+
         [HttpPost]
         public JsonResult DeleteEvent(string eventID)
         {
@@ -631,7 +601,6 @@ namespace ISOStd.Controllers
             try
             {
                 status = objModel.FunDeleteCalenderEvent(eventID);
-
             }
             catch (Exception ex)
             {
@@ -640,6 +609,7 @@ namespace ISOStd.Controllers
             }
             return new JsonResult { Data = new { status = status } };
         }
+
         [HttpPost]
         public JsonResult SaveEvent(QHSEPlannerModels e, FormCollection form)
         {
@@ -655,7 +625,6 @@ namespace ISOStd.Controllers
                     if (form["starttime"] != null)
                     {
                         e.start_date = DateTime.Parse(dateValue.ToString("dd/MM/yyyy") + " " + e.starttime + ":00");
-
                     }
                 }
                 if (form["end_date"] != null && DateTime.TryParse(form["end_date"], out dateValue) == true)
@@ -700,7 +669,6 @@ namespace ISOStd.Controllers
                 {
                     status = objModel.FunSaveEvent(e);
                 }
-
             }
             catch (Exception ex)
             {

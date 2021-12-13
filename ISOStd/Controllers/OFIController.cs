@@ -12,13 +12,14 @@ namespace ISOStd.Controllers
 {
     public class OFIController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
+        private clsGlobal objGlobaldata = new clsGlobal();
 
         public OFIController()
         {
             ViewBag.Menutype = "Risk";
             ViewBag.SubMenutype = "OFI";
         }
+
         //checked
         [AllowAnonymous]
         public ActionResult AddReportOFI(string risk_id = "")
@@ -51,6 +52,7 @@ namespace ISOStd.Controllers
             }
             return View(objModel);
         }
+
         //checked
         [HttpPost]
         [AllowAnonymous]
@@ -73,7 +75,6 @@ namespace ISOStd.Controllers
                     }
                     else
                     {
-
                         DataSet dsData = objGlobaldata.GetReportNo("OFI", "", objGlobaldata.GetBranchShortNameByID(objGlobaldata.GetCurrentUserSession().division));
                         if (dsData != null && dsData.Tables.Count > 0)
                         {
@@ -174,9 +175,7 @@ namespace ISOStd.Controllers
                     for (int i = 0; i < dsData.Tables[0].Rows.Count; i++)
                     {
                         len[i] = dsData.Tables[0].Rows[i]["Name"].ToString();
-
                     }
-
                 }
             }
             catch (Exception ex)
@@ -186,9 +185,9 @@ namespace ISOStd.Controllers
             }
             return Json(len);
         }
-    
-    //checked
-    [AllowAnonymous]
+
+        //checked
+        [AllowAnonymous]
         public ActionResult OFIList(string branch_name)
         {
             OFIModelsList objList = new OFIModelsList();
@@ -343,7 +342,6 @@ namespace ISOStd.Controllers
                             objGlobaldata.AddFunctionalLog("Exception in OFIList: " + ex.ToString());
                             TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                         }
-
                     }
                 }
             }
@@ -549,7 +547,6 @@ namespace ISOStd.Controllers
                     objModel.action_proposedby = objModel.action_proposedby.Trim(',');
                 }
 
-
                 //Notifed To
                 for (int i = 0; i < Convert.ToInt16(form["itemcnt1"]); i++)
                 {
@@ -589,7 +586,6 @@ namespace ISOStd.Controllers
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 }
-
             }
             catch (Exception ex)
             {
@@ -643,7 +639,6 @@ namespace ISOStd.Controllers
                             updatedby = (dsOFIModels.Tables[0].Rows[0]["updatedby"].ToString()),
                             improvement_achieve = dsOFIModels.Tables[0].Rows[0]["improvement_achieve"].ToString(),
                             checkedby = (dsOFIModels.Tables[0].Rows[0]["checkedby"].ToString()),
-
                         };
                         DateTime dtValue;
                         if (DateTime.TryParse(dsOFIModels.Tables[0].Rows[0]["reported_date"].ToString(), out dtValue))
@@ -751,7 +746,6 @@ namespace ISOStd.Controllers
         {
             try
             {
-
                 //updatedby
                 for (int i = 0; i < Convert.ToInt16(form["itemcnt"]); i++)
                 {
@@ -764,7 +758,6 @@ namespace ISOStd.Controllers
                 {
                     objModel.updatedby = objModel.updatedby.Trim(',');
                 }
-
 
                 //checkedby
                 for (int i = 0; i < Convert.ToInt16(form["itemcnt1"]); i++)
@@ -819,7 +812,6 @@ namespace ISOStd.Controllers
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 }
-
             }
             catch (Exception ex)
             {
@@ -834,10 +826,8 @@ namespace ISOStd.Controllers
         {
             try
             {
-
                 if (form["id_ofi"] != null && form["id_ofi"] != "")
                 {
-
                     OFIModels Doc = new OFIModels();
                     string sid_nc = form["id_ofi"];
 
@@ -916,7 +906,6 @@ namespace ISOStd.Controllers
                 file.SaveAs(sFilepath + "/" + sFilename);
                 //return Json("~/DataUpload/MgmtDocs/Surveillance/" + "Surveillance" + DateTime.Now.ToString("ddMMyyyyHHmm") + sFilename);
                 obj.upload = obj.upload + "," + "~/DataUpload/MgmtDocs/RiskMgmt/" + sFilename;
-
             }
             obj.upload = obj.upload.Trim(',');
             return Json(obj.upload);
@@ -970,11 +959,10 @@ namespace ISOStd.Controllers
                                 checkedbystatus = dsOFIModels.Tables[0].Rows[0]["checkedbystatus"].ToString(),
                                 remark = dsOFIModels.Tables[0].Rows[0]["remark"].ToString(),
                                 approved_status = dsOFIModels.Tables[0].Rows[0]["approved_status"].ToString(),
-                                pers_resp =objGlobaldata.GetMultiHrEmpNameById(dsOFIModels.Tables[0].Rows[0]["pers_resp"].ToString()),
+                                pers_resp = objGlobaldata.GetMultiHrEmpNameById(dsOFIModels.Tables[0].Rows[0]["pers_resp"].ToString()),
                                 approver_comments = dsOFIModels.Tables[0].Rows[0]["approver_comments"].ToString(),
                                 approver_upload = dsOFIModels.Tables[0].Rows[0]["approver_upload"].ToString(),
                                 realization_approved_status = dsOFIModels.Tables[0].Rows[0]["realization_approved_status"].ToString(),
-                             
                             };
 
                             DateTime dtValue;
@@ -1031,7 +1019,6 @@ namespace ISOStd.Controllers
                             }
                             ViewBag.ObjOFIActionList = ObjOFIList;
                             //------------------OFI Action Ends---------------------
-
 
                             //-----------------OFI Improvement starts-----------------
                             OFIModelsList ObjofiList = new OFIModelsList();
@@ -1099,14 +1086,12 @@ namespace ISOStd.Controllers
                             }
                             ViewBag.ObjOFIDocList = ObjOFIDocList;
                             //-------------------OFI Document Ends---------------
-
                         }
                         catch (Exception ex)
                         {
                             objGlobaldata.AddFunctionalLog("Exception in OFIList: " + ex.ToString());
                             TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                         }
-
                     }
                 }
             }
@@ -1176,10 +1161,10 @@ namespace ISOStd.Controllers
         //    }
         //}
 
-        public ActionResult OFIInitialApprove(OFIModels objModel, FormCollection form,string id_ofi, string sStatus, string PendingFlg, IEnumerable<HttpPostedFileBase> approver_upload, IEnumerable<HttpPostedFileBase> realization_upload)
+        public ActionResult OFIInitialApprove(OFIModels objModel, FormCollection form, string id_ofi, string sStatus, string PendingFlg, IEnumerable<HttpPostedFileBase> approver_upload, IEnumerable<HttpPostedFileBase> realization_upload)
         {
             try
-            {              
+            {
                 sStatus = form["approved_status"];
                 HttpPostedFileBase files = Request.Files[0];
                 if (approver_upload != null && files.ContentLength > 0)
@@ -1205,7 +1190,7 @@ namespace ISOStd.Controllers
                 {
                     ViewBag.Message = "You have not specified a file.";
                 }
-               
+
                 if (realization_upload != null && files.ContentLength > 0)
                 {
                     objModel.realization_upload = "";
@@ -1363,7 +1348,6 @@ namespace ISOStd.Controllers
                             ViewBag.ObjOFIActionList = ObjOFIList;
                             //------------------OFI Action Ends---------------------
 
-
                             //-----------------OFI Improvement starts-----------------
                             OFIModelsList ObjofiList = new OFIModelsList();
                             ObjofiList.OFIList = new List<OFIModels>();
@@ -1430,14 +1414,12 @@ namespace ISOStd.Controllers
                             }
                             ViewBag.ObjOFIDocList = ObjOFIDocList;
                             //-------------------OFI Document Ends---------------
-
                         }
                         catch (Exception ex)
                         {
                             objGlobaldata.AddFunctionalLog("Exception in OFIList: " + ex.ToString());
                             TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                         }
-
                     }
                 }
             }
@@ -1464,5 +1446,4 @@ namespace ISOStd.Controllers
             };
         }
     }
-
 }

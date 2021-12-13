@@ -1,27 +1,24 @@
-﻿using System;
+﻿using ISOStd.Models;
+using System;
 using System.Collections.Generic;
+using System.Data;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using ISOStd.Models;
-using System.Data;
-using System.Net;
-using System.IO;
-using PagedList;
-using PagedList.Mvc;
-using Rotativa;
 
 namespace ISOStd.Controllers
 {
     public class QualitySurveyController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
+        private clsGlobal objGlobaldata = new clsGlobal();
 
         public QualitySurveyController()
         {
             ViewBag.Menutype = "HSE";
             ViewBag.SubMenutype = "QualitySurvey";
         }
+
         [AllowAnonymous]
         public ActionResult AddQualitySurvey()
         {
@@ -30,7 +27,7 @@ namespace ISOStd.Controllers
                 ViewBag.Survey = objGlobaldata.GetDropdownList("Quality Survey");
                 ViewBag.SurveyCriteria = objGlobaldata.GetAuditCriteria();
                 ViewBag.Limit = objGlobaldata.GetConstantValue("QualityLimit");
-                ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox(); 
+                ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
                 ViewBag.Supplier = objGlobaldata.GetSupplierList();
             }
             catch (Exception ex)
@@ -40,7 +37,7 @@ namespace ISOStd.Controllers
             }
             return View();
         }
-          
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult AddQualitySurvey(QualitySurveyModels objQuality, FormCollection form, IEnumerable<HttpPostedFileBase> Report)
@@ -77,7 +74,7 @@ namespace ISOStd.Controllers
                         try
                         {
                             string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/HSE"), Path.GetFileName(file.FileName));
-                            string sFilename = "QualitySurvey" + "_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath), sFilepath = Path.GetDirectoryName(spath);   
+                            string sFilename = "QualitySurvey" + "_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath), sFilepath = Path.GetDirectoryName(spath);
                             file.SaveAs(sFilepath + "/" + sFilename);
                             objQuality.Report = objQuality.Report + "," + "~/DataUpload/MgmtDocs/HSE/" + sFilename;
                         }
@@ -109,13 +106,13 @@ namespace ISOStd.Controllers
             }
             return RedirectToAction("QualitySurveyList");
         }
-          
+
         [AllowAnonymous]
         public ActionResult QualitySurveyList(string branch_name)
         {
             QualitySurveyModelsList objQualityList = new QualitySurveyModelsList();
             objQualityList.lstQuality = new List<QualitySurveyModels>();
-           
+
             try
             {
                 string sBranch_name = objGlobaldata.GetCurrentUserSession().division;
@@ -141,9 +138,6 @@ namespace ISOStd.Controllers
 
                 if (dsQualityList.Tables.Count > 0 && dsQualityList.Tables[0].Rows.Count > 0)
                 {
-                    
-                       
-                    
                     for (int i = 0; i < dsQualityList.Tables[0].Rows.Count; i++)
                     {
                         try
@@ -184,9 +178,7 @@ namespace ISOStd.Controllers
                             TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                         }
                     }
-
                 }
-
             }
             catch (Exception ex)
             {
@@ -228,9 +220,6 @@ namespace ISOStd.Controllers
 
                 if (dsQualityList.Tables.Count > 0 && dsQualityList.Tables[0].Rows.Count > 0)
                 {
-
-                   
-
                     for (int i = 0; i < dsQualityList.Tables[0].Rows.Count; i++)
                     {
                         try
@@ -287,32 +276,27 @@ namespace ISOStd.Controllers
         {
             try
             {
-                
-                      if (form["id_qualitysurvey"] != null && form["id_qualitysurvey"] != "")
-                        {
+                if (form["id_qualitysurvey"] != null && form["id_qualitysurvey"] != "")
+                {
+                    QualitySurveyModels Doc = new QualitySurveyModels();
+                    string sid_qualitysurvey = form["id_qualitysurvey"];
 
-                            QualitySurveyModels Doc = new QualitySurveyModels();
-                            string sid_qualitysurvey = form["id_qualitysurvey"];
-
-
-                            if (Doc.FunDeleteQualitySurveyDoc(sid_qualitysurvey))
-                            {
-                                TempData["Successdata"] = "Document deleted successfully";
-                                return Json("Success");
-                            }
-                            else
-                            {
-                                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                                return Json("Failed");
-                            }
-                        }
-                        else
-                        {
-                            TempData["alertdata"] = "Quality Survey Id cannot be Null or empty";
-                            return Json("Failed");
-                        }
-                   
-                
+                    if (Doc.FunDeleteQualitySurveyDoc(sid_qualitysurvey))
+                    {
+                        TempData["Successdata"] = "Document deleted successfully";
+                        return Json("Success");
+                    }
+                    else
+                    {
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                        return Json("Failed");
+                    }
+                }
+                else
+                {
+                    TempData["alertdata"] = "Quality Survey Id cannot be Null or empty";
+                    return Json("Failed");
+                }
             }
             catch (Exception ex)
             {
@@ -321,7 +305,7 @@ namespace ISOStd.Controllers
             }
             return Json("Failed");
         }
-          
+
         [AllowAnonymous]
         public ActionResult QualitySurveyEdit()
         {
@@ -343,10 +327,8 @@ namespace ISOStd.Controllers
 
                     DataSet dsQualityList = objGlobaldata.Getdetails(sSqlstmt);
 
-
                     if (dsQualityList.Tables.Count > 0 && dsQualityList.Tables[0].Rows.Count > 0)
                     {
-
                         objQualityModels = new QualitySurveyModels
                         {
                             id_qualitysurvey = Convert.ToInt16(dsQualityList.Tables[0].Rows[0]["id_qualitysurvey"].ToString()),
@@ -376,14 +358,12 @@ namespace ISOStd.Controllers
                     }
                     else
                     {
-
                         TempData["alertdata"] = "QualitySurveyID cannot be Null or empty";
                         return RedirectToAction("QualitySurveyList");
                     }
                 }
                 else
                 {
-
                     TempData["alertdata"] = "QualitySurveyID cannot be Null or empty";
                     return RedirectToAction("QualitySurveyList");
                 }
@@ -396,14 +376,13 @@ namespace ISOStd.Controllers
             }
             return View(objQualityModels);
         }
-          
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult QualitySurveyEdit(QualitySurveyModels objQuality, FormCollection form, IEnumerable<HttpPostedFileBase> Report)
         {
             try
             {
-
                 objQuality.Survey_for = form["Survey_for"];
                 objQuality.ThirdParty = form["ThirdParty"];
                 objQuality.ConductedBy = form["ConductedBy"];
@@ -411,7 +390,7 @@ namespace ISOStd.Controllers
                 objQuality.Location = form["Location"];
                 objQuality.IsLimit = form["IsLimit"];
                 objQuality.Remarks = form["Remarks"];
-                string QCDelete = Request.Form["QCDocsValselectall"]; 
+                string QCDelete = Request.Form["QCDocsValselectall"];
                 HttpPostedFileBase files = Request.Files[0];
                 DateTime dateValue;
                 if (DateTime.TryParse(form["Survey_date"], out dateValue) == true)
@@ -427,7 +406,6 @@ namespace ISOStd.Controllers
                     objQuality.ReviewDate = dateValue;
                 }
 
-
                 if (Report != null && files.ContentLength > 0)
                 {
                     objQuality.Report = "";
@@ -436,7 +414,7 @@ namespace ISOStd.Controllers
                         try
                         {
                             string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/HSE"), Path.GetFileName(file.FileName));
-                            string sFilename = "QualitySurvey" + "_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath), sFilepath = Path.GetDirectoryName(spath);                      
+                            string sFilename = "QualitySurvey" + "_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath), sFilepath = Path.GetDirectoryName(spath);
                             file.SaveAs(sFilepath + "/" + sFilename);
                             objQuality.Report = objQuality.Report + "," + "~/DataUpload/MgmtDocs/HSE/" + sFilename;
                         }
@@ -483,7 +461,6 @@ namespace ISOStd.Controllers
             return RedirectToAction("QualitySurveyList");
         }
 
-          
         [AllowAnonymous]
         public ActionResult QualitySurveyDetails()
         {
@@ -535,7 +512,6 @@ namespace ISOStd.Controllers
                             objGlobaldata.AddFunctionalLog("Exception in QualitySurveyDetails: " + ex.ToString());
                             TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                         }
-
                     }
                     else
                     {
@@ -555,64 +531,62 @@ namespace ISOStd.Controllers
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
             return RedirectToAction("QualitySurveyList");
-
         }
-          
+
         [AllowAnonymous]
         public ActionResult QualitySurveyInfo(int id)
         {
             QualitySurveyModels objQualityModels = new QualitySurveyModels();
             try
             {
-                    string sSqlstmt = "select id_qualitysurvey,Survey_date,Survey_for,ThirdParty,ConductedBy,Criteria,"
-                    + "Report,ExpDate,ReviewDate,Location,IsLimit,Remarks,VerifiedBy from t_qualitysurvey where id_qualitysurvey='" + id + "'";
+                string sSqlstmt = "select id_qualitysurvey,Survey_date,Survey_for,ThirdParty,ConductedBy,Criteria,"
+                + "Report,ExpDate,ReviewDate,Location,IsLimit,Remarks,VerifiedBy from t_qualitysurvey where id_qualitysurvey='" + id + "'";
 
-                    DataSet dsQualityList = objGlobaldata.Getdetails(sSqlstmt);
-                    if (dsQualityList.Tables.Count > 0 && dsQualityList.Tables[0].Rows.Count > 0)
+                DataSet dsQualityList = objGlobaldata.Getdetails(sSqlstmt);
+                if (dsQualityList.Tables.Count > 0 && dsQualityList.Tables[0].Rows.Count > 0)
+                {
+                    try
                     {
-                        try
+                        objQualityModels = new QualitySurveyModels
                         {
-                            objQualityModels = new QualitySurveyModels
-                            {
-                                id_qualitysurvey = Convert.ToInt16(dsQualityList.Tables[0].Rows[0]["id_qualitysurvey"].ToString()),
-                                Survey_for = objGlobaldata.GetDropdownitemById(dsQualityList.Tables[0].Rows[0]["Survey_for"].ToString()),
-                                ThirdParty = objGlobaldata.GetSupplierNameById(dsQualityList.Tables[0].Rows[0]["ThirdParty"].ToString()),
-                                ConductedBy = dsQualityList.Tables[0].Rows[0]["ConductedBy"].ToString(),
-                                Criteria =/* objGlobaldata.GetIsoStdDescriptionById*/(dsQualityList.Tables[0].Rows[0]["Criteria"].ToString()),
-                                Report = dsQualityList.Tables[0].Rows[0]["Report"].ToString(),
-                                Location = dsQualityList.Tables[0].Rows[0]["Location"].ToString(),
-                                IsLimit = dsQualityList.Tables[0].Rows[0]["IsLimit"].ToString(),
-                                Remarks = dsQualityList.Tables[0].Rows[0]["Remarks"].ToString(),
-                                VerifiedBy = objGlobaldata.GetMultiHrEmpNameById(dsQualityList.Tables[0].Rows[0]["VerifiedBy"].ToString()),
-                            };
-                            DateTime dtValue;
-                            if (DateTime.TryParse(dsQualityList.Tables[0].Rows[0]["Survey_date"].ToString(), out dtValue))
-                            {
-                                objQualityModels.Survey_date = dtValue;
-                            }
-                            if (DateTime.TryParse(dsQualityList.Tables[0].Rows[0]["ExpDate"].ToString(), out dtValue))
-                            {
-                                objQualityModels.ExpDate = dtValue;
-                            }
-                            if (DateTime.TryParse(dsQualityList.Tables[0].Rows[0]["ReviewDate"].ToString(), out dtValue))
-                            {
-                                objQualityModels.ReviewDate = dtValue;
-                            }
-
-                            return View(objQualityModels);
+                            id_qualitysurvey = Convert.ToInt16(dsQualityList.Tables[0].Rows[0]["id_qualitysurvey"].ToString()),
+                            Survey_for = objGlobaldata.GetDropdownitemById(dsQualityList.Tables[0].Rows[0]["Survey_for"].ToString()),
+                            ThirdParty = objGlobaldata.GetSupplierNameById(dsQualityList.Tables[0].Rows[0]["ThirdParty"].ToString()),
+                            ConductedBy = dsQualityList.Tables[0].Rows[0]["ConductedBy"].ToString(),
+                            Criteria =/* objGlobaldata.GetIsoStdDescriptionById*/(dsQualityList.Tables[0].Rows[0]["Criteria"].ToString()),
+                            Report = dsQualityList.Tables[0].Rows[0]["Report"].ToString(),
+                            Location = dsQualityList.Tables[0].Rows[0]["Location"].ToString(),
+                            IsLimit = dsQualityList.Tables[0].Rows[0]["IsLimit"].ToString(),
+                            Remarks = dsQualityList.Tables[0].Rows[0]["Remarks"].ToString(),
+                            VerifiedBy = objGlobaldata.GetMultiHrEmpNameById(dsQualityList.Tables[0].Rows[0]["VerifiedBy"].ToString()),
+                        };
+                        DateTime dtValue;
+                        if (DateTime.TryParse(dsQualityList.Tables[0].Rows[0]["Survey_date"].ToString(), out dtValue))
+                        {
+                            objQualityModels.Survey_date = dtValue;
                         }
-                        catch (Exception ex)
+                        if (DateTime.TryParse(dsQualityList.Tables[0].Rows[0]["ExpDate"].ToString(), out dtValue))
                         {
-                            objGlobaldata.AddFunctionalLog("Exception in QualitySurveyDetails: " + ex.ToString());
-                            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                            objQualityModels.ExpDate = dtValue;
+                        }
+                        if (DateTime.TryParse(dsQualityList.Tables[0].Rows[0]["ReviewDate"].ToString(), out dtValue))
+                        {
+                            objQualityModels.ReviewDate = dtValue;
                         }
 
+                        return View(objQualityModels);
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        TempData["alertdata"] = "No data exists";
-                        return RedirectToAction("QualitySurveyList");
+                        objGlobaldata.AddFunctionalLog("Exception in QualitySurveyDetails: " + ex.ToString());
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                     }
+                }
+                else
+                {
+                    TempData["alertdata"] = "No data exists";
+                    return RedirectToAction("QualitySurveyList");
+                }
             }
             catch (Exception ex)
             {
@@ -620,7 +594,6 @@ namespace ISOStd.Controllers
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
             return RedirectToAction("QualitySurveyList");
-
         }
     }
 }

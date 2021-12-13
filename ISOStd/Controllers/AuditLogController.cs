@@ -12,12 +12,13 @@ namespace ISOStd.Controllers
 {
     public class AuditLogController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
+        private clsGlobal objGlobaldata = new clsGlobal();
+
         public AuditLogController()
         {
             ViewBag.Menutype = "Audit";
-
         }
+
         [AllowAnonymous]
         public ActionResult AuditLogList(string branch_name, string Audit_no, string dept_name)
         {
@@ -58,7 +59,7 @@ namespace ISOStd.Controllers
                 }
 
                 sSqlstmt = sSqlstmt + " order by id_nc desc";
-               
+
                 DataSet dsList = objGlobaldata.Getdetails(sSqlstmt);
                 if (dsList.Tables.Count > 0 && dsList.Tables[0].Rows.Count > 0)
                 {
@@ -74,7 +75,7 @@ namespace ISOStd.Controllers
                                 branch = objGlobaldata.GetCompanyBranchNameById(dsList.Tables[0].Rows[i]["branch"].ToString()),
                                 group_name = objGlobaldata.GetDeptNameById(dsList.Tables[0].Rows[i]["group_name"].ToString()),
                                 location = objGlobaldata.GetDivisionLocationById(dsList.Tables[0].Rows[i]["location"].ToString()),
-                                Audit_Status =objGlobaldata.GetAuditStatusById(dsList.Tables[0].Rows[i]["Audit_Status"].ToString()),
+                                Audit_Status = objGlobaldata.GetAuditStatusById(dsList.Tables[0].Rows[i]["Audit_Status"].ToString()),
                                 finding_category = objGlobaldata.GetAuditNCById(dsList.Tables[0].Rows[i]["finding_category"].ToString()),
                                 auditors = dsList.Tables[0].Rows[i]["auditors"].ToString(),
                                 auditee_team = dsList.Tables[0].Rows[i]["auditee_team"].ToString(),
@@ -83,9 +84,8 @@ namespace ISOStd.Controllers
                                 ca_notifiedto = dsList.Tables[0].Rows[i]["ca_notifiedto"].ToString(),
                                 nc_team = dsList.Tables[0].Rows[i]["nc_team"].ToString(),
 
-                                auditors_name =objGlobaldata.GetMultiHrEmpNameById(dsList.Tables[0].Rows[i]["auditors"].ToString()),
+                                auditors_name = objGlobaldata.GetMultiHrEmpNameById(dsList.Tables[0].Rows[i]["auditors"].ToString()),
                                 auditee_team_name = objGlobaldata.GetMultiHrEmpNameById(dsList.Tables[0].Rows[i]["auditee_team"].ToString()),
-
                             };
 
                             DateTime dtDocDate;
@@ -137,7 +137,7 @@ namespace ISOStd.Controllers
                     ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
                     ViewBag.RiskLevel = objGlobaldata.GetNCRiskLevelList();
                     string sSqlstmt = "select T3.id_nc,Audit_no,nc_no,AuditDate,branch,group_name,location,Audit_Status,finding_category,corrective_action_date,finding_details,disp_action_taken,disp_explain,disp_notifiedto,disp_notifeddate,risk_nc,risk_level,disp_upload"
-               + " from t_audit_process T1,t_audit_process_plan T2, t_audit_process_nc T3 where T1.Audit_Id = T2.Audit_Id and T2.Plan_Id = T3.Plan_Id and active = 1 and id_nc='"+ sid_nc + "'";
+               + " from t_audit_process T1,t_audit_process_plan T2, t_audit_process_nc T3 where T1.Audit_Id = T2.Audit_Id and T2.Plan_Id = T3.Plan_Id and active = 1 and id_nc='" + sid_nc + "'";
 
                     DataSet dsNCModels = objGlobaldata.Getdetails(sSqlstmt);
 
@@ -214,7 +214,6 @@ namespace ISOStd.Controllers
                         }
                         return View(objModel);
                     }
-                   
                 }
             }
             catch (Exception ex)
@@ -224,6 +223,7 @@ namespace ISOStd.Controllers
             }
             return RedirectToAction("AuditLogList");
         }
+
         [HttpPost]
         [AllowAnonymous]
         public ActionResult AddDisposition(AuditLogModels objModel, FormCollection form, IEnumerable<HttpPostedFileBase> disp_upload)
@@ -280,7 +280,6 @@ namespace ISOStd.Controllers
                     objModel.disp_notifeddate = dateValue;
                 }
 
-
                 //Notified To
                 for (int i = 0; i < Convert.ToInt16(form["itemcnt1"]); i++)
                 {
@@ -335,17 +334,15 @@ namespace ISOStd.Controllers
                 if (Request.QueryString["id_nc"] != null && Request.QueryString["id_nc"] != "")
                 {
                     string sid_nc = Request.QueryString["id_nc"];
-                   
+
                     NCModels objNCModel = new NCModels();
                     ViewBag.RCATechniqueList = objGlobaldata.GetDropdownList("RCA Technique");
                     ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
                     ViewBag.YesNo = objGlobaldata.GetConstantValue("YesNo");
 
-                 
                     string sSqlstmt = "select T3.id_nc,Audit_no,nc_no,AuditDate,branch,group_name,location,Audit_Status,finding_category,corrective_action_date,finding_details,"
                         + "rca_technique,rca_details,rca_upload,rca_action,rca_justify,rca_reportedby,rca_notifiedto,rca_reporteddate,rca_started_date"
                         + " from t_audit_process T1,t_audit_process_plan T2, t_audit_process_nc T3 where T1.Audit_Id = T2.Audit_Id and T2.Plan_Id = T3.Plan_Id and active = 1 and id_nc='" + sid_nc + "'";
-
 
                     DataSet dsNCModels = objGlobaldata.Getdetails(sSqlstmt);
 
@@ -491,7 +488,6 @@ namespace ISOStd.Controllers
                     objModel.rca_reportedby = objModel.rca_reportedby.Trim(',');
                 }
 
-
                 //Notifed To
                 for (int i = 0; i < Convert.ToInt16(form["itemcnts"]); i++)
                 {
@@ -513,7 +509,6 @@ namespace ISOStd.Controllers
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 }
-
             }
             catch (Exception ex)
             {
@@ -532,7 +527,7 @@ namespace ISOStd.Controllers
                 if (Request.QueryString["id_nc"] != null && Request.QueryString["id_nc"] != "")
                 {
                     string sid_nc = Request.QueryString["id_nc"];
-             
+
                     ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
                     //ViewBag.YesNo = objGlobaldata.GetConstantValue("YesNo");
                     //ViewBag.NCRStatus = objModel.GetNCRStatusList();
@@ -540,11 +535,10 @@ namespace ISOStd.Controllers
                     ViewBag.Division = objGlobaldata.GetCompanyBranchListbox();
                     ViewBag.Department = objGlobaldata.GetDepartmentListbox();
                     ViewBag.Location = objGlobaldata.GetLocationListBox();
-                  
-                    string sSqlstmt = "select T3.id_nc,Audit_no,nc_no,AuditDate,branch,group_name,location,Audit_Status,finding_category,corrective_action_date,finding_details,"
-                        +"ca_verfiry_duedate,ca_proposed_by,ca_notifiedto,ca_notifed_date" 
-                        + " from t_audit_process T1,t_audit_process_plan T2, t_audit_process_nc T3 where T1.Audit_Id = T2.Audit_Id and T2.Plan_Id = T3.Plan_Id and active = 1 and id_nc='" + sid_nc + "'";
 
+                    string sSqlstmt = "select T3.id_nc,Audit_no,nc_no,AuditDate,branch,group_name,location,Audit_Status,finding_category,corrective_action_date,finding_details,"
+                        + "ca_verfiry_duedate,ca_proposed_by,ca_notifiedto,ca_notifed_date"
+                        + " from t_audit_process T1,t_audit_process_plan T2, t_audit_process_nc T3 where T1.Audit_Id = T2.Audit_Id and T2.Plan_Id = T3.Plan_Id and active = 1 and id_nc='" + sid_nc + "'";
 
                     DataSet dsNCModels = objGlobaldata.Getdetails(sSqlstmt);
 
@@ -593,7 +587,6 @@ namespace ISOStd.Controllers
                             objModel.ca_notifed_date = dtValue;
                         }
 
-
                         AuditLogModelsList CAList = new AuditLogModelsList();
                         CAList.LogList = new List<AuditLogModels>();
 
@@ -625,8 +618,6 @@ namespace ISOStd.Controllers
                                     }
 
                                     CAList.LogList.Add(objNCModels);
-
-
                                 }
                                 catch (Exception ex)
                                 {
@@ -675,7 +666,6 @@ namespace ISOStd.Controllers
                     objModel.ca_notifed_date = dateValue;
                 }
 
-
                 //Reported By
                 for (int i = 0; i < Convert.ToInt16(form["itemcnt1"]); i++)
                 {
@@ -688,7 +678,6 @@ namespace ISOStd.Controllers
                 {
                     objModel.ca_proposed_by = objModel.ca_proposed_by.Trim(',');
                 }
-
 
                 //Notifed To
                 for (int i = 0; i < Convert.ToInt16(form["itemcnts"]); i++)
@@ -732,7 +721,6 @@ namespace ISOStd.Controllers
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 }
-
             }
             catch (Exception ex)
             {
@@ -752,14 +740,12 @@ namespace ISOStd.Controllers
                 if (Request.QueryString["id_nc"] != null && Request.QueryString["id_nc"] != "")
                 {
                     string sid_nc = Request.QueryString["id_nc"];
-                    
+
                     ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
 
-                
                     string sSqlstmt = "select T3.id_nc,Audit_no,nc_no,AuditDate,branch,group_name,location,Audit_Status,finding_category,corrective_action_date,finding_details,"
                        + "nc_team,team_approvedby,team_notifiedto,team_targetdate"
                        + " from t_audit_process T1,t_audit_process_plan T2, t_audit_process_nc T3 where T1.Audit_Id = T2.Audit_Id and T2.Plan_Id = T3.Plan_Id and active = 1 and id_nc='" + sid_nc + "'";
-
 
                     DataSet dsNCModels = objGlobaldata.Getdetails(sSqlstmt);
 
@@ -869,7 +855,6 @@ namespace ISOStd.Controllers
                     objModel.team_approvedby = objModel.team_approvedby.Trim(',');
                 }
 
-
                 //Notified To
                 for (int i = 0; i < Convert.ToInt16(form["itemcnts"]); i++)
                 {
@@ -891,7 +876,6 @@ namespace ISOStd.Controllers
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 }
-
             }
             catch (Exception ex)
             {
@@ -910,7 +894,7 @@ namespace ISOStd.Controllers
                 if (Request.QueryString["id_nc"] != null && Request.QueryString["id_nc"] != "")
                 {
                     string sid_nc = Request.QueryString["id_nc"];
-                   
+
                     ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
                     ViewBag.YesNo = objGlobaldata.GetConstantValue("YesNo");
                     ViewBag.OpenClose = objGlobaldata.GetConstantValue("OpenClose");
@@ -920,11 +904,9 @@ namespace ISOStd.Controllers
                     ViewBag.NCRStatus = objGlobaldata.GetDropdownList("NCR Status");
                     ViewBag.Action = objGlobaldata.GetDropdownList("NC Action Implementation");
 
-
                     string sSqlstmt = "select T3.id_nc,Audit_no,nc_no,AuditDate,branch,group_name,location,Audit_Status,finding_category,corrective_action_date,finding_details,"
                      + "v_implement,v_implement_explain,v_rca,v_rca_explain,v_discrepancies,v_discrep_explain,v_upload,v_status,v_closed_date,v_verifiedto,v_verified_date,v_notifiedto,v_eleminate_root_cause,v_risk_reduce,v_risk_reduce_reason,v_process_amended,v_document_amended,v_amend_docref,v_amend_docname,v_amend_docdate,v_ncr_reason"
                      + " from t_audit_process T1,t_audit_process_plan T2, t_audit_process_nc T3 where T1.Audit_Id = T2.Audit_Id and T2.Plan_Id = T3.Plan_Id and active = 1 and id_nc='" + sid_nc + "'";
-
 
                     DataSet dsNCModels = objGlobaldata.Getdetails(sSqlstmt);
 
@@ -961,7 +943,6 @@ namespace ISOStd.Controllers
                             v_amend_docref = (dsNCModels.Tables[0].Rows[0]["v_amend_docref"].ToString()),
                             v_amend_docname = (dsNCModels.Tables[0].Rows[0]["v_amend_docname"].ToString()),
                             v_ncr_reason = (dsNCModels.Tables[0].Rows[0]["v_ncr_reason"].ToString()),
-                           
                         };
 
                         if (dsNCModels.Tables[0].Rows[0]["v_verifiedto"].ToString() != "")
@@ -1047,7 +1028,6 @@ namespace ISOStd.Controllers
                         TempData["alertdata"] = "No Data exists";
                         return RedirectToAction("AuditLogList");
                     }
-
                 }
             }
             catch (Exception ex)
@@ -1126,7 +1106,6 @@ namespace ISOStd.Controllers
                     objModel.v_verifiedto = objModel.v_verifiedto.Trim(',');
                 }
 
-
                 //Notifed To
                 for (int i = 0; i < Convert.ToInt16(form["itemcnts"]); i++)
                 {
@@ -1139,7 +1118,6 @@ namespace ISOStd.Controllers
                 {
                     objModel.v_notifiedto = objModel.v_notifiedto.Trim(',');
                 }
-
 
                 for (int i = 0; i < Convert.ToInt16(form["itemcount"]); i++)
                 {
@@ -1173,7 +1151,6 @@ namespace ISOStd.Controllers
                 {
                     TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 }
-
             }
             catch (Exception ex)
             {
@@ -1192,169 +1169,9 @@ namespace ISOStd.Controllers
             MgmtDocumentsModels objMgmt = new MgmtDocumentsModels();
             try
             {
-
                 string sid_nc = form["id_nc"];
                 if (sid_nc != null && sid_nc != "")
                 {
-                   
-                    string sSqlstmt = "select id_nc,T3.Plan_Id,T1.Audit_Id,Audit_no,nc_no,nc_date,finding_details,upload,finding_category,T1.Audit_criteria,audit_clause,description,T1.logged_by,T1.logged_date,aprvrejct_date,corrective_action_date,reason_rejection,upload_evidence,apprvby_auditee,followup_date,AuditDate,auditee_team,branch,group_name,disp_action_taken,"
-                        + "disp_action_taken,disp_explain,risk_nc,risk_level,rca_details,rca_technique,rca_reporteddate,rca_action,rca_justify,ca_proposed_by,"
-                        + "v_verifiedto,v_verified_date,v_implement,v_implement_explain,v_rca,v_rca_explain,v_discrepancies,v_discrep_explain,v_eleminate_root_cause,v_risk_reduce,v_risk_reduce_reason,v_process_amended,v_document_amended,v_amend_docref,v_amend_docname,v_amend_docdate,v_ncr_reason,v_status,v_closed_date,"
-                      + "(CASE WHEN apprv_status = '0' THEN 'Pending for Auditee Approval' WHEN apprv_status = '1' THEN 'Rejected' ELSE 'Approved' END) as  apprv_status"
-                    + " from t_audit_process_nc T1,t_audit_process T2,t_audit_process_plan T3 where T1.Audit_Id = T2.Audit_Id and T2.Audit_Id=T3.Audit_Id and id_nc = '" + sid_nc + "'";
-
-                    DataSet dsList = objGlobaldata.Getdetails(sSqlstmt);
-
-                    if (dsList.Tables.Count > 0 && dsList.Tables[0].Rows.Count > 0)
-                    {
-                        objModel = new AuditLogModels
-                        {
-                            id_nc = dsList.Tables[0].Rows[0]["id_nc"].ToString(),
-                            Audit_Id = dsList.Tables[0].Rows[0]["Audit_Id"].ToString(),
-                            Plan_Id = dsList.Tables[0].Rows[0]["Plan_Id"].ToString(),
-                            Audit_no = dsList.Tables[0].Rows[0]["Audit_no"].ToString(),
-                            nc_no = dsList.Tables[0].Rows[0]["nc_no"].ToString(),
-                            finding_details = dsList.Tables[0].Rows[0]["finding_details"].ToString(),
-                         
-                            finding_category = objGlobaldata.GetAuditNCById(dsList.Tables[0].Rows[0]["finding_category"].ToString()),
-                            Audit_criteria = objGlobaldata.GetIsoStdDescriptionById(dsList.Tables[0].Rows[0]["Audit_criteria"].ToString()),
-                            audit_clause = objMgmt.GetMultiISOClauseNameById(dsList.Tables[0].Rows[0]["audit_clause"].ToString()),
-                            description = dsList.Tables[0].Rows[0]["description"].ToString(),
-                            logged_by = objGlobaldata.GetEmpHrNameById(dsList.Tables[0].Rows[0]["logged_by"].ToString()),
-                            apprv_status = dsList.Tables[0].Rows[0]["apprv_status"].ToString(),                          
-                            auditee_team = objGlobaldata.GetMultiHrEmpNameById(dsList.Tables[0].Rows[0]["auditee_team"].ToString()),
-                            branch = objGlobaldata.GetCompanyBranchNameById(dsList.Tables[0].Rows[0]["branch"].ToString()),
-                            group_name = objGlobaldata.GetDeptNameById(dsList.Tables[0].Rows[0]["group_name"].ToString()),
-                           
-                            disp_action_taken = objGlobaldata.GetDropdownitemById(dsList.Tables[0].Rows[0]["disp_action_taken"].ToString()),
-                            disp_explain = dsList.Tables[0].Rows[0]["disp_explain"].ToString(),
-
-                            risk_nc = dsList.Tables[0].Rows[0]["risk_nc"].ToString(),
-                            risk_level = objGlobaldata.GetNCRiskLevelById(dsList.Tables[0].Rows[0]["risk_level"].ToString()),
-
-                            rca_details = dsList.Tables[0].Rows[0]["rca_details"].ToString(),
-                            rca_technique = objGlobaldata.GetDropdownitemById(dsList.Tables[0].Rows[0]["rca_technique"].ToString()),
-                            rca_action = dsList.Tables[0].Rows[0]["rca_action"].ToString(),
-                            rca_justify = dsList.Tables[0].Rows[0]["rca_justify"].ToString(),
-
-                            ca_proposed_by = objGlobaldata.GetMultiHrEmpNameById(dsList.Tables[0].Rows[0]["ca_proposed_by"].ToString()),
-
-                            v_implement = objGlobaldata.GetDropdownitemById(dsList.Tables[0].Rows[0]["v_implement"].ToString()),
-                            v_implement_explain = dsList.Tables[0].Rows[0]["v_implement_explain"].ToString(),
-                            v_rca = dsList.Tables[0].Rows[0]["v_rca"].ToString(),
-                            v_rca_explain = dsList.Tables[0].Rows[0]["v_rca_explain"].ToString(),
-                            v_discrepancies = dsList.Tables[0].Rows[0]["v_discrepancies"].ToString(),
-                            v_discrep_explain = dsList.Tables[0].Rows[0]["v_discrep_explain"].ToString(),
-                            v_eleminate_root_cause = dsList.Tables[0].Rows[0]["v_eleminate_root_cause"].ToString(),
-                            v_risk_reduce = dsList.Tables[0].Rows[0]["v_risk_reduce"].ToString(),
-                            v_risk_reduce_reason = dsList.Tables[0].Rows[0]["v_risk_reduce_reason"].ToString(),
-                            v_process_amended = dsList.Tables[0].Rows[0]["v_process_amended"].ToString(),
-                            v_document_amended = dsList.Tables[0].Rows[0]["v_document_amended"].ToString(),
-                            v_amend_docref = dsList.Tables[0].Rows[0]["v_amend_docref"].ToString(),
-                            v_amend_docname = dsList.Tables[0].Rows[0]["v_amend_docname"].ToString(),
-                            v_ncr_reason = dsList.Tables[0].Rows[0]["v_ncr_reason"].ToString(),
-                            v_status = dsList.Tables[0].Rows[0]["v_status"].ToString(),
-                            v_verifiedto = objGlobaldata.GetMultiHrEmpNameById(dsList.Tables[0].Rows[0]["v_verifiedto"].ToString()),
-                        };
-                      
-                        objModel.finding_categorize = objModel.Audit_criteria +" "+ objModel.audit_clause + " " + objModel.description;
-
-                        DateTime dtDocDate;
-                        if (dsList.Tables[0].Rows[0]["nc_date"].ToString() != ""
-                         && DateTime.TryParse(dsList.Tables[0].Rows[0]["nc_date"].ToString(), out dtDocDate))
-                        {
-                            objModel.nc_date = dtDocDate;
-                        }
-                        if (dsList.Tables[0].Rows[0]["v_amend_docdate"].ToString() != ""
-                         && DateTime.TryParse(dsList.Tables[0].Rows[0]["v_amend_docdate"].ToString(), out dtDocDate))
-                        {
-                            objModel.v_amend_docdate = dtDocDate;
-                        }
-                        if (dsList.Tables[0].Rows[0]["v_closed_date"].ToString() != ""
-                        && DateTime.TryParse(dsList.Tables[0].Rows[0]["v_closed_date"].ToString(), out dtDocDate))
-                        {
-                            objModel.v_closed_date = dtDocDate;
-                        }
-                        if (dsList.Tables[0].Rows[0]["corrective_action_date"].ToString() != ""
-                      && DateTime.TryParse(dsList.Tables[0].Rows[0]["corrective_action_date"].ToString(), out dtDocDate))
-                        {
-                            objModel.corrective_action_date = dtDocDate;
-                        }
-                       
-                        if (dsList.Tables[0].Rows[0]["followup_date"].ToString() != ""
-                      && DateTime.TryParse(dsList.Tables[0].Rows[0]["followup_date"].ToString(), out dtDocDate))
-                        {
-                            objModel.followup_date = dtDocDate;
-                        }
-                        if (dsList.Tables[0].Rows[0]["AuditDate"].ToString() != ""
-                     && DateTime.TryParse(dsList.Tables[0].Rows[0]["AuditDate"].ToString(), out dtDocDate))
-                        {
-                            objModel.AuditDate = dtDocDate;
-                        }
-                        if (dsList.Tables[0].Rows[0]["rca_reporteddate"].ToString() != ""
-                        && DateTime.TryParse(dsList.Tables[0].Rows[0]["rca_reporteddate"].ToString(), out dtDocDate))
-                        {
-                            objModel.rca_reporteddate = dtDocDate;
-                        }
-                        if (dsList.Tables[0].Rows[0]["v_verified_date"].ToString() != ""
-                       && DateTime.TryParse(dsList.Tables[0].Rows[0]["v_verified_date"].ToString(), out dtDocDate))
-                        {
-                            objModel.v_verified_date = dtDocDate;
-                        }
-                        ViewBag.Audit = objModel;
-
-
-                        string sql1 = "select disp_action,disp_resp_person,disp_complete_date from t_audit_nc_disp_action where id_nc='"+ sid_nc + "'";
-                        ViewBag.ImAction = objGlobaldata.Getdetails(sql1);
-
-                        string sql2 = "select ca_ca,ca_resp_person,ca_target_date from t_audit_nc_ca where id_nc='" + sid_nc + "'";
-                        ViewBag.CA = objGlobaldata.Getdetails(sql2);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                objGlobaldata.AddFunctionalLog("Exception in NonconformityReportPDF: " + ex.ToString());
-                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-            }
-            Dictionary<string, string> cookieCollection = new Dictionary<string, string>();
-            foreach (var key in Request.Cookies.AllKeys)
-            {
-                cookieCollection.Add(key, Request.Cookies.Get(key).Value);
-            }
-            string header = Server.MapPath("~/views/AuditProcess/NCPrintHeader.html");//Path of PrintHeader.html File
-
-            string customSwitches = string.Format("--header-html  \"{0}\" " +
-                                "--header-spacing \"0\" " +
-            " --header-font-size \"10\" ", header);
-
-            return new ViewAsPdf("NonconformityReportPDF", "AuditProcess")
-            {
-                //FileName = "NonconformityReport.pdf",
-                Cookies = cookieCollection,
-                PageSize = Rotativa.Options.Size.A3,
-                PageOrientation = Rotativa.Options.Orientation.Portrait,
-                CustomSwitches =
-                   customSwitches,
-                PageMargins = { Left = 20, Bottom = 20, Right = 20, Top = 35 },
-                // PageMargins = new Rotativa.Options.Margins(0, 3, 32, 3),
-            };
-        }
-
-        [AllowAnonymous]
-        public ActionResult NCDetails(FormCollection form)
-        {
-            AuditLogModels objModel = new AuditLogModels();
-            NCModels objNCModel = new NCModels();
-            MgmtDocumentsModels objMgmt = new MgmtDocumentsModels();
-            try
-            {
-
-                if (Request.QueryString["id_nc"] != null && Request.QueryString["id_nc"] != "")
-                {
-                    string sid_nc = Request.QueryString["id_nc"];
-
-
                     string sSqlstmt = "select id_nc,T3.Plan_Id,T1.Audit_Id,Audit_no,nc_no,nc_date,finding_details,upload,finding_category,T1.Audit_criteria,audit_clause,description,T1.logged_by,T1.logged_date,aprvrejct_date,corrective_action_date,reason_rejection,upload_evidence,apprvby_auditee,followup_date,AuditDate,auditee_team,branch,group_name,disp_action_taken,"
                         + "disp_action_taken,disp_explain,risk_nc,risk_level,rca_details,rca_technique,rca_reporteddate,rca_action,rca_justify,ca_proposed_by,"
                         + "v_verifiedto,v_verified_date,v_implement,v_implement_explain,v_rca,v_rca_explain,v_discrepancies,v_discrep_explain,v_eleminate_root_cause,v_risk_reduce,v_risk_reduce_reason,v_process_amended,v_document_amended,v_amend_docref,v_amend_docname,v_amend_docdate,v_ncr_reason,v_status,v_closed_date,"
@@ -1383,7 +1200,7 @@ namespace ISOStd.Controllers
                             auditee_team = objGlobaldata.GetMultiHrEmpNameById(dsList.Tables[0].Rows[0]["auditee_team"].ToString()),
                             branch = objGlobaldata.GetCompanyBranchNameById(dsList.Tables[0].Rows[0]["branch"].ToString()),
                             group_name = objGlobaldata.GetDeptNameById(dsList.Tables[0].Rows[0]["group_name"].ToString()),
-                           
+
                             disp_action_taken = objGlobaldata.GetDropdownitemById(dsList.Tables[0].Rows[0]["disp_action_taken"].ToString()),
                             disp_explain = dsList.Tables[0].Rows[0]["disp_explain"].ToString(),
 
@@ -1461,6 +1278,160 @@ namespace ISOStd.Controllers
                         }
                         ViewBag.Audit = objModel;
 
+                        string sql1 = "select disp_action,disp_resp_person,disp_complete_date from t_audit_nc_disp_action where id_nc='" + sid_nc + "'";
+                        ViewBag.ImAction = objGlobaldata.Getdetails(sql1);
+
+                        string sql2 = "select ca_ca,ca_resp_person,ca_target_date from t_audit_nc_ca where id_nc='" + sid_nc + "'";
+                        ViewBag.CA = objGlobaldata.Getdetails(sql2);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in NonconformityReportPDF: " + ex.ToString());
+                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+            }
+            Dictionary<string, string> cookieCollection = new Dictionary<string, string>();
+            foreach (var key in Request.Cookies.AllKeys)
+            {
+                cookieCollection.Add(key, Request.Cookies.Get(key).Value);
+            }
+            string header = Server.MapPath("~/views/AuditProcess/NCPrintHeader.html");//Path of PrintHeader.html File
+
+            string customSwitches = string.Format("--header-html  \"{0}\" " +
+                                "--header-spacing \"0\" " +
+            " --header-font-size \"10\" ", header);
+
+            return new ViewAsPdf("NonconformityReportPDF", "AuditProcess")
+            {
+                //FileName = "NonconformityReport.pdf",
+                Cookies = cookieCollection,
+                PageSize = Rotativa.Options.Size.A3,
+                PageOrientation = Rotativa.Options.Orientation.Portrait,
+                CustomSwitches =
+                   customSwitches,
+                PageMargins = { Left = 20, Bottom = 20, Right = 20, Top = 35 },
+                // PageMargins = new Rotativa.Options.Margins(0, 3, 32, 3),
+            };
+        }
+
+        [AllowAnonymous]
+        public ActionResult NCDetails(FormCollection form)
+        {
+            AuditLogModels objModel = new AuditLogModels();
+            NCModels objNCModel = new NCModels();
+            MgmtDocumentsModels objMgmt = new MgmtDocumentsModels();
+            try
+            {
+                if (Request.QueryString["id_nc"] != null && Request.QueryString["id_nc"] != "")
+                {
+                    string sid_nc = Request.QueryString["id_nc"];
+
+                    string sSqlstmt = "select id_nc,T3.Plan_Id,T1.Audit_Id,Audit_no,nc_no,nc_date,finding_details,upload,finding_category,T1.Audit_criteria,audit_clause,description,T1.logged_by,T1.logged_date,aprvrejct_date,corrective_action_date,reason_rejection,upload_evidence,apprvby_auditee,followup_date,AuditDate,auditee_team,branch,group_name,disp_action_taken,"
+                        + "disp_action_taken,disp_explain,risk_nc,risk_level,rca_details,rca_technique,rca_reporteddate,rca_action,rca_justify,ca_proposed_by,"
+                        + "v_verifiedto,v_verified_date,v_implement,v_implement_explain,v_rca,v_rca_explain,v_discrepancies,v_discrep_explain,v_eleminate_root_cause,v_risk_reduce,v_risk_reduce_reason,v_process_amended,v_document_amended,v_amend_docref,v_amend_docname,v_amend_docdate,v_ncr_reason,v_status,v_closed_date,"
+                      + "(CASE WHEN apprv_status = '0' THEN 'Pending for Auditee Approval' WHEN apprv_status = '1' THEN 'Rejected' ELSE 'Approved' END) as  apprv_status"
+                    + " from t_audit_process_nc T1,t_audit_process T2,t_audit_process_plan T3 where T1.Audit_Id = T2.Audit_Id and T2.Audit_Id=T3.Audit_Id and id_nc = '" + sid_nc + "'";
+
+                    DataSet dsList = objGlobaldata.Getdetails(sSqlstmt);
+
+                    if (dsList.Tables.Count > 0 && dsList.Tables[0].Rows.Count > 0)
+                    {
+                        objModel = new AuditLogModels
+                        {
+                            id_nc = dsList.Tables[0].Rows[0]["id_nc"].ToString(),
+                            Audit_Id = dsList.Tables[0].Rows[0]["Audit_Id"].ToString(),
+                            Plan_Id = dsList.Tables[0].Rows[0]["Plan_Id"].ToString(),
+                            Audit_no = dsList.Tables[0].Rows[0]["Audit_no"].ToString(),
+                            nc_no = dsList.Tables[0].Rows[0]["nc_no"].ToString(),
+                            finding_details = dsList.Tables[0].Rows[0]["finding_details"].ToString(),
+
+                            finding_category = objGlobaldata.GetAuditNCById(dsList.Tables[0].Rows[0]["finding_category"].ToString()),
+                            Audit_criteria = objGlobaldata.GetIsoStdDescriptionById(dsList.Tables[0].Rows[0]["Audit_criteria"].ToString()),
+                            audit_clause = objMgmt.GetMultiISOClauseNameById(dsList.Tables[0].Rows[0]["audit_clause"].ToString()),
+                            description = dsList.Tables[0].Rows[0]["description"].ToString(),
+                            logged_by = objGlobaldata.GetEmpHrNameById(dsList.Tables[0].Rows[0]["logged_by"].ToString()),
+                            apprv_status = dsList.Tables[0].Rows[0]["apprv_status"].ToString(),
+                            auditee_team = objGlobaldata.GetMultiHrEmpNameById(dsList.Tables[0].Rows[0]["auditee_team"].ToString()),
+                            branch = objGlobaldata.GetCompanyBranchNameById(dsList.Tables[0].Rows[0]["branch"].ToString()),
+                            group_name = objGlobaldata.GetDeptNameById(dsList.Tables[0].Rows[0]["group_name"].ToString()),
+
+                            disp_action_taken = objGlobaldata.GetDropdownitemById(dsList.Tables[0].Rows[0]["disp_action_taken"].ToString()),
+                            disp_explain = dsList.Tables[0].Rows[0]["disp_explain"].ToString(),
+
+                            risk_nc = dsList.Tables[0].Rows[0]["risk_nc"].ToString(),
+                            risk_level = objGlobaldata.GetNCRiskLevelById(dsList.Tables[0].Rows[0]["risk_level"].ToString()),
+
+                            rca_details = dsList.Tables[0].Rows[0]["rca_details"].ToString(),
+                            rca_technique = objGlobaldata.GetDropdownitemById(dsList.Tables[0].Rows[0]["rca_technique"].ToString()),
+                            rca_action = dsList.Tables[0].Rows[0]["rca_action"].ToString(),
+                            rca_justify = dsList.Tables[0].Rows[0]["rca_justify"].ToString(),
+
+                            ca_proposed_by = objGlobaldata.GetMultiHrEmpNameById(dsList.Tables[0].Rows[0]["ca_proposed_by"].ToString()),
+
+                            v_implement = objGlobaldata.GetDropdownitemById(dsList.Tables[0].Rows[0]["v_implement"].ToString()),
+                            v_implement_explain = dsList.Tables[0].Rows[0]["v_implement_explain"].ToString(),
+                            v_rca = dsList.Tables[0].Rows[0]["v_rca"].ToString(),
+                            v_rca_explain = dsList.Tables[0].Rows[0]["v_rca_explain"].ToString(),
+                            v_discrepancies = dsList.Tables[0].Rows[0]["v_discrepancies"].ToString(),
+                            v_discrep_explain = dsList.Tables[0].Rows[0]["v_discrep_explain"].ToString(),
+                            v_eleminate_root_cause = dsList.Tables[0].Rows[0]["v_eleminate_root_cause"].ToString(),
+                            v_risk_reduce = dsList.Tables[0].Rows[0]["v_risk_reduce"].ToString(),
+                            v_risk_reduce_reason = dsList.Tables[0].Rows[0]["v_risk_reduce_reason"].ToString(),
+                            v_process_amended = dsList.Tables[0].Rows[0]["v_process_amended"].ToString(),
+                            v_document_amended = dsList.Tables[0].Rows[0]["v_document_amended"].ToString(),
+                            v_amend_docref = dsList.Tables[0].Rows[0]["v_amend_docref"].ToString(),
+                            v_amend_docname = dsList.Tables[0].Rows[0]["v_amend_docname"].ToString(),
+                            v_ncr_reason = dsList.Tables[0].Rows[0]["v_ncr_reason"].ToString(),
+                            v_status = dsList.Tables[0].Rows[0]["v_status"].ToString(),
+                            v_verifiedto = objGlobaldata.GetMultiHrEmpNameById(dsList.Tables[0].Rows[0]["v_verifiedto"].ToString()),
+                        };
+
+                        objModel.finding_categorize = objModel.Audit_criteria + " " + objModel.audit_clause + " " + objModel.description;
+
+                        DateTime dtDocDate;
+                        if (dsList.Tables[0].Rows[0]["nc_date"].ToString() != ""
+                         && DateTime.TryParse(dsList.Tables[0].Rows[0]["nc_date"].ToString(), out dtDocDate))
+                        {
+                            objModel.nc_date = dtDocDate;
+                        }
+                        if (dsList.Tables[0].Rows[0]["v_amend_docdate"].ToString() != ""
+                         && DateTime.TryParse(dsList.Tables[0].Rows[0]["v_amend_docdate"].ToString(), out dtDocDate))
+                        {
+                            objModel.v_amend_docdate = dtDocDate;
+                        }
+                        if (dsList.Tables[0].Rows[0]["v_closed_date"].ToString() != ""
+                        && DateTime.TryParse(dsList.Tables[0].Rows[0]["v_closed_date"].ToString(), out dtDocDate))
+                        {
+                            objModel.v_closed_date = dtDocDate;
+                        }
+                        if (dsList.Tables[0].Rows[0]["corrective_action_date"].ToString() != ""
+                      && DateTime.TryParse(dsList.Tables[0].Rows[0]["corrective_action_date"].ToString(), out dtDocDate))
+                        {
+                            objModel.corrective_action_date = dtDocDate;
+                        }
+
+                        if (dsList.Tables[0].Rows[0]["followup_date"].ToString() != ""
+                      && DateTime.TryParse(dsList.Tables[0].Rows[0]["followup_date"].ToString(), out dtDocDate))
+                        {
+                            objModel.followup_date = dtDocDate;
+                        }
+                        if (dsList.Tables[0].Rows[0]["AuditDate"].ToString() != ""
+                     && DateTime.TryParse(dsList.Tables[0].Rows[0]["AuditDate"].ToString(), out dtDocDate))
+                        {
+                            objModel.AuditDate = dtDocDate;
+                        }
+                        if (dsList.Tables[0].Rows[0]["rca_reporteddate"].ToString() != ""
+                        && DateTime.TryParse(dsList.Tables[0].Rows[0]["rca_reporteddate"].ToString(), out dtDocDate))
+                        {
+                            objModel.rca_reporteddate = dtDocDate;
+                        }
+                        if (dsList.Tables[0].Rows[0]["v_verified_date"].ToString() != ""
+                       && DateTime.TryParse(dsList.Tables[0].Rows[0]["v_verified_date"].ToString(), out dtDocDate))
+                        {
+                            objModel.v_verified_date = dtDocDate;
+                        }
+                        ViewBag.Audit = objModel;
 
                         string sql1 = "select disp_action,disp_resp_person,disp_complete_date from t_audit_nc_disp_action where id_nc='" + sid_nc + "'";
                         ViewBag.ImAction = objGlobaldata.Getdetails(sql1);
@@ -1533,8 +1504,6 @@ namespace ISOStd.Controllers
                         }
                     }
 
-                    
-
                     CompanyModels objCompany = new CompanyModels();
                     string user = objGlobaldata.GetCurrentUserSession().empid;
                     dsNCModels = objCompany.GetCompanyDetailsForReport(dsNCModels);
@@ -1581,7 +1550,6 @@ namespace ISOStd.Controllers
                     "ca_target_date,ca_resp_person,implement_status,ca_effective,reason from t_audit_nc_ca where id_audit_process_perform = '" + sid_audit_process_perform + "' and ca_active=1";
                     DataSet dsVerifyModel = objGlobaldata.Getdetails(sSqlstmt18);
                     ViewBag.VerificationList = dsVerifyModel;
-
                 }
                 else
                 {
@@ -1615,10 +1583,8 @@ namespace ISOStd.Controllers
         {
             try
             {
-
                 if (form["id_audit_nc_ca"] != null && form["id_audit_nc_ca"] != "")
                 {
-
                     AuditLogModels Doc = new AuditLogModels();
                     string sid_audit_nc_ca = form["id_audit_nc_ca"];
 
@@ -1649,7 +1615,6 @@ namespace ISOStd.Controllers
 
         public JsonResult FunGetEmpDetails(string semp_no)
         {
-
             NCModels objModels = new NCModels();
             try
             {

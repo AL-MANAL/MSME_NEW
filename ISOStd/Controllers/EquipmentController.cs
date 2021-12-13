@@ -1,20 +1,18 @@
-﻿using System;
+﻿using ISOStd.Models;
+using System;
 using System.Collections.Generic;
+using System.Data;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using ISOStd.Models;
-using System.Data;
-using System.IO;
-using PagedList;
-using PagedList.Mvc;
 
 namespace ISOStd.Controllers
 {
     public class EquipmentController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
-         
+        private clsGlobal objGlobaldata = new clsGlobal();
+
         public EquipmentController()
         {
             ViewBag.Menutype = "Equipments";
@@ -23,15 +21,14 @@ namespace ISOStd.Controllers
 
         //
         // GET: /Equipment/
-          
+
         public ActionResult Index()
         {
             return View();
         }
 
-
         // GET: /Equipment/AddEquipment
-          
+
         [AllowAnonymous]
         public ActionResult AddEquipment()
         {
@@ -39,7 +36,7 @@ namespace ISOStd.Controllers
         }
 
         // GET: /Equipment/AddEquipment
-          
+
         private ActionResult InitilizeAddEquipment()
         {
             EquipmentModels objEquip = new EquipmentModels();
@@ -49,7 +46,7 @@ namespace ISOStd.Controllers
                 objEquip.branch = objGlobaldata.GetCurrentUserSession().division;
                 objEquip.Department = objGlobaldata.GetCurrentUserSession().DeptID;
                 objEquip.location = objGlobaldata.GetCurrentUserSession().Work_Location;
-                
+
                 ViewBag.Branch = objGlobaldata.GetCompanyBranchListbox();
                 ViewBag.Department = objGlobaldata.GetDepartmentListbox(objEquip.branch);
                 ViewBag.Location = objGlobaldata.GetDivisionLocationList(objEquip.branch);
@@ -67,7 +64,6 @@ namespace ISOStd.Controllers
             return View(objEquip);
         }
 
-         
         [AllowAnonymous]
         public JsonResult EquimentDocDelete(FormCollection form)
         {
@@ -76,30 +72,26 @@ namespace ISOStd.Controllers
                 ViewBag.SubMenutype = "Equipment";
 
                 if (form["Equipment_Id"] != null && form["Equipment_Id"] != "")
-                        {
+                {
+                    EquipmentModels Doc = new EquipmentModels();
+                    string sEquipment_Id = form["Equipment_Id"];
 
-                            EquipmentModels Doc = new EquipmentModels();
-                            string sEquipment_Id = form["Equipment_Id"];
-
-
-                            if (Doc.FunDeleteEquipmentDoc(sEquipment_Id))
-                            {
-                                TempData["Successdata"] = "Document deleted successfully";
-                                return Json("Success");
-                            }
-                            else
-                            {
-                                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                                return Json("Failed");
-                            }
-                        }
-                        else
-                        {
-                            TempData["alertdata"] = "Equipment Id cannot be Null or empty";
-                            return Json("Failed");
-                        }
-                   
-                
+                    if (Doc.FunDeleteEquipmentDoc(sEquipment_Id))
+                    {
+                        TempData["Successdata"] = "Document deleted successfully";
+                        return Json("Success");
+                    }
+                    else
+                    {
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                        return Json("Failed");
+                    }
+                }
+                else
+                {
+                    TempData["alertdata"] = "Equipment Id cannot be Null or empty";
+                    return Json("Failed");
+                }
             }
             catch (Exception ex)
             {
@@ -109,7 +101,6 @@ namespace ISOStd.Controllers
             return Json("Failed");
         }
 
-          
         [AllowAnonymous]
         public JsonResult CalibrationDocDelete(FormCollection form)
         {
@@ -117,30 +108,26 @@ namespace ISOStd.Controllers
             {
                 ViewBag.SubMenutype = "Calibration";
                 if (form["calibration_id"] != null && form["calibration_id"] != "")
-                        {
+                {
+                    EquipmentModels Doc = new EquipmentModels();
+                    string scalibration_id = form["calibration_id"];
 
-                            EquipmentModels Doc = new EquipmentModels();
-                            string scalibration_id = form["calibration_id"];
-
-
-                            if (Doc.FunDeleteCalibrationDoc(scalibration_id))
-                            {
-                                TempData["Successdata"] = "Document deleted successfully";
-                                return Json("Success");
-                            }
-                            else
-                            {
-                                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                                return Json("Failed");
-                            }
-                        }
-                        else
-                        {
-                            TempData["alertdata"] = "Calibration Id cannot be Null or empty";
-                            return Json("Failed");
-                        }
-                  
-                
+                    if (Doc.FunDeleteCalibrationDoc(scalibration_id))
+                    {
+                        TempData["Successdata"] = "Document deleted successfully";
+                        return Json("Success");
+                    }
+                    else
+                    {
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                        return Json("Failed");
+                    }
+                }
+                else
+                {
+                    TempData["alertdata"] = "Calibration Id cannot be Null or empty";
+                    return Json("Failed");
+                }
             }
             catch (Exception ex)
             {
@@ -150,7 +137,6 @@ namespace ISOStd.Controllers
             return Json("Failed");
         }
 
-          
         [HttpPost]
         public JsonResult doesEquipmentExist(string Equipment_serial_no)
         {
@@ -159,12 +145,12 @@ namespace ISOStd.Controllers
 
             return Json(Equip);
         }
- 
+
         // POST: /Equipment/AddEquipment
-          
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult AddEquipment(EquipmentModels objEquipment, FormCollection form, IEnumerable <HttpPostedFileBase> file)
+        public ActionResult AddEquipment(EquipmentModels objEquipment, FormCollection form, IEnumerable<HttpPostedFileBase> file)
         {
             ViewBag.SubMenutype = "Equipment";
             try
@@ -173,7 +159,6 @@ namespace ISOStd.Controllers
                 objEquipment.location = form["location"];
                 objEquipment.Department = form["Department"];
                 objEquipment.RespPerson = form["RespPerson"];
-
 
                 HttpPostedFileBase files = Request.Files[0];
                 if (objEquipment != null)
@@ -232,9 +217,9 @@ namespace ISOStd.Controllers
 
             return RedirectToAction("EquipmentList");
         }
-           
+
         [AllowAnonymous]
-        public ActionResult EquipmentList(string SearchText, string Equipment_status , int? page,string CalibrationSource,string chkAll, string branch_name)
+        public ActionResult EquipmentList(string SearchText, string Equipment_status, int? page, string CalibrationSource, string chkAll, string branch_name)
         {
             ViewBag.SubMenutype = "Equipment";
             EquipmentModelsList objEquipmentModelsList = new EquipmentModelsList();
@@ -242,8 +227,8 @@ namespace ISOStd.Controllers
 
             EquipmentModels objEquip = new EquipmentModels();
 
-            ViewBag.CalibrationSource= objEquip.GetMultiCalibrationSourceList();
-          
+            ViewBag.CalibrationSource = objEquip.GetMultiCalibrationSourceList();
+
             try
             {
                 string sBranch_name = objGlobaldata.GetCurrentUserSession().division;
@@ -261,7 +246,7 @@ namespace ISOStd.Controllers
                 string sSearchtext = "";
 
                 if (chkAll != "All" && chkAll == null)
-                {                    
+                {
                     if (SearchText != null && SearchText != "")
                     {
                         ViewBag.SearchText = SearchText;
@@ -297,7 +282,6 @@ namespace ISOStd.Controllers
                             sSearchtext = sSearchtext + " and (Source_of_calibration ='" + CalibrationSource + "')";
                         }
                     }
-
                 }
                 else
                 {
@@ -318,12 +302,11 @@ namespace ISOStd.Controllers
 
                 //ViewBag.Equipment_status = new string[] { "Active", "In Active" };
                 ViewBag.Equipment_status = objEquip.GetMultiCalibrationStatusList();
-              
 
                 DataSet dsEquipmentList = objGlobaldata.Getdetails(sSqlstmt);
 
                 for (int i = 0; i < dsEquipmentList.Tables[0].Rows.Count; i++)
-                {                      
+                {
                     try
                     {
                         EquipmentModels objEquipmentModels = new EquipmentModels
@@ -332,11 +315,11 @@ namespace ISOStd.Controllers
                             Equipment_serial_no = dsEquipmentList.Tables[0].Rows[i]["Equipment_serial_no"].ToString(),
                             Equipment_Name = (dsEquipmentList.Tables[0].Rows[i]["Equipment_Name"].ToString()),
                             Equipment_Application = dsEquipmentList.Tables[0].Rows[i]["Equipment_Application"].ToString(),
-                            Source_of_calibration =objEquip.GetCalibrationSourceNameById(dsEquipmentList.Tables[0].Rows[i]["Source_of_calibration"].ToString()),
-                            Freq_of_calibration =objEquip.GetCalibrationFrequencyNameById(dsEquipmentList.Tables[0].Rows[i]["Freq_of_calibration"].ToString()),
+                            Source_of_calibration = objEquip.GetCalibrationSourceNameById(dsEquipmentList.Tables[0].Rows[i]["Source_of_calibration"].ToString()),
+                            Freq_of_calibration = objEquip.GetCalibrationFrequencyNameById(dsEquipmentList.Tables[0].Rows[i]["Freq_of_calibration"].ToString()),
                             Commissioning_Date = Convert.ToDateTime(dsEquipmentList.Tables[0].Rows[i]["Commissioning_Date"].ToString()),
                             Manufacturer = (dsEquipmentList.Tables[0].Rows[i]["Manufacturer"].ToString()),
-                            Equipment_status =objEquip.GetCalibrationStatusNameById(dsEquipmentList.Tables[0].Rows[i]["Equipment_status"].ToString()),
+                            Equipment_status = objEquip.GetCalibrationStatusNameById(dsEquipmentList.Tables[0].Rows[i]["Equipment_status"].ToString()),
                             Model_No = (dsEquipmentList.Tables[0].Rows[0]["model_no"].ToString()),
                             RespPerson = objGlobaldata.GetEmpHrNameById(dsEquipmentList.Tables[0].Rows[i]["RespPerson"].ToString()),
                             equp_type = objGlobaldata.GetDropdownitemById(dsEquipmentList.Tables[0].Rows[i]["equp_type"].ToString()),
@@ -345,7 +328,7 @@ namespace ISOStd.Controllers
                             branch = objGlobaldata.GetMultiCompanyBranchNameById(dsEquipmentList.Tables[0].Rows[i]["branch"].ToString()),
                             Department = objGlobaldata.GetMultiDeptNameById(dsEquipmentList.Tables[0].Rows[i]["Department"].ToString()),
                             location = objGlobaldata.GetDivisionLocationById(dsEquipmentList.Tables[0].Rows[i]["location"].ToString()),
-                        };                       
+                        };
                         objEquipmentModelsList.EquipmentMList.Add(objEquipmentModels);
                     }
                     catch (Exception ex)
@@ -447,11 +430,10 @@ namespace ISOStd.Controllers
                 //ViewBag.Equipment_status = new string[] { "Active", "In Active" };
                 ViewBag.Equipment_status = objEquip.GetMultiCalibrationStatusList();
 
-
                 DataSet dsEquipmentList = objGlobaldata.Getdetails(sSqlstmt);
 
                 for (int i = 0; i < dsEquipmentList.Tables[0].Rows.Count; i++)
-                {   
+                {
                     try
                     {
                         EquipmentModels objEquipmentModels = new EquipmentModels
@@ -473,7 +455,6 @@ namespace ISOStd.Controllers
                             branch = objGlobaldata.GetMultiCompanyBranchNameById(dsEquipmentList.Tables[0].Rows[i]["branch"].ToString()),
                             Department = objGlobaldata.GetMultiDeptNameById(dsEquipmentList.Tables[0].Rows[i]["Department"].ToString()),
                             location = objGlobaldata.GetDivisionLocationById(dsEquipmentList.Tables[0].Rows[i]["location"].ToString()),
-
                         };
                         objEquipmentModelsList.EquipmentMList.Add(objEquipmentModels);
                     }
@@ -504,10 +485,9 @@ namespace ISOStd.Controllers
                 {
                     string sEquipment_Id = Request.QueryString["Equipment_Id"];
 
-                   
                     string sSqlstmt = "select Equipment_Id, Equipment_serial_no, Equipment_Name, Equipment_Application, Source_of_calibration, Freq_of_calibration,equp_type, "
                         + "Commissioning_Date, Manufacturer, Equipment_status, model_no,Department,Logged_date,DocUploadPath,RespPerson,location,branch,Equipment_location from t_equipment where Equipment_Id='" + sEquipment_Id + "'";
-                   // string sSqlstmt = "select a.Equipment_Id, Equipment_serial_no, ifnull(max(Next_Maint_Date), '0001-01-01') as Next_Maint_Date,Equipment_Name," +
+                    // string sSqlstmt = "select a.Equipment_Id, Equipment_serial_no, ifnull(max(Next_Maint_Date), '0001-01-01') as Next_Maint_Date,Equipment_Name," +
                     //"Equipment_Application,Source_of_calibration,Freq_of_calibration,Commissioning_Date, Manufacturer,Equipment_status, model_no,Department," +
                     //"RespPerson,equp_type,location,Logged_date,DocUploadPath from t_equipment a left outer join t_equpiment_preventive_maint b on a.Equipment_Id = b.Equipment_Id where a.Active = 1" +
                     //" group by a.Equipment_Id, Equipment_serial_no,Equipment_Name,Equipment_Application, Equipment_status, model_no, Department,RespPerson,equp_type,location";
@@ -522,15 +502,15 @@ namespace ISOStd.Controllers
                             Equipment_serial_no = dsEquipmentList.Tables[0].Rows[0]["Equipment_serial_no"].ToString(),
                             Equipment_Name = (dsEquipmentList.Tables[0].Rows[0]["Equipment_Name"].ToString()),
                             Equipment_Application = dsEquipmentList.Tables[0].Rows[0]["Equipment_Application"].ToString(),
-                            Source_of_calibration =objEquipmentModels.GetCalibrationSourceNameById(dsEquipmentList.Tables[0].Rows[0]["Source_of_calibration"].ToString()),
+                            Source_of_calibration = objEquipmentModels.GetCalibrationSourceNameById(dsEquipmentList.Tables[0].Rows[0]["Source_of_calibration"].ToString()),
                             Freq_of_calibration = objEquipmentModels.GetCalibrationFrequencyNameById(dsEquipmentList.Tables[0].Rows[0]["Freq_of_calibration"].ToString()),
                             Commissioning_Date = Convert.ToDateTime(dsEquipmentList.Tables[0].Rows[0]["Commissioning_Date"].ToString()),
                             Manufacturer = (dsEquipmentList.Tables[0].Rows[0]["Manufacturer"].ToString()),
                             Equipment_status = objEquipmentModels.GetCalibrationStatusNameById(dsEquipmentList.Tables[0].Rows[0]["Equipment_status"].ToString()),
                             Model_No = (dsEquipmentList.Tables[0].Rows[0]["model_no"].ToString()),
                             DocUploadPath = (dsEquipmentList.Tables[0].Rows[0]["DocUploadPath"].ToString()),
-                            RespPerson=objGlobaldata.GetEmpHrNameById(dsEquipmentList.Tables[0].Rows[0]["RespPerson"].ToString()),
-                            equp_type =objGlobaldata.GetDropdownitemById(dsEquipmentList.Tables[0].Rows[0]["equp_type"].ToString()),
+                            RespPerson = objGlobaldata.GetEmpHrNameById(dsEquipmentList.Tables[0].Rows[0]["RespPerson"].ToString()),
+                            equp_type = objGlobaldata.GetDropdownitemById(dsEquipmentList.Tables[0].Rows[0]["equp_type"].ToString()),
                             Equipment_location = (dsEquipmentList.Tables[0].Rows[0]["Equipment_location"].ToString()),
                             branch = objGlobaldata.GetMultiCompanyBranchNameById(dsEquipmentList.Tables[0].Rows[0]["branch"].ToString()),
                             Department = objGlobaldata.GetMultiDeptNameById(dsEquipmentList.Tables[0].Rows[0]["Department"].ToString()),
@@ -554,7 +534,6 @@ namespace ISOStd.Controllers
                        + " t_equipment_maintenance as tmain, t_equipment as tequp where tmain.equipment_id=tequp.equipment_id and tmain.equipment_id='" + sEquipment_Id + "'";
                     ViewBag.Maintenance = objGlobaldata.Getdetails(sSqlstmt1);
 
-
                     string sSqlstmt2 = "select Preventive_Id, tmain.Equipment_Id, Maintenance_Date, Maintenance_Details, Next_Maint_Date,Amt_Spent,"
                      + " done_by, Remarks, concat(Equipment_name,' - ', Equipment_serial_no) as Equipment_Name from "
                      + " t_equpiment_preventive_maint as tmain, t_equipment as tequp where tmain.equipment_id=tequp.equipment_id and tmain.equipment_id='" + sEquipment_Id + "'";
@@ -574,14 +553,13 @@ namespace ISOStd.Controllers
 
             return View(objEquipmentModels);
         }
-                  
+
         [AllowAnonymous]
         public ActionResult EquipmentInfo(int id)
-        {            
+        {
             EquipmentModels objEquipmentModels = new EquipmentModels();
             try
             {
-
                 string sSqlstmt = "select Equipment_Id, Equipment_serial_no, Equipment_Name, Equipment_Application, Source_of_calibration, Freq_of_calibration,equp_type, "
                     + "Commissioning_Date, Manufacturer, Equipment_status, model_no,Department,Logged_date,RespPerson,location,branch,Equipment_location from t_equipment where Equipment_Id='" + id + "'";
                 //string sSqlstmt = "select a.Equipment_Id, Equipment_serial_no, ifnull(max(Next_Maint_Date), '0001-01-01') as Next_Maint_Date,Equipment_Name," +
@@ -591,6 +569,77 @@ namespace ISOStd.Controllers
 
                 DataSet dsEquipmentList = objGlobaldata.Getdetails(sSqlstmt);
 
+                if (dsEquipmentList.Tables.Count > 0 && dsEquipmentList.Tables[0].Rows.Count > 0)
+                {
+                    objEquipmentModels = new EquipmentModels
+                    {
+                        Equipment_Id = (dsEquipmentList.Tables[0].Rows[0]["Equipment_Id"].ToString()),
+                        Equipment_serial_no = dsEquipmentList.Tables[0].Rows[0]["Equipment_serial_no"].ToString(),
+                        Equipment_Name = (dsEquipmentList.Tables[0].Rows[0]["Equipment_Name"].ToString()),
+                        Equipment_Application = dsEquipmentList.Tables[0].Rows[0]["Equipment_Application"].ToString(),
+                        Source_of_calibration = objEquipmentModels.GetCalibrationSourceNameById(dsEquipmentList.Tables[0].Rows[0]["Source_of_calibration"].ToString()),
+                        Freq_of_calibration = objEquipmentModels.GetCalibrationFrequencyNameById(dsEquipmentList.Tables[0].Rows[0]["Freq_of_calibration"].ToString()),
+                        Commissioning_Date = Convert.ToDateTime(dsEquipmentList.Tables[0].Rows[0]["Commissioning_Date"].ToString()),
+                        Manufacturer = (dsEquipmentList.Tables[0].Rows[0]["Manufacturer"].ToString()),
+                        Equipment_status = objEquipmentModels.GetCalibrationStatusNameById(dsEquipmentList.Tables[0].Rows[0]["Equipment_status"].ToString()),
+                        Model_No = (dsEquipmentList.Tables[0].Rows[0]["model_no"].ToString()),
+                        RespPerson = objGlobaldata.GetEmpHrNameById(dsEquipmentList.Tables[0].Rows[0]["RespPerson"].ToString()),
+                        Equipment_location = (dsEquipmentList.Tables[0].Rows[0]["Equipment_location"].ToString()),
+                        equp_type = objGlobaldata.GetDropdownitemById(dsEquipmentList.Tables[0].Rows[0]["equp_type"].ToString()),
+                        branch = objGlobaldata.GetMultiCompanyBranchNameById(dsEquipmentList.Tables[0].Rows[0]["branch"].ToString()),
+                        Department = objGlobaldata.GetMultiDeptNameById(dsEquipmentList.Tables[0].Rows[0]["Department"].ToString()),
+                        location = objGlobaldata.GetDivisionLocationById(dsEquipmentList.Tables[0].Rows[0]["location"].ToString()),
+                        // Next_Maint_Date = Convert.ToDateTime(dsEquipmentList.Tables[0].Rows[0]["Next_Maint_Date"].ToString()),
+                    };
+                    DateTime dateValue;
+                    if (DateTime.TryParse(dsEquipmentList.Tables[0].Rows[0]["Logged_date"].ToString(), out dateValue))
+                    {
+                        objEquipmentModels.Logged_date = dateValue;
+                    }
+                }
+                else
+                {
+                    TempData["alertdata"] = "No data exists";
+                    return RedirectToAction("EquipmentList");
+                }
+
+                string sSqlstmt1 = "select Maintenance_Id, tmain.Equipment_Id, Maintenance_Date, Maintenance_Details, Maintenance_RectificationWork,"
+                   + " Down_Time_From, Down_Time_To, Spare_Used, Remarks, concat(Equipment_name,' - ', Equipment_serial_no) as Equipment_Name,Amt_Spent from "
+                   + " t_equipment_maintenance as tmain, t_equipment as tequp where tmain.equipment_id=tequp.equipment_id and tmain.equipment_id='" + id + "'";
+                ViewBag.Maintenance = objGlobaldata.Getdetails(sSqlstmt1);
+
+                string sSqlstmt2 = "select Preventive_Id, tmain.Equipment_Id, Maintenance_Date, Maintenance_Details, Next_Maint_Date,Amt_Spent,"
+                 + " done_by, Remarks, concat(Equipment_name,' - ', Equipment_serial_no) as Equipment_Name from "
+                 + " t_equpiment_preventive_maint as tmain, t_equipment as tequp where tmain.equipment_id=tequp.equipment_id and tmain.equipment_id='" + id + "'";
+                ViewBag.PMaintenance = objGlobaldata.Getdetails(sSqlstmt2);
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in EquipmentDetails: " + ex.ToString());
+                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+            }
+
+            return View(objEquipmentModels);
+        }
+
+        [AllowAnonymous]
+        public ActionResult EquipmentEdit()
+        {
+            ViewBag.SubMenutype = "Equipment";
+            EquipmentModels objEquipmentModels = new EquipmentModels();
+            ViewBag.RespPerson = objGlobaldata.GetHrEmployeeListbox();
+
+            try
+            {
+                if (Request.QueryString["Equipment_Id"] != null && Request.QueryString["Equipment_Id"] != "")
+                {
+                    string sEquipment_Id = Request.QueryString["Equipment_Id"];
+
+                    //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS
+                    string sSqlstmt = "select Equipment_Id, Equipment_serial_no, Equipment_Name, Equipment_Application, Source_of_calibration, Freq_of_calibration, "
+                        + "Commissioning_Date, Manufacturer, Equipment_status, model_no,Department,DocUploadPath,RespPerson,equp_type,location,branch,Equipment_location from t_equipment where Equipment_Id='" + sEquipment_Id + "'";
+
+                    DataSet dsEquipmentList = objGlobaldata.Getdetails(sSqlstmt);
                     if (dsEquipmentList.Tables.Count > 0 && dsEquipmentList.Tables[0].Rows.Count > 0)
                     {
                         objEquipmentModels = new EquipmentModels
@@ -605,80 +654,8 @@ namespace ISOStd.Controllers
                             Manufacturer = (dsEquipmentList.Tables[0].Rows[0]["Manufacturer"].ToString()),
                             Equipment_status = objEquipmentModels.GetCalibrationStatusNameById(dsEquipmentList.Tables[0].Rows[0]["Equipment_status"].ToString()),
                             Model_No = (dsEquipmentList.Tables[0].Rows[0]["model_no"].ToString()),
-                            RespPerson=objGlobaldata.GetEmpHrNameById(dsEquipmentList.Tables[0].Rows[0]["RespPerson"].ToString()),
-                            Equipment_location = (dsEquipmentList.Tables[0].Rows[0]["Equipment_location"].ToString()),
-                            equp_type = objGlobaldata.GetDropdownitemById(dsEquipmentList.Tables[0].Rows[0]["equp_type"].ToString()),
-                            branch = objGlobaldata.GetMultiCompanyBranchNameById(dsEquipmentList.Tables[0].Rows[0]["branch"].ToString()),
-                            Department = objGlobaldata.GetMultiDeptNameById(dsEquipmentList.Tables[0].Rows[0]["Department"].ToString()),
-                            location = objGlobaldata.GetDivisionLocationById(dsEquipmentList.Tables[0].Rows[0]["location"].ToString()),
-                            // Next_Maint_Date = Convert.ToDateTime(dsEquipmentList.Tables[0].Rows[0]["Next_Maint_Date"].ToString()),
-                        };
-                        DateTime dateValue;
-                        if (DateTime.TryParse(dsEquipmentList.Tables[0].Rows[0]["Logged_date"].ToString(), out dateValue))
-                        {
-                            objEquipmentModels.Logged_date = dateValue;
-                        }
-                    }
-                    else
-                    {
-                        TempData["alertdata"] = "No data exists";
-                        return RedirectToAction("EquipmentList");
-                    }
-
-                    string sSqlstmt1 = "select Maintenance_Id, tmain.Equipment_Id, Maintenance_Date, Maintenance_Details, Maintenance_RectificationWork,"
-                       + " Down_Time_From, Down_Time_To, Spare_Used, Remarks, concat(Equipment_name,' - ', Equipment_serial_no) as Equipment_Name,Amt_Spent from "
-                       + " t_equipment_maintenance as tmain, t_equipment as tequp where tmain.equipment_id=tequp.equipment_id and tmain.equipment_id='" + id + "'";
-                    ViewBag.Maintenance = objGlobaldata.Getdetails(sSqlstmt1);
-
-                   string sSqlstmt2 = "select Preventive_Id, tmain.Equipment_Id, Maintenance_Date, Maintenance_Details, Next_Maint_Date,Amt_Spent,"
-                    + " done_by, Remarks, concat(Equipment_name,' - ', Equipment_serial_no) as Equipment_Name from "
-                    + " t_equpiment_preventive_maint as tmain, t_equipment as tequp where tmain.equipment_id=tequp.equipment_id and tmain.equipment_id='" + id + "'";
-                    ViewBag.PMaintenance = objGlobaldata.Getdetails(sSqlstmt2);
-            }
-            catch (Exception ex)
-            {
-                objGlobaldata.AddFunctionalLog("Exception in EquipmentDetails: " + ex.ToString());
-                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-            }
-
-            return View(objEquipmentModels);
-        }
-          
-        [AllowAnonymous]
-        public ActionResult EquipmentEdit()
-        {
-            ViewBag.SubMenutype = "Equipment";
-            EquipmentModels objEquipmentModels = new EquipmentModels();
-            ViewBag.RespPerson = objGlobaldata.GetHrEmployeeListbox();
-
-            try
-            {
-
-                if (Request.QueryString["Equipment_Id"] != null && Request.QueryString["Equipment_Id"] != "")
-                {
-                    string sEquipment_Id = Request.QueryString["Equipment_Id"];
-
-                    //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS  
-                    string sSqlstmt = "select Equipment_Id, Equipment_serial_no, Equipment_Name, Equipment_Application, Source_of_calibration, Freq_of_calibration, "
-                        + "Commissioning_Date, Manufacturer, Equipment_status, model_no,Department,DocUploadPath,RespPerson,equp_type,location,branch,Equipment_location from t_equipment where Equipment_Id='" + sEquipment_Id + "'";
-
-                    DataSet dsEquipmentList = objGlobaldata.Getdetails(sSqlstmt);
-                    if (dsEquipmentList.Tables.Count > 0 && dsEquipmentList.Tables[0].Rows.Count > 0)
-                    {
-                        objEquipmentModels = new EquipmentModels
-                        {
-                            Equipment_Id = (dsEquipmentList.Tables[0].Rows[0]["Equipment_Id"].ToString()),
-                            Equipment_serial_no = dsEquipmentList.Tables[0].Rows[0]["Equipment_serial_no"].ToString(),
-                            Equipment_Name = (dsEquipmentList.Tables[0].Rows[0]["Equipment_Name"].ToString()),
-                            Equipment_Application = dsEquipmentList.Tables[0].Rows[0]["Equipment_Application"].ToString(),
-                            Source_of_calibration =objEquipmentModels.GetCalibrationSourceNameById(dsEquipmentList.Tables[0].Rows[0]["Source_of_calibration"].ToString()),
-                            Freq_of_calibration = objEquipmentModels.GetCalibrationFrequencyNameById(dsEquipmentList.Tables[0].Rows[0]["Freq_of_calibration"].ToString()),
-                            Commissioning_Date = Convert.ToDateTime(dsEquipmentList.Tables[0].Rows[0]["Commissioning_Date"].ToString()),
-                            Manufacturer = (dsEquipmentList.Tables[0].Rows[0]["Manufacturer"].ToString()),
-                            Equipment_status =objEquipmentModels.GetCalibrationStatusNameById(dsEquipmentList.Tables[0].Rows[0]["Equipment_status"].ToString()),
-                            Model_No = (dsEquipmentList.Tables[0].Rows[0]["model_no"].ToString()),
                             DocUploadPath = (dsEquipmentList.Tables[0].Rows[0]["DocUploadPath"].ToString()),
-                            RespPerson=(dsEquipmentList.Tables[0].Rows[0]["RespPerson"].ToString()),
+                            RespPerson = (dsEquipmentList.Tables[0].Rows[0]["RespPerson"].ToString()),
                             equp_type = (dsEquipmentList.Tables[0].Rows[0]["equp_type"].ToString()),
                             Equipment_location = (dsEquipmentList.Tables[0].Rows[0]["Equipment_location"].ToString()),
                             branch = (dsEquipmentList.Tables[0].Rows[0]["branch"].ToString()),
@@ -699,22 +676,20 @@ namespace ISOStd.Controllers
                         TempData["alertdata"] = "No data exists";
                         return RedirectToAction("EquipmentList");
                     }
-                }               
+                }
                 else
                 {
                     TempData["alertdata"] = "Equipment Id cannot be Null or empty";
                     return RedirectToAction("EquipmentList");
                 }
-                
             }
             catch (Exception ex)
             {
                 objGlobaldata.AddFunctionalLog("Exception in EquipmentEdit: " + ex.ToString());
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 return RedirectToAction("EquipmentList");
-            }            
+            }
             return View(objEquipmentModels);
-
         }
 
         [HttpPost]
@@ -786,7 +761,7 @@ namespace ISOStd.Controllers
                     {
                         objEquipment.DocUploadPath = null;
                     }
-                   
+
                     if (objEquipment.FunUpdateEquipment(objEquipment))
                     {
                         TempData["Successdata"] = "Equiment details updated successfully";
@@ -805,15 +780,15 @@ namespace ISOStd.Controllers
 
             return RedirectToAction("EquipmentList");
         }
-         
+
         [AllowAnonymous]
         public ActionResult AddCalibration()
-        {            
+        {
             return InitilizeAddCalibration();
         }
 
         // GET: /Equipment/AddCalibration
-         
+
         private ActionResult InitilizeAddCalibration()
         {
             try
@@ -833,7 +808,7 @@ namespace ISOStd.Controllers
             }
             return View();
         }
-         
+
         [HttpPost]
         public JsonResult doesFileTypeValidation(string calibration_report_ref)
         {
@@ -848,7 +823,7 @@ namespace ISOStd.Controllers
         }
 
         // POST: /Equipment/AddCalibration
-         
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult AddCalibration(CalibrationModels objCalibrationModels, FormCollection form, HttpPostedFileBase fileCert, HttpPostedFileBase calibration_report_ref)
@@ -953,9 +928,8 @@ namespace ISOStd.Controllers
             return RedirectToAction("CalibrationList");
         }
 
-
         // GET: /Equipment/CalibrationList
-         
+
         [AllowAnonymous]
         public ActionResult CalibrationList(string SearchText, int? page, string branch_name)
         {
@@ -968,7 +942,7 @@ namespace ISOStd.Controllers
                 string sBranch_name = objGlobaldata.GetCurrentUserSession().division;
                 string sBranchtree = objGlobaldata.GetCurrentUserSession().BranchTree;
                 ViewBag.Branch = objGlobaldata.GetMultiBranchListByID(sBranchtree);
-                //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS  
+                //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS
                 string sSqlstmt = "select calibration_id, tcal.Equipment_id, calibration_by, method_of_calibration, accuracy, calibration_status,"
                     + " calibration_report_ref, calibration_certificate, due_date, Remarks, concat(Equipment_name,' - ', Equipment_serial_no) as Equipment_Name, "
                     + "CalibrationDate,Ref_no,certificate_no from  t_calibration as tcal, t_equipment as tequp"
@@ -992,12 +966,11 @@ namespace ISOStd.Controllers
                 }
 
                 sSqlstmt = sSqlstmt + sSearchtext + " order by Equipment_Name asc";
-                
+
                 DataSet dsEquipmentList = objGlobaldata.Getdetails(sSqlstmt);
 
                 if (dsEquipmentList.Tables.Count > 0)
                 {
-
                     for (int i = 0; i < dsEquipmentList.Tables[0].Rows.Count; i++)
                     {
                         try
@@ -1028,7 +1001,6 @@ namespace ISOStd.Controllers
                             DataSet EquipList = objGlobaldata.Getdetails(stmt);
                             if (EquipList.Tables.Count > 0 && EquipList.Tables[0].Rows.Count > 0)
                             {
-
                                 objCalibrationModels.Department = objGlobaldata.GetMultiDeptNameById(EquipList.Tables[0].Rows[0]["Department"].ToString());
 
                                 objCalibrationModels.Freq_of_calibration = objModel.GetCalibrationFrequencyNameById(EquipList.Tables[0].Rows[0]["Freq_of_calibration"].ToString());
@@ -1067,7 +1039,7 @@ namespace ISOStd.Controllers
                 string sBranch_name = objGlobaldata.GetCurrentUserSession().division;
                 string sBranchtree = objGlobaldata.GetCurrentUserSession().BranchTree;
                 ViewBag.Branch = objGlobaldata.GetMultiBranchListByID(sBranchtree);
-                //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS  
+                //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS
                 string sSqlstmt = "select calibration_id, tcal.Equipment_id, calibration_by, method_of_calibration, accuracy, calibration_status,"
                     + " calibration_report_ref, calibration_certificate, due_date, Remarks, concat(Equipment_name,' - ', Equipment_serial_no) as Equipment_Name, "
                     + "CalibrationDate,Ref_no from  t_calibration as tcal, t_equipment as tequp"
@@ -1096,9 +1068,6 @@ namespace ISOStd.Controllers
 
                 if (dsEquipmentList.Tables.Count > 0)
                 {
-
-                  
-
                     for (int i = 0; i < dsEquipmentList.Tables[0].Rows.Count; i++)
                     {
                         try
@@ -1147,12 +1116,11 @@ namespace ISOStd.Controllers
             CalibrationModels objCalibrationModels = new CalibrationModels();
             try
             {
-
                 if (Request.QueryString["calibration_id"] != null && Request.QueryString["calibration_id"] != "")
                 {
                     string scalibration_id = Request.QueryString["calibration_id"];
 
-                    //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS  
+                    //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS
                     string sSqlstmt = "select calibration_id, tcal.Equipment_id, calibration_by, method_of_calibration, accuracy, calibration_status,"
                         + " calibration_report_ref, calibration_certificate, due_date, Remarks, concat(Equipment_name,' - ', Equipment_serial_no) as Equipment_Name,"
                         + " NotificationPeriod, NotificationValue, Person_Responsible,Ref_no,certificate_no,CalibrationDate from  t_calibration as tcal, t_equipment as tequp where tcal.equipment_id=tequp.equipment_id "
@@ -1176,7 +1144,7 @@ namespace ISOStd.Controllers
                             Remarks = (dsEquipmentList.Tables[0].Rows[0]["Remarks"].ToString()),
                             NotificationPeriod = dsEquipmentList.Tables[0].Rows[0]["NotificationPeriod"].ToString(),
                             NotificationValue = dsEquipmentList.Tables[0].Rows[0]["NotificationValue"].ToString(),
-                            Person_Responsible =objGlobaldata.GetEmpHrNameById(dsEquipmentList.Tables[0].Rows[0]["Person_Responsible"].ToString()),
+                            Person_Responsible = objGlobaldata.GetEmpHrNameById(dsEquipmentList.Tables[0].Rows[0]["Person_Responsible"].ToString()),
                             Ref_no = dsEquipmentList.Tables[0].Rows[0]["Ref_no"].ToString(),
                             certificate_no = dsEquipmentList.Tables[0].Rows[0]["certificate_no"].ToString(),
                         };
@@ -1188,7 +1156,6 @@ namespace ISOStd.Controllers
                         }
                         if (dsEquipmentList.Tables[0].Rows[0]["Equipment_Id"].ToString() != "" && dsEquipmentList.Tables[0].Rows[0]["Equipment_Id"].ToString() != null)
                         {
-
                             string stmt = "Select Department,branch,location from t_equipment where active=1 and " +
                                 "Equipment_Id = '" + dsEquipmentList.Tables[0].Rows[0]["Equipment_Id"].ToString() + "'";
                             DataSet EquipList = objGlobaldata.Getdetails(stmt);
@@ -1205,8 +1172,6 @@ namespace ISOStd.Controllers
                         TempData["alertdata"] = "No data exists";
                         return RedirectToAction("CalibrationList");
                     }
-
-                   
                 }
                 else
                 {
@@ -1231,12 +1196,11 @@ namespace ISOStd.Controllers
             EquipmentModels objModel = new EquipmentModels();
             try
             {
-
                 if (Request.QueryString["calibration_id"] != null && Request.QueryString["calibration_id"] != "")
                 {
                     string scalibration_id = Request.QueryString["calibration_id"];
 
-                    //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS  
+                    //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS
                     string sSqlstmt = "select calibration_id, tcal.Equipment_id, calibration_by, method_of_calibration, accuracy, calibration_status,"
                         + " calibration_report_ref, calibration_certificate, due_date, Remarks, concat(Equipment_name,' - ', Equipment_serial_no) as Equipment_Name,"
                         + " NotificationPeriod, NotificationValue, Person_Responsible,Ref_no,certificate_no,CalibrationDate from  t_calibration as tcal, t_equipment as tequp where tcal.equipment_id=tequp.equipment_id "
@@ -1272,7 +1236,6 @@ namespace ISOStd.Controllers
                         }
                         if (dsEquipmentList.Tables[0].Rows[0]["Equipment_Id"].ToString() != "" && dsEquipmentList.Tables[0].Rows[0]["Equipment_Id"].ToString() != null)
                         {
-
                             string stmt = "Select Department,branch,location,Freq_of_calibration from t_equipment where active=1 and " +
                                 "Equipment_Id = '" + dsEquipmentList.Tables[0].Rows[0]["Equipment_Id"].ToString() + "'";
                             DataSet EquipList = objGlobaldata.Getdetails(stmt);
@@ -1290,8 +1253,6 @@ namespace ISOStd.Controllers
                         TempData["alertdata"] = "No data exists";
                         return RedirectToAction("CalibrationList");
                     }
-
-
                 }
                 else
                 {
@@ -1314,38 +1275,38 @@ namespace ISOStd.Controllers
             CalibrationModels objCalibrationModels = new CalibrationModels();
             try
             {
-                    string sSqlstmt = "select calibration_id, tcal.Equipment_id, calibration_by, method_of_calibration, accuracy, calibration_status,"
-                        + " calibration_report_ref, calibration_certificate, due_date, Remarks, concat(Equipment_name,' - ', Equipment_serial_no) as Equipment_Name,"
-                        + " NotificationPeriod, NotificationValue, Person_Responsible,Ref_no from  t_calibration as tcal, t_equipment as tequp where tcal.equipment_id=tequp.equipment_id "
-                        + "and calibration_id='" + id + "'";
+                string sSqlstmt = "select calibration_id, tcal.Equipment_id, calibration_by, method_of_calibration, accuracy, calibration_status,"
+                    + " calibration_report_ref, calibration_certificate, due_date, Remarks, concat(Equipment_name,' - ', Equipment_serial_no) as Equipment_Name,"
+                    + " NotificationPeriod, NotificationValue, Person_Responsible,Ref_no from  t_calibration as tcal, t_equipment as tequp where tcal.equipment_id=tequp.equipment_id "
+                    + "and calibration_id='" + id + "'";
 
-                    DataSet dsEquipmentList = objGlobaldata.Getdetails(sSqlstmt);
+                DataSet dsEquipmentList = objGlobaldata.Getdetails(sSqlstmt);
 
-                    if (dsEquipmentList.Tables.Count > 0 && dsEquipmentList.Tables[0].Rows.Count > 0)
+                if (dsEquipmentList.Tables.Count > 0 && dsEquipmentList.Tables[0].Rows.Count > 0)
+                {
+                    objCalibrationModels = new CalibrationModels
                     {
-                        objCalibrationModels = new CalibrationModels
-                        {
-                            calibration_id = (dsEquipmentList.Tables[0].Rows[0]["calibration_id"].ToString()),
-                            Equipment_Id = (dsEquipmentList.Tables[0].Rows[0]["Equipment_Name"].ToString()),
-                            calibration_by = dsEquipmentList.Tables[0].Rows[0]["calibration_by"].ToString(),
-                            method_of_calibration = (dsEquipmentList.Tables[0].Rows[0]["method_of_calibration"].ToString()),
-                            accuracy = dsEquipmentList.Tables[0].Rows[0]["accuracy"].ToString(),
-                            calibration_status = dsEquipmentList.Tables[0].Rows[0]["calibration_status"].ToString(),
-                            calibration_report_ref = (dsEquipmentList.Tables[0].Rows[0]["calibration_report_ref"].ToString()),
-                            due_date = Convert.ToDateTime(dsEquipmentList.Tables[0].Rows[0]["due_date"].ToString()),
-                            calibration_certificate = (dsEquipmentList.Tables[0].Rows[0]["calibration_certificate"].ToString()),
-                            Remarks = (dsEquipmentList.Tables[0].Rows[0]["Remarks"].ToString()),
-                            NotificationPeriod = dsEquipmentList.Tables[0].Rows[0]["NotificationPeriod"].ToString(),
-                            NotificationValue = dsEquipmentList.Tables[0].Rows[0]["NotificationValue"].ToString(),
-                            Person_Responsible = objGlobaldata.GetEmpHrNameById(dsEquipmentList.Tables[0].Rows[0]["Person_Responsible"].ToString()),
-                            Ref_no = dsEquipmentList.Tables[0].Rows[0]["Ref_no"].ToString(),
-                        };
-                    }
-                    else
-                    {
-                        TempData["alertdata"] = "No data exists";
-                        return RedirectToAction("CalibrationList");
-                    }
+                        calibration_id = (dsEquipmentList.Tables[0].Rows[0]["calibration_id"].ToString()),
+                        Equipment_Id = (dsEquipmentList.Tables[0].Rows[0]["Equipment_Name"].ToString()),
+                        calibration_by = dsEquipmentList.Tables[0].Rows[0]["calibration_by"].ToString(),
+                        method_of_calibration = (dsEquipmentList.Tables[0].Rows[0]["method_of_calibration"].ToString()),
+                        accuracy = dsEquipmentList.Tables[0].Rows[0]["accuracy"].ToString(),
+                        calibration_status = dsEquipmentList.Tables[0].Rows[0]["calibration_status"].ToString(),
+                        calibration_report_ref = (dsEquipmentList.Tables[0].Rows[0]["calibration_report_ref"].ToString()),
+                        due_date = Convert.ToDateTime(dsEquipmentList.Tables[0].Rows[0]["due_date"].ToString()),
+                        calibration_certificate = (dsEquipmentList.Tables[0].Rows[0]["calibration_certificate"].ToString()),
+                        Remarks = (dsEquipmentList.Tables[0].Rows[0]["Remarks"].ToString()),
+                        NotificationPeriod = dsEquipmentList.Tables[0].Rows[0]["NotificationPeriod"].ToString(),
+                        NotificationValue = dsEquipmentList.Tables[0].Rows[0]["NotificationValue"].ToString(),
+                        Person_Responsible = objGlobaldata.GetEmpHrNameById(dsEquipmentList.Tables[0].Rows[0]["Person_Responsible"].ToString()),
+                        Ref_no = dsEquipmentList.Tables[0].Rows[0]["Ref_no"].ToString(),
+                    };
+                }
+                else
+                {
+                    TempData["alertdata"] = "No data exists";
+                    return RedirectToAction("CalibrationList");
+                }
             }
             catch (Exception ex)
             {
@@ -1357,7 +1318,7 @@ namespace ISOStd.Controllers
         }
 
         // GET: /Equipment/EquipmentEdit
-         
+
         [AllowAnonymous]
         public ActionResult CalibrationEdit()
         {
@@ -1370,7 +1331,7 @@ namespace ISOStd.Controllers
                 {
                     string scalibration_id = Request.QueryString["calibration_id"];
 
-                    //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS  
+                    //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS
                     string sSqlstmt = "select calibration_id,  tcal.Equipment_id, calibration_by, method_of_calibration, accuracy, calibration_status,"
                         + " calibration_report_ref, calibration_certificate, due_date, Remarks, tequp.Equipment_Name, NotificationPeriod, NotificationValue,  "
                         + " Person_Responsible,Ref_no,certificate_no,CalibrationDate from t_calibration as tcal, t_equipment as tequp where tcal.equipment_id=tequp.equipment_id and calibration_id='"
@@ -1431,7 +1392,7 @@ namespace ISOStd.Controllers
         }
 
         // POST: /Equipment/CalibrationEdit
-         
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult CalibrationEdit(CalibrationModels objCalibrationModels, FormCollection form, HttpPostedFileBase fileCert, HttpPostedFileBase fileReport_ref)
@@ -1439,7 +1400,6 @@ namespace ISOStd.Controllers
             ViewBag.SubMenutype = "Calibration";
             try
             {
-
                 if (objCalibrationModels != null)
                 {
                     objCalibrationModels.calibration_status = form["calibration_status"];
@@ -1539,23 +1499,21 @@ namespace ISOStd.Controllers
             return RedirectToAction("CalibrationList");
         }
 
-       public JsonResult FunGetEquipmentDetails(string EquipmentId)
+        public JsonResult FunGetEquipmentDetails(string EquipmentId)
         {
             EquipmentModels objModels = new EquipmentModels();
-            if(EquipmentId != "" && EquipmentId != null)
+            if (EquipmentId != "" && EquipmentId != null)
             {
-                
-                string stmt= "Select Department,branch,location,Freq_of_calibration from t_equipment where active=1 and " +
+                string stmt = "Select Department,branch,location,Freq_of_calibration from t_equipment where active=1 and " +
                     "Equipment_Id = '" + EquipmentId + "'";
                 DataSet EquipList = objGlobaldata.Getdetails(stmt);
-                if(EquipList.Tables.Count>0 && EquipList.Tables[0].Rows.Count>0)
+                if (EquipList.Tables.Count > 0 && EquipList.Tables[0].Rows.Count > 0)
                 {
                     objModels.branch = objGlobaldata.GetMultiCompanyBranchNameById(EquipList.Tables[0].Rows[0]["branch"].ToString());
                     objModels.Department = objGlobaldata.GetMultiDeptNameById(EquipList.Tables[0].Rows[0]["Department"].ToString());
                     objModels.location = objGlobaldata.GetDivisionLocationById(EquipList.Tables[0].Rows[0]["location"].ToString());
                     objModels.Freq_of_calibration = objModels.GetCalibrationFrequencyNameById(EquipList.Tables[0].Rows[0]["Freq_of_calibration"].ToString());
                 }
-               
             }
             return Json(objModels);
         }
@@ -1563,7 +1521,6 @@ namespace ISOStd.Controllers
         [AllowAnonymous]
         public ActionResult AddMaintanance()
         {
-
             ViewBag.SubMenutype = "Equipment";
             if (Request.QueryString["Equipment_Id"] != null && Request.QueryString["Equipment_Id"] != "")
             {
@@ -1578,7 +1535,7 @@ namespace ISOStd.Controllers
         }
 
         // GET: /Equipment/AddMaintanance
-         
+
         [AllowAnonymous]
         public ActionResult InitilizeAddMaintanance(string sEquipment_Id)
         {
@@ -1602,7 +1559,7 @@ namespace ISOStd.Controllers
         }
 
         // POST: /Equipment/AddMaintanance
-         
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult AddMaintanance(EquipmentMaintanance objEquipmentMaintanance, FormCollection form, HttpPostedFileBase Maintenance_Details)
@@ -1626,9 +1583,8 @@ namespace ISOStd.Controllers
 
                 if (DateTime.TryParse(form["ToTimeDate"], out dateValue) == true)
                 {
-                    objEquipmentMaintanance.Down_Time_To =  Convert.ToDateTime(dateValue.ToString("yyyy/MM/dd") + " " + form["ToTimeInHour"] + ":" + form["ToTimeInMin"]);
-                }               
-                
+                    objEquipmentMaintanance.Down_Time_To = Convert.ToDateTime(dateValue.ToString("yyyy/MM/dd") + " " + form["ToTimeInHour"] + ":" + form["ToTimeInMin"]);
+                }
 
                 if (Maintenance_Details != null && Maintenance_Details.ContentLength > 0)
                 {
@@ -1638,7 +1594,7 @@ namespace ISOStd.Controllers
                         string sFileFullPath = objEquipmentMaintanance.Equipment_Id + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath);
                         string sFilepath = Path.GetDirectoryName(spath);
 
-                        Maintenance_Details.SaveAs(sFilepath + "/" +  sFileFullPath);
+                        Maintenance_Details.SaveAs(sFilepath + "/" + sFileFullPath);
                         objEquipmentMaintanance.Maintenance_Details = "~/DataUpload/MgmtDocs/Equipment/" + sFileFullPath;
                         ViewBag.Message = "File uploaded successfully";
                     }
@@ -1647,7 +1603,6 @@ namespace ISOStd.Controllers
                         objGlobaldata.AddFunctionalLog("Exception in AddMaintanance-upload: " + ex.ToString());
                         TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                     }
-
                 }
                 else
                 {
@@ -1673,9 +1628,8 @@ namespace ISOStd.Controllers
             return InitilizeAddMaintanance(sEquipment_Id);
         }
 
-
         // GET: /Equipment/MaintenanceList
-         
+
         [AllowAnonymous]
         public ActionResult MaintenanceList(string SearchText, int? page)
         {
@@ -1689,7 +1643,7 @@ namespace ISOStd.Controllers
                 {
                     string sEquipment_Id = Request.QueryString["Equipment_Id"];
                     ViewBag.Equipment_Id = sEquipment_Id;
-                    //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS  
+                    //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS
                     string sSqlstmt = "select Maintenance_Id, tmain.Equipment_Id, Maintenance_Date, Maintenance_Details, Maintenance_RectificationWork,"
                         + " Down_Time_From, Down_Time_To, Spare_Used, Remarks, concat(Equipment_name,' - ', Equipment_serial_no) as Equipment_Name,Amt_Spent from "
                         + " t_equipment_maintenance as tmain, t_equipment as tequp where tmain.equipment_id=tequp.equipment_id and tmain.equipment_id='" + sEquipment_Id + "'";
@@ -1701,9 +1655,7 @@ namespace ISOStd.Controllers
                     //    sSearchtext = " and (tequp.Equipment_Name ='" + SearchText + "' or tequp.Equipment_Name '" + SearchText + "%')";
                     //}
 
-
                     sSqlstmt = sSqlstmt + sSearchtext + " order by Equipment_name ";
-
 
                     DataSet dsMaintenanceList = objGlobaldata.Getdetails(sSqlstmt);
 
@@ -1719,7 +1671,7 @@ namespace ISOStd.Controllers
                                     Equipment_Id = (dsMaintenanceList.Tables[0].Rows[i]["Equipment_Name"].ToString()),
                                     Maintenance_Details = dsMaintenanceList.Tables[0].Rows[i]["Maintenance_Details"].ToString(),
                                     Maintenance_RectificationWork = (dsMaintenanceList.Tables[0].Rows[i]["Maintenance_RectificationWork"].ToString()),
-                                    Down_Time_From =Convert.ToDateTime(dsMaintenanceList.Tables[0].Rows[i]["Down_Time_From"].ToString()),
+                                    Down_Time_From = Convert.ToDateTime(dsMaintenanceList.Tables[0].Rows[i]["Down_Time_From"].ToString()),
                                     Down_Time_To = Convert.ToDateTime(dsMaintenanceList.Tables[0].Rows[i]["Down_Time_To"].ToString()),
                                     Spare_Used = dsMaintenanceList.Tables[0].Rows[i]["Spare_Used"].ToString(),
                                     Maintenance_Date = Convert.ToDateTime(dsMaintenanceList.Tables[0].Rows[i]["Maintenance_Date"].ToString()),
@@ -1757,7 +1709,7 @@ namespace ISOStd.Controllers
         }
 
         // GET: /Equipment/MaintenanceDetails
-         
+
         [AllowAnonymous]
         public ActionResult MaintenanceDetails()
         {
@@ -1784,7 +1736,7 @@ namespace ISOStd.Controllers
                             Equipment_Id1 = (dsMaintenanceList.Tables[0].Rows[0]["Equipment_Id"].ToString()),
                             Maintenance_Details = dsMaintenanceList.Tables[0].Rows[0]["Maintenance_Details"].ToString(),
                             Maintenance_RectificationWork = (dsMaintenanceList.Tables[0].Rows[0]["Maintenance_RectificationWork"].ToString()),
-                            Down_Time_From =Convert.ToDateTime( dsMaintenanceList.Tables[0].Rows[0]["Down_Time_From"].ToString()),
+                            Down_Time_From = Convert.ToDateTime(dsMaintenanceList.Tables[0].Rows[0]["Down_Time_From"].ToString()),
                             Down_Time_To = Convert.ToDateTime(dsMaintenanceList.Tables[0].Rows[0]["Down_Time_To"].ToString()),
                             Spare_Used = dsMaintenanceList.Tables[0].Rows[0]["Spare_Used"].ToString(),
                             Maintenance_Date = Convert.ToDateTime(dsMaintenanceList.Tables[0].Rows[0]["Maintenance_Date"].ToString()),
@@ -1814,9 +1766,8 @@ namespace ISOStd.Controllers
             return View(objEquipmentMaintanance);
         }
 
-
         // GET: /Equipment/MaintenanceEdit
-         
+
         [AllowAnonymous]
         public ActionResult MaintenanceEdit()
         {
@@ -1830,7 +1781,7 @@ namespace ISOStd.Controllers
                     string sMaintenance_Id = Request.QueryString["Maintenance_Id"];
                     string sSqlstmt = "select Maintenance_Id, tmain.Equipment_Id, Equipment_Name, Maintenance_Date, Maintenance_Details, Maintenance_RectificationWork,"
                         + " Down_Time_From, Down_Time_To, Spare_Used, Remarks, concat(Equipment_name,' - ', Equipment_serial_no) as Equipment_Name,Amt_Spent from "
-                        + " t_equipment_maintenance as tmain, t_equipment as tequp where tmain.equipment_id=tequp.equipment_id and tmain.Maintenance_Id='" 
+                        + " t_equipment_maintenance as tmain, t_equipment as tequp where tmain.equipment_id=tequp.equipment_id and tmain.Maintenance_Id='"
                         + sMaintenance_Id + "'";
 
                     DataSet dsMaintenanceList = objGlobaldata.Getdetails(sSqlstmt);
@@ -1872,13 +1823,12 @@ namespace ISOStd.Controllers
                 objGlobaldata.AddFunctionalLog("Exception in MaintenanceEdit: " + ex.ToString());
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
-            
+
             return View(objEquipmentMaintanance);
         }
 
-
         // POST: /Equipment/AddMaintanance
-         
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult MaintenanceEdit(EquipmentMaintanance objEquipmentMaintanance, FormCollection form, HttpPostedFileBase Maintenance_Details)
@@ -1887,7 +1837,6 @@ namespace ISOStd.Controllers
             string sEquipment_Id = form["Equipment_Id"];
             try
             {
-
                 DateTime dateValue;
 
                 if (DateTime.TryParse(form["Maintanance_Date"], out dateValue) == true)
@@ -1902,8 +1851,8 @@ namespace ISOStd.Controllers
 
                 if (DateTime.TryParse(form["ToTimeDate"], out dateValue) == true)
                 {
-                    objEquipmentMaintanance.Down_Time_To =Convert.ToDateTime(dateValue.ToString("yyyy/MM/dd") + " " + form["ToTimeInHour"] + ":" + form["ToTimeInMin"]);
-                }  
+                    objEquipmentMaintanance.Down_Time_To = Convert.ToDateTime(dateValue.ToString("yyyy/MM/dd") + " " + form["ToTimeInHour"] + ":" + form["ToTimeInMin"]);
+                }
 
                 if (Maintenance_Details != null && Maintenance_Details.ContentLength > 0)
                 {
@@ -1945,13 +1894,11 @@ namespace ISOStd.Controllers
             return RedirectToAction("MaintenanceList", new { Equipment_Id = sEquipment_Id });
         }
 
-
         //Preventive Maintainance
 
         [AllowAnonymous]
         public ActionResult AddPreventiveMaint()
         {
-
             ViewBag.NotificationPeriod = objGlobaldata.GetConstantValueKeyValuePair("NotificationPeriod");
             ViewBag.SubMenutype = "Equipment";
             if (Request.QueryString["Equipment_Id"] != null && Request.QueryString["Equipment_Id"] != "")
@@ -1965,7 +1912,7 @@ namespace ISOStd.Controllers
 
             return RedirectToAction("PMaintenanceList");
         }
-                     
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult AddPreventiveMaint(EquipmentMaintanance objEquipmentMaintanance, FormCollection form, HttpPostedFileBase Maintenance_Details)
@@ -2021,7 +1968,6 @@ namespace ISOStd.Controllers
                         objGlobaldata.AddFunctionalLog("Exception in AddPreventiveMaint-upload: " + ex.ToString());
                         TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                     }
-
                 }
                 else
                 {
@@ -2060,14 +2006,14 @@ namespace ISOStd.Controllers
                 {
                     string sEquipment_Id = Request.QueryString["Equipment_Id"];
                     ViewBag.Equipment_Id = sEquipment_Id;
-                    //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS  
+                    //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS
                     string sSqlstmt = "select Preventive_Id, tmain.Equipment_Id, Maintenance_Date, Maintenance_Details, Next_Maint_Date,Amt_Spent,"
                         + " done_by, Remarks, concat(Equipment_name,' - ', Equipment_serial_no) as Equipment_Name from "
                         + " t_equpiment_preventive_maint as tmain, t_equipment as tequp where tmain.equipment_id=tequp.equipment_id and tmain.equipment_id='" + sEquipment_Id + "'";
                     string sSearchtext = "";
 
                     sSqlstmt = sSqlstmt + sSearchtext + " order by Equipment_name ";
-                    
+
                     DataSet dsMaintenanceList = objGlobaldata.Getdetails(sSqlstmt);
 
                     if (dsMaintenanceList.Tables.Count > 0)
@@ -2085,7 +2031,7 @@ namespace ISOStd.Controllers
                                     Next_Maint_Date = Convert.ToDateTime(dsMaintenanceList.Tables[0].Rows[i]["Next_Maint_Date"].ToString()),
                                     Maintenance_Date = Convert.ToDateTime(dsMaintenanceList.Tables[0].Rows[i]["Maintenance_Date"].ToString()),
                                     Remarks = (dsMaintenanceList.Tables[0].Rows[i]["Remarks"].ToString()),
-                                    Amt_Spent=Convert.ToDecimal(dsMaintenanceList.Tables[0].Rows[i]["Amt_Spent"].ToString())
+                                    Amt_Spent = Convert.ToDecimal(dsMaintenanceList.Tables[0].Rows[i]["Amt_Spent"].ToString())
                                 };
                                 objEquipmentMaintananceList.lstEquipmentMaintanance.Add(objEquipmentMaintanance);
                             }
@@ -2148,12 +2094,11 @@ namespace ISOStd.Controllers
                             done_by = dsMaintenanceList.Tables[0].Rows[0]["done_by"].ToString(),
                             Maintenance_Date = Convert.ToDateTime(dsMaintenanceList.Tables[0].Rows[0]["Maintenance_Date"].ToString()),
                             Remarks = (dsMaintenanceList.Tables[0].Rows[0]["Remarks"].ToString()),
-                            Amt_Spent=Convert.ToDecimal(dsMaintenanceList.Tables[0].Rows[0]["Amt_Spent"].ToString()),
+                            Amt_Spent = Convert.ToDecimal(dsMaintenanceList.Tables[0].Rows[0]["Amt_Spent"].ToString()),
                             NotificationPeriod = dsMaintenanceList.Tables[0].Rows[0]["NotificationPeriod"].ToString(),
                             NotificationValue = dsMaintenanceList.Tables[0].Rows[0]["NotificationValue"].ToString(),
                         };
                         ViewBag.Equipment_Id = dsMaintenanceList.Tables[0].Rows[0]["Equipment_Id"].ToString();
-
                     }
                     else
                     {
@@ -2175,7 +2120,7 @@ namespace ISOStd.Controllers
 
             return View(objEquipmentMaintanance);
         }
-        
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult PMaintenanceEdit(EquipmentMaintanance objEquipmentMaintanance, FormCollection form, HttpPostedFileBase Maintenance_Details)
@@ -2266,8 +2211,8 @@ namespace ISOStd.Controllers
                     string sPreventive_Id = Request.QueryString["Preventive_Id"];
                     string sSqlstmt = "select Preventive_Id, tmain.Equipment_Id, Equipment_Name, Maintenance_Date, Maintenance_Details, Next_Maint_Date,Amt_Spent,"
                         + " done_by, Remarks, concat(Equipment_name,' - ', Equipment_serial_no) as Equipment_Name,NotificationPeriod,NotificationDays,NotificationValue from "
-                        + " t_equpiment_preventive_maint as tmain, t_equipment as tequp where tmain.equipment_id=tequp.equipment_id and tmain.Preventive_Id='"+ sPreventive_Id + "'";
-                    
+                        + " t_equpiment_preventive_maint as tmain, t_equipment as tequp where tmain.equipment_id=tequp.equipment_id and tmain.Preventive_Id='" + sPreventive_Id + "'";
+
                     DataSet dsMaintenanceList = objGlobaldata.Getdetails(sSqlstmt);
 
                     if (dsMaintenanceList.Tables.Count > 0 && dsMaintenanceList.Tables[0].Rows.Count > 0)
@@ -2322,13 +2267,12 @@ namespace ISOStd.Controllers
                 {
                     string calibration_id = Request.QueryString["calibration_id"].ToString();
 
-                    //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS  
+                    //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS
                     string sSqlstmt = "select calibration_id, tcal.Equipment_id, calibration_by, method_of_calibration, accuracy, calibration_status,"
                         + " calibration_report_ref, calibration_certificate, due_date, Remarks, concat(Equipment_name,' - ', Equipment_serial_no) as Equipment_Name, "
                         + "CalibrationDate,Ref_no from  t_calibration_history as tcal, t_equipment as tequp"
                         + " where tcal.equipment_id=tequp.equipment_id and calibration_id in (select max(calibration_id) from t_calibration_history where tcal.Active=1 and calibration_id='" + calibration_id + "' group by Equipment_id)";
                     string sSearchtext = "";
-
 
                     sSqlstmt = sSqlstmt + sSearchtext + " order by Equipment_Name asc";
 
@@ -2375,6 +2319,5 @@ namespace ISOStd.Controllers
 
             return View(objCalibrationModelsList.CalibrationMList.ToList());
         }
-
     }
 }

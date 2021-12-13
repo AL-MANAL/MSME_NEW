@@ -1,42 +1,37 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+﻿using ISOStd.Filters;
 using ISOStd.Models;
+using System;
+using System.Collections.Generic;
 using System.Data;
-using System.Net;
-using PagedList;
-using PagedList.Mvc;
-using ISOStd.Filters;
+using System.Linq;
+using System.Web.Mvc;
 
 namespace ISOStd.Controllers
 {
     [PreventFromUrl]
     public class CustomerAuditController : Controller
     {
-        clsGlobal objGlobaldata = new clsGlobal();
-        CustomerAuditModels objEAudit = new CustomerAuditModels();
+        private clsGlobal objGlobaldata = new clsGlobal();
+        private CustomerAuditModels objEAudit = new CustomerAuditModels();
 
-       
         public CustomerAuditController()
         {
             ViewBag.Menutype = "Audit";
             ViewBag.SubMenutype = "CustomerAuditList";
         }
-      
-        // GET: /CustomerAudit/        
+
+        // GET: /CustomerAudit/
         public ActionResult Index()
         {
             return View();
         }
-                
+
         [AllowAnonymous]
         public ActionResult AddCustomerAudit()
-        {           
+        {
             return InitilizeAddCustomerAudit();
         }
-         
+
         private ActionResult InitilizeAddCustomerAudit()
         {
             CustomerAuditModels objCust = new CustomerAuditModels();
@@ -122,33 +117,27 @@ namespace ISOStd.Controllers
 
             return RedirectToAction("CustomerAuditList");
         }
-        
+
         [AllowAnonymous]
         public JsonResult CustomerAuditDocDelete(FormCollection form)
         {
             try
             {
-               
-                        
-                            if (form["CustAuditID"] != null && form["CustAuditID"] != "")
-                            {
+                if (form["CustAuditID"] != null && form["CustAuditID"] != "")
+                {
+                    CustomerAuditModels Doc = new CustomerAuditModels();
+                    string sCustAuditID = form["CustAuditID"];
 
-                                CustomerAuditModels Doc = new CustomerAuditModels();
-                                string sCustAuditID = form["CustAuditID"];
-
-
-                                if (Doc.FunDeleteCustomerAuditDoc(sCustAuditID))
-                                {
-                                    TempData["Successdata"] = "Document deleted successfully";
-                                    return Json("Success");
-                                }
-                                else
-                                {
-                                    TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                                    return Json("Failed");
-                                }
-                          
-                        
+                    if (Doc.FunDeleteCustomerAuditDoc(sCustAuditID))
+                    {
+                        TempData["Successdata"] = "Document deleted successfully";
+                        return Json("Success");
+                    }
+                    else
+                    {
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                        return Json("Failed");
+                    }
                 }
                 else
                 {
@@ -163,7 +152,7 @@ namespace ISOStd.Controllers
             }
             return Json("Failed");
         }
-        
+
         [AllowAnonymous]
         public ActionResult CustomerAuditList(string branch_name)
         {
@@ -178,7 +167,7 @@ namespace ISOStd.Controllers
                 string sBranchtree = objGlobaldata.GetCurrentUserSession().BranchTree;
                 ViewBag.Branch = objGlobaldata.GetMultiBranchListByID(sBranchtree);
                 string sSearchtext = "";
-                //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS  
+                //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS
                 string sSqlstmt = "SELECT CustAuditID, CustomerName, Customer_Audit_Team, AuditNum, AuditDate,branch,Department,Location" +
                     " FROM t_customer_audit where Active=1";
                 if (branch_name != null && branch_name != "")
@@ -195,7 +184,7 @@ namespace ISOStd.Controllers
 
                 DataSet dsCertificationBodyList = objGlobaldata.Getdetails(sSqlstmt);
                 if (dsCertificationBodyList.Tables.Count > 0)
-                { 
+                {
                     for (int i = 0; i < dsCertificationBodyList.Tables[0].Rows.Count; i++)
                     {
                         DateTime AuditDateVal = Convert.ToDateTime(dsCertificationBodyList.Tables[0].Rows[i]["AuditDate"].ToString());
@@ -246,7 +235,7 @@ namespace ISOStd.Controllers
                 string sBranchtree = objGlobaldata.GetCurrentUserSession().BranchTree;
                 ViewBag.Branch = objGlobaldata.GetMultiBranchListByID(sBranchtree);
                 string sSearchtext = "";
-                //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS  
+                //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS
                 string sSqlstmt = "SELECT CustAuditID, CustomerName, Customer_Audit_Team, AuditNum, AuditDate,branch,Department,Location" +
                     " FROM t_customer_audit where Active=1";
 
@@ -281,7 +270,6 @@ namespace ISOStd.Controllers
                                 branch = objGlobaldata.GetMultiCompanyBranchNameById(dsCertificationBodyList.Tables[0].Rows[i]["branch"].ToString()),
                                 Department = objGlobaldata.GetMultiDeptNameById(dsCertificationBodyList.Tables[0].Rows[i]["Department"].ToString()),
                                 Location = objGlobaldata.GetDivisionLocationById(dsCertificationBodyList.Tables[0].Rows[i]["Location"].ToString()),
-
                             };
 
                             CustomerAuditModelsList.CustomerAuditMList.Add(objCustomerAuditModels);
@@ -311,7 +299,7 @@ namespace ISOStd.Controllers
                 string sCustAuditID = Request.QueryString["CustAuditID"];
                 try
                 {
-                    //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS  
+                    //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS
                     string sSqlstmt = "SELECT CustAuditID, AuditNum,CustomerName,Customer_Audit_Team, AuditDate,branch,Department,Location" +
                         " FROM t_customer_audit where CustAuditID='" + sCustAuditID + "'";
 
@@ -331,7 +319,6 @@ namespace ISOStd.Controllers
                             branch = objGlobaldata.GetMultiCompanyBranchNameById(dsCustomerAuditModelsList.Tables[0].Rows[0]["branch"].ToString()),
                             Department = objGlobaldata.GetMultiDeptNameById(dsCustomerAuditModelsList.Tables[0].Rows[0]["Department"].ToString()),
                             Location = objGlobaldata.GetDivisionLocationById(dsCustomerAuditModelsList.Tables[0].Rows[0]["Location"].ToString()),
-
                         };
 
                         sSqlstmt = "select CustAudtTransId, CustAuditID, NCNo, AuditFindingDesc, CorrectionTaken, CorrectionDate, ProposedcorrectiveAction,"
@@ -358,64 +345,58 @@ namespace ISOStd.Controllers
                 return RedirectToAction("CustomerAuditList");
             }
             return View(objCustomerAuditModels);
-
         }
-                
+
         [AllowAnonymous]
         public ActionResult CustomerAuditInfo(int id)
         {
             CustomerAuditModels objCustomerAuditModels = new CustomerAuditModels();
-          
-                try
+
+            try
+            {
+                string sSqlstmt = "SELECT CustAuditID, AuditNum,CustomerName,Customer_Audit_Team, AuditDate,branch,Department,Location" +
+                " FROM t_customer_audit where CustAuditID='" + id + "'";
+
+                DataSet dsCustomerAuditModelsList = objGlobaldata.Getdetails(sSqlstmt);
+
+                if (dsCustomerAuditModelsList.Tables.Count > 0 && dsCustomerAuditModelsList.Tables[0].Rows.Count > 0)
                 {
-                    string sSqlstmt = "SELECT CustAuditID, AuditNum,CustomerName,Customer_Audit_Team, AuditDate,branch,Department,Location" +
-                    " FROM t_customer_audit where CustAuditID='" + id + "'";
+                    DateTime AuditDateVal = Convert.ToDateTime(dsCustomerAuditModelsList.Tables[0].Rows[0]["AuditDate"].ToString());
 
-                    DataSet dsCustomerAuditModelsList = objGlobaldata.Getdetails(sSqlstmt);
-
-                    if (dsCustomerAuditModelsList.Tables.Count > 0 && dsCustomerAuditModelsList.Tables[0].Rows.Count > 0)
+                    objCustomerAuditModels = new CustomerAuditModels
                     {
-                        DateTime AuditDateVal = Convert.ToDateTime(dsCustomerAuditModelsList.Tables[0].Rows[0]["AuditDate"].ToString());
+                        CustAuditID = dsCustomerAuditModelsList.Tables[0].Rows[0]["CustAuditID"].ToString(),
+                        AuditNum = dsCustomerAuditModelsList.Tables[0].Rows[0]["AuditNum"].ToString(),
+                        Customer_Audit_Team = dsCustomerAuditModelsList.Tables[0].Rows[0]["Customer_Audit_Team"].ToString(),
+                        CustomerName = objGlobaldata.GetCustomerNameById(dsCustomerAuditModelsList.Tables[0].Rows[0]["CustomerName"].ToString()),
+                        AuditDate = AuditDateVal,
+                        branch = objGlobaldata.GetMultiCompanyBranchNameById(dsCustomerAuditModelsList.Tables[0].Rows[0]["branch"].ToString()),
+                        Department = objGlobaldata.GetMultiDeptNameById(dsCustomerAuditModelsList.Tables[0].Rows[0]["Department"].ToString()),
+                        Location = objGlobaldata.GetDivisionLocationById(dsCustomerAuditModelsList.Tables[0].Rows[0]["Location"].ToString()),
+                    };
 
-                        objCustomerAuditModels = new CustomerAuditModels
-                        {
-                            CustAuditID = dsCustomerAuditModelsList.Tables[0].Rows[0]["CustAuditID"].ToString(),
-                            AuditNum = dsCustomerAuditModelsList.Tables[0].Rows[0]["AuditNum"].ToString(),
-                            Customer_Audit_Team = dsCustomerAuditModelsList.Tables[0].Rows[0]["Customer_Audit_Team"].ToString(),
-                            CustomerName = objGlobaldata.GetCustomerNameById(dsCustomerAuditModelsList.Tables[0].Rows[0]["CustomerName"].ToString()),
-                            AuditDate = AuditDateVal,
-                            branch = objGlobaldata.GetMultiCompanyBranchNameById(dsCustomerAuditModelsList.Tables[0].Rows[0]["branch"].ToString()),
-                            Department = objGlobaldata.GetMultiDeptNameById(dsCustomerAuditModelsList.Tables[0].Rows[0]["Department"].ToString()),
-                            Location = objGlobaldata.GetDivisionLocationById(dsCustomerAuditModelsList.Tables[0].Rows[0]["Location"].ToString()),
-
-
-                        };
-
-                        sSqlstmt = "select CustAudtTransId, CustAuditID, NCNo, AuditFindingDesc, CorrectionTaken, CorrectionDate, ProposedcorrectiveAction,"
-                           + " CorrectiveActionDate, Action_taken_by, NC_status, reviewed_by from t_customer_audit_trans where CustAuditID=" + objCustomerAuditModels.CustAuditID
-                           + " order by CustAudtTransId desc";
-                        ViewBag.FindingsDetails = objGlobaldata.Getdetails(sSqlstmt);
-                     
-                    }
-                    else
-                    {
-                        TempData["alertdata"] = "No Data exists";
-                        return RedirectToAction("CustomerAuditList");
-                    }
+                    sSqlstmt = "select CustAudtTransId, CustAuditID, NCNo, AuditFindingDesc, CorrectionTaken, CorrectionDate, ProposedcorrectiveAction,"
+                       + " CorrectiveActionDate, Action_taken_by, NC_status, reviewed_by from t_customer_audit_trans where CustAuditID=" + objCustomerAuditModels.CustAuditID
+                       + " order by CustAudtTransId desc";
+                    ViewBag.FindingsDetails = objGlobaldata.Getdetails(sSqlstmt);
                 }
-                catch (Exception ex)
+                else
                 {
-                    objGlobaldata.AddFunctionalLog("Exception in CustomerAuditDetails: " + ex.ToString());
-                    TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                    TempData["alertdata"] = "No Data exists";
+                    return RedirectToAction("CustomerAuditList");
                 }
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in CustomerAuditDetails: " + ex.ToString());
+                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+            }
             return View(objCustomerAuditModels);
-
         }
-        
+
         [AllowAnonymous]
         public ActionResult CustomerAuditEdit()
         {
-
             CustomerAuditModels objCustomerAuditModels = new CustomerAuditModels();
 
             UserCredentials objUserInfo = (UserCredentials)Session["UserCredentials"];
@@ -426,7 +407,7 @@ namespace ISOStd.Controllers
                 {
                     ViewBag.CustList = objGlobaldata.GetCustomerListbox();
                     ViewBag.NC_status = objGlobaldata.GetDropdownList("Audit Status");
-                    //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS  
+                    //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS
                     string sSqlstmt = "SELECT  CustAuditID, AuditNum,CustomerName,Customer_Audit_Team,AuditDate,branch,Department,Location" +
                         " FROM t_customer_audit where CustAuditID=" + sCustAuditID;
 
@@ -446,7 +427,6 @@ namespace ISOStd.Controllers
                             branch = (dsCustomerAuditModelsList.Tables[0].Rows[0]["branch"].ToString()),
                             Department = (dsCustomerAuditModelsList.Tables[0].Rows[0]["Department"].ToString()),
                             Location = (dsCustomerAuditModelsList.Tables[0].Rows[0]["Location"].ToString()),
-
                         };
 
                         ViewBag.Branch = objGlobaldata.GetCompanyBranchListbox();
@@ -475,7 +455,6 @@ namespace ISOStd.Controllers
                 TempData["alertdata"] = "Customer Audit id cannot be empty";
                 return RedirectToAction("CustomerAuditList");
             }
-          
 
             return View(objCustomerAuditModels);
         }
@@ -525,7 +504,6 @@ namespace ISOStd.Controllers
                 }
                 else
                 {
-                    
                     if (CustomerAuditFindingsUpdate(objCustomerAuditModels, form))
                     {
                         TempData["Successdata"] = "Customer Compliant updated successfully";
@@ -544,7 +522,7 @@ namespace ISOStd.Controllers
 
             return RedirectToAction("CustomerAuditList");//View();
         }
-                        
+
         public bool CustomerAuditFindingsUpdate(CustomerAuditModels objCustomerAuditModels, FormCollection form)
         {
             try
@@ -563,14 +541,13 @@ namespace ISOStd.Controllers
 
             return false;
         }
- 
+
         public bool CustomerAuditFindingsAdd(CustomerAuditModels objCustomerAuditModels, FormCollection form)
         {
             try
             {
                 CustomerAuditModelsList objCustomerAuditModelsList = new CustomerAuditModelsList();
                 objCustomerAuditModelsList.CustomerAuditMList = new List<CustomerAuditModels>();
-
 
                 objCustomerAuditModels.CustAuditID = form["CustAuditID"];
                 // objExternalAuditModels.ExternalAuditID = form["ExtAuditTransID"];

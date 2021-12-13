@@ -1432,6 +1432,9 @@ namespace ISOStd.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult MeetingEdit(MeetingModels objMeetingModels, FormCollection form, HttpPostedFileBase fileAttendees, HttpPostedFileBase upload)
         {
+          
+            MeetingItemModels objItem = new MeetingItemModels();
+          
             ViewBag.SubMenutype = "MOM";
             string smeeting_ref = form["meeting_ref"];
             string sendmail = Request.Form["selectall"];
@@ -1499,12 +1502,17 @@ namespace ISOStd.Controllers
 
                     if (MeetingItemAdd(objMeetingModels, form))
                     {
+                       
+                      
+                       
                         TempData["Successdata"] = "Added Meeting Item details successfully";
                     }
                     else
                     {
                         TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                     }
+                   
+                    objItem.SendMOMEmail(smeeting_ref, "Update on Minutes of Meeting");
                 }
                 else
                 {
@@ -1539,12 +1547,7 @@ namespace ISOStd.Controllers
                     }
                 }
 
-                //Send MOM email
-                MeetingItemModels objItem = new MeetingItemModels();
-                //if (sendmail != null && sendmail != "")
-                //{
-                    objItem.SendMOMEmail(smeeting_ref, "Update on Minutes of Meeting");
-                //}
+              
             }
             catch (Exception ex)
             {

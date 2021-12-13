@@ -202,12 +202,18 @@
                 <td> @Html.DisplayFor(modelItem => item.Base_Line_Value)</td>
                 <td> @Html.DisplayFor(modelItem => item.baseline_data)</td>
                 <td>
-                    @if (item.Action_Plan != "")
-                    {
-                        <a class="text-orange" href='@Url.Action("DisplayDocument", "Reports", new { Document = item.Action_Plan.ToString() })' target="_blank">Preview</a>
-                    }
-                    else
-                    {
+                  
+@if (item.Action_Plan != null && item.Action_Plan != "" && item.Action_Plan.Length > 0)
+{
+    foreach (var docs in item.Action_Plan.Trim(',').Split(','))
+    {
+        <span class="bg-dark py-1 px-2 rounded">
+            <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs})' target="_blank">Preview</a>
+        </span>
+    }
+}
+else
+{
                         <span class="badge badge-info">No File attached</span>
                     }
                 </td>

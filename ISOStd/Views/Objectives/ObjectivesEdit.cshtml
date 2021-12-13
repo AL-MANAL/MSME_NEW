@@ -374,15 +374,19 @@
                             </td>
                             <th class="col-xs-3 col-md-2" style="font-weight: bold;">  @Html.LabelFor(model => model.Action_Plan)@*<text style="color: red;">*</text></th>*@
                             <td class="col">
-                                <input type="file" name="Action_Plan" id="Action_Plan" title="Action Plan" onchange="FileFormatValidation(this)" accept=".pdf,.xlsx,.xls,.jpeg,.jpg,.png,.doc,.docx,image/*"
+                                <input type="file" name="Action_Plan" id="Action_Plan" title="Action Plan" onchange="FileFormatValidation(this)" multiple accept=".pdf,.xlsx,.xls,.jpeg,.jpg,.png,.doc,.docx,image/*"
                                        class="bootstrap-uploader" data-fouc />
                                 @if (Model.Action_Plan != null && Model.Action_Plan != "" && Model.Action_Plan.Length > 0)
                                 {
                                     foreach (var docs in Model.Action_Plan.Trim(',').Split(','))
                                     {
-                                        <span class="bg-dark py-1 px-2 rounded">
-                                            <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs})' target="_blank">Preview</a>
-                                        </span>
+                                        <p style="margin: 0px;">
+                                            <input type="checkbox" id="QCDocsVal" name="QCDocsVal" class="QCDocsVal" value="@docs.Trim(',')" checked title="Uncheck in case to remove a uploaded file" />
+                                            <input type="hidden" id="QCDocsValselectall" name="QCDocsValselectall" />
+                                            <span class="py-1 px-2 rounded">
+                                                <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs})' target="_blank">Preview</a>
+                                            </span>
+                                        </p>
                                     }
                                 }
                             </td>
@@ -697,7 +701,17 @@
 
       //GetEstablisedDetails();
     });
-    //zzz----
+        $("#QCDocsVal").click(function () {
+            if ($("#QCDocsVal").prop('checked')) {
+                {
+                    $(this).prop('checked', true);
+                }
+            }
+            else {
+                $(this).prop('checked', false);
+                document.getElementById("QCDocsValselectall").value = "DeleteQC";
+            }
+        });
 
         var showClass = 'is-visible';
         var hideClass = 'invisible';

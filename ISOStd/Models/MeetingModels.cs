@@ -740,9 +740,9 @@ namespace ISOStd.Models
                                 + "<td> " + objGlobalData.GetDropdownitemById(dsItems.Tables[0].Rows[i]["item_status"].ToString()) + " </td>"
                                    + "<td> " + dsItems.Tables[0].Rows[i]["remarks"].ToString() + " </td>"
                                 + " </tr>";
-                            if (objGlobalData.GetHrEmpEmailIdById(dsItems.Tables[0].Rows[i]["action_owner"].ToString()) != "")
+                            if (objGlobalData.GetMultiHrEmpEmailIdById(dsItems.Tables[0].Rows[i]["action_owner"].ToString()) != "")
                             {
-                             sToEmailIds = sToEmailIds +","+objGlobalData.GetHrEmpEmailIdById(dsItems.Tables[0].Rows[i]["action_owner"].ToString()) + ",";
+                             sToEmailIds = sToEmailIds +","+objGlobalData.GetMultiHrEmpEmailIdById(dsItems.Tables[0].Rows[i]["action_owner"].ToString()) + ",";
                             }
                            
                         }

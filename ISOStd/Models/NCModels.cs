@@ -120,7 +120,7 @@ namespace ISOStd.Models
 
         public string logged_by { get; set; }
 
-        [Display(Name = "NC Status")]
+        [Display(Name = "Approve Status")]
         public string nc_issuedto_status { get; set; }
         public string nc_issuedto_statusId { get; set; }
 
@@ -1225,7 +1225,7 @@ namespace ISOStd.Models
                                 string Sql1 = "update t_nc set nc_issuers= concat(nc_issuers,',','" + user + "') where id_nc='" + sid_nc + "'";
                                 objGlobaldata.ExecuteQuery(Sql1);
                             }
-                            SendNCApprovalmail(sid_nc, 1);
+                            SendNCApprovalmail(sid_nc, 1, nc_reject_comment);
                             return true;
                         }
                     }
@@ -1235,7 +1235,7 @@ namespace ISOStd.Models
                     //string Sql1 = "update t_nc set nc_issuedto_status='" + objModel.nc_stauts + "',nc_issuer_rejector= concat(nc_issuer_rejector,',','" + user + "') where id_nc='" + sid_nc + "'";
                     string Sql1 = "update t_nc set nc_issuedto_status='" + objModel.nc_stauts + "',nc_issuer_rejector= concat(nc_issuer_rejector,',','" + user + "') where id_nc='" + sid_nc + "'";
                     objGlobaldata.ExecuteQuery(Sql1);
-                    SendNCApprovalmail(sid_nc, 2);
+                    SendNCApprovalmail(sid_nc, 2, nc_reject_comment);
                     return true;
                 }
             }
@@ -1246,7 +1246,7 @@ namespace ISOStd.Models
             return false;
         }
 
-        internal bool SendNCApprovalmail(string sid_nc,int status)
+        internal bool SendNCApprovalmail(string sid_nc,int status,string nc_reject_comment)
         {
             try
             {
@@ -1268,7 +1268,7 @@ namespace ISOStd.Models
                     }
                     else
                     {
-                        sExtraMsg = "Nonconformance & Corrective Action has been rejected by "+ user + ", NC Number: " + dsDocument.Tables[0].Rows[0]["nc_no"].ToString();
+                        sExtraMsg = "Nonconformance & Corrective Action has been rejected by "+ user + " <br> Comment:" + nc_reject_comment + " <br> NC Number: " + dsDocument.Tables[0].Rows[0]["nc_no"].ToString();
                         sEmailTemplate = "NCReject";
                     }                   
 

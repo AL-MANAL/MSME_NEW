@@ -218,7 +218,7 @@ namespace ISOStd.Controllers
 
                 string sSqlstmt = "select id_nc, nc_no, nc_reported_date, nc_detected_date, nc_category, nc_description, nc_activity, nc_performed, nc_pnc, nc_upload,"
                     + "nc_impact, nc_risk, risklevel, nc_reportedby,  nc_notifiedto, nc_division, division, department, location,nc_audit,audit_no,nc_raise_dueto," +
-                    "(case when nc_issuedto_status=0 then 'Pending' when nc_issuedto_status=1 then 'Accepted' when nc_issuedto_status=2 then 'Rejected' end) as nc_issuedto_status,nc_issuedto_status as nc_issuedto_statusId,nc_initial_status as nc_initial_statusId,ca_verfiry_duedate,nc_issueto,ca_proposed_by,rca_action from t_nc where Active=1";
+                    "(case when nc_issuedto_status=0 then 'Pending' when nc_issuedto_status=1 then 'Accepted' when nc_issuedto_status=2 then 'Rejected' end) as nc_issuedto_status,nc_issuedto_status as nc_issuedto_statusId,nc_initial_status as nc_initial_statusId,ca_verfiry_duedate,nc_issueto,ca_proposed_by,rca_action,v_status from t_nc where Active=1";
                 string sSearchtext = "";
                              
 
@@ -272,9 +272,9 @@ namespace ISOStd.Controllers
                                 nc_issuetoId = (dsNCModels.Tables[0].Rows[i]["nc_issueto"].ToString()),
                                 nc_reportedby_dept = objGlobaldata.GetMultiDeptNameById(objGlobaldata.GetDeptIdByHrEmpId(dsNCModels.Tables[0].Rows[i]["nc_reportedby"].ToString())),
                                 nc_issueto_dept = objGlobaldata.GetMultiDeptNameById(objGlobaldata.GetDeptIdByHrEmpId(dsNCModels.Tables[0].Rows[i]["nc_issueto"].ToString())),
-                                  ca_proposed_by = dsNCModels.Tables[0].Rows[i]["ca_proposed_by"].ToString(),
+                                ca_proposed_by = dsNCModels.Tables[0].Rows[i]["ca_proposed_by"].ToString(),
                                 rca_action= dsNCModels.Tables[0].Rows[i]["rca_action"].ToString(),
-
+                                v_status =objGlobaldata.GetDropdownitemById(dsNCModels.Tables[0].Rows[i]["v_status"].ToString()),
                             };
 
                             DateTime dtValue;
@@ -2261,6 +2261,12 @@ namespace ISOStd.Controllers
                             "ca_target_date,ca_resp_person,implement_status,ca_effective,reason from t_nc_corrective_action where id_nc = '" + sid_nc + "' and ca_active=1";
                             DataSet dsVerifyModel = objGlobaldata.Getdetails(sSqlstmt18);
                             ViewBag.VerificationList = dsVerifyModel;
+
+
+                            string SSqlstmt11 = "Select nc_issuedto,(case when nc_stauts= 0 then 'Pending' when nc_stauts = 1 then 'Approved' when nc_stauts = 2 then 'Rejected' end) as nc_stauts,nc_approve_reject_date,nc_reject_comment,nc_reject_upload from t_nc_status where id_nc = '" + sid_nc + "'";
+                            DataSet dsNcStatusList = objGlobaldata.Getdetails(SSqlstmt11);
+                            ViewBag.NcStatus = dsNcStatusList;
+
 
                             //For PDF Report
                             string sSqlstmtRpt = "select immediate_action,team,ca,rca,verification from t_pfd_report where report_name= 'Main Non Conformance' and active=1";

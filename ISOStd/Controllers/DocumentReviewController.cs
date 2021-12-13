@@ -116,7 +116,7 @@ namespace ISOStd.Controllers
             try
             {
                 string sSqlstmt = "select id_doc_review,review_date, doc_level, doc_type, frequency, " +
-                    "criteria, approvedby, division from t_document_review where active=1";
+                    "criteria, approvedby, division,approve_status from t_document_review where active=1";
 
                 string sSearchtext = "";
 
@@ -133,7 +133,7 @@ namespace ISOStd.Controllers
                 {
                     sSearchtext = sSearchtext + " and find_in_set('" + sBranch_name + "', division)";
                 }
-                sSqlstmt = sSqlstmt + sSearchtext + " order by doc_type";
+                sSqlstmt = sSqlstmt + sSearchtext + " order by id_doc_review desc";
 
                 DataSet dsReviewList = objGlobaldata.Getdetails(sSqlstmt);
                 if (dsReviewList.Tables.Count > 0 && dsReviewList.Tables[0].Rows.Count > 0)
@@ -151,6 +151,7 @@ namespace ISOStd.Controllers
                                 criteria = objReview.GetDocReviewCriteriaById(dsReviewList.Tables[0].Rows[i]["criteria"].ToString()),
                                 approvedby = objGlobaldata.GetMultiHrEmpNameById(dsReviewList.Tables[0].Rows[i]["approvedby"].ToString()),
                                 division = objGlobaldata.GetMultiCompanyBranchNameById(dsReviewList.Tables[0].Rows[i]["division"].ToString()),
+                                approve_status = (dsReviewList.Tables[0].Rows[i]["approve_status"].ToString()),
                             };
 
                             DateTime dateValue;
@@ -449,7 +450,8 @@ namespace ISOStd.Controllers
                 }
                 if (objReview.FunDocReviewFreApproveOrReject(id_doc_review, iStatus))
                 {
-                    TempData["Successdata"] = "Document Review Frequency" + sStatus + " successfully";
+                    //TempData["Successdata"] = "Document Review Frequency" + sStatus + " successfully";
+                    TempData["Successdata"] = "Document Status Updated Successfully";
                 }
                 else
                 {

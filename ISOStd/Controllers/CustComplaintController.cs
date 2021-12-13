@@ -251,7 +251,7 @@ namespace ISOStd.Controllers
                 //    }
                 //}
 
-                sSqlstmt = sSqlstmt + sSearchtext + " order by ReceivedDate desc";
+                sSqlstmt = sSqlstmt + sSearchtext + " and LoggedBy = '"+ objGlobaldata.GetCurrentUserSession().empid +"' order by ReceivedDate desc";
                 DataSet dsComplaintModelsList = objGlobaldata.Getdetails(sSqlstmt);
 
                 if (dsComplaintModelsList.Tables.Count > 0 && dsComplaintModelsList.Tables[0].Rows.Count > 0)
@@ -1477,8 +1477,9 @@ namespace ISOStd.Controllers
                 cookieCollection.Add(key, Request.Cookies.Get(key).Value);
             }
             //string footer = "--footer-right \"Date: [date] [time]\" " + "--footer-center \"Page: [page] of [toPage]\" --footer-line --footer-font-size \"9\" --footer-spacing 5 --footer-font-name \"calibri light\"";
-
-            string footer = string.Format("--footer-left \"" + objComplaintModels.ComplaintNo + "                                                             Rev. No: 1                                                                       Date: " + objComplaintModels.registered_on.ToString("dd/MM/yyyy") + "  Page: [page]/[toPage]\" --footer-font-size \"9\"");
+          
+            string footer = string.Format("--footer-left \"Form No.: QHSE - F 020                                                             Rev. No: 1                                                                       Date:  09.Nov.2020   Page: [page]/[toPage]\" --footer-font-size \"9\"");
+                                
 
             return new ViewAsPdf("CustomerComplaintToPDF")
             {

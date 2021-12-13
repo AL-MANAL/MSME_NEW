@@ -387,7 +387,7 @@ namespace ISOStd.Models
         {
             try
             {
-                DataSet dsDocument = objGlobalData.Getdetails("select DocName, PreparedBy, ReviewedBy, ApprovedBy, UploadedBy from t_mgmt_documents where idMgmt='" + sidMgmt + "'");
+                DataSet dsDocument = objGlobalData.Getdetails("select dcr_no,DocRef,RevNo,DocName, PreparedBy, ReviewedBy, ApprovedBy, UploadedBy from t_mgmt_documents where idMgmt='" + sidMgmt + "'");
                 if (dsDocument.Tables.Count > 0 && dsDocument.Tables[0].Rows.Count > 0)
                 {
                     string sEmailid = objGlobalData.GetMultiHrEmpEmailIdById(dsDocument.Tables[0].Rows[0]["PreparedBy"].ToString());
@@ -396,6 +396,12 @@ namespace ISOStd.Models
                     sEmailid = sEmailid.TrimEnd(',');
                     sEmailid = sEmailid.TrimStart(',');
                     string sExtraMsg = "Internal Document has been approved, Document Name: " + dsDocument.Tables[0].Rows[0]["DocName"].ToString();
+
+                    sExtraMsg = sExtraMsg + "<br><br><br><tr><td colspan=3><b>DCR No :<b></td> <td colspan=3>" + objGlobalData.GetDCRNOById(dsDocument.Tables[0].Rows[0]["dcr_no"].ToString()) + "</td></tr>"
+                   + "<tr><td colspan=3><b>Document Ref:<b></td> <td colspan=3>" + dsDocument.Tables[0].Rows[0]["DocRef"].ToString() + "</td></tr>"
+                   + "<tr><td colspan=3><b>Rev No:<b></td> <td colspan=3>" + dsDocument.Tables[0].Rows[0]["RevNo"].ToString() + "</td></tr>"
+                   + "<tr><td colspan=3><b>Preparer:<b></td> <td colspan=3>" + objGlobalData.GetMultiHrEmpNameById(dsDocument.Tables[0].Rows[0]["PreparedBy"].ToString()) + "</td></tr>";
+
 
                     string sEmailCCList = objGlobalData.GetMultiHrEmpEmailIdById(dsDocument.Tables[0].Rows[0]["ApprovedBy"].ToString()) + "," + objGlobalData.GetMultiHrEmpEmailIdById(dsDocument.Tables[0].Rows[0]["ReviewedBy"].ToString()) + ","
                         + objGlobalData.GetMultiHrEmpEmailIdById(dsDocument.Tables[0].Rows[0]["UploadedBy"].ToString());
@@ -416,7 +422,7 @@ namespace ISOStd.Models
         {
             try
             {
-                DataSet dsDocument = objGlobalData.Getdetails("select DocName, PreparedBy, ReviewedBy, ApprovedBy, UploadedBy from t_mgmt_documents where idMgmt='" + sidMgmt + "'");
+                DataSet dsDocument = objGlobalData.Getdetails("select dcr_no,DocRef,RevNo,DocName, PreparedBy, ReviewedBy, ApprovedBy, UploadedBy from t_mgmt_documents where idMgmt='" + sidMgmt + "'");
                 if (dsDocument.Tables.Count > 0 && dsDocument.Tables[0].Rows.Count > 0)
                 {
                     string sEmailid = objGlobalData.GetMultiHrEmpEmailIdById(dsDocument.Tables[0].Rows[0]["PreparedBy"].ToString());
@@ -425,6 +431,12 @@ namespace ISOStd.Models
                     sEmailid = sEmailid.TrimEnd(',');
                     sEmailid = sEmailid.TrimStart(',');
                     string sExtraMsg = "Internal Document has been Rejected, Document Name: " + dsDocument.Tables[0].Rows[0]["DocName"].ToString();
+
+                    sExtraMsg = sExtraMsg + "<br><br><br><tr><td colspan=3><b>DCR No :<b></td> <td colspan=3>" + objGlobalData.GetDCRNOById(dsDocument.Tables[0].Rows[0]["dcr_no"].ToString()) + "</td></tr>"
+                + "<tr><td colspan=3><b>Document Ref:<b></td> <td colspan=3>" + dsDocument.Tables[0].Rows[0]["DocRef"].ToString() + "</td></tr>"
+                + "<tr><td colspan=3><b>Rev No:<b></td> <td colspan=3>" + dsDocument.Tables[0].Rows[0]["RevNo"].ToString() + "</td></tr>"
+                + "<tr><td colspan=3><b>Preparer:<b></td> <td colspan=3>" + objGlobalData.GetMultiHrEmpNameById(dsDocument.Tables[0].Rows[0]["PreparedBy"].ToString()) + "</td></tr>";
+
 
                     string sEmailCCList = objGlobalData.GetMultiHrEmpEmailIdById(dsDocument.Tables[0].Rows[0]["ApprovedBy"].ToString()) + "," + objGlobalData.GetMultiHrEmpEmailIdById(dsDocument.Tables[0].Rows[0]["ReviewedBy"].ToString()) + ","
                         + objGlobalData.GetMultiHrEmpEmailIdById(dsDocument.Tables[0].Rows[0]["UploadedBy"].ToString());
@@ -502,7 +514,7 @@ namespace ISOStd.Models
         {
             try
             {
-                DataSet dsDocument = objGlobalData.Getdetails("select DocName, PreparedBy, ReviewedBy, ApprovedBy, UploadedBy from t_mgmt_documents where idMgmt='" + sidMgmt + "'");
+                DataSet dsDocument = objGlobalData.Getdetails("select dcr_no,DocRef,RevNo,DocName, PreparedBy, ReviewedBy, ApprovedBy, UploadedBy from t_mgmt_documents where idMgmt='" + sidMgmt + "'");
                 if (dsDocument.Tables.Count > 0 && dsDocument.Tables[0].Rows.Count > 0)
                 {
                     string sEmailid = objGlobalData.GetMultiHrEmpEmailIdById(dsDocument.Tables[0].Rows[0]["ApprovedBy"].ToString());
@@ -511,6 +523,12 @@ namespace ISOStd.Models
                     sEmailid = sEmailid.TrimEnd(',');
                     sEmailid = sEmailid.TrimStart(',');
                     string sExtraMsg = "Internal Document has been Reviewed, Document Name: " + dsDocument.Tables[0].Rows[0]["DocName"].ToString();
+
+                    sExtraMsg = sExtraMsg + "<br><br><br><tr><td colspan=3><b>DCR No :<b></td> <td colspan=3>" + objGlobalData.GetDCRNOById(dsDocument.Tables[0].Rows[0]["dcr_no"].ToString()) + "</td></tr>"
+               + "<tr><td colspan=3><b>Document Ref:<b></td> <td colspan=3>" + dsDocument.Tables[0].Rows[0]["DocRef"].ToString() + "</td></tr>"
+               + "<tr><td colspan=3><b>Rev No:<b></td> <td colspan=3>" + dsDocument.Tables[0].Rows[0]["RevNo"].ToString() + "</td></tr>"
+               + "<tr><td colspan=3><b>Preparer:<b></td> <td colspan=3>" + objGlobalData.GetMultiHrEmpNameById(dsDocument.Tables[0].Rows[0]["PreparedBy"].ToString()) + "</td></tr>";
+
 
                     string sEmailCCList = objGlobalData.GetMultiHrEmpEmailIdById(dsDocument.Tables[0].Rows[0]["ApprovedBy"].ToString()) + "," + objGlobalData.GetMultiHrEmpEmailIdById(dsDocument.Tables[0].Rows[0]["ReviewedBy"].ToString()) + ","
                         + objGlobalData.GetMultiHrEmpEmailIdById(dsDocument.Tables[0].Rows[0]["UploadedBy"].ToString());
@@ -531,7 +549,7 @@ namespace ISOStd.Models
         {
             try
             {
-                DataSet dsDocument = objGlobalData.Getdetails("select DocName, PreparedBy, ReviewedBy, ApprovedBy, UploadedBy from t_mgmt_documents where idMgmt='" + sidMgmt + "'");
+                DataSet dsDocument = objGlobalData.Getdetails("select dcr_no,DocRef,RevNo,DocName, PreparedBy, ReviewedBy, ApprovedBy, UploadedBy from t_mgmt_documents where idMgmt='" + sidMgmt + "'");
                 if (dsDocument.Tables.Count > 0 && dsDocument.Tables[0].Rows.Count > 0)
                 {
                     string sEmailid = objGlobalData.GetMultiHrEmpEmailIdById(dsDocument.Tables[0].Rows[0]["ApprovedBy"].ToString());
@@ -540,6 +558,12 @@ namespace ISOStd.Models
                     sEmailid = sEmailid.TrimEnd(',');
                     sEmailid = sEmailid.TrimStart(',');
                     string sExtraMsg = "Internal Document Review has been Rejected, Document Name: " + dsDocument.Tables[0].Rows[0]["DocName"].ToString();
+                    sExtraMsg = sExtraMsg + "<br><br><br><tr><td colspan=3><b>DCR No :<b></td> <td colspan=3>" + objGlobalData.GetDCRNOById(dsDocument.Tables[0].Rows[0]["dcr_no"].ToString()) + "</td></tr>"
+               + "<tr><td colspan=3><b>Document Ref:<b></td> <td colspan=3>" + dsDocument.Tables[0].Rows[0]["DocRef"].ToString() + "</td></tr>"
+               + "<tr><td colspan=3><b>Rev No:<b></td> <td colspan=3>" + dsDocument.Tables[0].Rows[0]["RevNo"].ToString() + "</td></tr>"
+               + "<tr><td colspan=3><b>Preparer:<b></td> <td colspan=3>" + objGlobalData.GetMultiHrEmpNameById(dsDocument.Tables[0].Rows[0]["PreparedBy"].ToString()) + "</td></tr>";
+
+
 
                     string sEmailCCList = objGlobalData.GetMultiHrEmpEmailIdById(dsDocument.Tables[0].Rows[0]["ApprovedBy"].ToString()) + "," + objGlobalData.GetMultiHrEmpEmailIdById(dsDocument.Tables[0].Rows[0]["ReviewedBy"].ToString()) + ","
                         + objGlobalData.GetMultiHrEmpEmailIdById(dsDocument.Tables[0].Rows[0]["UploadedBy"].ToString());

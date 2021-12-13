@@ -25,6 +25,7 @@
     DataSet CAList = new DataSet();
     DataSet Verification = new DataSet();
     DataSet VerificationList = new DataSet();
+    DataSet NcStatus = new DataSet();
 
     //Disposition
     if (ViewBag.Disposition != null)
@@ -73,6 +74,10 @@
         VerificationList = ViewBag.VerificationList;
     }
 
+    if (ViewBag.NcStatus != null)
+    {
+        NcStatus = ViewBag.NcStatus;
+    }
     Layout = "~/Views/Shared/_PrintLayout.cshtml";
 
 
@@ -410,6 +415,53 @@
                                     <td>@objNCList.lstNC[index].nc_related_aspect</td>
                                     <td>@objNCList.lstNC[index].nc_related_explain</td>
                                     <td>@objNCList.lstNC[index].nc_related_doc</td>
+
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            @if (NcStatus != null && NcStatus.Tables.Count > 0 && NcStatus.Tables[0].Rows.Count > 0)
+            {
+                <br />
+                <h2>NC Approve Status</h2>
+                <div>
+                    <table class="table table-lg table-bordered">
+                        <thead>
+                            <tr class="bg-blue font-weight-bold">
+
+                                <th>Sl No</th>
+                                <th>NC Issued To</th>
+                                <th>NC Status</th>
+                                <th>Date</th>
+                                <th>Comments if Rejected</th>
+
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0, j = 1; i < NcStatus.Tables[0].Rows.Count; i++, j++)
+                            {
+                                <tr class="row">
+                                    <td>
+                                        @j
+                                    </td>
+                                    <td>
+                                        @Obj.GetMultiHrEmpNameById(NcStatus.Tables[0].Rows[i]["nc_issuedto"].ToString())
+                                    </td>
+                                    <td>
+                                        @(NcStatus.Tables[0].Rows[i]["nc_stauts"].ToString())
+                                    </td>
+                                    <td>
+                                        @if (NcStatus.Tables[0].Rows[i]["nc_approve_reject_date"].ToString() != null && @Convert.ToDateTime(NcStatus.Tables[0].Rows[i]["nc_approve_reject_date"].ToString()) > Convert.ToDateTime("01/01/0001"))
+                                        {
+                                            @Convert.ToDateTime(NcStatus.Tables[0].Rows[i]["nc_approve_reject_date"].ToString()).ToString("dd/MM/yyyy hh:mm:ss")
+                                        }
+                                    </td>
+                                    <td>
+                                        @NcStatus.Tables[0].Rows[i]["nc_reject_comment"].ToString()
+                                    </td>
 
                                 </tr>
                             }

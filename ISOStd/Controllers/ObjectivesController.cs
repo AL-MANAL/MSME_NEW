@@ -1207,7 +1207,7 @@ namespace ISOStd.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult ObjectivesEdit(ObjectivesModels objModel, FormCollection form, HttpPostedFileBase Action_Plan)
+        public ActionResult ObjectivesEdit(ObjectivesModels objModel, FormCollection form, IEnumerable<HttpPostedFileBase> Action_Plan)
         {
             string sView = form["view"];
             try
@@ -1268,23 +1268,64 @@ namespace ISOStd.Controllers
                     objModel.Target_Date = dateValue;
                 }
 
-                if (Action_Plan != null && Action_Plan.ContentLength > 0)
+                //if (Action_Plan != null && Action_Plan.ContentLength > 0)
+                //{
+                //    try
+                //    {
+                //        string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/Objectives"), Path.GetFileName(Action_Plan.FileName));
+                //        string sFilename = Path.GetFileName(spath), sFilepath = Path.GetDirectoryName(spath);
+                //        Action_Plan.SaveAs(sFilepath + "/" + DateTime.Now.ToString("ddMMyyyyHHmm") + sFilename);
+                //        objModel.Action_Plan = "~/DataUpload/MgmtDocs/Objectives/" + DateTime.Now.ToString("ddMMyyyyHHmm") + sFilename;
+                //    }
+                //    catch (Exception ex)
+                //    {
+                //        ViewBag.Message = "ERROR:" + ex.Message.ToString();
+                //    }
+                //}
+                //else
+                //{
+                //    ViewBag.Message = "You have not specified a file.";
+                //}
+
+                IList<HttpPostedFileBase> obj_uploadList = (IList<HttpPostedFileBase>)Action_Plan;
+                string QCDelete = Request.Form["QCDocsValselectall"];
+
+                if (obj_uploadList[0] != null)
                 {
-                    try
+                    objModel.Action_Plan = "";
+                    foreach (var file in Action_Plan)
                     {
-                        string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/Objectives"), Path.GetFileName(Action_Plan.FileName));
-                        string sFilename = Path.GetFileName(spath), sFilepath = Path.GetDirectoryName(spath);
-                        Action_Plan.SaveAs(sFilepath + "/" + DateTime.Now.ToString("ddMMyyyyHHmm") + sFilename);
-                        objModel.Action_Plan = "~/DataUpload/MgmtDocs/Objectives/" + DateTime.Now.ToString("ddMMyyyyHHmm") + sFilename;
+                        try
+                        {
+                            string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/Objectives"), Path.GetFileName(file.FileName));
+                            string sFilename = "OBJ" + "_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath), sFilepath = Path.GetDirectoryName(spath);
+                            file.SaveAs(sFilepath + "/" + sFilename);
+                            objModel.Action_Plan = objModel.Action_Plan + "," + "~/DataUpload/MgmtDocs/Objectives/" + sFilename;
+                        }
+                        catch (Exception ex)
+                        {
+                            objGlobaldata.AddFunctionalLog("Exception in ObjectivesEdit-upload: " + ex.ToString());
+
+                        }
                     }
-                    catch (Exception ex)
-                    {
-                        ViewBag.Message = "ERROR:" + ex.Message.ToString();
-                    }
+                    objModel.Action_Plan = objModel.Action_Plan.Trim(',');
                 }
                 else
                 {
                     ViewBag.Message = "You have not specified a file.";
+                }
+                if (form["QCDocsVal"] != null && form["QCDocsVal"] != "")
+                {
+                    objModel.Action_Plan = objModel.Action_Plan + "," + form["QCDocsVal"];
+                    objModel.Action_Plan = objModel.Action_Plan.Trim(',');
+                }
+                else if (form["QCDocsVal"] == null && QCDelete != null && obj_uploadList[0] == null)
+                {
+                    objModel.Action_Plan = null;
+                }
+                else if (form["QCDocsVal"] == null && obj_uploadList[0] == null)
+                {
+                    objModel.Action_Plan = null;
                 }
 
                 if (objModel.FunUpdateObjectives(objModel))
@@ -2874,23 +2915,41 @@ namespace ISOStd.Controllers
             return Json(lstEmp);
         }
 
+        //[HttpPost]
+        //public JsonResult UploadDocument()
+        //{
+        //    HttpFileCollectionBase Action_Plan1 = Request.Files;
+
+        //    for (int i = 0; i < Request.Files.Count; i++)
+        //    {
+        //        var file = Request.Files[i];
+
+        //        string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/Objectives"), Path.GetFileName(file.FileName));
+        //        string sFilename = Path.GetFileName(spath), sFilepath = Path.GetDirectoryName(spath);
+        //        file.SaveAs(sFilepath + "/" + "ActionPlan" + DateTime.Now.ToString("ddMMyyyyHHmm") + sFilename);
+        //        return Json("~/DataUpload/MgmtDocs/Objectives/" + "ActionPlan" + DateTime.Now.ToString("ddMMyyyyHHmm") + sFilename);
+
+        //    }
+        //    return Json("");//Failed return null value
+        //}
         [HttpPost]
         public JsonResult UploadDocument()
         {
-            HttpFileCollectionBase Action_Plan1 = Request.Files;
-
+            HttpFileCollectionBase upload = Request.Files;
+            DocumentTrackingModels obj = new DocumentTrackingModels();
             for (int i = 0; i < Request.Files.Count; i++)
             {
                 var file = Request.Files[i];
-
                 string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/Objectives"), Path.GetFileName(file.FileName));
                 string sFilename = Path.GetFileName(spath), sFilepath = Path.GetDirectoryName(spath);
-                file.SaveAs(sFilepath + "/" + "ActionPlan" + DateTime.Now.ToString("ddMMyyyyHHmm") + sFilename);
-                return Json("~/DataUpload/MgmtDocs/Objectives/" + "ActionPlan" + DateTime.Now.ToString("ddMMyyyyHHmm") + sFilename);
-            }
-            return Json("");//Failed return null value
-        }
+                file.SaveAs(sFilepath + "/" + sFilename);
+                //return Json("~/DataUpload/MgmtDocs/Surveillance/" + "Surveillance" + DateTime.Now.ToString("ddMMyyyyHHmm") + sFilename);
+                obj.upload = obj.upload + "," + "~/DataUpload/MgmtDocs/Objectives/" + sFilename;
 
+            }
+            obj.upload = obj.upload.Trim(',');
+            return Json(obj.upload);
+        }
         [HttpPost]
         public JsonResult doesObjRefExist(string Obj_Ref)
         {

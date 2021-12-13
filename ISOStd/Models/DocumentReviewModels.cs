@@ -271,7 +271,7 @@ namespace ISOStd.Models
             {
 
                 string sSqlstmt = "update t_document_review set frequency='" + objModels.frequency
-                     + "', criteria='" + objModels.criteria + "', approvedby='" + objModels.approvedby + "'";
+                     + "', criteria='" + objModels.criteria + "', approvedby='" + objModels.approvedby + "', approve_status='0', approve_date=NULL";
 
                 if (objModels.review_date != null && objModels.review_date > Convert.ToDateTime("01/01/0001"))
                 {
@@ -279,7 +279,12 @@ namespace ISOStd.Models
                 }
                               
                 sSqlstmt = sSqlstmt + " where id_doc_review='" + objModels.id_doc_review + "'";
-                return objGlobaldata.ExecuteQuery(sSqlstmt);                
+                if(objGlobaldata.ExecuteQuery(sSqlstmt))
+                {
+                    SendReviewEmail(Convert.ToInt32(id_doc_review));
+                    return true;
+                }
+               
             }
             catch (Exception ex)
             {

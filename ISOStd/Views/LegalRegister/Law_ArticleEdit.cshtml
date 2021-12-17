@@ -161,28 +161,52 @@
                     <tbody>
                         <tr class="row">
                             <th class="col">Article Date</th>
-                            <th class="col">Article Number</th>
-                            <th class="col">Article Details</th>
+                            <th class="col">ACT/RULE/CLAUSE/SECTION </th>
+                            <th class="col">Applicable Requirement</th>
+                            <th class="col">Compliance to be done</th>
+                            <th class="col">Monitoring</th>
                             <th class="col">Record Form Number</th>
                             <th class="col">Compliance evaluation frequency</th>
                         </tr>
                         <tr class="row">
                             <td class="col">
-                                <input class="form-control" type='date' id='article_date' name="article_date" />
+                                @*<input class="form-control" type='date' id='article_date' name="article_date" />*@
+                                @if (Model.Eve_date > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    <input type="date" id="article_date" name="article_date" value="@Model.Eve_date.ToString("yyyy-MM-dd")" class="form-control" />
+                                }
+                                else
+                                {
+                                    <input type="date" id="article_date" name="article_date" required class="form-control" />
+                                }
                                 @Html.ValidationMessageFor(model => model.article_date)
                                 <span class="field-validation-error"><span id="article_date-message" style="display: none;" for="basic">Please select Article Date.</span></span>
                             </td>
                             <td class="col">
                                 <input class="form-control" type='text' id='article_no' name="article_no" />
                                 @Html.ValidationMessageFor(model => model.article_no)
-                                <span class="field-validation-error"><span id="article_no-message" style="display: none;" for="basic">Please write Article Number required.</span></span>
+                                <span class="field-validation-error"><span id="article_no-message" style="display: none;" for="basic">Please write ACT/RULE/CLAUSE/SECTION  required.</span></span>
                             </td>
                             <td class="col">
                                 <input class="form-control" type='text' id='article_detail' name="article_detail" />
                                 @Html.ValidationMessageFor(model => model.article_detail)
 
-                                <span class="field-validation-error"><span id="article_detail-message" style="display: none;" for="basic">Please write Article Details.</span></span>
+                                <span class="field-validation-error"><span id="article_detail-message" style="display: none;" for="basic">Please write Applicable Requirement.</span></span>
                             </td>
+
+                            <td class="col">
+                                <input class="form-control" type='text' id='compliance_done' name="compliance_done" />
+                                @Html.ValidationMessageFor(model => model.compliance_done)
+
+                                <span class="field-validation-error"><span id="compliance_done-message" style="display: none;" for="basic">Please Enter.</span></span>
+                            </td>
+                            <td class="col">
+                                <input class="form-control" type='text' id='monitoring' name="monitoring" />
+                                @Html.ValidationMessageFor(model => model.monitoring)
+
+                                <span class="field-validation-error"><span id="monitoring-message" style="display: none;" for="basic">Please Enter.</span></span>
+                            </td>
+
                             <td class="col">
                                 <input class="form-control" type='text' id='article_recordno' name="article_recordno" />
                                 @Html.ValidationMessageFor(model => model.article_recordno)
@@ -234,8 +258,10 @@
                                 <tr class="bg-blue">
                                     <th>Action</th>
                                     <th>Article Date</th>
-                                    <th>Article Number</th>
-                                    <th>Article Details</th>                                  
+                                    <th>ACT/RULE/CLAUSE/SECTION </th>
+                                    <th>Applicable Requirement</th>  
+                                    <th>Compliance to be done</th>
+                                    <th>Monitoring</th>                                
                                     <th>Record Form Number</th>
                                     <th>Compliance evaluation frequency</th>
                                 </tr>
@@ -257,6 +283,13 @@
                                 <td>
                                     <input type='hidden' id='article_detail @index' name="article_detail @index" value='@LRList.LegalRegisterMList[index].article_detail'>@LRList.LegalRegisterMList[index].article_detail
                                 </td>
+                                <td>
+                                    <input type='hidden' id='compliance_done @index' name="compliance_done @index" value='@LRList.LegalRegisterMList[index].compliance_done'>@LRList.LegalRegisterMList[index].compliance_done
+                                </td>
+                                <td>
+                                    <input type='hidden' id='monitoring @index' name="monitoring @index" value='@LRList.LegalRegisterMList[index].monitoring'>@LRList.LegalRegisterMList[index].monitoring
+                                </td>
+
                                 <td>
                                     <input type='hidden' id='article_recordno @index' name="article_recordno @index" value='@LRList.LegalRegisterMList[index].article_recordno'>@LRList.LegalRegisterMList[index].article_recordno
                                 </td>
@@ -488,7 +521,9 @@
             var cell2 = row.insertCell(2);
             var cell3 = row.insertCell(3);
             var cell4 = row.insertCell(4);
-            var cell5 = row.insertCell(5);           
+            var cell5 = row.insertCell(5);  
+            var cell6 = row.insertCell(6);         
+            var cell7 = row.insertCell(7);         
             
        
             var article_no = $('#article_no').val();
@@ -497,13 +532,17 @@
             var article_recordno = $('#article_recordno').val();
             var frequency_eval = $('#frequency_eval').val();
             var frequency_evalText = $("#frequency_eval option:selected").text();
+            var compliance_done = $('#compliance_done').val();
+            var monitoring = $('#monitoring').val();
 
             cell0.innerHTML = " <img src='@Url.Content("~/images/cancel.png")' onclick='deleteRow1(this)' style='cursor:pointer; padding-right: 5px;'/>Remove";
             cell1.innerHTML = "<input type='hidden' id='article_date " + cnt + "' name='article_date " + cnt + "' value='" + article_date + "'>" + article_date;
             cell2.innerHTML = "<input type='hidden' id='article_no " + cnt + "' name='article_no " + cnt + "' value='" + article_no + "'>" + article_no;
             cell3.innerHTML = "<input type='hidden' id='article_detail " + cnt + "' name='article_detail " + cnt + "' value='" + article_detail + "'>" + article_detail;
-            cell4.innerHTML = "<input type='hidden' id='article_recordno " + cnt + "' name='article_recordno " + cnt + "' value='" + article_recordno + "'>" + article_recordno;
-            cell5.innerHTML = "<input type='hidden' id='frequency_eval " + cnt + "' name='frequency_eval " + cnt + "' value='" + frequency_eval + "'>" + frequency_evalText;
+            cell4.innerHTML = "<input type='hidden' id='compliance_done " + cnt + "' name='compliance_done " + cnt + "' value='" + compliance_done + "'>" + compliance_done;
+            cell5.innerHTML = "<input type='hidden' id='monitoring " + cnt + "' name='monitoring " + cnt + "' value='" + monitoring + "'>" + monitoring;
+            cell6.innerHTML = "<input type='hidden' id='article_recordno " + cnt + "' name='article_recordno " + cnt + "' value='" + article_recordno + "'>" + article_recordno;
+            cell7.innerHTML = "<input type='hidden' id='frequency_eval " + cnt + "' name='frequency_eval " + cnt + "' value='" + frequency_eval + "'>" + frequency_evalText;
 
             cnt++;
             document.getElementById("itemcount").value = cnt;
@@ -550,6 +589,24 @@
                 ssnMessage = $('#article_detail-message');
                 ssnMessage.hide();
             }
+            if (document.getElementById("compliance_done").value == "") {
+                ssnMessage = $('#compliance_done-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#compliance_done-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("monitoring").value == "") {
+                ssnMessage = $('#monitoring-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#monitoring-message');
+                ssnMessage.hide();
+            }
             if (document.getElementById("article_recordno").value == "") {
                 ssnMessage = $('#article_recordno-message');
                 ssnMessage.show();
@@ -572,9 +629,11 @@
         }
 
         function ResetControl() {
-            document.getElementById("article_date").value = "";
+            //document.getElementById("article_date").value = "";
             document.getElementById("article_no").value = "";
             document.getElementById("article_detail").value = "";
+            document.getElementById("compliance_done").value = "";
+            document.getElementById("monitoring").value = "";
             document.getElementById("article_recordno").value = "";
             $("#frequency_eval").val('').trigger('change');
         }

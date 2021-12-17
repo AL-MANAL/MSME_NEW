@@ -85,8 +85,6 @@
 
             <!-- Basic layout-->
             <div class="card">
-
-
                 <div class="card-header header-elements-inline">
                     <h5 class="card-title">Add / Update Performance Evaluation Questions </h5>
                     <div class="header-elements">
@@ -104,7 +102,6 @@
                         @Html.ValidationSummary(true)
                         <input type="hidden" id="branch" name="branch" value="@ViewBag.Branch_name" />
                         <div class="container-fluid">
-
                             <table class="table table-lg">
 
                                 <tbody>
@@ -140,6 +137,73 @@
                                             </select>
                                         </td>
                                     </tr>
+
+                                    <tr>
+                                        <td>
+                                            @Html.LabelFor(m => m.eval_period)
+                                        </td>
+                                        <td>
+                                            <select class="form-control select-fixed-single" data-fouc id="eval_period" name="eval_period" onchange="GetQuestions()" required>
+                                                <option value='' hidden>Select</option>
+                                                @if (ViewBag.eval_period != null && ViewBag.eval_period_Id != null)
+                                                {
+                                                    foreach (var item in ViewBag.eval_period)
+                                                    {
+                                                        if (item.Value == ViewBag.eval_period_Id)
+                                                        {
+                                                            <option value="@item.Value" selected>@item.Text</option>
+                                                        }
+                                                        else
+                                                        {
+                                                            <option value="@item.Value">@item.Text</option>
+                                                        }
+                                                    }
+                                                }
+
+                                                else if (ViewBag.eval_period != null)
+                                                {
+                                                    foreach (var item in ViewBag.eval_period)
+                                                    {
+                                                        <option value='@item.Value'>@item.Text</option>
+                                                    }
+                                                }
+                                            </select>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>
+                                            @Html.LabelFor(m => m.eval_category)
+                                        </td>
+                                        <td>
+                                            <select class="form-control select-fixed-single" data-fouc id="eval_category" name="eval_category" onchange="GetQuestions()" required>
+                                                <option value='' hidden>Select</option>
+                                                @if (ViewBag.eval_category != null && ViewBag.eval_category_Id != null)
+                                                {
+                                                    foreach (var item in ViewBag.eval_category)
+                                                    {
+                                                        if (item.Value == ViewBag.eval_category_Id)
+                                                        {
+                                                            <option value="@item.Value" selected>@item.Text</option>
+                                                        }
+                                                        else
+                                                        {
+                                                            <option value="@item.Value">@item.Text</option>
+                                                        }
+                                                    }
+                                                }
+
+                                                else if (ViewBag.eval_category != null)
+                                                {
+                                                    foreach (var item in ViewBag.eval_category)
+                                                    {
+                                                        <option value='@item.Value'>@item.Text</option>
+                                                    }
+                                                }
+                                            </select>
+                                        </td>
+                                    </tr>
+
                                     <tr>
                                         <td>
                                             @Html.LabelFor(model => model.Questions)
@@ -399,6 +463,8 @@
          function GetQuestions() {
           
              var Section = $('#Section').val();
+             var eval_period = $('#eval_period').val();
+             var eval_category = $('#eval_category').val();
              var branch_name = document.getElementById("branch").value;
              //var branch = document.getElementById("branch").value;
              if (Section != "") {
@@ -406,7 +472,7 @@
                      url: '@Url.Action("GetPerformanceQuestions", "EmployeePerformanceEval")',
                      type: 'POST',
                      dataType: "json",
-                     data: { 'Section': Section,'branch': branch_name},
+                     data: { 'Section': Section, 'branch': branch_name, 'eval_period': eval_period, 'eval_category': eval_category },
                      success: function (result) {
 
                          var table = document.getElementById("tblMeetingList");

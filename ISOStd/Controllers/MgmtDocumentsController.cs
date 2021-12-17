@@ -963,7 +963,8 @@ namespace ISOStd.Controllers
                 }
                 if (objMgmtDocuments.FunMgmtDocumentsReviewApproveOrReject(idMgmt, iStatus, fsSource, filename, DocName, DocRef))
                 {
-                    TempData["Successdata"] = "Document Review " + sStatus + " successfully";
+                    TempData["Successdata"] = "Document Review Status Updated Successfully";
+                    //TempData["Successdata"] = "Document Review " + sStatus + " successfully";
                 }
                 else
                 {

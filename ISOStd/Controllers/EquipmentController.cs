@@ -240,8 +240,8 @@ namespace ISOStd.Controllers
 
                 string sSqlstmt = "select a.Equipment_Id, Equipment_serial_no, ifnull(max(Next_Maint_Date), '0001-01-01') as Next_Maint_Date,Equipment_Name," +
                     "Equipment_Application,Source_of_calibration,Freq_of_calibration,Commissioning_Date, Manufacturer,Equipment_status, model_no,Department," +
-                    "RespPerson,equp_type,location,branch,Equipment_location from t_equipment a left outer join t_equpiment_preventive_maint b on a.Equipment_Id = b.Equipment_Id where a.Active = 1" +
-                    " group by a.Equipment_Id, Equipment_serial_no,Equipment_Name,Equipment_Application, Equipment_status, model_no, Department,RespPerson,equp_type,location";
+                    "RespPerson,equp_type,location,branch,Equipment_location from t_equipment a left outer join t_equpiment_preventive_maint b on a.Equipment_Id = b.Equipment_Id where a.Active = 1";
+
 
                 string sSearchtext = "";
 
@@ -298,7 +298,7 @@ namespace ISOStd.Controllers
                     sSearchtext = sSearchtext + " and find_in_set('" + sBranch_name + "', branch)";
                 }
 
-                sSqlstmt = sSqlstmt + sSearchtext + " order by Equipment_Name asc";
+                sSqlstmt = sSqlstmt + sSearchtext + " group by a.Equipment_Id, Equipment_serial_no,Equipment_Name,Equipment_Application, Equipment_status, model_no, Department,RespPerson,equp_type,location order by Equipment_Id desc";
 
                 //ViewBag.Equipment_status = new string[] { "Active", "In Active" };
                 ViewBag.Equipment_status = objEquip.GetMultiCalibrationStatusList();
@@ -826,9 +826,14 @@ namespace ISOStd.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult AddCalibration(CalibrationModels objCalibrationModels, FormCollection form, HttpPostedFileBase fileCert, HttpPostedFileBase calibration_report_ref)
+        public ActionResult AddCalibration(CalibrationModels objCalibrationModels, FormCollection form, IEnumerable<HttpPostedFileBase> calibration_certificate, IEnumerable<HttpPostedFileBase> calibration_report_ref)
         {
             ViewBag.SubMenutype = "Calibration";
+
+            IList<HttpPostedFileBase> calibration_certificateList = (IList<HttpPostedFileBase>)calibration_certificate;
+            IList<HttpPostedFileBase> calibration_report_refList = (IList<HttpPostedFileBase>)calibration_report_ref;
+
+
             try
             {
                 //if (objCalibrationModels != null)
@@ -854,7 +859,11 @@ namespace ISOStd.Controllers
                     {
                         Notificationval = 30 * Notificationval;
                     }
-                    objCalibrationModels.NotificationDays = Notificationval;
+                    else if (objCalibrationModels.NotificationPeriod == "Days" && int.TryParse(objCalibrationModels.NotificationValue, out Notificationval))
+                    {
+                        Notificationval =Convert.ToInt32(objCalibrationModels.NotificationValue);
+                    }
+                        objCalibrationModels.NotificationDays = Notificationval;
 
                     DateTime dateValue;
 
@@ -863,51 +872,96 @@ namespace ISOStd.Controllers
                         objCalibrationModels.due_date = dateValue;
                     }
 
-                    if (fileCert != null && fileCert.ContentLength > 0)
-                    {
-                        try
-                        {
-                            string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/Equipment"), Path.GetFileName(fileCert.FileName));
-                            string sFilename = objCalibrationModels.Equipment_Id + "Cert_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath);
-                            string sFilepath = Path.GetDirectoryName(spath);
+                    //if (fileCert != null && fileCert.ContentLength > 0)
+                    //{
+                    //    try
+                    //    {
+                    //        string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/Equipment"), Path.GetFileName(fileCert.FileName));
+                    //        string sFilename = objCalibrationModels.Equipment_Id + "Cert_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath);
+                    //        string sFilepath = Path.GetDirectoryName(spath);
 
-                            fileCert.SaveAs(sFilepath + "/" + sFilename);
-                            objCalibrationModels.calibration_certificate = "~/DataUpload/MgmtDocs/Equipment/" + sFilename;
-                            ViewBag.Message = "File uploaded successfully";
-                        }
-                        catch (Exception ex)
+                    //        fileCert.SaveAs(sFilepath + "/" + sFilename);
+                    //        objCalibrationModels.calibration_certificate = "~/DataUpload/MgmtDocs/Equipment/" + sFilename;
+                    //        ViewBag.Message = "File uploaded successfully";
+                    //    }
+                    //    catch (Exception ex)
+                    //    {
+                    //        objGlobaldata.AddFunctionalLog("Exception in AddCalibration: " + ex.ToString());
+                    //        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                    //    }
+                    //}
+                    //else
+                    //{
+                    //    ViewBag.Message = "You have not specified a file.";
+                    //}
+                    if (calibration_certificateList[0] != null)
+                    {
+                        objCalibrationModels.calibration_certificate = "";
+                        foreach (var file in calibration_certificate)
                         {
-                            objGlobaldata.AddFunctionalLog("Exception in AddCalibration: " + ex.ToString());
-                            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                            try
+                            {
+                                string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/Equipment"), Path.GetFileName(file.FileName));
+                                string sFilename = "Cert" + "_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath), sFilepath = Path.GetDirectoryName(spath);
+                                file.SaveAs(sFilepath + "/" + sFilename);
+                                objCalibrationModels.calibration_certificate = objCalibrationModels.calibration_certificate + "," + "~/DataUpload/MgmtDocs/Equipment/" + sFilename;
+                            }
+                            catch (Exception ex)
+                            {
+                                objGlobaldata.AddFunctionalLog("Exception in AddCalibration: " + ex.ToString());
+                            }
                         }
+                        objCalibrationModels.calibration_certificate = objCalibrationModels.calibration_certificate.Trim(',');
                     }
                     else
                     {
                         ViewBag.Message = "You have not specified a file.";
                     }
-
-                    if (calibration_report_ref != null && calibration_report_ref.ContentLength > 0)
+                    if (calibration_report_refList[0] != null)
                     {
-                        try
+                        objCalibrationModels.calibration_report_ref = "";
+                        foreach (var file in calibration_report_ref)
                         {
-                            string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/Equipment"), Path.GetFileName(calibration_report_ref.FileName));
-                            string sFilename = objCalibrationModels.Equipment_Id + "Report_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath);
-                            string sFilepath = Path.GetDirectoryName(spath);
-
-                            calibration_report_ref.SaveAs(sFilepath + "/" + sFilename);
-                            objCalibrationModels.calibration_report_ref = "~/DataUpload/MgmtDocs/Equipment/" + sFilename;
-                            ViewBag.Message = "File uploaded successfully";
+                            try
+                            {
+                                string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/Equipment"), Path.GetFileName(file.FileName));
+                                string sFilename = "Report" + "_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath), sFilepath = Path.GetDirectoryName(spath);
+                                file.SaveAs(sFilepath + "/" + sFilename);
+                                objCalibrationModels.calibration_report_ref = objCalibrationModels.calibration_report_ref + "," + "~/DataUpload/MgmtDocs/Equipment/" + sFilename;
+                            }
+                            catch (Exception ex)
+                            {
+                                objGlobaldata.AddFunctionalLog("Exception in AddCalibration: " + ex.ToString());
+                            }
                         }
-                        catch (Exception ex)
-                        {
-                            objGlobaldata.AddFunctionalLog("Exception in AddCalibration: " + ex.ToString());
-                            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                        }
+                        objCalibrationModels.calibration_report_ref = objCalibrationModels.calibration_report_ref.Trim(',');
                     }
                     else
                     {
                         ViewBag.Message = "You have not specified a file.";
                     }
+                    //if (calibration_report_ref != null && calibration_report_ref.ContentLength > 0)
+                    //{
+                    //    try
+                    //    {
+                    //        string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/Equipment"), Path.GetFileName(calibration_report_ref.FileName));
+                    //        string sFilename = objCalibrationModels.Equipment_Id + "Report_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath);
+                    //        string sFilepath = Path.GetDirectoryName(spath);
+
+                    //        calibration_report_ref.SaveAs(sFilepath + "/" + sFilename);
+                    //        objCalibrationModels.calibration_report_ref = "~/DataUpload/MgmtDocs/Equipment/" + sFilename;
+                    //        ViewBag.Message = "File uploaded successfully";
+                    //    }
+                    //    catch (Exception ex)
+                    //    {
+                    //        objGlobaldata.AddFunctionalLog("Exception in AddCalibration: " + ex.ToString());
+                    //        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                    //    }
+                    //}
+                    //else
+                    //{
+                    //    ViewBag.Message = "You have not specified a file.";
+                    //}
 
                     if (objCalibrationModels.FunAddCalibration(objCalibrationModels))
                     {
@@ -957,15 +1011,15 @@ namespace ISOStd.Controllers
 
                 if (branch_name != null && branch_name != "")
                 {
-                    sSearchtext = sSearchtext + " and tequp.branch='" + branch_name + "' ";
+                    sSearchtext = sSearchtext + " and tcal.branch='" + branch_name + "' ";
                     ViewBag.Branch_name = branch_name;
                 }
                 else
                 {
-                    sSearchtext = sSearchtext + " and tequp.branch='" + sBranch_name + "' ";
+                    sSearchtext = sSearchtext + " and tcal.branch='" + sBranch_name + "' ";
                 }
 
-                sSqlstmt = sSqlstmt + sSearchtext + " order by Equipment_Name asc";
+                sSqlstmt = sSqlstmt + sSearchtext + " order by calibration_id desc";
 
                 DataSet dsEquipmentList = objGlobaldata.Getdetails(sSqlstmt);
 
@@ -1395,13 +1449,94 @@ namespace ISOStd.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult CalibrationEdit(CalibrationModels objCalibrationModels, FormCollection form, HttpPostedFileBase fileCert, HttpPostedFileBase fileReport_ref)
+        public ActionResult CalibrationEdit(CalibrationModels objCalibrationModels, FormCollection form, IEnumerable<HttpPostedFileBase> calibration_certificate, IEnumerable<HttpPostedFileBase> calibration_report_ref)
         {
             ViewBag.SubMenutype = "Calibration";
             try
             {
+
                 if (objCalibrationModels != null)
                 {
+                    string QCDelete = Request.Form["QCDocsValselectall"];
+                    string QCDelete1 = Request.Form["QCDocsValselectall1"];
+
+                    IList<HttpPostedFileBase> calibration_certificateList = (IList<HttpPostedFileBase>)calibration_certificate;
+                    IList<HttpPostedFileBase> calibration_report_refList = (IList<HttpPostedFileBase>)calibration_report_ref;
+
+                    if (calibration_certificateList[0] != null)
+                    {
+                        objCalibrationModels.calibration_certificate = "";
+                        foreach (var file in calibration_certificate)
+                        {
+                            try
+                            {
+                                string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/Equipment"), Path.GetFileName(file.FileName));
+                                string sFilename = "Cert" + "_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath), sFilepath = Path.GetDirectoryName(spath);
+                                file.SaveAs(sFilepath + "/" + sFilename);
+                                objCalibrationModels.calibration_certificate = objCalibrationModels.calibration_certificate + "," + "~/DataUpload/MgmtDocs/Equipment/" + sFilename;
+                            }
+                            catch (Exception ex)
+                            {
+                                objGlobaldata.AddFunctionalLog("Exception in AddCalibration: " + ex.ToString());
+                            }
+                        }
+                        objCalibrationModels.calibration_certificate = objCalibrationModels.calibration_certificate.Trim(',');
+                    }
+                    else
+                    {
+                        ViewBag.Message = "You have not specified a file.";
+                    }
+                    if (form["QCDocsVal"] != null && form["QCDocsVal"] != "")
+                    {
+                        objCalibrationModels.calibration_certificate = objCalibrationModels.calibration_certificate + "," + form["QCDocsVal"];
+                        objCalibrationModels.calibration_certificate = objCalibrationModels.calibration_certificate.Trim(',');
+                    }
+                    else if (form["QCDocsVal"] == null && QCDelete != null && calibration_certificateList[0] == null)
+                    {
+                        objCalibrationModels.calibration_certificate = null;
+                    }
+                    else if (form["QCDocsVal"] == null && calibration_certificateList[0] == null)
+                    {
+                        objCalibrationModels.calibration_certificate = null;
+                    }
+
+                    if (calibration_report_refList[0] != null)
+                    {
+                        objCalibrationModels.calibration_report_ref = "";
+                        foreach (var file in calibration_report_ref)
+                        {
+                            try
+                            {
+                                string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/Equipment"), Path.GetFileName(file.FileName));
+                                string sFilename = "Report" + "_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath), sFilepath = Path.GetDirectoryName(spath);
+                                file.SaveAs(sFilepath + "/" + sFilename);
+                                objCalibrationModels.calibration_report_ref = objCalibrationModels.calibration_report_ref + "," + "~/DataUpload/MgmtDocs/Equipment/" + sFilename;
+                            }
+                            catch (Exception ex)
+                            {
+                                objGlobaldata.AddFunctionalLog("Exception in AddCalibration: " + ex.ToString());
+                            }
+                        }
+                        objCalibrationModels.calibration_report_ref = objCalibrationModels.calibration_report_ref.Trim(',');
+                    }
+                    else
+                    {
+                        ViewBag.Message = "You have not specified a file.";
+                    }
+                    if (form["QCDocsVal1"] != null && form["QCDocsVal1"] != "")
+                    {
+                        objCalibrationModels.calibration_report_ref = objCalibrationModels.calibration_report_ref + "," + form["QCDocsVal1"];
+                        objCalibrationModels.calibration_report_ref = objCalibrationModels.calibration_report_ref.Trim(',');
+                    }
+                    else if (form["QCDocsVal1"] == null && QCDelete1 != null && calibration_report_refList[0] == null)
+                    {
+                        objCalibrationModels.calibration_report_ref = null;
+                    }
+                    else if (form["QCDocsVal1"] == null && calibration_report_refList[0] == null)
+                    {
+                        objCalibrationModels.calibration_report_ref = null;
+                    }
+
                     objCalibrationModels.calibration_status = form["calibration_status"];
                     objCalibrationModels.Equipment_Id = form["Equipment_Id"];
 
@@ -1425,6 +1560,10 @@ namespace ISOStd.Controllers
                     {
                         Notificationval = 30 * Notificationval;
                     }
+                    else if (objCalibrationModels.NotificationPeriod == "Days" && int.TryParse(objCalibrationModels.NotificationValue, out Notificationval))
+                    {
+                        Notificationval = Convert.ToInt32(objCalibrationModels.NotificationValue);
+                    }
                     objCalibrationModels.NotificationDays = Notificationval;
 
                     DateTime dateValue;
@@ -1434,51 +1573,51 @@ namespace ISOStd.Controllers
                         objCalibrationModels.due_date = dateValue;
                     }
 
-                    if (fileCert != null && fileCert.ContentLength > 0)
-                    {
-                        try
-                        {
-                            string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/Equipment"), Path.GetFileName(fileCert.FileName));
-                            string sFilename = objCalibrationModels.Equipment_Id + "Cert_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath);
-                            string sFilepath = Path.GetDirectoryName(spath);
+                    //if (fileCert != null && fileCert.ContentLength > 0)
+                    //{
+                    //    try
+                    //    {
+                    //        string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/Equipment"), Path.GetFileName(fileCert.FileName));
+                    //        string sFilename = objCalibrationModels.Equipment_Id + "Cert_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath);
+                    //        string sFilepath = Path.GetDirectoryName(spath);
 
-                            fileCert.SaveAs(sFilepath + "/" + sFilename);
-                            objCalibrationModels.calibration_certificate = "~/DataUpload/MgmtDocs/Equipment/" + sFilename;
-                            ViewBag.Message = "File uploaded successfully";
-                        }
-                        catch (Exception ex)
-                        {
-                            objGlobaldata.AddFunctionalLog("Exception in CalibrationEdit-cert upload: " + ex.ToString());
-                            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                        }
-                    }
-                    else
-                    {
-                        ViewBag.Message = "You have not specified a file.";
-                    }
+                    //        fileCert.SaveAs(sFilepath + "/" + sFilename);
+                    //        objCalibrationModels.calibration_certificate = "~/DataUpload/MgmtDocs/Equipment/" + sFilename;
+                    //        ViewBag.Message = "File uploaded successfully";
+                    //    }
+                    //    catch (Exception ex)
+                    //    {
+                    //        objGlobaldata.AddFunctionalLog("Exception in CalibrationEdit-cert upload: " + ex.ToString());
+                    //        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                    //    }
+                    //}
+                    //else
+                    //{
+                    //    ViewBag.Message = "You have not specified a file.";
+                    //}
 
-                    if (fileReport_ref != null && fileReport_ref.ContentLength > 0)
-                    {
-                        try
-                        {
-                            string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/Equipment"), Path.GetFileName(fileReport_ref.FileName));
-                            string sFilename = objCalibrationModels.Equipment_Id + "Report_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath);
-                            string sFilepath = Path.GetDirectoryName(spath);
+                    //if (fileReport_ref != null && fileReport_ref.ContentLength > 0)
+                    //{
+                    //    try
+                    //    {
+                    //        string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/Equipment"), Path.GetFileName(fileReport_ref.FileName));
+                    //        string sFilename = objCalibrationModels.Equipment_Id + "Report_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath);
+                    //        string sFilepath = Path.GetDirectoryName(spath);
 
-                            fileReport_ref.SaveAs(sFilepath + "/" + sFilename);
-                            objCalibrationModels.calibration_report_ref = "~/DataUpload/MgmtDocs/Equipment/" + sFilename;
-                            ViewBag.Message = "File uploaded successfully";
-                        }
-                        catch (Exception ex)
-                        {
-                            objGlobaldata.AddFunctionalLog("Exception in CalibrationEdit-report upload: " + ex.ToString());
-                            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-                        }
-                    }
-                    else
-                    {
-                        ViewBag.Message = "You have not specified a file.";
-                    }
+                    //        fileReport_ref.SaveAs(sFilepath + "/" + sFilename);
+                    //        objCalibrationModels.calibration_report_ref = "~/DataUpload/MgmtDocs/Equipment/" + sFilename;
+                    //        ViewBag.Message = "File uploaded successfully";
+                    //    }
+                    //    catch (Exception ex)
+                    //    {
+                    //        objGlobaldata.AddFunctionalLog("Exception in CalibrationEdit-report upload: " + ex.ToString());
+                    //        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                    //    }
+                    //}
+                    //else
+                    //{
+                    //    ViewBag.Message = "You have not specified a file.";
+                    //}
 
                     if (objCalibrationModels.FunUpdateCalibration(objCalibrationModels))
                     {
@@ -1609,7 +1748,24 @@ namespace ISOStd.Controllers
                     ViewBag.Message = "You have not specified a file.";
                 }
 
-                if (objEquipmentMaintanance.FunAddMaintanance(objEquipmentMaintanance))
+
+                EquipmentMaintananceList objList = new EquipmentMaintananceList();
+                objList.lstEquipmentMaintanance = new List<EquipmentMaintanance>();
+
+                for (int i = 0; i < Convert.ToInt16(form["itemcnt1"]); i++)
+                {
+                    EquipmentMaintanance objModels = new EquipmentMaintanance();
+                    if (form["Spare_Used " + i] != null && form["Spare_Used " + i] != "")
+                    {
+                        objModels.Spare_Used = form["Spare_Used " + i];
+                        objModels.Amt_Spent = Convert.ToDecimal(form["Amt_Spent " + i]);
+                        objModels.voucher = form["voucher " + i];
+
+                        objList.lstEquipmentMaintanance.Add(objModels);
+                    }
+                }
+
+                if (objEquipmentMaintanance.FunAddMaintanance(objEquipmentMaintanance, objList))
                 {
                     TempData["Successdata"] = "Added Maintenance details successfully";
                     return RedirectToAction("MaintenanceList", new { Equipment_Id = sEquipment_Id });
@@ -1744,6 +1900,10 @@ namespace ISOStd.Controllers
                             Amt_Spent = Convert.ToDecimal(dsMaintenanceList.Tables[0].Rows[0]["Amt_Spent"].ToString())
                         };
                         ViewBag.Equipment_Id = sMaintenance_Id;
+
+                        string sql = "select id_spare,Maintenance_Id,Spare_Used,Amt_Spent,voucher from t_equipment_spare where Maintenance_Id='"+ sMaintenance_Id + "'";
+                        ViewBag.dsSpare = objGlobaldata.Getdetails(sql);
+
                     }
                     else
                     {
@@ -1805,6 +1965,41 @@ namespace ISOStd.Controllers
 
                         ViewBag.TimeInHour = objGlobaldata.GetAuditTimeInHour();
                         ViewBag.TimeInMin = objGlobaldata.GetAuditTimeInMin();
+
+
+                        //Spare 
+
+                        EquipmentMaintananceList objList = new EquipmentMaintananceList();
+                        objList.lstEquipmentMaintanance = new List<EquipmentMaintanance>();
+
+                        sSqlstmt = "select id_spare,Maintenance_Id,Spare_Used,Amt_Spent,voucher from t_equipment_spare where Maintenance_Id='" + sMaintenance_Id + "'";
+                        DataSet dsList = objGlobaldata.Getdetails(sSqlstmt);
+                        if (dsList.Tables.Count > 0 && dsList.Tables[0].Rows.Count > 0)
+                        {
+                            for (int i = 0; i < dsList.Tables[0].Rows.Count; i++)
+                            {
+                                try
+                                {
+                                    EquipmentMaintanance objSpare = new EquipmentMaintanance
+                                    {
+                                        id_spare = dsList.Tables[0].Rows[i]["id_spare"].ToString(),
+                                        Maintenance_Id = dsList.Tables[0].Rows[i]["Maintenance_Id"].ToString(),
+                                        Spare_Used = dsList.Tables[0].Rows[i]["Spare_Used"].ToString(),
+                                        Amt_Spent =Convert.ToDecimal(dsList.Tables[0].Rows[i]["Amt_Spent"].ToString()),
+                                        voucher = dsList.Tables[0].Rows[i]["voucher"].ToString(),
+                                    };
+                                    objList.lstEquipmentMaintanance.Add(objSpare);
+                                }
+                                catch (Exception ex)
+                                {
+                                    objGlobaldata.AddFunctionalLog("Exception in MaintenanceEdit: " + ex.ToString());
+                                    TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                                    return RedirectToAction("EquipmentList");
+                                }
+                            }
+                            ViewBag.objList = objList;
+                        }
+
                     }
                     else
                     {
@@ -1875,8 +2070,22 @@ namespace ISOStd.Controllers
                 {
                     ViewBag.Message = "You have not specified a file.";
                 }
+                EquipmentMaintananceList objList = new EquipmentMaintananceList();
+                objList.lstEquipmentMaintanance = new List<EquipmentMaintanance>();
 
-                if (objEquipmentMaintanance.FunUpdateMaintanance(objEquipmentMaintanance))
+                for (int i = 0; i < Convert.ToInt16(form["itemcnt1"]); i++)
+                {
+                    EquipmentMaintanance objModels = new EquipmentMaintanance();
+                    if (form["Spare_Used " + i] != null && form["Spare_Used " + i] != "")
+                    {
+                        objModels.Spare_Used = form["Spare_Used " + i];
+                        objModels.Amt_Spent = Convert.ToDecimal(form["Amt_Spent " + i]);
+                        objModels.voucher = form["voucher " + i];
+
+                        objList.lstEquipmentMaintanance.Add(objModels);
+                    }
+                }
+                if (objEquipmentMaintanance.FunUpdateMaintanance(objEquipmentMaintanance, objList))
                 {
                     TempData["Successdata"] = "Maintenance details updated successfully";
                 }

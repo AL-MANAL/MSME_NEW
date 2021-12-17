@@ -451,18 +451,18 @@ namespace ISOStd.Models
                     {
                         sid_measurable = objModelsList.KPIMList[i].id_measurable;
                     }
-                    if (objModelsList.KPIMList[i].monitoring_frm_date != null && objModelsList.KPIMList[i].monitoring_frm_date > Convert.ToDateTime("01/01/0001 00:00:00"))
-                    {
+                    //if (objModelsList.KPIMList[i].monitoring_frm_date != null && objModelsList.KPIMList[i].monitoring_frm_date > Convert.ToDateTime("01/01/0001 00:00:00"))
+                    //{
 
-                        sFields = sFields + ", monitoring_frm_date";
-                        sFieldValue = sFieldValue + ", '" + objModelsList.KPIMList[i].monitoring_frm_date.ToString("yyyy/MM/dd") + "'";
-                    }
-                    if (objModelsList.KPIMList[i].monitoring_to_date != null && objModelsList.KPIMList[i].monitoring_to_date > Convert.ToDateTime("01/01/0001 00:00:00"))
-                    {
+                    //    sFields = sFields + ", monitoring_frm_date";
+                    //    sFieldValue = sFieldValue + ", '" + objModelsList.KPIMList[i].monitoring_frm_date.ToString("yyyy/MM/dd") + "'";
+                    //}
+                    //if (objModelsList.KPIMList[i].monitoring_to_date != null && objModelsList.KPIMList[i].monitoring_to_date > Convert.ToDateTime("01/01/0001 00:00:00"))
+                    //{
                         
-                        sFields = sFields + ", monitoring_to_date";
-                        sFieldValue = sFieldValue + ", '" + objModelsList.KPIMList[i].monitoring_to_date.ToString("yyyy/MM/dd") + "'";
-                    }
+                    //    sFields = sFields + ", monitoring_to_date";
+                    //    sFieldValue = sFieldValue + ", '" + objModelsList.KPIMList[i].monitoring_to_date.ToString("yyyy/MM/dd") + "'";
+                    //}
                     sSqlstmt = sSqlstmt + sFields;
                     sSqlstmt = sSqlstmt + ") values(" + sid_measurable + ",'" + objModelsList.KPIMList[0].KPI_Id + "','" + ref_no + "','" + objModelsList.KPIMList[i].measurable_indicator + "','" + objModelsList.KPIMList[i].expected_value + "','" + objModelsList.KPIMList[i].expected_value_unit + "','" + objModelsList.KPIMList[i].kpi_type + "','" + objModelsList.KPIMList[i].monitoring_mechanism + "','" + objModelsList.KPIMList[i].frequency_eval + "','" + objModelsList.KPIMList[i].risk + "'";
                     sSqlstmt = sSqlstmt + sFieldValue + ");";
@@ -548,7 +548,7 @@ namespace ISOStd.Models
                     }
                     sHeader = "<tr><td colspan=3><b>KPI Ref No:<b></td> <td colspan=3>" + dsData.Tables[0].Rows[0]["kpi_ref_no"].ToString() + "</td></tr>"
                     + "<tr><td colspan=3><b>KPI Established On:<b></td> <td colspan=3>" + established_date + "</td></tr>"
-                    + "<tr><td colspan=3><b>Proposed By:<b></td> <td colspan=3>" +objGlobalData.GetCompanyBranchNameById(dsData.Tables[0].Rows[0]["branch"].ToString()) + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp"+objGlobalData.GetDeptNameById(dsData.Tables[0].Rows[0]["group_name"].ToString()) + "</td></tr>"
+                    + "<tr><td colspan=3><b>Proposed By:<b></td> <td colspan=3>" +objGlobalData.GetCompanyBranchNameById(dsData.Tables[0].Rows[0]["branch"].ToString()) + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"+objGlobalData.GetDeptNameById(dsData.Tables[0].Rows[0]["group_name"].ToString()) + "</td></tr>"
 
                      + "<tr><td colspan=3><b>Process/Performance Indicator:<b></td> <td colspan=3>" + objGlobalData.GetKPIPerformanceIndicatorById(dsData.Tables[0].Rows[0]["process_indicator"].ToString()) + "</td></tr>"
 
@@ -573,8 +573,8 @@ namespace ISOStd.Models
                             + "<th style='width:300px'>Measurable Indicator</th>"
                             + "<th style='width:300px'>Expected value to be achieved</th>"
                             + "<th style='width:300px'>Unit</th>"
-                            + "<th style='width:300px'>Monitoring Period From Date</th>"
-                            + "<th style='width:300px'>To Date</th>"
+                            //+ "<th style='width:300px'>Monitoring Period From Date</th>"
+                            //+ "<th style='width:300px'>To Date</th>"
                             + "<th style='width:300px'>Monitoring Mechanism</th>"
                              + "<th style='width:300px'>Frequency of Evaluation</th>"
                              + "<th style='width:300px'>Risk,if not achieved</th>"
@@ -584,22 +584,22 @@ namespace ISOStd.Models
                         for (int i = 0; i < dsItems.Tables[0].Rows.Count; i++)
                         {
 
-                            string monitoring_frm_date = "", monitoring_to_date="";
-                            if (dsItems.Tables[0].Rows[i]["monitoring_frm_date"].ToString() != null && Convert.ToDateTime(dsItems.Tables[0].Rows[i]["monitoring_frm_date"].ToString()) > Convert.ToDateTime("01/01/0001"))
-                            {
-                                monitoring_frm_date = Convert.ToDateTime(dsItems.Tables[0].Rows[i]["monitoring_frm_date"].ToString()).ToString("yyyy-MM-dd");
-                            }
-                            if (dsItems.Tables[0].Rows[i]["monitoring_to_date"].ToString() != null && Convert.ToDateTime(dsItems.Tables[0].Rows[i]["monitoring_to_date"].ToString()) > Convert.ToDateTime("01/01/0001"))
-                            {
-                                monitoring_to_date = Convert.ToDateTime(dsItems.Tables[0].Rows[i]["monitoring_to_date"].ToString()).ToString("yyyy-MM-dd");
-                            }
+                            //string monitoring_frm_date = "", monitoring_to_date="";
+                            //if (dsItems.Tables[0].Rows[i]["monitoring_frm_date"].ToString() != null && Convert.ToDateTime(dsItems.Tables[0].Rows[i]["monitoring_frm_date"].ToString()) > Convert.ToDateTime("01/01/0001"))
+                            //{
+                            //    monitoring_frm_date = Convert.ToDateTime(dsItems.Tables[0].Rows[i]["monitoring_frm_date"].ToString()).ToString("yyyy-MM-dd");
+                            //}
+                            //if (dsItems.Tables[0].Rows[i]["monitoring_to_date"].ToString() != null && Convert.ToDateTime(dsItems.Tables[0].Rows[i]["monitoring_to_date"].ToString()) > Convert.ToDateTime("01/01/0001"))
+                            //{
+                            //    monitoring_to_date = Convert.ToDateTime(dsItems.Tables[0].Rows[i]["monitoring_to_date"].ToString()).ToString("yyyy-MM-dd");
+                            //}
                             sInformation = sInformation + "<tr>"
                                 + " <td>" + (i + 1) + "</td>"
                                 + " <td style='width:300px'>" + (dsItems.Tables[0].Rows[i]["measurable_indicator"].ToString()) + "</td>"
                                  + " <td style='width:300px'>" + (dsItems.Tables[0].Rows[i]["expected_value"].ToString()) + "</td>"
                                  + " <td style='width:300px'>" + (dsItems.Tables[0].Rows[i]["expected_value_unit"].ToString()) + "</td>"
-                                  + " <td style='width:300px'>" + monitoring_frm_date + "</td>"
-                                     + " <td style='width:300px'>" + monitoring_to_date + "</td>"
+                                  //+ " <td style='width:300px'>" + monitoring_frm_date + "</td>"
+                                  //   + " <td style='width:300px'>" + monitoring_to_date + "</td>"
                                      + " <td style='width:300px'>" + (dsItems.Tables[0].Rows[i]["monitoring_mechanism"].ToString()) + "</td>"
                                       + " <td style='width:300px'>" +objGlobalData.GetDropdownitemById(dsItems.Tables[0].Rows[i]["frequency_eval"].ToString()) + "</td>"
                                            + " <td style='width:300px'>" + (dsItems.Tables[0].Rows[i]["risk"].ToString()) + "</td>"
@@ -655,7 +655,7 @@ namespace ISOStd.Models
                             sInformation = sInformation + "<tr>"
                                 + " <td>" + (i + 1) + "</td>"
                                 + " <td style='width:300px'>" + (dsItems.Tables[0].Rows[i]["causes_failure"].ToString()) + "</td>"
-                                 + " <td style='width:300px'>" + (dsItems.Tables[0].Rows[i]["impact"].ToString()) + "</td>"
+                                 + " <td style='width:300px'>" +objGlobalData.GetDropdownitemById(dsItems.Tables[0].Rows[i]["impact"].ToString()) + "</td>"
                                  + " <td style='width:300px'>" + (dsItems.Tables[0].Rows[i]["mitigation_measures"].ToString()) + "</td>"
                                   + " <td style='width:300px'>" + target_date + "</td>"
                                      + " <td style='width:300px'>" +objGlobalData.GetDropdownitemById(dsItems.Tables[0].Rows[i]["failure_status"].ToString()) + "</td>"
@@ -766,7 +766,7 @@ namespace ISOStd.Models
                     }
                     sHeader = "<tr><td colspan=3><b>KPI Ref No:<b></td> <td colspan=3>" + dsData.Tables[0].Rows[0]["kpi_ref_no"].ToString() + "</td></tr>"
                     + "<tr><td colspan=3><b>KPI Established On:<b></td> <td colspan=3>" + established_date + "</td></tr>"
-                    + "<tr><td colspan=3><b>Proposed By:<b></td> <td colspan=3>" + objGlobalData.GetCompanyBranchNameById(dsData.Tables[0].Rows[0]["branch"].ToString()) + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp" + objGlobalData.GetDeptNameById(dsData.Tables[0].Rows[0]["group_name"].ToString()) + "</td></tr>"
+                    + "<tr><td colspan=3><b>Proposed By:<b></td> <td colspan=3>" + objGlobalData.GetCompanyBranchNameById(dsData.Tables[0].Rows[0]["branch"].ToString()) + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + objGlobalData.GetDeptNameById(dsData.Tables[0].Rows[0]["group_name"].ToString()) + "</td></tr>"
 
                      + "<tr><td colspan=3><b>Process/Performance Indicator:<b></td> <td colspan=3>" + objGlobalData.GetKPIPerformanceIndicatorById(dsData.Tables[0].Rows[0]["process_indicator"].ToString()) + "</td></tr>"
 

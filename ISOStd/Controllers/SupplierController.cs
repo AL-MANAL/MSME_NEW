@@ -50,6 +50,7 @@ namespace ISOStd.Controllers
                 ViewBag.SupplierType = objGlobaldata.GetDropdownList("Supplier Type");
                 ViewBag.SupplierTypes = objGlobaldata.GetDropdownList("Supplier Work Type");
                 ViewBag.HeaderId = objGlobaldata.GetDropdownHeaderIdByDesc("Supplier payment term");
+                ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
             }
             catch (Exception ex)
             {
@@ -98,7 +99,7 @@ namespace ISOStd.Controllers
                 objSupplierModels.branch = form["branch"];
                 objSupplierModels.Department = form["Department"];
                 objSupplierModels.Location = form["Location"];
-
+                objSupplierModels.notified_to = form["notified_to"];
                 int Notificationval = 1;
 
                 if (objSupplierModels.NotificationPeriod == "None")
@@ -463,7 +464,7 @@ namespace ISOStd.Controllers
 
                     string sSqlstmt = "select SupplierId, SupplierCode, SupplierName, SupplyScope, ApprovalCriteria, SupportingDoc, ApprovedOn, ApprovedBy, Remarks,"
                     + " (case when ApprovedStatus = '0' then 'Pending for Approval' when ApprovedStatus = '1' then 'Approved' else 'Not Approved' end) as ApprovedStatus, Added_Updated_By, UpdatedOn, "
-                    + " City,Country, ContactPerson, ContactNo, Address, FaxNo, PO_No,Email,VatNo,RefNo,Supplier_type,Payment_term,License_Expiry,NotificationDays,NotificationPeriod,NotificationValue,Criticality,Supplier_Work_Nature,branch,Department,Location,pan_no FROM t_supplier where SupplierId='" + sSupplierId + "'";
+                    + " City,Country, ContactPerson, ContactNo, Address, FaxNo, PO_No,Email,VatNo,RefNo,Supplier_type,Payment_term,License_Expiry,NotificationDays,NotificationPeriod,NotificationValue,Criticality,Supplier_Work_Nature,branch,Department,Location,pan_no,notified_to FROM t_supplier where SupplierId='" + sSupplierId + "'";
 
                     DataSet dsSupplier = objGlobaldata.Getdetails(sSqlstmt);
 
@@ -501,6 +502,7 @@ namespace ISOStd.Controllers
                             Department = objGlobaldata.GetMultiDeptNameById(dsSupplier.Tables[0].Rows[0]["Department"].ToString()),
                             Location = objGlobaldata.GetDivisionLocationById(dsSupplier.Tables[0].Rows[0]["Location"].ToString()),
                             pan_no = dsSupplier.Tables[0].Rows[0]["pan_no"].ToString(),
+                            notified_to =objGlobaldata.GetMultiHrEmpNameById(dsSupplier.Tables[0].Rows[0]["notified_to"].ToString()),
                         };
 
                         DateTime dateValue;
@@ -630,7 +632,7 @@ namespace ISOStd.Controllers
             ViewBag.NotificationPeriod = objGlobaldata.GetConstantValueKeyValuePair("NotificationPeriod");
             ViewBag.SuppCriticality = objGlobaldata.GetConstantValue("Criticality");
             ViewBag.SupplierTypes = objGlobaldata.GetDropdownList("Supplier Work Type");
-
+            ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
             UserCredentials objUser = new UserCredentials();
             objUser = objGlobaldata.GetCurrentUserSession();
             try
@@ -642,7 +644,7 @@ namespace ISOStd.Controllers
 
                     string sSqlstmt = "select SupplierId, SupplierCode, SupplierName, SupplyScope, ApprovalCriteria, SupportingDoc, ApprovedOn, ApprovedBy, Remarks,"
                         + " Added_Updated_By, ApprovedStatus, UpdatedOn , City,Country, ContactPerson, ContactNo, Address, FaxNo, PO_No,Email,VatNo,RefNo,"
-                        + " Supplier_type,Payment_term,License_Expiry,NotificationDays,NotificationPeriod,NotificationValue,Criticality,Supplier_Work_Nature,branch,Department,Location,pan_no FROM t_supplier where SupplierId='"
+                        + " Supplier_type,Payment_term,License_Expiry,NotificationDays,NotificationPeriod,NotificationValue,Criticality,Supplier_Work_Nature,branch,Department,Location,pan_no,notified_to FROM t_supplier where SupplierId='"
                         + sSupplierId + "'";
                     DataSet dsSupplier = objGlobaldata.Getdetails(sSqlstmt);
 
@@ -682,6 +684,7 @@ namespace ISOStd.Controllers
                             Department = (dsSupplier.Tables[0].Rows[0]["Department"].ToString()),
                             Location = (dsSupplier.Tables[0].Rows[0]["Location"].ToString()),
                             pan_no = (dsSupplier.Tables[0].Rows[0]["pan_no"].ToString()),
+                            notified_to = (dsSupplier.Tables[0].Rows[0]["notified_to"].ToString()),
                         };
                         ViewBag.Branch = objGlobaldata.GetCompanyBranchListbox();
                         ViewBag.Location = objGlobaldata.GetLocationbyMultiDivision(dsSupplier.Tables[0].Rows[0]["branch"].ToString());
@@ -746,7 +749,7 @@ namespace ISOStd.Controllers
                 objSupplierModels.branch = form["branch"];
                 objSupplierModels.Department = form["Department"];
                 objSupplierModels.Location = form["Location"];
-
+                objSupplierModels.notified_to = form["notified_to"];
                 DateTime dateValue;
                 if (DateTime.TryParse(form["License_Expires"], out dateValue) == true)
                 {

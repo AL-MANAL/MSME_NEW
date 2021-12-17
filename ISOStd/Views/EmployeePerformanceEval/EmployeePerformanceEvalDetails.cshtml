@@ -4,8 +4,10 @@
     ViewBag.Title = "AddEmployeeCompetenceEval";
 
     ISOStd.Models.EmpPerformanceElementsModelsList objEmpPerformanceEvalList = new ISOStd.Models.EmpPerformanceElementsModelsList();
+
+    ISOStd.Models.EmpPerformanceElementsModels objElementMdl = new ISOStd.Models.EmpPerformanceElementsModels();
     int iSrno = 0;
-    decimal TotalScore = 0;
+    double TotalScore = 0;
     var SectionId = "";
     if (ViewBag.PerformanceElement != null)
     {
@@ -18,6 +20,8 @@
 
     System.Data.DataSet ObjMaxRate = new System.Data.DataSet();
     System.Data.DataSet dsList = new System.Data.DataSet();
+    System.Data.DataSet dsData = new System.Data.DataSet();
+
     if (ViewBag.MaxRate != null)
     {
         ObjMaxRate = ViewBag.MaxRate;
@@ -26,7 +30,16 @@
     {
         dsList = ViewBag.dsList;
     }
+    if (ViewBag.dsData != null)
+    {
+        dsData = ViewBag.dsData;
+    }
     int sObjMaxRate = 0;
+
+   
+        int Sq_No = 0; int sWeightage = 0; double s = 0.0;
+        int tot_q = objEmpPerformanceEvalList.lstEmpPerformanceElements.Count;
+    
 }
 
 @section featured {
@@ -397,15 +410,38 @@
 
                     <td class="col-xs-3 col-md-2">
                         <p class="bg-brown py-1 px-2 rounded">
-                           Status
+                            @Html.LabelFor(model => model.eval_period)
                         </p>
                     </td>
                     <td class="col">
                         <span class="bg-dark py-1 px-2 rounded">
-                            @Html.DisplayFor(model => model.sstatus)
+                            @Html.DisplayFor(model => model.eval_period)
                         </span>
                     </td>
-                    
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.LabelFor(model => model.eval_category)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.eval_category)
+                        </span>
+                    </td>
+                </tr>
+                <tr class="row">
+
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            Status
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.eval_period)
+                        </span>
+                    </td>
+
                 </tr>
             </table>
 
@@ -446,7 +482,7 @@
                 </div>
             }
 
-            @if (ViewBag.PerformanceElement != null)
+            @*@if (ViewBag.PerformanceElement != null)
             {
                 <br />
                 <h2 class="bg-dark pl-sm-2">Employee Performance</h2>
@@ -514,7 +550,7 @@
 
                                 <tr>
                                     <td>
-                                        @*@iSrno*@
+                                        
                                         @Sq_No
                                     </td>
                                     <td>
@@ -588,6 +624,103 @@
                         </tbody>
                     </table>
                 </div>
+            }*@
+
+
+        @if (ViewBag.PerformanceElement != null)
+            {
+            <br />
+                <h2 class="bg-dark pl-sm-2">Employee Performance</h2>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped table-hover datatable-responsive" id="">
+                        <thead>
+                            <tr class="bg-brown">
+
+                                <th>Sr. No.</th>
+                                <th>Element</th>
+                                <th>Rating</th>
+                                <th>Weightage</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                           
+
+                           
+                            @foreach (var item in objEmpPerformanceEvalList.lstEmpPerformanceElements)
+                            {
+                                Sq_No = Sq_No + 1;
+                                sWeightage = sWeightage +Convert.ToInt32(item.SQ_Weightage);
+                                <tr>
+                                    <td>
+                                        @*@iSrno*@
+                                        @Sq_No
+                                    </td>
+                                    <td>
+                                        @item.SQId
+                                    </td>
+                                    <td>
+                                        @item.SQ_OptionsId
+                                    </td>
+                                    <td>
+                                        @item.SQ_Weightage
+                                    </td>
+                                </tr>
+                            }
+                            @{
+                                 s = (Convert.ToInt32(Model.Weightage)) * tot_q;
+                                 TotalScore = (14 / s) * 100;
+                            }
+                            <tr>
+                                <td>
+                                    Actual Score:
+                                </td>
+                                <td colspan="3">
+
+                                    @TotalScore %
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                                    }
+
+            @if (dsData != null && dsData.Tables.Count > 0 && dsData.Tables[0].Rows.Count > 0)
+            {
+                <br />
+                <h2 class="bg-dark pl-sm-2">No of Questions</h2>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped table-hover datatable-responsive" id="table1">
+                            <thead>
+                                <tr class="bg-brown">
+                                    <th>Sl No</th>
+                                    <th>Rating</th>
+                                    <th>No of Questions</th>
+                                    
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (int i = 0, j = 1; i < dsData.Tables[0].Rows.Count; i++, j++)
+                                {
+                                    <tr>
+                                        <td>
+                                            @j
+                                        </td>
+                                        <td>
+                                            @objElementMdl.GetRatingNameById(dsData.Tables[0].Rows[i]["SQ_OptionsId"].ToString())
+                                        </td>
+                                        <td>
+                                            @(dsData.Tables[0].Rows[i]["tot_quest"].ToString())
+                                        </td>
+                                    </tr>
+                                }
+                               
+                            </tbody>
+                        </table>
+
+
+
+                    </div>
             }
 
         </div>

@@ -1,12 +1,22 @@
 ﻿@model ISOStd.Models.EquipmentMaintanance
 @{
     ViewBag.Title = "";
- string sfromTimeHr = "", sfromTimeMin = "", stoTimeHr = "", stoTimeMin = "";
+    string sfromTimeHr = "", sfromTimeMin = "", stoTimeHr = "", stoTimeMin = "";
     //string[] fromtime = Model.Down_Time_From.Split(':');
     sfromTimeHr = Model.Down_Time_From.Hour.ToString();
     sfromTimeMin = Model.Down_Time_From.Minute.ToString();
     stoTimeHr = Model.Down_Time_To.Hour.ToString();
     stoTimeMin = Model.Down_Time_To.Minute.ToString();
+
+    ISOStd.Models.EquipmentMaintananceList objList = new ISOStd.Models.EquipmentMaintananceList();
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+
+    int icnt = 0;
+    if (ViewBag.objList != null)
+    {
+        objList = ViewBag.objList;
+        icnt = objList.lstEquipmentMaintanance.Count;
+    }
 }
 @section featured {
 
@@ -69,7 +79,8 @@
     @Html.ValidationSummary(true)
     <input type="hidden" id="Maintenance_Id" name="Maintenance_Id" value="@Model.Maintenance_Id" />
                         <input type="hidden" id="Equipment_Id" name="Equipment_Id" value="@ViewBag.Equipment_Id" />
-    <div class="card">
+                        <input type="hidden" id="itemcnt1" name="itemcnt1" value="@icnt" />
+                         <div class="card">
         <div class="card-header header-elements-inline bg-primary">
             <h5 class="card-title">Edit Equipment Maintenance details</h5>
             <div class="header-elements">
@@ -247,7 +258,7 @@
                             </div>
  		
                         </td>
-                         <td class="col-xs-3 col-md-2">
+                         @*<td class="col-xs-3 col-md-2">
                             <div class="editor-label">
                                 @Html.LabelFor(model => model.Spare_Used)<text style="color:red;">*</text>
                             </div>
@@ -257,23 +268,23 @@
                                 <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="Spare_Used" name="Spare_Used" required>@Model.Spare_Used</textarea>
                                  @Html.ValidationMessageFor(m => m.Spare_Used)
 			                </div>
-                        </td>
+                        </td>*@
                     </tr>
 
 
 			<tr class="row">
                         
-                        <td class="col-xs-3 col-md-2">
+                        @*<td class="col-xs-3 col-md-2">
                             <div class="editor-label">
                                 @Html.LabelFor(model => model.Amt_Spent)
                             </div>
                         </td>
                         <td class="col">
                             <div class="editor-field">
-                                  @* <input class="form-control" type="number" id="Amt_Spent" name="Amt_Spent" />	*@		
+                               
                                 @Html.EditorFor(model => model.Amt_Spent, new { htmlAttributes = new { @type = "number", @min = "0", @step = "0.01", @value = "0" }})	
                             </div>
-                        </td>
+                        </td>*@
  			   <td class="col-xs-3 col-md-2">
 
                             @Html.LabelFor(model => model.Remarks)
@@ -286,6 +297,95 @@
                         </td>
                     </tr>
                 </table>
+
+                <fieldset class="border p-2">
+                    <legend class="font-weight-semibold text-success">Spare wise amount</legend>
+                    <table class="table table-lg">
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.DisplayNameFor(model => model.Spare_Used)<text style="color: red;">*</text>
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <input type="text" class="form-control" id="Spare_Used" name="Spare_Used" />
+                                    <span class="field-validation-error"><span id="Spare_Used-message" style="display: none;">This field is required.</span></span>
+                                    @Html.ValidationMessageFor(model => model.Spare_Used)
+                                </div>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.DisplayNameFor(model => model.Amt_Spent)<text style="color: red;">*</text>
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <input type="number" class="form-control" id="Amt_Spent" name="Amt_Spent" />
+                                    <span class="field-validation-error"><span id="Amt_Spent-message" style="display: none;">This field is required.</span></span>
+                                    @Html.ValidationMessageFor(model => model.Amt_Spent)
+                                </div>
+                            </td>
+
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.DisplayNameFor(model => model.voucher)<text style="color: red;">*</text>
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <input type="text" class="form-control" id="voucher" name="voucher" />
+                                    <span class="field-validation-error"><span id="voucher-message" style="display: none;">This field is required.</span></span>
+                                    @Html.ValidationMessageFor(model => model.voucher)
+                                </div>
+                            </td>
+                            <td class="col-xs-3 col-md-1">
+                                <input type="button" value="Add" class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" onclick="AddData()" />
+                            </td>
+                        </tr>
+
+                    </table>
+                </fieldset>
+
+                <div class="card" id="hidden card1">
+
+                    <div class="card-body scrollbar-container">
+
+                        <div class="card card-table table-responsive shadow-0 mb-0 scrollbar">
+
+                            <table class="table" id="team-list1">
+                                <tr class="bg-blue">
+                                    <th>Delete</th>
+                                    <th>Spare used </th>
+                                    <th>Amount </th>
+                                    <th>Voucher </th>
+                                </tr>
+                                @if (objList.lstEquipmentMaintanance != null && objList.lstEquipmentMaintanance.Count > 0)
+                                {
+                                    for (int index = 0; index < objList.lstEquipmentMaintanance.Count; index++)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <span class="badge badge-info" onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span>
+                                            </td>
+                                            <td>
+                                                <input type="text" class="form-control" id='Spare_Used @(index)' name="Spare_Used @(index)" value="@objList.lstEquipmentMaintanance[index].Spare_Used" />
+                                            </td>
+                                            <td>
+                                                <input type="number" class="form-control" id='Amt_Spent @(index)' name="Amt_Spent @(index)" value="@objList.lstEquipmentMaintanance[index].Amt_Spent" />
+                                            </td>
+                                            <td>
+                                                <input type="text" class="form-control" id='voucher @(index)' name="voucher @(index)" value="@objList.lstEquipmentMaintanance[index].voucher" />
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </table>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="card-footer bg-white d-flex justify-content-between align-items-center">
@@ -301,7 +401,106 @@
 
 @section Scripts {
     <script>
+        var showClass = 'is-visible';
+        var hideClass = 'invisible';
 
+
+        function deleteRow(btn) {
+            var row = btn.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+        }
+
+        function Validation() {
+            var validflg = true;
+            var ssnMessage = "";
+            if (document.getElementById("Spare_Used").value == "") {
+                ssnMessage = $('#Spare_Used-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#Spare_Used-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("Amt_Spent").value == "") {
+                ssnMessage = $('#Amt_Spent-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#Amt_Spent-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("voucher").value == "") {
+                ssnMessage = $('#voucher-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#voucher-message');
+                ssnMessage.hide();
+            }
+            return validflg;
+        }
+        function AddData() {
+
+            if (Validation() == true) {
+
+                document.getElementById("hidden card1").style.display = "block";
+                var cnt = document.getElementById("itemcnt1").value;
+
+                document.getElementById("itemcnt1").value = cnt;
+                // Find a <table> element with id="myTable":
+                var table = document.getElementById("team-list1");
+
+                // Create an empty <tr> element and add it to the 1st position of the table:
+                var row = table.insertRow();
+
+                // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                var cell0 = row.insertCell(0);
+                var cell1 = row.insertCell(1);
+                var cell2 = row.insertCell(2);
+                var cell3 = row.insertCell(3);
+
+                var Spare_Used = $('#Spare_Used').val();
+                var Amt_Spent = $('#Amt_Spent').val();
+                var voucher = $('#voucher').val();
+
+                cell0.innerHTML = "<span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span>";
+                cell1.innerHTML = "<input class='form-control' type='text' id='Spare_Used " + cnt + "' name='Spare_Used " + cnt + "' value='" + Spare_Used + "' />";
+                cell2.innerHTML = "<input class='form-control' type='number' id='Amt_Spent " + cnt + "' name='Amt_Spent " + cnt + "' value='" + Amt_Spent + "' />";
+
+                cell3.innerHTML = "<input class='form-control' type='text' id='voucher " + cnt + "' name='voucher " + cnt + "' value='" + voucher + "' />";
+
+
+
+                cnt++;
+                document.getElementById("itemcnt1").value = cnt;
+
+                //reintialisation
+
+                // Badge position
+                $('.maxlength-badge-position').maxlength({
+                    alwaysShow: true,
+                    placement: 'top'
+                });
+
+                //auto resize
+                autosize($('.elastic'));
+                $('.select-fixed-single').select2({
+                    minimumResultsForSearch: Infinity,
+                    width: 150
+                });
+                document.getElementById("hidden card1").classList.remove(hideClass);
+                document.getElementById("hidden card1").classList.add(showClass);
+
+                document.getElementById("Spare_Used").value = "";
+                document.getElementById("Amt_Spent").value = "";
+                document.getElementById("voucher").value = "";
+
+            }
+
+        }
         function FileFormatValidation(file) {
             var ext = file.value.split(".").pop().toLowerCase();
             if ($.inArray(ext, ["doc", "pdf", "docx", "jpg", "jpeg", "gif", "png"]) == -1) {

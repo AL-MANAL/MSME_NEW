@@ -3,7 +3,9 @@
 
 @{
     ViewBag.Title = "";
-   ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+    DataSet dsSpare = new DataSet();
+    dsSpare = ViewBag.dsSpare;
 }
 @section featured {
 
@@ -211,7 +213,46 @@
                         </td>                        
                     </tr>		
                 </table>
+      <br />
+      @if (dsSpare != null && dsSpare.Tables.Count > 0 && dsSpare.Tables[0].Rows.Count > 0)
+            {
+          <br />
+              <h2 class="bg-dark pl-sm-2">Spare wise amount</h2>
+              <div class="table-responsive">
+                  <table class="table table-bordered table-striped table-hover datatable-responsive" id="table1">
+                      <thead>
+                          <tr class="bg-brown">
+                              <th>Sl No</th>
+                              <th>Spare used </th>
+                              <th>Amount</th>
+                              <th>Voucher</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          @for (int i = 0, j = 1; i < dsSpare.Tables[0].Rows.Count; i++, j++)
+                          {
+                              <tr>
+                                  <td>
+                                      @j
+                                  </td>      
+                                  <td>
+                                      @(dsSpare.Tables[0].Rows[i]["Spare_Used"].ToString())
+                                  </td>
+                                  <td>
+                                      @(dsSpare.Tables[0].Rows[i]["Amt_Spent"].ToString())
+                                  </td>
+                                  <td>
+                                      @(dsSpare.Tables[0].Rows[i]["voucher"].ToString())
+                                  </td>
+                              </tr>
+                          }
+                      </tbody>
+                  </table>
 
+
+
+              </div>
+      }
   </div>
   </div>
 

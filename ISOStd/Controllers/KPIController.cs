@@ -1141,7 +1141,7 @@ namespace ISOStd.Controllers
                         //    objKPIModels.monitoring_to_date = dtValue;
                         //}
 
-                        sSqlstmt = "select id_kpi_failure,KPI_Id,causes_failure from t_kpi_failure where KPI_Id='" + objKPIModels.KPI_Id + "'";
+                        sSqlstmt = "select id_kpi_failure,KPI_Id,causes_failure,impact,mitigation_measures,target_date,failure_status,status_updated_date from t_kpi_failure where KPI_Id='" + objKPIModels.KPI_Id + "'";
                         ViewBag.objList = objGlobaldata.Getdetails(sSqlstmt);
 
                         string sql2 = "select kpi_ref_no,measurable_indicator,expected_value,expected_value_unit,kpi_type,monitoring_frm_date,monitoring_to_date,monitoring_mechanism," +
@@ -1194,7 +1194,7 @@ namespace ISOStd.Controllers
                             pers_resp = objGlobaldata.GetEmpHrNameById(dsKPIModelsList.Tables[0].Rows[0]["pers_resp"].ToString()),
                             upload = (dsKPIModelsList.Tables[0].Rows[0]["upload"].ToString()),
                             approved_by = objGlobaldata.GetEmpHrNameById(dsKPIModelsList.Tables[0].Rows[0]["approved_by"].ToString()),
-                            kpi_status = (dsKPIModelsList.Tables[0].Rows[0]["kpi_status"].ToString()),
+                            kpi_status =objGlobaldata.GetDropdownitemById(dsKPIModelsList.Tables[0].Rows[0]["kpi_status"].ToString()),
                             status_reason = (dsKPIModelsList.Tables[0].Rows[0]["status_reason"].ToString()),
                         };
                         DateTime dtValue;
@@ -1202,13 +1202,19 @@ namespace ISOStd.Controllers
                         {
                             objKPIModels.established_date = dtValue;
                         }
-
-                        sSqlstmt = "select id_kpi_failure,KPI_Id,causes_failure from t_kpi_failure where KPI_Id='" + objKPIModels.KPI_Id + "'";
+                        sSqlstmt = "select id_kpi_failure,KPI_Id,causes_failure,impact,mitigation_measures,target_date,failure_status,status_updated_date from t_kpi_failure where KPI_Id='" + objKPIModels.KPI_Id + "'";
                         ViewBag.objList = objGlobaldata.Getdetails(sSqlstmt);
 
-                        string sql2 = "select kpi_ref_no,measurable_indicator,expected_value,expected_value_unit,kpi_type,monitoring_frm_date,monitoring_to_date,monitoring_mechanism,FromPeriod,ToPeriod" +
-                       "frequency_eval,risk" +
-                       " from t_kpi_measurable_indicator   where KPI_Id ='" + objKPIModels.KPI_Id + "'";
+
+                        // string sql2 = "select kpi_ref_no,measurable_indicator,expected_value,expected_value_unit,kpi_type,monitoring_frm_date,monitoring_to_date,monitoring_mechanism,FromPeriod,ToPeriod" +
+                        //"frequency_eval,risk" +
+                        //" from t_kpi_measurable_indicator   where KPI_Id ='" + objKPIModels.KPI_Id + "'";
+
+
+                        string sql2 = "select kpi_ref_no,measurable_indicator,expected_value,expected_value_unit,kpi_type,monitoring_frm_date,monitoring_to_date,monitoring_mechanism," +
+                        "frequency_eval,risk,evaluation_date,source_evaluate,upload,method_evaluation,value_achieved,unit,kpi_status,remarks,raise_need,FromPeriod,ToPeriod " +
+                        "from t_kpi_measurable_indicator t left join t_kpi_evaluation tt on t.id_measurable = tt.id_measurable where t.KPI_Id ='" + objKPIModels.KPI_Id + "'";
+                        ViewBag.MIList = objGlobaldata.Getdetails(sql2);
 
                         string sql3 = "select Action,TargetDate,PersonResponsible,remarks from t_kpi_actions where KPI_Id='" + objKPIModels.KPI_Id + "'";
                         ViewBag.ActionList = objGlobaldata.Getdetails(sql3);

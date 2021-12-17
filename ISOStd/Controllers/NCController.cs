@@ -193,7 +193,7 @@ namespace ISOStd.Controllers
                 objGlobaldata.AddFunctionalLog("Exception in AddNC: " + ex.ToString());
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
-            return Json(true);
+            return RedirectToAction("NCList");
         }
 
         [AllowAnonymous]

@@ -274,7 +274,7 @@ namespace ISOStd.Controllers
                 {
                     string sSqlstmt = "select id_doc_review,review_date, doc_level, doc_type, frequency, " +
                         "criteria, approvedby, division, (case when approve_status='1' then 'Approved' else 'Not Approved' end) as approve_status," +
-                        " approve_status as approve_statusId,approve_date from t_document_review where id_doc_review='" + sid_doc_review + "'";
+                        " approve_status as approve_statusId,approve_date,apprv_reject_comment from t_document_review where id_doc_review='" + sid_doc_review + "'";
 
                     DataSet dsReviewList = objGlobaldata.Getdetails(sSqlstmt);
                     if (dsReviewList.Tables.Count > 0 && dsReviewList.Tables[0].Rows.Count > 0)
@@ -293,6 +293,7 @@ namespace ISOStd.Controllers
                                 division = objGlobaldata.GetMultiCompanyBranchNameById(dsReviewList.Tables[0].Rows[0]["division"].ToString()),
                                 approve_status = dsReviewList.Tables[0].Rows[0]["approve_status"].ToString(),
                                 approve_statusId = dsReviewList.Tables[0].Rows[0]["approve_statusId"].ToString(),
+                                apprv_reject_comment = dsReviewList.Tables[0].Rows[0]["apprv_reject_comment"].ToString(),
                             };
 
                             DateTime dateValue;
@@ -428,30 +429,71 @@ namespace ISOStd.Controllers
             return View(objRList.ReviewList.ToList());
         }
 
+        //[AllowAnonymous]
+        //public ActionResult DocReviewFreqApproveOrReject(string id_doc_review, int iStatus, string PendingFlg)
+        //{
+        //    try
+        //    {
+        //        DocumentReviewModels objReview = new DocumentReviewModels();
+        //        string sStatus = "";
+
+        //        if (iStatus == 0)
+        //        {
+        //            sStatus = "Pending";
+        //        }
+        //        else if (iStatus == 1)
+        //        {
+        //            sStatus = "Approved";
+        //        }
+        //        else if (iStatus == 2)
+        //        {
+        //            sStatus = "Rejected";
+        //        }
+        //        if (objReview.FunDocReviewFreApproveOrReject(id_doc_review, iStatus))
+        //        {
+        //            //TempData["Successdata"] = "Document Review Frequency" + sStatus + " successfully";
+        //            TempData["Successdata"] = "Document Status Updated Successfully";
+        //        }
+        //        else
+        //        {
+        //            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        objGlobaldata.AddFunctionalLog("Exception in DocReviewFreqApproveOrReject: " + ex.ToString());
+        //        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+        //    }
+
+        //    if (PendingFlg != null && PendingFlg == "true")
+        //    {
+        //        string path = Request.CurrentExecutionFilePath;
+        //        string[] url = path.Split('/');
+        //        //var controller = url[1];
+        //        if (url[1] == "DocumentReview" || url[2] == "DocumentReview")
+        //        {
+        //            return RedirectToAction("DocumentReviewList", "DocumentReview");
+        //        }
+        //        else
+        //        {
+        //            return RedirectToAction("ListPendingForReview", "Dashboard");
+        //        }
+        //    }
+        //    else
+        //    {
+        //        return RedirectToAction("MgmtDocumentsList");
+        //    }
+        //}
+
+
         [AllowAnonymous]
-        public ActionResult DocReviewFreqApproveOrReject(string id_doc_review, int iStatus, string PendingFlg)
+        public ActionResult DocReviewFreqApproveOrReject(FormCollection form, DocumentReviewModels objModel)
         {
             try
             {
-                DocumentReviewModels objReview = new DocumentReviewModels();
-                string sStatus = "";
-
-                if (iStatus == 0)
+                if (objModel.FunDocReviewFreApproveOrReject(objModel))
                 {
-                    sStatus = "Pending";
-                }
-                else if (iStatus == 1)
-                {
-                    sStatus = "Approved";
-                }
-                else if (iStatus == 2)
-                {
-                    sStatus = "Rejected";
-                }
-                if (objReview.FunDocReviewFreApproveOrReject(id_doc_review, iStatus))
-                {
-                    //TempData["Successdata"] = "Document Review Frequency" + sStatus + " successfully";
-                    TempData["Successdata"] = "Document Status Updated Successfully";
+                    TempData["Successdata"] = "Document review status updated";
                 }
                 else
                 {
@@ -464,24 +506,7 @@ namespace ISOStd.Controllers
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
 
-            if (PendingFlg != null && PendingFlg == "true")
-            {
-                string path = Request.CurrentExecutionFilePath;
-                string[] url = path.Split('/');
-                //var controller = url[1];
-                if (url[1] == "DocumentReview" || url[2] == "DocumentReview")
-                {
-                    return RedirectToAction("DocumentReviewList", "DocumentReview");
-                }
-                else
-                {
-                    return RedirectToAction("ListPendingForReview", "Dashboard");
-                }
-            }
-            else
-            {
-                return RedirectToAction("MgmtDocumentsList");
-            }
+            return RedirectToAction("Index", "Home");
         }
 
         public JsonResult FunGetExistDoc(string DocLevels, string DocType)

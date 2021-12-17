@@ -131,6 +131,14 @@ namespace ISOStd.Models
         [Display(Name = "Criticality")]
         public string criticality { get; set; }
 
+        [Display(Name = "Evaluation Period")]
+        public string eval_period { get; set; }
+
+        [Display(Name = "Category")]
+        public string eval_category { get; set; }
+
+        public string Weightage { get; set; }
+
         internal bool FunDeletePerformanceDoc(string sPerformance_EvalId)
         {
             try
@@ -164,7 +172,7 @@ namespace ISOStd.Models
                 
 
                 string sSqlstmt = "insert into t_emp_performance_eval (emp_id, Designation, Dept_id, Eval_DoneBy, Eval_DoneBy_Desig,"
-                    + "Eval_DoneBy_DeptId, Weakness, Strengths, Training_Reqd, Actions_Taken, Eval_ReviewedBy, Eval_ReviewedBy_Desig, Eval_ReviewedBy_DeptId, LoggedBy,DocUploadPath,branch,JrMgr,SrMgr,training_need,remarks,recommendation,notified_to";
+                    + "Eval_DoneBy_DeptId, Weakness, Strengths, Training_Reqd, Actions_Taken, Eval_ReviewedBy, Eval_ReviewedBy_Desig, Eval_ReviewedBy_DeptId, LoggedBy,DocUploadPath,branch,JrMgr,SrMgr,training_need,remarks,recommendation,notified_to,eval_period,eval_category";
 
                 if (objEmpPerformanceEval.Evaluation_DoneOn > Convert.ToDateTime("01/01/0001"))
                 {
@@ -189,7 +197,7 @@ namespace ISOStd.Models
                  + "','" + objEmpPerformanceEval.Eval_DoneBy_DeptId + "','" + objEmpPerformanceEval.Weakness
                  + "','" + objEmpPerformanceEval.Strengths + "','" + objEmpPerformanceEval.Training_Reqd + "','" + objEmpPerformanceEval.Actions_Taken
                  + "','" + objEmpPerformanceEval.Eval_ReviewedBy + "','" + objEmpPerformanceEval.Eval_ReviewedBy_Desig + "','" + objEmpPerformanceEval.Eval_ReviewedBy_DeptId
-                 + "','" + user + "','" + objEmpPerformanceEval.DocUploadPath + "','" + sBranch + "','" + VarJrMgr + "','" + VarSrMgr + "','" + training_need + "','" + remarks + "','" + recommendation + "','" + notified_to + "'";
+                 + "','" + user + "','" + objEmpPerformanceEval.DocUploadPath + "','" + sBranch + "','" + VarJrMgr + "','" + VarSrMgr + "','" + training_need + "','" + remarks + "','" + recommendation + "','" + notified_to + "','" + eval_period + "','" + eval_category + "'";
 
                 sSqlstmt = sSqlstmt + sValues + ")";
 
@@ -324,7 +332,7 @@ namespace ISOStd.Models
                  + "', Eval_DoneBy_DeptId='" + objEmpPerformanceEval.Eval_DoneBy_DeptId + "', Weakness='" + objEmpPerformanceEval.Weakness
                  + "', Strengths='" + objEmpPerformanceEval.Strengths + "', Training_Reqd='" + objEmpPerformanceEval.Training_Reqd + "', Actions_Taken='" + objEmpPerformanceEval.Actions_Taken
                  + "', Eval_ReviewedBy='" + objEmpPerformanceEval.Eval_ReviewedBy + "', Eval_ReviewedBy_Desig='" + objEmpPerformanceEval.Eval_ReviewedBy_Desig
-                 + "', Eval_ReviewedBy_DeptId='" + objEmpPerformanceEval.Eval_ReviewedBy_DeptId + "',training_need='" + training_need + "',remarks='" + remarks + "',recommendation='" + recommendation + "',notified_to='" + notified_to + "'";
+                 + "', Eval_ReviewedBy_DeptId='" + objEmpPerformanceEval.Eval_ReviewedBy_DeptId + "',training_need='" + training_need + "',remarks='" + remarks + "',recommendation='" + recommendation + "',notified_to='" + notified_to + "',eval_period='" + eval_period + "',eval_category='" + eval_category + "'";
 
                 if (objEmpPerformanceEval.DocUploadPath != null)
                 {
@@ -353,7 +361,6 @@ namespace ISOStd.Models
                     EmpPerformanceElementsModels objElement = new EmpPerformanceElementsModels();
                     objElement.FunAddEmpPerformanceEvaluation(objEmpPerformanceEeleList);
 
-                    objModelList.lstEmpPerformanceEvalModels[0].Performance_EvalId = Performance_EvalId.ToString();
                    
                     FunAddTrainingList(objModelList);
                     return true;
@@ -545,6 +552,12 @@ namespace ISOStd.Models
         [Display(Name = "Questions")]
         public string Questions { get; set; }
 
+        [Display(Name = "Evaluation Period")]
+        public string eval_period { get; set; }
+
+        [Display(Name = "Category")]
+        public string eval_category { get; set; }
+
         //t_emp_performance_eval_options
 
         [Display(Name = "Rating Id")]
@@ -560,7 +573,25 @@ namespace ISOStd.Models
 
         public string SQ_Weightage { get; set; }
         public string Section_Weightage { get; set; }
-        
+
+
+        public string GetMaxRatingWeightage()
+        {
+            try
+            {
+                DataSet dsData = objGlobalData.Getdetails("select max(Weightage) Weightage from t_emp_performance_eval_rating");
+                if (dsData.Tables.Count > 0 && dsData.Tables[0].Rows.Count > 0)
+                {
+                    return (dsData.Tables[0].Rows[0]["Weightage"].ToString());
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobalData.AddFunctionalLog("Exception in GetMaxRatingWeightage: " + ex.ToString());
+            }
+            return "";
+        }
+
         //NameByIds
 
         public string GetRatingNameById(string SQ_OptionsId)
@@ -652,15 +683,33 @@ namespace ISOStd.Models
 
         //Questions
 
-        public MultiSelectList GetQuestionWithSectionList(string section,string branch)
+        public MultiSelectList GetQuestionWithSectionList(string section,string branch, string eval_period, string eval_category)
         {
             EmpPerformanceElementsModelsList Typelist = new EmpPerformanceElementsModelsList();
             Typelist.lstEmpPerformanceElements = new List<EmpPerformanceElementsModels>();
-
+            string sSqlstmt = "";
             try
             {
-                string sSqlstmt = "SELECT SQId, Questions FROM t_emp_performance_eval_questions where Section='"+ section +"' and branch = '"+ branch +"' and active=1";
-                
+                if(section != ""  && eval_period == "" && eval_category == "")
+                {
+                     sSqlstmt = "SELECT SQId, Questions FROM t_emp_performance_eval_questions where Section='" + section + "' and branch = '" + branch + "' and active=1";
+
+                }
+                if (section != "" &&  eval_period != "" && eval_category == "")
+                {
+                     sSqlstmt = "SELECT SQId, Questions FROM t_emp_performance_eval_questions where Section='" + section + "' and branch = '" + branch + "' and eval_period = '" + eval_period + "'  and active=1";
+
+                }
+                if (section != "" && eval_period == "" && eval_category != "")
+                {
+                     sSqlstmt = "SELECT SQId, Questions FROM t_emp_performance_eval_questions where Section='" + section + "' and branch = '" + branch + "' and eval_category = '" + eval_category + "'  and active=1";
+
+                }
+                if (section != "" && eval_period != "" && eval_category != "")
+                {
+                     sSqlstmt = "SELECT SQId, Questions FROM t_emp_performance_eval_questions where Section='" + section + "' and branch = '" + branch + "' and  eval_period = '" + eval_period + "' and eval_category = '" + eval_category + "'  and active=1";
+
+                }
                 DataSet dsEmp = objGlobalData.Getdetails(sSqlstmt);
                 if (dsEmp.Tables.Count > 0 && dsEmp.Tables[0].Rows.Count > 0)
                 {
@@ -669,7 +718,8 @@ namespace ISOStd.Models
                         EmpPerformanceElementsModels data = new EmpPerformanceElementsModels()
                         {
                             SQId = dsEmp.Tables[0].Rows[i]["SQId"].ToString(),
-                            Questions = dsEmp.Tables[0].Rows[i]["Questions"].ToString()
+                            Questions = dsEmp.Tables[0].Rows[i]["Questions"].ToString(),
+                          
                         };
 
                         Typelist.lstEmpPerformanceElements.Add(data);
@@ -700,7 +750,8 @@ namespace ISOStd.Models
                         EmpPerformanceElementsModels data = new EmpPerformanceElementsModels()
                         {
                             SQId = dsEmp.Tables[0].Rows[i]["SQId"].ToString(),
-                            Questions = dsEmp.Tables[0].Rows[i]["Questions"].ToString()
+                            Questions = dsEmp.Tables[0].Rows[i]["Questions"].ToString(),
+                           
                         };
 
                         Typelist.lstEmpPerformanceElements.Add(data);
@@ -714,7 +765,40 @@ namespace ISOStd.Models
             return new MultiSelectList(Typelist.lstEmpPerformanceElements, "SQId", "Questions");
         }
 
-        public MultiSelectList GetQuestionListBox()
+        //public MultiSelectList GetQuestionListBox(string eval_period,string eval_category)
+        //{
+        //    EmpPerformanceElementsModelsList Typelist = new EmpPerformanceElementsModelsList();
+        //    Typelist.lstEmpPerformanceElements = new List<EmpPerformanceElementsModels>();
+
+        //    try
+        //    {
+        //        string sbranch = objGlobalData.GetCurrentUserSession().division;
+
+        //        string sSqlstmt = "SELECT SQId, Questions FROM t_emp_performance_eval_questions  where branch = '" + sbranch + "' and eval_period = '" + eval_period + "' and eval_category = '" + eval_category + "' and active=1 order by Section,SQId asc";
+
+        //        DataSet dsEmp = objGlobalData.Getdetails(sSqlstmt);
+        //        if (dsEmp.Tables.Count > 0 && dsEmp.Tables[0].Rows.Count > 0)
+        //        {
+        //            for (int i = 0; i < dsEmp.Tables[0].Rows.Count; i++)
+        //            {
+        //                EmpPerformanceElementsModels data = new EmpPerformanceElementsModels()
+        //                {
+        //                    SQId = dsEmp.Tables[0].Rows[i]["SQId"].ToString(),
+        //                    Questions = dsEmp.Tables[0].Rows[i]["Questions"].ToString()
+        //                };
+
+        //                Typelist.lstEmpPerformanceElements.Add(data);
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        objGlobalData.AddFunctionalLog("Exception in GetQuestionListBox: " + ex.ToString());
+        //    }
+        //    return new MultiSelectList(Typelist.lstEmpPerformanceElements, "SQId", "Questions");
+        //}
+
+        public MultiSelectList GetQuestionListBox(string eval_period,string eval_category)
         {
             EmpPerformanceElementsModelsList Typelist = new EmpPerformanceElementsModelsList();
             Typelist.lstEmpPerformanceElements = new List<EmpPerformanceElementsModels>();
@@ -723,7 +807,7 @@ namespace ISOStd.Models
             {
                 string sbranch = objGlobalData.GetCurrentUserSession().division;
 
-                string sSqlstmt = "SELECT SQId, Questions FROM t_emp_performance_eval_questions  where branch = '" + sbranch + "' and active=1 order by Section,SQId asc";
+                string sSqlstmt = "SELECT SQId, Questions FROM t_emp_performance_eval_questions  where branch = '" + sbranch + "' and eval_period='"+ eval_period + "' and eval_category='"+ eval_category + "' and active=1 order by Section,SQId asc";
 
                 DataSet dsEmp = objGlobalData.Getdetails(sSqlstmt);
                 if (dsEmp.Tables.Count > 0 && dsEmp.Tables[0].Rows.Count > 0)
@@ -753,7 +837,7 @@ namespace ISOStd.Models
             {
                 //string sBranch = objGlobalData.GetCurrentUserSession().Work_Location;
 
-                string sSqlstmt = "insert into t_emp_performance_eval_questions (Section,Questions,branch) values('" + objModels.Section + "','"  + objModels.Questions + "','" + sBranch + "')";
+                string sSqlstmt = "insert into t_emp_performance_eval_questions (Section,Questions,branch,eval_period,eval_category) values('" + objModels.Section + "','"  + objModels.Questions + "','" + sBranch + "','" + objModels.eval_period + "','" + objModels.eval_category + "')";
 
                 return objGlobalData.ExecuteQuery(sSqlstmt);
             }
@@ -923,7 +1007,7 @@ namespace ISOStd.Models
             {
                 if (objEmpPerformanceEeleList.lstEmpPerformanceElements.Count > 0)
                 {
-                    string sSqlstmt = "delete from t_emp_performance_elements where Performance_EvalId='"
+                    string sSqlstmt = "SET SQL_SAFE_UPDATES=0;delete from t_emp_performance_elements where Performance_EvalId='"
                         + objEmpPerformanceEeleList.lstEmpPerformanceElements[0].Performance_EvalId + "'; ";
                     for (int i = 0; i < objEmpPerformanceEeleList.lstEmpPerformanceElements.Count; i++)
                     {

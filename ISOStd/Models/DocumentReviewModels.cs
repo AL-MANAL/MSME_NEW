@@ -61,6 +61,9 @@ namespace ISOStd.Models
         public string approve_statusId { get; set; }
         public DateTime approve_date { get; set; }
 
+        [Display(Name = "Comment")]
+        public string apprv_reject_comment { get; set; }
+
         public MultiSelectList GetDocReviewFrequencyList()
         {
             DropdownNCList NcdropList = new DropdownNCList();
@@ -240,7 +243,7 @@ namespace ISOStd.Models
                           + "<tr><td colspan=3><b>Defined On:<b></td> <td colspan=3>" + Convert.ToDateTime(dsReviewList.Tables[0].Rows[0]["review_date"].ToString()).ToString("dd/MM/yyyy")
                        + "</td></tr>"
                         + "<tr><td colspan=3><b>Document Level:<b></td> <td colspan=3>" + objGlobaldata.GetDocumentLevelbyId(dsReviewList.Tables[0].Rows[0]["doc_level"].ToString()) + "</td></tr>"
-                       + "<tr><td colspan=3><b>Document Type:<b></td> <td colspan=3>" +objGlobaldata.GetDropdownitemById(dsReviewList.Tables[0].Rows[0]["doc_type"].ToString()) + "</td></tr>"                     
+                       + "<tr><td colspan=3><b>Document Type:<b></td> <td colspan=3>" +objGlobaldata.GetDocumentTypebyId(dsReviewList.Tables[0].Rows[0]["doc_type"].ToString()) + "</td></tr>"                     
                     + "<tr><td colspan=3><b>Review Frequency:<b></td> <td colspan=3>" + objType.GetDocReviewFrequencyById(dsReviewList.Tables[0].Rows[0]["frequency"].ToString()) + "</td></tr>"
                     + "<tr><td colspan=3><b>Criteria to define the frequency:<b></td> <td colspan=3>" + objType.GetDocReviewCriteriaById(dsReviewList.Tables[0].Rows[0]["criteria"].ToString()) + "</td></tr>";
                     
@@ -308,7 +311,7 @@ namespace ISOStd.Models
         }
 
 
-        internal bool FunDocReviewFreApproveOrReject(string sid_doc_review, int sStatus)
+        internal bool FunDocReviewFreApproveOrReject(DocumentReviewModels objModels)
         {
             try
             {
@@ -317,7 +320,7 @@ namespace ISOStd.Models
 
                 user = objGlobaldata.GetCurrentUserSession().empid;
                 
-                string Sql1 = "update t_document_review set approve_status='"+ sStatus + "', approve_date='" + sApproveDate + "' where id_doc_review='" + sid_doc_review + "'";
+                string Sql1 = "update t_document_review set approve_status='"+ approve_status + "', approve_date='" + sApproveDate + "', apprv_reject_comment='" + apprv_reject_comment + "' where id_doc_review='" + id_doc_review + "'";
                 objGlobaldata.ExecuteQuery(Sql1);
 
                 //SendMgmtDocReviewApprovalmail(sid_doc_review);

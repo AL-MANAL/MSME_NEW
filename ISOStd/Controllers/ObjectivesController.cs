@@ -1955,7 +1955,7 @@ namespace ISOStd.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public ActionResult AddObjectiveActionPlan(FormCollection form, ObjectivesModels objObjectivesModels, HttpPostedFileBase upload)
+        public ActionResult AddObjectiveActionPlan(FormCollection form, ObjectivesModels objObjectivesModels, IEnumerable<HttpPostedFileBase> upload)
         {
             try
             {
@@ -1978,22 +1978,47 @@ namespace ISOStd.Controllers
                 objObjectivesModels.Objectives_Id = Convert.ToInt16(form["Objectives_Id"]);
                 objObjectivesModels.ObjectivesTrans_Id = Convert.ToInt16(form["ObjectivesTrans_Id"]);
 
-                if (upload != null && upload.ContentLength > 0)
-                {
-                    try
-                    {
-                        string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/Objectives"), Path.GetFileName(upload.FileName));
-                        string sFilename = "Upload" + "_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath);
-                        string sFilepath = Path.GetDirectoryName(spath);
+                //if (upload != null && upload.ContentLength > 0)
+                //{
+                //    try
+                //    {
+                //        string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/Objectives"), Path.GetFileName(upload.FileName));
+                //        string sFilename = "Upload" + "_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath);
+                //        string sFilepath = Path.GetDirectoryName(spath);
 
-                        upload.SaveAs(sFilepath + "/" + sFilename);
-                        objObjectivesModels.upload = "~/DataUpload/MgmtDocs/Objectives/" + sFilename;
-                        ViewBag.Message = "File uploaded successfully";
-                    }
-                    catch (Exception ex)
+                //        upload.SaveAs(sFilepath + "/" + sFilename);
+                //        objObjectivesModels.upload = "~/DataUpload/MgmtDocs/Objectives/" + sFilename;
+                //        ViewBag.Message = "File uploaded successfully";
+                //    }
+                //    catch (Exception ex)
+                //    {
+                //        ViewBag.Message = "ERROR:" + ex.Message.ToString();
+                //    }
+                //}
+                //else
+                //{
+                //    ViewBag.Message = "You have not specified a file.";
+                //}
+
+                HttpPostedFileBase files = Request.Files[0];
+                if (upload != null && files.ContentLength > 0)
+                {
+                    objObjectivesModels.upload = "";
+                    foreach (var file in upload)
                     {
-                        ViewBag.Message = "ERROR:" + ex.Message.ToString();
+                        try
+                        {
+                            string spath = Path.Combine(Server.MapPath("~/DataUpload/MgmtDocs/Objectives"), Path.GetFileName(file.FileName));
+                            string sFilename = "OBJ" + "_" + DateTime.Now.ToString("ddMMyyyyHHmm") + Path.GetFileName(spath), sFilepath = Path.GetDirectoryName(spath);
+                            file.SaveAs(sFilepath + "/" + sFilename);
+                            objObjectivesModels.upload = objObjectivesModels.upload + "," + "~/DataUpload/MgmtDocs/Objectives/" + sFilename;
+                        }
+                        catch (Exception ex)
+                        {
+                            objGlobaldata.AddFunctionalLog("Exception in AddObjectiveActionPlan-upload: " + ex.ToString());
+                        }
                     }
+                    objObjectivesModels.upload = objObjectivesModels.upload.Trim(',');
                 }
                 else
                 {

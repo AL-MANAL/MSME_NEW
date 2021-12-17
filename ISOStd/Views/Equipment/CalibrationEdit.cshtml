@@ -28,27 +28,10 @@
                     <span class="breadcrumb-item active">Update Calibration</span>
                 </div>
 
-                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+              
             </div>
 
-            <div class="header-elements d-none">
-                <div class="breadcrumb justify-content-center">
-
-
-                    <div class="breadcrumb-elements-item dropdown p-0">
-                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
-                            <i class="icon-gear mr-2"></i>
-                            Settings
-                        </a>
-
-                        <div class="dropdown-menu dropdown-menu-right">
-
-                            <div class="dropdown-divider"></div>
-                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
+         
         </div>
     </div>
 }
@@ -237,12 +220,23 @@
                         </td>
                         <td class="col">
                             <div class="editor-field">
-                                <input type="file" name="calibration_report_ref" id="calibration_report_ref" onchange="FileFormatValidation(this)" accept=".pdf,.xlsx,.xls,.jpeg,.jpg,.png,.doc,.docx,image/*" class="bootstrap-uploader" data-fouc />
-                                @if (Model.calibration_report_ref != "")
+                                <input type="file" name="calibration_report_ref" id="calibration_report_ref" onchange="FileFormatValidation(this)" accept=".pdf,.xlsx,.xls,.jpeg,.jpg,.png,.doc,.docx,image/*" class="bootstrap-uploader" data-fouc multiple />
+                                @if (Model.calibration_report_ref != null && Model.calibration_report_ref != "" && Model.calibration_report_ref.Length > 0)
                                 {
-                                    <span class="bg-dark py-1 px-2 rounded">
-                                        <a href='@Url.Action("DisplayDocument", "Reports", new { Document = Model.calibration_report_ref})' target="_blank">Preview</a>
-                                    </span>
+                                    <div class="editor-label">
+                                        <p style="font-weight: bold; margin: 0px;"> Docs. List:</p>
+                                    </div>
+                                    <p style="font-size: 11px; margin: 0px; color: red;">(Uncheck in case to remove a uploaded file)</p>
+                                    foreach (var docs in Model.calibration_report_ref.Trim(',').Split(','))
+                                    {
+                                        <p style="margin: 0px;">
+                                            <input type="checkbox" id="QCDocsVal" name="QCDocsVal" class="QCDocsVal" value="@docs.Trim(',')" checked title="Uncheck in case to remove a uploaded file" />
+                                            <input type="hidden" id="QCDocsValselectall" name="QCDocsValselectall" />
+                                            <span class="bg-dark py-1 px-2 rounded">
+                                                <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs})' target="_blank">Preview</a>
+                                            </span>
+                                        </p>
+                                    }
                                 }
 
 
@@ -255,12 +249,23 @@
                         </td>
                         <td class="col">
                             <div class="editor-field">
-                                <input type="file" name="fileCert" id="fileCert" onchange="FileFormatValidation(this)" accept=".pdf,.xlsx,.xls,.jpeg,.jpg,.png,.doc,.docx,image/*"class="bootstrap-uploader" data-fouc />
-                                @if (Model.calibration_certificate != "")
+                                <input type="file" name="calibration_certificate" id="calibration_certificate" onchange="FileFormatValidation(this)" accept=".pdf,.xlsx,.xls,.jpeg,.jpg,.png,.doc,.docx,image/*"class="bootstrap-uploader" data-fouc multiple />
+                                @if (Model.calibration_certificate != null && Model.calibration_certificate != "" && Model.calibration_certificate.Length > 0)
                                 {
-                                    <span class="bg-dark py-1 px-2 rounded">
-                                        <a href='@Url.Action("DisplayDocument", "Reports", new { Document = Model.calibration_certificate})' target="_blank">Preview</a>
-                                    </span>
+                                    <div class="editor-label">
+                                        <p style="font-weight: bold; margin: 0px;"> Docs. List:</p>
+                                    </div>
+                                    <p style="font-size: 11px; margin: 0px; color: red;">(Uncheck in case to remove a uploaded file)</p>
+                                    foreach (var docs1 in Model.calibration_certificate.Trim(',').Split(','))
+                                    {
+                                        <p style="margin: 0px;">
+                                            <input type="checkbox" id="QCDocsVal1" name="QCDocsVal1" class="QCDocsVal1" value="@docs1.Trim(',')" checked title="Uncheck in case to remove a uploaded file" />
+                                            <input type="hidden" id="QCDocsValselectall1" name="QCDocsValselectall1" />
+                                            <span class="bg-dark py-1 px-2 rounded">
+                                                <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs1})' target="_blank">Preview</a>
+                                            </span>
+                                        </p>
+                                    }
                                 }
                             </div>
                         </td>
@@ -413,6 +418,30 @@
 @section Scripts {
     <script>
         GetDetails();
+        $("#QCDocsVal").click(function () {
+            if ($("#QCDocsVal").prop('checked')) {
+                {
+                    $(this).prop('checked', true);
+                }
+            }
+            else {
+
+                $(this).prop('checked', false);
+                document.getElementById("QCDocsValselectall").value = "DeleteQC";
+            }
+        });
+        $("#QCDocsVal1").click(function () {
+            if ($("#QCDocsVal1").prop('checked')) {
+                {
+                    $(this).prop('checked', true);
+                }
+            }
+            else {
+
+                $(this).prop('checked', false);
+                document.getElementById("QCDocsValselectall1").value = "DeleteQC";
+            }
+        });
         function FileFormatValidation(file) {
             var ext = file.value.split(".").pop().toLowerCase();
             if ($.inArray(ext, ["pdf", "xlsx", "xls", "doc", "docx", "jpeg", "jpg", "png"]) == -1) {
@@ -451,7 +480,7 @@
                 }
                 if (Freq_of_calibration == "Semi Annually") {
                     var cal_dates = new Date(cal_date);
-                    dt.setDate(cal_dates.getDate() + 179);
+                    dt.setDate(cal_dates.getDate() + 181);
                     document.getElementById("due_date").value = dt.toISOString().slice(0, 10);
                 }
             }

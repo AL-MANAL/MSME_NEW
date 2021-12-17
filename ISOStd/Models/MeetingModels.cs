@@ -695,7 +695,8 @@ namespace ISOStd.Models
 
                        + "<tr><td colspan=3><b>Meeting Date:<b></td> <td colspan=3>" + Convert.ToDateTime(dsMeetingList.Tables[0].Rows[0]["meeting_date"].ToString()).ToString("dd/MM/yyyy HH:mm:ss")
                        + "</td></tr>"
-                    + "<tr><td colspan=3><b>Attendees:<b></td> <td colspan=3>" + objGlobalData.GetMultiHrEmpNameById(dsMeetingList.Tables[0].Rows[0]["AttendeesUser"].ToString())+ "," +dsMeetingList.Tables[0].Rows[0]["ext_attendees"].ToString() + "</td></tr>"
+                     + "<tr><td colspan=3><b>If any External Attendees:<b></td> <td colspan=3>" + (dsMeetingList.Tables[0].Rows[0]["ext_attendees"].ToString()) + "</td></tr>"
+                    + "<tr><td colspan=3><b>Attendees:<b></td> <td colspan=3>" + objGlobalData.GetMultiHrEmpNameById(dsMeetingList.Tables[0].Rows[0]["AttendeesUser"].ToString())+ "</td></tr>"
                     + "<tr><td colspan=3><b>Meeting Location:<b></td> <td colspan=3>" + (dsMeetingList.Tables[0].Rows[0]["Venue"].ToString()) + "</td></tr>";
 
                     if (File.Exists(aAttachment))

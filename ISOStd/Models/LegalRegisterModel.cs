@@ -318,6 +318,11 @@ namespace ISOStd.Models
         [Display(Name = "Report Date")]
         public DateTime report_date { get; set; }
 
+        [Display(Name = "Compliance to be done")]
+        public string compliance_done { get; set; }
+
+        
+
         //----------------- Start Law - Articles-----------------
         internal bool FunUpdateArticle(LegalRegisterModel objComp, LegalRegisterModelsList objCompList)
         {
@@ -369,12 +374,12 @@ namespace ISOStd.Models
                         sarticle_date = objList.LegalRegisterMList[i].article_date.ToString("yyyy-MM-dd");
                     }
 
-                    sSqlstmt = sSqlstmt + " insert into t_compliance_obligation_article (id_article,id_law,article_date,article_no,article_detail,article_recordno,frequency_eval)"
+                    sSqlstmt = sSqlstmt + " insert into t_compliance_obligation_article (id_article,id_law,article_date,article_no,article_detail,article_recordno,frequency_eval,compliance_done,monitoring)"
                     + " values(" + sid_article + "," + objList.LegalRegisterMList[0].id_law + ",'" + sarticle_date + "','" + objList.LegalRegisterMList[i].article_no 
-                    + "','" + objList.LegalRegisterMList[i].article_detail + "','" + objList.LegalRegisterMList[i].article_recordno + "','" + objList.LegalRegisterMList[i].frequency_eval + "')"
+                    + "','" + objList.LegalRegisterMList[i].article_detail + "','" + objList.LegalRegisterMList[i].article_recordno + "','" + objList.LegalRegisterMList[i].frequency_eval + "','" + objList.LegalRegisterMList[i].compliance_done + "','" + objList.LegalRegisterMList[i].monitoring + "')"
                     + " ON DUPLICATE KEY UPDATE "
                     + "id_article= values(id_article),id_law= values(id_law), article_date= values(article_date), article_no = values(article_no), article_detail = values(article_detail)" +
-                    ", article_recordno = values(article_recordno), frequency_eval = values(frequency_eval); ";
+                    ", article_recordno = values(article_recordno), frequency_eval = values(frequency_eval), compliance_done = values(compliance_done), monitoring = values(monitoring); ";
                 }
 
                 return objGlobalData.ExecuteQuery(sSqlstmt);

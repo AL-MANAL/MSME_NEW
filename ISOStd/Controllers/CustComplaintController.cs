@@ -251,7 +251,7 @@ namespace ISOStd.Controllers
                 //    }
                 //}
 
-                sSqlstmt = sSqlstmt + sSearchtext + " and LoggedBy = '"+ objGlobaldata.GetCurrentUserSession().empid +"' order by ReceivedDate desc";
+                sSqlstmt = sSqlstmt + sSearchtext + "  order by ReceivedDate desc";
                 DataSet dsComplaintModelsList = objGlobaldata.Getdetails(sSqlstmt);
 
                 if (dsComplaintModelsList.Tables.Count > 0 && dsComplaintModelsList.Tables[0].Rows.Count > 0)

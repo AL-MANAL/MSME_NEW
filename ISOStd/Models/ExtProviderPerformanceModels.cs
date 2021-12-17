@@ -35,16 +35,16 @@ namespace ISOStd.Models
         [Display(Name = "Report Number")]
         public string ReportNo { get; set; }
 
-        [Display(Name = "Total number of POs issued")]
+        [Display(Name = "Total number of POs issues")]
         public decimal PO_Issued { get; set; }
 
         [Display(Name = "Total number of POs completed")]
         public decimal PO_Completed { get; set; }
 
-        [Display(Name = "Total no of quality issued(TQI)")]
+        [Display(Name = "Total no of quality issues(TQI)")]
         public decimal Quality_Issue { get; set; }
 
-        [Display(Name = "Total no of delivery issued(TDI)")]
+        [Display(Name = "Total no of delivery issues(TDI)")]
         public decimal Delivery_Issue { get; set; }
 
         [Display(Name = "Evaluated By")]
@@ -93,7 +93,7 @@ namespace ISOStd.Models
 
         //t_extprovider_performance
 
-        [Display(Name = "Total no of quantity issued(TQNI)")]
+        [Display(Name = "Total no of quantity issues(TQNI)")]
         public decimal quantity_issue { get; set; }
 
         [Display(Name = "Total number of LOTs received")]
@@ -239,8 +239,9 @@ namespace ISOStd.Models
             {
                 string sType = "email";
 
-                string sSqlstmt = "select Id_Performace,ReportNo,Ext_Provider_Name,Scheduled_by,Approved_by,notified_to"
-                    + " from t_extprovider_performance where Id_Performace='" + Id_Performace + "'";
+                string sSqlstmt = "select ReportNo,Eval_Date,Ext_Provider_Name,Scope_ofSupplies,po_detail,Eval_FromDate,"
+                +"Eval_ToDate,lots_received,Quality_Issue,quantity_issue,Delivery_Issue,quality_rating,quantity_rating,delivery_rating,total_rating,Scheduled_by,Approved_by,notified_to"
+                + " from t_extprovider_performance where Id_Performace='" + Id_Performace + "'";
 
                 DataSet dsList = objGlobalData.Getdetails(sSqlstmt);
 
@@ -266,9 +267,52 @@ namespace ISOStd.Models
                     string sToEmailIds = objGlobalData.GetMultiHrEmpEmailIdById(dsList.Tables[0].Rows[0]["Approved_by"].ToString());
                     string sCCEmailIds = objGlobalData.GetMultiHrEmpEmailIdById(dsList.Tables[0].Rows[0]["Scheduled_by"].ToString())+","+ objGlobalData.GetMultiHrEmpEmailIdById(dsList.Tables[0].Rows[0]["notified_to"].ToString());
 
+                    string Eval_Date = "", Eval_FromDate="", Eval_ToDate="";
+                    if (dsList.Tables[0].Rows[0]["Eval_Date"].ToString() != null && dsList.Tables[0].Rows[0]["Eval_Date"].ToString() != "")
+                    {
+                        Eval_Date = Convert.ToDateTime(dsList.Tables[0].Rows[0]["Eval_Date"].ToString()).ToString("dd/MM/yyyy");
+                    }
+                    if (dsList.Tables[0].Rows[0]["Eval_FromDate"].ToString() != null && dsList.Tables[0].Rows[0]["Eval_FromDate"].ToString() != "")
+                    {
+                        Eval_FromDate = Convert.ToDateTime(dsList.Tables[0].Rows[0]["Eval_FromDate"].ToString()).ToString("dd/MM/yyyy");
+                    }
+                    if (dsList.Tables[0].Rows[0]["Eval_ToDate"].ToString() != null && dsList.Tables[0].Rows[0]["Eval_ToDate"].ToString() != "")
+                    {
+                        Eval_ToDate = Convert.ToDateTime(dsList.Tables[0].Rows[0]["Eval_ToDate"].ToString()).ToString("dd/MM/yyyy");
+                    }
                     sHeader = "<tr><td colspan=3><b>Report No:<b></td> <td colspan=3>"
                         + (dsList.Tables[0].Rows[0]["ReportNo"].ToString()) + "</td></tr>"
-                          + "<tr><td colspan=3><b>External Provider Name:<b></td> <td colspan=3>" + objGlobalData.GetSupplierNameById(dsList.Tables[0].Rows[0]["Ext_Provider_Name"].ToString()) + "</td></tr>";
+                          + "<tr><td colspan=3><b>External Provider Name:<b></td> <td colspan=3>" + objGlobalData.GetSupplierNameById(dsList.Tables[0].Rows[0]["Ext_Provider_Name"].ToString()) + "</td></tr>"
+
+                            + "<tr><td colspan=3><b>Evaluation Date:<b></td> <td colspan=3>" + Eval_Date + "</td></tr>"
+
+                    + "<tr><td colspan=3><b>Scope of Supply or Service:<b></td> <td colspan=3>" + (dsList.Tables[0].Rows[0]["Scope_ofSupplies"].ToString()) + "</td></tr>"
+
+                    + "<tr><td colspan=3><b>PO Details:<b></td> <td colspan=3>" + (dsList.Tables[0].Rows[0]["po_detail"].ToString()) + "</td></tr>"
+
+                    + "<tr><td colspan=3><b>Evaluation From Date:< b></td> <td colspan=3>" + Eval_FromDate + "</td></tr>"
+
+                    + "<tr><td colspan=3><b>Evaluation To Date:<b></td> <td colspan=3>" + Eval_ToDate + "</td></tr>"
+
+                    + "<tr><td colspan=3><b>Total number of LOTs received:<b></td> <td colspan=3>" + (dsList.Tables[0].Rows[0]["lots_received"].ToString()) + "</td></tr>"
+
+                    + "<tr><td colspan=3><b>Total no of quality issues(TQI):<b></td> <td colspan=3>" + (dsList.Tables[0].Rows[0]["Quality_Issue"].ToString()) + "</td></tr>"
+
+                    + "<tr><td colspan=3><b>Total no of quantity issues(TQNI):<b></td> <td colspan=3>" + (dsList.Tables[0].Rows[0]["quantity_issue"].ToString()) + "</td></tr>"
+
+                    + "<tr><td colspan=3><b>Total no of delivery issues(TDI):<b></td> <td colspan=3>" + (dsList.Tables[0].Rows[0]["Delivery_Issue"].ToString()) + "</td></tr>"
+
+                    + "<tr><td colspan=3><b>Quality Rating:<b></td> <td colspan=3>" + (dsList.Tables[0].Rows[0]["quality_rating"].ToString()) + "</td></tr>"
+
+                    + "<tr><td colspan=3><b>Quantity Rating:<b></td> <td colspan=3>" + (dsList.Tables[0].Rows[0]["quantity_rating"].ToString()) + "</td></tr>"
+
+                    + "<tr><td colspan=3><b>Delivery Rating:<b></td> <td colspan=3>" + (dsList.Tables[0].Rows[0]["delivery_rating"].ToString()) + "</td></tr>"
+
+                    + "<tr><td colspan=3><b>Total Supplier Rating:<b></td> <td colspan=3>" + (dsList.Tables[0].Rows[0]["total_rating"].ToString()) + "</td></tr>"
+
+                    + "<tr><td colspan=3><b>Evaluated By:<b></td> <td colspan=3>" + objGlobalData.GetMultiHrEmpNameById(dsList.Tables[0].Rows[0]["Scheduled_by"].ToString()) + "</td></tr>"
+
+                    + "<tr><td colspan=3><b>To be reviewed & verified by:<b></td> <td colspan=3>" + objGlobalData.GetMultiHrEmpNameById(dsList.Tables[0].Rows[0]["Approved_by"].ToString()) + "</td></tr>";
 
                     sContent = sContent.Replace("{FromMsg}", "");
                     sContent = sContent.Replace("{UserName}", sName);
@@ -321,8 +365,9 @@ namespace ISOStd.Models
             {
                 string sType = "email";
 
-                string sSqlstmt = "select Id_Performace,ReportNo,Ext_Provider_Name,Scheduled_by,Approved_by,notified_to,apprv_comments,"
-                     + "(CASE WHEN apprv_status = '0' THEN 'Pending for review' WHEN apprv_status = '1' THEN 'Rejected' WHEN apprv_status = '2' THEN 'Reviewed' end) as apprv_status"
+                string sSqlstmt = "select ReportNo,Eval_Date,Ext_Provider_Name,Scope_ofSupplies,po_detail,Eval_FromDate,"
+            + "Eval_ToDate,lots_received,Quality_Issue,quantity_issue,Delivery_Issue,quality_rating,quantity_rating,delivery_rating,total_rating,Scheduled_by,Approved_by,notified_to,"
+                 + "(CASE WHEN apprv_status = '0' THEN 'Pending for review' WHEN apprv_status = '1' THEN 'Rejected' WHEN apprv_status = '2' THEN 'Reviewed' end) as apprv_status,apprv_comments"
                      + " from t_extprovider_performance where Id_Performace='" + Id_Performace + "'";
 
                 DataSet dsList = objGlobalData.Getdetails(sSqlstmt);
@@ -352,10 +397,52 @@ namespace ISOStd.Models
 
 
 
+                    string Eval_Date = "", Eval_FromDate = "", Eval_ToDate = "";
+                    if (dsList.Tables[0].Rows[0]["Eval_Date"].ToString() != null && dsList.Tables[0].Rows[0]["Eval_Date"].ToString() != "")
+                    {
+                        Eval_Date = Convert.ToDateTime(dsList.Tables[0].Rows[0]["Eval_Date"].ToString()).ToString("dd/MM/yyyy");
+                    }
+                    if (dsList.Tables[0].Rows[0]["Eval_FromDate"].ToString() != null && dsList.Tables[0].Rows[0]["Eval_FromDate"].ToString() != "")
+                    {
+                        Eval_FromDate = Convert.ToDateTime(dsList.Tables[0].Rows[0]["Eval_FromDate"].ToString()).ToString("dd/MM/yyyy");
+                    }
+                    if (dsList.Tables[0].Rows[0]["Eval_ToDate"].ToString() != null && dsList.Tables[0].Rows[0]["Eval_ToDate"].ToString() != "")
+                    {
+                        Eval_ToDate = Convert.ToDateTime(dsList.Tables[0].Rows[0]["Eval_ToDate"].ToString()).ToString("dd/MM/yyyy");
+                    }
                     sHeader = "<tr><td colspan=3><b>Report No:<b></td> <td colspan=3>"
                         + (dsList.Tables[0].Rows[0]["ReportNo"].ToString()) + "</td></tr>"
                           + "<tr><td colspan=3><b>External Provider Name:<b></td> <td colspan=3>" + objGlobalData.GetSupplierNameById(dsList.Tables[0].Rows[0]["Ext_Provider_Name"].ToString()) + "</td></tr>"
-                           + "<tr><td colspan=3><b>Approval Status:<b></td> <td colspan=3>" + (dsList.Tables[0].Rows[0]["apprv_status"].ToString()) + "</td></tr>"
+
+                            + "<tr><td colspan=3><b>Evaluation Date:<b></td> <td colspan=3>" + Eval_Date + "</td></tr>"
+
+                    + "<tr><td colspan=3><b>Scope of Supply or Service:<b></td> <td colspan=3>" + (dsList.Tables[0].Rows[0]["Scope_ofSupplies"].ToString()) + "</td></tr>"
+
+                    + "<tr><td colspan=3><b>PO Details:<b></td> <td colspan=3>" + (dsList.Tables[0].Rows[0]["po_detail"].ToString()) + "</td></tr>"
+
+                    + "<tr><td colspan=3><b>Evaluation From Date:< b></td> <td colspan=3>" + Eval_FromDate + "</td></tr>"
+
+                    + "<tr><td colspan=3><b>Evaluation To Date:<b></td> <td colspan=3>" + Eval_ToDate + "</td></tr>"
+
+                    + "<tr><td colspan=3><b>Total number of LOTs received:<b></td> <td colspan=3>" + (dsList.Tables[0].Rows[0]["lots_received"].ToString()) + "</td></tr>"
+
+                    + "<tr><td colspan=3><b>Total no of quality issues(TQI):<b></td> <td colspan=3>" + (dsList.Tables[0].Rows[0]["Quality_Issue"].ToString()) + "</td></tr>"
+
+                    + "<tr><td colspan=3><b>Total no of quantity issues(TQNI):<b></td> <td colspan=3>" + (dsList.Tables[0].Rows[0]["quantity_issue"].ToString()) + "</td></tr>"
+
+                    + "<tr><td colspan=3><b>Total no of delivery issues(TDI):<b></td> <td colspan=3>" + (dsList.Tables[0].Rows[0]["Delivery_Issue"].ToString()) + "</td></tr>"
+
+                    + "<tr><td colspan=3><b>Quality Rating:<b></td> <td colspan=3>" + (dsList.Tables[0].Rows[0]["quality_rating"].ToString()) + "</td></tr>"
+
+                    + "<tr><td colspan=3><b>Quantity Rating:<b></td> <td colspan=3>" + (dsList.Tables[0].Rows[0]["quantity_rating"].ToString()) + "</td></tr>"
+
+                    + "<tr><td colspan=3><b>Delivery Rating:<b></td> <td colspan=3>" + (dsList.Tables[0].Rows[0]["delivery_rating"].ToString()) + "</td></tr>"
+
+                    + "<tr><td colspan=3><b>Total Supplier Rating:<b></td> <td colspan=3>" + (dsList.Tables[0].Rows[0]["total_rating"].ToString()) + "</td></tr>"
+
+                    + "<tr><td colspan=3><b>Evaluated By:<b></td> <td colspan=3>" + objGlobalData.GetMultiHrEmpNameById(dsList.Tables[0].Rows[0]["Scheduled_by"].ToString()) + "</td></tr>"
+
+                    +"<tr><td colspan=3><b>Approval Status:<b></td> <td colspan=3>" + (dsList.Tables[0].Rows[0]["apprv_status"].ToString()) + "</td></tr>"
                             + "<tr><td colspan=3><b>Comments:<b></td> <td colspan=3>" + (dsList.Tables[0].Rows[0]["apprv_comments"].ToString()) + "</td></tr>";
 
                     sContent = sContent.Replace("{FromMsg}", "");

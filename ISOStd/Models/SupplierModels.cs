@@ -137,6 +137,10 @@ namespace ISOStd.Models
         [Display(Name = "PAN No")]
         public string pan_no { get; set; }
 
+
+        [Display(Name = "Notified To")]
+        public string notified_to { get; set; }
+
         internal bool FunInvalidSupplier(string sSupplierID, string invalid_reason)
         {
             try
@@ -160,7 +164,7 @@ namespace ISOStd.Models
         {
             try
             {
-                string sSqlstmt = "select SupplierId from t_supplier where SupplierName='" + SupplierName + "'";
+                string sSqlstmt = "select SupplierId from t_supplier where SupplierName='" + SupplierName + "' and active=1";
                 DataSet dsData = objGlobalData.Getdetails(sSqlstmt);
                 if (dsData.Tables.Count > 0 && dsData.Tables[0].Rows.Count > 0)
                 {
@@ -178,7 +182,7 @@ namespace ISOStd.Models
         {
             try
             {
-                string sSqlstmt = "select SupplierId from t_supplier where SupplierCode='" + SupplierCode + "'";
+                string sSqlstmt = "select SupplierId from t_supplier where SupplierCode='" + SupplierCode + "' and active=1";
                 DataSet dsData = objGlobalData.Getdetails(sSqlstmt);
                 if (dsData.Tables.Count > 0 && dsData.Tables[0].Rows.Count > 0)
                 {
@@ -201,7 +205,7 @@ namespace ISOStd.Models
 
                 string sSqlstmt = "insert into t_supplier (SupplierCode, SupplierName, SupplyScope, ApprovalCriteria, ApprovedBy, Remarks, Added_Updated_By, ApprovedOn,"
                     + " City,Country, ContactPerson, ContactNo, Address, FaxNo, PO_No,UpdatedOn,Email,VatNo,RefNo,Supplier_type,Payment_term,License_Expiry,NotificationDays," +
-                    "NotificationPeriod,NotificationValue,Criticality,branch,Supplier_Work_Nature,Department,Location,pan_no";
+                    "NotificationPeriod,NotificationValue,Criticality,branch,Supplier_Work_Nature,Department,Location,pan_no,notified_to";
                 string UpdateOn = DateTime.Now.ToString("yyyy/MM/dd HH:mm");
                 if (objSupplierModels.SupportingDoc != null && objSupplierModels.SupportingDoc != "")
                 {
@@ -214,7 +218,7 @@ namespace ISOStd.Models
                         + "','" + objSupplierModels.FaxNo + "','" + objSupplierModels.PO_No + "','" + UpdateOn + "','" + objSupplierModels.Email + "','" + objSupplierModels.VatNo + "','" + objSupplierModels.RefNo + "',"
                         + "'" + objSupplierModels.Supplier_type + "','" + objSupplierModels.Payment_term + "','" + dtDateOfExpiry + "','" + objSupplierModels.NotificationDays + "','" + objSupplierModels.NotificationPeriod 
                         + "','" + objSupplierModels.NotificationValue + "','" + objSupplierModels.Criticality + "','" + objSupplierModels.branch + "','" + objSupplierModels.Supplier_Work_Nature
-                        + "','" + objSupplierModels.Department + "','" + objSupplierModels.Location + "','" + objSupplierModels.pan_no + "'";
+                        + "','" + objSupplierModels.Department + "','" + objSupplierModels.Location + "','" + objSupplierModels.pan_no + "','" + objSupplierModels.notified_to + "'";
 
                 if (objSupplierModels.SupportingDoc != null && objSupplierModels.SupportingDoc != "")
                 {
@@ -226,13 +230,14 @@ namespace ISOStd.Models
                 {
                     string sUsername = objGlobalData.GetEmpHrNameById(objSupplierModels.ApprovedBy);
                     string sEmailid = objGlobalData.GetMultiHrEmpEmailIdById(objSupplierModels.ApprovedBy);
+                    string sCCList=objGlobalData.GetMultiHrEmpEmailIdById(objSupplierModels.notified_to);
                     if (sEmailid != null && sEmailid != "")
                     {
                         string sExtraMsg = "There is Supplier details Pending for your approval,Supplier Name: " + objSupplierModels.SupplierName;
                         //Dictionary<string, string> dicEmailContent = objGlobalData.FormEmailBody(objGlobalData.GetEmpHrNameById(objSupplierModels.ApprovedBy), "supplierdoc", sExtraMsg);
 
                         Dictionary<string, string> dicEmailContent = objGlobalData.FormEmailBody(sUsername, "supplierdoc", sExtraMsg);
-                        return objGlobalData.Sendmail(sEmailid, dicEmailContent["subject"], dicEmailContent["body"], "");
+                        return objGlobalData.Sendmail(sEmailid, dicEmailContent["subject"], dicEmailContent["body"], "", sCCList);
                     }
                 }
             }
@@ -259,7 +264,7 @@ namespace ISOStd.Models
                     + ", RefNo='" + objSupplierModels.RefNo + "', Supplier_type='" + objSupplierModels.Supplier_type + "', Payment_term='" + objSupplierModels.Payment_term + "', License_Expiry='" + dtDateOfExpiry
                     + "', NotificationDays='" + objSupplierModels.NotificationDays + "', NotificationPeriod='" + objSupplierModels.NotificationPeriod + "', NotificationValue='" + objSupplierModels.NotificationValue 
                     + "', Criticality='" + objSupplierModels.Criticality + "', Supplier_Work_Nature='" + objSupplierModels.Supplier_Work_Nature
-                    + "', branch='" + objSupplierModels.branch + "', Department='" + objSupplierModels.Department + "', Location='" + objSupplierModels.Location + "', pan_no='" + pan_no + "'";
+                    + "', branch='" + objSupplierModels.branch + "', Department='" + objSupplierModels.Department + "', Location='" + objSupplierModels.Location + "', pan_no='" + pan_no + "', notified_to='" + notified_to + "'";
 
                 if (objSupplierModels.SupportingDoc != null && objSupplierModels.SupportingDoc != "")
                 {

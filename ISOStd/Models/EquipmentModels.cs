@@ -5,6 +5,8 @@ using System.Web;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using System.Data;
+using System.IO;
+using System.Text.RegularExpressions;
 
 namespace ISOStd.Models
 {
@@ -125,7 +127,15 @@ namespace ISOStd.Models
                 + objEquipmentModels.Manufacturer + "','" + objEquipmentModels.Equipment_status + "','" + objEquipmentModels.Model_No + "','" + objEquipmentModels.Department + "'"
                 + ",'" + objEquipmentModels.DocUploadPath + "','" + objEquipmentModels.RespPerson + "','" + objEquipmentModels.equp_type + "','" + objEquipmentModels.branch + "','" + objEquipmentModels.location + "','" + objEquipmentModels.Equipment_location + "')";
 
-                return objGlobalData.ExecuteQuery(sSqlstmt);
+
+                int Equipment_Id = 0;
+                if (int.TryParse(objGlobalData.ExecuteQueryReturnId(sSqlstmt).ToString(), out Equipment_Id))
+                {
+                    if (Equipment_Id > 0)
+                    {
+                        return sendEquipmentMail(Equipment_Id, "Equipment Details");
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -134,7 +144,90 @@ namespace ISOStd.Models
             }
             return false;
         }
-        
+
+        internal bool sendEquipmentMail(int Equipment_Id, string sMessage = "")
+        {
+            try
+            {
+                string sType = "email";
+
+                string sSqlstmt = "select Equipment_Id,equp_type,Equipment_serial_no,Equipment_Name,Model_No,Freq_of_calibration,Commissioning_Date,Source_of_calibration,Equipment_status,RespPerson from  t_equipment where Equipment_Id='" + Equipment_Id + "'";
+
+                DataSet dsData = objGlobalData.Getdetails(sSqlstmt);
+
+                if (dsData.Tables.Count > 0 && dsData.Tables[0].Rows.Count > 0)
+                {
+                    //objGlobalData.AddFunctionalLog("Step");
+                    //AddFunctionalLog("Step");
+                    string sHeader, sInformation = "", sSubject = "", sContent = "", aAttachment = "", sCCEmailIds="";
+
+                    //using streamreader for reading my htmltemplate 
+                    //Form the Email Subject and Body content
+                    DataSet dsEmailXML = new DataSet();
+                    dsEmailXML.ReadXml(HttpContext.Current.Server.MapPath("~/EmailTemplates.xml"));
+
+                    if (sType != "" && dsEmailXML.Tables.Count > 0 && dsEmailXML.Tables[sType] != null && dsEmailXML.Tables[sType].Rows.Count > 0)
+                    {
+                        sSubject = dsEmailXML.Tables[sType].Rows[0]["subject"].ToString();
+                    }
+
+                    using (StreamReader reader = new StreamReader(HttpContext.Current.Server.MapPath("~/Views/EmailTemplate/EmailTemplate.html")))
+                    {
+                        sContent = reader.ReadToEnd();
+                    }
+                    //string sName = objGlobalData.GetMultiHrEmpNameById(dsData.Tables[0].Rows[0]["approved_by"].ToString());
+                    string sToEmailIds = objGlobalData.GetMultiHrEmpEmailIdById(dsData.Tables[0].Rows[0]["RespPerson"].ToString());
+                   // string sCCEmailIds = objGlobalData.GetMultiHrEmpEmailIdById(dsData.Tables[0].Rows[0]["logged_by"].ToString()) + "," + objGlobalData.GetMultiHrEmpEmailIdById(dsData.Tables[0].Rows[0]["pers_resp"].ToString());
+
+                    string Commissioning_Date = "";
+                    if (dsData.Tables[0].Rows[0]["Commissioning_Date"].ToString() != null && Convert.ToDateTime(dsData.Tables[0].Rows[0]["Commissioning_Date"].ToString()) > Convert.ToDateTime("01/01/0001"))
+                    {
+                        Commissioning_Date = Convert.ToDateTime(dsData.Tables[0].Rows[0]["Commissioning_Date"].ToString()).ToString("yyyy-MM-dd");
+                    }
+                    sHeader = "<tr><td colspan=3><b>Equipment Type:<b></td> <td colspan=3>" + objGlobalData.GetDropdownitemById(dsData.Tables[0].Rows[0]["equp_type"].ToString()) + "</td></tr>"
+                    + "<tr><td colspan=3><b>Serial Number/Equipment No:<b></td> <td colspan=3>" + dsData.Tables[0].Rows[0]["Equipment_serial_no"].ToString() + "</td></tr>"
+                    + "<tr><td colspan=3><b>Equipment Name:<b></td> <td colspan=3>" + (dsData.Tables[0].Rows[0]["Equipment_Name"].ToString()) +"</td></tr>"
+
+                     + "<tr><td colspan=3><b>Model Number:< b></td> <td colspan=3>" + (dsData.Tables[0].Rows[0]["Model_No"].ToString()) + "</td></tr>"
+
+                    + "<tr><td colspan=3><b>Calibration Frequency:<b></td> <td colspan=3>" + objGlobalData.GetDropdownitemById(dsData.Tables[0].Rows[0]["Freq_of_calibration"].ToString()) + "</td></tr>"
+
+                    + "<tr><td colspan=3><b>Commissioning Date:<b></td> <td colspan=3>" + Commissioning_Date + "</td></tr>"
+
+                    + "<tr><td colspan=3><b>Source of calibration:<b></td> <td colspan=3>" + objGlobalData.GetDropdownitemById(dsData.Tables[0].Rows[0]["Source_of_calibration"].ToString()) + "</td></tr>"
+                    +"<tr><td colspan=3><b>Status:<b></td> <td colspan=3>" + objGlobalData.GetDropdownitemById(dsData.Tables[0].Rows[0]["Equipment_status"].ToString()) + "</td></tr>";
+
+
+
+                    sContent = sContent.Replace("{FromMsg}", "");
+                    //sContent = sContent.Replace("{UserName}", sName);
+                    sContent = sContent.Replace("{Title}", "Equipment Details");
+                    sContent = sContent.Replace("{content}", sHeader + sInformation);
+                    sContent = sContent.Replace("{message}", "");
+                    sContent = sContent.Replace("{extramessage}", "");
+
+                    sToEmailIds = Regex.Replace(sToEmailIds, ",+", ",");
+                    sToEmailIds = sToEmailIds.Trim();
+                    sToEmailIds = sToEmailIds.TrimEnd(',');
+                    sToEmailIds = sToEmailIds.TrimStart(',');
+
+                    sCCEmailIds = Regex.Replace(sCCEmailIds, ",+", ",");
+                    sCCEmailIds = sCCEmailIds.Trim();
+                    sCCEmailIds = sCCEmailIds.TrimEnd(',');
+                    sCCEmailIds = sCCEmailIds.TrimStart(',');
+
+                    return objGlobalData.Sendmail(sToEmailIds, sSubject + sMessage, sContent, aAttachment, sCCEmailIds, "");
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobalData.AddFunctionalLog("Exception in sendEquipmentMail: " + ex.ToString());
+            }
+            return false;
+        }
+
+
+
         internal bool FunUpdateEquipment(EquipmentModels objEquipmentModels)
         {
             try
@@ -480,7 +573,7 @@ namespace ISOStd.Models
 
         //[Required]
         [DataType(DataType.MultilineText)]
-        [Display(Name = "Spare Used")]
+        [Display(Name = "Spare used")]
         public string Spare_Used { get; set; }
 
         //[Required]
@@ -501,7 +594,7 @@ namespace ISOStd.Models
         [Display(Name = "Maintenance Done By")]
         public string done_by { get; set; }
 
-        [Display(Name ="Spent Amount")]
+        [Display(Name = "Amount")]
         public Decimal Amt_Spent { get; set; }
 
         [Display(Name = "Email Notification Period")]
@@ -513,8 +606,12 @@ namespace ISOStd.Models
         [Display(Name = "Notification Days")]
         public int NotificationDays { get; set; }
 
+        [Display(Name = "Voucher")]
+        public string voucher { get; set; }
 
-        internal bool FunAddMaintanance(EquipmentMaintanance objEquipmentMaintanance)
+        public string id_spare { get; set; }
+
+        internal bool FunAddMaintanance(EquipmentMaintanance objEquipmentMaintanance, EquipmentMaintananceList objList)
         {
             try
             {
@@ -528,7 +625,23 @@ namespace ISOStd.Models
                 + "','" + objEquipmentMaintanance.Maintenance_RectificationWork + "','" + sDown_Time_From + "','" + sDown_Time_To
                 + "','" + objEquipmentMaintanance.Spare_Used + "','" + objEquipmentMaintanance.Remarks + "','" + objEquipmentMaintanance.Amt_Spent + "')";
                 //Down_Time_To, Down_Time_From
-                return objGlobalData.ExecuteQuery(sSqlstmt);
+               
+                int Maintenance_Id = 0;
+                if (int.TryParse(objGlobalData.ExecuteQueryReturnId(sSqlstmt).ToString(), out Maintenance_Id))
+                {
+                    if (Maintenance_Id > 0)
+                    {
+
+                        if (Convert.ToInt32(objList.lstEquipmentMaintanance.Count) > 0)
+                        {
+                            objList.lstEquipmentMaintanance[0].Maintenance_Id = Maintenance_Id.ToString();
+                            return FunAddSpareList(objList);
+                        }
+                    }
+                }
+                       
+
+                return true;
             }
             catch (Exception ex)
             {
@@ -536,8 +649,33 @@ namespace ISOStd.Models
             }
             return false;
         }
-        
-        internal bool FunUpdateMaintanance(EquipmentMaintanance objEquipmentMaintanance)
+        internal bool FunAddSpareList(EquipmentMaintananceList objList)
+        {
+            try
+            {
+                string sSqlstmt = "delete from t_equipment_spare where Maintenance_Id='" + objList.lstEquipmentMaintanance[0].Maintenance_Id + "'; ";
+
+                for (int i = 0; i < objList.lstEquipmentMaintanance.Count; i++)
+                {
+
+                    sSqlstmt = sSqlstmt + "insert into t_equipment_spare(Maintenance_Id,Spare_Used,Amt_Spent,voucher";
+
+                    string sFieldValue = "", sFields = "";
+
+                    sSqlstmt = sSqlstmt + sFields;
+                    sSqlstmt = sSqlstmt + ") values('" + objList.lstEquipmentMaintanance[0].Maintenance_Id + "','" + objList.lstEquipmentMaintanance[i].Spare_Used + "','" + objList.lstEquipmentMaintanance[i].Amt_Spent + "','" + objList.lstEquipmentMaintanance[i].voucher + "'";
+
+                    sSqlstmt = sSqlstmt + sFieldValue + ");";
+                }
+                return objGlobalData.ExecuteQuery(sSqlstmt);
+            }
+            catch (Exception ex)
+            {
+                objGlobalData.AddFunctionalLog("Exception in FunAddSpareList: " + ex.ToString());
+            }
+            return false;
+        }
+        internal bool FunUpdateMaintanance(EquipmentMaintanance objEquipmentMaintanance, EquipmentMaintananceList objList)
         {
             try
             {
@@ -556,7 +694,14 @@ namespace ISOStd.Models
                 }
                 sSqlstmt = sSqlstmt + " where Maintenance_Id='" + objEquipmentMaintanance.Maintenance_Id + "'";
 
-                return objGlobalData.ExecuteQuery(sSqlstmt);
+                objGlobalData.ExecuteQuery(sSqlstmt);
+
+                if (Convert.ToInt32(objList.lstEquipmentMaintanance.Count) > 0)
+                {
+                    objList.lstEquipmentMaintanance[0].Maintenance_Id = Maintenance_Id.ToString();
+                    return FunAddSpareList(objList);
+                }
+                return true;
             }
             catch (Exception ex)
             {
@@ -747,25 +892,28 @@ namespace ISOStd.Models
             try
             {
                 string sdue_date = objCalibrationModels.due_date.ToString("yyyy-MM-dd HH':'mm':'ss");
-                string sCalibrationDate = DateTime.Now.ToString("yyyy-MM-dd HH':'mm':'ss");
+                //string sCalibrationDate = DateTime.Now.ToString("yyyy-MM-dd HH':'mm':'ss");
 
                 string sSqlstmt = "update t_calibration set Equipment_id ='" + objCalibrationModels.Equipment_Id + "', calibration_by='"
                     + objCalibrationModels.calibration_by + "', method_of_calibration='" + objCalibrationModels.method_of_calibration
                     + "', accuracy='" + objCalibrationModels.accuracy + "', calibration_status='" + objCalibrationModels.calibration_status
-                    + "', due_date='" + sdue_date + "', Remarks='" + objCalibrationModels.Remarks + "', CalibrationDate='" + sCalibrationDate +
-                    "', NotificationPeriod='" + objCalibrationModels.NotificationPeriod + "', NotificationValue='" + objCalibrationModels.NotificationValue
+                    + "', due_date='" + sdue_date + "', Remarks='" + objCalibrationModels.Remarks
+                    + "', NotificationPeriod='" + objCalibrationModels.NotificationPeriod + "', NotificationValue='" + objCalibrationModels.NotificationValue
                     + "', Person_Responsible='" + objCalibrationModels.Person_Responsible + "', NotificationDays='" + objCalibrationModels.NotificationDays
-                    + "',Ref_no='" + objCalibrationModels.Ref_no + "',certificate_no='" + objCalibrationModels.certificate_no + "'";
+                    + "',Ref_no='" + objCalibrationModels.Ref_no + "',certificate_no='" + objCalibrationModels.certificate_no + "',calibration_report_ref='" + objCalibrationModels.calibration_report_ref + "',calibration_certificate='" + objCalibrationModels.calibration_certificate + "'";
 
-                if (objCalibrationModels.calibration_report_ref != null && objCalibrationModels.calibration_report_ref != "")
+                //if (objCalibrationModels.calibration_report_ref != null && objCalibrationModels.calibration_report_ref != "")
+                //{
+                //    sSqlstmt = sSqlstmt + ", calibration_report_ref='" + objCalibrationModels.calibration_report_ref + "'";
+                //}
+                //if (objCalibrationModels.calibration_certificate != null && objCalibrationModels.calibration_certificate != "")
+                //{
+                //    sSqlstmt = sSqlstmt + ", calibration_certificate='" + objCalibrationModels.calibration_certificate + "'";
+                //}
+                if (objCalibrationModels.CalibrationDate != null && objCalibrationModels.CalibrationDate > Convert.ToDateTime("01/01/0001"))
                 {
-                    sSqlstmt = sSqlstmt + ", calibration_report_ref='" + objCalibrationModels.calibration_report_ref + "'";
+                    sSqlstmt = sSqlstmt + ", CalibrationDate='" + objCalibrationModels.CalibrationDate.ToString("yyyy/MM/dd") + "'";
                 }
-                if (objCalibrationModels.calibration_certificate != null && objCalibrationModels.calibration_certificate != "")
-                {
-                    sSqlstmt = sSqlstmt + ", calibration_certificate='" + objCalibrationModels.calibration_certificate + "'";
-                }
-
                 sSqlstmt = sSqlstmt + " where calibration_id='" + objCalibrationModels.calibration_id + "'";
 
                 return objGlobalData.ExecuteQuery(sSqlstmt);

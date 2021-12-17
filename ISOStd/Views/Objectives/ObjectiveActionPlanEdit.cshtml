@@ -192,12 +192,27 @@
                                 @Html.LabelFor(model => model.upload)
                             </td>
                             <td class="col">
-                                <input type="file" name="upload" id="upload" title="Objective Action Plan Upload" onchange="FileFormatValidation(this)" accept=".pdf, .doc, .docx,.xls,.xlsx,.jpg,.jpeg,.png,image/*"
+                                <input type="file" name="upload" id="upload" title="Objective Action Plan Upload" onchange="FileFormatValidation(this)" multiple accept=".pdf, .doc, .docx,.xls,.xlsx,.jpg,.jpeg,.png,image/*"
                                        style="height: 38px;" class="bootstrap-uploader" data-fouc />
-                                @if (Model.upload != "")
+                                
+                                @if (Model.upload != null && Model.upload != "" && Model.upload.Length > 0)
                                 {
-                                    <a href='@Url.Action("DisplayDocument", "Reports", new { Document = Model.upload })' target="_blank">Preview</a>
+                                    <div class="editor-label">
+                                        <p style="font-weight: bold; margin: 0px;"> Docs. List:</p>
+                                    </div>
+                                    <p style="font-size: 11px; margin: 0px; color: red;">(Uncheck in case to remove a uploaded file)</p>
+                                    foreach (var docs in Model.upload.Trim(',').Split(','))
+                                    {
+                                        <p style="margin: 0px;">
+                                            <input type="checkbox" id="QCDocsVal" name="QCDocsVal" class="QCDocsVal" value="@docs.Trim(',')" checked title="Uncheck in case to remove a uploaded file" />
+                                            <input type="hidden" id="QCDocsValselectall" name="QCDocsValselectall" />
+                                            <span class="py-1 px-2 rounded">
+                                                <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs})' target="_blank">Preview</a>
+                                            </span>
+                                        </p>
+                                    }
                                 }
+
                             </td>
                             @*<td class="col-xs-3 col-md-2">
                                 @Html.LabelFor(model => model.action_status)<text style="color:red;">*</text>
@@ -261,7 +276,20 @@
         @:       type: 'success'
         @:   }).show();
     }      
-    });
+         });
+
+        $("#QCDocsVal").click(function () {
+            if ($("#QCDocsVal").prop('checked')) {
+                {
+                    $(this).prop('checked', true);
+                }
+            }
+            else {
+                $(this).prop('checked', false);
+                document.getElementById("QCDocsValselectall").value = "DeleteQC";
+            }
+        });
+
                function checkDate() {
                     var dt1 = document.getElementById("begin_date").value;
                     var dt2 = document.getElementById("end_date").value;

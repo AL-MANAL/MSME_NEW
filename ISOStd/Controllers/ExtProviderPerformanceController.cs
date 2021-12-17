@@ -128,14 +128,16 @@ namespace ISOStd.Controllers
                     for (int i = 0; i < Convert.ToInt16(form["itemcnt"]); i++)
                     {
                         ExtProviderPerformanceModels AudModel = new ExtProviderPerformanceModels();
-
-                        AudModel.Actions = form["Actions" + i];
-                        AudModel.Personnel_Resp = form["Personnel_Resp" + i];
-                        AudModel.Priority = form["Priority" + i];
-
-                        if (DateTime.TryParse(form["Due_Date" + i], out dateValue) == true)
+                        if (form["Actions" + i] != "" && form["Actions" + i] != null)
                         {
-                            AudModel.Due_Date = dateValue;
+                            AudModel.Actions = form["Actions" + i];
+                            AudModel.Personnel_Resp = form["Personnel_Resp" + i];
+                            AudModel.Priority = form["Priority" + i];
+
+                            if (DateTime.TryParse(form["Due_Date" + i], out dateValue) == true)
+                            {
+                                AudModel.Due_Date = dateValue;
+                            }
                         }
                         objExtList.ExtPerfpList.Add(AudModel);
                     }
@@ -394,7 +396,7 @@ namespace ISOStd.Controllers
                 {
                     sSearchtext = sSearchtext + " and find_in_set('" + sBranch_name + "', branch)";
                 }
-                sSqlstmt = sSqlstmt + sSearchtext + " order by Ext_Provider_Name";
+                sSqlstmt = sSqlstmt + sSearchtext + " order by Id_Performace desc";
                 DataSet dsExtProviderModels = objGlobalData.Getdetails(sSqlstmt);
                 if (dsExtProviderModels.Tables.Count > 0 && dsExtProviderModels.Tables[0].Rows.Count > 0)
                 {
@@ -999,24 +1001,24 @@ namespace ISOStd.Controllers
                         {
                             ViewBag.actbyArray = (dsModelsList.Tables[0].Rows[0]["action_by"].ToString()).Split(',');
                         }
-                        else
-                        {
-                            if (objGlobalData.GetEmpIDByEmpName("Malhari") != "")
-                            {
-                                ViewBag.actbyArray = objGlobalData.GetEmpIDByEmpName("Malhari").Split(',');
-                            }
-                        }
+                        //else
+                        //{
+                        //    if (objGlobalData.GetEmpIDByEmpName("Malhari") != "")
+                        //    {
+                        //        ViewBag.actbyArray = objGlobalData.GetEmpIDByEmpName("Malhari").Split(',');
+                        //    }
+                        //}
                         if (dsModelsList.Tables[0].Rows[0]["action_notified_to"].ToString() != "")
                         {
                             ViewBag.NotifiedToArray = (dsModelsList.Tables[0].Rows[0]["action_notified_to"].ToString()).Split(',');
                         }
-                        else
-                        {
-                            if (objGlobalData.GetQAQCDeptEmployees() != "")
-                            {
-                                ViewBag.NotifiedToArray = objGlobalData.GetQAQCDeptEmployees().Split(',');
-                            }
-                        }
+                        //else
+                        //{
+                        //    if (objGlobalData.GetQAQCDeptEmployees() != "")
+                        //    {
+                        //        ViewBag.NotifiedToArray = objGlobalData.GetQAQCDeptEmployees().Split(',');
+                        //    }
+                        //}
                         DateTime dtValue;
                         if (DateTime.TryParse(dsModelsList.Tables[0].Rows[0]["initiated_date"].ToString(), out dtValue))
                         {

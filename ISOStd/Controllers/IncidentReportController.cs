@@ -155,7 +155,7 @@ namespace ISOStd.Controllers
                 if (Witness_StmtDocList[0] != null)
                 {
                     objIncidentReport.Witness_StmtDoc = "";
-                    foreach (var file in report_upload)
+                    foreach (var file in Witness_StmtDoc)
                     {
                         try
                         {
@@ -1194,7 +1194,7 @@ namespace ISOStd.Controllers
                 if (Witness_StmtDocList[0] != null)
                 {
                     objIncidentReport.Witness_StmtDoc = "";
-                    foreach (var file in report_upload)
+                    foreach (var file in Witness_StmtDoc)
                     {
                         try
                         {

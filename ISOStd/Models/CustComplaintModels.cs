@@ -1075,7 +1075,7 @@ namespace ISOStd.Models
                     sHeader = "<tr><td colspan=3><b>Complaint Number:<b></td> <td colspan=3>"
                         + dsNCList.Tables[0].Rows[0]["ComplaintNo"].ToString() + "</td></tr>"
                         + "<tr><td colspan=3><b>Customer Name:<b></td> <td colspan=3>" + objGlobalData.GetCustomerNameById(dsNCList.Tables[0].Rows[0]["CustomerName"].ToString()) + "</td></tr>"
-                        + "<tr><td colspan=3><b>Complaint ReportedBy:<b></td> <td colspan=3>" +objGlobalData.GetMultiHrEmpNameById(dsNCList.Tables[0].Rows[0]["ReportedBy"].ToString()) + "</td></tr>"
+                        + "<tr><td colspan=3><b>Complaint ReportedBy:<b></td> <td colspan=3>" +objGlobalData.GetCustomerContactPersonByCustId(dsNCList.Tables[0].Rows[0]["ReportedBy"].ToString()) + "</td></tr>"
                         + "<tr><td colspan=3><b>Complaint Received Date:<b></td> <td colspan=3>" + Convert.ToDateTime(dsNCList.Tables[0].Rows[0]["ReceivedDate"].ToString()).ToString("dd/MM/yyyy")
                         + "</td></tr>"
                         + "<tr><td colspan=3><b>Are action effective to resolve complaint?:<b></td> <td colspan=3>" + objGlobalData.GetDropdownitemById(dsNCList.Tables[0].Rows[0]["disp_action_taken"].ToString()) + "</td></tr>"
@@ -1200,7 +1200,7 @@ namespace ISOStd.Models
                     sHeader = "<tr><td colspan=3><b>Complaint Number:<b></td> <td colspan=3>"
                         + dsNCList.Tables[0].Rows[0]["ComplaintNo"].ToString() + "</td></tr>"
                         + "<tr><td colspan=3><b>Customer Name:<b></td> <td colspan=3>" + objGlobalData.GetDropdownitemById(dsNCList.Tables[0].Rows[0]["CustomerName"].ToString()) + "</td></tr>"
-                        + "<tr><td colspan=3><b>Complaint ReportedBy:<b></td> <td colspan=3>" + dsNCList.Tables[0].Rows[0]["ReportedBy"].ToString() + "</td></tr>"
+                        + "<tr><td colspan=3><b>Complaint ReportedBy:<b></td> <td colspan=3>" + objGlobalData.GetCustomerContactPersonByCustId(dsNCList.Tables[0].Rows[0]["ReportedBy"].ToString()) + "</td></tr>"
                         + "<tr><td colspan=3><b>Complaint Received Date:<b></td> <td colspan=3>" + Convert.ToDateTime(dsNCList.Tables[0].Rows[0]["ReceivedDate"].ToString()).ToString("dd/MM/yyyy")
                         + "</td></tr>"
                         + "<tr><td colspan=3><b>Target date to complete the Root Cause Analysis:<b></td> <td colspan=3>" + Convert.ToDateTime(dsNCList.Tables[0].Rows[0]["team_targetdate"].ToString()).ToString("dd/MM/yyyy")
@@ -1338,7 +1338,7 @@ namespace ISOStd.Models
                     sHeader = "<tr><td colspan=3><b>Complaint Number:<b></td> <td colspan=3>"
                         + dsNCList.Tables[0].Rows[0]["ComplaintNo"].ToString() + "</td></tr>"
                         + "<tr><td colspan=3><b>Customer Name:<b></td> <td colspan=3>" + objGlobalData.GetCustomerNameById(dsNCList.Tables[0].Rows[0]["CustomerName"].ToString()) + "</td></tr>"
-                        + "<tr><td colspan=3><b>Complaint ReportedBy:<b></td> <td colspan=3>" +objGlobalData.GetMultiHrEmpNameById(dsNCList.Tables[0].Rows[0]["ReportedBy"].ToString()) + "</td></tr>"
+                        + "<tr><td colspan=3><b>Complaint ReportedBy:<b></td> <td colspan=3>" +objGlobalData.GetCustomerContactPersonByCustId(dsNCList.Tables[0].Rows[0]["ReportedBy"].ToString()) + "</td></tr>"
                         + "<tr><td colspan=3><b>Complaint Received Date:<b></td> <td colspan=3>" + Convert.ToDateTime(dsNCList.Tables[0].Rows[0]["ReceivedDate"].ToString()).ToString("dd/MM/yyyy")
                         + "</td></tr>"
                         + "<tr><td colspan=3><b>Techniques adopted:<b></td> <td colspan=3>" + objGlobalData.GetDropdownitemById(dsNCList.Tables[0].Rows[0]["rca_technique"].ToString()) + "</td></tr>"
@@ -1533,7 +1533,7 @@ namespace ISOStd.Models
                     sHeader = "<tr><td colspan=3><b>Complaint Number:<b></td> <td colspan=3>"
                         + dsNCList.Tables[0].Rows[0]["ComplaintNo"].ToString() + "</td></tr>"
                         + "<tr><td colspan=3><b>Customer Name:<b></td> <td colspan=3>" + objGlobalData.GetCustomerNameById(dsNCList.Tables[0].Rows[0]["CustomerName"].ToString()) + "</td></tr>"
-                        + "<tr><td colspan=3><b>Complaint ReportedBy:<b></td> <td colspan=3>" + objGlobalData.GetMultiHrEmpNameById(dsNCList.Tables[0].Rows[0]["ReportedBy"].ToString()) + "</td></tr>"
+                        + "<tr><td colspan=3><b>Complaint ReportedBy:<b></td> <td colspan=3>" + objGlobalData.GetCustomerContactPersonByCustId(dsNCList.Tables[0].Rows[0]["ReportedBy"].ToString()) + "</td></tr>"
                         + "<tr><td colspan=3><b>Complaint Received Date:<b></td> <td colspan=3>" + Convert.ToDateTime(dsNCList.Tables[0].Rows[0]["ReceivedDate"].ToString()).ToString("dd/MM/yyyy")
                         + "</td></tr>"
                         + "<tr><td colspan=3><b>Verification due date:<b></td> <td colspan=3>" + Convert.ToDateTime(dsNCList.Tables[0].Rows[0]["ca_verfiry_duedate"].ToString()).ToString("dd/MM/yyyy") + "</td></tr>"
@@ -1704,7 +1704,7 @@ namespace ISOStd.Models
                     sHeader = "<tr><td colspan=3><b>Complaint Number:<b></td> <td colspan=3>"
                         + dsNCList.Tables[0].Rows[0]["ComplaintNo"].ToString() + "</td></tr>"
                         + "<tr><td colspan=3><b>Customer Name:<b></td> <td colspan=3>" + objGlobalData.GetCustomerNameById(dsNCList.Tables[0].Rows[0]["CustomerName"].ToString()) + "</td></tr>"
-                        + "<tr><td colspan=3><b>Complaint ReportedBy:<b></td> <td colspan=3>" +objGlobalData.GetMultiHrEmpNameById(dsNCList.Tables[0].Rows[0]["ReportedBy"].ToString()) + "</td></tr>"
+                        + "<tr><td colspan=3><b>Complaint ReportedBy:<b></td> <td colspan=3>" +objGlobalData.GetCustomerContactPersonByCustId(dsNCList.Tables[0].Rows[0]["ReportedBy"].ToString()) + "</td></tr>"
                         + "<tr><td colspan=3><b>Complaint Received Date:<b></td> <td colspan=3>" + Convert.ToDateTime(dsNCList.Tables[0].Rows[0]["ReceivedDate"].ToString()).ToString("dd/MM/yyyy")
                         + "</td></tr>"
                         + "<tr><td colspan=3><b>Verification due date:<b></td> <td colspan=3>" + Convert.ToDateTime(dsNCList.Tables[0].Rows[0]["v_verified_date"].ToString()).ToString("dd/MM/yyyy") + "</td></tr>"

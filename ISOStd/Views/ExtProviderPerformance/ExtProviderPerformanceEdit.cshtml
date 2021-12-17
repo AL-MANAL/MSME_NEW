@@ -404,7 +404,7 @@
                         </td>
                         <td class="col">
                             <div class="editor-field">
-                                <select class="form-control select-fixed-multiple" data-fouc id="notified_to" name="notified_to" onchange="GetNotifiedDetails()">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="notified_to" name="notified_to" onchange="GetNotifiedDetails()">
                                     <option value="">Select</option>
                                     @if (ViewBag.EmpList != null)
                                     {
@@ -643,7 +643,8 @@
             var lots = document.getElementById("lots_received").value;
             var quality = document.getElementById("Quality_Issue").value;
             if (lots != "" && quality != "") {
-                var rating = (quality / lots) * 100;
+               // var rating = (quality / lots) * 100;
+                var rating = ((lots - quality) / lots) * 100;
                 document.getElementById("quality_rating").value = rating.toFixed(2);
             }
             calTotRating();
@@ -652,7 +653,8 @@
             var lots = document.getElementById("lots_received").value;
             var quantity = document.getElementById("quantity_issue").value;
             if (lots != "" && quantity != "") {
-                var rating = (quantity / lots) * 100;
+                //var rating = (quantity / lots) * 100;
+                var rating = ((lots - quantity) / lots) * 100;
                 document.getElementById("quantity_rating").value = rating.toFixed(2);
             }
             calTotRating();
@@ -661,7 +663,8 @@
             var lots = document.getElementById("lots_received").value;
             var delivery = document.getElementById("Delivery_Issue").value;
             if (lots != "" && delivery != "") {
-                var rating = (delivery / lots) * 100;
+                //var rating = (delivery / lots) * 100;
+                var rating = ((lots - delivery) / lots) * 100;
                 document.getElementById("delivery_rating").value = rating.toFixed(2);
             }
             calTotRating();
@@ -677,7 +680,7 @@
             var quantity_rating = document.getElementById("quantity_rating").value;
             var delivery_rating = document.getElementById("delivery_rating").value;
             if (quality_rating != "" && quantity_rating != "" && delivery_rating != "") {
-                var rating = ((0.6 * quality_rating) + (0.2 * quantity_rating) + (0.2 * delivery_rating));
+                var rating = ((0.6 * quality_rating) + (0.3 * quantity_rating) + (0.1 * delivery_rating));
 
                 document.getElementById("total_rating").value = rating.toFixed(2);;
             }
@@ -722,7 +725,7 @@
                             var cell4 = row.insertCell(4);
                             var cell5 = row.insertCell(5);
 
-                            cell0.innerHTML = "<span class='badge badge-info' onclick='deleteRow1(this)' style='cursor:pointer;'>Delete</span> <input type = 'hidden' id = 'nempno " + cnt + "' name = 'nempno " + cnt + "' value = '" + nempno + "'>";
+                            cell0.innerHTML = "<span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span> <input type = 'hidden' id = 'nempno " + cnt + "' name = 'nempno " + cnt + "' value = '" + nempno + "'>";
                             cell1.innerHTML = "<input type='hidden' id='nempid " + cnt + "' name='nempid " + cnt + "' value='" + nempid + "'>" + nempid;
                             cell2.innerHTML = "<input type='hidden' id='nempname " + cnt + "' name='nempname " + cnt + "' value='" + nempname + "'>" + nempname;
                             cell3.innerHTML = "<input type='hidden' id='nempdiv " + cnt + "' name='nempdiv " + cnt + "' value='" + nempdiv + "'>" + nempdiv;
@@ -878,8 +881,6 @@
         function deleteRow(btn) {
             var row = btn.parentNode.parentNode;
             row.parentNode.removeChild(row);
-            var cnt = document.getElementById("itemcnt").value;
-            cnt--;
 
             //document.getElementById("itemcnt").value = cnt;
             //if (cnt == "0") {

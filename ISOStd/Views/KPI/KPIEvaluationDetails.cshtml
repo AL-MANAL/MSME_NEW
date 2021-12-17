@@ -290,7 +290,12 @@
                         <thead>
                             <tr class="bg-brown">
                                 <th>Sl No</th>
-                                <th>Potential Causes for Failure</th>                   
+                                <th>Potential Causes for Failure</th>
+                                <th>Impact</th>
+                                <th>Mitigation Measure(s)</th>
+                                <th>Target Date to implement the measure</th>
+                                <th>Status</th>
+                                <th>Status Updated On</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -304,7 +309,27 @@
                                     <td>
                                         @dsSource.Tables[0].Rows[i]["causes_failure"].ToString()
                                     </td>
-                                   
+                                    <td>
+                                        @Obj.GetDropdownitemById(dsSource.Tables[0].Rows[i]["impact"].ToString())
+                                    </td>
+                                    <td>
+                                        @dsSource.Tables[0].Rows[i]["mitigation_measures"].ToString()
+                                    </td>
+                                    <td>
+                                        @if (dsSource.Tables[0].Rows[i]["target_date"].ToString() != null && Convert.ToDateTime(dsSource.Tables[0].Rows[i]["target_date"].ToString()) > Convert.ToDateTime("01/01/0001"))
+                                        {
+                                            @Html.Label(Convert.ToDateTime(dsSource.Tables[0].Rows[i]["target_date"].ToString()).ToString("dd/MM/yyyy"))
+                                        }
+                                    </td>
+                                    <td>
+                                        @Obj.GetDropdownitemById(dsSource.Tables[0].Rows[i]["failure_status"].ToString())
+                                    </td>
+                                    <td>
+                                        @if (dsSource.Tables[0].Rows[i]["status_updated_date"].ToString() != null && Convert.ToDateTime(dsSource.Tables[0].Rows[i]["status_updated_date"].ToString()) > Convert.ToDateTime("01/01/0001"))
+                                        {
+                                            @Html.Label(Convert.ToDateTime(dsSource.Tables[0].Rows[i]["status_updated_date"].ToString()).ToString("dd/MM/yyyy"))
+                                        }
+                                    </td>
                                 </tr>
                             }
                         </tbody>

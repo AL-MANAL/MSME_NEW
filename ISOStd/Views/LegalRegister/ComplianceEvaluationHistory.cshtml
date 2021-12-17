@@ -1,9 +1,9 @@
 ﻿@model ISOStd.Models.LegalRegisterModel
 
 @{
-    ViewBag.Title = "Law_ArticleDetail";
-    string[] NotifiedtoArray = new string[0];
-       
+    ViewBag.Title = "ComplianceEvaluationEdit";
+    
+
     ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
     ISOStd.Models.LegalRegisterModelsList LRList = new ISOStd.Models.LegalRegisterModelsList();
     int itemcount = 0;
@@ -33,7 +33,7 @@
                     <a href="@Url.Action("ComplianceList", "LegalRegister", null)" class="breadcrumb-item">
                         <span class="breadcrumb-item">Legal Register</span>
                     </a>
-                    <span class="breadcrumb-item active">Update Law_Article</span>
+                    <span class="breadcrumb-item active">Compliance Evaluation History</span>
                 </div>
 
                 <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
@@ -56,17 +56,14 @@
         </div>
     </div>
 }
+<script src="/Scripts/jquery.validate.js"></script>
+<script src="/Scripts/jquery.validate.unobtrusive.js"></script>
 
-@using (Html.BeginForm("Law_ArticleEdit", "LegalRegister", FormMethod.Post,
-                     new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
-{
-    @Html.AntiForgeryToken()
-    @Html.ValidationSummary(true)
-    <input type="hidden" id="id_law" name="id_law" value="@Model.id_law" />
+ 
 
     <div class="card">
         <div class="card-header header-elements-inline bg-primary">
-            <h5 class="card-title">Law Article</h5>
+            <h5 class="card-title">Compliance Evaluation History</h5>
             <div class="header-elements">
                 <div class="list-icons">
                     <a class="list-icons-item" data-action="collapse"></a>
@@ -147,9 +144,12 @@
                     </tr>
                 </table>
                 <hr />
+                <div> <b>Law Article Details:</b> </div>
+                <br />
+
                 <div class="card is-visible" id="hidden_card_count">
                     <div class="card-header header-elements-inline">
-                        <h5 class="card-title">Law-Article Details</h5>
+                        <h5 class="card-title">Compliance Evaluation Details</h5>
                         <div class="header-elements">
                             <div class="list-icons">
                                 <a class="list-icons-item" data-action="collapse"></a>
@@ -158,27 +158,30 @@
                     </div>
 
                     <div class="card-body">
-                        <input type="hidden" id="itemcount" name="itemcount" value="@itemcount" />
+                     
                         <div class="card card-table table-responsive shadow-0 mb-0">
                             <table class="table" id="team-list-count">
                                 <tr class="bg-blue">
                                    
                                     <th>Article Date</th>
-                                    <th>ACT/RULE/CLAUSE/SECTION </th>
-                                    <th>Applicable Requirement</th>
-                                    <th>Compliance to be done</th>
-                                    <th>Monitoring</th>
-                                    <th>Record Form Number</th>
-                                    <th>Compliance evaluation frequency</th>
+                                    <th>Article Number</th>
+                                    <th>Article Details</th>
+                                    <th>Compliance Status</th>
+                                    <th>Description</th>
+                                    <th>Action To Be Taken</th>
+                                    <th>Target Date</th>
+                                    <th>Report Date</th>
+                                    <th>Personnel Responsible</th>
+                                    <th>Upload Document</th>
                                 </tr>
                                 @if (LRList.LegalRegisterMList != null && LRList.LegalRegisterMList.Count > 0)
                                 {
                                     for (int index = 0; index < LRList.LegalRegisterMList.Count; index++)
                                     {
                                         <tr>
-                                            
+                                           
                                             <td>
-                                                <input type='hidden' id='id_article @index' name="id_article @index" value='@LRList.LegalRegisterMList[index].id_article' />
+                                              
                                                 <input type='hidden' id='article_date @index' name="article_date @index" value='@LRList.LegalRegisterMList[index].article_date.ToString("yyyy-MM-dd")'>@LRList.LegalRegisterMList[index].article_date.ToString("yyyy-MM-dd")
                                             </td>
                                             <td>
@@ -188,16 +191,45 @@
                                                 <input type='hidden' id='article_detail @index' name="article_detail @index" value='@LRList.LegalRegisterMList[index].article_detail'>@LRList.LegalRegisterMList[index].article_detail
                                             </td>
                                             <td>
-                                                <input type='hidden' id='compliance_done @index' name="compliance_done @index" value='@LRList.LegalRegisterMList[index].compliance_done'>@LRList.LegalRegisterMList[index].compliance_done
+                                                @Obj.GetDropdownitemById(LRList.LegalRegisterMList[index].compliance_status)
+                                               
                                             </td>
                                             <td>
-                                                <input type='hidden' id='monitoring @index' name="monitoring @index" value='@LRList.LegalRegisterMList[index].monitoring'>@LRList.LegalRegisterMList[index].monitoring
+                                                @LRList.LegalRegisterMList[index].article_desc
+                                               
                                             </td>
                                             <td>
-                                                <input type='hidden' id='article_recordno @index' name="article_recordno @index" value='@LRList.LegalRegisterMList[index].article_recordno'>@LRList.LegalRegisterMList[index].article_recordno
+                                                @LRList.LegalRegisterMList[index].action_taken
+                                              
+                                                
                                             </td>
                                             <td>
-                                                <input type='hidden' id='frequency_eval @index' name="frequency_eval @index" value='@LRList.LegalRegisterMList[index].frequency_eval'>@LRList.LegalRegisterMList[index].frequency_eval
+                                                @if (LRList.LegalRegisterMList[index].target_date != null && LRList.LegalRegisterMList[index].target_date > Convert.ToDateTime("01/01/0001"))
+                                                {
+                                                   @LRList.LegalRegisterMList[index].target_date.ToString("yyyy-MM-dd")
+                                                }
+                                                
+                                                
+                                            </td>
+                                            <td>
+                                                @if (LRList.LegalRegisterMList[index].report_date != null && LRList.LegalRegisterMList[index].report_date > Convert.ToDateTime("01/01/0001"))
+                                                {
+                                                    @LRList.LegalRegisterMList[index].report_date.ToString("yyyy-MM-dd")
+                                                }
+
+                                            
+                                            </td>
+                                            <td>
+                                                @Obj.GetEmpHrNameById(LRList.LegalRegisterMList[index].person_resp)
+                                               
+                                            </td>
+                                            <td>
+                                               
+                                                @if (LRList.LegalRegisterMList[index].article_upload != "")
+                                                {
+                                                    <a href='@Url.Action("DisplayDocument", "Reports", new { Document = LRList.LegalRegisterMList[index].article_upload })' target="_blank">Preview</a>
+                                                }
+                                               
                                             </td>
                                         </tr>
                                     }
@@ -206,50 +238,25 @@
                         </div>
                     </div>
                 </div>
-
-                @*NotifiedTo*@
-                <table class="table table-lg">
-                    <tr class="row">
-                        <td class="col-xs-3 col-md-2">
-                            @Html.DisplayNameFor(model => model.article_notified_to)
-                        </td>
-                        <td class="col">
-                            @Html.DisplayFor(model => model.article_notified_to)
-                        </td>
-                    </tr>
-                </table>
             </div>
         </div>
+
         <div class="card-footer bg-white d-flex justify-content-between align-items-center">
             @Html.ActionLink("Back to List", "ComplianceList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+            <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')" @*onclick="Validationstatus()"*@><i class="icon-checkmark3 mr-2"></i> Add</button>
         </div>
     </div>
-}
+    <div id="dvItems" style="overflow: auto; display: none;">
+        <table id="team-list" style="width: 100%">
+            <tr>
+                <th>Upload</th>
+            </tr>
+        </table>
+    </div>
+
 
 @section Scripts {
     <script>
-
-    $(document).ready(function () {
-
-    @if (TempData["alertdata"] != null)
-    {
-
-        @: new Noty({
-        @:     text: '@TempData["alertdata"]',
-        @:     type: 'error'
-        @: }).show();
-    }
-
-    @if (@TempData["Successdata"] != null)
-    {
-
-        @:    new Noty({
-        @:       text: '@TempData["Successdata"]',
-        @:       type: 'success'
-        @:   }).show();
-    }
-
-    });
 
     </script>
     @Scripts.Render("~/bundles/jqueryval")

@@ -528,7 +528,7 @@ namespace ISOStd.Controllers
                     objList.LegalRegisterMList = new List<LegalRegisterModel>();
 
                     string sSqlstmt1 = "select id_article,article_date,article_no,article_detail,compliance_status,article_desc," +
-                    "action_taken,target_date,person_resp,article_upload,action_status,pending_reason,status_updatedon,article_recordno,frequency_eval,report_date from t_compliance_obligation_article"
+                    "action_taken,target_date,person_resp,article_upload,action_status,pending_reason,status_updatedon,article_recordno,frequency_eval,report_date,compliance_done,monitoring from t_compliance_obligation_article"
                     + " where id_law='" + sid_law + "' and article_active=1";
                     DataSet dsarticlelList = objGlobaldata.Getdetails(sSqlstmt1);
 
@@ -550,6 +550,8 @@ namespace ISOStd.Controllers
                                 pending_reason = dsarticlelList.Tables[0].Rows[i]["pending_reason"].ToString(),
                                 article_recordno = dsarticlelList.Tables[0].Rows[i]["article_recordno"].ToString(),
                                 frequency_eval = dsarticlelList.Tables[0].Rows[i]["frequency_eval"].ToString(),
+                                compliance_done = dsarticlelList.Tables[0].Rows[i]["compliance_done"].ToString(),
+                                monitoring = dsarticlelList.Tables[0].Rows[i]["monitoring"].ToString(),
                             };
 
                             DateTime dtDocDate;
@@ -973,7 +975,7 @@ namespace ISOStd.Controllers
                     LegalRegisterModelsList objList = new LegalRegisterModelsList();
                     objList.LegalRegisterMList = new List<LegalRegisterModel>();
 
-                    string sSqlstmt1 = "select id_article,article_date,article_no,article_detail,article_recordno,frequency_eval from t_compliance_obligation_article"
+                    string sSqlstmt1 = "select id_article,article_date,article_no,article_detail,article_recordno,frequency_eval,compliance_done,monitoring from t_compliance_obligation_article"
                     + " where id_law='" + sid_law + "' and article_active=1";
                     DataSet dsarticlelList = objGlobaldata.Getdetails(sSqlstmt1);
 
@@ -988,6 +990,8 @@ namespace ISOStd.Controllers
                                 article_detail = (dsarticlelList.Tables[0].Rows[i]["article_detail"].ToString()),
                                 article_recordno = dsarticlelList.Tables[0].Rows[i]["article_recordno"].ToString(),
                                 frequency_eval = (dsarticlelList.Tables[0].Rows[i]["frequency_eval"].ToString()),
+                                compliance_done = (dsarticlelList.Tables[0].Rows[i]["compliance_done"].ToString()),
+                                monitoring = (dsarticlelList.Tables[0].Rows[i]["monitoring"].ToString()),
                             };
 
                             DateTime dtDocDate;
@@ -1055,6 +1059,8 @@ namespace ISOStd.Controllers
                                 article_detail = form["article_detail " + i],
                                 article_recordno = form["article_recordno " + i],
                                 frequency_eval = form["frequency_eval " + i],
+                                compliance_done = form["compliance_done " + i],
+                                monitoring = form["monitoring " + i],
                             };
                             if (DateTime.TryParse(form["article_date " + i], out dateValue1) == true)
                             {
@@ -1131,7 +1137,7 @@ namespace ISOStd.Controllers
                     LegalRegisterModelsList objList = new LegalRegisterModelsList();
                     objList.LegalRegisterMList = new List<LegalRegisterModel>();
 
-                    string sSqlstmt1 = "select id_article,article_date,article_no,article_detail,article_recordno,frequency_eval from t_compliance_obligation_article"
+                    string sSqlstmt1 = "select id_article,article_date,article_no,article_detail,article_recordno,frequency_eval,compliance_done,monitoring from t_compliance_obligation_article"
                     + " where id_law='" + sid_law + "' and article_active=1";
                     DataSet dsarticlelList = objGlobaldata.Getdetails(sSqlstmt1);
 
@@ -1146,6 +1152,8 @@ namespace ISOStd.Controllers
                                 article_detail = (dsarticlelList.Tables[0].Rows[i]["article_detail"].ToString()),
                                 article_recordno = dsarticlelList.Tables[0].Rows[i]["article_recordno"].ToString(),
                                 frequency_eval = (dsarticlelList.Tables[0].Rows[i]["frequency_eval"].ToString()),
+                                compliance_done = (dsarticlelList.Tables[0].Rows[i]["compliance_done"].ToString()),
+                                monitoring = (dsarticlelList.Tables[0].Rows[i]["monitoring"].ToString()),
                             };
 
                             DateTime dtDocDate;
@@ -1175,6 +1183,8 @@ namespace ISOStd.Controllers
             }
             return View(objComp);
         }
+
+       
 
         [AllowAnonymous]
         public ActionResult ComplianceEvaluationEdit()
@@ -1279,6 +1289,114 @@ namespace ISOStd.Controllers
             catch (Exception ex)
             {
                 objGlobaldata.AddFunctionalLog("Exception in ComplianceEvaluationEdit: " + ex.ToString());
+                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                return RedirectToAction("ComplianceList");
+            }
+            return View(objComp);
+        }
+
+        [AllowAnonymous]
+        public ActionResult ComplianceEvaluationHistory()
+        {
+            ViewBag.SubMenutype = "Compliance";
+            LegalRegisterModel objComp = new LegalRegisterModel();
+            try
+            {
+                string sid_law = Request.QueryString["id_law"];
+                string id_article = Request.QueryString["id_article"];
+
+                if (Request.QueryString["id_law"] != null && Request.QueryString["id_law"] != "" && Request.QueryString["id_article"] != null && Request.QueryString["id_article"] != "")
+                {
+                    //t_compliance_obligation
+                    string sSqlstmt = "select id_law,lawNo,lawTitle,deptid,Eve_date,branch,Location,article_notified_to from t_compliance_obligation"
+                    + " where id_law='" + sid_law + "' and active=1";
+
+                    DataSet dsComplList = objGlobaldata.Getdetails(sSqlstmt);
+
+                    if (dsComplList.Tables.Count > 0 && dsComplList.Tables[0].Rows.Count > 0)
+                    {
+                        objComp = new LegalRegisterModel
+                        {
+                            id_law = (dsComplList.Tables[0].Rows[0]["id_law"].ToString()),
+                            lawNo = dsComplList.Tables[0].Rows[0]["lawNo"].ToString(),
+                            lawTitle = dsComplList.Tables[0].Rows[0]["lawTitle"].ToString(),
+                            deptid = objGlobaldata.GetMultiDeptNameById(dsComplList.Tables[0].Rows[0]["deptid"].ToString()),
+                            branch = objGlobaldata.GetMultiCompanyBranchNameById(dsComplList.Tables[0].Rows[0]["branch"].ToString()),
+                            Location = objGlobaldata.GetDivisionLocationById(dsComplList.Tables[0].Rows[0]["Location"].ToString()),
+                            //  article_notified_to = dsComplList.Tables[0].Rows[0]["article_notified_to"].ToString()
+                        };
+
+                        DateTime dtDocDate;
+                        if (dsComplList.Tables[0].Rows[0]["Eve_date"].ToString() != ""
+                           && DateTime.TryParse(dsComplList.Tables[0].Rows[0]["Eve_date"].ToString(), out dtDocDate))
+                        {
+                            objComp.Eve_date = dtDocDate;
+                        }
+                    }
+                    else
+                    {
+                        TempData["alertdata"] = "ID cannot be Null or empty";
+                        return RedirectToAction("ComplianceList");
+                    }
+
+                    //t_compliance_obligation_article
+
+                    LegalRegisterModelsList objList = new LegalRegisterModelsList();
+                    objList.LegalRegisterMList = new List<LegalRegisterModel>();
+
+                    string sSqlstmt1 = "select t.id_article,tt.article_date,article_no,article_detail,t.compliance_status,t.article_desc,"
+                    +"t.action_taken,t.target_date,t.person_resp,t.article_upload,t.report_date"
+                    +" from t_compliance_obligation_article_trans t, t_compliance_obligation_article tt where t.id_article = '"+ id_article + "' and article_active = 1 and t.id_article = tt.id_article";
+                    DataSet dsarticlelList = objGlobaldata.Getdetails(sSqlstmt1);
+
+                    if (dsarticlelList.Tables.Count > 0 && dsarticlelList.Tables[0].Rows.Count > 0)
+                    {
+                        for (int i = 0; i < dsarticlelList.Tables[0].Rows.Count; i++)
+                        {
+                            LegalRegisterModel objLeg = new LegalRegisterModel
+                            {
+                                id_article = dsarticlelList.Tables[0].Rows[i]["id_article"].ToString(),
+                                article_no = dsarticlelList.Tables[0].Rows[i]["article_no"].ToString(),
+                                article_detail = (dsarticlelList.Tables[0].Rows[i]["article_detail"].ToString()),
+                                compliance_status = dsarticlelList.Tables[0].Rows[i]["compliance_status"].ToString(),
+                                article_desc = dsarticlelList.Tables[0].Rows[i]["article_desc"].ToString(),
+                                action_taken = (dsarticlelList.Tables[0].Rows[i]["action_taken"].ToString()),
+                                person_resp = dsarticlelList.Tables[0].Rows[i]["person_resp"].ToString(),
+                                article_upload = dsarticlelList.Tables[0].Rows[i]["article_upload"].ToString(),
+                            };
+
+                            DateTime dtDocDate;
+                            if (dsarticlelList.Tables[0].Rows[i]["article_date"].ToString() != ""
+                               && DateTime.TryParse(dsarticlelList.Tables[0].Rows[i]["article_date"].ToString(), out dtDocDate))
+                            {
+                                objLeg.article_date = dtDocDate;
+                            }
+
+                            if (dsarticlelList.Tables[0].Rows[i]["target_date"].ToString() != ""
+                             && DateTime.TryParse(dsarticlelList.Tables[0].Rows[i]["target_date"].ToString(), out dtDocDate))
+                            {
+                                objLeg.target_date = dtDocDate;
+                            }
+                            if (dsarticlelList.Tables[0].Rows[i]["report_date"].ToString() != ""
+                             && DateTime.TryParse(dsarticlelList.Tables[0].Rows[i]["report_date"].ToString(), out dtDocDate))
+                            {
+                                objLeg.report_date = dtDocDate;
+                            }
+                            objList.LegalRegisterMList.Add(objLeg);
+                        }
+                    }
+
+                    ViewBag.Law_article = objList;
+                }
+                else
+                {
+                    TempData["alertdata"] = "ID cannot be Null or empty";
+                    return RedirectToAction("ComplianceList");
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in ComplianceEvaluationHistory: " + ex.ToString());
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
                 return RedirectToAction("ComplianceList");
             }

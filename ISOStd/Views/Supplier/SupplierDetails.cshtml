@@ -2,8 +2,9 @@
 @using System.Data;
 
 @{
-   ViewBag.Title = "";
+    ViewBag.Title = "";
     ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+    string user = Obj.GetCurrentUserSession().empid;
 }
 
 @section featured {
@@ -436,10 +437,122 @@
                     </td>
 
                 </tr>
+                @if (Model.ApprovedStatus_id == "0")
+                {
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.ApprovedBy)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.ApprovedBy)
+                            </p>
+                        </td>
+
+
+                    </tr>
+                }
+                else 
+                {
+                    <tr class="row">
+                        <td class="col-md-12">Approver Details</td>
+                    </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    Approved/Rejected By
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @Html.DisplayFor(model => model.ApprovedBy)
+                                </p>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.ApprovedStatus)
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @Html.DisplayFor(model => model.ApprovedStatus)
+                                </p>
+                            </td>
+
+
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.ApprovedOn)
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @if (Model.ApprovedOn != null && Model.ApprovedOn > Convert.ToDateTime("01/01/0001"))
+                                    {
+                                        @Html.Label(Model.ApprovedOn.ToString("dd/MM/yyyy hh:mm:ss"))
+                                    }
+                                </p>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.approver_comments)
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @Html.DisplayFor(model => model.approver_comments)
+                                </p>
+                            </td>
+                        </tr>
+                }
             </table>
 
                 </div>
-            
+        <br />
+        @if (Model.ApprovedStatus_id == "0" && Model.ApprovedBy_id.Split(',').Contains(user))
+            {
+                using (Html.BeginForm("SupplierApprove", "Supplier", FormMethod.Post,
+                                     new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+                {
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary(true)
+                <input type="hidden" id="SupplierId" name="SupplierId" value="@Model.SupplierId" />
+                        <table class="table table-dark table-bordered table-striped table-hover bg-blue-800">
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+                                    <p class="bg-brown py-1 px-2 rounded">
+                                        Approve/Reject <text style="color:red;">*</text>
+                                    </p>
+                                </td>
+                                <td class="col">
+                                    <p class="bg-dark py-1 px-2 rounded">
+                                        <label><input type="radio" id="ApprovedStatus" name="ApprovedStatus" value="1" required onchange="ApproveRequired()" />Approved</label>
+                                        <label><input type="radio" id="ApprovedStatus" name="ApprovedStatus" value="2" required onchange="ApproveRequired()" />Rejected</label>
+                                    </p>
+                                </td>
+
+                                <td class="col-xs-3 col-md-2">
+                                    <p class="bg-brown py-1 px-2 rounded">
+                                        Comments
+                                    </p>
+                                </td>
+                                <td class="col">
+                                    <div class="bg-dark py-1 px-2 rounded">
+                                        <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="approver_comments" name="approver_comments"></textarea>
+                                    </div>
+                                </td>
+                            </tr>
+                          
+                        </table>
+                        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+                            <button type="submit" id="btnCreate" value="Submit" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Submit</button>
+                        </div>
+            }
+        }
         </div>
     </div>
 
@@ -472,6 +585,15 @@
                                             }
                 });
 
+                function ApproveRequired() {
+                    var doc_status = $("input[type='radio'][id='ApprovedStatus']:checked").val();
+                    if (doc_status == "2") {
+                        $("#approver_comments").attr('required', true);
+                    }
+                    else {
+                        $("#approver_comments").attr('required', false);
+                    }
+                }
 </script>
 
 

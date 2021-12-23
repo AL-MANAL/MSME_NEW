@@ -60,7 +60,10 @@ namespace ISOStd.Controllers
             try
             {
                 objModel.loggedby = objGlobaldata.GetCurrentUserSession().empid;
-                objModel.na = form["N/A"];
+                objModel.exceptional = form["Excellent"];
+                objModel.satisfactory = form["Good"];
+                objModel.unsatisfactory = form["Poor"];
+                objModel.insufficient = form["Average"];
                 objModel.branch = form["branch"];
                 objModel.Department = form["Department"];
                 objModel.Location = form["Location"];
@@ -171,7 +174,7 @@ namespace ISOStd.Controllers
                             auditee = dsSupplier.Tables[0].Rows[i]["auditee"].ToString(),
                             loggedby = objGlobaldata.GetEmpHrNameById(dsSupplier.Tables[0].Rows[i]["loggedby"].ToString()),
                             upload = dsSupplier.Tables[0].Rows[i]["upload"].ToString(),
-                            overall_perf = objGlobaldata.GetDropdownitemById(dsSupplier.Tables[0].Rows[i]["overall_perf"].ToString()),
+                            overall_perf = (dsSupplier.Tables[0].Rows[i]["overall_perf"].ToString()),
                             branch = objGlobaldata.GetMultiCompanyBranchNameById(dsSupplier.Tables[0].Rows[i]["branch"].ToString()),
                             Department = objGlobaldata.GetMultiDeptNameById(dsSupplier.Tables[0].Rows[i]["Department"].ToString()),
                             Location = objGlobaldata.GetDivisionLocationById(dsSupplier.Tables[0].Rows[i]["Location"].ToString()),
@@ -284,7 +287,7 @@ namespace ISOStd.Controllers
                     string sid_sup_rating = Request.QueryString["id_sup_rating"];
 
                     string sSqlstmt = "select id_sup_rating, supplier_name, evalu_date, auditee, auditor, upload," +
-                        " loggedby,overall_perf,exceptional,satisfactory,unsatisfactory,na,insufficient,branch,Department,Location,evaluated_by  from t_supplier_perf_rating where id_sup_rating='" + sid_sup_rating + "'";
+                        " loggedby,overall_perf,exceptional,satisfactory,unsatisfactory,na,insufficient,branch,Department,Location,evaluated_by,actions_init  from t_supplier_perf_rating where id_sup_rating='" + sid_sup_rating + "'";
 
                     DataSet dsSupplier = objGlobaldata.Getdetails(sSqlstmt);
 
@@ -308,6 +311,7 @@ namespace ISOStd.Controllers
                             Department = (dsSupplier.Tables[0].Rows[0]["Department"].ToString()),
                             Location = (dsSupplier.Tables[0].Rows[0]["Location"].ToString()),
                             evaluated_by = (dsSupplier.Tables[0].Rows[0]["evaluated_by"].ToString()),
+                            actions_init = (dsSupplier.Tables[0].Rows[0]["actions_init"].ToString()),
                         };
                         ViewBag.Branch = objGlobaldata.GetCompanyBranchListbox();
                         ViewBag.Location = objGlobaldata.GetLocationbyMultiDivision(dsSupplier.Tables[0].Rows[0]["branch"].ToString());
@@ -385,7 +389,10 @@ namespace ISOStd.Controllers
             {
                 //objModel.LoggedBy = objGlobaldata.GetCurrentUserSession().empid;
                 //objModel.Eval_ReviewedBy_DeptId = objGlobaldata.GetDeptIdByHrEmpId(objModel.Eval_ReviewedBy);
-                objModel.na = form["N/A"];
+                objModel.exceptional = form["Excellent"];
+                objModel.satisfactory = form["Good"];
+                objModel.unsatisfactory = form["Poor"];
+                objModel.insufficient = form["Average"];
                 objModel.branch = form["branch"];
                 objModel.Department = form["Department"];
                 objModel.Location = form["Location"];
@@ -504,7 +511,7 @@ namespace ISOStd.Controllers
                 {
                     string sid_sup_rating = Request.QueryString["id_sup_rating"];
 
-                    string sSqlstmt = "select id_sup_rating, supplier_name, evalu_date, auditee, auditor, upload, loggedby,overall_perf,overall_perf,exceptional,satisfactory,unsatisfactory,na,insufficient,branch,Department,Location,evaluated_by " +
+                    string sSqlstmt = "select id_sup_rating, supplier_name, evalu_date, auditee, auditor, upload, loggedby,overall_perf,exceptional,satisfactory,unsatisfactory,na,insufficient,branch,Department,Location,evaluated_by,actions_init " +
                         " from t_supplier_perf_rating where id_sup_rating='" + sid_sup_rating + "'";
 
                     DataSet dsSupplier = objGlobaldata.Getdetails(sSqlstmt);
@@ -519,7 +526,7 @@ namespace ISOStd.Controllers
                             auditee = dsSupplier.Tables[0].Rows[0]["auditee"].ToString(),
                             loggedby = objGlobaldata.GetEmpHrNameById(dsSupplier.Tables[0].Rows[0]["loggedby"].ToString()),
                             upload = dsSupplier.Tables[0].Rows[0]["upload"].ToString(),
-                            overall_perf = objGlobaldata.GetDropdownitemById(dsSupplier.Tables[0].Rows[0]["overall_perf"].ToString()),
+                            overall_perf = (dsSupplier.Tables[0].Rows[0]["overall_perf"].ToString()),
                             exceptional = dsSupplier.Tables[0].Rows[0]["exceptional"].ToString(),
                             satisfactory = dsSupplier.Tables[0].Rows[0]["satisfactory"].ToString(),
                             unsatisfactory = dsSupplier.Tables[0].Rows[0]["unsatisfactory"].ToString(),
@@ -529,6 +536,7 @@ namespace ISOStd.Controllers
                             Department = objGlobaldata.GetMultiDeptNameById(dsSupplier.Tables[0].Rows[0]["Department"].ToString()),
                             Location = objGlobaldata.GetDivisionLocationById(dsSupplier.Tables[0].Rows[0]["Location"].ToString()),
                             evaluated_by = objGlobaldata.GetEmpHrNameById(dsSupplier.Tables[0].Rows[0]["evaluated_by"].ToString()),
+                            actions_init = (dsSupplier.Tables[0].Rows[0]["actions_init"].ToString()),
                         };
 
                         DateTime dtValue;
@@ -689,7 +697,7 @@ namespace ISOStd.Controllers
 
                 if (id_sup_rating != null && id_sup_rating != "")
                 {
-                    string sSqlstmt = "select id_sup_rating, supplier_name, evalu_date, auditee, auditor, upload, loggedby,overall_perf,overall_perf,exceptional,satisfactory,unsatisfactory,na,insufficient" +
+                    string sSqlstmt = "select id_sup_rating, supplier_name, evalu_date, auditee, auditor, upload, loggedby,overall_perf,exceptional,satisfactory,unsatisfactory,na,insufficient" +
                         ",branch,Department,Location  from t_supplier_perf_rating where id_sup_rating='" + id_sup_rating + "'";
 
                     DataSet dsSupplier = objGlobaldata.Getdetails(sSqlstmt);
@@ -704,7 +712,7 @@ namespace ISOStd.Controllers
                             auditee = dsSupplier.Tables[0].Rows[0]["auditee"].ToString(),
                             loggedby = objGlobaldata.GetEmpHrNameById(dsSupplier.Tables[0].Rows[0]["loggedby"].ToString()),
                             upload = dsSupplier.Tables[0].Rows[0]["upload"].ToString(),
-                            overall_perf = objGlobaldata.GetDropdownitemById(dsSupplier.Tables[0].Rows[0]["overall_perf"].ToString()),
+                            overall_perf = (dsSupplier.Tables[0].Rows[0]["overall_perf"].ToString()),
                             exceptional = dsSupplier.Tables[0].Rows[0]["exceptional"].ToString(),
                             satisfactory = dsSupplier.Tables[0].Rows[0]["satisfactory"].ToString(),
                             unsatisfactory = dsSupplier.Tables[0].Rows[0]["unsatisfactory"].ToString(),
@@ -934,5 +942,51 @@ namespace ISOStd.Controllers
 
             return Json("Failed");
         }
+        //overall perf rating
+        public JsonResult SuppOverallPerfRating(decimal excellent, decimal good, decimal avg, decimal poor, decimal tot_ques)
+        {
+            
+            SupplierPerpRatingModels objModel = new SupplierPerpRatingModels();
+
+           
+            string sql = "select id_rating_criteria,overall_rating,Excellent,Good,Average,Poor,action_initiate from t_rating_criteria";
+            DataSet dsData = objGlobaldata.Getdetails(sql);
+            for (int i = 0; dsData.Tables.Count > 0 && i < dsData.Tables[0].Rows.Count; i++)
+            {
+                decimal perc_excellent = 0, perc_good = 0, perc_avg = 0, perc_poor = 0;
+                try
+                {
+
+                    //getting the percentage
+                    perc_excellent = (excellent / tot_ques) * 100;
+                    perc_good = (good / tot_ques) * 100;
+                    perc_avg = (avg / tot_ques) * 100;
+                    perc_poor = (poor / tot_ques) * 100;
+                    int dbExec =Convert.ToInt32(dsData.Tables[0].Rows[i]["Excellent"].ToString()), dbGood = Convert.ToInt32(dsData.Tables[0].Rows[i]["Good"].ToString()), dbAvg = Convert.ToInt32(dsData.Tables[0].Rows[i]["Average"].ToString()), dbPoor = Convert.ToInt32(dsData.Tables[0].Rows[i]["Poor"].ToString());
+                 
+                    if ((dbExec == 0 || (perc_excellent >= dbExec)) &&
+                      (dbGood == 0 || (dbGood > 0 && (perc_excellent + perc_good) >= dbGood + dbExec)) &&
+                      (dbAvg == 0 || (dbAvg > 0 && (perc_excellent + perc_good + perc_avg) >= dbGood + dbExec + dbAvg)) &&
+                      (dbPoor == 0 || (dbPoor > 0 && (perc_excellent + perc_good + perc_avg + perc_poor) >= dbGood + dbExec + dbAvg + dbPoor)))
+                  {
+                        objModel.actions_init = dsData.Tables[0].Rows[i]["action_initiate"].ToString();
+                        objModel.overall_perf = dsData.Tables[0].Rows[i]["overall_rating"].ToString();
+                        break;
+                    }
+                    
+                }
+                catch (Exception ex)
+                {
+                    objGlobaldata.AddFunctionalLog("Exception in SuppOverallPerfRating: " + ex.ToString());
+                    TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                }
+            }
+
+            
+
+            return Json(objModel);
+        }
     }
+
+    
 }

@@ -420,21 +420,13 @@ namespace ISOStd.Controllers
         }
 
         [AllowAnonymous]
-        public ActionResult SupplierApprove(string SupplierID, int iStatus)
+        public ActionResult SupplierApprove(FormCollection form, SupplierModels objModel)
         {
             try
             {
-                SupplierModels objSupModels = new SupplierModels();
-
-                string sStatus = "";
-                if (iStatus == 1)
+                if (objModel.FunApproveSupplier(objModel))
                 {
-                    sStatus = "Approved";
-                }
-
-                if (objSupModels.FunApproveSupplier(SupplierID, iStatus))
-                {
-                    TempData["Successdata"] = "Supplier" + sStatus;
+                    TempData["Successdata"] = "status updated";
                 }
                 else
                 {
@@ -446,7 +438,8 @@ namespace ISOStd.Controllers
                 objGlobaldata.AddFunctionalLog("Exception in SupplierApprove: " + ex.ToString());
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
-            return RedirectToAction("ListPendingForApproval", "Dashboard");
+
+            return RedirectToAction("Index", "Home");
         }
 
         [AllowAnonymous]
@@ -464,7 +457,7 @@ namespace ISOStd.Controllers
 
                     string sSqlstmt = "select SupplierId, SupplierCode, SupplierName, SupplyScope, ApprovalCriteria, SupportingDoc, ApprovedOn, ApprovedBy, Remarks,"
                     + " (case when ApprovedStatus = '0' then 'Pending for Approval' when ApprovedStatus = '1' then 'Approved' else 'Not Approved' end) as ApprovedStatus, Added_Updated_By, UpdatedOn, "
-                    + " City,Country, ContactPerson, ContactNo, Address, FaxNo, PO_No,Email,VatNo,RefNo,Supplier_type,Payment_term,License_Expiry,NotificationDays,NotificationPeriod,NotificationValue,Criticality,Supplier_Work_Nature,branch,Department,Location,pan_no,notified_to FROM t_supplier where SupplierId='" + sSupplierId + "'";
+                    + " City,Country, ContactPerson, ContactNo, Address, FaxNo, PO_No,Email,VatNo,RefNo,Supplier_type,Payment_term,License_Expiry,NotificationDays,NotificationPeriod,NotificationValue,Criticality,Supplier_Work_Nature,branch,Department,Location,pan_no,notified_to,ApprovedStatus as ApprovedStatus_id,ApprovedBy as ApprovedBy_id,approver_comments FROM t_supplier where SupplierId='" + sSupplierId + "'";
 
                     DataSet dsSupplier = objGlobaldata.Getdetails(sSqlstmt);
 
@@ -503,6 +496,9 @@ namespace ISOStd.Controllers
                             Location = objGlobaldata.GetDivisionLocationById(dsSupplier.Tables[0].Rows[0]["Location"].ToString()),
                             pan_no = dsSupplier.Tables[0].Rows[0]["pan_no"].ToString(),
                             notified_to =objGlobaldata.GetMultiHrEmpNameById(dsSupplier.Tables[0].Rows[0]["notified_to"].ToString()),
+                            ApprovedStatus_id = dsSupplier.Tables[0].Rows[0]["ApprovedStatus_id"].ToString(),
+                            ApprovedBy_id = dsSupplier.Tables[0].Rows[0]["ApprovedBy_id"].ToString(),
+                            approver_comments = dsSupplier.Tables[0].Rows[0]["approver_comments"].ToString(),
                         };
 
                         DateTime dateValue;
@@ -519,6 +515,7 @@ namespace ISOStd.Controllers
                         {
                             objSupplierModels.ApprovedOn = dateValue;
                         }
+                       
                         return View(objSupplierModels);
                     }
                     else
@@ -1380,37 +1377,37 @@ namespace ISOStd.Controllers
             return RedirectToAction("DiscrepancyLogList");
         }
 
-        public JsonResult SupplierApproveNoty(string SupplierID, int iStatus)
-        {
-            try
-            {
-                SupplierModels objSupModels = new SupplierModels();
+        //public JsonResult SupplierApproveNoty(string SupplierID, int iStatus)
+        //{
+        //    try
+        //    {
+        //        SupplierModels objSupModels = new SupplierModels();
 
-                string sStatus = "";
-                if (iStatus == 1)
-                {
-                    sStatus = "Approved";
-                }
-                if (iStatus == 2)
-                {
-                    sStatus = "Rejected";
-                }
-                if (objSupModels.FunApproveSupplier(SupplierID, iStatus))
-                {
-                    return Json("Success");
-                }
-                else
-                {
-                    return Json("Failed");
-                }
-            }
-            catch (Exception ex)
-            {
-                objGlobaldata.AddFunctionalLog("Exception in SupplierApprove: " + ex.ToString());
-                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
-            }
-            return Json("Success");
-        }
+        //        string sStatus = "";
+        //        if (iStatus == 1)
+        //        {
+        //            sStatus = "Approved";
+        //        }
+        //        if (iStatus == 2)
+        //        {
+        //            sStatus = "Rejected";
+        //        }
+        //        if (objSupModels.FunApproveSupplier(SupplierID, iStatus))
+        //        {
+        //            return Json("Success");
+        //        }
+        //        else
+        //        {
+        //            return Json("Failed");
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        objGlobaldata.AddFunctionalLog("Exception in SupplierApprove: " + ex.ToString());
+        //        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+        //    }
+        //    return Json("Success");
+        //}
 
         [AllowAnonymous]
         public JsonResult SuppliertInvalid(string SupplierID, string invalid_reason)

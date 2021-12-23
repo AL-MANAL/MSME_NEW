@@ -318,7 +318,17 @@ namespace ISOStd.Models
         public string Eid_no { get; set; }
         public string Date_of_Birth { get; set; }
         public string Nationaliity { get; set; }
+        public DateTime Date_of_join { get; set; }
+        public string training_type { get; set; }
 
+        [Display(Name = "Years of Experience")]
+        public string years_exp { get; set; }
+
+        [Display(Name = "Skills")]
+        public string skill { get; set; }
+
+        [Display(Name = "Qualification")]
+        public string qualification { get; set; }
         //New field
 
         [Display(Name = "Upload Document")]

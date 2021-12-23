@@ -148,6 +148,9 @@ namespace ISOStd.Models
         [Display(Name = "Document(s)")]
         public string approver_upload { get; set; }
 
+        [Display(Name = "Notified To")]
+        public string notified_to { get; set; }
+
         //t_emp_competence_eval_training
 
         public string id_training { get; set; }
@@ -160,6 +163,21 @@ namespace ISOStd.Models
 
         [Display(Name = "Criticality")]
         public string criticality { get; set; }
+
+        [Display(Name = "Type of Training")]
+        public string training_type { get; set; }
+
+        [Display(Name = "Years of Experience")]
+        public string years_exp { get; set; }
+
+        [Display(Name = "Skills")]
+        public string skill { get; set; }
+
+        [Display(Name = "Qualification")]
+        public string qualification { get; set; }
+
+        [Display(Name = "Date of Join")]
+        public DateTime Date_of_join { get; set; }
 
         internal bool FunDeleteCompetenceDoc(string sCompetenceId)
         {
@@ -186,7 +204,7 @@ namespace ISOStd.Models
                 string sSqlstmt = "insert into t_emp_competence_eval (Evaluated_Freq, Evalaution_Done_By, Academic_MinComp_Details,"
                     + " Academic_EmpComp_Details, Academic_EvalOutput, YrExp_MinComp_Details, YrExp_EmpComp_Details, YrExp_EvalOutput, Relevant_MinComp_Details,"
                     + "Relevant_EmpComp_Details, Relevant_EvalOutput, Skills_MinComp_Details, Skills_EmpComp_Details, Skills_EvalOutput, Emp_Suit_Hold_Pos,"
-                    + " Emp_Prom_Nxt_Pos, Need_Of_Trainings, Emp_Not_Competent_Action, Eval_ReviewedBy, Eval_ApprovedBy,Name,branch,LoggedBy";
+                    + " Emp_Prom_Nxt_Pos, Need_Of_Trainings, Emp_Not_Competent_Action, Eval_ReviewedBy, Eval_ApprovedBy,Name,branch,LoggedBy,notified_to";
 
                 if (objEmployeeCompetence.Evaluation_DoneOn > Convert.ToDateTime("01/01/0001"))
                 {
@@ -201,7 +219,7 @@ namespace ISOStd.Models
                  + "','" + objEmployeeCompetence.Relevant_EvalOutput + "','" + objEmployeeCompetence.Skills_MinComp_Details + "','" + objEmployeeCompetence.Skills_EmpComp_Details
                  + "','" + objEmployeeCompetence.Skills_EvalOutput + "','" + objEmployeeCompetence.Emp_Suit_Hold_Pos + "','" + objEmployeeCompetence.Emp_Prom_Nxt_Pos
                  + "','" + objEmployeeCompetence.Need_Of_Trainings + "','" + objEmployeeCompetence.Emp_Not_Competent_Action + "','" + objEmployeeCompetence.Eval_ReviewedBy
-                 + "','" + objEmployeeCompetence.Eval_ApprovedBy + "','" + objEmployeeCompetence.Name + "','" + sBranch + "','" + objGlobalData.GetCurrentUserSession().empid + "'";
+                 + "','" + objEmployeeCompetence.Eval_ApprovedBy + "','" + objEmployeeCompetence.Name + "','" + sBranch + "','" + objGlobalData.GetCurrentUserSession().empid + "','" + notified_to + "'";
 
                 sSqlstmt = sSqlstmt + sValues + ")";
                 int CompetenceId = 0;
@@ -255,7 +273,7 @@ namespace ISOStd.Models
             try
             {
                 string sType = "email";
-                string sSqlstmt = "select CompetenceId,Name,Evaluation_DoneOn,Evalaution_Done_By,LoggedBy,Eval_ReviewedBy,Eval_ApprovedBy"
+                string sSqlstmt = "select CompetenceId,Name,Evaluation_DoneOn,Evalaution_Done_By,LoggedBy,Eval_ReviewedBy,Eval_ApprovedBy,notified_to"
                + " from t_emp_competence_eval  where CompetenceId = '" + CompetenceId + "'";
 
                 DataSet dsList = objGlobalData.Getdetails(sSqlstmt);
@@ -279,7 +297,7 @@ namespace ISOStd.Models
                     }
                     string sName = objGlobalData.GetMultiHrEmpNameById(dsList.Tables[0].Rows[0]["Eval_ReviewedBy"].ToString());
                     string sToEmailIds = objGlobalData.GetMultiHrEmpEmailIdById(dsList.Tables[0].Rows[0]["LoggedBy"].ToString());
-                    string sCCEmailIds = objGlobalData.GetMultiHrEmpEmailIdById(dsList.Tables[0].Rows[0]["Eval_ReviewedBy"].ToString());
+                    string sCCEmailIds = objGlobalData.GetMultiHrEmpEmailIdById(dsList.Tables[0].Rows[0]["Eval_ReviewedBy"].ToString())+","+ objGlobalData.GetMultiHrEmpEmailIdById(dsList.Tables[0].Rows[0]["notified_to"].ToString());
 
 
                     sHeader = "<tr><td colspan=3><b>Employee Name:<b></td> <td colspan=3>"
@@ -353,7 +371,7 @@ namespace ISOStd.Models
             try
             {
                 string sType = "email";
-                string sSqlstmt = "select CompetenceId,Name,Evaluation_DoneOn,Evalaution_Done_By,LoggedBy,Eval_ReviewedBy,Eval_ApprovedBy,review_comments,approver_comments"
+                string sSqlstmt = "select CompetenceId,Name,Evaluation_DoneOn,Evalaution_Done_By,LoggedBy,Eval_ReviewedBy,Eval_ApprovedBy,review_comments,approver_comments,notified_to"
                 + " from t_emp_competence_eval  where CompetenceId = '" + CompetenceId + "'";
 
                 DataSet dsList = objGlobalData.Getdetails(sSqlstmt);
@@ -377,7 +395,7 @@ namespace ISOStd.Models
                     }
                     string sName = objGlobalData.GetMultiHrEmpNameById(dsList.Tables[0].Rows[0]["Eval_ReviewedBy"].ToString());
                     string sToEmailIds = objGlobalData.GetMultiHrEmpEmailIdById(dsList.Tables[0].Rows[0]["Eval_ReviewedBy"].ToString());
-                    string sCCEmailIds = objGlobalData.GetMultiHrEmpEmailIdById(dsList.Tables[0].Rows[0]["Eval_ApprovedBy"].ToString()) + "," + objGlobalData.GetMultiHrEmpEmailIdById(dsList.Tables[0].Rows[0]["LoggedBy"].ToString());
+                    string sCCEmailIds = objGlobalData.GetMultiHrEmpEmailIdById(dsList.Tables[0].Rows[0]["Eval_ApprovedBy"].ToString()) + "," + objGlobalData.GetMultiHrEmpEmailIdById(dsList.Tables[0].Rows[0]["LoggedBy"].ToString()) + "," + objGlobalData.GetMultiHrEmpEmailIdById(dsList.Tables[0].Rows[0]["notified_to"].ToString());
 
 
                     if (iStatus == "4") // Approve
@@ -430,7 +448,7 @@ namespace ISOStd.Models
             try
             {
                 string sType = "email";
-                string sSqlstmt = "select CompetenceId,Name,Evaluation_DoneOn,Evalaution_Done_By,LoggedBy,Eval_ReviewedBy,Eval_ApprovedBy,review_comments"
+                string sSqlstmt = "select CompetenceId,Name,Evaluation_DoneOn,Evalaution_Done_By,LoggedBy,Eval_ReviewedBy,Eval_ApprovedBy,review_comments,notified_to"
                 + " from t_emp_competence_eval  where CompetenceId = '" + CompetenceId + "'";
 
                 DataSet dsList = objGlobalData.Getdetails(sSqlstmt);
@@ -454,7 +472,7 @@ namespace ISOStd.Models
                     }
                     string sName = objGlobalData.GetMultiHrEmpNameById(dsList.Tables[0].Rows[0]["Eval_ApprovedBy"].ToString());
                     string sToEmailIds = objGlobalData.GetMultiHrEmpEmailIdById(dsList.Tables[0].Rows[0]["Eval_ApprovedBy"].ToString());
-                    string sCCEmailIds = objGlobalData.GetMultiHrEmpEmailIdById(dsList.Tables[0].Rows[0]["Eval_ReviewedBy"].ToString())+","+ objGlobalData.GetMultiHrEmpEmailIdById(dsList.Tables[0].Rows[0]["LoggedBy"].ToString());
+                    string sCCEmailIds = objGlobalData.GetMultiHrEmpEmailIdById(dsList.Tables[0].Rows[0]["Eval_ReviewedBy"].ToString())+","+ objGlobalData.GetMultiHrEmpEmailIdById(dsList.Tables[0].Rows[0]["LoggedBy"].ToString()) + "," + objGlobalData.GetMultiHrEmpEmailIdById(dsList.Tables[0].Rows[0]["notified_to"].ToString());
 
 
                     if (iStatus == "2") // Approve
@@ -517,7 +535,7 @@ namespace ISOStd.Models
                  + "', Emp_Suit_Hold_Pos='" + objEmployeeCompetence.Emp_Suit_Hold_Pos + "', Emp_Prom_Nxt_Pos='" + objEmployeeCompetence.Emp_Prom_Nxt_Pos
                  + "', Need_Of_Trainings='" + objEmployeeCompetence.Need_Of_Trainings + "', Emp_Not_Competent_Action='" + objEmployeeCompetence.Emp_Not_Competent_Action
                  + "', Eval_ReviewedBy='" + objEmployeeCompetence.Eval_ReviewedBy + "',Eval_ApprovedBy='" + objEmployeeCompetence.Eval_ApprovedBy
-                 + "', Name='" + objEmployeeCompetence.Name + "'";
+                 + "', Name='" + objEmployeeCompetence.Name + "', notified_to='" + objEmployeeCompetence.notified_to + "'";
 
                 if (objEmployeeCompetence.Evaluation_DoneOn > Convert.ToDateTime("01/01/0001"))
                 {

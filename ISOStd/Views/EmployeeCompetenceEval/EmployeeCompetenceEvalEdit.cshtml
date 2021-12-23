@@ -133,6 +133,21 @@
                             </div>
                         </td>
                     </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+
+                            <div class="editor-label">
+                                @*@Html.LabelFor(model => model.Date_of_join)*@
+                                Date of Join
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <div class="editor-field">
+                                <input class="form-control" type="date" id="Date_of_join" name="Date_of_join" required disabled />
+
+                            </div>
+                        </td>
+                    </tr>
                     </table>
                 <div id="recieverdiv">
                     <div class="card-body">
@@ -236,6 +251,40 @@
                         </td>
                     </tr>
                     <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.years_exp)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input type="text" class="form-control" id="years_exp" name="years_exp" readonly />
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.skill)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="skill" name="skill" readonly></textarea>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.training_type)
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <div class="editor-field">
+                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="training_type" name="training_type" readonly></textarea>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
                         <td class="col" colspan="4">Academic Qualification</td>
                     </tr>
                     <tr class="row">
@@ -256,7 +305,7 @@
                         </td>
                         <td class="col">
                             <div class="editor-field">
-                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="Academic_EmpComp_Details" name="Academic_EmpComp_Details">@Model.Academic_EmpComp_Details</textarea>
+                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="qualification" name="qualification" readonly></textarea>
                             </div>
                         </td>
                     </tr>
@@ -758,7 +807,31 @@
                             </div>
                         </td>
                     </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.notified_to)<text style="color: red;">*</text>
+                        </td>
+                        <td class="col">
+                            <select class="form-control select-search select2-hidden-accessible" data-fouc id="notified_to" name="notified_to" multiple="multiple" required>
+                                @if (ViewBag.EmpList != null)
+                                {
+                                    foreach (var data in ViewBag.EmpList)
+                                    {
+                                        if (Array.IndexOf(Model.notified_to.ToString().Split(','), data.Value) >= 0)
+                                        {
+                                            <option value='@data.Value' selected>@data.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@data.Value'>@data.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
 
+                        </td>
+
+                    </tr>
                 </table>
  	    </div>
         </div>
@@ -774,6 +847,7 @@
 @section Scripts {
      <script>
 
+         GetEmpInfo();
          var showClass = 'is-visible';
          var hideClass = 'invisible';
 
@@ -788,6 +862,39 @@
          function deleteRow(btn) {
              var row = btn.parentNode.parentNode;
              row.parentNode.removeChild(row);
+         }
+         function GetEmpInfo() {
+             var emp_no = $('#Name').val();
+             jQuery.ajax({
+                 url: '@Url.Action("FunGetEmpDetails", "EmployeeDetails")',
+                 type: 'POST',
+                 dataType: "json",
+                 data: { 'semp_no': emp_no },
+                 success: function (result) {
+
+                     var dateString = result.Date_of_join.substr(6);
+                     var currentTime = new Date(parseInt(dateString));
+                     var month = currentTime.getMonth() + 1;
+                     if (month.toString().length == 1) {
+                         month = '0' + month;
+
+                     }
+                     var day = currentTime.getDate();
+                     if (day.toString().length == 1) {
+                         day = '0' + day;
+
+                     }
+                     var year = currentTime.getFullYear();
+                     // var date = month + "/" + day + "/" + year;
+                     var date = year + "-" + month + "-" + day;
+
+                     document.getElementById("Date_of_join").value = date;
+                     document.getElementById("years_exp").value = result.years_exp;
+                     document.getElementById("skill").value = result.skill;
+                     document.getElementById("training_type").value = result.training_type;
+                     document.getElementById("qualification").value = result.qualification;
+                 }
+             });
          }
        function GetEmpDetails() {
              var Emp_Name = $('#Name').val();
@@ -848,6 +955,7 @@
                  });
 
              }
+           GetEmpInfo();
          }
          
          function setTraining() {

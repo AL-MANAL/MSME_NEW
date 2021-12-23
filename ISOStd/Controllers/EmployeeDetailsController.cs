@@ -3100,7 +3100,10 @@ namespace ISOStd.Controllers
             NCModels objModels = new NCModels();
             try
             {
-                string sSqlstmt = "select emp_no,emp_id,division,Emp_work_location,Dept_Id,EmailId,Designation from t_hr_employee where emp_no = '" + semp_no + "'";
+                string sSqlstmt = "select t1.emp_no,emp_id,division,Emp_work_location,Dept_Id,EmailId,Designation,"
+                +"Date_of_join,years_exp,(group_concat(distinct skill)) skill,(group_concat(distinct t2.qualification)) qualification"
+                +",(group_concat(distinct training_type)) training_type from t_hr_employee t1, t_hr_employee_qualification t2,t_hr_employee_skills t3, t_hr_employee_training t4"
+                +" where t1.emp_no = t2.emp_no and t1.emp_no = t3.emp_no and t1.emp_no = t4.emp_no and t1.emp_no = '"+ semp_no + "'";
                 DataSet dsList = objGlobaldata.Getdetails(sSqlstmt);
                 if (dsList.Tables.Count > 0 && dsList.Tables[0].Rows.Count > 0)
                 {
@@ -3113,8 +3116,18 @@ namespace ISOStd.Controllers
                         location = objGlobaldata.GetDivisionLocationById(dsList.Tables[0].Rows[0]["Emp_work_location"].ToString()),
                         department = objGlobaldata.GetDeptNameById(dsList.Tables[0].Rows[0]["Dept_Id"].ToString()),
                         EmailId = (dsList.Tables[0].Rows[0]["EmailId"].ToString()),
-                        Designation = (dsList.Tables[0].Rows[0]["Designation"].ToString())
+                        Designation = (dsList.Tables[0].Rows[0]["Designation"].ToString()),
+                        years_exp = (dsList.Tables[0].Rows[0]["years_exp"].ToString()),
+                         skill = (dsList.Tables[0].Rows[0]["skill"].ToString()),
+                          qualification =objGlobaldata.GetDropdownitemById(dsList.Tables[0].Rows[0]["qualification"].ToString()),
+                           training_type = (dsList.Tables[0].Rows[0]["training_type"].ToString()),
                     };
+                    DateTime dtValue;
+                    if (DateTime.TryParse(dsList.Tables[0].Rows[0]["Date_of_join"].ToString(), out dtValue))
+                    {
+                        objModels.Date_of_join = dtValue;
+                    }
+
                 }
                 return Json(objModels);
             }

@@ -71,6 +71,10 @@ namespace ISOStd.Models
         public string SQ_OptionsId { get; set; }
         public string SQ_Weightage { get; set; }
 
+        [Display(Name = "Actions to be Initiated")]
+        public string actions_init { get; set; }
+        
+
         internal bool FunAddSupPerformanceEvaluation(SupplierPerpRatingModels ObjModel, SupplierPerpRatingModelsList ObjList)
         {
             try
@@ -83,7 +87,7 @@ namespace ISOStd.Models
 
 
                 string sSqlstmt = "insert into t_supplier_perf_rating (supplier_name, auditee, auditor, upload, loggedby,overall_perf,exceptional," +
-                    "satisfactory,unsatisfactory,na,insufficient,branch,Department,Location,evaluated_by";
+                    "satisfactory,unsatisfactory,na,insufficient,branch,Department,Location,evaluated_by,actions_init";
 
                 if (ObjModel.evalu_date > Convert.ToDateTime("01/01/0001"))
                 {
@@ -93,7 +97,7 @@ namespace ISOStd.Models
 
                 sSqlstmt = sSqlstmt + sColumn + ") values('" + ObjModel.supplier_name + "','" + ObjModel.auditee + "','" + ObjModel.auditor
                  + "','" + ObjModel.upload + "','" + user + "','" + ObjModel.overall_perf + "','" + ObjModel.exceptional + "','" + ObjModel.satisfactory
-                 + "','" + ObjModel.unsatisfactory + "','" + ObjModel.na + "','" + ObjModel.insufficient + "','" + ObjModel.branch + "','" + ObjModel.Department + "','" + ObjModel.Location + "','" + ObjModel.evaluated_by + "'";
+                 + "','" + ObjModel.unsatisfactory + "','" + ObjModel.na + "','" + ObjModel.insufficient + "','" + ObjModel.branch + "','" + ObjModel.Department + "','" + ObjModel.Location + "','" + ObjModel.evaluated_by + "','" + ObjModel.actions_init + "'";
 
                 sSqlstmt = sSqlstmt + sValues + ")";
 
@@ -149,7 +153,7 @@ namespace ISOStd.Models
                 string sSqlstmt = "update t_supplier_perf_rating set supplier_name='" + ObjModel.supplier_name + "', auditee='" + ObjModel.auditee
                     + "', auditor='" + ObjModel.auditor + "', overall_perf='" + ObjModel.overall_perf + "', exceptional='" + ObjModel.exceptional + "', satisfactory='" + ObjModel.satisfactory
                      + "', unsatisfactory='" + ObjModel.unsatisfactory + "', na='" + ObjModel.na + "', insufficient='" + ObjModel.insufficient
-                      + "', branch='" + ObjModel.branch + "', Department='" + ObjModel.Department + "', Location='" + ObjModel.Location + "', evaluated_by='" + ObjModel.evaluated_by + "'"; 
+                      + "', branch='" + ObjModel.branch + "', Department='" + ObjModel.Department + "', Location='" + ObjModel.Location + "', evaluated_by='" + ObjModel.evaluated_by + "', actions_init='" + ObjModel.actions_init + "'"; 
 
                 if (ObjModel.upload != null)
                 {

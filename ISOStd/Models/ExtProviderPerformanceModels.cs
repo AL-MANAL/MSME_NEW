@@ -592,7 +592,10 @@ namespace ISOStd.Models
                     sSqlstmt = sSqlstmt + ",Due_Date='" + objModel.Due_Date.ToString("yyyy/MM/dd") + "'";
                 }
                 sSqlstmt = sSqlstmt + " where Id_Performace='" + Id_Performace + "'";
-                return objGlobalData.ExecuteQuery(sSqlstmt);
+                if(objGlobalData.ExecuteQuery(sSqlstmt))
+                {
+                   return SendActionInitEmail(Id_Performace, "Supplier Performance Evaluation Action Initiated");
+                }
             }
             catch (Exception ex)
             {
@@ -600,8 +603,91 @@ namespace ISOStd.Models
             }
             return false;
         }
+        internal bool SendActionInitEmail(string  Id_Performace, string sMessage = "")
+        {
+            try
+            {
+                string sType = "email";
+
+                string sSqlstmt = "select ReportNo,Ext_Provider_Name,initiated_date,action_taken,Due_Date,action_by,action_notified_to  from t_extprovider_performance where Id_Performace ='" + Id_Performace + "'";
+
+                DataSet dsList = objGlobalData.Getdetails(sSqlstmt);
+                NCModels objType = new NCModels();
+
+                if (dsList.Tables.Count > 0 && dsList.Tables[0].Rows.Count > 0)
+                {
+                    string sHeader, sInformation = "", sSubject = "", sContent = "", aAttachment = "";
+
+                    //Form the Email Subject and Body content
+                    DataSet dsEmailXML = new DataSet();
+                    dsEmailXML.ReadXml(HttpContext.Current.Server.MapPath("~/EmailTemplates.xml"));
+
+                    if (sType != "" && dsEmailXML.Tables.Count > 0 && dsEmailXML.Tables[sType] != null && dsEmailXML.Tables[sType].Rows.Count > 0)
+                    {
+                        sSubject = dsEmailXML.Tables[sType].Rows[0]["subject"].ToString();
+                    }
+
+                    using (StreamReader reader = new StreamReader(HttpContext.Current.Server.MapPath("~/Views/EmailTemplate/EmailTemplate.html")))
+                    {
+                        sContent = reader.ReadToEnd();
+                    }
+                    //string sName = objGlobalData.GetMultiHrEmpNameById(dsData.Tables[0].Rows[0]["approved_by"].ToString());
+                    string sToEmailIds = objGlobalData.GetMultiHrEmpEmailIdById(dsList.Tables[0].Rows[0]["action_by"].ToString());
+                    string sCCEmailIds = objGlobalData.GetMultiHrEmpEmailIdById(dsList.Tables[0].Rows[0]["action_notified_to"].ToString());
+
+                    string initiated_date = "", Due_Date="";
+                    if (dsList.Tables[0].Rows[0]["initiated_date"].ToString() != null && Convert.ToDateTime(dsList.Tables[0].Rows[0]["initiated_date"].ToString()) > Convert.ToDateTime("01/01/0001"))
+                    {
+                        initiated_date = Convert.ToDateTime(dsList.Tables[0].Rows[0]["initiated_date"].ToString()).ToString("yyyy-MM-dd");
+                    }
+                    if (dsList.Tables[0].Rows[0]["Due_Date"].ToString() != null && Convert.ToDateTime(dsList.Tables[0].Rows[0]["Due_Date"].ToString()) > Convert.ToDateTime("01/01/0001"))
+                    {
+                        Due_Date = Convert.ToDateTime(dsList.Tables[0].Rows[0]["Due_Date"].ToString()).ToString("yyyy-MM-dd");
+                    }
+                    sHeader = "<tr><td colspan=3><b>Report Number:<b></td> <td colspan=3>" + dsList.Tables[0].Rows[0]["ReportNo"].ToString() + "</td></tr>"
+                    + "<tr><td colspan=3><b>External Provider Name:<b></td> <td colspan=3>" + objGlobalData.GetSupplierNameById(dsList.Tables[0].Rows[0]["Ext_Provider_Name"].ToString()) + "</td></tr>"
+                    + "<tr><td colspan=3><b>Action Initiated on:<b></td> <td colspan=3>" + initiated_date + "</td></tr>"
+
+                     + "<tr><td colspan=3><b>Action to be taken:<b></td> <td colspan=3>" + objGlobalData.GetDropdownitemById(dsList.Tables[0].Rows[0]["action_taken"].ToString()) + "</td></tr>"
+
+                    + "<tr><td colspan=3><b>Due Date:<b></td> <td colspan=3>" + Due_Date + "</td></tr>"
+
+                    + "<tr><td colspan=3><b>Action to be taken by:<b></td> <td colspan=3>" + objGlobalData.GetMultiHrEmpNameById(dsList.Tables[0].Rows[0]["action_by"].ToString()) + "</td></tr>";
+
+                  
+
+                    sContent = sContent.Replace("{FromMsg}", "");
+                    //sContent = sContent.Replace("{UserName}", sName);
+                    sContent = sContent.Replace("{Title}", "Supplier Performance Evaluation Action Initiated Details");
+                    sContent = sContent.Replace("{content}", sHeader + sInformation);
+                    sContent = sContent.Replace("{message}", "");
+                    sContent = sContent.Replace("{extramessage}", "");
+
+                    sToEmailIds = Regex.Replace(sToEmailIds, ",+", ",");
+                    sToEmailIds = sToEmailIds.Trim();
+                    sToEmailIds = sToEmailIds.TrimEnd(',');
+                    sToEmailIds = sToEmailIds.TrimStart(',');
+
+                    sCCEmailIds = Regex.Replace(sCCEmailIds, ",+", ",");
+                    sCCEmailIds = sCCEmailIds.Trim();
+                    sCCEmailIds = sCCEmailIds.TrimEnd(',');
+                    sCCEmailIds = sCCEmailIds.TrimStart(',');
+
+
+                    objGlobalData.Sendmail(sToEmailIds, sSubject + sMessage, sContent, aAttachment, sCCEmailIds, "");
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobalData.AddFunctionalLog("Exception in SendActionInitEmail: " + ex.ToString());
+            }
+            return false;
+        }
 
     }
+
+
 
     public class ExtProviderPerformanceModelsList
     {

@@ -45,7 +45,7 @@ namespace ISOStd.Models
         public DateTime ApprovedOn { get; set; }
 
 
-        [Display(Name = "Approval By")]
+        [Display(Name = "To be approved By")]
         public string ApprovedBy { get; set; }
 
 
@@ -140,6 +140,14 @@ namespace ISOStd.Models
 
         [Display(Name = "Notified To")]
         public string notified_to { get; set; }
+
+        
+
+        [Display(Name = "Comments")]
+        public string approver_comments { get; set; }
+
+        public string ApprovedStatus_id { get; set; }
+        public string ApprovedBy_id { get; set; }
 
         internal bool FunInvalidSupplier(string sSupplierID, string invalid_reason)
         {
@@ -280,11 +288,11 @@ namespace ISOStd.Models
             return false;
         }
 
-        internal bool FunApproveSupplier(string SupplierID, int iStatus)
+        internal bool FunApproveSupplier(SupplierModels objSupplierModels)
         {
             try
             {
-                string sSqlstmt = "update t_supplier set ApprovedStatus='" + iStatus + "', ApprovedOn='" + DateTime.Now.ToString("yyyy/MM/dd HH:mm") + "' where SupplierId='" + SupplierID + "'";
+                string sSqlstmt = "update t_supplier set ApprovedStatus='" + ApprovedStatus + "',approver_comments='" + approver_comments + "', ApprovedOn='" + DateTime.Now.ToString("yyyy/MM/dd HH:mm") + "' where SupplierId='" + SupplierId + "'";
 
                 return objGlobalData.ExecuteQuery(sSqlstmt);
             }

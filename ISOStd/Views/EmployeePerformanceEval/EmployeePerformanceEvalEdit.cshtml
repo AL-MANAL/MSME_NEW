@@ -127,7 +127,7 @@
                         </td>
                         <td class="col">
                             <div class="editor-field">
-                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="emp_id" name="emp_id" required>
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="emp_id" name="emp_id" required onchange="GetEmpInfo()">
                                     <option value='' hidden>Select</option>
                                     @if (ViewBag.EmpList != null)
                                     {
@@ -164,6 +164,21 @@
                                     <input class="form-control" type="date" id="Evaluation_DoneOn" name="Evaluation_DoneOn" required />
                                 }
                                 @Html.ValidationMessageFor(model => model.Evaluation_DoneOn)
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+
+                            <div class="editor-label">
+                                @*@Html.LabelFor(model => model.Date_of_join)*@
+                                Date of Join
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-3">
+                            <div class="editor-field">
+                                <input class="form-control" type="date" id="Date_of_join" name="Date_of_join" required disabled />
+
                             </div>
                         </td>
                     </tr>
@@ -842,8 +857,36 @@
 
 @section Scripts {
     <script>
+        GetEmpInfo();
+        function GetEmpInfo() {
+            var emp_no = $('#emp_id').val();
+            jQuery.ajax({
+                url: '@Url.Action("FunGetEmpDetails", "EmployeeDetails")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'semp_no': emp_no },
+                success: function (result) {
 
-        
+                    var dateString = result.Date_of_join.substr(6);
+                    var currentTime = new Date(parseInt(dateString));
+                    var month = currentTime.getMonth() + 1;
+                    if (month.toString().length == 1) {
+                        month = '0' + month;
+
+                    }
+                    var day = currentTime.getDate();
+                    if (day.toString().length == 1) {
+                        day = '0' + day;
+
+                    }
+                    var year = currentTime.getFullYear();
+                    // var date = month + "/" + day + "/" + year;
+                    var date = year + "-" + month + "-" + day;
+
+                    document.getElementById("Date_of_join").value = date
+                }
+            });
+        }
         function GetQuestions() {
 
             var eval_period = $('#eval_period').val();

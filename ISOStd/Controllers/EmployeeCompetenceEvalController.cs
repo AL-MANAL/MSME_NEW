@@ -66,7 +66,7 @@ namespace ISOStd.Controllers
             try
             {
                 DateTime dateValue;
-
+                objEmployeeCompetence.notified_to = form["notified_to"];
                 // objEmployeeCompetence.Dept_id = objGlobaldata.GetDeptIdByHrEmpId(objEmployeeCompetence.emp_id);
                 //objEmployeeCompetence.Designation = objGlobaldata.GetEmpDesignationByHrEmpId(objEmployeeCompetence.emp_id);
 
@@ -297,7 +297,7 @@ namespace ISOStd.Controllers
                             + "Academic_EmpComp_Details, Academic_EvalOutput, YrExp_MinComp_Details, YrExp_EmpComp_Details, YrExp_EvalOutput, Relevant_MinComp_Details,"
                             + "Relevant_EmpComp_Details, Relevant_EvalOutput, Skills_MinComp_Details, Skills_EmpComp_Details, Skills_EvalOutput, Emp_Suit_Hold_Pos,"
                             + " Emp_Prom_Nxt_Pos, Need_Of_Trainings, Emp_Not_Competent_Action, Eval_ReviewedBy, Eval_ApprovedBy,Name,eval_status as eval_status_id,review_comments,reviewed_date,review_upload,approver_comments,approved_date,approver_upload,"
-                            + "(CASE WHEN eval_status = '0' THEN 'Pending for review' WHEN eval_status = '1' THEN 'Reviewer Rejected' WHEN eval_status = '2' THEN 'Reviewed' WHEN eval_status = '3' THEN 'Approver Rejected' ELSE 'Approved' END) as eval_status"
+                            + "(CASE WHEN eval_status = '0' THEN 'Pending for review' WHEN eval_status = '1' THEN 'Reviewer Rejected' WHEN eval_status = '2' THEN 'Reviewed' WHEN eval_status = '3' THEN 'Approver Rejected' ELSE 'Approved' END) as eval_status,notified_to"
                             + " FROM t_emp_competence_eval where CompetenceId='" + sCompetenceId + "'";
 
                     DataSet dsCompetenceList = objGlobaldata.Getdetails(sSqlstmt);
@@ -335,6 +335,7 @@ namespace ISOStd.Controllers
                             eval_status_id = (dsCompetenceList.Tables[0].Rows[0]["eval_status_id"].ToString()),
                             approver_comments = (dsCompetenceList.Tables[0].Rows[0]["approver_comments"].ToString()),
                             approver_upload = (dsCompetenceList.Tables[0].Rows[0]["approver_upload"].ToString()),
+                            notified_to =objGlobaldata.GetMultiHrEmpNameById(dsCompetenceList.Tables[0].Rows[0]["notified_to"].ToString()),
                         };
 
                         DateTime dateValue;
@@ -349,6 +350,26 @@ namespace ISOStd.Controllers
                         if (DateTime.TryParse(dsCompetenceList.Tables[0].Rows[0]["approved_date"].ToString(), out dateValue))
                         {
                             objEmployeeCompetence.approved_date = dateValue;
+                        }
+
+                       
+                string sSqlstmt1 = "select Date_of_join,years_exp,(group_concat(distinct skill)) skill,(group_concat(distinct t2.qualification)) qualification"
+                + ",(group_concat(distinct training_type)) training_type from t_hr_employee t1, t_hr_employee_qualification t2,t_hr_employee_skills t3, t_hr_employee_training t4"
+                + " where t1.emp_no = t2.emp_no and t1.emp_no = t3.emp_no and t1.emp_no = t4.emp_no and t1.emp_no = '" + dsCompetenceList.Tables[0].Rows[0]["Name"].ToString() + "'";
+                        DataSet dsList = objGlobaldata.Getdetails(sSqlstmt1);
+                        if (dsList.Tables.Count > 0 && dsList.Tables[0].Rows.Count > 0)
+                        {
+                            objEmployeeCompetence.years_exp = (dsList.Tables[0].Rows[0]["years_exp"].ToString());
+                            objEmployeeCompetence.skill = (dsList.Tables[0].Rows[0]["skill"].ToString());
+                            objEmployeeCompetence.qualification = objGlobaldata.GetDropdownitemById(dsList.Tables[0].Rows[0]["qualification"].ToString());
+                            objEmployeeCompetence.training_type = (dsList.Tables[0].Rows[0]["training_type"].ToString());
+                            
+                            DateTime dtValue;
+                            if (DateTime.TryParse(dsList.Tables[0].Rows[0]["Date_of_join"].ToString(), out dtValue))
+                            {
+                                objEmployeeCompetence.Date_of_join = dtValue;
+                            }
+
                         }
 
                         string sql = "select id_training,CompetenceId,training_topic,source_training,criticality from t_emp_competence_eval_training where CompetenceId='" + sCompetenceId + "'";
@@ -587,7 +608,7 @@ namespace ISOStd.Controllers
                     string sSqlstmt = "SELECT CompetenceId,Name,Evaluation_DoneOn, Evaluated_Freq, Evalaution_Done_By, Academic_MinComp_Details,"
                             + "Academic_EmpComp_Details, Academic_EvalOutput, YrExp_MinComp_Details, YrExp_EmpComp_Details, YrExp_EvalOutput, Relevant_MinComp_Details,"
                             + "Relevant_EmpComp_Details, Relevant_EvalOutput, Skills_MinComp_Details, Skills_EmpComp_Details, Skills_EvalOutput, Emp_Suit_Hold_Pos,"
-                            + " Emp_Prom_Nxt_Pos, Need_Of_Trainings, Emp_Not_Competent_Action, Eval_ReviewedBy, Eval_ApprovedBy, LoggedBy"
+                            + " Emp_Prom_Nxt_Pos, Need_Of_Trainings, Emp_Not_Competent_Action, Eval_ReviewedBy, Eval_ApprovedBy, LoggedBy,notified_to"
                             + " FROM t_emp_competence_eval where CompetenceId='" + sCompetenceId + "'";
 
                     DataSet dsCompetenceList = objGlobaldata.Getdetails(sSqlstmt);
@@ -618,6 +639,7 @@ namespace ISOStd.Controllers
 
                             Eval_ReviewedBy = dsCompetenceList.Tables[0].Rows[0]["Eval_ReviewedBy"].ToString(),
                             Eval_ApprovedBy = dsCompetenceList.Tables[0].Rows[0]["Eval_ApprovedBy"].ToString(),
+                            notified_to = dsCompetenceList.Tables[0].Rows[0]["notified_to"].ToString(),
                             // LoggedBy = (dsCompetenceList.Tables[0].Rows[0]["LoggedBy"].ToString())
                         };
                         if (dsCompetenceList.Tables[0].Rows[0]["Name"].ToString() != "")
@@ -704,6 +726,7 @@ namespace ISOStd.Controllers
         {
             try
             {
+                objEmployeeCompetence.notified_to = form["notified_to"];
                 DateTime dateValue;
                 if (form["Evaluation_DoneOn"] != null && DateTime.TryParse(form["Evaluation_DoneOn"], out dateValue) == true)
                 {

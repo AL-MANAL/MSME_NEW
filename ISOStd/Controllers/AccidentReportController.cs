@@ -337,7 +337,7 @@ namespace ISOStd.Controllers
                 {
                     string id_accident_rept = Request.QueryString["id_accident_rept"];
                     string sSqlstmt = "select id_accident_rept,report_no,acc_date,reported_date,reported_by,location,details,upload," +
-                    "damage,invest_need,justify,invest_reportno,accident_place,Incident_Type,Actions_Taken,branch,Department from t_accident_report where id_accident_rept ='" + id_accident_rept + "'";
+                    "damage,invest_need,justify,invest_reportno,accident_place,Incident_Type,Actions_Taken,branch,Department,eqp_involved,job_type,ppe from t_accident_report where id_accident_rept ='" + id_accident_rept + "'";
 
                     DataSet dsAccidentList = objGlobaldata.Getdetails(sSqlstmt);
                     if (dsAccidentList.Tables.Count > 0 && dsAccidentList.Tables[0].Rows.Count > 0)
@@ -359,6 +359,9 @@ namespace ISOStd.Controllers
                             Actions_Taken = dsAccidentList.Tables[0].Rows[0]["Actions_Taken"].ToString(),
                             branch = (dsAccidentList.Tables[0].Rows[0]["branch"].ToString()),
                             Department = (dsAccidentList.Tables[0].Rows[0]["Department"].ToString()),
+                            eqp_involved = (dsAccidentList.Tables[0].Rows[0]["eqp_involved"].ToString()),
+                            job_type = (dsAccidentList.Tables[0].Rows[0]["job_type"].ToString()),
+                            ppe = (dsAccidentList.Tables[0].Rows[0]["ppe"].ToString()),
                         };
                         DateTime dtDocDate;
                         if (dsAccidentList.Tables[0].Rows[0]["acc_date"].ToString() != ""
@@ -781,7 +784,7 @@ namespace ISOStd.Controllers
                 {
                     string id_accident_rept = Request.QueryString["id_accident_rept"];
                     string sSqlstmt = "select id_accident_rept,report_no,acc_date,reported_date,reported_by,location,details,upload," +
-                    "damage,invest_need,justify,invest_reportno,accident_place,Incident_Type,Actions_Taken,branch,Department from t_accident_report where id_accident_rept ='" + id_accident_rept + "'";
+                    "damage,invest_need,justify,invest_reportno,accident_place,Incident_Type,Actions_Taken,branch,Department,eqp_involved,job_type,ppe from t_accident_report where id_accident_rept ='" + id_accident_rept + "'";
 
                     DataSet dsAccidentList = objGlobaldata.Getdetails(sSqlstmt);
                     if (dsAccidentList.Tables.Count > 0 && dsAccidentList.Tables[0].Rows.Count > 0)
@@ -803,6 +806,9 @@ namespace ISOStd.Controllers
                             Actions_Taken = dsAccidentList.Tables[0].Rows[0]["Actions_Taken"].ToString(),
                             branch = objGlobaldata.GetMultiCompanyBranchNameById(dsAccidentList.Tables[0].Rows[0]["branch"].ToString()),
                             Department = objGlobaldata.GetMultiDeptNameById(dsAccidentList.Tables[0].Rows[0]["Department"].ToString()),
+                            eqp_involved = dsAccidentList.Tables[0].Rows[0]["eqp_involved"].ToString(),
+                            job_type = dsAccidentList.Tables[0].Rows[0]["job_type"].ToString(),
+                            ppe = dsAccidentList.Tables[0].Rows[0]["ppe"].ToString(),
                         };
                         DateTime dtDocDate;
                         if (dsAccidentList.Tables[0].Rows[0]["acc_date"].ToString() != ""
@@ -917,7 +923,7 @@ namespace ISOStd.Controllers
                 {
                     string id_accident_rept = form["id_accident_rept"];
                     string sSqlstmt = "select id_accident_rept,report_no,acc_date,reported_date,reported_by,location,details,upload," +
-                    "damage,invest_need,justify,invest_reportno,logged_by,Incident_Type,Actions_Taken,branch,Department from t_accident_report where id_accident_rept ='" + id_accident_rept + "'";
+                    "damage,invest_need,justify,invest_reportno,logged_by,Incident_Type,Actions_Taken,branch,Department,eqp_involved,job_type,ppe from t_accident_report where id_accident_rept ='" + id_accident_rept + "'";
 
                     DataSet dsAccidentList = objGlobaldata.Getdetails(sSqlstmt);
                     if (dsAccidentList.Tables.Count > 0 && dsAccidentList.Tables[0].Rows.Count > 0)
@@ -939,6 +945,9 @@ namespace ISOStd.Controllers
                             Actions_Taken = dsAccidentList.Tables[0].Rows[0]["Actions_Taken"].ToString(),
                             branch = objGlobaldata.GetMultiCompanyBranchNameById(dsAccidentList.Tables[0].Rows[0]["branch"].ToString()),
                             Department = objGlobaldata.GetMultiDeptNameById(dsAccidentList.Tables[0].Rows[0]["Department"].ToString()),
+                            eqp_involved = dsAccidentList.Tables[0].Rows[0]["eqp_involved"].ToString(),
+                            job_type = dsAccidentList.Tables[0].Rows[0]["job_type"].ToString(),
+                            ppe = dsAccidentList.Tables[0].Rows[0]["ppe"].ToString(),
                         };
                         DateTime dtDocDate;
                         if (dsAccidentList.Tables[0].Rows[0]["acc_date"].ToString() != ""

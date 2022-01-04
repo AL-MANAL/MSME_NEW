@@ -1,0 +1,762 @@
+﻿@model ISOStd.Models.ManagementChangeModels
+@using System.Data;
+
+@{
+    ViewBag.Title = "ChangeManagementEdit";
+    DataSet dsActionDetails = ViewBag.ActionDetails;
+    string sId = "", sAction = "", sPersonResponsible = "", sAction_Status = "", SubmitFinding = "SubmitFinding", Save = "Save"; ;
+    DateTime dtTargetDate = new DateTime();
+    ISOStd.Models.clsGlobal obj = new ISOStd.Models.clsGlobal();
+    if (dsActionDetails != null && dsActionDetails.Tables.Count > 0 && dsActionDetails.Tables[0].Rows.Count > 0)
+    {
+        sId = dsActionDetails.Tables[0].Rows[0]["Id"].ToString();
+        sAction = dsActionDetails.Tables[0].Rows[0]["Action"].ToString();
+        sPersonResponsible = dsActionDetails.Tables[0].Rows[0]["PersonResponsible"].ToString();
+        sAction_Status = dsActionDetails.Tables[0].Rows[0]["Action_Status"].ToString();
+        dtTargetDate = Convert.ToDateTime(dsActionDetails.Tables[0].Rows[0]["TargetDate"].ToString());
+    }
+}
+
+@section featured {
+
+    <div class="page-header page-header-light">
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("ChangeManagementList", "ChangeManagement", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Management of Change</span>
+                    </a>
+                    <span class="breadcrumb-item active">Update Management of Change</span>
+                </div>
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+}
+
+@using (Html.BeginForm("ChangeManagementEdit", "ChangeManagement", FormMethod.Post,
+                         new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Change request initiation</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+
+            <div class="container-fluid">
+                <input type="hidden" id="IdMgmt" name="IdMgmt" value="@Model.IdMgmt" />
+
+                <table class="table table-lg">
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.branch)
+                        </td>
+                        <td class="col">
+                            <select class="form-control select-fixed-multiple" multiple="multiple" data-fouc id="branch" name="branch" onchange="GetDeptList()">
+                                @*<option value='' hidden>Select</option>*@
+                                @if (ViewBag.Branch != null)
+                                {
+                                    foreach (var data in ViewBag.Branch)
+                                    {
+                                        if (Array.IndexOf(Model.branch.ToString().Split(','), data.Value) >= 0)
+                                        {
+                                            <option value='@data.Value' selected>@data.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@data.Value'>@data.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.Department)<text style="color:red;">*</text>
+                        </td>
+                        <td class="col">
+                            <select class="form-control select-fixed-multiple" data-fouc id="Department" name="Department" multiple="multiple" @*onchange="GetEmployeeList()"*@ required>
+                                @if (ViewBag.Department != null)
+                                {
+                                    foreach (var item in ViewBag.Department)
+                                    {
+                                        if (Array.IndexOf(Model.Department.ToString().Split(','), item.Value) >= 0)
+                                        {
+                                            <option value='@item.Value' selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+
+                            @Html.LabelFor(model => model.ChangeInitiatedDate)
+
+                        </td>
+                        <td class="col">
+                            <input class="form-control" type="date" id="ChangeInitiatedDate" name="ChangeInitiatedDate" value="@Model.ChangeInitiatedDate.ToString("yyyy-MM-dd")" />
+
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.Location)<text style="color:red;">*</text>
+                        </td>
+                        <td class="col">
+                            <select class="form-control select-fixed-multiple" data-fouc id="Location" name="Location" multiple="multiple" @*onchange="GetEmployeeList()"*@ required>
+                                @if (ViewBag.Location != null)
+                                {
+                                    foreach (var item in ViewBag.Location)
+                                    {
+                                        if (Array.IndexOf(Model.Location.ToString().Split(','), item.Value) >= 0)
+                                        {
+                                            <option value='@item.Value' selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                        </td>
+                        
+                    </tr>
+
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+
+                            @Html.LabelFor(model => model.ChangeIn)<text style="color:red;">*</text>
+
+                        </td>
+                        <td class="col">
+
+                            <select class="form-control select-search select2-hidden-accessible" data-fouc id="ChangeIn" name="ChangeIn" required>
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.Samples != null)
+                                {
+                                    foreach (var data in ViewBag.Samples)
+                                    {
+                                        if (data.Text == Model.ChangeIn)
+                                        {
+                                            <option value='@data.Value' selected>@data.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@data.Value'>@data.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+
+                        </td>
+
+                        <td class="col-xs-3 col-md-2">
+
+                            @Html.LabelFor(model => model.ChangeType)<text style="color:red;">*</text>
+
+                        </td>
+                        <td class="col">
+
+                            <select class="form-control select-search select2-hidden-accessible" data-fouc id="ChangeType" name="ChangeType" required>
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.changetype != null)
+                                {
+                                    foreach (var data in ViewBag.changetype)
+                                    {
+                                        if (data == Model.ChangeType)
+                                        {
+                                            <option value='@data' selected>@data</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@data'>@data</option>
+                                        }
+                                    }
+                                }
+                            </select>
+
+
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+
+                            @Html.LabelFor(model => model.RiskLevel)<text style="color:red;">*</text>
+
+                        </td>
+                        <td class="col">
+
+                            <select class="form-control select-search select2-hidden-accessible" data-fouc id="RiskLevel" name="RiskLevel" required>
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.impact_id != null)
+                                {
+                                    foreach (var data in ViewBag.impact_id)
+                                    {
+                                        if (data.Text == Model.RiskLevel)
+                                        {
+                                            <option value='@data.Value' selected>@data.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@data.Value'>@data.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                        <td class="col-xs-3 col-md-2">
+
+                            @Html.LabelFor(model => model.ChangeRequestedBy)<text style="color:red;">*</text>
+
+                        </td>
+                        <td class="col">
+
+                            <select class="form-control select-search select2-hidden-accessible" data-fouc id="ChangeRequestedBy" name="ChangeRequestedBy" required>
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.EmpLists != null)
+                                {
+                                    foreach (var data in ViewBag.EmpLists)
+                                    {
+                                        if (data.Text == Model.ChangeRequestedBy)
+                                        {
+                                            <option value='@data.Value' selected>@data.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@data.Value'>@data.Text</option>
+                                        }
+
+                                    }
+                                }
+                            </select>
+
+                        </td>
+                        </td>
+
+<tr class="row">
+                        <td class="col-xs-3 col-md-2">
+
+                            @Html.LabelFor(model => model.DetailsOfChange)
+
+                        </td>
+                        <td class="col" colspan="3">
+
+
+                            @Html.TextAreaFor(model => model.DetailsOfChange, new { @id = "editor-full", @rows = "4", @cols = "4" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" class="font-size-lg" style="background-color: #4cc4dd; color: #fff; font-weight: bold;">Change of evaluation</td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+
+                            @Html.LabelFor(model => model.ResonForChange)
+
+
+                        </td>
+                        <td class="col" colspan="3">
+
+
+
+                            @Html.TextAreaFor(model => model.ResonForChange, new { @id = "editor-full2", @rows = "4", @cols = "4" })
+
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="colclass=" col-xs-3 col-md-2">
+
+                            @Html.LabelFor(model => model.Impact)
+
+
+                        </td>
+                        <td class="col" colspan="3">
+
+
+
+                            @Html.TextAreaFor(model => model.Impact, new { @id = "editor-full3", @rows = "4", @cols = "4" })
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+
+                            @Html.LabelFor(model => model.ApprovedBy)<text style="color:red;">*</text>
+
+                        </td>
+                        <td class="col">
+
+                            <select class="form-control select-fixed-multiple" id="ApprovedBy" name="ApprovedBy" required multiple>
+                                @if (ViewBag.Approver != null)
+                                {
+                                    foreach (var data in ViewBag.Approver)
+                                    {
+                                        if (Array.IndexOf(Model.ApprovedBy.ToString().Split(','), data.Value) >= 0)
+                                        {
+                                            <option value='@data.Value' selected>@data.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@data.Value'>@data.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+
+                        </td>
+                    </tr>
+
+                </table>
+            </div>
+
+        </div>
+      
+    <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+
+        @Html.ActionLink("Back to List", "ChangeManagementList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+
+
+        <button class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" type="submit" value="Update" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Save</button>
+    </div>
+    </div>
+
+
+}
+@* @using (Html.BeginForm("ChangeManagementActionUpdate", "ChangeManagement", FormMethod.Post, new
+     {
+         enctype = "multipart/form-data",
+         id = "form2",
+         name = "form2"
+     }))
+     {
+        @Html.ValidationSummary(true)
+         @Html.AntiForgeryToken()
+           <fieldset>
+                <legend>ObjectivesModels</legend>
+         <div>
+             <input type="hidden" id="Id" name="Id" value="@sId"/>
+             <input type="hidden" id="IdMgmt" name="IdMgmt" value="@Model.IdMgmt" />
+             <table id="tabcontent">
+                 <tr>
+                     <td colspan="4" style="background-color: #4cc4dd; color: #fff; font-weight: bold; font-size: 14px;">Actions taken to mitigate the impact on consequences</td>
+                 </tr>
+                 <tr>
+                     <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Action)<text style="color:red;">*</text>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                             <textarea id="Action" name="Action" value="@sAction">@sAction</textarea>
+                            <span class="field-validation-error"><span id="Action-message" style="display: none;">Action field is required.</span></span>
+                            @Html.ValidationMessageFor(model => model.Action)
+                        </div>
+                    </td>
+
+
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.TargetDate)<text style="color:red;">*</text>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <input type="text" id="TargetDate" name="TargetDate" value="@dtTargetDate.ToString("dd/MM/yyyy")" readonly style="width: 150px;"/>
+                            <span class="field-validation-error"><span id="Target-date-message" style="display: none;">Target Date field is required.</span></span>
+                            @Html.ValidationMessageFor(model => model.TargetDate)
+                        </div>
+                    </td>
+                 </tr>
+                 <tr>
+                     <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.PersonResponsible)<text style="color:red;">*</text>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                       <select id="PersonResponsible" name="PersonResponsible">
+                            <option value='' hidden>Select</option>
+                            @if (ViewBag.EmpList != null)
+                            {
+                                foreach (var data in ViewBag.EmpList)
+                                {
+                                    if (data.Value == sPersonResponsible)
+                                    {
+                                        <option value='@data.Value' selected>@data.Text</option>
+                                    }
+                                    else
+                                    {
+                                        <option value='@data.Value'>@data.Text</option>
+                                    }
+                                }
+                            }
+                        </select>
+                           <span class="field-validation-error"><span id="Person-Responsible-message" style="display: none;">Person Responsible field is required.</span></span>
+                            @Html.ValidationMessageFor(model => model.PersonResponsible)
+                        </div>
+                    </td>
+
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Action_Status)<text style="color:red;">*</text>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <select id="Action_Status" name="Action_Status">
+                            <option value='' hidden>Select</option>
+                             @if (ViewBag.ActionStatus != null)
+                             {
+                                 foreach (var data in ViewBag.ActionStatus)
+                                 {
+                                     if (data == sAction_Status)
+                                     {
+                                     <option value='@data' selected>@data</option>
+                                     }
+                                     else
+                                     {
+                                     <option value='@data'>@data</option>
+                                     }
+                                 }
+                             }
+                        </select>
+
+                            <span class="field-validation-error"><span id="Action-status-message" style="display: none;">Action Status field is required.</span></span>
+                            @Html.ValidationMessageFor(model => model.Action_Status)
+                        </div>
+                    </td>
+                 </tr>
+
+             </table>
+             <div style="padding-right: 200px; text-align:center;">
+
+                 @if (dsActionDetails != null && dsActionDetails.Tables.Count > 0 && dsActionDetails.Tables[0].Rows.Count > 0)
+                 {
+                     <input type="submit" id="@SubmitFinding" name="button" value="UpdatePlan" onclick="return Validation()" />
+                     <input type="submit" id="@Save" name="button" value="Save" onclick="return Validation()" style="display: none;" />
+                 }
+                 else
+                 {
+                     <input type="submit" id="@SubmitFinding" name="button" value="UpdatePlan" onclick="return Validation()" style="display: none;" />
+                     <input type="submit" id="@Save" name="button" value="Save" onclick="return Validation()"  />
+                 }
+
+                 <input type="button" value="Add New" onclick="AddNewItem()" />
+             </div>
+         </div>
+                 </fieldset>
+     }
+    <br />*@
+@*@if (dsActionDetails != null && dsActionDetails.Tables.Count > 0 && dsActionDetails.Tables[0].Rows.Count > 0)
+    {
+        <div id="dvItems" >
+            <input type="hidden" id="itemcnt" name="itemcnt" value="0" />
+            <div class="editor-label">
+                <label for="Action Details" style="background-color: #4cc4dd; width: 100%; color: white; padding-left: 5px;">Action Details</label>
+            </div>
+            <table id="team-list">
+                <tr>
+                    <th>Edit</th>
+                    <th>Action</th>
+                    <th>Target Date</th>
+                    <th>Person Responsible</th>
+                    <th>Action Status</th>
+
+                </tr>
+                @for (int i = 0; i < dsActionDetails.Tables[0].Rows.Count; i++)
+                {
+                    <tr id="@i">
+                        <td>
+                            <a onclick="EditItem(@dsActionDetails.Tables[0].Rows[i]["Id"].ToString(), @i)" title="Edit Action details">
+                                <span class="glyphicon glyphicon glyphicon-edit iocnstatus-edit"></span></a>
+                        </td>
+                        <td>
+                            @dsActionDetails.Tables[0].Rows[i]["Action"].ToString()
+                        </td>
+                        <td>
+                            @Convert.ToDateTime(dsActionDetails.Tables[0].Rows[i]["TargetDate"].ToString()).ToString("dd/MM/yyyy")
+                        </td>
+                        <td>
+                            @obj.GetEmpHrNameById(dsActionDetails.Tables[0].Rows[i]["PersonResponsible"].ToString())
+                        </td>
+                        <td>
+                            @dsActionDetails.Tables[0].Rows[i]["Action_Status"].ToString()
+                        </td>
+                    </tr>
+                }
+            </table>
+        </div>
+    }*@
+
+
+@section Scripts {
+    <script type="text/javascript">
+
+        //function AddNewItem() {
+        //    document.getElementById("SubmitFinding").style.display = "None";
+        //    document.getElementById("Save").style.display = "";
+        //    ResetControl();
+        //}
+
+        //function Validation() {
+        //    var validflg = true;
+        //    var ssnMessage = "";
+        //    if (document.getElementById("Action").value == "") {
+        //        ssnMessage = $('#Action-message');
+        //        ssnMessage.show();
+        //        validflg = false;
+        //    }
+        //    else {
+        //        ssnMessage = $('#Action-message');
+        //        ssnMessage.hide();
+        //    }
+        //    if (document.getElementById("TargetDate").value == "") {
+        //        ssnMessage = $('#Target-date-message');
+        //        ssnMessage.show();
+        //        validflg = false;
+        //    }
+        //    else {
+        //        ssnMessage = $('#Target-date-message');
+        //        ssnMessage.hide();
+        //    }
+        //    if (document.getElementById("PersonResponsible").value == "") {
+        //        ssnMessage = $('#Person-Responsible-message');
+        //        ssnMessage.show();
+        //        validflg = false;
+        //    }
+        //    else {
+        //        ssnMessage = $('#Person-Responsible-message');
+        //        ssnMessage.hide();
+        //    }
+        //    if (document.getElementById("Action_Status").value == "") {
+        //        ssnMessage = $('#Action-status-message');
+        //        ssnMessage.show();
+        //        validflg = false;
+        //    }
+        //    else {
+        //        ssnMessage = $('#Action-status-message');
+        //        ssnMessage.hide();
+        //    }
+
+        //    return validflg;
+        //}
+
+        //function ResetControl() {
+
+        //    $("#TargetDate").datepicker("setDate", new Date());
+        //    document.getElementById("Action").value = "";
+        //    $("#PersonResponsible").val('').trigger("chosen:updated");
+        //    $("#Action_Status").val('').trigger("chosen:updated");
+
+
+        //    var ssnMessage = $('#Action-message');
+        //    ssnMessage.hide();
+        //    ssnMessage = $('#Target-date-message');
+        //    ssnMessage.hide();
+        //    ssnMessage = $('#Person-Responsible-message');
+        //    ssnMessage.hide();
+        //    ssnMessage = $('#Action-status-message');
+        //    ssnMessage.hide();
+        //}
+        //function EditItem(Id, Ids) {
+        //    Ids++;
+        //    var table = document.getElementById("team-list");
+        //    document.getElementById("Id").value = Id;
+        //    document.getElementById("Action").value = table.rows[Ids].cells[1].innerText;
+        //    document.getElementById("TargetDate").value = table.rows[Ids].cells[2].innerText;
+
+        //    var person_responsible = table.rows[Ids].cells[3].innerText;
+
+        //    $('#PersonResponsible option').each(function () {
+        //        if (this.text == person_responsible) {
+        //            $('#PersonResponsible').val(this.value);
+        //            $('#PersonResponsible').prop('selected', true).trigger("chosen:updated");
+        //        }
+        //    });
+
+        //    var Action = table.rows[Ids].cells[4].innerText;
+        //    $('#Action_Status option').filter(function () {
+        //        return ($(this).text() == Action);
+        //    }).prop('selected', true).trigger("chosen:updated");
+
+        //    document.getElementById("SubmitFinding").style.display = "";
+        //    document.getElementById("Save").style.display = "none";
+        //}
+
+        //$(function () {
+        //    $("#ChangeRequestedBy").chosen();
+        //    $("#ApprovedBy").chosen();
+        //    $("#PersonResponsible").chosen();
+        //    $("#Action_Status").chosen();
+        //    $("#ChangeIn").chosen();
+        //    $("#ChangeType").chosen();
+        //    $("#RiskLevel").chosen();
+        //    $.validator.setDefaults({ ignore: ":hidden:not('.chosen-select')" });
+
+        //    $('#TargetDate').datepicker({
+        //        dateFormat: "dd/mm/yy",
+        //        buttonImageOnly: true,
+        //        buttonImage: '../Images/Calender.png',
+        //        showOn: 'both',
+        //        changeMonth: true,
+        //        changeYear: true,
+        //        gotoCurrent: true
+        //    });
+
+        //    $("#TargetDate").datepicker("setDate", new Date());
+        //});
+
+        //(function () {
+        //    var cancelEvent = function (evt) {
+        //        evt.cancel();
+        //    };
+
+        //    CKEDITOR.editor.prototype.readOnly = function (isReadOnly) {
+        //        // Turn off contentEditable.
+        //        this.document.$.body.disabled = isReadOnly;
+        //        CKEDITOR.env.ie ? this.document.$.body.contentEditable = !isReadOnly
+        //            : this.document.$.designMode = isReadOnly ? "off" : "on";
+
+        //        // Prevent key handling.
+        //        this[isReadOnly ? 'on' : 'removeListener']('key', cancelEvent, null, null, 0);
+        //        this[isReadOnly ? 'on' : 'removeListener']('selectionChange', cancelEvent, null, null, 0);
+
+        //        // Disable all commands in wysiwyg mode.
+        //        var command,
+        //            commands = this._.commands,
+        //            mode = this.mode;
+
+        //        for (var name in commands) {
+        //            command = commands[name];
+        //            isReadOnly ? command.disable() : command[command.modes[mode] ? 'enable' : 'disable']();
+        //            this[isReadOnly ? 'on' : 'removeListener']('state', cancelEvent, null, null, 0);
+        //        }
+        //    }
+        //})();
+
+
+
+       //----zzz
+
+
+     $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+    });
+
+    //zzz----
+
+
+        // Full featured editor
+        // ------------------------------
+
+        // Setup
+        CKEDITOR.replace('editor-full', {
+            height: 400,
+            extraPlugins: 'forms'
+        });
+
+
+        CKEDITOR.replace('editor-full2', {
+            height: 400,
+            extraPlugins: 'forms'
+        });
+
+
+        CKEDITOR.replace('editor-full3', {
+            height: 400,
+            extraPlugins: 'forms'
+        });
+
+        function GetDeptList() {
+            var selectedValues = [];
+            $("#branch :selected").each(function () {
+                selectedValues.push($(this).val());
+            });
+            var svalue = selectedValues.join(",");
+           /* GetEmployeeList();*/
+            updateDeptnlocation(svalue, "Location", "location");
+            updateDeptnlocation(svalue, "Department", "department");
+        }
+
+        function GetEmployeeList() {
+            var sbranch = $.map($("#branch option:selected"), function (el, i) {
+                return $(el).val();
+            });
+            var sbvalue = (sbranch.join(","));
+
+            var sDepartment = $.map($("#Department option:selected"), function (el, i) {
+                return $(el).val();
+            });
+            var sdvalue = (sDepartment.join(","));
+
+            var sLocation = $.map($("#Location option:selected"), function (el, i) {
+                return $(el).val();
+            });
+            var slvalue = (sLocation.join(","));
+
+            updateEmployeeList(sbvalue, sdvalue, slvalue, "ChangeRequestedBy");
+            updateRoleList(sbvalue, sdvalue, slvalue, "ApprovedBy", "Approver");
+        }
+     
+
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+
+}

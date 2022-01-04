@@ -55,9 +55,10 @@ namespace ISOStd.Controllers
                 ViewBag.Location = objGlobaldata.GetCompanyBranchListbox();
                 ViewBag.Report_HSE = objGlobaldata.GetConstantValue("YesNo");
                 ViewBag.AccidentReport = objGlobaldata.GetAccidentReportsWithInvestList();
-                ViewBag.HSEEmp = objGlobaldata.GetHrEmpHseList();
+                ViewBag.HSEEmp = objGlobaldata.GetHSEOfficerListbox();
                 ViewBag.Status = objGlobaldata.GetDropdownList("Incident Status");
                 ViewBag.Injury = objGlobaldata.GetDropdownList("Type of Injury");
+                ViewBag.InvstTeam = objGlobaldata.GetAccidentInvestTeamListbox();
             }
             catch (Exception ex)
             {
@@ -214,7 +215,7 @@ namespace ISOStd.Controllers
                                 Incident_Id = objIncidentReport.Incident_Id,
                                 LTI_Id = form["LTI_Id " + i],
                                 AccidentType = form["AccidentType " + i],
-                                Emp_Id = form["Emp_Id " + i],
+                                Emp_Id = form["Emp_Id" + i],
                                 LTI_Hrs = form["LTI_Hrs " + i],
                                 injury_type = form["injury_type " + i],
                             };
@@ -295,7 +296,7 @@ namespace ISOStd.Controllers
                 string sSqlstmt = "SELECT Incident_Id, Incident_Num, Reported_On, PreparedBy, Incident_Type, Incident_Datetime, Location, Occurred_onJob, InWork_Premises, "
                     + " WitnessedBy, Witness_StmtDoc, Incident_Desc, Consequences, Damages, Injury_Nature, Minor_InjuriesNo, Minor_Injuries_LTINo, "
                     + " Major_InjuriesNo, FatalitiesNo, Actions_Taken, Incident_Reasons, Corrective_Measures, Corrective_ApprovedBy_ReviewedBy, DueDate,"
-                    + " ClosedOn, LoggedBy, Incident_Datetime, Loggeddate,ReportToHSE FROM t_incident_report where Active=1 ";
+                    + " ClosedOn, LoggedBy, Incident_Datetime, Loggeddate,ReportToHSE,hse_officer FROM t_incident_report where Active=1 ";
 
                 if (branch_name != null && branch_name != "")
                 {
@@ -337,7 +338,8 @@ namespace ISOStd.Controllers
                                 Corrective_Measures = (dsIncident.Tables[0].Rows[i]["Corrective_Measures"].ToString()),
                                 Corrective_ApprovedBy_ReviewedBy = (dsIncident.Tables[0].Rows[i]["Corrective_ApprovedBy_ReviewedBy"].ToString()),
                                 LoggedBy = objGlobaldata.GetEmpHrNameById(dsIncident.Tables[0].Rows[i]["LoggedBy"].ToString()),
-                                ReportToHSE = dsIncident.Tables[0].Rows[i]["ReportToHSE"].ToString()
+                                ReportToHSE = dsIncident.Tables[0].Rows[i]["ReportToHSE"].ToString(),
+                                hse_officer = objGlobaldata.GetEmpHrNameById(dsIncident.Tables[0].Rows[i]["hse_officer"].ToString()),
                             };
 
                             DateTime dateValue;
@@ -548,7 +550,7 @@ namespace ISOStd.Controllers
                             WitnessedBy = objGlobaldata.GetMultiHrEmpNameById(dsIncident.Tables[0].Rows[0]["WitnessedBy"].ToString()),
                             Witness_StmtDoc = dsIncident.Tables[0].Rows[0]["Witness_StmtDoc"].ToString(),
                             Incident_Desc = dsIncident.Tables[0].Rows[0]["Incident_Desc"].ToString(),
-                            Consequences = dsIncident.Tables[0].Rows[0]["Consequences"].ToString(),
+                            //Consequences = dsIncident.Tables[0].Rows[0]["Consequences"].ToString(),
                             Damages = (dsIncident.Tables[0].Rows[0]["Damages"].ToString()),
                             Injury_Nature = dsIncident.Tables[0].Rows[0]["Injury_Nature"].ToString(),
                             Minor_InjuriesNo = objGlobaldata.GetMultiHrEmpNameById(dsIncident.Tables[0].Rows[0]["Minor_InjuriesNo"].ToString()),
@@ -624,7 +626,7 @@ namespace ISOStd.Controllers
                                         Incident_Id = dsIncident.Tables[0].Rows[i]["Incident_Id"].ToString(),
                                         LTI_Id = (dsIncident.Tables[0].Rows[i]["LTI_Id"].ToString()),
                                         AccidentType = objGlobaldata.GetDropdownitemById(dsIncident.Tables[0].Rows[i]["AccidentType"].ToString()),
-                                        Emp_Id = objGlobaldata.GetEmpHrNameById(dsIncident.Tables[0].Rows[i]["Emp_Id"].ToString()),
+                                        Emp_Id = objGlobaldata.GetMultiHrEmpNameById(dsIncident.Tables[0].Rows[i]["Emp_Id"].ToString()),
                                         LTI_Hrs = dsIncident.Tables[0].Rows[i]["LTI_Hrs"].ToString(),
                                         injury_type = objGlobaldata.GetDropdownitemById(dsIncident.Tables[0].Rows[i]["injury_type"].ToString()),
                                     };
@@ -713,7 +715,7 @@ namespace ISOStd.Controllers
                             ViewBag.objCloseList = objCloseList;
                         }
 
-                        string sSqlstmt1 = "select acc_date,reported_date,reported_by,details,Incident_Type from t_accident_report"
+                        string sSqlstmt1 = "select acc_date,reported_date,reported_by,details,Incident_Type,damage from t_accident_report"
                 + " where id_accident_rept = '" + objIncidentReport.accident_reportno + "'";
                         DataSet dsAccident = objGlobaldata.Getdetails(sSqlstmt1);
 
@@ -724,6 +726,7 @@ namespace ISOStd.Controllers
                                 objIncidentReport.reported_by = objGlobaldata.GetMultiHrEmpNameById(dsAccident.Tables[0].Rows[i]["reported_by"].ToString());
                                 objIncidentReport.details = dsAccident.Tables[0].Rows[i]["details"].ToString();
                                 objIncidentReport.Incident_Type = objinc.GetIncidentTypeNameById(dsAccident.Tables[0].Rows[i]["Incident_Type"].ToString());
+                                objIncidentReport.Consequences = (dsAccident.Tables[0].Rows[i]["damage"].ToString());
 
                                 DateTime dtDocDate;
                                 if (dsAccident.Tables[0].Rows[i]["acc_date"].ToString() != ""
@@ -1001,7 +1004,7 @@ namespace ISOStd.Controllers
                                         Incident_Id = dsIncident.Tables[0].Rows[i]["Incident_Id"].ToString(),
                                         LTI_Id = (dsIncident.Tables[0].Rows[i]["LTI_Id"].ToString()),
                                         AccidentType = (dsIncident.Tables[0].Rows[i]["AccidentType"].ToString()),
-                                        Emp_Id = objGlobaldata.GetEmpHrNameById(dsIncident.Tables[0].Rows[i]["Emp_Id"].ToString()),
+                                        Emp_Id = (dsIncident.Tables[0].Rows[i]["Emp_Id"].ToString()),
                                         LTI_Hrs = dsIncident.Tables[0].Rows[i]["LTI_Hrs"].ToString(),
                                         injury_type = dsIncident.Tables[0].Rows[i]["injury_type"].ToString(),
                                     };
@@ -1106,10 +1109,12 @@ namespace ISOStd.Controllers
                         ViewBag.AccidentType = objGlobaldata.GetDropdownList("Accident Type");
                         ViewBag.Location = objGlobaldata.GetCompanyBranchListbox();
                         ViewBag.AccidentReport = objGlobaldata.GetAccidentReportsWithInvestList();
-                        ViewBag.HSEEmp = objGlobaldata.GetHrEmpHseList();
+                        ViewBag.HSEEmp = objGlobaldata.GetHSEOfficerListbox();
                         ViewBag.Status = objGlobaldata.GetDropdownList("Incident Status");
                         ViewBag.Injury = objGlobaldata.GetDropdownList("Type of Injury");
-
+                        ViewBag.InvstTeam = objGlobaldata.GetAccidentInvestTeamListbox();
+                        ViewBag.InjuryPers= objGlobaldata.GetHrMultiEmployeeListByID(objGlobaldata.GetAccidentInjuriedPerson(objIncidentReport.accident_reportno));
+                       
                         if (objGlobaldata.GetIncidentInvestigators(sIncident_Id) != "" && objGlobaldata.GetIncidentInvestigators(sIncident_Id) != null)
                         {
                             ViewBag.InvestTeam = objGlobaldata.GetHrMultiEmployeeListByID(objGlobaldata.GetIncidentInvestigators(sIncident_Id));
@@ -1280,7 +1285,7 @@ namespace ISOStd.Controllers
                                 Incident_Id = objIncidentReport.Incident_Id,
                                 LTI_Id = form["LTI_Id " + i],
                                 AccidentType = form["AccidentType " + i],
-                                Emp_Id = form["Emp_Id " + i],
+                                Emp_Id = form["Emp_Id" + i],
                                 LTI_Hrs = form["LTI_Hrs " + i],
                                 injury_type = form["injury_type " + i]
                             };
@@ -1659,7 +1664,7 @@ namespace ISOStd.Controllers
             AccidentReportModels objModel = new AccidentReportModels();
             try
             {
-                string sSqlstmt = "select acc_date,reported_date,reported_by,details,Incident_Type from t_accident_report"
+                string sSqlstmt = "select acc_date,reported_date,reported_by,details,Incident_Type,damage from t_accident_report"
                 + " where id_accident_rept = '" + accident_reportno + "'";
                 DataSet dsIncident = objGlobaldata.Getdetails(sSqlstmt);
 
@@ -1672,6 +1677,7 @@ namespace ISOStd.Controllers
                             reported_by = objGlobaldata.GetMultiHrEmpNameById(dsIncident.Tables[0].Rows[i]["reported_by"].ToString()),
                             details = dsIncident.Tables[0].Rows[i]["details"].ToString(),
                             Incident_Type = objinc.GetIncidentTypeNameById(dsIncident.Tables[0].Rows[i]["Incident_Type"].ToString()),
+                            damage = dsIncident.Tables[0].Rows[i]["damage"].ToString(),
                         };
                         DateTime dtDocDate;
                         if (dsIncident.Tables[0].Rows[i]["acc_date"].ToString() != ""
@@ -1711,6 +1717,29 @@ namespace ISOStd.Controllers
             }
             obj.action_report = obj.action_report.Trim(',');
             return Json(obj.action_report);
+        }
+
+        [HttpPost]
+        public JsonResult FunGetInjuredEmplist(string accident_reportno)
+        {
+           
+            var data = new object();
+            try
+            {
+                string sEmp = objGlobaldata.GetAccidentInjuriedPerson(accident_reportno);
+                if (sEmp != "")
+                {
+                    data = objGlobaldata.GetHrMultiEmployeeListByID(sEmp);
+                }
+               
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in FunGetInjuredEmplist: " + ex.ToString());
+                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+            }
+
+            return Json(data);
         }
     }
 }

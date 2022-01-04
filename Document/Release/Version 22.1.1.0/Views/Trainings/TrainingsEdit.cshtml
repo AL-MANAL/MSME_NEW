@@ -1,0 +1,650 @@
+﻿@model ISOStd.Models.TrainingsModels
+
+@{
+    ViewBag.Title = "";
+ string dtTraining_Actual_Date = "", dtTraining_Actual_Completion_Date = "";
+}
+
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                  <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Home</span>
+                    </a>
+                    <a href="@Url.Action("TrainingsList", "Trainings", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Trainings List</span>
+                    </a>
+                    <span class="breadcrumb-item active">Edit Trainings</span>
+                </div>
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            <div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+@using (Html.BeginForm("TrainingsEdit", "Trainings", FormMethod.Post,
+                     new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+<input type="hidden" id="TrainingID" name="TrainingID" value="@Model.TrainingID" />
+   
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Edit Trainings</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+
+                <table class="table table-lg">
+                   <tr class="row">
+            <td class="col" colspan="4">
+                <div class="editor-label">
+                    Training Request
+                </div>
+            </td>
+        </tr>
+        <tr class="row">
+            <td class="col-xs-3 col-md-2">
+                <div class="display-label">
+                    @Html.DisplayNameFor(model => model.Training_Topic)
+                </div>
+            </td>
+            <td class="col">
+                <div class="display-field">
+                    @Html.DisplayFor(model => model.Training_Topic)
+                </div>
+            </td>
+            <td class="col-xs-3 col-md-2">
+                <div class="display-label">
+                    @Html.DisplayNameFor(model => model.TopicContent)
+                </div>
+            </td>
+            <td class="col">
+                <div class="display-field">
+                   @Html.Raw(HttpUtility.HtmlDecode(Model.TopicContent))
+                </div>
+            </td>
+         </tr>
+         <tr class="row">
+            <td class="col-xs-3 col-md-2">
+                <div class="display-label">
+                    @Html.DisplayNameFor(model => model.Attendees)
+                </div>
+            </td>
+             <td class="col-xs-3 col-md-4">
+                <div class="display-field">
+                    @Html.DisplayFor(model => model.Attendees)
+                </div>
+            </td>
+        </tr>
+        <tr class="row">
+            <td class="col-xs-3 col-md-2">
+                <div class="display-label">
+                    @Html.DisplayNameFor(model => model.Traning_BeforeDate)
+                </div>
+            </td>
+            <td class="col">
+                <div class="display-field">
+                   @if (Model.Traning_BeforeDate > Convert.ToDateTime("01/01/0001"))
+                   {
+                        @Html.Label(Model.Traning_BeforeDate.ToString("dd/MM/yyyy"))
+                   }
+                </div>
+            </td>
+            <td class="col-xs-3 col-md-2">
+                <div class="display-label">
+                    @Html.DisplayNameFor(model => model.Reasonfor_Training)
+                </div>
+            </td>
+            <td class="col">
+                <div class="display-field">
+                    @Html.DisplayFor(model => model.Reasonfor_Training)
+                </div>
+            </td>
+        </tr>
+        <tr class="row">
+            <td class="col-xs-3 col-md-2">
+                <div class="display-label">
+                    @Html.DisplayNameFor(model => model.Training_Requested_By)
+                </div>
+            </td>
+            <td class="col">
+                <div class="display-field">
+                    @Html.DisplayFor(model => model.Training_Requested_By)
+                </div>
+            </td>
+            <td class="col-xs-3 col-md-2">
+                <div class="display-label">
+                    @Html.DisplayNameFor(model => model.ApprovedBy)
+                </div>
+            </td>
+            <td class="col">
+                <div class="display-field">
+                    @Html.DisplayFor(model => model.ApprovedBy)
+                </div>
+            </td>
+            </tr>
+        <tr class="row">           
+           <td class="col-xs-3 col-md-2">
+                <div class="display-label">
+                    @Html.DisplayNameFor(model => model.RequestStatus)
+                </div>
+            </td>
+           <td class="col-xs-3 col-md-4">
+                <div class="display-field">
+                    @Html.DisplayFor(model => model.RequestStatus)
+                </div>
+            </td>           
+        </tr>      
+        
+         <tr class="row">
+                <td class="col" colspan="4"><br />
+                    <div class="editor-label">
+                        Training Plan Details
+                    </div>
+                </td>
+            </tr>
+        <tr class="row">
+                <td class="col-xs-3 col-md-2">
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.Training_Planned_Date)<text style="color:red;">*</text>
+                    </div>
+                </td>
+                <td class="col">
+                    <div class="editor-field">
+                        @if (Model.Training_Planned_Date > Convert.ToDateTime("01/01/0001"))
+                        {
+                           <input class="form-control" type="date" id="Training_Planned_Date" name="Training_Planned_Date" value="@Model.Training_Planned_Date.ToString("dd/MM/yyyy")" 
+                               required />
+                        }
+                        else
+                        {
+                           <input class="form-control" type="date" id="Training_Planned_Date" name="Training_Planned_Date" required />
+                        }
+                    </div>
+		@Html.ValidationMessageFor(model => model.Training_Planned_Date)       
+                </td>
+            <td class="col-xs-3 col-md-2">
+                <div class="display-label">
+                    @Html.DisplayNameFor(model => model.Expected_Duration)<text style="color:red;">*</text>
+                </div>
+            </td>
+            <td class="col">
+                <div class="display-field">
+                     <input class="form-control" type="text" id="Expected_Duration" name="Expected_Duration" value="@Model.Expected_Duration" required/>
+			@Html.ValidationMessageFor(model => model.Expected_Duration)                
+		</div>
+            </td>
+             </tr>
+           <tr class="row">
+              <td class="col-xs-3 col-md-2">
+                <div class="display-label">
+                    @Html.DisplayNameFor(model => model.Training_Start_Date)
+                </div>
+             </td>
+               <td class="col">
+                   <div class="display-field">
+                       @if (Model.Training_Start_Date > Convert.ToDateTime("01/01/0001"))
+                       {
+                           <input class="form-control" type="date" id="Training_Start_Date" name="Training_Start_Date" value="@Model.Training_Start_Date.ToString("dd/MM/yyyy")" onchange="checkDate1();" />
+                       }
+                       else
+                       {
+                           <input class="form-control" type="date" id="Training_Start_Date" name="Training_Start_Date" onchange="checkDate1();" />
+                       }
+                   </div>
+               </td>
+           
+            <td class="col-xs-3 col-md-2">
+
+                <div class="display-label">
+                    @Html.DisplayNameFor(model => model.Expected_Date_Completion)
+                </div>
+            </td>
+           <td class="col">
+                <div class="display-field">
+                    @if (Model.Expected_Date_Completion > Convert.ToDateTime("01/01/0001"))
+                    {
+                           <input class="form-control" type="date" id="Expected_Date_Completion" name="Expected_Date_Completion" value="@Model.Expected_Date_Completion.ToString("dd/MM/yyyy")" onchange="checkDate2();" />
+                    }
+                    else
+                    {
+                           <input class="form-control" type="date" id="Expected_Date_Completion" name="Expected_Date_Completion" onchange="checkDate2();" />
+                    }
+                </div>
+            </td>
+         </tr>
+           <tr class="row">
+              <td class="col-xs-3 col-md-2">
+                <div class="display-label">
+                    @Html.DisplayNameFor(model => model.Sourceof_Training)<text style="color:red;">*</text>
+                </div>
+            </td>
+            <td class="col">
+                <div class="display-field">
+                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="Sourceof_Training" name="Sourceof_Training" required="">
+                        <option value=''>Select</option>
+                            @if (ViewBag.Sourceof_Training != null)
+                            {
+                                foreach (var item in ViewBag.Sourceof_Training)
+                                {
+                                    if (item.Text == Model.Sourceof_Training.ToString())
+                                    {
+                                     <option value='@item.Value' selected>@item.Text</option>
+                                    }
+                                    else
+                                    {
+                                     <option value='@item.Value'>@item.Text</option>
+                                    }
+                                }
+                            }
+                        </select>
+ 			 @Html.ValidationMessageFor(model => model.Sourceof_Training)
+                </div>
+            </td>
+            <td class="col-xs-3 col-md-2">
+                <div class="display-label">
+                    @Html.DisplayNameFor(model => model.Trainer_Name)<text style="color:red;">*</text>
+                </div>
+            </td>
+		<td class="col">
+                <div class="display-field">
+                    <input class="form-control" type="text" id="Trainer_Name" name="Trainer_Name" value="@Model.Trainer_Name" required/>
+		   @Html.ValidationMessageFor(model => model.Trainer_Name)
+                </div>
+            </td>
+             </tr>
+         <tr class="row">
+           <td class="col-xs-3 col-md-2">
+                <div class="display-label">
+                    @Html.DisplayNameFor(model => model.Venue)<text style="color:red;">*</text>
+                </div>
+            </td>
+           <td class="col-xs-3 col-md-4">
+                <div class="display-field">
+                      <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="Venue" name="Venue" required></textarea>
+                	@Html.ValidationMessageFor(model => model.Venue)
+		</div>
+            </td>
+       
+           
+        </tr>
+          <tr class="row">
+                <td class="col" colspan="4">
+                    <div class="editor-label">
+                        Training Details
+                    </div>
+                </td>
+            </tr>
+        <tr class="row">
+            <td class="col-xs-3 col-md-2">
+                <div class="display-label">
+                    @Html.DisplayNameFor(model => model.Training_Cert_Status)
+                </div>
+            </td>
+           <td class="col">
+                <div class="display-field">
+                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="Training_Cert_Status" name="Training_Cert_Status">
+                        <option value='' selected>Select</option>
+                             @if (ViewBag.Training_Cert_Status != null)
+                             {
+                                 foreach (var item in ViewBag.Training_Cert_Status)
+                                 {
+                                     if (item.Text == Model.Training_Cert_Status.ToString())
+                                     {
+                                     <option value='@item.Value' selected>@item.Text</option>
+                                     }
+                                     else
+                                     {
+                                     <option value='@item.Value'>@item.Text</option>
+                                     }
+                                 }
+                             }
+                        </select>
+                      
+                </div>
+            </td>
+        
+
+            <td class="col-xs-3 col-md-2">
+                <div class="display-label">
+                    @Html.DisplayNameFor(model => model.Training_Attendance)
+                </div>
+            </td>
+           <td class="col">
+                <div class="display-field">
+                     <input type="file" name="Training_Attendance" id="Training_Attendance" onchange="FileFormatValidation(this)" accept=".pdf,.xlsx,.xls,.doc,.docx"   class="bootstrap-uploader" data-fouc />
+                                @if (Model.Training_Attendance != "")
+                         {
+                               <span class="bg-dark py-1 px-2 rounded">
+                                   <a href='@Url.Action("DisplayDocument", "Reports", new { Document = Model.Training_Attendance})' target="_blank">Preview</a>
+                               </span>
+                        }
+                </div>
+            </td>
+			</tr>
+        <tr class="row">
+           <td class="col-xs-3 col-md-2">
+                <div class="display-label">
+                    @Html.DisplayNameFor(model => model.Reasons_for_Not_Completed)
+                </div>
+            </td>
+           <td class="col">
+                <div class="display-field">
+                    @Html.EditorFor(model => model.Reasons_for_Not_Completed, new { htmlAttributes = new { @class = "form-control"  } }) 
+                </div>
+            </td>
+       
+
+           <td class="col-xs-3 col-md-2">
+                <div class="display-label">
+                    @Html.DisplayNameFor(model => model.Training_ReSchedule_Date)
+                </div>
+            </td>
+            <td class="col">
+                <div class="display-field">
+                      @if (Model.Training_ReSchedule_Date > Convert.ToDateTime("01/01/0001"))
+                      {
+                           <input class="form-control" type="date" id="Training_ReSchedule_Date" name="Training_ReSchedule_Date" value="@Model.Training_ReSchedule_Date.ToString("dd/MM/yyyy")" onchange="checkDate3();" />
+                      }
+                      else
+                      {
+                           <input class="form-control" type="date" id="Training_ReSchedule_Date" name="Training_ReSchedule_Date" onchange="checkDate3();" />
+                      }
+                </div>
+            </td>
+			 </tr>
+         <tr class="row">
+
+            <td class="col-xs-3 col-md-2">
+                <div class="display-label">
+                    @Html.DisplayNameFor(model => model.Training_Actual_Date)
+                </div>
+            </td>
+            <td class="col">
+                <div class="display-field">
+                     @if (Model.Training_Actual_Date > Convert.ToDateTime("01/01/0001"))
+                     {
+                           <input class="form-control" type="date" id="Training_Actual_Date" name="Training_Actual_Date" value="@Model.Training_Actual_Date.ToString("dd/MM/yyyy")" onchange="checkDate5();" />
+                     }
+                     else
+                     {
+                           <input class="form-control" type="date" id="Training_Actual_Date" name="Training_Actual_Date" onchange="checkDate5();" />
+                     }
+                </div>
+            </td>
+            <td class="col-xs-3 col-md-2">
+                <div class="display-label">
+                    @Html.DisplayNameFor(model => model.Training_Actual_Completion_Date)
+                </div>
+            </td>
+            <td class="col">
+                <div class="display-field">
+                     @if (Model.Training_Actual_Completion_Date > Convert.ToDateTime("01/01/0001"))
+                     {
+                           <input class="form-control" type="date" id="Training_Actual_Completion_Date" name="Training_Actual_Completion_Date" value="@Model.Training_Actual_Completion_Date.ToString("dd/MM/yyyy")" onchange="checkDate6();" />
+                     }
+                     else
+                     {
+                           <input class="form-control" type="date" id="Training_Actual_Completion_Date" name="Training_Actual_Completion_Date" onchange="checkDate6();" />
+                     }
+                </div>
+            </td>
+        </tr>
+        <tr class="row">
+
+           <td class="col-xs-3 col-md-2">
+                <div class="display-label">
+                    @Html.DisplayNameFor(model => model.Training_Effect_Eval_Method)
+                </div>
+            </td>
+            <td class="col">
+                <div class="display-field">
+                   
+                     <select class="form-control select-search select2-hidden-accessible" data-fouc id="Training_Effect_Eval_Method" name="Training_Effect_Eval_Method">
+                        <option value='' selected>Select</option>
+                             @if (ViewBag.Training_Effect_Eval_Method != null)
+                             {
+                                 foreach (var item in ViewBag.Training_Effect_Eval_Method)
+                                 {
+                                     if (item.Text == Model.Training_Effect_Eval_Method.ToString())
+                                     {
+                                     <option value='@item.Value' selected>@item.Text</option>
+                                     }
+                                     else
+                                     {
+                                     <option value='@item.Value'>@item.Text</option>
+                                     }
+                                 }
+                             }
+                        </select>
+                      
+                </div>
+            </td>            
+           <td class="col-xs-3 col-md-2">
+                <div class="display-label">
+                    @Html.DisplayNameFor(model => model.Training_Effect_Eval_Plan_Date)
+                </div>
+            </td>
+            <td class="col">
+                <div class="display-field">
+                     @if (Model.Training_Effect_Eval_Plan_Date > Convert.ToDateTime("01/01/0001"))
+                     {
+                           <input class="form-control" type="date" id="Training_Effect_Eval_Plan_Date" name="Training_Effect_Eval_Plan_Date" value="@Model.Training_Actual_Date.ToString("dd/MM/yyyy")" onchange="checkDate4();" />
+                     }
+                     else
+                     {
+                           <input class="form-control" type="date" id="Training_Effect_Eval_Plan_Date" name="Training_Effect_Eval_Plan_Date" onchange="checkDate4();" />
+                     }
+                </div>
+            </td>
+        </tr>
+              <tr class="row">
+            <td class="col-xs-3 col-md-2">
+                <div class="display-label">
+                    @Html.DisplayNameFor(model => model.Training_Effect_Eval_Record_Ref)
+                </div>
+            </td>
+            <td class="col">
+                <div class="display-field">
+                  <input type="file" name="Training_Effect_Eval_Record_Ref" id="Training_Effect_Eval_Record_Ref" onchange="FileFormatValidation(this)" accept=".pdf,.xlsx,.xls,.doc,.docx"   class="bootstrap-uploader" data-fouc />
+                                @if (Model.Training_Attendance != "")
+                         {
+                               <span class="bg-dark py-1 px-2 rounded">
+                                   <a href='@Url.Action("DisplayDocument", "Reports", new { Document = Model.Training_Effect_Eval_Record_Ref})' target="_blank">Preview</a>
+                               </span>
+                        }
+                </div>
+            </td>
+                  <td class="col-xs-3 col-md-2">
+                      <div class="display-label">
+                          @Html.DisplayNameFor(model => model.Course_Material)
+                      </div>
+                  </td>
+                  <td class="col">
+                      <div class="display-field">
+                           <input type="file" name="Course_Material" id="Course_Material" onchange="FileFormatValidation(this)" accept=".pdf,.xlsx,.xls,.doc,.docx"   class="bootstrap-uploader" data-fouc />
+                                @if (Model.Training_Attendance != "")
+                         {
+                               <span class="bg-dark py-1 px-2 rounded">
+                                   <a href='@Url.Action("DisplayDocument", "Reports", new { Document = Model.Course_Material})' target="_blank">Preview</a>
+                               </span>
+                        }
+                      </div>
+                  </td>
+        </tr>
+             <tr class="row">
+                  <td class="col-xs-3 col-md-2">
+                <div class="display-label">
+                    @Html.DisplayNameFor(model => model.Training_Status)
+                </div>
+            	</td>
+            <td class="col-xs-3 col-md-4">
+                <div class="display-field">
+                     <select class="form-control select-search select2-hidden-accessible" data-fouc id="Training_Status" name="Training_Status" required="">
+                          <option value='' selected>Select</option>
+                            @if (ViewBag.Training_Status != null)
+                            {
+                                foreach (var item in ViewBag.Training_Status)
+                                {
+                                    if (item.Text == Model.Training_Status.ToString())
+                                    {
+                                     <option value='@item.Value' selected>@item.Text</option>
+                                    }
+                                    else
+                                    {
+                                     <option value='@item.Value'>@item.Text</option>
+                                    }
+                                }
+                            }
+                        </select>
+                
+                </div>
+            </td>
+             </tr>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+            @Html.ActionLink("Back to List", "TrainingsList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+
+            <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Add</button>
+        </div>
+    </div>
+        }
+@section Scripts {
+    <script>
+
+        function FileFormatValidation(file) {
+            var ext = file.value.split(".").pop().toLowerCase();
+            if ($.inArray(ext, ["doc", "pdf", "docx", "jpg", "jpeg", "gif", "png"]) == -1) {
+                file.value = "";
+                jAlert("Invalid file format, please upload only doc, pdf, docx, jpg, jpeg, gif, png format");
+            }
+        }
+
+        function checkDate1() {
+            var dt1 = document.getElementById("Training_Planned_Date").value;
+            var dt2 = document.getElementById("Training_Start_Date").value;
+
+            if (new Date(dt2).getTime() < new Date(dt1).getTime()) {
+
+                bootbox.alert({
+                    title: 'Training_Start_Date',
+                    message: 'Training start date cannot be before Planned date'
+                });
+                $('#Training_Start_Date').val("");
+            }
+        }
+
+        function checkDate2() {
+            var dt1 = document.getElementById("Training_Planned_Date").value;
+            var dt2 = document.getElementById("Training_Start_Date").value;
+            var dt3 = document.getElementById("Expected_Date_Completion").value;
+
+            if (new Date(dt3).getTime() < new Date(dt1).getTime()) {
+
+                bootbox.alert({
+                    title: 'Expected_Date_Completion',
+                    message: 'Expected completion date cannot be before Planned date'
+                });
+                $('#Expected_Date_Completion').val("");
+            }
+            else if (new Date(dt3).getTime() < new Date(dt2).getTime()) {
+
+                bootbox.alert({
+                    title: 'Expected_Date_Completion',
+                    message: 'Expected completion date cannot be before Training start date'
+                });
+                $('#Expected_Date_Completion').val("");
+            }
+        }
+        function checkDate3() {
+            var dt1 = document.getElementById("Training_Planned_Date").value;
+            var dt2 = document.getElementById("Training_ReSchedule_Date").value;
+
+            if (new Date(dt2).getTime() <= new Date(dt1).getTime()) {
+
+                bootbox.alert({
+                    title: 'Training_ReSchedule_Date',
+                    message: 'Training Reschedule date cannot be before Planned date'
+                });
+                $('#Training_ReSchedule_Date').val("");
+            }
+        }
+        function checkDate4() {
+            var dt1 = document.getElementById("Training_Actual_Completion_Date").value;
+            var dt2 = document.getElementById("Training_Effect_Eval_Plan_Date").value;
+
+            if (new Date(dt2).getTime() <= new Date(dt1).getTime()) {
+
+                bootbox.alert({
+                    title: 'Training_Effect_Eval_Plan_Date',
+                    message: 'Training Effect Evaluation Plan date cannot be before Completion date'
+                });
+                $('#Training_Effect_Eval_Plan_Date').val("");
+            }
+        }
+        function checkDate5() {
+            var dt1 = document.getElementById("Training_Planned_Date").value;
+            var dt2 = document.getElementById("Training_Actual_Date").value;
+
+            if (new Date(dt2).getTime() <= new Date(dt1).getTime()) {
+
+                bootbox.alert({
+                    title: 'Training_Actual_Date',
+                    message: 'Training Effect Evaluation Plan date cannot be before Completion date'
+                });
+                $('#Training_Actual_Date').val("");
+            }
+        }
+        function checkDate6() {
+            var dt1 = document.getElementById("Training_Planned_Date").value;
+            var dt2 = document.getElementById("Training_Actual_Completion_Date").value;
+
+            if (new Date(dt2).getTime() <= new Date(dt1).getTime()) {
+
+                bootbox.alert({
+                    title: 'Training_Actual_Completion_Date',
+                    message: 'Training Actual Completion date cannot be before Planned date'
+                });
+                $('#Training_Actual_Completion_Date').val("");
+            }
+        }
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}
+

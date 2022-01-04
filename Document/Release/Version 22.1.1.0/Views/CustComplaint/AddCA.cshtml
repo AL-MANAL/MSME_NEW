@@ -1,0 +1,971 @@
+﻿@model ISOStd.Models.CustComplaintModels
+
+@{
+    ViewBag.Title = "AddCA";
+    //DateTime today = DateTime.Now;
+    string[] NotifiedtoArray = new string[0];
+    string[] ReportedByArray = new string[0];
+    int itemcnt1 = 0, itemcnts = 0;
+
+    if (ViewBag.ReportedByArray != null)
+    {
+        ReportedByArray = ViewBag.ReportedByArray;
+        itemcnt1 = ReportedByArray.Length;
+    }
+
+    if (ViewBag.NotifiedtoArray != null)
+    {
+        NotifiedtoArray = ViewBag.NotifiedtoArray;
+        itemcnts = NotifiedtoArray.Length;
+    }
+
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+    ISOStd.Models.CustComplaintModelsList CAList = new ISOStd.Models.CustComplaintModelsList();
+    int itemcount = 0;
+
+    if (ViewBag.CorrectiveAction != null)
+    {
+        CAList = ViewBag.CorrectiveAction;
+        itemcount = CAList.CustComplaintList.Count;
+    }
+}
+
+<script src='@Url.Content("~/global_assets/js/demo_pages/CustComplaint_NC_CA_wizard.js")'></script>
+
+@section featured {
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("CustomerComplaintList", "CustComplaint", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Customer Complaint</span>
+                    </a>
+                    <span class="breadcrumb-item active">Corrective Action</span>
+                </div>
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+}
+<!-- Basic setup -->
+<div class="card">
+    <div class="card-header header-elements-inline bg-primary">
+        <h5 class="card-title">Corrective Action</h5>
+        <div class="header-elements">
+            <div class="list-icons">
+                <a class="list-icons-item" data-action="collapse"></a>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        @*<table class="container-fluid">*@
+
+        <form class="wizard-form steps-validation" action="@Url.Action("AddCA", "CustComplaint")" data-fouc id="form1">
+            <input type="hidden" id="id_complaint" name="id_complaint" value="@Model.id_complaint" />
+            <input type="hidden" id="id_custcomplaint_nc" name="id_custcomplaint_nc" value="@Model.id_custcomplaint_nc" />
+            <h6>Corrective Action</h6>
+            <fieldset>
+                <table class="table table-lg">
+                    @*------------------Start Meta data-----------------------*@
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.ComplaintNo)
+                            </div>
+                        </td>
+                        <td class="col">
+                            @Html.DisplayFor(model => model.ComplaintNo)
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.registered_on)
+                            </div>
+                        </td>
+                        <td class="col">
+                            @if (Model.registered_on != null && Model.registered_on > Convert.ToDateTime("01/01/0001"))
+                            {
+                                @Html.Label(Model.registered_on.ToString("yyyy-MM-dd"))
+                            }
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.CustomerName)
+                            </div>
+                        </td>
+                        <td class="col">
+                            @Html.DisplayFor(model => model.CustomerName)
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.ProjectName)
+                            </div>
+                        </td>
+                        <td class="col">
+                            @Html.DisplayFor(model => model.ProjectName)
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.CustomerRef)
+                            </div>
+                        </td>
+                        <td class="col">
+                            @Html.DisplayFor(model => model.CustomerRef)
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.ModeOfComplaint)
+                            </div>
+                        </td>
+                        <td class="col">
+                            @Html.DisplayFor(model => model.ModeOfComplaint)
+                        </td>
+                    </tr>
+                    <tr class="row"> <td class="col" style="text-align:center"><b>Complaint Reported by</b></td></tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.ReportedBy)
+                            </div>
+                        </td>
+                        <td class="col">
+                            @Html.DisplayFor(model => model.ReportedBy)
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.reportedby_email)
+                            </div>
+                        </td>
+                        <td class="col">
+                            @Html.DisplayFor(model => model.reportedby_email)
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.reportedby_no)
+                            </div>
+                        </td>
+                        <td class="col">
+                            @Html.DisplayFor(model => model.reportedby_no)
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.reportedby_desig)
+                            </div>
+                        </td>
+                        <td class="col">
+                            @Html.DisplayFor(model => model.reportedby_desig)
+                        </td>
+                    </tr>
+                    @*------------------End Meta data-----------------------*@
+                    <tr class="row"> <td class="col" style="text-align:center"><b>Corrective Action Details</b></td></tr>
+                </table>
+                @*<div> <b>Add Corrective Action Details:</b> </div>*@
+                <br />
+                <table class="table table-lg" id="table1">
+                    <tbody>
+                        <tr class="row">
+                            <th class="col-xs-3 col-md-2" style="font-weight: bold;">Corrective action</th>
+                            <td class="col">
+                                <input class="form-control" type='text' id='ca_ca' name="ca_ca" />
+                                @Html.ValidationMessageFor(model => model.ca_ca)
+                                <span class="field-validation-error"><span id="ca_ca-message" style="display: none;" for="basic">Please write Corrective action .</span></span>
+                            </td>
+                            <th class="col-xs-3 col-md-2" style="font-weight: bold;">Person responsible</th>
+                            <td class="col">
+                                <select class="form-control-select3" data-fouc id="ca_resp_person" name="ca_resp_person">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.EmpList != null)
+                                    {
+                                        foreach (var item in ViewBag.EmpList)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                                @Html.ValidationMessageFor(model => model.ca_resp_person)
+                                <span class="field-validation-error"><span id="ca_resp_person-message" style="display: none;">Please select Person responsible.</span></span>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <th class="col-xs-3 col-md-2" style="font-weight: bold;">Target Date</th>
+                            <td class="col">
+                                <input class="form-control" type='date' id='ca_target_date' name="ca_target_date" onchange="GetVerficationDate1()" />
+                                @Html.ValidationMessageFor(model => model.ca_target_date)
+
+                                <span class="field-validation-error"><span id="ca_target_date-message" style="display: none;" for="basic">Please select Target Date.</span></span>
+                            </td>
+                            <th class="col-xs-3 col-md-2" style="font-weight: bold;">Resource required</th>
+                            <td class="col">
+                                <input class="form-control" type='text' id='ca_resource' name="ca_resource" />
+                                @Html.ValidationMessageFor(model => model.ca_resource)
+                                <span class="field-validation-error"><span id="ca_resource-message" style="display: none;" for="basic">Please write Resource required.</span></span>
+                            </td>
+                            <td class="col">
+                                <img src='@Url.Content("~/images/icon_add.png")' onclick='AddCAInfo()' style='cursor:pointer; padding-right: 5px;' />Add
+                            </td>
+                        </tr>
+
+                    </tbody>
+                </table>
+
+                <span class="form-text text-muted"><code>Please click Add or Plus button to add N number of Corrective Action details</code></span>
+                <div class="card is-visible" id="hidden_card_count">
+                    <div class="card-header header-elements-inline">
+                        <h5 class="card-title">Corrective Action Details</h5>
+                        <div class="header-elements">
+                            <div class="list-icons">
+                                <a class="list-icons-item" data-action="collapse"></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+                        <input type="hidden" id="itemcount" name="itemcount" value="@itemcount" />
+                        <div class="card card-table table-responsive shadow-0 mb-0">
+                            <table class="table" id="team-list-count">
+                                <tr class="bg-blue">
+                                    <th>Action</th>
+                                    @*<th>Division</th>
+                                <th>Location</th>
+                                <th>Department</th>
+                                <th>Root Cause</th>*@
+                                    <th>Corrective Action</th>
+                                    <th>Person Responsible</th>
+                                    <th>Target Date</th>
+                                    <th>Resource Required</th>
+
+                                </tr>
+                                @if (CAList.CustComplaintList != null && CAList.CustComplaintList.Count > 0)
+                                {
+                                    for (int index = 0; index < CAList.CustComplaintList.Count; index++)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <img src='@Url.Content("~/images/cancel.png")' onclick='deleteRow1(@CAList.CustComplaintList[index].id_cust_nc_ca)' style='cursor:pointer; padding-right: 5px;' />Remove
+                                                <input type='hidden' id='id_cust_nc_ca @index' name="id_cust_nc_ca @index" value='@CAList.CustComplaintList[index].id_cust_nc_ca' />
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='ca_ca @index' name="ca_ca @index" value='@CAList.CustComplaintList[index].ca_ca'>@CAList.CustComplaintList[index].ca_ca
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='ca_resp_person @index' name="ca_resp_person @index" value='@CAList.CustComplaintList[index].ca_resp_person'>@Obj.GetEmpHrNameById(CAList.CustComplaintList[index].ca_resp_person)
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='ca_target_date @index' name="ca_target_date @index" value='@CAList.CustComplaintList[index].ca_target_date.ToString("yyyy-MM-dd")'>@CAList.CustComplaintList[index].ca_target_date.ToString("yyyy-MM-dd")
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='ca_resource @index' name="ca_resource @index" value='@CAList.CustComplaintList[index].ca_resource'>@CAList.CustComplaintList[index].ca_resource
+                                            </td>
+
+                                        </tr>
+                                    }
+                                }
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                @*Proposed by*@
+                <table class="table table-lg">
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.ca_verfiry_duedate) <text style="color:red">*</text>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @if (Model.ca_verfiry_duedate != null && Model.ca_verfiry_duedate > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    <input type="date" class="form-control" id="ca_verfiry_duedate" name="ca_verfiry_duedate" value="@Model.ca_verfiry_duedate.ToString("yyyy-MM-dd")" onchange="GetVerficationDate()" required/>
+                                }
+                                else
+                                {
+                                    <input type="date" class="form-control" id="ca_verfiry_duedate" name="ca_verfiry_duedate" onchange="GetVerficationDate()" required/>
+                                }
+                            </div>
+                        </td>
+
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.ca_proposed_by)
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control-select3" data-fouc id="ca_proposed_by" name="ca_proposed_by" onchange="GetReportedByDetails()">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.EmpList != null)
+                                    {
+                                        foreach (var item in ViewBag.EmpList)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+
+                <div id="hidden_card1">
+                    <div class="card-body">
+                        <input type="hidden" id="itemcnt1" name="itemcnt1" value="@itemcnt1" />
+
+                        <div class="card card-table table-responsive shadow-0 mb-0">
+                            <table class="table" id="team-list1">
+                                <tr class="bg-blue">
+                                    <th>Action</th>
+                                    <th>Id</th>
+                                    <th>Name</th>
+                                    <th>Division</th>
+                                    <th>Location</th>
+                                    <th>Department</th>
+                                    <th>Email</th>
+                                </tr>
+                                @if (ViewBag.ReportedByArray != null && ReportedByArray != null && ReportedByArray.Length > 0)
+                                {
+                                    for (int index = 0; index < ReportedByArray.Length; index++)
+                                    {
+                                        //string[] sEmp = @objIncidentLTIList.lstIncidentLTIModels[index].Emp_Id.Split(';');
+                                        <tr>
+                                            <td>
+                                                <span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span>
+                                                @*<img src='@Url.Content("~/images/cancel.png")' onclick='deleteRow1(this)' style='cursor:pointer; padding-right: 5px;' />Remove*@
+                                                <input type='hidden' id='aempno @index' name="aempno @index" value='@ReportedByArray[index]' />
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='aempid @index' name="aempid @index" readonly>@Obj.GetEmpIDByEmpNo(ReportedByArray[index])
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='aempname @index' name="aempname @index" readonly>@Obj.GetEmpHrNameById(ReportedByArray[index])
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='aempdiv @index' name="aempdiv @index" readonly>@Obj.GetCompanyBranchNameById(Obj.GetDivisionIdByHrEmpId(ReportedByArray[index]))
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='aemploc @index' name="aemploc @index" readonly>@Obj.GetDivisionLocationById(Obj.GetWorkLocationIdByHrEmpId(ReportedByArray[index]))
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='aempdept @index' name="aempdept @index" readonly>@Obj.GetDeptNameById(Obj.GetDeptIdByHrEmpId(ReportedByArray[index]))
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='aempemail @index' name="aempemail @index" readonly>@Obj.GetHrEmpEmailIdById(ReportedByArray[index])
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+
+                @*NotifiedTo*@
+                <table class="table table-lg">
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.ca_notifed_date) <text style="color:red"> *</text>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @if (Model.ca_notifed_date != null && Model.ca_notifed_date > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    <input type="date" class="form-control" id="ca_notifed_date" name="ca_notifed_date" value="@Model.ca_notifed_date.ToString("yyyy-MM-dd")" required />
+                                }
+                                else
+                                {
+                                    <input type="date" class="form-control" id="ca_notifed_date" name="ca_notifed_date" value="@DateTime.Now.ToString("yyyy-MM-dd")" required />
+                                }
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.ca_notifiedto)
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control-select3" data-fouc id="ca_notifiedto" name="ca_notifiedto" onchange="GetNotifiedToDetails()">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.EmpList != null)
+                                    {
+                                        foreach (var item in ViewBag.EmpList)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+
+                <div id="hidden_cards">
+                    <div class="card-body">
+                        <input type="hidden" id="itemcnts" name="itemcnts" value="@itemcnts" />
+
+                        <div class="card card-table table-responsive shadow-0 mb-0">
+                            <table class="table" id="team-lists">
+                                <tr class="bg-blue">
+                                    <th>Action</th>
+                                    <th>Id</th>
+                                    <th>Name</th>
+                                    <th>Division</th>
+                                    <th>Location</th>
+                                    <th>Department</th>
+                                    <th>Email</th>
+                                </tr>
+                                @if (ViewBag.NotifiedtoArray != null && NotifiedtoArray != null && NotifiedtoArray.Length > 0)
+                                {
+                                    for (int index = 0; index < NotifiedtoArray.Length; index++)
+                                    {
+                                        //string[] sEmp = @objIncidentLTIList.lstIncidentLTIModels[index].Emp_Id.Split(';');
+                                        <tr>
+                                            <td>
+                                                <span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span>
+                                                @*<img src='@Url.Content("~/images/cancel.png")' onclick='deleteRow1(this)' style='cursor:pointer; padding-right: 5px;' />Remove*@
+                                                <input type='hidden' id='nempno @index' name="nempno @index" value='@NotifiedtoArray[index]' />
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='nempid @index' name="nempid @index" readonly>@Obj.GetEmpIDByEmpNo(NotifiedtoArray[index])
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='nempname @index' name="nempname @index" readonly>@Obj.GetEmpHrNameById(NotifiedtoArray[index])
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='nempdiv @index' name="nempdiv @index" readonly>@Obj.GetCompanyBranchNameById(Obj.GetDivisionIdByHrEmpId(NotifiedtoArray[index]))
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='nemploc @index' name="nemploc @index" readonly>@Obj.GetDivisionLocationById(Obj.GetWorkLocationIdByHrEmpId(NotifiedtoArray[index]))
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='nempdept @index' name="nempdept @index" readonly>@Obj.GetDeptNameById(Obj.GetDeptIdByHrEmpId(NotifiedtoArray[index]))
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='nempemail @index' name="nempemail @index" readonly>@Obj.GetHrEmpEmailIdById(NotifiedtoArray[index])
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </fieldset>
+        </form>
+        @*</table>*@
+    </div>
+</div>
+<!-- /basic setup -->
+
+<script src='@Url.Content("~/global_assets/js/plugins/forms/wizards/steps2.min.js")'></script>
+<script>
+       var summary = {
+           summaryUrl: '@Url.Action("AddCA", "CustComplaint")'
+       };
+
+       var $ = jQuery.noConflict();
+</script>
+
+
+@section Scripts {
+    <script>
+
+    $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+
+    });
+
+    var showClass = 'is-visible';
+    var hideClass = 'invisible';
+
+        function FileFormatValidation(file) {
+            var ext = file.value.split(".").pop().toLowerCase();
+            if ($.inArray(ext, ["pdf", "xlsx", "xls", "doc", "docx"]) == -1) {
+                file.value = "";
+                bootbox.alert({
+                    title: 'File type',
+                    message: 'Invalid file format, please upload only doc, pdf, docx, jpg, jpeg, gif, png format'
+                });
+            }
+        }
+
+        function checkDate() {
+
+            var dt1 = document.getElementById("evaluation_date").value;
+            if (new Date(dt1).getTime() > new Date().getTime()) {
+                bootbox.alert({
+                    title: 'Evaluation Date',
+                    message: 'Evaluation cannot be greater then today.'
+                });
+                $('#evaluation_date').val("");
+            }
+        }
+
+
+         //function reformatDate(dateStr) {
+         //    dArr = dateStr.split("-");  // ex input 2010-01-18
+         //    return dArr[2] + "/" + dArr[1] + "/" + dArr[0]; //ex out: 2018/01/10
+         //}
+
+
+    function GetNotifiedToDetails() {
+        var ca_notifiedto = $('#ca_notifiedto').val();
+        if (ca_notifiedto != "" && ca_notifiedto != null) {
+                jQuery.ajax({
+                    url: '@Url.Action("FunGetEmpDetails", "EmployeeDetails")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'semp_no': ca_notifiedto },
+                    success: function (result) {
+                        if (result != null) {
+                            //document.getElementById("NotifiedTodiv").classList.remove(hideClass);
+                            //document.getElementById("NotifiedTodiv").classList.add(showClass);
+
+                            var nempno = $('#ca_notifiedto option:selected').val();
+                            var nempid = result.emp_id;
+                            var nempname = result.empname;
+                            var nempdiv = result.division;
+                            var nempdept = result.department;
+                            var nemploc = result.location;
+                            var nempemail = result.EmailId;
+
+                            if (nempid != null) {
+                                var cnt = document.getElementById("itemcnts").value;
+
+                                document.getElementById("itemcnts").value = cnt;
+                                // Find a <table> element with id="myTable":
+                                var table = document.getElementById("team-lists");
+
+                                // Create an empty <tr> element and add it to the 1st position of the table:
+                                var row = table.insertRow();
+
+
+                                // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                                var cell0 = row.insertCell(0);
+                                var cell1 = row.insertCell(1);
+                                var cell2 = row.insertCell(2);
+                                var cell3 = row.insertCell(3);
+                                var cell4 = row.insertCell(4);
+                                var cell5 = row.insertCell(5);
+                                var cell6 = row.insertCell(6);
+                                                                
+                                cell0.innerHTML = "<span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span> <input type = 'hidden' id = 'nempno " + cnt + "' name = 'nempno " + cnt + "' value = '" + nempno + "'>";
+                                cell1.innerHTML = "<input type='hidden' id='nempid " + cnt + "' name='nempid " + cnt + "' value='" + nempid + "'>" + nempid;
+                                cell2.innerHTML = "<input type='hidden' id='nempname " + cnt + "' name='nempname " + cnt + "' value='" + nempname + "'>" + nempname;
+                                cell3.innerHTML = "<input type='hidden' id='nempdiv " + cnt + "' name='nempdiv " + cnt + "' value='" + nempdiv + "'>" + nempdiv;
+                                cell4.innerHTML = "<input type='hidden' id='nemploc " + cnt + "' name='nemploc " + cnt + "' value='" + nemploc + "'>" + nemploc;
+                                cell5.innerHTML = "<input type='hidden' id='nempdept " + cnt + "' name='nempdept " + cnt + "' value='" + nempdept + "'>" + nempdept;
+                                cell6.innerHTML = "<input type='hidden' id='nempemail " + cnt + "' name='nempemail " + cnt + "' value='" + nempemail + "'>" + nempemail;
+
+                                cnt++;
+                                document.getElementById("itemcnts").value = cnt;
+
+                                //document.getElementById("hidden_cards").classList.remove(hideClass);
+                                //document.getElementById("hidden_cards").classList.add(showClass);
+
+                                $("#ca_notifiedto").val('').trigger('change');
+                            }
+                        }
+                    }
+                });
+            }
+    }
+
+       
+
+      function GetReportedByDetails() {
+          var ca_proposed_by = $('#ca_proposed_by').val();
+          if (ca_proposed_by != "" && ca_proposed_by != null) {
+                jQuery.ajax({
+                    url: '@Url.Action("FunGetEmpDetails", "EmployeeDetails")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'semp_no': ca_proposed_by },
+                    success: function (result) {
+                        if (result != null) {
+                            //document.getElementById("ReportedBydiv").classList.remove(hideClass);
+                            //document.getElementById("ReportedBydiv").classList.add(showClass);
+
+                            var aempno = $('#ca_proposed_by option:selected').val();
+                            var aempid = result.emp_id;
+                            var aempname = result.empname;
+                            var aempdiv = result.division;
+                            var aempdept = result.department;
+                            var aemploc = result.location;
+                            var aempemail = result.EmailId;
+
+                            if (aempid != null) {
+                                var cnt = document.getElementById("itemcnt1").value;
+
+                                document.getElementById("itemcnt1").value = cnt;
+                                // Find a <table> element with id="myTable":
+                                var table = document.getElementById("team-list1");
+                                if (cnt > 0) {
+                                    table.deleteRow(1);
+                                }
+                                // Create an empty <tr> element and add it to the 1st position of the table:
+                                var row = table.insertRow();
+
+                                // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                                var cell0 = row.insertCell(0);
+                                var cell1 = row.insertCell(1);
+                                var cell2 = row.insertCell(2);
+                                var cell3 = row.insertCell(3);
+                                var cell4 = row.insertCell(4);
+                                var cell5 = row.insertCell(5);
+                                var cell6 = row.insertCell(6);
+
+                                cell0.innerHTML = "<span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span> <input type='hidden' id='aempno " + cnt + "' name='aempno " + cnt + "' value='" + aempno + "'>";
+                                cell1.innerHTML = "<input type='hidden' id='aempid " + cnt + "' name='aempid " + cnt + "' value='" + aempid + "'>" + aempid;
+                                cell2.innerHTML = "<input type='hidden' id='aempname " + cnt + "' name='aempname " + cnt + "' value='" + aempname + "'>" + aempname;
+                                cell3.innerHTML = "<input type='hidden' id='aempdiv " + cnt + "' name='aempdiv " + cnt + "' value='" + aempdiv + "'>" + aempdiv;
+                                cell4.innerHTML = "<input type='hidden' id='aemploc " + cnt + "' name='aemploc " + cnt + "' value='" + aemploc + "'>" + aemploc;
+                                cell5.innerHTML = "<input type='hidden' id='aempdept " + cnt + "' name='aempdept " + cnt + "' value='" + aempdept + "'>" + aempdept;
+                                cell6.innerHTML = "<input type='hidden' id='aempemail " + cnt + "' name='aempemail " + cnt + "' value='" + aempemail + "'>" + aempemail;
+
+                                cnt++;
+                                document.getElementById("itemcnt1").value = cnt;
+
+                                //document.getElementById("hidden_card1").classList.remove(hideClass);
+                                //document.getElementById("hidden_card1").classList.add(showClass);
+
+                                //$("#ca_proposed_by").val('').trigger('change');
+                             }
+                        }
+                    }
+                });
+            }
+            }
+
+      
+
+
+
+  function AddCAInfo() {
+
+        if (Validation() == true) {
+
+            var cnt = document.getElementById("itemcount").value;
+
+            document.getElementById("itemcount").value = cnt;
+            // Find a <table> element with id="myTable":
+            var table = document.getElementById("team-list-count");
+
+            // Create an empty <tr> element and add it to the 1st position of the table:
+            var row = table.insertRow();
+
+            // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+            var cell0 = row.insertCell(0);
+            var cell1 = row.insertCell(1);
+            var cell2 = row.insertCell(2);
+            var cell3 = row.insertCell(3);
+            var cell4 = row.insertCell(4);
+            //var cell5 = row.insertCell(5);
+            //var cell6 = row.insertCell(6);
+            //var cell7 = row.insertCell(7);
+            //var cell8 = row.insertCell(8);
+           
+            //var ca_div = $('#ca_div').val();
+            //var ca_divText = $("#ca_div option:selected").text();
+            //var ca_loc = $('#ca_loc').val();
+            //var ca_locText = $("#ca_loc option:selected").text();
+            //var ca_dept = $('#ca_dept').val();
+            //var ca_deptText = $("#ca_dept option:selected").text();           
+            //var ca_rootcause = $('#ca_rootcause').val();
+
+            var ca_ca = $('#ca_ca').val();
+            var ca_resource = $('#ca_resource').val();
+            var ca_target_date = /*reformatDate*/($("#ca_target_date").val());
+            var ca_resp_person = $('#ca_resp_person').val();
+            var ca_resp_personText = $("#ca_resp_person option:selected").text();
+
+            cell0.innerHTML = " <img src='@Url.Content("~/images/cancel.png")' onclick='deleteRow1(this)' style='cursor:pointer; padding-right: 5px;'/>Remove";           
+            cell1.innerHTML = "<input type='hidden' id='ca_ca " + cnt + "' name='ca_ca " + cnt + "' value='" + ca_ca + "'>" + ca_ca;
+            cell2.innerHTML = "<input type='hidden' id='ca_resp_person " + cnt + "' name='ca_resp_person " + cnt + "' value='" + ca_resp_person + "'>" + ca_resp_personText;
+            cell3.innerHTML = "<input type='hidden' id='ca_target_date " + cnt + "' name='ca_target_date " + cnt + "' value='" + ca_target_date + "'>" + ca_target_date;
+            cell4.innerHTML = "<input type='hidden' id='ca_resource " + cnt + "' name='ca_resource " + cnt + "' value='" + ca_resource + "'>" + ca_resource;
+
+            cnt++;
+            document.getElementById("itemcount").value = cnt;
+
+            document.getElementById("hidden_card_count").classList.remove(hideClass);
+            document.getElementById("hidden_card_count").classList.add(showClass);
+            //document.getElementById("hidden_card1").style.display = "";
+            ResetControl();
+            }
+
+        }
+
+        function Validation() {
+            var validflg = true;
+            var ssnMessage = "";
+
+            //if (document.getElementById("ca_div").value == "") {
+            //    ssnMessage = $('#ca_div-message');
+            //    ssnMessage.show();
+            //    validflg = false;
+            //}
+            //else {
+            //    ssnMessage = $('#ca_div-message');
+            //    ssnMessage.hide();
+            //}
+
+            //if (document.getElementById("ca_loc").value == "") {
+            //    ssnMessage = $('#ca_loc-message');
+            //    ssnMessage.show();
+            //    validflg = false;
+            //}
+            //else {
+            //    ssnMessage = $('#ca_loc-message');
+            //    ssnMessage.hide();
+            //}
+
+            //if (document.getElementById("ca_dept").value == "") {
+            //    ssnMessage = $('#ca_dept-message');
+            //    ssnMessage.show();
+            //    validflg = false;
+            //}
+            //else {
+            //    ssnMessage = $('#ca_dept-message');
+            //    ssnMessage.hide();
+            //}
+
+            //if (document.getElementById("ca_rootcause").value == "") {
+            //    ssnMessage = $('#ca_rootcause-message');
+            //    ssnMessage.show();
+            //    validflg = false;
+            //}
+            //else {
+            //    ssnMessage = $('#ca_rootcause-message');
+            //    ssnMessage.hide();
+            //}
+
+            if (document.getElementById("ca_ca").value == "") {
+                ssnMessage = $('#ca_ca-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#ca_ca-message');
+                ssnMessage.hide();
+            }
+
+            if (document.getElementById("ca_resource").value == "") {
+                ssnMessage = $('#ca_resource-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#ca_resource-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("ca_target_date").value == "") {
+                ssnMessage = $('#ca_target_date-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#ca_target_date-message');
+                ssnMessage.hide();
+            }
+
+            if (document.getElementById("ca_resp_person").value == "") {
+                ssnMessage = $('#ca_resp_person-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#ca_resp_person-message');
+                ssnMessage.hide();
+            }
+
+            return validflg;
+        }
+
+        function ResetControl() {
+            //$("#ca_div").val('').trigger('change');
+            //$("#ca_loc").val('').trigger('change');
+            //$("#ca_dept").val('').trigger('change');
+            //document.getElementById("ca_rootcause").value = "";
+            document.getElementById("ca_ca").value = "";
+            document.getElementById("ca_resource").value = "";
+            document.getElementById("ca_target_date").value = "";
+            $("#ca_resp_person").val('').trigger('change');
+        }
+
+        function deleteRow(btn) {
+            var row = btn.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+        }
+        
+        function deleteRow1(id_cust_nc_ca) {
+            bootbox.confirm({
+                title: 'Confirm dialog',
+                message: 'Are you Sure you want to Delete the current Record?',
+                buttons: {
+                    confirm: {
+                        label: 'Yes',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'Cancel',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (r) {
+                    if (r == true) {
+                    jQuery.ajax({
+                        url: '@Url.Action("CADocDelete", "CustComplaint")',
+                        data: { id_cust_nc_ca: id_cust_nc_ca },
+                        type: 'POST',
+                        dataType: "json",
+                        success: function (result) {
+
+                            var id_complaint = $("#id_complaint").val();
+                            var id_custcomplaint_nc = $("#id_custcomplaint_nc").val();
+                            var params = {
+                                id_custcomplaint_nc: id_custcomplaint_nc,
+                                id_complaint: id_complaint
+                            };
+                            queryString = $.param(params);
+                            //// Add new params to the querystring dictionary
+                            window.location.href =
+                                window.location.protocol + "//" +
+                                window.location.host +
+                                window.location.pathname +
+                                '?' + queryString;
+                        }
+                    });
+                    return true;
+                }
+                else if (r == false) {
+                        bootbox.hideAll();
+                        return false;
+                    }
+                }
+               });
+        }
+
+        function GetVerficationDate(){
+            var ca_verfiry_duedate = document.getElementById("ca_verfiry_duedate").value;
+           
+            if (ca_verfiry_duedate != null && ca_verfiry_duedate > "0001-01-01")
+            {
+                var itemcount = $("#itemcount").val();
+                for (var i = 0; i < itemcount; i++) {
+                    var ca_target_date = document.getElementById("ca_target_date " + i).value;
+                    
+                    if ((new Date(ca_target_date).getTime() > new Date(ca_verfiry_duedate).getTime())) {
+                       bootbox.alert({
+                            title: 'Date',
+                            message: 'Verfication Due date has to be greater than Target date'
+                        });
+                        $("#ca_verfiry_duedate").val('');
+                        break;
+                    }
+                   
+                }   
+        }
+        }       
+
+
+        function GetVerficationDate1() {
+            var ca_verfiry_duedate = $("#ca_verfiry_duedate").val();
+            var ca_target_date = $("#ca_target_date").val();
+            if (ca_verfiry_duedate != null && ca_verfiry_duedate > ("01/01/0001"))
+            { 
+                if (ca_target_date > ca_verfiry_duedate) {
+                    bootbox.alert({
+                        title: 'Date',
+                        message: 'Target date has to be less than Verfication Due date'
+                    });                      
+                    $("#ca_target_date").val('');
+                }              
+            }
+        }
+
+       
+        function GetCADept() {
+            var selectedValues = [];
+            $("#ca_div :selected").each(function () {
+                selectedValues.push($(this).val());
+            });
+         // var selectedValues = $("#division option:selected").val();
+         // alert(selectedValues);
+                jQuery.ajax({
+                    url: '@Url.Action("FunGetAllDeptList", "EmployeeDetails")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'branch': selectedValues },
+                    success: function (result) {
+                        GetLocList(selectedValues);
+                        $("#ca_dept").children('option').remove();
+                        $("#ca_dept").trigger('change');
+                        if (result != null && result.length > 0) {
+                            $("#ca_dept").append("<option value=''>" + Select + "</option>");
+                            $.each(result, function (index, item) {
+                                $("#ca_dept").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                                $("#ca_dept").trigger('change');
+                            });
+                            return;
+                        }
+                        //else {
+                        //    bootbox.alert({
+                        //        title: 'Department List',
+                        //        message: 'No Department exists.'
+                        //    });
+                        //}
+                    }
+                });
+        }
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
+
+

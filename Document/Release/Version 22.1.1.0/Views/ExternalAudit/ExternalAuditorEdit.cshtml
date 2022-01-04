@@ -1,0 +1,105 @@
+﻿@model ISOStd.Models.ExternalAuditorModels
+
+@{
+    ViewBag.Title = "ExternalAuditorEdit";
+}
+
+<div class="groupedassets margin10">
+    <span class="groupedassetshead margin10 onestphdcolor">External Auditor Edit </span>
+</div>
+<div id="divmsg">
+    @if (TempData["alertdata"] != null)
+    {
+        <span class="errMsg" style="color: red;font-weight: bold;">@TempData["alertdata"]</span>
+        }
+    @if (TempData["Successdata"] != null)
+    {
+        <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+        }
+</div>
+
+@using (Html.BeginForm()) {
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <fieldset>
+        <legend>ExternalAuditorModels</legend>
+        <table style="width: 100%">
+            <tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.Auditor_name)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        @Html.DisplayFor(model => model.Auditor_name)
+                        @Html.ValidationMessageFor(model => model.Auditor_name)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.CertID)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        @if (ViewBag.CertBodyList != null)
+                        {
+                            <select id="CertId" name="CertId" required="">
+                                <option value='0'>Select</option>
+                                @foreach (var item in ViewBag.CertBodyList)
+                                {
+                                    if (item.Text == ViewBag.UserCertID)
+                                    {
+                                    <option value='@item.Value' selected="selected">@item.Text</option>
+                                    }
+                                    else
+                                    {
+                                    <option value='@item.Value'>@item.Text</option>
+                                    }
+                                }
+                            </select>
+                        }
+
+                        @Html.ValidationMessageFor(model => model.CertID)
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.emailaddress)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.emailaddress)
+                        @Html.ValidationMessageFor(model => model.emailaddress)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.PhoneNumber)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.PhoneNumber)
+                        @Html.ValidationMessageFor(model => model.PhoneNumber)
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </fieldset>
+    <br />
+    <div style="width: 100%; text-align: center;">
+        @Html.ActionLink("Back to List", "ExternalAuditorList", new {@class = "ActionLink", onclick = "HyperLinkProgressIconFunction()" })
+        <input type="submit" value="Update" />
+    </div>
+}
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

@@ -92,13 +92,23 @@ namespace ISOStd.Models
         [Display(Name = "Person Name")]
         public string pers_name { get; set; }
 
+        [Display(Name = "Equipment Involved")]
+        public string eqp_involved { get; set; }
+
+        [Display(Name = "Type of Job")]
+        public string job_type { get; set; }
+
+        [Display(Name = "PPE")]
+        public string ppe { get; set; }
+
+
         internal bool FunAddAccidentReport(AccidentReportModels objAcc, AccidentReportModelsList objAccTypeList, AccidentReportModelsList objAccInfoList)
         {
             try
             {
                 string sBranch = objGlobalData.GetCurrentUserSession().division;
 
-                string sSqlstmt = "insert into t_accident_report (reported_by,location,details,upload,damage,invest_need,justify,logged_by,branch,accident_place,Incident_Type,Actions_Taken,Department";
+                string sSqlstmt = "insert into t_accident_report (reported_by,location,details,upload,damage,invest_need,justify,logged_by,branch,accident_place,Incident_Type,Actions_Taken,Department,eqp_involved,job_type,ppe";
                 string sFields = "", sFieldValue = "";
                 if (objAcc.acc_date != null && objAcc.acc_date > Convert.ToDateTime("01/01/0001 00:00:00"))
                 {
@@ -113,7 +123,7 @@ namespace ISOStd.Models
                 sSqlstmt = sSqlstmt + sFields;
                 sSqlstmt = sSqlstmt + ") values('" + objAcc.reported_by + "','" + objAcc.location + "','" + objAcc.details + "'"
                     + ",'" + objAcc.upload + "','" + objAcc.damage + "','" + objAcc.invest_need + "','" + objAcc.justify + "','"
-                    + objGlobalData.GetCurrentUserSession().empid + "','" + objAcc.branch + "','" + objAcc.accident_place + "','" + objAcc.Incident_Type + "','" + objAcc.Actions_Taken + "','" + objAcc.Department + "'";
+                    + objGlobalData.GetCurrentUserSession().empid + "','" + objAcc.branch + "','" + objAcc.accident_place + "','" + objAcc.Incident_Type + "','" + objAcc.Actions_Taken + "','" + objAcc.Department + "','" + objAcc.eqp_involved + "','" + objAcc.job_type + "','" + objAcc.ppe + "'";
                 sSqlstmt = sSqlstmt + sFieldValue + ")";
                 int id_accident_rept = 0;
                 if (int.TryParse(objGlobalData.ExecuteQueryReturnId(sSqlstmt).ToString(), out id_accident_rept))
@@ -226,7 +236,7 @@ namespace ISOStd.Models
                 string sSqlstmt = "update t_accident_report set reported_by ='" + objAcc.reported_by + "', location='" + objAcc.location + "', "
                     + "details='" + objAcc.details + "',upload='" + objAcc.upload + "',damage='" + objAcc.damage + "',invest_need='" + objAcc.invest_need
                     + "',justify='" + objAcc.justify + "',accident_place='" + objAcc.accident_place + "',Incident_Type='" + objAcc.Incident_Type
-                    + "',Actions_Taken='" + objAcc.Actions_Taken + "',branch='" + objAcc.branch + "',Department='" + objAcc.Department + "'";
+                    + "',Actions_Taken='" + objAcc.Actions_Taken + "',branch='" + objAcc.branch + "',Department='" + objAcc.Department + "',eqp_involved='" + objAcc.eqp_involved + "',job_type='" + objAcc.job_type + "',ppe='" + objAcc.ppe + "'";
 
                 if (objAcc.acc_date != null && objAcc.acc_date > Convert.ToDateTime("01/01/0001 00:00:00"))
                 {

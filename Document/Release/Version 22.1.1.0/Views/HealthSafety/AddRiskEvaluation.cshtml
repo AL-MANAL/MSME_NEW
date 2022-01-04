@@ -1,0 +1,650 @@
+﻿@model ISOStd.Models.HealthSafetyModels
+
+@{
+    ViewBag.Title = "";
+    DateTime today = DateTime.Now;
+}
+
+<script src='@Url.Content("~/global_assets/js/demo_pages/Hazardevaluat_form_wizard.js")'></script>
+
+@section featured {
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("HazardList", "HealthSafety", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Health & Safety Hazard</span>
+                    </a>
+                    <span class="breadcrumb-item active">Initial Risk Evaluation</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+}
+<!-- Basic setup -->
+<div class="card">
+    <div class="card-header header-elements-inline bg-primary">
+        <h5 class="card-title">Initial Risk Evaluation</h5>
+        <div class="header-elements">
+            <div class="list-icons">
+                <a class="list-icons-item" data-action="collapse"></a>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="container-fluid">
+
+            <form class="wizard-form steps-validation" action="@Url.Action("AddRiskEvaluation", "HealthSafety")" data-fouc id="form1">
+                <input type="hidden" id="id_hazard" name="id_hazard" value="@ViewBag.id_hazard" />
+                <h6>Initial Risk Evaluation</h6>
+                <fieldset>
+                    <table class="table table-lg">
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.DisplayNameFor(model => model.hazard_refno)
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    @Html.DisplayFor(model => model.hazard_refno)
+                                </div>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.DisplayNameFor(model => model.branch_id)
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    @Html.DisplayFor(model => model.branch_id)
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.DisplayNameFor(model => model.dept)
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    @Html.DisplayFor(model => model.dept)
+                                </div>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.DisplayNameFor(model => model.activity)
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    @Html.DisplayFor(model => model.activity)
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.DisplayNameFor(model => model.hazards)
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    @Html.DisplayFor(model => model.hazards)
+                                </div>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.DisplayNameFor(model => model.consequences)
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    @Html.DisplayFor(model => model.consequences)
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.DisplayNameFor(model => model.further_consequences)<text style="color: red;">*</text>
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="further_consequences" name="further_consequences" required>@Model.further_consequences</textarea>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2" colspan="2">
+                                <div class="editor-field">
+                                    Current Control Measures to reduce the Risk:
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    Type of Operational Control
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    Control Description
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2" colspan="2">
+                                <div class="editor-field">
+
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    @if (Model.op_control.Contains("Elimination"))
+                                    {
+                                        <input type="checkbox" id="op_control5" name="op_control5" class="chkboxclass" value="Elimination" checked />
+                                    }
+                                    else
+                                    {
+                                        <input type="checkbox" id="op_control5" name="op_control5" class="chkboxclass" value="Elimination" />
+                                    }
+                                    <label class="CheckBoxLabelClass">Elimination</label>
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <input type="text" class="form-control" id="cnt_elimination" name="cnt_elimination" value="@Model.cnt_elimination" />
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2" colspan="2">
+                                <div class="editor-field">
+
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    @if (Model.op_control.Contains("Substitution"))
+                                    {
+                                        <input type="checkbox" id="op_control6" name="op_control6" class="chkboxclass" value="Substitution" checked />
+                                    }
+                                    else
+                                    {
+                                        <input type="checkbox" id="op_control6" name="op_control6" class="chkboxclass" value="Substitution" />
+                                    }
+                                        <label class="CheckBoxLabelClass">Substitution</label>
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <input type="text" class="form-control" id="cnt_substitution" name="cnt_substitution" value="@Model.cnt_substitution" />
+                                </div>
+                            </td>
+                        </tr>                       
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2" colspan="2">
+                                <div class="editor-field">
+
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    @if (Model.op_control.Contains("Engineering"))
+                                    {
+                                        <input type="checkbox" id="op_control1" name="op_control1" class="chkboxclass" value="Engineering" checked />
+                                    }
+                                    else
+                                    {
+                                        <input type="checkbox" id="op_control1" name="op_control1" class="chkboxclass" value="Engineering" />
+                                    }
+                                    <label class="CheckBoxLabelClass">Engineering</label>
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <input type="text" class="form-control" id="cnt_engineering" name="cnt_engineering" value="@Model.cnt_engineering" />
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2" colspan="2">
+                                <div class="editor-field">
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    @if (Model.op_control.Contains("Administrative"))
+                                    {
+                                        <input type="checkbox" id="op_control2" name="op_control2" class="chkboxclass" value="Administrative" checked />
+                                    }
+                                    else
+                                    {
+                                        <input type="checkbox" id="op_control2" name="op_control2" class="chkboxclass" value="Administrative" />
+                                    }
+                                    <label class="CheckBoxLabelClass">Administrative</label>
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <input type="text" class="form-control" id="cnt_administrative" name="cnt_administrative" value="@Model.cnt_administrative" />
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2" colspan="2">
+                                <div class="editor-field">
+
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    @if (Model.op_control.Contains("PPE"))
+                                    {
+                                        <input type="checkbox" id="op_control3" name="op_control3" class="chkboxclass" value="PPE" checked />
+                                    }
+                                    else
+                                    {
+                                        <input type="checkbox" id="op_control3" name="op_control3" class="chkboxclass" value="PPE" />
+                                    }
+                                    <label class="CheckBoxLabelClass">PPE</label>
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <input type="text" class="form-control" id="cnt_ppe" name="cnt_ppe" value="@Model.cnt_ppe" />
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2" colspan="2">
+                                <div class="editor-field">
+
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    @if (Model.op_control.Contains("General"))
+                                    {
+                                        <input type="checkbox" id="op_control4" name="op_control4" class="chkboxclass" value="General" checked />
+                                    }
+                                    else
+                                    {
+                                        <input type="checkbox" id="op_control4" name="op_control4" class="chkboxclass" value="General" />
+                                    }
+                                    <label class="CheckBoxLabelClass">General</label>
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <input type="text" class="form-control" id="cnt_general" name="cnt_general" value="@Model.cnt_general" />
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.DisplayNameFor(model => model.impact_id)<text style="color: red;">*</text>
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <select class="select-search1" data-fouc id="impact_id" name="impact_id" required onchange="GetRiskRating()">
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.impact_id != null)
+                                        {
+                                            foreach (var item in ViewBag.impact_id)
+                                            {
+                                                if (item.Value == Model.impact_id)
+                                                {
+                                                    <option value='@item.Value' selected>@item.Text</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.DisplayNameFor(model => model.like_id)<text style="color: red;">*</text>
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <select class="select-search1" data-fouc id="like_id" name="like_id" required onchange="GetRiskRating()">
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.like_id != null)
+                                        {
+                                            foreach (var item in ViewBag.like_id)
+                                            {
+                                                if (item.Value == Model.like_id)
+                                                {
+                                                    <option value='@item.Value' selected>@item.Text</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    Risk Rating
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <input class="form-control" type="text" id="rating" name="rating" style="display:none;" readonly />
+                                </div>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    <a href="#" data-toggle="popover" data-trigger="hover">Risk Matrix</a>
+                                </div>
+                            </td>
+
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.DisplayNameFor(model => model.legal)@*<text style="color: red;">*</text>*@
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <select class="select-search1" data-fouc id="legal" name="legal">
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.Legal != null)
+                                        {
+                                            foreach (var item in ViewBag.Legal)
+                                            {
+                                                if (item.Value == Model.legal)
+                                                {
+                                                    <option value='@item.Value' selected>@item.Text</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+                                                }
+
+                                            }
+                                        }
+                                    </select>
+
+                                </div>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.DisplayNameFor(model => model.legal_voilation)@*<text style="color: red;">*</text>*@
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="legal_voilation" name="legal_voilation">@Model.legal_voilation</textarea>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.DisplayNameFor(model => model.evaluated_by)<text style="color: red;">*</text>
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <select class="select-search1" data-fouc id="evaluated_by" name="evaluated_by" required>
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.EvaluatedBy != null)
+                                        {
+                                            foreach (var item in ViewBag.EvaluatedBy)
+                                            {
+                                                if (item.Text == Model.evaluated_by)
+                                                {
+                                                    <option value='@item.Value' selected>@item.Text</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.DisplayNameFor(model => model.evaluation_date)<text style="color: red;">*</text>
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    @if (Model.evaluation_date != null && Model.evaluation_date > Convert.ToDateTime("01/01/0001"))
+                                    {
+                                        <input class="form-control required" type="date" id="evaluation_date" name="evaluation_date" value="@Model.evaluation_date.ToString("yyyy-MM-dd")" onchange="checkDate()" />
+                                    }
+                                    else
+                                    {
+                                        <input class="form-control required" type="date" id="evaluation_date" name="evaluation_date" value="@today.ToString("yyyy-MM-dd")" onchange="checkDate()" />
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.DisplayNameFor(model => model.eval_notified_to)<text style="color: red;">*</text>
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <select class="select-search1" data-fouc id="eval_notified_to" name="eval_notified_to" required multiple>
+                                        @*<option value='' hidden>Select</option>*@
+                                        @if (ViewBag.EmpList != null)
+                                        {
+                                            foreach (var data in ViewBag.EmpList)
+                                            {
+                                                if (Array.IndexOf(Model.eval_notified_to.ToString().Split(','), data.Value) >= 0)
+                                                {
+                                                    <option value='@data.Value' selected>@data.Text</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@data.Value'>@data.Text</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </fieldset>
+
+
+
+            </form>
+        </div>
+    </div>
+</div>
+<!-- /basic setup -->
+
+<script src='@Url.Content("~/global_assets/js/plugins/forms/wizards/steps2.min.js")'></script>
+<script>
+       var summary = {
+           summaryUrl: '@Url.Action("AddRiskEvaluation", "HealthSafety")'
+       };
+       var $ = jQuery.noConflict();
+</script>
+
+
+
+
+
+@section Scripts {
+    <script>
+
+
+             //----zzz
+
+
+     $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+
+         $('[data-toggle="popover"]').popover({
+
+                html: true,
+                content: setData,
+                container: 'body'
+            });
+
+            function setData() {
+                var set_data = '';
+                var element = $(this);
+
+                $.ajax({
+                    url: '@Url.Action("RiskMatrix", "RiskMgmt")',
+                    methos: "post",
+                    async: false,
+                    success: function (data) {
+                        set_data = data;
+                    }
+                });
+                return set_data;
+            }
+        });
+
+        var impact = $('#impact_id').val();
+        var like = $('#like_id').val();
+
+        if (impact != "" && like != "") {
+
+            jQuery.ajax({
+                url: '@Url.Action("FunGetRiskRating", "RiskMgmt")',
+                type: 'POST',
+                dataType: "json",
+                //data: { impact: impact, like: like },
+                data: { like: like, impact: impact },
+                success: function (result) {
+                    if (result != null) {
+
+                        document.getElementById("rating").style.display = 'block';
+                        document.getElementById("rating").value = result.RiskRating;
+                        document.getElementById("rating").style.backgroundColor=result.color_code;
+                    }
+
+                }
+            });
+
+        }
+        function checkDate() {
+
+            var dt1 = document.getElementById("evaluation_date").value;
+            if (new Date(dt1).getTime() > new Date().getTime()) {
+                bootbox.alert({
+                    title: 'Evaluation Date',
+                    message: 'Evaluation cannot be greater then today.'
+                });
+                $('#evaluation_date').val("");
+            }
+        }
+
+       
+        function GetRiskRating() {
+
+            var impact = $('#impact_id').val();
+            var like = $('#like_id').val();
+
+            if (impact != "" && like != "") {
+                jQuery.ajax({
+                    url: '@Url.Action("FunGetRiskRating", "RiskMgmt")',
+                    type: 'POST',
+                    dataType: "json",
+                    //data: { impact: impact, like: like },
+                    data: { like: like, impact: impact },
+                    success: function (result) {
+                        if (result != null) {
+
+                            document.getElementById("rating").style.display = 'block';
+                            document.getElementById("rating").value = result.RiskRating;
+                            document.getElementById("rating").style.backgroundColor = result.color_code;
+                        }
+                    }
+                });
+            }
+            }
+
+        function GetDeptList() {
+            var selectedValues = [];
+            $("#branch_id :selected").each(function () {
+                selectedValues.push($(this).val());
+            });
+            var svalue = selectedValues.join(",");
+           
+            updateDeptnlocation(svalue, "Location", "location");
+            updateDeptnlocation(svalue, "dept", "department");
+        }    
+
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

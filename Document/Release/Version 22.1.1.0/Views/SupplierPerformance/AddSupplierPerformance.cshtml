@@ -1,0 +1,350 @@
+﻿@model ISOStd.Models.SupplierPerformanceModels
+
+@{
+    ViewBag.Title = "";
+}
+
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Home</span>
+                    </a>
+                    <a href="@Url.Action("SupplierPerformanceList", "SupplierPerformance", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">External Provider Performance List</span>
+                    </a>
+                    <span class="breadcrumb-item active">Add External Provider Performance</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            <div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@using (Html.BeginForm("AddSupplierPerformance", "SupplierPerformance", FormMethod.Post,
+                     new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Add External Provider Performance</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+
+                <table class="table table-lg">
+
+                    <tr class="row">                   
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Eval_FromDate)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                  <input class="form-control" type="date" id="Eval_FromDate" name="Eval_FromDate" required/>        
+                                 @Html.ValidationMessageFor(model => model.Eval_FromDate)
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Eval_ToDate)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                 <select class="form-control select-search select2-hidden-accessible" data-fouc id="Eval_ToDate" name="Eval_ToDate" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.EvalToYear != null)
+                                    {
+                                        foreach (var item in ViewBag.EvalToYear)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                                 @Html.ValidationMessageFor(model => model.Eval_ToDate)
+                            </div>
+                        </td>
+                    </tr>
+
+ 		 <tr class="row">                   
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Supplier_Name)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="Supplier_Name" name="Supplier_Name" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.SuppList != null)
+                                    {
+                                        foreach (var item in ViewBag.SuppList)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                                  @Html.ValidationMessageFor(model => model.Supplier_Name)
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.total_delv)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                               <input class="form-control" type="number" id="total_delv" name="total_delv" required/>
+                               @Html.ValidationMessageFor(model => model.total_delv)
+                            </div>
+                        </td>
+                    </tr>
+
+                  <tr class="row">                   
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.accept_delv)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                 <input class="form-control" type="number" id="accept_delv" name="accept_delv" required onchange="Cal()"/>
+                               @Html.ValidationMessageFor(model => model.accept_delv)   
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.ontime_delv)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                               <input class="form-control" type="number" id="ontime_delv" name="ontime_delv" onchange="Cal()"/>                            
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">                   
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.lowest_price)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                 <input class="form-control" type="number" id="lowest_price" name="lowest_price"/>   
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.supp_price)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                 <input class="form-control" type="number" id="supp_price" name="supp_price"/>                            
+                            </div>
+                        </td>
+                    </tr>
+		    <tr class="row">                   
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.hse_compliance)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="hse_compliance" name="hse_compliance">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.HSE != null)
+                                    {
+                                        foreach (var item in ViewBag.HSE)
+                                        {
+                                            <option value='@item'>@item</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.iso9001_compliance)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="iso9001_compliance" name="iso9001_compliance">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.ISO != null)
+                                    {
+                                        foreach (var item in ViewBag.ISO)
+                                        {
+                                            <option value='@item'>@item</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                    </tr>
+		   <tr class="row">                   
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.recomend_by)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="recomend_by" name="recomend_by">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.EmpList != null)
+                                    {
+                                        foreach (var item in ViewBag.EmpList)
+                                        {
+                                             <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                       <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.payment_terms)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="payment_terms" name="payment_terms">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.Rating != null)
+                                    {
+                                        foreach (var data in ViewBag.Rating)
+                                        {
+                                              <option value='@data'>@data</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                    </tr>
+                   <tr class="row">                   
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.sale_perf)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="sale_perf" name="sale_perf">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.Rating != null)
+                                    {
+                                        foreach (var data in ViewBag.Rating)
+                                        {
+                                              <option value='@data'>@data</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                       <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.EnvMgmt)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="EnvMgmt" name="EnvMgmt">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.Env != null)
+                                    {
+                                        foreach (var data in ViewBag.Env)
+                                        {
+                                            <option value='@data'>@data</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                    </tr>
+  
+                </table>
+            </div>
+        </div>
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+            @Html.ActionLink("Back to List", "SupplierPerformanceList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+
+            <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Add</button>
+        </div>
+    </div>
+
+       
+        }
+
+
+@section Scripts {
+    <script>
+        function Cal() {
+            var total = document.getElementById("total_delv").value;
+            var accept_delv = document.getElementById("accept_delv").value;
+            var ontime_delv = document.getElementById("ontime_delv").value;
+            var SHE_total = document.getElementById("SHE_total").value;
+
+            var totalVal = parseInt(total);
+            if (totalVal < accept_delv) {
+                jAlert("Accepted delivery should be less than total delivery");
+                document.getElementById("accept_delv").value = "";
+            }
+            if (totalVal < ontime_delv) {
+                jAlert("Ontime delivery should be less than total delivery");
+                document.getElementById("ontime_delv").value = "";
+            }
+            if (totalVal < SHE_total) {
+                jAlert("Safety,health & environment should be less than total delivery");
+                document.getElementById("SHE_total").value = "";
+            }
+        }
+
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}
+

@@ -1,0 +1,126 @@
+﻿@model ISOStd.Models.TrainingProgram
+
+@{
+    ViewBag.Title = "TrainingProgramEdit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div style="max-width: 80%; padding-left: 200px;">
+
+    <div class="groupedassets margin10">
+        <span class="groupedassetshead margin10 onestphdcolor">Edit Training Calender </span>
+    </div>
+
+    <div id="divmsg">
+        @if (TempData["alertdata"] != null)
+        {
+            <span class="errMsg" style="color: red; font-weight: bold;">@TempData["alertdata"]</span>
+        }
+        @if (TempData["Successdata"] != null)
+        {
+            <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+        }
+    </div>
+</div>
+
+
+
+@using (Html.BeginForm("TrainingProgramEdit", "TrainingProgram", FormMethod.Post, new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <div style="width:50%;">
+        <table id="tabcontent">
+            <input type="hidden" id="Id_Training_program" name="Id_Training_program" value="@Model.Id_Training_program" />
+            <tr>
+                <td>
+                    <div>
+                        @Html.LabelFor(model => model.topic_id, htmlAttributes: new { @class = "editor-label" })
+
+
+
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <select class="chosen-select" id="Training_Topic" required multiple name="Training_Topic">
+                            @if (ViewBag.Topics != null)
+                            {
+
+
+                                foreach (var data in ViewBag.Topics)
+                                {
+
+                                    if (Array.IndexOf(Model.topic_id.Split(','), data.Value) >= 0)
+                                    {
+                                        <option value='@data.Value' selected>@data.Text</option>
+                                    }
+                                    else if (Array.IndexOf(Model.topic_id.Split(','), " " + data.Value) >= 0)
+                                    {
+
+                                        <option value="@data.Value" selected>@data.Text</option>
+                                    }
+                                    else
+                                    {
+                                        <option value='@data.Value'>@data.Text</option>
+                                    }
+                                }
+                            }
+                        </select>
+                    </div>
+
+
+
+                </td>
+            </tr>
+
+
+
+            @*<div class="form-group">
+            @Html.LabelFor(model => model.year, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.year, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.year, "", new { @class = "text-danger" })
+            </div>
+        </div>*@
+
+
+
+            <tr>
+                <td>
+                    <div>
+                        @Html.LabelFor(model => model.remark, htmlAttributes: new { @class = "editor-label" })
+                    </div>
+                </td>
+                <td>
+                    <div>
+                        @Html.TextAreaFor(model => model.remark, new { htmlAttributes = new { @class = "editor-class" } })
+                        @Html.ValidationMessageFor(model => model.remark, "Please enter remarks", new { @class = "text-danger" })
+                    </div>
+
+                </td>
+            </tr>
+
+
+        </table>
+    </div>
+
+
+    <div style="width: 80%; text-align: center;">
+        @Html.ActionLink("Back to List", "TrainingProgramList", null, new { @class = "ActionLink", onclick = "HyperLinkProgressIconFunction()" })
+        <input type="submit" value="Update" onclick="ProgressIconFunction('#form1')" />
+    </div>
+
+}
+@section Scripts {
+    <script>
+        $(function () {
+            $("#Training_Topic").chosen();
+            $(".chosen-select").chosen();
+
+            $.validator.setDefaults({ ignore: ":hidden:not(.chosen-select)" });
+
+
+
+        });
+    </script>
+}

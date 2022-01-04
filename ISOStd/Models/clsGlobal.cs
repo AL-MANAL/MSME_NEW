@@ -25,6 +25,100 @@ namespace ISOStd.Models
         private object fileUploader;
         private object mail;
 
+        //accident hse officer list
+        public MultiSelectList GetHSEOfficerListbox()
+        {
+            EmployeeList emplist = new EmployeeList();
+            emplist.EmpList = new List<Employee>();
+
+            try
+            {
+                string branch = GetCurrentUserSession().division;
+                DataSet dsEmp = Getdetails("select emp_no as Empid,concat(concat(emp_firstname,' ',ifnull(emp_middlename,' '),' ',ifnull(emp_lastname,' ')),' - ',EmailId) as Empname from t_hr_employee e,roles r where e.emp_status=1"
+               + " and FIND_IN_SET(id,Role) and RoleName='HSE officer'");
+
+
+                if (dsEmp.Tables.Count > 0 && dsEmp.Tables[0].Rows.Count > 0)
+                {
+                    for (int i = 0; i < dsEmp.Tables[0].Rows.Count; i++)
+                    {
+
+                        Employee emp = new Employee()
+                        {
+                            Empid = dsEmp.Tables[0].Rows[i]["Empid"].ToString(),
+                            Empname = Regex.Replace(dsEmp.Tables[0].Rows[i]["Empname"].ToString(), " +", " ")
+                        };
+                        emp.Empname = emp.Empname.Trim();
+                        emplist.EmpList.Add(emp);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                AddFunctionalLog("Exception in GetHSEOfficerListbox: " + ex.ToString());
+            }
+            return new MultiSelectList(emplist.EmpList, "Empid", "Empname");
+        }
+        //accident investigation team list
+        public MultiSelectList GetAccidentInvestTeamListbox()
+        {
+            EmployeeList emplist = new EmployeeList();
+            emplist.EmpList = new List<Employee>();
+
+            try
+            {
+                string branch = GetCurrentUserSession().division;
+                DataSet dsEmp = Getdetails("select emp_no as Empid,concat(concat(emp_firstname,' ',ifnull(emp_middlename,' '),' ',ifnull(emp_lastname,' ')),' - ',EmailId) as Empname from t_hr_employee e,roles r where e.emp_status=1"
+               + " and FIND_IN_SET(id,Role) and (RoleName='Investigation team member' or RoleName='Safety officer' or RoleName='HSE officer' or RoleName='HSE worker Representative' or RoleName='Lead HSE investigation team memeber')");
+
+
+                if (dsEmp.Tables.Count > 0 && dsEmp.Tables[0].Rows.Count > 0)
+                {
+                    for (int i = 0; i < dsEmp.Tables[0].Rows.Count; i++)
+                    {
+
+                        Employee emp = new Employee()
+                        {
+                            Empid = dsEmp.Tables[0].Rows[i]["Empid"].ToString(),
+                            Empname = Regex.Replace(dsEmp.Tables[0].Rows[i]["Empname"].ToString(), " +", " ")
+                        };
+                        emp.Empname = emp.Empname.Trim();
+                        emplist.EmpList.Add(emp);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                AddFunctionalLog("Exception in GetAccidentInvestTeamListbox: " + ex.ToString());
+            }
+            return new MultiSelectList(emplist.EmpList, "Empid", "Empname");
+        }
+        //injury person list
+        public string GetAccidentInjuriedPerson(string id_accident_rept)
+        {
+            try
+            {
+                if (id_accident_rept != "" && id_accident_rept != null)
+                {
+                    DataSet dsRole = Getdetails("Select GROUP_CONCAT(pers_name) pers_name FROM t_accident_type  where id_accident_rept ='" + id_accident_rept + "'");
+                    if (dsRole.Tables.Count > 0 && dsRole.Tables[0].Rows.Count > 0)
+                    {
+                        string sDesc = dsRole.Tables[0].Rows[0]["pers_name"].ToString();
+                        if (sDesc != "" && sDesc.Contains(','))
+                        {
+                            return sDesc.Replace(",", ", ");
+                        }
+                        return sDesc;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                AddFunctionalLog("Exception in GetAccidentInjuriedPerson: " + ex.ToString());
+            }
+            return "";
+        }
+
         //q&a department employees and Top mgmt employees
         public MultiSelectList GetQADeptandTopmgmtEmployeeList()
         {

@@ -360,8 +360,8 @@ var FormWizard = function () {
 
         // Initialize
         var $select = $('.form-control-select3').select2({
-            minimumResultsForSearch: Infinity,
-            width: '100%'
+            //minimumResultsForSearch: Infinity,
+            //width: '100%'
         });
 
         // Trigger value change when selection is made

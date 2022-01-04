@@ -193,7 +193,8 @@ namespace ISOStd.Models
         {
             try
             {
-                string sSsqlstmt = "select Section as Name from t_inspection_section where id_inspection='" + Section_id + "'";
+                string sSsqlstmt = "select group_concat(Section) as Name from t_inspection_section where id_inspection in (" + Section_id + ")";
+              
                 DataSet dsData = objGlobalData.Getdetails(sSsqlstmt);
                 if (dsData.Tables.Count > 0 && dsData.Tables[0].Rows.Count > 0)
                 {

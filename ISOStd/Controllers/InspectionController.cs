@@ -199,8 +199,8 @@ namespace ISOStd.Controllers
                 ViewBag.InspCriteria = objGlobaldata.GetDropdownList("Inspection Criteria");
                 ViewBag.Criticality = objGlobaldata.GetDropdownList("Inspection Criticality");
                 ViewBag.AuditCriteria = objGlobaldata.GetIsoStdListbox();
-                ViewBag.Reviewer = objGlobaldata.GetHrQHSEEmployeeListbox();
-                ViewBag.Approver = objGlobaldata.GetTopMgmtEmpListbox();
+                ViewBag.Reviewer = objGlobaldata.GetReviewer();
+                ViewBag.Approver = objGlobaldata.GetApprover();
             }
             catch (Exception ex)
             {
@@ -218,7 +218,7 @@ namespace ISOStd.Controllers
             {
                 DateTime dateValue;
                 objModel.insp_criteria = form["insp_criteria"];
-
+                objModel.Section = form["Section"];
                 if (DateTime.TryParse(form["logged_date"], out dateValue) == true)
                 {
                     objModel.logged_date = dateValue;
@@ -305,8 +305,8 @@ namespace ISOStd.Controllers
                     ViewBag.InspCriteria = objGlobaldata.GetDropdownList("Inspection Criteria");
                     ViewBag.Criticality = objGlobaldata.GetDropdownList("Inspection Criticality");
                     ViewBag.AuditCriteria = objGlobaldata.GetIsoStdListbox();
-                    ViewBag.Reviewer = objGlobaldata.GetHrQHSEEmployeeListbox();
-                    ViewBag.Approver = objGlobaldata.GetTopMgmtEmpListbox();
+                    ViewBag.Reviewer = objGlobaldata.GetReviewer();
+                    ViewBag.Approver = objGlobaldata.GetApprover();
                     ViewBag.Section = objGlobaldata.FunGetDeptSectionList(objModel.dept);
                     // Checklist questions
 
@@ -359,7 +359,7 @@ namespace ISOStd.Controllers
             {
                 DateTime dateValue;
                 objModel.insp_criteria = form["insp_criteria"];
-
+                objModel.Section = form["Section"];
                 if (DateTime.TryParse(form["logged_date"], out dateValue) == true)
                 {
                     objModel.logged_date = dateValue;
@@ -580,8 +580,8 @@ namespace ISOStd.Controllers
                     ViewBag.InspCriteria = objGlobaldata.GetDropdownList("Inspection Criteria");
                     ViewBag.Criticality = objGlobaldata.GetDropdownList("Inspection Criticality");
                     ViewBag.AuditCriteria = objGlobaldata.GetIsoStdListbox();
-                    ViewBag.Reviewer = objGlobaldata.GetHrQHSEEmployeeListbox();
-                    ViewBag.Approver = objGlobaldata.GetTopMgmtEmpListbox();
+                    ViewBag.Reviewer = objGlobaldata.GetReviewer();
+                    ViewBag.Approver = objGlobaldata.GetApprover();
                     ViewBag.Section = objGlobaldata.FunGetDeptSectionList(objModel.dept);
 
                     // Checklist questions
@@ -635,7 +635,7 @@ namespace ISOStd.Controllers
             {
                 DateTime dateValue;
                 objModel.insp_criteria = form["insp_criteria"];
-
+                objModel.Section = form["Section"];
                 if (DateTime.TryParse(form["logged_date"], out dateValue) == true)
                 {
                     objModel.logged_date = dateValue;
@@ -1248,6 +1248,7 @@ namespace ISOStd.Controllers
                 DateTime dateValue;
                 objModel.insp_criteria = form["insp_criteria"];
                 objModel.notified_to = form["notified_to"];
+                objModel.Section = form["Section"];
                 InspctionQuestionList objInsp = new InspctionQuestionList();
                 objInsp.InspectionQstList = new List<InspctionQuestionModels>();
 
@@ -1328,7 +1329,7 @@ namespace ISOStd.Controllers
                     ViewBag.Section = objGlobaldata.FunGetDeptSectionList(objModel.dept);
                     ViewBag.checklist_ref = objGlobaldata.FunGetChecklistRefList(objModel.insp_type);
                     ViewBag.ApprovedBy = FunGetApproverMultiList(objModel.dept);
-                    ViewBag.pers_resp = FunGetPersRespMultiList(objModel.dept);
+                   // ViewBag.pers_resp = FunGetPersRespMultiList(objModel.dept);
                     ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
                     // inspection dates
 
@@ -1385,6 +1386,7 @@ namespace ISOStd.Controllers
                 DateTime dateValue;
                 objModel.insp_criteria = form["insp_criteria"];
                 objModel.notified_to = form["notified_to"];
+                objModel.Section = form["Section"];
                 InspctionQuestionList objInsp = new InspctionQuestionList();
                 objInsp.InspectionQstList = new List<InspctionQuestionModels>();
 

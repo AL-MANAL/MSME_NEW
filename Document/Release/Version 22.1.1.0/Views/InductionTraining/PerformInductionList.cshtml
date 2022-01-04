@@ -1,0 +1,557 @@
+﻿@model List<ISOStd.Models.InductionTrainingModels>
+
+@{
+    ViewBag.Title = "PerformInductionList";
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+    string current_user = Obj.GetCurrentUserSession().empid;
+}
+@{
+    var ShowEdit = Obj.GetCurrentUserSession().Perftraining.Contains("3") ? true : false;
+    var ShowDownld = Obj.GetCurrentUserSession().Perftraining.Contains("4") ? true : false;
+    var ShowDel = Obj.GetCurrentUserSession().Perftraining.Contains("5") ? true : false;
+}
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item active"> Home</span>
+                    </a>
+                    <a href="@Url.Action("InductionList", "InductionTraining", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Induction Training</span>
+                    </a>
+                    <span class="breadcrumb-item active"> Perform Induction Training</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+}
+
+<style>
+    .hidden {
+        display: none !important;
+    }
+</style>
+
+<div class="card">
+    <div class="card-header header-elements-inline bg-primary">
+        <h5 class="card-title">Perform Induction Training</h5>
+        <div class="header-elements">
+            <div class="list-icons">
+                <a class="list-icons-item" data-action="collapse"></a>
+
+            </div>
+        </div>
+    </div>
+
+    <table class="table table-bordered table-striped table-hover datatable-responsive" id="Induction">
+        <thead>
+
+            <tr>
+                <th>
+                    Sl.No
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.First().ref_no)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.First().employee_Name)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.First().training_topic)
+                </th>
+                <th class="not-export-column">
+                    @Html.DisplayNameFor(model => model.First().final_status)
+                </th>
+                <th class="not-export-column">
+                    @Html.DisplayNameFor(model => model.First().completion_date)
+                </th>
+                <th class="not-export-column">
+                    @Html.DisplayNameFor(model => model.First().final_notifyto)
+                </th>
+                <th data-priority="2" class="text-center not-export-column">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Count() > 0)
+            {
+                int i = 0;
+                foreach (var item in Model)
+                {
+                    i = i + 1;
+                    <tr>
+                        <td>
+                            @if ((item.employee_id).Contains(current_user) || (item.planned_by).Split(',').Contains(current_user))
+                            {
+                                @Html.ActionLink(i.ToString(), "PerformInductionDetails", new { id_induction = item.id_induction.ToString(), employee_id = item.employee_id }, new { data_toggle = "popover", data_trigger = "hover", id = item.id_induction, onclick = "HyperLinkProgressIconFunction()" })
+                            }
+                            else
+                            {
+                                @i.ToString();
+                            }
+                        </td>
+                        <td>
+                            @Html.DisplayFor(model => item.ref_no)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(model => item.employee_Name)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(model => item.training_topic)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(model => item.final_status)
+                        </td>
+                        <td>
+                            @if (item.completion_date > Convert.ToDateTime("01/01/0001"))
+                            {
+                                @item.completion_date.ToString("dd/MM/yyyy")
+                            }
+                        </td>
+                        <td>
+                            @Html.DisplayFor(model => item.final_notifyto)
+                        </td>
+                        <td class="text-center">
+                            <div class="list-icons">
+                                <div class="list-icons-item dropdown">
+                                    <a href="#" class="list-icons-item caret-0 dropdown-toggle" data-toggle="dropdown">
+                                        <i class="icon-gear mr-2"></i>
+                                    </a>
+
+                                    <div class="dropdown-menu dropdown-menu-right">
+                                        @if ((item.employee_id).Contains(current_user) || (item.planned_by).Split(',').Contains(current_user))
+                                        {
+                                            if (ShowEdit)
+                                            {
+                                                <a class="dropdown-item" href='@Url.Action("AddPerformInduction", "InductionTraining", new { id_induction = item.id_induction, employee_id = item.employee_id  })' title="Update Perform Induction Training" onclick="HyperLinkProgressIconFunction()">
+                                                    <i class="icon-pencil7"></i>Perform Training
+                                                </a>
+                                                @*<a class="dropdown-item" href='@Url.Action("PerformInductionReport", "InductionTraining", new { id_induction = item.id_induction, employee_id = item.employee_id  })' title="Report for Perform Induction Training" onclick="HyperLinkProgressIconFunction()">
+                                                    <i class="icon-pencil7"></i>Generate Report
+                                                </a>*@
+                                            }
+                                            if (ShowDel)
+                                            {
+                                                <span class="dropdown-item text-center" title="Delete Document" onclick="DeleteItems(@item.id_induction,@item.employee_id)" style="cursor:pointer;"><i class="icon-bin"></i>Delete</span>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <span>Not an Attendee/Planned Person</span>
+                                        }
+                                        @*<div class="dropdown-divider"></div>*@
+
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+
+                        @*<td>
+                                <a href='@Url.Action("DocTrackingEdit", "DocumentTracking", new { id_induction = item.id_induction })' title="Edit Induction Training" onclick="HyperLinkProgressIconFunction()">
+                                    <span class="badge badge-info">Edit</span>
+                                </a>
+                            <td>
+                                <a href='@Url.Action("DocTrackingsHistoryList", "DocumentTracking", new { id_induction = item.id_induction })' title="View History" onclick="HyperLinkProgressIconFunction()">
+                                    <i class="icon-history"></i>
+                                </a>
+                            </td>
+                            <td>
+                                <span class="badge badge-danger" title="Delete QHSE Planner" onclick="DeleteItems(@item.id_induction)" style="cursor:pointer;">Delete</span>
+                            </td>*@
+
+                    </tr>
+                }
+            }
+
+        </tbody>
+    </table>
+</div>
+<div class="card-footer bg-white d-flex justify-content-between align-items-center">
+    @Html.ActionLink("Back to List", "InductionList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })  
+</div>
+@section scripts {
+
+    <script type="text/javascript">
+
+
+        $(document).ready(function () {
+
+        @if (TempData["alertdata"] != null)
+        {
+
+            @: new Noty({
+            @:     text: '@TempData["alertdata"]',
+            @:     type: 'error'
+            @: }).show();
+        }
+
+        @if (@TempData["Successdata"] != null)
+        {
+
+            @:    new Noty({
+            @:       text: '@TempData["Successdata"]',
+            @:       type: 'success'
+            @:   }).show();
+        }
+        });
+        //zzz----
+
+        @*function setData(id) {
+
+        var set_data = '';
+        var element = $(this);
+        var id = element.attr("id");
+        $.ajax({
+         url: '@Url.Action("DocTrackingInfo", "DocumentTracking")',
+        methos: "post",
+        async: false,
+        data: { id: id },
+        success: function (data) {
+        set_data = data;
+
+        }
+
+        });
+
+        return set_data;
+        }*@
+
+
+
+
+        var documenttrack = function () {
+
+ @*var ShowEdit = @(Obj.GetCurrentUserSession().Perftraining.Contains("3") ? "true" : "false");
+                var ShowDownld = @(Obj.GetCurrentUserSession().Perftraining.Contains("4") ? "true" : "false");
+                var ShowDel = @(Obj.GetCurrentUserSession().Perftraining.Contains("5") ? "true" : "false");*@
+
+        // Basic Datatable examples
+        var _componentDatatableBasic = function () {
+        if (!$().DataTable) {
+        console.warn('Warning - datatables.min.js is not loaded.');
+        return;
+        }
+
+        //Setting datatable defaults
+        $.extend($.fn.dataTable.defaults, {
+        autoWidth: false,
+        responsive:true,
+        columnDefs: [{
+            orderable: false,
+            targets: 'not-export-column'
+        }],
+        responsivePriority: 2, targets: -1,
+        colReorder: false,
+        dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+        //dom: 'lBfrtip',
+        language: {
+        search: '<span>Filter:</span> _INPUT_',
+        searchPlaceholder: 'Type to filter...',
+        lengthMenu: '<span>Show:</span> _MENU_',
+        paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+        }
+        });
+
+var myClass = "";
+                var Delclass= @(Obj.GetCurrentUserSession().Perftraining.Contains("4") ? "true" : "false");
+                if (Delclass == false) { myClass = 'hidden'  };
+
+            var table = $('#Induction').DataTable({
+        drawCallback: function () {
+        $('[data-toggle="popover"]').popover({
+
+            html: true,
+            //content: setData,
+            container: 'body'
+        });
+        var dropdownMenu;
+
+            // and when you show it, move it to the body
+        $('.datatable-responsive').on('show.bs.dropdown', function (e) {
+            // grab the menu
+            dropdownMenu = $(e.target).find('.dropdown-menu');
+
+            // detach it and append it to the body
+            $('body').append(dropdownMenu.detach());
+
+            // grab the new offset position
+            var eOffset = $(e.target).offset();
+
+            // make sure to place it where it would normally go (this could be improved)
+            dropdownMenu.css({
+                'display': 'block',
+                'top': eOffset.top + $(e.target).outerHeight(),
+                'left': eOffset.left
+            });
+        });
+
+            // and when you hide it, reattach the drop down, and hide it normally
+        $('.datatable-responsive').on('hide.bs.dropdown', function (e) {
+            $(e.target).append(dropdownMenu.detach());
+            dropdownMenu.hide();
+        });
+        },
+        lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+        colReorder: {
+        fixedColumnsLeft: 1
+        },
+        stateSave: true,
+            //stateSaveParams: function (settings, data) {
+            //    for (var i = 0, ien = data.columns.length; i < ien; i++) {
+            //        delete data.columns[i].visible;
+            //        delete data.columns[i].search;
+            //    }
+            //},
+        scrollY: '350px',
+        scrollCollapse: true,
+
+
+        keys: {
+        className: 'focus focus-success'
+        },
+
+        buttons: {
+        buttons: [
+        {
+        extend: 'copyHtml5',
+                className: myClass,
+                //className: 'btn btn-light',
+                title: 'Induction Training Data export',
+        exportOptions: {
+        columns: ':visible :not(.not-export-column)'
+        },
+        },
+        {
+        extend: 'excelHtml5',
+            className: myClass,
+            //className: 'btn btn-light',
+            title: 'Induction Training Data export',
+        exportOptions: {
+        columns: ':visible :not(.not-export-column)'
+        },
+
+        },
+        {
+        extend: 'pdfHtml5',
+            className: myClass,
+            //className: 'btn btn-light',
+            title: 'Induction Training Data export',
+        exportOptions: {
+        columns: ':visible :not(.not-export-column)'
+        },
+        },
+        {
+        extend: 'csvHtml5',
+            className: myClass,
+            //className: 'btn btn-light',
+            title: 'Induction Training Data export',
+        exportOptions: {
+        columns: ':visible :not(.not-export-column)'
+        },
+        },
+        {
+        extend: 'print',
+            className: myClass,
+            //className: 'btn btn-light',
+            title: 'Induction Training Data export',
+        exportOptions: {
+        columns: ':visible :not(.not-export-column)'
+        },
+        },
+
+        {
+        extend: 'colvis',
+        text: '<i class="icon-three-bars"></i>',
+            className: 'btn bg-blue btn-icon dropdown-toggle',
+            columns: ':visible:not(.not-export-column)'
+        }
+        ]
+        }
+
+
+
+
+        });
+        // Adjust columns on window resize
+        setTimeout(function () {
+        $(window).on('resize', function () {
+        table.columns.adjust();
+        });
+        }, 100);
+
+
+        //Redraw table on click toggle. -------table.columns.adjust doesn't work properly upon calling after toggle (width increase/decrease = redraw table.).
+        $('.sidebar-control').on('click', function () {
+
+        setTimeout(function () {
+
+        table.columns.adjust().draw();
+            $("#Induction").resize();
+        } , 100);
+
+        });
+        //}
+
+            $('#Induction').on('page.dt', function () {
+
+                $("#Induction").resize();
+
+        });
+
+            $('#Induction').on('column-visibility.dt', function () {
+
+                $("#Induction").resize();
+
+        });
+
+            $('#Induction').on('order.dt', function () {
+
+                $("#Induction").resize();
+
+        });
+
+
+            $('#Induction').on('responsive-display.dt', function () {
+
+            $("#Induction").resize();
+
+        });
+
+
+            $('#Induction').on('responsive-resize.dt', function () {
+
+                $("#Induction").resize();
+
+        });
+
+        };
+
+        // Select2 for length menu styling
+        var _componentSelect2 = function () {
+        if (!$().select2) {
+        console.warn('Warning - select2.min.js is not loaded.');
+        return;
+        }
+
+        // Initialize
+        $('.dataTables_length select').select2({
+        minimumResultsForSearch: Infinity,
+        dropdownAutoWidth: true,
+        width: 'auto'
+        });
+        };
+
+
+        //
+        // Return objects assigned to module
+        //
+
+        return {
+        init: function () {
+        _componentDatatableBasic();
+        _componentSelect2();
+        }
+        }
+    }();
+
+
+    // Initialize module
+    // ------------------------------
+
+    document.addEventListener('DOMContentLoaded', function () {
+        documenttrack.init();
+    });
+
+        function DeleteItems(id_induction, employee_id) {
+                bootbox.confirm({
+                    title: 'Confirm dialog',
+                    message: 'Are you Sure you want to Delete the current Record?',
+                    buttons: {
+                        confirm: {
+                            label: 'Yes',
+                            className: 'btn-primary'
+                        },
+                        cancel: {
+                            label: 'Cancel',
+                            className: 'btn-link'
+                        }
+                    },
+                    callback: function (r) {
+                if (r == true) {
+                    jQuery.ajax({
+                        url: '@Url.Action("PerformInductionDelete", "InductionTraining")',
+                        type: 'POST',
+                        dataType: "json",
+                        data: { 'id_induction': id_induction, 'employee_id': employee_id },
+                        success: function (result) {
+
+                            window.location.href =
+                                window.location.protocol + "//" +
+                                window.location.host +
+                                window.location.pathname
+
+                        }
+                    });
+                    return true;
+                }
+                        else if (r == false) {
+
+                            bootbox.hideAll();
+                            return false;
+
+                        }
+
+                    }
+            });
+            }
+
+             function getDetails() {
+                var branch_name = document.getElementById("branch_name").value;
+                 var params = {
+                     branch_name: branch_name
+                 };
+                            queryString = $.param(params);
+
+                            window.location.href =
+                                window.location.protocol + "//" +
+                                window.location.host +
+                                window.location.pathname +
+                               '?' + queryString;
+
+            }
+
+    </script>
+
+}
+

@@ -1,0 +1,202 @@
+﻿@using PagedList;
+@using PagedList.Mvc;
+
+@model IPagedList<ISOStd.Models.DieselEquipmentModels>
+
+@{
+    ViewBag.Title = "DieselEuipmentList";
+}
+
+<div class="groupedassets margin10">
+    <span class="groupedassetshead margin10 onestphdcolor">Vehicle / Equipment List </span>
+</div>
+<div class = "ActionLink">@Html.ActionLink("Add New", "AddDieselEuipment", null, null, new { @class = "ActionLink", onclick="HyperLinkProgressIconFunction()" })</div>
+ <div id="divmsg">
+        @if (TempData["alertdata"] != null)
+        {
+            <span class="errMsg" style="color: red;font-weight: bold;">@TempData["alertdata"]</span>
+        }
+        @if (TempData["Successdata"] != null)
+        {
+            <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+        }
+    </div>
+
+@using (Html.BeginForm("DieselEuipmentList", "DieselEquipment", FormMethod.Post, new { id = "form1", name = "form1" }))
+{
+    <div style="text-align: center;">
+        @Html.TextBox("Equip_No", (string)ViewBag.Equip_No, new { placeholder = "Search by Vehicle / Equipment Number", style = "width: 20%", required="required" })
+        <button type="submit" class="btn btn-info" onclick="ProgressIconFunction('#form1')">
+            <span class="glyphicon glyphicon-search"></span>Search
+        </button>
+    </div>
+    
+}
+
+@Html.PagedListPager(Model, page => Url.Action("DieselEuipmentList",
+    new
+    {
+        page,
+        Equip_No = Request.QueryString["Equip_No"]
+    }),
+    new PagedListRenderOptions() { Display = PagedListDisplayMode.IfNeeded, DisplayPageCountAndCurrentLocation = true })
+<div id="content">
+    <table id="table1">
+        <tr>           
+            <th>
+                @Html.DisplayNameFor(model => model.First().Equip_No)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().Make)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().Capacity)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().Model)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().Chasis_No)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().Engine_No)
+            </th>
+             <th>
+                @Html.DisplayNameFor(model => model.First().Index_no)
+            </th>
+             <th>
+                @Html.DisplayNameFor(model => model.First().Plate_no)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().Date_Of_Purchase)
+            </th>
+            <th>
+                Reg. Issued Date
+            </th>
+            <th>
+                Reg. Expiry Date
+            </th>
+       
+            <th>
+                @Html.DisplayNameFor(model => model.First().Insurance_ExpDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().LoggedBy)
+            </th>
+            <th style="width: 80px; min-width: 80px; max-width: 80px;">Action</th>
+        </tr>
+        @if (Model != null && Model.Count() > 0)
+        {
+            foreach (var item in Model)
+            {
+            <tr>
+                <td>
+                    @Html.ActionLink(item.Equip_No, "DieselEuipmentDetails", new { Diesel_Equip_Id = item.Diesel_Equip_Id }, new { onclick = "HyperLinkProgressIconFunction()" })
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Description)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Make)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Capacity)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Model)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Chasis_No)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Engine_No)
+                </td>
+                 <td>
+                    @Html.DisplayFor(modelItem => item.Index_no)
+                </td>
+                 <td>
+                    @Html.DisplayFor(modelItem => item.Plate_no)
+                </td>
+                <td>
+                    @if (item.Date_Of_Purchase > Convert.ToDateTime("01/01/0001"))
+                    {
+                        @item.Date_Of_Purchase.ToString("dd/MM/yyyy")
+                    }
+                </td>
+                <td>
+                    @if (item.Reg_Issued_Date > Convert.ToDateTime("01/01/0001"))
+                    {
+                        @item.Reg_Issued_Date.ToString("dd/MM/yyyy")
+                    }
+                </td>
+               <td style="background-color:@item.color_code_Reg;font-weight: bold;width:150px;min-width:150px; max-width:150px;">
+                    @if (item.Reg_Expr_Date > Convert.ToDateTime("01/01/0001"))
+                    {
+                        @item.Reg_Expr_Date.ToString("dd/MM/yyyy")
+                    }
+                </td>
+                <td style="background-color:@item.color_code_Issue;font-weight: bold;width:150px;min-width:150px; max-width:150px;">
+                    @if (item.Insurance_ExpDate > Convert.ToDateTime("01/01/0001"))
+                    {
+                        @item.Insurance_ExpDate.ToString("dd/MM/yyyy")
+                    }
+                </td>
+                     
+               
+                <td>
+                    @Html.DisplayFor(modelItem => item.LoggedBy)
+                </td>
+                <td style="width: 80px; min-width: 80px; max-width: 80px;">
+                    <a href='@Url.Action("DieselEuipmentEdit", "DieselEquipment", new { Diesel_Equip_Id = item.Diesel_Equip_Id })' title="Edit Vehicle/Euipment details" 
+                        onclick="HyperLinkProgressIconFunction()">
+                        <span class="glyphicon glyphicon glyphicon-edit iocnstatus-edit"></span></a>
+                    <img src="@Url.Content("~/Images/delete.png")" title="Delete Enquiry" onclick="DeleteItems(@item.Diesel_Equip_Id)" style="cursor:pointer;"/>
+                </td>
+            </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="12">
+                    <div style="text-align: center;">
+                        <h4 style="color: grey;">Search for Data</h4>
+                    </div>
+                </td>
+            </tr>
+        }
+    </table>
+</div>
+
+@section scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript">
+        function DeleteItems(Diesel_Equip_Id) {
+            jConfirm('Do you want to delete?', 'Are you Sure?', function (r) {
+                if (r == true) {
+                    jQuery.ajax({
+                        url: '@Url.Action("DieselEquipmentDelete", "DieselEquipment")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'Diesel_Equip_Id': Diesel_Equip_Id },
+                    success: function (result) {                      
+
+                        window.location.href =
+							window.location.protocol + "//" +
+							window.location.host +
+							window.location.pathname;
+                    }
+                });
+                return true;
+            }
+            else if (r == false) {
+                return false;
+            }
+        });
+    }
+
+    </script>
+    }

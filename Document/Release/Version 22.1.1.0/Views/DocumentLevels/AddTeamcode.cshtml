@@ -1,0 +1,430 @@
+﻿@model ISOStd.Models.GroupTeamModels
+@using System.Data;
+
+@{ ViewBag.Title = "DocumentLevelsModels";
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+
+
+    DataSet dsGroupTeam = new DataSet();
+
+    if (ViewBag.dsGroupTeam != null)
+    {
+        dsGroupTeam = ViewBag.dsGroupTeam;
+    } }
+
+
+
+@section featured {
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+
+                    <span class="breadcrumb-item active"> Team Code</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            <div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+<div class="row">
+    <div class="col-md-6">
+
+        <!-- Basic layout-->
+        <div class="card">
+            <div class="card-header header-elements-inline">
+                <h5 class="card-title">Team Code Details</h5>
+                <div class="header-elements">
+                    <div class="list-icons">
+                        <a class="list-icons-item" data-action="collapse"></a>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body">
+                @using (Html.BeginForm("AddTeamcode", "DocumentLevels", FormMethod.Post, new { id = "form1", name = "form1", onsubmit = "EnableDisabled()" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary(true)
+
+                    <div class="container-fluid">
+                        <table class="table table-lg">
+
+                            <tbody>
+
+                                <tr>
+                                    <td>
+                                        Group Name
+                                    </td>
+                                    <td>
+                                        <select class="form-control select-search select2-hidden-accessible" data-fouc id="Group" name="Group" onchange="GetGroupCode()">
+                                            <option value='' hidden>Select</option>
+                                            @if (ViewBag.Group != null)
+                                            {
+                                                foreach (var item in ViewBag.GroupName)
+                                                {
+                                                    if (ViewBag.Group_id != null && ViewBag.Group_id == item.Value)
+                                                    {
+                                                        <option value='@item.Value' selected>@item.Text</option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value='@item.Value'>@item.Text</option>}
+                                                }
+                                            }
+                                        </select>
+
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Group Code
+                                    </td>
+                                    <td>
+                                        <select class="form-control select-search select2-hidden-accessible" data-fouc id="Group_id" name="Group_id" disabled required onchange="PopulateTeam()">
+                                            <option value='' hidden>Select</option>
+                                            @if (ViewBag.Group != null)
+                                            {
+                                                foreach (var item in ViewBag.Group)
+                                                {
+                                                    if (ViewBag.Group_id != null && ViewBag.Group_id == item.Value)
+                                                    {
+                                                        <option value='@item.Value' selected>@item.Text</option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value='@item.Value'>@item.Text</option>}
+                                                }
+                                            }
+                                        </select>
+                                        @Html.ValidationMessageFor(m => m.Group_id)
+
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Team Code
+                                    </td>
+                                    <td>
+                                        @*@Html.EditorFor(m => m.Type_Desc, new { htmlAttributes = new { @required = "required", @class = "form-control" } })*@
+                                        <input class="form-control" type="text" id="Type_Desc" name="Type_Desc" required />
+                                        @Html.ValidationMessageFor(m => m.Type_Desc)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Team
+                                    </td>
+                                    <td>
+                                        <input class="form-control" type="text" id="Type_Details" name="Type_Details" required />
+                                        @Html.ValidationMessageFor(m => m.Type_Details)
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="card-footer bg-white ml-auto">
+                        <button type="submit" name="button" id="button" value="Save" class="btn bg-indigo-400 float-right" onclick="ProgressIconFunction('#form1')">Submit<i class="icon-paperplane ml-2"></i></button>
+                    </div>
+                    @Html.ActionLink("Back to List", "AddLevel", "DocumentLevels", new { @class = "btn btn-outline bg-orange text-orange border-orange", onclick = "HyperLinkProgressIconFunction()" })
+
+                }
+            </div>
+        </div>
+        <!-- /basic layout -->
+
+    </div>
+
+
+    <div class="col-md-6">
+        <div class="card" id="hidden card">
+            <div class="card-header header-elements-inline">
+                <h5 class="card-title">Details</h5>
+                <div class="header-elements">
+                    <div class="list-icons">
+                        <a class="list-icons-item" data-action="collapse"></a>
+
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <table class="table table-lg" id="tbl_Agenda">
+                    @if (dsGroupTeam.Tables.Count > 0 && dsGroupTeam.Tables[0].Rows.Count > 0)
+                    {
+        <tr class="row">
+            <td class="col" colspan="3" style="background-color: #4cc4dd; color: #fff; font-weight: bold;">Team Code List</td>
+        </tr>
+                        <tr class="row" style="background-color: #e5eafe; color: #0099ff; font-weight: bold;">
+                            <th class="col col-xs-10">Team Code</th>
+                            <th class="col col-xs-10">Team</th>
+                            <th class="col col-xs-2">Actions</th>
+                        </tr> for (int item = 0; item < dsGroupTeam.Tables[0].Rows.Count; item++)
+                                        {
+                        <tr class="row">
+                            <td class="col col-xs-10">
+                                @*<input class="form-control" type="text" id="Agenda_Desc @dsAgenda.Tables[0].Rows[item]["Agenda_Id"].ToString()"
+                                    name="Agenda_Desc @dsAgenda.Tables[0].Rows[item]["Agenda_Id"].ToString()" value="@dsAgenda.Tables[0].Rows[item]["Agenda_Desc"].ToString()" />*@
+
+                                <textarea class='form-control elastic maxlength-badge-position' maxlength='25' placeholder='Textarea' style='overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;' rows='4' cols='4' id='Type_Desc @dsGroupTeam.Tables[0].Rows[item]["Team_id"].ToString()' name='Type_Desc @dsGroupTeam.Tables[0].Rows[item]["Team_id"].ToString()'>@dsGroupTeam.Tables[0].Rows[item]["Type_Desc"].ToString()</textarea>
+                            </td>
+                            <td class="col col-xs-10">
+                                @*<input class="form-control" type="text" id="Agenda_Details @dsAgenda.Tables[0].Rows[item]["Agenda_Id"].ToString()"
+                                    name="Agenda_Details @dsAgenda.Tables[0].Rows[item]["Agenda_Id"].ToString()" value="@dsAgenda.Tables[0].Rows[item]["Agenda_Details"].ToString()" />*@
+                                <textarea class='form-control elastic maxlength-badge-position' maxlength='25' placeholder='Textarea' style='overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;' rows='4' cols='4' id='Type_Details @dsGroupTeam.Tables[0].Rows[item]["Team_id"].ToString()' name='Type_Details @dsGroupTeam.Tables[0].Rows[item]["Team_id"].ToString()'>@dsGroupTeam.Tables[0].Rows[item]["Type_Details"].ToString()</textarea>
+                            </td>
+
+                            <td class="col col-xs-2">
+
+                                <span class='badge badge-info' style='cursor: pointer;' title='Update Team Code' onclick='UpdateTeam(@dsGroupTeam.Tables[0].Rows[item]["Team_id"].ToString())'>Edit</span>
+                                <span class='badge badge-danger' onclick='DeleteTeam(@dsGroupTeam.Tables[0].Rows[item]["Team_id"].ToString())' style='cursor:pointer;' title='Delete Team '>Delete</span>
+
+                            </td>
+
+                        </tr>
+                        }
+                    }
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script type="text/javascript">
+        var showClass = 'is-visible';
+        var hideClass = 'invisible';
+
+
+    $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+    });
+
+
+        function GetGroupCode() {
+            GroupName = document.getElementById("Group").value;
+
+            document.getElementById("Group_id").value = GroupName;
+            $("#Group_id").trigger('change');
+        }
+
+        function EnableDisabled() {
+            document.getElementById('Group_id').disabled = false;
+        }
+
+         function PopulateTeam() {
+             Group = document.getElementById("Group_id").value;
+             
+         jQuery.ajax({
+             url: '@Url.Action("GetTeamList", "DocumentLevels")',
+                    type: 'POST',
+                    dataType: "json",
+             data: { 'sDocId': Group },
+                 success: function (result) {
+     var table = document.getElementById("tbl_Agenda");
+
+     while (table.rows.length > 0) {
+         table.deleteRow(0);
+     }
+
+     if (result != "") {
+         
+         var thTitleRow = table.insertRow();
+         thTitleRow.style = "background-color: #4cc4dd; color: #fff; font-weight: bold;";
+         var cellTitle0 = thTitleRow.insertCell(0);
+         thTitleRow.className = "row";
+         cellTitle0.innerHTML = "Group List";
+         table.rows[0].cells[0].colSpan = 3;
+         table.rows[0].cells[0].style = "color:#fff";
+         
+         var theaderRow = table.insertRow();
+         theaderRow.className = "row";
+         theaderRow.style = "background-color: #e5eafe; font-weight: bold;";
+         var cellth0 = theaderRow.insertCell(0);
+         cellth0.className = "col col-xs-10";
+         var cellth1 = theaderRow.insertCell(1);
+         cellth1.className = "col col-xs-10";
+         var cellth2 = theaderRow.insertCell(2);
+         cellth2.className = "col col-xs-2";
+
+
+         cellth0.innerHTML = "<th>Team Code</th>";
+         //cellth1.innerHTML = "<th>Action</th>";
+         cellth1.innerHTML = "<th>Team</th>";
+         cellth2.innerHTML = "<th>Actions</th>";
+
+         table.rows[1].cells[0].style = "color:#0099ff";
+         table.rows[1].cells[1].style = "color:#0099ff";
+         table.rows[1].cells[2].style = "color:#0099ff";
+
+         var list = result;
+                            $.each(list, function (index, item) {
+
+             // Create an empty <tr> element and add it to the 1st position of the table:
+             var row = table.insertRow();
+             row.className = "row";
+             // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+             var cell0 = row.insertCell(0);
+             cell0.className = "col col-xs-10";
+             var cell1 = row.insertCell(1);
+             cell1.className = "col col-xs-10";
+             var cell2 = row.insertCell(2);
+             cell2.className = "col col-xs-2";
+
+             var AgendaName = item.Text;
+             var Id = item.Value;
+
+             var data = item.Text;
+
+             var dataarray = new Array();
+
+             dataarray = data.split("_");
+
+             // cell0.innerHTML = AgendaName;
+             cell0.innerHTML = dataarray[0];
+             cell1.innerHTML = dataarray[1];
+
+             cell0.innerHTML = " <textarea class='form-control elastic maxlength-badge-position' maxlength = '25' placeholder = 'Textarea' style = 'overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;' rows = '4' cols = '4' id='Type_Desc " + Id + "' name='Type_Desc " + Id + "'>" + dataarray[0] + "</textarea>";
+             cell1.innerHTML = " <textarea class='form-control elastic maxlength-badge-position' maxlength = '25' placeholder = 'Textarea' style = 'overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;' rows = '4' cols = '4' id='Type_Details " + Id + "' name='Type_Details " + Id + "'>" + dataarray[1] + "</textarea>";
+
+             cell2.innerHTML = "<span class='badge badge-info' style='cursor: pointer;' title='Update Team Code' onclick='UpdateTeam(" + Id + ")'>Edit</span>"
+                 + " <span class='badge badge-danger' onclick='DeleteTeam(" + Id + ")' style='cursor:pointer;' title='Delete Team'>Delete</span>";
+                               @* cell1.innerHTML = " <img src='@Url.Content("~/images/cancel.png")' id='imgAgenda" + Id + "' onclick='DisplayAgenda(" + Id
+                                    + ")' title='" + AgendaName + "' style='cursor:pointer; padding-right: 5px;'/>";*@
+
+                                autosize($('.elastic'));
+                                $('.maxlength-badge-position').maxlength({
+                                    alwaysShow: true,
+                                    placement: 'top'
+                                });
+                            });
+                        }
+                      else {
+                          bootbox.alert({
+                              title: 'Team',
+                              message: 'No Team Code exists, please add Team and then try again'
+                          });
+                        }
+                    }
+                });
+        }
+
+        function UpdateTeam(id_element) {
+
+             var Element = document.getElementById("Type_Desc " + id_element).value;
+             var Element2 = document.getElementById("Type_Details " + id_element).value;
+
+             jQuery.ajax({
+                 url: '@Url.Action("DocTeamUpdate", "DocumentLevels")',
+                 type: 'POST',
+                 dataType: "json",
+                 data: { 'id_element': id_element, 'Type_Desc': Element, 'Type_Details': Element2 },
+                 success: function (result) {
+                     bootbox.alert({
+                         title: 'Team Code',
+                         message: 'Your Document Team code has been updated.'
+                     });
+                 }
+             });
+         }
+
+        function DeleteTeam(id_element) {
+             bootbox.confirm({
+                 title: 'Confirm dialog',
+                 message: 'Are you Sure you want to Delete the current Record?',
+                 buttons: {
+                     confirm: {
+                         label: 'Yes',
+                         className: 'btn-primary'
+                     },
+                     cancel: {
+                         label: 'Cancel',
+                         className: 'btn-link'
+                     }
+                 },
+                 callback: function (r) {
+                     if (r == true) {
+                     jQuery.ajax({
+                         url: '@Url.Action("TeamDelete", "DocumentLevels")',
+                         type: 'POST',
+                         dataType: "json",
+                         data: { 'id_element': id_element },
+                         success: function (data) {
+
+                             Group_id = document.getElementById("Group").value;
+
+                             window.location.href =
+                                 window.location.protocol + "//" +
+                                 window.location.host +
+                             window.location.pathname +
+                             '?Group_id=' + Group_id;
+
+                         }
+                     });
+                         return true;
+                     }
+                     else if (r == false) {
+                         bootbox.hideAll();
+                         return false;
+                     }
+                 }
+             });
+         }
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+
+}

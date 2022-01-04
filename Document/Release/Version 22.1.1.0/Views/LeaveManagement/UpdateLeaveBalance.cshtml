@@ -1,0 +1,108 @@
+﻿@model ISOStd.Models.LeaveManagementModels
+
+@{
+    ViewBag.Title = "AddParties";
+}
+
+<div style="max-width: 80%; padding-left: 200px;">
+
+    <div class="groupedassets margin10">
+        <span class="groupedassetshead margin10 onestphdcolor">Update Used Leaves</span>
+    </div>
+
+    <div id="divmsg">
+        @if (TempData["alertdata"] != null)
+        {
+            <span class="errMsg" style="color: red;font-weight: bold;">@TempData["alertdata"]</span>
+        }
+        @if (TempData["Successdata"] != null)
+        {
+            <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+        }
+    </div>
+
+    @using (Html.BeginForm("UpdateLeaveBalance", "LeaveManagement", FormMethod.Post,
+                         new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true)
+
+        <fieldset>
+            <legend> AddIssues</legend>
+            <table id="tabcontent">
+                <tr>
+                      <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.emp_no)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <input type="text" id="emp_no" name="emp_no" readonly value="@Model.emp_no" style="background-color:#d0ebf1" />
+                        </div>
+                    </td>
+                      <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.emp_firstname)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <input type="text" id="emp_firstname" name="emp_firstname" readonly value="@Model.emp_firstname" style="background-color:#d0ebf1"/>
+                        </div>
+                    </td>
+                </tr>
+              <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.balance)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <input type="text" id="balance" name="balance" readonly value="@Model.balance" style="background-color:#d0ebf1"/>
+                        </div>
+                    </td>
+                     <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.duration)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <input type="number" id="duration" name="duration" min="0" onchange="SetBal()" />
+                        </div>
+                    </td>
+              </tr>
+            </table>
+        </fieldset>
+    
+        <div style="width: 100%; text-align: center;">
+            @Html.ActionLink("Back to List", "MasterLeaveList", null, new {Class="ActionLink", onclick="HyperLinkProgressIconFunction()" })
+            <input type="submit" value="Save"  onclick="ProgressIconFunction('#form1')"/>
+        </div>
+}
+
+</div>
+@section Scripts {
+     <script>
+     
+         function SetBal() {
+
+             var balance = document.getElementById("balance").value;
+             var duration = document.getElementById("duration").value;
+
+             if (parseFloat(duration) > parseFloat(balance)) {
+                 jAlert("Cannot be greater than balance");
+                 document.getElementById("duration").value = "";
+             }
+
+             if (parseFloat(duration) < 0) {
+                 jAlert("Cannot be lesser than 0");
+                 document.getElementById("duration").value = "";
+             }
+         }
+
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

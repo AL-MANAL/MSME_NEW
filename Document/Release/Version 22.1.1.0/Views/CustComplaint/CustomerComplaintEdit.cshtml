@@ -1,0 +1,849 @@
+﻿@model ISOStd.Models.CustComplaintModels
+
+@{
+    ViewBag.Title = "";
+
+    string[] NotifiedtoArray = new string[0];
+    int itemcnts = 0;
+
+    if (ViewBag.NotifiedtoArray != null)
+    {
+        NotifiedtoArray = ViewBag.NotifiedtoArray;
+        itemcnts = NotifiedtoArray.Length;
+    }
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+}
+
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                  <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Home</span>
+                    </a>
+                    <a href="@Url.Action("CustomerComplaintList", "CustComplaint", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Customer Complaints</span>
+                    </a>
+                    <span class="breadcrumb-item active">Update Customer Complaints</span>
+                </div>
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+}
+@using (Html.BeginForm("CustomerComplaintEdit", "CustComplaint", FormMethod.Post,
+                     new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+   <input type="hidden" id="id_complaint" name="id_complaint" value="@Model.id_complaint" />
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Update Customer Complaints</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+                <table class="table table-lg">
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.ComplaintNo)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @Html.DisplayFor(model => model.ComplaintNo)
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.ReceivedDate)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @if (Model.ReceivedDate != null && Model.ReceivedDate > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    <input class="form-control" type="date" id="ReceivedDate" name="ReceivedDate" value="@Model.ReceivedDate.ToString("yyyy-MM-dd")" onchange="GetChkDate()" required />
+                                }
+                                else
+                                {
+                                    <input class="form-control" type="date" id="ReceivedDate" name="ReceivedDate" onchange="GetChkDate()" required />
+                                }
+                                @Html.ValidationMessageFor(m => m.ReceivedDate)
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.registered_on)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @if (Model.registered_on != null && Model.registered_on > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    <input class="form-control" type="date" id="registered_on" name="registered_on" value="@Model.registered_on.ToString("yyyy-MM-dd")" readonly />
+                                }
+                                else
+                                {
+                                    <input class="form-control" type="date" id="registered_on" name="registered_on" value="@DateTime.Now.ToString("yyyy-MM-dd")" readonly />
+                                }
+                                @Html.ValidationMessageFor(m => m.registered_on)
+                            </div>
+                        </td>
+
+                    </tr>
+
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                Customer Complaint Registered By
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @ViewBag.Name
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                Department
+                            </div>
+                            <div class="editor-field">
+                                @ViewBag.DeptName
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-label">
+                                Designation
+                            </div>
+                            <div class="editor-field">
+                                @ViewBag.Designation
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.CustomerName)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="CustomerName" name="CustomerName" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.Customer != null)
+                                    {
+                                        foreach (var item in ViewBag.Customer)
+                                        {
+                                            if (item.Value == Model.CustomerName)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                                @Html.ValidationMessageFor(m => m.CustomerName)
+                            </div>
+                        </td>
+                        @*<td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.branch)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input type="text" class="form-control" name="branch" id="branch" readonly style="background-color:lightgray" />
+                            </div>
+                        </td>*@
+                    </tr>
+                    @*<tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Department)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input type="text" class="form-control" name="Department" id="Department" readonly style="background-color:lightgray" />
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Location)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input type="text" class="form-control" name="Location" id="Location" readonly style="background-color:lightgray" />
+                            </div>
+                        </td>
+                    </tr>*@
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.ProjectName)@*<text style="color:red;">*</text>*@
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.ProjectName, new { htmlAttributes = new { @class = "form-control" } })
+                                @*@Html.ValidationMessageFor(m => m.ProjectName)*@
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.ReportedBy)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @*@Html.EditorFor(model => model.ReportedBy, new { htmlAttributes = new { @required = "required", @class = "form-control" } })*@
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="ReportedBy" name="ReportedBy" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.CustEmpList != null)
+                                    {
+                                        foreach (var item in ViewBag.CustEmpList)
+                                        {
+                                            if (item.Value == Model.ReportedBy)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                                @Html.ValidationMessageFor(m => m.ReportedBy)
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.reportedby_email)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.reportedby_email, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.reportedby_desig)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.reportedby_desig, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.reportedby_no)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.reportedby_no, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.CustomerRef)@*<text style="color:red;">*</text>*@
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.CustomerRef, new { htmlAttributes = new { @class = "form-control" } })
+                                @*@Html.ValidationMessageFor(m => m.ProjectName)*@
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.ModeOfComplaint)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="ModeOfComplaint" name="ModeOfComplaint" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.Mode != null)
+                                    {
+                                        foreach (var data in ViewBag.Mode)
+                                        {
+                                            if (data.Text == Model.ModeOfComplaint)
+                                            {
+                                                <option value='@data.Value' selected>@data.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@data.Value'>@data.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                                @Html.ValidationMessageFor(m => m.ModeOfComplaint)
+                            </div>
+                        </td>
+
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Details)
+                            </div>
+                        </td>
+                        <td class="col" colspan="3">
+                            <div class="editor-field">
+                                @Html.TextAreaFor(model => model.Details, new { @id = "editor-full", @rows = "4", @cols = "4" })
+                            </div>
+                        </td>
+
+                    </tr>
+                    <tr class="row">
+
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Document)
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <div class="editor-field">
+                                <input type="file" name="file" id="file" onchange="FileFormatValidation(this)" multiple accept=".pdf,.xlsx,.xls,.jpeg,.jpg,.png,.doc,.docx,image/*" class="bootstrap-uploader" data-fouc />
+                                @if (Model.Document != null && Model.Document != "" && Model.Document.Length > 0)
+                                {
+                                    <div class="editor-label">
+                                        <p style="font-weight: bold; margin: 0px;"> Docs. List:</p>
+                                    </div>
+                                    <p style="font-size: 11px; margin: 0px; color: red;">(Uncheck in case to remove a uploaded file)</p>
+                                    foreach (var docs in Model.Document.Trim(',').Split(','))
+                                    {
+                                        <p style="margin: 0px;">
+                                            <input type="checkbox" id="QCDocsVal" name="QCDocsVal" class="QCDocsVal" value="@docs.Trim(',')" checked title="Uncheck in case to remove a uploaded file" />
+                                            <input type="hidden" id="QCDocsValselectall" name="QCDocsValselectall" />
+                                            <span class="bg-dark py-1 px-2 rounded">
+                                                <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs})' target="_blank">Preview</a>
+                                            </span>
+                                        </p>
+                                    }
+                                }
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.ComplaintStatus)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="ComplaintStatus" name="ComplaintStatus" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.Complaint_Status != null)
+                                    {
+                                        foreach (var data in ViewBag.Complaint_Status)
+                                        {
+                                            if (data.Text == Model.ComplaintStatus)
+                                            {
+                                                <option value='@data.Value' selected>@data.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@data.Value'>@data.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                                @Html.ValidationMessageFor(m => m.ComplaintStatus)
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.initial_observation)
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <div class="editor-field">
+                                <textarea class="form-control" id="initial_observation" name="initial_observation"> @Model.initial_observation</textarea>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.complaint_relatedto)
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="complaint_relatedto" name="complaint_relatedto" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.ComplaintRelatedTo != null)
+                                    {
+                                        foreach (var item in ViewBag.ComplaintRelatedTo)
+                                        {
+                                            if (item.Value == Model.complaint_relatedto)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                                @Html.ValidationMessageFor(m => m.complaint_relatedto)
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.complaint_copiedto)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="complaint_copiedto" name="complaint_copiedto" multiple required>
+                                    @*<option value='' hidden>Select</option>*@
+                                    @if (ViewBag.Employee != null)
+                                    {
+                                        foreach (var item in ViewBag.Employee)
+                                        {
+                                            if (Array.IndexOf(Model.complaint_copiedto.ToString().Split(','), item.Value) >= 0)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                                @Html.ValidationMessageFor(m => m.complaint_copiedto)
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        @*<td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                Forward complaint to
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="DeptId" name="DeptId" onchange="GetDeptEmployeeList()">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.DeptList != null)
+                                    {
+                                        foreach (var item in ViewBag.DeptList)
+                                        {
+                                            if (Model.divisionId == item.Value)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>*@
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                Forward complaint to<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="ForwardTo" name="ForwardTo" @*onchange="GetNotifiedToDetails()"*@ required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.ForwardTo != null)
+                                    {
+                                        foreach (var data in ViewBag.ForwardTo)
+                                        {
+                                            if (Array.IndexOf(Model.ForwardTo.ToString().Split(','), data.Value) >= 0)
+                                            {
+                                                <option value='@data.Value' selected>@data.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@data.Value'>@data.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                                @Html.ValidationMessageFor(m => m.ForwardTo)
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div id="hidden_cards">
+                <div class="card-body">
+                    <input type="hidden" id="itemcnts" name="itemcnts" value="@itemcnts" />
+
+                    <div class="card card-table table-responsive shadow-0 mb-0">
+                        <table class="table" id="team-lists">
+                            <tr class="bg-blue">
+                                <th>Action</th>
+                                <th>Id</th>
+                                <th>Name</th>
+                                <th>Division</th>
+                                <th>Location</th>
+                                <th>Department</th>
+                                <th>Email</th>
+                            </tr>
+                            @if (ViewBag.NotifiedtoArray != null && NotifiedtoArray != null && NotifiedtoArray.Length > 0)
+                            {
+                                for (int index = 0; index < NotifiedtoArray.Length; index++)
+                                {
+                                    //string[] sEmp = @objIncidentLTIList.lstIncidentLTIModels[index].Emp_Id.Split(';');
+                                    <tr>
+                                        <td>
+                                            <span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span>
+                                            @*<img src='@Url.Content("~/images/cancel.png")' onclick='deleteRow1(this)' style='cursor:pointer; padding-right: 5px;' />Remove*@
+                                            <input type='hidden' id='nempno @index' name="nempno @index" value='@NotifiedtoArray[index]' />
+                                        </td>
+                                        <td>
+                                            <input type='hidden' id='nempid @index' name="nempid @index" readonly>@Obj.GetEmpIDByEmpNo(NotifiedtoArray[index])
+                                        </td>
+                                        <td>
+                                            <input type='hidden' id='nempname @index' name="nempname @index" readonly>@Obj.GetEmpHrNameById(NotifiedtoArray[index])
+                                        </td>
+                                        <td>
+                                            <input type='hidden' id='nempdiv @index' name="nempdiv @index" readonly>@Obj.GetCompanyBranchNameById(Obj.GetDivisionIdByHrEmpId(NotifiedtoArray[index]))
+                                        </td>
+                                        <td>
+                                            <input type='hidden' id='nemploc @index' name="nemploc @index" readonly>@Obj.GetDivisionLocationById(Obj.GetWorkLocationIdByHrEmpId(NotifiedtoArray[index]))
+                                        </td>
+                                        <td>
+                                            <input type='hidden' id='nempdept @index' name="nempdept @index" readonly>@Obj.GetDeptNameById(Obj.GetDeptIdByHrEmpId(NotifiedtoArray[index]))
+                                        </td>
+                                        <td>
+                                            <input type='hidden' id='nempemail @index' name="nempemail @index" readonly>@Obj.GetHrEmpEmailIdById(NotifiedtoArray[index])
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+            @Html.ActionLink("Back to List", "CustomerComplaintList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+
+            <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Update</button>
+        </div>
+    </div>
+        }
+
+
+@section Scripts {
+    <script>
+
+        $(function () {
+            GetEditDetails();
+
+            $("#QCDocsVal").click(function () {
+                if ($("#QCDocsVal").prop('checked')) {
+                    {
+                        $(this).prop('checked', true);
+                    }
+                }
+                else {
+
+                    $(this).prop('checked', false);
+                    document.getElementById("QCDocsValselectall").value = "DeleteQC";
+                }
+
+            });
+        });
+
+        function FileFormatValidation(file) {
+            var ext = file.value.split(".").pop().toLowerCase();
+            if ($.inArray(ext, ["pdf","xlsx","xls","doc","docx","jpg","jpeg","png"]) == -1) {
+                file.value = "";
+                jAlert("Invalid file format, please upload only pdf,xlsx,xls,doc,docx,jpg,jpeg,png format");
+            }
+        }
+
+        CKEDITOR.replace('editor-full', {
+            height: 400,
+            extraPlugins: 'forms'
+        });
+
+         function GetDeptEmployeeList() {
+            //  var selectedValues = [];
+            //$("#DeptId :selected").each(function () {
+            //    selectedValues.push($(this).val());
+            //});
+            //alert("selectedValues="+selectedValues);
+            var dept = $("#DeptId option:selected").toArray().map(item => item.value);
+             if (dept != null && dept != "") {
+                 deltable();
+                 jQuery.ajax({
+                     url: '@Url.Action("FunGetAllEmpList", "EmployeeDetails")',
+                     type: 'POST',
+                     dataType: "json",
+                     data: { 'branch': dept },
+                     success: function (result) {
+                         $("#ForwardTo").children('option').remove();
+                         //  $("#ForwardTo").trigger('change');
+                         if (result != null && result.length > 0) {
+                             $.each(result, function (index, item) {
+                                 $("#ForwardTo").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                                 //    $("#ForwardTo").trigger('change');
+                             });
+                             $("#ForwardTo").trigger('change');
+                             return;
+                         }
+                     }
+                 });
+             }
+        }
+
+        function deltable() {
+            var table = document.getElementById("team-lists");
+            var childcount = table.rows.length;
+            if (childcount > 1) {
+                table.deleteRow(1);
+            }
+            document.getElementById("itemcnts").value = 0;
+        }
+
+           function GetEditDetails() {
+            var CustId = $("#CustomerName").val();
+               $.ajax({
+                   url: '@Url.Action("GetCustomerDetails","CustComplaint")',
+                   type: 'POST',
+                   dataType: 'json',
+                   data: { 'CustId': CustId },
+                   success: function (result) {
+                       if (result != null && result != "") {
+                           document.getElementById('branch').value = result.branch;
+                           document.getElementById('Location').value = result.Location;
+                           document.getElementById('Department').value = result.Department;
+
+                       }
+                       else {
+                           document.getElementById('branch').value = "";
+                           document.getElementById('Location').value = "";
+                           document.getElementById('Department').value = "";
+                       }
+                   }
+               });
+        }
+
+          function GetDetails() {
+            var CustId = $("#CustomerName").val();
+            $.ajax({
+                url: '@Url.Action("GetCustomerDetails","CustComplaint")',
+                type: 'POST',
+                dataType: 'json',
+                data: { 'CustId': CustId},
+                success: function (result) {
+                    if (result != null && result != "") {
+                        document.getElementById('branch').value = result.branch;
+                        document.getElementById('Location').value = result.Location;
+                        document.getElementById('Department').value = result.Department;
+                        document.getElementById("reportedby_email").value = "";
+                        document.getElementById("reportedby_desig").value = "";
+                        document.getElementById("reportedby_no").value = "";
+
+                    }
+                    else {
+                        document.getElementById('branch').value = "";
+                        document.getElementById('Location').value = "";
+                        document.getElementById('Department').value = "";
+                        document.getElementById("reportedby_email").value = "";
+                        document.getElementById("reportedby_desig").value = "";
+                        document.getElementById("reportedby_no").value = "";
+                    }
+
+                    jQuery.ajax({
+                    url: '@Url.Action("FunGetAllContactPersonList", "CustComplaint")',
+                    type: 'POST',
+                    dataType: "json",
+                        data: { 'CustId': CustId },
+                    success: function (result) {
+                        $("#ReportedBy").children('option').remove();
+                        $("#ReportedBy").trigger('change');
+                        if (result != null && result.length > 0) {
+                            $("#ReportedBy").append("<option value=''> Select </option>");
+                            $.each(result, function (index, item) {
+                                $("#ReportedBy").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                            });
+                            $("#ReportedBy").trigger('change');
+                            return;
+                        }
+                    }
+                });
+                }
+            })
+        }
+
+
+        $('#ReportedBy').change(function () {
+            var ReportedBy = $('#ReportedBy option:selected').val();
+            if (ReportedBy != null && ReportedBy != "") {
+
+                jQuery.ajax({
+                    url: '@Url.Action("FunGetCustEmpDetails", "CustComplaint")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'CustId': ReportedBy },
+                    success: function (result) {
+                        if (result != null && result != "") {
+                            document.getElementById("reportedby_email").value = result.EmailId;
+                            document.getElementById("reportedby_desig").value = result.designation;
+                            document.getElementById("reportedby_no").value = result.MobileNumber;
+                        }
+                        else {
+                            document.getElementById("reportedby_email").value = "";
+                            document.getElementById("reportedby_desig").value = "";
+                            document.getElementById("reportedby_no").value = "";
+                        }
+                    }
+                });
+            }
+        });
+
+
+ $('#ForwardTo').change(function () {
+
+            var team_notifiedto = $('#ForwardTo').val();
+            if (team_notifiedto != "" && team_notifiedto != null) {
+                jQuery.ajax({
+                    url: '@Url.Action("FunGetEmpDetails", "NC")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'semp_no': team_notifiedto },
+                    success: function (result) {
+                        if (result != null) {
+                            //document.getElementById("NotifiedTodiv").classList.remove(hideClass);
+                            //document.getElementById("NotifiedTodiv").classList.add(showClass);
+
+                            var nempno = $('#ForwardTo option:selected').val();
+                            var nempid = result.emp_id;
+                            var nempname = result.empname;
+                            var nempdiv = result.division;
+                            var nempdept = result.department;
+                            var nemploc = result.location;
+                            var nempemail = result.EmailId;
+
+                            if (nempid != null) {
+                                var cnt = document.getElementById("itemcnts").value;
+
+                                // Find a <table> element with id="myTable":
+                                var table = document.getElementById("team-lists");
+
+
+                                if (cnt == 1) {
+                                    table.deleteRow(1);
+                                    cnt = 0;
+                                }
+                                //document.getElementById("itemcnts").value = cnt;
+
+
+                                // Create an empty <tr> element and add it to the 1st position of the table:
+                                var row = table.insertRow();
+
+
+                                // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                                var cell0 = row.insertCell(0);
+                                var cell1 = row.insertCell(1);
+                                var cell2 = row.insertCell(2);
+                                var cell3 = row.insertCell(3);
+                                var cell4 = row.insertCell(4);
+                                var cell5 = row.insertCell(5);
+                                //var cell6 = row.insertCell(6);
+
+
+                                //cell0.innerHTML = "";
+                                cell0.innerHTML = "<input type = 'hidden' id = 'nempno " + cnt + "' name = 'nempno " + cnt + "' value = '" + nempno + "'><input type='hidden' id='nempid " + cnt + "' name='nempid " + cnt + "' value='" + nempid + "'>" + nempid;
+                                cell1.innerHTML = "<input type='hidden' id='nempname " + cnt + "' name='nempname " + cnt + "' value='" + nempname + "'>" + nempname;
+                                cell2.innerHTML = "<input type='hidden' id='nempdiv " + cnt + "' name='nempdiv " + cnt + "' value='" + nempdiv + "'>" + nempdiv;
+                                cell3.innerHTML = "<input type='hidden' id='nemploc " + cnt + "' name='nemploc " + cnt + "' value='" + nemploc + "'>" + nemploc;
+                                cell4.innerHTML = "<input type='hidden' id='nempdept " + cnt + "' name='nempdept " + cnt + "' value='" + nempdept + "'>" + nempdept;
+                                cell5.innerHTML = "<input type='hidden' id='nempemail " + cnt + "' name='nempemail " + cnt + "' value='" + nempemail + "'>" + nempemail;
+
+                                cnt++;
+                                document.getElementById("itemcnts").value = cnt;
+
+                                //document.getElementById("hidden_cards").classList.remove(hideClass);
+                                //document.getElementById("hidden_cards").classList.add(showClass);
+
+                                //$("#ForwardTo").val('').trigger('change');
+                            }
+                        }
+                    }
+                });
+            }
+ });
+
+        function GetChkDate() {
+            var sReceivedDate = $('#ReceivedDate').val();
+            var sregistered_on = $('#registered_on').val();
+
+            if (sregistered_on < sReceivedDate) {
+                bootbox.alert({
+                    title: 'Date',
+                    message: 'Received date has to be less than or equal to Registered Date'
+                });
+                $("#ReceivedDate").val('');
+            }
+
+        }
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

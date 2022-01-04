@@ -1,0 +1,620 @@
+﻿@model ISOStd.Models.InternalAuditModels
+@using System.Data;
+
+@{
+    ViewBag.Title = "InternalAuditNumDetails";
+    DataSet dsFindingsDetails = ViewBag.PlanningDetails;
+    ISOStd.Models.clsGlobal objGlobaldata = new ISOStd.Models.clsGlobal();
+}
+
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("InternalAuditList", "Audit", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Internal Audit List</span>
+                    </a>
+                    <span class="breadcrumb-item active"> Internal Audit Details</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            <div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>    
+}
+
+    <style>
+        .hidden {
+            display: none !important;
+        }
+    </style>
+
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Internal Audit Details</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="card-header bg-white header-elements-sm-inline">
+
+                <div class="header-elements">
+                    <div class="mt-2 mt-sm-0">
+
+                        @if (objGlobaldata.GetCurrentUserSession().InterAudit.Contains("3"))
+                        {
+                            <a class="btn bg-orange btn-labeled btn-labeled-left" data-style="radius" href='@Url.Action("InternalAuditEdit", "Audit", new { AuditID = Model.AuditID })' title="Edit" onclick="HyperLinkProgressIconFunction()">
+                                <b>  <i class="icon-add-to-list"></i></b> Edit
+                            </a>
+                        }
+                        @Html.ActionLink("Back to List", "InternalAuditList", null, new { @class = "btn btn-outline bg-orange text-orange border-orange", onclick = "HyperLinkProgressIconFunction()" })
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <input type="hidden" id="AuditID" name="AuditID" value="@ViewBag.AuditID" />
+
+        <div class="card-body">
+
+
+            <div class="container-fluid">
+                <table class="table table-dark table-bordered table-striped table-hover bg-blue-800">
+                    <thead></thead>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.AuditNum)
+                            </p>
+                        </td>
+
+                        <td class="col">
+                            <span class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.AuditNum)
+                            </span>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.AuditDate)
+                            </p>
+                        </td>
+
+                        <td class="col">
+                            <span class="bg-dark py-1 px-2 rounded">
+                                @Model.AuditDate.ToString("dd/MM/yyyy")
+                            </span>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.AuditCriteria)
+                            </p>
+                        </td>
+
+                        <td class="col">
+                            <span class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.AuditCriteria)
+                            </span>
+                        </td>
+
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.AuditLocation)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <span class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.AuditLocation)
+                            </span>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        @if (objGlobaldata.GetCurrentUserSession().InterAudit.Contains("3"))
+                        {
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounde">
+                                    @Html.DisplayNameFor(model => model.upload)
+                                </p>
+                            </td>
+                            <td class="col">
+                                @if (Model.upload != "")
+                                {
+                                    <span class="bg-dark py-1 px-2 rounded">
+                                        <a href='@Url.Action("DisplayDocument", "Reports", new { Document = Model.upload })' target="_blank">Preview</a>
+                                    </span>
+                                }
+
+                                else
+                                {
+                                    <span class="bg-dark py-1 px-2 rounded text-danger">No File</span>
+                                }
+                            </td>
+                        }
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.Audit_Prepared_by)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <span class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.Audit_Prepared_by)
+                            </span>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.ApprovedBy)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <span class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.ApprovedBy)
+                            </span>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.ApprvStatus)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <span class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.ApprvStatus)
+                            </span>
+                        </td>
+                    </tr>
+                </table>
+
+
+                @if (dsFindingsDetails != null && dsFindingsDetails.Tables.Count > 0 && dsFindingsDetails.Tables[0].Rows.Count > 0)
+                {
+                    <br />
+                    <h2 class="bg-dark pl-sm-2"> Plans Details</h2>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped table-hover datatable-responsive" id="table1">
+                            <thead>
+                                <tr class="bg-brown">
+
+                                    <th>Dept</th>
+                                    <th>From Time</th>
+                                    <th>To Time</th>
+                                    <th>Auditor(s)</th>
+                                    <th>Auditee(s)</th>
+                                    <th>Audit Planned Date</th>
+                                    <th>Scheduled Date</th>
+                                    @* <th>Audit Plan Prepared by</th>*@
+                                    @*   <th>Status</th>*@
+                                    <th>Activity</th>
+                                    <th class="not-export-column">Audit Details</th>
+                                    <th class="not-export-column">Findings Log</th>
+                                    @* <th>Approved by</th>*@
+
+                                </tr>
+                                </thead>
+                            <tbody>
+                                @for (int i = 0; i < dsFindingsDetails.Tables[0].Rows.Count; i++)
+                                {
+                                    <tr>
+                                        <td>
+                                            @objGlobaldata.GetDeptNameById(dsFindingsDetails.Tables[0].Rows[i]["DeptID"].ToString())
+                                        </td>
+                                        <td>
+                                            @dsFindingsDetails.Tables[0].Rows[i]["fromAuditTime"].ToString()
+                                        </td>
+                                        <td>
+                                            @dsFindingsDetails.Tables[0].Rows[i]["toAuditTime"].ToString()
+                                        </td>
+                                        <td>
+                                            @objGlobaldata.GetMultiHrEmpNameById(@dsFindingsDetails.Tables[0].Rows[i]["Auditor"].ToString())
+                                        </td>
+                                        <td>
+                                            @objGlobaldata.GetMultiHrEmpNameById(@dsFindingsDetails.Tables[0].Rows[i]["Auditee"].ToString())
+                                        </td>
+                                        <td>
+                                            @Convert.ToDateTime(@dsFindingsDetails.Tables[0].Rows[i]["Audit_Planned_Date"].ToString()).ToString("dd/MM/yyyy")
+
+                                        </td>
+                                        <td>
+                                            @Convert.ToDateTime(@dsFindingsDetails.Tables[0].Rows[i]["DateScheduled"].ToString()).ToString("dd/MM/yyyy")
+                                        </td>
+                                        @*    <td>
+                    @objGlobaldata.GetEmpHrNameById(@dsFindingsDetails.Tables[0].Rows[i]["Audit_Prepared_by"].ToString())
+                </td>*@
+                                        @*  <td>
+                    @objGlobaldata.GetAuditStatusNameById(dsFindingsDetails.Tables[0].Rows[i]["AuditStatus"].ToString())
+                </td>*@
+
+                                        <td>
+                                            @dsFindingsDetails.Tables[0].Rows[i]["Activity"].ToString()
+                                        </td>
+
+                                        @if (dsFindingsDetails.Tables[0].Rows[i]["AuditDetails"].ToString() != "")
+                                        {
+                                            <td>
+                                                @*<a href='@Url.Action("AddInternalAuditDetails", "Audit", new { AuditTransID = @dsFindingsDetails.Tables[0].Rows[i]["AuditTransID"].ToString(), AuditNum = @ViewBag.AuditNum,AuditID=dsFindingsDetails.Tables[0].Rows[i]["AuditID"].ToString() })'
+                           onclick="HyperLinkProgressIconFunction()" title="Add Audit Details">
+                            <img src='@Url.Content("~/Images/minus.png")' style="width:30px;" title="Add Audit Details" onclick="HyperLinkProgressIconFunction()" />
+                        </a>*@
+
+                                                <span class="bg-dark py-1 px-2 rounded">
+                                                    <a href='@Url.Action("AddInternalAuditDetails", "Audit", new { AuditTransID = @dsFindingsDetails.Tables[0].Rows[i]["AuditTransID"].ToString(), AuditNum = @ViewBag.AuditNum,AuditID=dsFindingsDetails.Tables[0].Rows[i]["AuditID"].ToString() })'
+                                                       onclick="HyperLinkProgressIconFunction()" title="Edit Audit Details">
+                                                        <i class="icon-pencil" title="Edit Audit Details"></i>
+                                                    </a>
+
+                                                </span>
+                                            </td>
+                                        }
+                                        else
+                                        {
+                                            <td>
+
+
+                                                <span class="bg-dark py-1 px-2 rounded">
+                                                    <a href='@Url.Action("AddInternalAuditDetails", "Audit", new { AuditTransID = @dsFindingsDetails.Tables[0].Rows[i]["AuditTransID"].ToString(), AuditNum = @ViewBag.AuditNum,AuditID=dsFindingsDetails.Tables[0].Rows[i]["AuditID"].ToString() })'
+                                                       onclick="HyperLinkProgressIconFunction()" title="Add Audit Details">
+                                                        <i class="icon-plus-circle2" title="Add Audit Details"></i>
+                                                    </a>
+
+                                                </span>
+
+                                            </td>
+                                        }
+
+                                        <td>
+                                            @if (Model.ApprvStatus.ToLower() == "approved")
+                                            {
+                                            <span class="bg-dark py-1 px-2 rounded text-nowrap">
+
+
+                                                @if (objGlobaldata.GetCurrentUserSession().InterAudit.Contains("3"))
+                                                {
+                                                    <a href='@Url.Action("AddInternalAuditFindingsLog", "Audit", new { AuditTransID = @dsFindingsDetails.Tables[0].Rows[i]["AuditTransID"].ToString(), AuditNum = @ViewBag.AuditNum,AuditID=dsFindingsDetails.Tables[0].Rows[i]["AuditID"].ToString() })'
+                                                       onclick="HyperLinkProgressIconFunction()" title="Add finding log">
+                                                        <i class="icon-add" title="Add finding log"></i>
+                                                    </a>
+                                                }
+                                                <a href='@Url.Action("InternalAuditFindingsLogList", "Audit", new { AuditTransID = @dsFindingsDetails.Tables[0].Rows[i]["AuditTransID"].ToString(), AuditNum = @ViewBag.AuditNum,AuditID=dsFindingsDetails.Tables[0].Rows[i]["AuditID"].ToString() })'
+                                                   onclick="HyperLinkProgressIconFunction()" title="View Log List">
+
+                                                    <i class="icon-list3" title="View Log List"></i>
+                                                </a>
+                                            </span>
+
+                                            }
+                                        </td>
+
+                                        @*<td>
+                    @objGlobaldata.GetEmpHrNameById(dsFindingsDetails.Tables[0].Rows[i]["ApprovedBy"].ToString())
+
+                </td>*@
+
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+
+
+
+                    </div>
+                }
+            </div>
+
+        </div>
+    </div>
+
+
+
+        @section scripts {
+            <script>
+    //----zzz
+
+
+     $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+    });
+
+    //zzz----
+
+
+
+                var table1 = function () {
+
+
+                var ShowEdit = @(objGlobaldata.GetCurrentUserSession().InterAudit.Contains("3") ? "true" : "false");
+                var ShowDel = @(objGlobaldata.GetCurrentUserSession().InterAudit.Contains("5") ? "true" : "false");
+
+                    // Basic Datatable examples
+                    var _componentDatatableBasic = function () {
+                        if (!$().DataTable) {
+                            console.warn('Warning - datatables.min.js is not loaded.');
+                            return;
+                        }
+
+                        //Setting datatable defaults
+                        $.extend($.fn.dataTable.defaults, {
+                            autoWidth: false,
+                            responsive: true,
+                            columnDefs: [{
+                                orderable: false,
+                                width: 100,
+                                targets: [8 ,9]
+                            }, {
+                                    'targets': [8],
+                                    'visible': ShowEdit
+                                }],
+
+
+                            colReorder: false,
+                            dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                            //dom: 'lBfrtip',
+                            language: {
+                                search: '<span>Filter:</span> _INPUT_',
+                                searchPlaceholder: 'Type to filter...',
+                                lengthMenu: '<span>Show:</span> _MENU_',
+                                paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                            }
+                        });
+
+                        var myClass = "";
+                var Delclass= @(objGlobaldata.GetCurrentUserSession().InterAudit.Contains("4") ? "true" : "false");
+                        if (Delclass == false) { myClass = 'hidden' };
+
+                        var table = $('#table1').DataTable({
+
+                            lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                            colReorder: {
+                                fixedColumnsLeft: 1
+                            },
+                            stateSave: true,
+                            stateSaveParams: function (settings, data) {
+                                for (var i = 0, ien = data.columns.length; i < ien; i++) {
+                                    delete data.columns[i].visible;
+                                    delete data.columns[i].search;
+                                }
+                            },
+                            scrollY: '350px',
+                            scrollCollapse: true,
+
+
+                            keys: {
+                                className: 'focus focus-success'
+                            },
+
+                            buttons: {
+                                buttons: [
+                                    {
+                                        extend: 'copyHtml5',
+                                        className: myClass,
+                                        //className: 'btn btn-light',
+                                        title: 'Audit Plan Data export',
+                                        exportOptions: {
+                                            columns: ':visible :not(.not-export-column)'
+                                        },
+                                    },
+                                    {
+                                        extend: 'excelHtml5',
+                                        className: myClass,
+                                        //className: 'btn btn-light',
+                                        title: 'Audit Plan Data export',
+                                        exportOptions: {
+                                            columns: ':visible :not(.not-export-column)'
+                                        },
+
+                                    },
+                                    {
+                                        extend: 'pdfHtml5',
+                                        className: myClass,
+                                        //className: 'btn btn-light',
+                                        title: 'Audit Plan Data export',
+                                        exportOptions: {
+                                            columns: ':visible :not(.not-export-column)'
+                                        },
+                                    },
+                                    {
+                                        extend: 'csvHtml5',
+                                        className: myClass,
+                                        //className: 'btn btn-light',
+                                        title: 'Audit Plan Data export',
+                                        exportOptions: {
+                                            columns: ':visible :not(.not-export-column)'
+                                        },
+                                    },
+                                    {
+                                        extend: 'print',
+                                        className: myClass,
+                                        //className: 'btn btn-light',
+                                        title: 'Audit Plan Data export',
+                                        exportOptions: {
+                                            columns: ':visible :not(.not-export-column)'
+                                        },
+                                    },
+
+                                    {
+                                        extend: 'colvis',
+                                        text: '<i class="icon-three-bars"></i>',
+                                        className: 'btn bg-blue btn-icon dropdown-toggle',
+                                        columns: ':visible:not(.not-export-column)'
+                                    }
+                                ]
+                            }
+
+
+
+
+                        });
+                        // Adjust columns on window resize
+                        setTimeout(function () {
+                            $(window).on('resize', function () {
+                                table.columns.adjust();
+                            });
+                        }, 100);
+
+
+                        //Redraw table on click toggle. -------table.columns.adjust doesn't work properly upon calling after toggle (width increase/decrease = redraw table.).
+                        $('.sidebar-control').on('click', function () {
+
+                            setTimeout(function () {
+                                //alert("gii");
+
+                                table.columns.adjust().draw();
+                                $("#table1").resize();
+                            }, 100);
+
+                        });
+                        //}
+
+                        $('#table1').on('page.dt', function () {
+                            //table.draw();
+                            //alert("zzz1");
+                            $("#table1").resize();
+
+                        });
+
+                        $('#table1').on('column-visibility.dt', function () {
+                            //table.draw();
+                            //alert("zzz2");
+                            $("#table1").resize();
+
+                        });
+
+                        $('#table1').on('order.dt', function () {
+                            //table.draw();
+                            //alert("zzz3");
+                            $("#table1").resize();
+
+                        });
+
+
+                        $('#table1').on('responsive-display.dt', function () {
+                            //table.draw();
+                            //alert("zzz4");
+                            $("#table1").resize();
+
+                        });
+
+
+                        $('#table1').on('responsive-resize.dt', function () {
+                            //table.draw();
+                            //alert("zzz4");
+                            $("#table1").resize();
+
+                        });
+
+
+                        //.on('order.dt', function () {
+                        //    table.columns.adjust().draw();
+                        //    $("#qhse").resize(); })
+                        //.on('search.dt', function () {
+                        //    table.columns.adjust().draw();
+                        //    $("#qhse").resize(); })
+
+                        //.on('column-visibility.dt', function () {
+                        //    table.columns.adjust().draw();
+                        //    $("#qhse").resize();
+                        //})
+
+
+
+                    };
+
+
+
+
+
+
+                    // Select2 for length menu styling
+                    var _componentSelect2 = function () {
+                        if (!$().select2) {
+                            console.warn('Warning - select2.min.js is not loaded.');
+                            return;
+                        }
+
+                        // Initialize
+                        $('.dataTables_length select').select2({
+                            minimumResultsForSearch: Infinity,
+                            dropdownAutoWidth: true,
+                            width: 'auto'
+                        });
+                    };
+
+
+                    //
+                    // Return objects assigned to module
+                    //
+
+                    return {
+                        init: function () {
+                            _componentDatatableBasic();
+                            _componentSelect2();
+                        }
+                    }
+                }();
+
+
+                // Initialize module
+                // ------------------------------
+
+                document.addEventListener('DOMContentLoaded', function () {
+                    table1.init();
+                });
+
+
+            </script>
+
+
+        }
+

@@ -1,0 +1,161 @@
+﻿@using PagedList;
+@using PagedList.Mvc;
+
+@model IPagedList<ISOStd.Models.TUVPerformAuditModels>
+
+@{
+    ViewBag.Title = "CustomerList";
+    string chked = Convert.ToString(ViewBag.chkAll);
+}
+
+<div class="groupedassets margin10">
+    <span class="groupedassetshead margin10 onestphdcolor">Perform Audit List</span>
+</div>
+ <link href='@Url.Content("~/Content/popover/popover.css")' rel="stylesheet">
+
+<div id="divmsg">
+    @if (TempData["alertdata"] != null)
+    {
+        <span class="errMsg" style="color: red;font-weight: bold;">@TempData["alertdata"]</span>
+    }
+    @if (TempData["Successdata"] != null)
+    {
+        <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+    }
+</div>
+    <br />
+<div>
+  @Html.ActionLink("Back to List", "AuditDetails", new { id_audit = ViewBag.id_audit }, new { @class = "ActionLink", onclick = "HyperLinkProgressIconFunction()" })
+</div>
+
+
+    @Html.PagedListPager(Model, page => Url.Action("PerformAuditList",
+    new
+    {
+        page,
+        Approvestatus = Request.QueryString["Approvestatus"],
+        SearchText = Request.QueryString["SearchText"],
+
+    }),
+    new PagedListRenderOptions() { Display = PagedListDisplayMode.IfNeeded, DisplayPageCountAndCurrentLocation = true })
+
+
+<div id="content">
+    <table id="table1">
+        <thead>
+            <tr>
+                  <th style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayNameFor(model => model.First().SupplierName)
+                </th>
+                <th style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayNameFor(model => model.First().Audit_date)
+                </th>
+                <th style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayNameFor(model => model.First().Auditors)
+                </th>
+             <th style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayNameFor(model => model.First().Auditee)
+                </th>
+                <th style="width:60px; min-width:60px; max-width:60px;">Edit</th>
+                @if (ViewBag.DeleteFlg != null && ViewBag.DeleteFlg == true)
+                {
+                    <th style="width: 60px; min-width: 60px; max-width: 60px;">Delete</th>
+                }
+                
+                
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Count() > 0)
+            {
+                foreach (var item in Model)
+                {
+                    <tr>
+                         <td style="width:150px;min-width:150px; max-width:150px;word-wrap:break-word">
+                            @Html.ActionLink(item.SupplierName.ToString(), "PerformAuditDetails", new { id_paudit = item.id_paudit.ToString() },new {onclick="HyperLinkProgressIconFunction()"})
+                        </td>
+                        <td style="width:150px; min-width:150px; max-width:150px;word-wrap:break-word">
+                           @if (item.Audit_date > Convert.ToDateTime("01/01/0001"))
+                             {
+                            @item.Audit_date.ToString("dd/MM/yyyy")
+                             }
+                        </td>
+                        <td style="width:150px;min-width:150px; max-width:150px;word-wrap:break-word">
+                            @Html.DisplayFor(modelItem => item.Auditors)
+                        </td>
+                         <td style="width:150px;min-width:150px; max-width:150px;word-wrap:break-word">
+                            @Html.DisplayFor(modelItem => item.Auditee)
+                        </td>
+                      
+                         <td style="width:60px; min-width:60px; max-width:60px;word-wrap:break-word">
+                           
+                            <a href='@Url.Action("PerformAuditEdit", "TUV", new { id_paudit = item.id_paudit })' title="Edit Audit" onclick="HyperLinkProgressIconFunction()">
+                                <span class="glyphicon glyphicon glyphicon-edit iocnstatus-edit" onclick="HyperLinkProgressIconFunction()"></span>
+                            </a>
+                        </td>
+
+                        @if (ViewBag.DeleteFlg != null && ViewBag.DeleteFlg == true)
+                        {
+                            <td style="width: 60px; min-width: 60px; max-width: 60px;word-wrap:break-word">
+                                <img src="@Url.Content("~/Images/delete.png")" title="Delete Document" onclick="DeleteItems(@item.id_paudit,@item.id_audit_trans)" style="cursor:pointer;" />
+                            </td>
+                        }
+
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="10">
+                        <div style="text-align: center;">
+                            <h4 style="color: grey;">No data exists</h4>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+</table>
+</div>
+@Styles.Render("~/Content/popover")
+@section scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript">
+        $(function () {
+            $("#CompanyName").chosen();
+        });
+        function DeleteItems(id_paudit, id_audit_trans) {
+            jConfirm('Do you want to delete?', 'Are you Sure?', function (r) {
+                if (r == true) {
+                    jQuery.ajax({
+                        url: '@Url.Action("AuditPerformanceDelete", "TUV")',
+                        type: 'POST',
+                        dataType: "json",
+                        data: { 'id_paudit': id_paudit },
+                        success: function (result) {
+                            var params = {
+                                id_audit_trans: id_audit_trans
+                            };
+
+                            //// Add new params to the querystring dictionary
+                            queryString = $.param(params);
+
+                            window.location.href =
+                                window.location.protocol + "//" +
+                                window.location.host +
+                                window.location.pathname +
+                               '?' + queryString;
+                        }
+                    });
+                    return true;
+                }
+                else if (r == false) {
+                    return false;
+                }
+            });
+        }
+
+       
+    </script>
+
+}

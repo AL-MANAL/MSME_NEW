@@ -1,0 +1,193 @@
+﻿@model ISOStd.Models.EmpTimeSheetModels
+
+@using System.Data;
+@{
+    ViewBag.Title = "AddTimeSheet";   
+    
+}
+
+<h2>AddTimeSheet</h2>
+
+@using (Html.BeginForm()) {
+    @Html.ValidationSummary(true)
+    @Html.AntiForgeryToken()
+
+    <fieldset>
+        <legend>EmpTimeSheetModels</legend>       
+        <div id="content">
+            <table>
+                 <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.CustSuppId)
+                        </div>
+                    </td>
+                    <td>
+                        <select id="CustSuppId" name="CustSuppId" required="required">
+                            @if (ViewBag.CustList != null)
+                            {
+                                foreach (var item in ViewBag.CustList)
+                                {
+                                <option value='@item.Value'>@item.Text</option>
+                                }
+                            }
+                        </select>
+                    </td>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.MonthOf)
+                        </div>
+                    </td>
+                    <td>
+                        <input type="text" id="MonthOf" name="MonthOf" required readonly />
+                    </td>
+                     </tr>
+                  
+                     <tr>
+                                       
+                    <td>
+                        <div class="editor-label">
+                            First Half In Time
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <label style="padding-right: 4px;">From Hr: </label>@Html.DropDownList("FirstHalf_InTimeHr", new SelectList(ViewBag.TimeInHour, "FirstHalf_InTimeHr"), new { @style = "width: 40px;" })
+                            Min: @Html.DropDownList("FirstHalf_InTimeMin", new SelectList(ViewBag.TimeInMin, "FirstHalf_InTimeMin"), new { @style = "width: 40px;" })
+                        </div>
+
+                        <div class="editor-field">
+                            <label style="width: 48px;">To   Hr: </label>
+                            @Html.DropDownList("FirstHalf_OutTimeHr", new SelectList(ViewBag.TimeInHour, "FirstHalf_OutTimeHr"), new { @style = "width: 40px;" })
+                            Min: @Html.DropDownList("FirstHalf_OutTimeMin", new SelectList(ViewBag.TimeInMin, "FirstHalf_OutTimeMin"), new { @style = "width: 40px;margin-top: 4px;" })
+                            @*@Html.EditorFor(model => model.AuditTime, new { @class = "date" })*@
+                        </div>
+                    </td>
+                         <td>
+                        <div class="editor-label">
+                            Second Half In Time
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <label style="padding-right: 4px;">From Hr: </label>@Html.DropDownList("SecondHalf_InTimeHr", new SelectList(ViewBag.TimeInHour, "SecondHalf_InTimeHr"), new { @style = "width: 40px;" })
+                            Min: @Html.DropDownList("SecondHalf_InTimeMin", new SelectList(ViewBag.TimeInMin, "SecondHalf_InTimeMin"), new { @style = "width: 40px;" })
+                        </div>
+
+                        <div class="editor-field">
+                            <label style="width: 48px;">To   Hr: </label>
+                            @Html.DropDownList("SecondHalf_OutTimeHr", new SelectList(ViewBag.TimeInHour, "SecondHalf_OutTimeHr"), new { @style = "width: 40px;" })
+                            Min: @Html.DropDownList("SecondHalf_OutTimeMin", new SelectList(ViewBag.TimeInMin, "SecondHalf_OutTimeMin"), new { @style = "width: 40px;margin-top: 4px;" })
+                            @*@Html.EditorFor(model => model.AuditTime, new { @class = "date" })*@
+                        </div>
+                    </td>
+                    <td><input type="button" value="Set" onclick="ApplyTime()" style="width: 45px;padding: 0px;font-size: 16px;"/></td>
+                </tr>
+            </table>
+            <table id="table1">
+               
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.EmpId)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.FirstHalf_InTime)
+                    </th>
+
+                    <th>
+                        @Html.DisplayNameFor(model => model.FirstHalf_OutTime)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.SecondHalf_InTime)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.SecondHalf_OutTime)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.OverTime)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Remarks)
+                    </th>
+
+                    @if (ViewBag.EmpLists != null)
+                    {
+                        int index = 0;
+                        string sEmpid, FirstHalf_InTime, FirstHalf_outTime, SecHalf_InTime, SecHalf_outTime, OverTime, remarks;
+                        foreach (var item in ViewBag.EmpLists)
+                        {
+                            sEmpid = "EmpId" + index;
+                            FirstHalf_InTime = "fhInTime" + index;
+                            FirstHalf_outTime = "fhOutTime" + index;
+                            SecHalf_InTime = "shInTime" + index;
+                            SecHalf_outTime = "shOutTime" + index;
+                            OverTime = "OverTime" + index;
+                            remarks = "Remarks" + index;
+                        <tr>
+                            <td>
+                                <input type="hidden" id="@sEmpid" name="@sEmpid" value="@item.Value" />@item.Text</td>
+                            <td>
+                                <input type="text" id="@FirstHalf_InTime" name="@FirstHalf_InTime" required/></td>
+                            <td>
+                                <input type="text" id="@FirstHalf_outTime" name="@FirstHalf_outTime" required/></td>
+                            <td>
+                                <input type="text" id="@SecHalf_InTime" name="@SecHalf_InTime"  required/></td>
+                            <td>
+                                <input type="text" id="@SecHalf_outTime" name="@SecHalf_outTime" required/></td>
+                            <td>
+                                <input type="number" id="@OverTime" name="@OverTime" value="0"/></td>
+                            <td>
+                                <textarea id="@remarks" name="@remarks"> </textarea></td>
+                        </tr>
+                            index++;
+
+                        }
+                        <input type="hidden" id="ItemCount" name="ItemCount" value="@index" />                        
+                    }
+            </table>
+             
+        </div>
+
+        <p>
+            <input type="submit" value="Create" />
+        </p>
+    </fieldset>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+        $(function () {
+
+            $('#MonthOf').datepicker({
+                dateFormat: "dd/mm/yy",
+                buttonImageOnly: true,
+                buttonImage: '../Images/Calender.png',
+                showOn: 'both',
+                changeMonth: true,
+                changeYear: true,                
+            });
+            $("#MonthOf").datepicker("setDate", new Date());
+        });
+
+        function ApplyTime()
+        {
+            var firstHalfInTime = $("#FirstHalf_InTimeHr").val() + ":" + $("#FirstHalf_InTimeMin").val();
+            var firstHalfOutTime = $("#FirstHalf_OutTimeHr").val() + ":" + $("#FirstHalf_OutTimeMin").val();
+            var SecHalfInTime = $("#SecondHalf_InTimeHr").val() + ":" + $("#SecondHalf_InTimeMin").val();
+            var SecHalfOutTime = $("#SecondHalf_OutTimeHr").val() + ":" + $("#SecondHalf_OutTimeMin").val();
+            var ItemCount=document.getElementById("ItemCount").value;
+            for (i = 0; i < ItemCount; i++)
+            {
+                document.getElementById("fhInTime" + i).value = firstHalfInTime;
+                document.getElementById("fhOutTime" + i).value = firstHalfOutTime;
+                document.getElementById("shInTime" + i).value = SecHalfInTime;
+                document.getElementById("shOutTime" + i).value = SecHalfOutTime;
+            }
+        }
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

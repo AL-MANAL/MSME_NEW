@@ -1,0 +1,905 @@
+﻿@model ISOStd.Models.LegalRegisterModel
+
+@{
+    
+    ViewBag.Title = "AddLegalRegister";
+}
+<script type="text/javascript" src="/ckeditor/ckeditor.js"></script>
+<div class="groupedassets margin10">
+    
+    <span class="groupedassetshead margin10 onestphdcolor">Add Legal Register </span>
+</div>
+<div id="divmsg">
+    @if (TempData["alertdata"] != null)
+    {
+        <span class="errMsg" style="color: red;font-weight: bold;">@TempData["alertdata"]</span>
+        }
+    @if (TempData["Successdata"] != null)
+    {
+        <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+        }
+</div>
+
+@using (Html.BeginForm("AddLegalRegister", "LegalRegister", FormMethod.Post,
+                         new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <fieldset>
+       
+        <legend>LegalRegisterModel</legend>
+        <div style="max-width: 50%;">
+            <table id="tabcontent" style="float: left;">
+                <tr>
+                    <td colspan="4" style="background-color: #4cc4dd; color: #fff; font-weight: bold; font-size: 14px;">Register</td>
+                </tr>
+                <tr>
+ <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.lawNo)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                                <input type="text" id="lawNo" name="lawNo" required/>
+                        </div>
+                    </td>
+                <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.lawTitle)
+                        </div>
+                    </td>
+                   
+                    <td>
+                       
+                        <div class="editor-field">
+                                <input type="text " style="height:80px;width:200px" id="lawTitle" name="lawTitle"  aria-multiline="true"  required/>
+                        </div>
+                            
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.origin_of_requirement)
+                        </div>
+                    </td>
+                     <td>
+                        <div class="editor-field">
+                                <input type="text " style="height:80px;width:200px" id="origin_of_requirement" name="origin_of_requirement"  aria-multiline="true"  required/>
+                        </div>
+                    </td>
+                   
+              
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.document_storage_location)
+                        </div>
+                    </td>
+                      <td>
+                        <div class="editor-field">
+                                <input type="text " style="height:80px;width:200px" id="document_storage_location" name="document_storage_location"  aria-multiline="true" />
+                        </div>
+                    </td>
+                    
+                      </tr>
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.frequency_of_evaluation)
+                        </div>
+                    </td>
+                  @*   <td>
+                        <div class="editor-field">
+                                <input type="text" id="frequency_of_evaluation" name="frequency_of_evaluation" required/>
+                        </div>
+                    </td>*@
+                    <td>
+                        <div class="editor-field">
+                            <select id="frequency_of_evaluation" name="frequency_of_evaluation" required="">
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.frequency_of_evaluation != null)
+                                {
+                                    foreach (var item in ViewBag.frequency_of_evaluation)
+                                    {
+                                        <option value='@item'>@item</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </td>
+              
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.activeStatus)
+                        </div>
+                    </td>
+                    <td>
+                          <div class="editor-field">
+                            <select id="activeStatus" name="activeStatus" required="">
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.activeStatus != null)
+                                {
+                                    foreach (var item in ViewBag.activeStatus)
+                                    {
+                                        <option value='@item'>@item</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </td>
+                       </tr>
+               
+                     @* <td>
+                        <div class="editor-field">
+                                <input type="text" id="activeStatus" name="activeStatus" required/>
+                        </div>
+                    </td>*@
+                        
+                   
+               
+                   <tr>
+                     
+                  <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.updatedOn)
+                        </div>
+                    </td>
+                             <td>
+                   
+                            <div class="editor-field">
+                                <input type="text" id="updatedOn" name="updatedOn"  />
+                                <span class="field-validation-error"><span id="updatedOn-message" style="display: none;">updatedOn field is required.</span></span>
+                                @Html.ValidationMessageFor(model => model.updatedOn)
+                            </div>
+                      
+                </td>
+              
+                  <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.updatedByName)
+                        </div>
+                    </td>
+                    @*<td>
+                        <div class="editor-field">
+                                <input type="text" id="updatedByName" name="updatedByName" required/>
+                        </div>
+                    </td>*@
+                             <td>
+                          <div class="editor-field">
+                            <select id="updatedByName" name="updatedByName" required="">
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.EmpLists != null)
+                                {
+                                    foreach (var item in ViewBag.EmpLists)
+                                    {
+                                        <option value='@item.Value'>@item.Text</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </td>
+                    </tr> 
+                 <tr>
+                   
+                     
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.reviewedBy)
+                        </div>
+                    </td>
+                   @* <td>
+                        <div class="editor-field">
+                                <input type="text" id="reviewedBy" name="reviewedBy" required/>
+                        </div>
+                    </td>*@
+
+                               <td>
+                          <div class="editor-field">
+                            <select id="reviewedBy" name="reviewedBy" required="">
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.DeptHead != null)
+                                {
+                                    foreach (var item in ViewBag.DeptHead)
+                                    {
+                                       <option value='@item.Value'>@item.Text</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </td>
+                <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.approvedBy)
+                        </div>
+                    </td>
+                   @* <td>
+                        <div class="editor-field">
+                                <input type="text" id="approvedBy" name="approvedBy" required/>
+                        </div>
+                    </td>*@
+                               <td>
+                          <div class="editor-field">
+                            <select id="approvedBy" name="approvedBy" required="">
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.DeptHead != null)
+                                {
+                                    foreach (var item in ViewBag.DeptHead)
+                                    {
+                                        <option value='@item.Value'>@item.Text</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </td>
+                    </tr> 
+                <tr>
+                       
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.initialdevelopmentdate)
+                        </div>
+                    </td>
+                  
+                       <td>
+                   
+                            <div class="editor-field">
+                                <input type="text" id="initialdevelopmentdate" name="initialdevelopmentdate"  />
+                                <span class="field-validation-error"><span id="initialdevelopmentdate-message" style="display: none;">initialdevelopmentdate field is required.</span></span>
+                                @Html.ValidationMessageFor(model => model.initialdevelopmentdate)
+                            </div>
+                      
+                </td>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.upload)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <input type="file" name="upload" id="upload" onchange="FileFormatValidation(this)" accept=".pdf,.xlsx" style="height: 38px;" />
+                        </div>
+
+                    </td>
+                </tr>
+                 <tr>
+                        <td colspan="4" style="text-align:center;">
+                             <p style="font-size: 11px;">(Add atleast a  Article to Create Register)</p>
+                        </td>
+                    </tr> 
+            </table>
+        </div>
+
+            <div style="max-width: 50%; float: right;">
+                <table style="margin-top: 18px; margin-bottom: 20px;">
+                    <tr>
+                        <td colspan="6" style="background-color: #4cc4dd; color: #fff; font-weight: bold; font-size: 14px;">Legal Register detail</td>
+                    </tr>
+                   
+                    <tr>
+                        <td>
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.article)
+                            </div>
+                        </td>
+                        <td>
+                            <div class="editor-field">
+                                @*<input type="text" id="article" name="article" style="width: 150px;"/>*@
+                                @Html.TextAreaFor(model => model.article)
+                                <span class="field-validation-error"><span id="article-message" style="display: none;">article  is required.</span></span>
+                                @Html.ValidationMessageFor(model => model.article)
+                            </div>
+                        </td>
+                         
+                        <td>
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.requirements)
+                            </div>
+                        </td>
+                             <td colspan="3">
+                            <div class="editor-field" >
+                                @Html.TextAreaFor(model => model.requirements)
+                                <span class="field-validation-error"><span id="requirements-message" style="display: none;" >Article details are required</span></span>
+                                @Html.ValidationMessageFor(model => model.requirements)
+                            </div>
+                        </td>
+                   @*     <td colspan="3">
+                            <div class="editor-field" >
+                                @Html.TextAreaFor(model => model.requirements , htmlAttributes: new {@class = "ckeditor"})
+                                <span class="field-validation-error" ><span id="requirements-message"   style="display: none;"  >requirements field is required.</span></span>
+                                @Html.ValidationMessageFor(model => model.requirements)
+                            </div>
+                        </td>*@
+                    </tr>
+                   
+               
+                    <tr>
+                        <td>
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.applicable)
+                            </div>
+                        </td>
+                           <td>
+                          <div class="editor-field">
+                            <select id="applicable" name="applicable" required=""   onclick="cal()">
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.applicable != null)
+                                {
+                                    foreach (var item in ViewBag.applicable)
+                                    {
+                                        <option value='@item'>@item</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </td>
+                @*        <td>
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.applicable)
+                                <span class="field-validation-error"><span id="applicable-message" style="display: none;">Applicable field is required.</span></span>
+                                @Html.ValidationMessageFor(model => model.applicable)
+                            </div>
+                        </td>*@
+                        <td>
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.nonapplicablejustify)
+                            </div>
+                        </td>
+                        <td>
+                            <div class="editor-field"  >
+                                <input type="text" id="nonapplicablejustify" name="nonapplicablejustify" disabled style="background:#efefe6" />
+                                @*@Html.EditorFor(model => model.nonapplicablejustify)*@
+                                <span class="field-validation-error"><span id="nonapplicablejustify-message"   readonly></span></span>
+                                @Html.ValidationMessageFor(model => model.nonapplicablejustify)
+                            </div>
+                        </td>
+
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="editor-label" >
+                                @Html.LabelFor(model => model.reference)
+                            </div>
+                        </td>
+                        <td>
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.reference )
+                                <span class="field-validation-error"><span id="reference-message" style="display: none;"> reference field is required.</span></span>
+                                @Html.ValidationMessageFor(model => model.reference)
+                            </div>
+                        </td>
+                         <td>
+                            <div class="editor-label" >
+                                @Html.LabelFor(model => model.monitoring)
+                            </div>
+                        </td>
+                        <td>
+                            <div class="editor-field" >
+                                @Html.TextAreaFor(model => model.monitoring )
+                                <span class="field-validation-error"><span id="monitoring-message" style="display: none;"> monitoring field is required.</span></span>
+                                @Html.ValidationMessageFor(model => model.monitoring)
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="editor-label" >
+                                @Html.LabelFor(model => model.updatedBynametrans)
+                            </div>
+                        </td>
+                        <td>
+                            <div class="editor-field" style="background: #8b8383" ;>
+                                @Html.EditorFor(model => model.updatedBynametrans )
+                                <span class="field-validation-error"><span id="updatedBynametrans-message" style="display: none;"> Updated By field is required.</span></span>
+                                @Html.ValidationMessageFor(model => model.updatedBynametrans)
+                            </div>
+                        </td>
+                           @*<td>
+                          <div class="editor-field">
+                            <select id="updatedBynametrans" name="updatedBynametrans" required="">
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.EmpLists != null)
+                                {
+                                    foreach (var item in ViewBag.EmpLists)
+                                    {
+                                        <option value='@item.Value'>@item.Text</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </td>*@
+
+
+                        <td>
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.updatedByposition)
+                            </div>
+                        </td>
+
+
+
+                       
+                        <td>
+                            <div class="editor-field">
+                                <input type="text" id="updatedByposition" name="updatedByposition"  />
+                                <span class="field-validation-error"><span id="updatedByposition-message" style="display: none;">updatedBy position field is required.</span></span>
+                                @Html.ValidationMessageFor(model => model.updatedByposition)
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.updatedByDept)
+                    </div>
+                </td>
+            
+                        <td>
+                            <div class="editor-field">
+                                <input type="text" id="updatedByDept" name="updatedByDept"  />
+                                <span class="field-validation-error"><span id="updatedByDept-message" style="display: none;">updatedBy Dept field is required.</span></span>
+                                @Html.ValidationMessageFor(model => model.updatedByDept)
+                            </div>
+                        </td>
+
+                          @*   <td>
+                          <div class="editor-field">
+                            <select id="updatedByDept" name="updatedByDept" required="">
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.Deptlist != null)
+                                {
+                                    foreach (var item in ViewBag.DeptList)
+                                    {
+                                        <option value='@item'>@item</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </td>*@
+
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.updatedDate)
+                    </div>
+                </td>
+                <td>
+                   
+                            <div class="editor-field">
+                                <input type="text" id="updatedDate" name="updatedByposition"  />
+                                <span class="field-validation-error"><span id="updatedDate-message" style="display: none;">Updated Date  is required.</span></span>
+                                @Html.ValidationMessageFor(model => model.updatedDate)
+                            </div>
+                      
+                </td>
+                    </tr>
+                    <tr>
+
+             
+            
+            </tr>
+           
+       </table> 
+                </div>      
+    </fieldset>
+    <div style="width: 100%; padding-left: 136px;">
+        @Html.ActionLink("Back to List", "LegalRegisterList", "LegalRegister" , null, new { onclick="HyperLinkProgressIconFunction()"})
+        <input type="submit" id="btnCreate" value="Create" style="display:none;" onclick="ProgressIconFunction('#form1')"/>       
+          <div style="float: right; padding-right: 200px;">
+                <input type="button" value="Add" onclick="AddAudit()" />
+            </div>
+    </div>
+    <div id="dvItems" style="overflow: auto; display: none;">
+        <input type="hidden" id="itemcnt" name="itemcnt" value="0" />
+        <div class="editor-label" style="background-color: #4cc4dd; width: 100%; height:30px; cursor: pointer;">
+            <label for="Objective_Details" style="color: white; padding-left: 5px;">Legal Register Detail</label>
+        </div>
+
+        <table id="team-list" style="width: 100%">
+            <tr> 
+               
+                 <th>Article</th>
+                <th>Article Details</th>
+                <th>Applicable</th>
+                <th>If Nonapplicable ,justify</th>
+                <th>Updated By</th>
+                <th>Updated By Position</th>                
+                <th>Updated By Dept</th>
+                <th>Updated Date</th>
+                <th>Reference</th>
+                <th>Monitoring</th>
+                         
+            </tr>
+        </table>
+    </div>         
+                         }
+
+
+@section Scripts {
+    <script>
+      
+        function Validation() {
+            var validflg = true;
+
+            ////if (document.getElementById("requirements").value == "") {
+            ////    ssnMessage = $('#requirements-message');
+            ////    ssnMessage.show();
+            ////    validflg = false;
+            ////}
+            ////else {
+            ////    ssnMessage = $('#requirements-message');
+            ////    ssnMessage.hide();
+            ////}
+
+            var ssnMessage = "";
+            if (document.getElementById("article").value == "") {
+                ssnMessage = $('#article-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#article-message');
+                ssnMessage.hide();
+            }
+       
+            if (document.getElementById("applicable").value == "") {
+                ssnMessage = $('#applicable-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#applicable-message');
+                ssnMessage.hide();
+            }
+            //if (document.getElementById("nonapplicablejustify").value == "") {
+            //    ssnMessage = $('#nonapplicablejustify-message');
+            //    ssnMessage.show();
+            //    validflg = false;
+            //}
+            //else {
+            //    ssnMessage = $('#nonapplicablejustify-message');
+            //    ssnMessage.hide();
+            //}
+            if (document.getElementById("updatedBynametrans").value == "") {
+                ssnMessage = $('#updatedBynametrans-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#updatedBynametrans-message');
+                ssnMessage.hide();
+            }
+
+            if (document.getElementById("updatedByposition").value == "") {
+                ssnMessage = $('#updatedByposition-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#updatedByposition-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("updatedByDept").value == "") {
+                ssnMessage = $('#updatedByDept-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#updatedByDept-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("updatedDate").value == "") {
+                ssnMessage = $('#updatedDate-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#updatedDate-message');
+                ssnMessage.hide();
+            }
+
+            if (document.getElementById("reference").value == "") {
+                ssnMessage = $('#reference-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#reference-message');
+                ssnMessage.hide();
+            }
+
+            if (document.getElementById("monitoring").value == "") {
+                ssnMessage = $('#monitoring-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#monitoring-message');
+                ssnMessage.hide();
+            }
+
+            return validflg;
+        }
+
+
+        function AddAudit() {
+
+            if (Validation() == true) {
+
+                document.getElementById("dvItems").style.display = "";
+                var cnt = document.getElementById("itemcnt").value;
+
+                document.getElementById("itemcnt").value = cnt;
+                // Find a <table> element with id="myTable":
+                var table = document.getElementById("team-list");
+
+
+                // Create an empty <tr> element and add it to the 1st position of the table:
+                var row = table.insertRow();
+
+                // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                var cell0 = row.insertCell(0);
+                var cell1 = row.insertCell(1);
+                var cell2 = row.insertCell(2);
+                var cell3 = row.insertCell(3);
+                var cell4 = row.insertCell(4);
+                var cell5 = row.insertCell(5);
+                var cell6 = row.insertCell(6);
+                var cell7 = row.insertCell(7);
+                var cell8 = row.insertCell(8);
+                var cell9 = row.insertCell(9);
+
+
+                var article = $('#article').val();
+                var requirements = $('#requirements').val(); 
+                var applicable = $('#applicable').val();
+                var nonapplicablejustify = $('#nonapplicablejustify').val();
+                var updatedBynametrans = $('#updatedBynametrans').val();
+                var updatedByposition = $("#updatedByposition").val();
+                var updatedDate = $("#updatedDate").val();
+                var updatedByDept = $('#updatedByDept').val();
+                var reference = $('#reference').val();
+                var monitoring = $('#monitoring').val();
+
+
+
+                // cell0.innerHTML = " <img src='@Url.Content("~/images/cancel.png")' onclick='deleteRow(this)' style='cursor:pointer; padding-right: 5px;'/>";
+                cell0.innerHTML = "<input type='hidden' id='article" + cnt + "' name='article" + cnt + "' value='" + article + "'>" + article;
+                cell1.innerHTML = "<input type='hidden' id='requirements" + cnt + "' name='requirements" + cnt + "' value='" + requirements + "'>" + requirements;
+                cell2.innerHTML = "<input type='hidden' id='applicable" + cnt + "' name='applicable" + cnt + "' value='" + applicable + "'>" + applicable;
+                cell3.innerHTML = "<input type='hidden' id='nonapplicablejustify" + cnt + "' name='nonapplicablejustify" + cnt + "' value='" + nonapplicablejustify + "'>" + nonapplicablejustify;
+                cell4.innerHTML = "<input type='hidden' id='updatedBynametrans" + cnt + "' name='updatedBynametrans" + cnt + "' value='" + updatedBynametrans + "'>" + updatedBynametrans;
+                cell5.innerHTML = "<input type='hidden' id='updatedByposition" + cnt + "' name='updatedByposition" + cnt + "' value='" + updatedByposition + "'>" + updatedByposition;
+                cell6.innerHTML = "<input type='hidden' id='updatedByDept" + cnt + "' name='updatedByDept" + cnt + "' value='" + updatedByDept + "'>" + updatedByDept;
+                cell7.innerHTML = "<input type='hidden' id='updatedDate" + cnt + "' name='updatedDate" + cnt + "' value='" + updatedDate + "'>" + updatedDate;
+                cell8.innerHTML = "<input type='hidden' id='reference" + cnt + "' name='reference" + cnt + "' value='" + reference + "'>" + reference;
+                cell9.innerHTML = "<input type='hidden' id='monitoring" + cnt + "' name='monitoring" + cnt + "' value='" + monitoring + "'>" + monitoring;
+
+                cnt++;
+                document.getElementById("itemcnt").value = cnt;
+                document.getElementById("btnCreate").style.display = "";
+
+                ResetControl();
+            }
+
+        }
+
+        function UploadDocument(ind) {
+            var Action_Plan = ($("#Action_Plan")).files; //$('#testfile').file;
+
+            var formData = new FormData();
+            var totalFiles = document.getElementById("Action_Plan").files.length;
+            for (var i = 0; i < totalFiles; i++) {
+                var file = document.getElementById("Action_Plan").files[i];
+
+                formData.append("Action_Plan", file);
+            }
+            jQuery.ajax({
+                url: '@Url.Action("UploadDocument", "Objectives")',
+                type: 'POST',
+                contentType: false,
+                processData: false,
+                data: formData,
+                success: function (result) {
+                    document.getElementById("Action_Plan" + ind).value = result;
+                    Action_PlanServerPath = result;
+                    //jAlert(result);
+                    return result;
+                }
+            });
+        }
+
+        function ResetControl() {
+
+            $("#Obj_Estld_On").datepicker("setDate", new Date());
+            document.getElementById("Objectives_val").value = "";
+            document.getElementById("Obj_Target").value = "";
+            document.getElementById("Base_Line_Value").value = "";
+            document.getElementById("Monitoring_Mechanism").value = "";
+            $("#Target_Date").datepicker("setDate", new Date());
+            document.getElementById("Action_Plan").value = "";
+            document.getElementById("Status_Obj_Eval").selectedIndex = "0";
+            document.getElementById("reference").value = "";
+            document.getElementById("monitoring").value = "";
+
+            var ssnMessage = $('#Obj_Estld_On-message');
+            ssnMessage.hide();
+            ssnMessage = $('#Objectives_val-message');
+            ssnMessage.hide();
+            ssnMessage = $('#Obj_Target-message');
+            ssnMessage.hide();
+            ssnMessage = $('#Base_Line_Value-message');
+            ssnMessage.hide();
+            ssnMessage = $('#Monitoring_Mechanism-message');
+            ssnMessage.hide();
+            ssnMessage = $('#Target_Date-message');
+            ssnMessage.hide();
+            ssnMessage = $('#Action_Plan-message');
+            ssnMessage.hide();
+            ssnMessage = $('#Status_Obj_Eval-message');
+            ssnMessage.hide();
+            ssnMessage = $('#reference-message');
+            ssnMessage.hide();
+            ssnMessage = $('#monitoring-message');
+            ssnMessage.hide();
+        }
+
+        function deleteRow(btn) {
+            var row = btn.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+        }
+
+
+      
+             
+     
+
+
+
+            $(function () {
+                $('#updatedOn').datepicker({
+                    dateFormat: "dd-mm-yy",
+                    buttonImageOnly: true,
+                    buttonImage: '../Images/Calender.png',
+                    showOn: 'both',
+                    changeMonth: true,
+                    changeYear: true,
+                    gotoCurrent: true               
+                });
+
+                $('#initialdevelopmentdate').datepicker({
+                    dateFormat: "dd-mm-yy",
+                    buttonImageOnly: true,
+                    buttonImage: '../Images/Calender.png',
+                    showOn: 'both',
+                    changeMonth: true,
+                    changeYear: true,
+                    gotoCurrent: true
+                });
+                $('#updatedDate').datepicker({
+                    dateFormat: "dd-mm-yy",
+                    buttonImageOnly: true,
+                    buttonImage: '../Images/Calender.png',
+                    showOn: 'both',
+                    changeMonth: true,
+                    changeYear: true,
+                    gotoCurrent: true
+                });
+            })
+
+
+
+
+
+
+
+        function GetObjectivesRefList() {
+            var Dept = $('#Dept').val();
+            //alert(AuditDepartment);
+            jQuery.ajax({
+                url: '@Url.Action("GetLegalRegisterRefList", "LegalRegister")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'DeptId': Dept },
+                    success: function (result) {
+                        document.getElementById("lawNo").value = result;
+                    }
+                });
+            }
+
+            function GetDeptEmployeeList() {
+                var Dept = $('#Dept').val();
+                //alert(AuditDepartment);
+                jQuery.ajax({
+                    url: '@Url.Action("FunGetDeptEmpList", "Objectives")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'DeptId': Dept },
+                success: function (result) {
+                    var x = document.getElementById("Personal_Responsible");
+
+                    $.each(result, function (index, item) {
+                        var option = document.createElement("option");
+                        option.text = item.Text;
+                        option.value = item.Value;
+                        x.add(option);
+                    });
+                }
+            });
+        }
+
+        function GetLegalRegisterDetails() {
+            var DeptId = $('#Dept').val();
+
+           // GetDeptEmployeeList(DeptId);
+            //alert(AuditDepartment);
+            jQuery.ajax({
+                url: '@Url.Action("FunGetLegalRegisterDetails", "LegalRegister")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'lawNo': lawNo },
+                success: function (result) {
+
+                    if (result != "") {
+                        //alert(result.ISO);
+                        document.getElementById("lawNo").value = result.lawNo;
+                        document.getElementById("frequency_of_evaluation").value = result.frequency_of_evaluation;
+                       // document.getElementById("Personal_Responsible").value = result.Personal_Responsible;
+
+                        $('#lawTitle').val('');
+                        var Audit = result.lawTitle.split(',');
+                        $.each(Audit, function (index, item) {
+
+                            //you're filtering options, not the list itself
+                            $("#Audit_Criteria > option").filter(function () {
+                                return $(this).val() == item;
+                            }).prop('selected', true); //use .prop, not .attr
+                        });
+
+                        document.getElementById("approved_By").value = result.approved_By;
+                        document.getElementById("updatedByName").value = result.updatedByName;
+                    }
+                    else {
+                        document.getElementById("lawNo").value = "";
+                        document.getElementById("frequency_of_evaluation").value = "";
+                       // document.getElementById("Personal_Responsible").value = "";
+
+                     //   $('#Audit_Criteria').val('');
+
+
+                        document.getElementById("approved_By").value = "";
+                        document.getElementById("updatedByName").value = "";
+                    }
+                }
+            });
+        }
+
+        function cal() {
+            var x = document.getElementById("applicable").value;
+
+
+            if (x == "No") {
+                document.getElementById("nonapplicablejustify").disabled = false;
+                document.getElementById("nonapplicablejustify").style = "";
+                
+
+
+            }
+            else {
+                document.getElementById("nonapplicablejustify").disabled = true;
+                document.getElementById("nonapplicablejustify").style.background = "#efefe6";
+            }
+        }
+        function FileFormatValidation(file) {
+            var ext = file.value.split(".").pop().toLowerCase();
+            if ($.inArray(ext, ["doc", "pdf", "docx", "jpg", "jpeg", "gif", "png"]) == -1) {
+                file.value = "";
+                jAlert("Invalid file format, please upload only doc, pdf, docx, jpg, jpeg, gif, png format");
+            }
+        }
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

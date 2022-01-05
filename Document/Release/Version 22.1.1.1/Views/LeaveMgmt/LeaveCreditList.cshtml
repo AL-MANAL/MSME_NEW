@@ -1,0 +1,198 @@
+﻿@using PagedList;
+@using PagedList.Mvc;
+
+@model IPagedList<ISOStd.Models.LeaveMgmtModels>
+
+@{
+    ViewBag.Title = "";
+}
+
+<div class="groupedassets margin10">
+    <span class="groupedassetshead margin10 onestphdcolor">Annual Leave Credit List</span>
+</div>
+
+<br />
+<div id="divmsg">
+    @if (TempData["alertdata"] != null)
+    {
+        <span class="errMsg" style="color: red; font-weight: bold;">@TempData["alertdata"]</span>
+    }
+    @if (TempData["Successdata"] != null)
+    {
+        <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+    }
+</div>
+
+
+<div>
+    @Html.ActionLink("Add Leave Credit", "AddLeaveCredit", null, new { @class = "ActionLink", onclick = "HyperLinkProgressIconFunction()" })
+</div>
+
+<br />
+<br />
+
+
+<div id="content">
+    <table id="leave" style="width:100%">
+        <thead>
+            <tr>
+                <th style="width: 40px; min-width: 40px; max-width: 100px;">Sl No
+                </th>
+                <th style="width: 100px; min-width: 100px; max-width: 100px;">
+                    @Html.DisplayNameFor(model => model.First().syear)
+                </th>
+                <th style="width: 150px; min-width: 150px; max-width: 150px;">
+                    @Html.DisplayNameFor(model => model.First().annual_leave)
+                </th>
+                <th style="width: 150px; min-width: 150px; max-width: 150px;">
+                    @Html.DisplayNameFor(model => model.First().sick_leave)
+                </th>
+                <th style="width: 150px; min-width: 150px; max-width: 150px;">
+                    @Html.DisplayNameFor(model => model.First().other_leave)
+                </th>
+                <th style="width: 150px; min-width: 150px; max-width: 150px;">
+                    @Html.DisplayNameFor(model => model.First().carry_leave)
+                </th>
+                <th style="width: 80px; min-width: 80px; max-width: 80px;">
+                    @Html.DisplayNameFor(model => model.First().logged_date)
+                </th>
+                <th style="width: 60px; min-width: 60px; max-width: 60px;">Edit</th>
+                 <th style="width: 100px; min-width: 100px; max-width: 100px;">Generate Leave</th>
+              @*  @if (ViewBag.DeleteFlg != null && ViewBag.DeleteFlg == true)
+                {
+                    <th style="width: 60px; min-width: 60px; max-width: 60px;">Delete</th>
+                }*@
+
+
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Count() > 0)
+            {
+                int i = 0;
+                foreach (var item in Model)
+                {
+                    i = i + 1;
+                <tr>
+                    <td style="width: 40px; min-width: 40px; max-width: 40px; word-wrap: break-word">
+                        @i
+                    </td>
+                    <td style="width: 100px; min-width: 100px; max-width: 100px; word-wrap: break-word">
+                        @Html.DisplayFor(modelItem => item.syear)
+                    </td>
+                    <td style="width: 150px; min-width: 150px; max-width: 150px; word-wrap: break-word">
+                        @Html.DisplayFor(modelItem => item.annual_leave)
+                    </td>
+                    <td style="width: 150px; min-width: 150px; max-width: 150px; word-wrap: break-word">
+                        @Html.DisplayFor(modelItem => item.sick_leave)
+                    </td>
+                    <td style="width: 150px; min-width: 150px; max-width: 150px; word-wrap: break-word">
+                        @Html.DisplayFor(modelItem => item.other_leave)
+                    </td>
+                    <td style="width: 150px; min-width: 150px; max-width: 150px; word-wrap: break-word">
+                        @Html.DisplayFor(modelItem => item.carry_leave)
+                    </td>
+                     <td style="width: 80px; min-width: 80px; max-width: 80px;">
+                            @if (item.logged_date != null && item.logged_date > Convert.ToDateTime("01/01/0001"))
+                            {
+                                @Html.Label(item.logged_date.ToString("dd/MM/yyyy"))
+                            }
+                    </td>
+                    <td style="width: 60px; min-width: 60px; max-width: 60px; word-wrap: break-word">
+                         @if (item.leave_gen == "N")
+                        {
+                   
+                        <a href='@Url.Action("LeaveCreditEdit", "LeaveMgmt", new { id_leave_credit = item.id_leave_credit })' title="Edit Issue details" onclick="HyperLinkProgressIconFunction()">
+                            <span class="glyphicon glyphicon glyphicon-edit iocnstatus-edit" onclick="HyperLinkProgressIconFunction()"></span>
+                        </a>
+                         }
+                    </td>
+             @*       @if (ViewBag.DeleteFlg != null && ViewBag.DeleteFlg == true)
+                    {
+                        <td style="width: 60px; min-width: 60px; max-width: 60px; word-wrap: break-word">
+                            <img src="@Url.Content("~/Images/delete.png")" title="Delete Document" onclick="DeleteItems(@item.id_leave_credit)" style="cursor:pointer;" />
+                        </td>
+                    }*@
+                    <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                        @if (item.leave_gen == "N")
+                        {
+                   
+                         <a href='@Url.Action("AnnualLeave", "LeaveMgmt", new { syear = item.syear })' title="Generate Leave" onclick="HyperLinkProgressIconFunction()" class="btn btn-info btn-md" style="width:30px">
+                                    <span class="glyphicon glyphicon glyphicon-user iocnstatus-user" onclick="HyperLinkProgressIconFunction()"></span>
+                         </a>
+                             }
+                    </td>
+                </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="10">
+                        <div style="text-align: center;">
+                            <h4 style="color: grey;">No data exists</h4>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<script type="text/javascript" charset="utf8" src="~/Scripts/jquery-3.1.1.js"></script>
+     @Styles.Render("~/Content/popover")
+    <script>
+        var $x = jQuery.noConflict();
+        $x(document).ready(function () {
+            // DataTable
+            var table = $x('#leave').DataTable(
+                {
+                    fixedHeader: true,
+
+
+                    colReorder: true
+
+                });
+        });
+
+    </script>
+
+@section scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript">
+
+
+        function DeleteItems(id_leave_credit) {
+            jConfirm('Do you want to delete?', 'Are you Sure?', function (r) {
+                if (r == true) {
+                    jQuery.ajax({
+                        url: '@Url.Action("LeaveCreditDelete", "LeaveMgmt")',
+                        type: 'POST',
+                        dataType: "json",
+                        data: { 'id_leave_credit': id_leave_credit },
+                        success: function (result) {
+                            var params = {
+                                View: 1
+                            };
+
+                            //// Add new params to the querystring dictionary
+                            queryString = $.param(params);
+
+                            window.location.href =
+                                window.location.protocol + "//" +
+                                window.location.host +
+                                window.location.pathname +
+                               '?' + queryString;
+                        }
+                    });
+                    return true;
+                }
+                else if (r == false) {
+                    return false;
+                }
+            });
+        }
+
+
+    </script>
+
+}

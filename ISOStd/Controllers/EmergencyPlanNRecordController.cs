@@ -465,6 +465,26 @@ namespace ISOStd.Controllers
                             ViewBag.objEmergency = objPlanList;
                         }
 
+                        string sql = "select id_perform,Emergency_Plan_Id,action_details,perf_observation,perf_remarks,perf_location,drill_date,alarm_raised_by,assembly_point from t_emergency_plan_record_perform where Emergency_Plan_Id='" + sEmergency_Plan_Id + "'";
+                        dsCompetenceList = objGlobaldata.Getdetails(sql);
+                        if (dsCompetenceList.Tables.Count > 0 && dsCompetenceList.Tables[0].Rows.Count > 0)
+                        {
+
+                            objEmployeeCompetence.id_perform = dsCompetenceList.Tables[0].Rows[0]["id_perform"].ToString();
+                            objEmployeeCompetence.Emergency_Plan_Id = dsCompetenceList.Tables[0].Rows[0]["Emergency_Plan_Id"].ToString();
+                            objEmployeeCompetence.action_details = dsCompetenceList.Tables[0].Rows[0]["action_details"].ToString();
+                            objEmployeeCompetence.perf_observation = dsCompetenceList.Tables[0].Rows[0]["perf_observation"].ToString();
+                            objEmployeeCompetence.perf_remarks = dsCompetenceList.Tables[0].Rows[0]["perf_remarks"].ToString();
+                            objEmployeeCompetence.perf_location = dsCompetenceList.Tables[0].Rows[0]["perf_location"].ToString();
+                            objEmployeeCompetence.alarm_raised_by = dsCompetenceList.Tables[0].Rows[0]["alarm_raised_by"].ToString();
+                            objEmployeeCompetence.assembly_point = dsCompetenceList.Tables[0].Rows[0]["assembly_point"].ToString();
+
+
+                            if (DateTime.TryParse(dsCompetenceList.Tables[0].Rows[0]["drill_date"].ToString(), out dateValue))
+                            {
+                                objEmployeeCompetence.drill_date = dateValue;
+                            }
+                        }
                         return View(objEmployeeCompetence);
                     }
                     else
@@ -814,5 +834,177 @@ namespace ISOStd.Controllers
 
             return RedirectToAction("EmergencyPlanNRecordList");
         }
+
+        [AllowAnonymous]
+        public ActionResult EmergencyPlanPerformPlan()
+        {
+            try
+            {
+                EmergencyPlanNRecordModels objem = new EmergencyPlanNRecordModels();
+
+                if (Request.QueryString["Emergency_Plan_Id"] != null && Request.QueryString["Emergency_Plan_Id"] != "")
+                {
+                    string sEmergency_Plan_Id = Request.QueryString["Emergency_Plan_Id"];
+                    string sSqlstmt = "select Emergency_Plan_Id, emp_id, Plan_From, Plan_To, Emergency_Type, Plan_Date_Time, Drill_Location, Incharge, Need_Reporting, "
+                        + " Plan_Status, Performance, Remarks, ReportNo, Upload_Report, LoggedBy, ReviewedBy, ApprovedBy,Observation,No_Emp,branch,Department,Location from t_emergency_plan_record where "
+                        + "Emergency_Plan_Id='" + sEmergency_Plan_Id + "'";
+
+                    DataSet dsCompetenceList = objGlobaldata.Getdetails(sSqlstmt);
+                    if (dsCompetenceList.Tables.Count > 0 && dsCompetenceList.Tables[0].Rows.Count > 0)
+                    {
+                        EmergencyPlanNRecordModels objEmployeeCompetence = new EmergencyPlanNRecordModels
+                        {
+                            Emergency_Plan_Id = dsCompetenceList.Tables[0].Rows[0]["Emergency_Plan_Id"].ToString(),
+                            emp_id = objGlobaldata.GetEmpHrNameById(dsCompetenceList.Tables[0].Rows[0]["emp_id"].ToString()),
+                            Emergency_Type = objem.GetEmergencyTypeNameById(dsCompetenceList.Tables[0].Rows[0]["Emergency_Type"].ToString()),
+                            Drill_Location = objGlobaldata.GetCompanyBranchNameById(dsCompetenceList.Tables[0].Rows[0]["Drill_Location"].ToString()),
+                            Incharge = objGlobaldata.GetEmpHrNameById(dsCompetenceList.Tables[0].Rows[0]["Incharge"].ToString()),
+                            Need_Reporting = (dsCompetenceList.Tables[0].Rows[0]["Need_Reporting"].ToString()),
+                            Plan_Status = objem.GetHSEPerformanceNameById(dsCompetenceList.Tables[0].Rows[0]["Plan_Status"].ToString()),
+                            Performance = objem.GetDrillPerformanceNameById(dsCompetenceList.Tables[0].Rows[0]["Performance"].ToString()),
+                            Remarks = (dsCompetenceList.Tables[0].Rows[0]["Remarks"].ToString()),
+                            ReportNo = dsCompetenceList.Tables[0].Rows[0]["ReportNo"].ToString(),
+                            Upload_Report = (dsCompetenceList.Tables[0].Rows[0]["Upload_Report"].ToString()),
+                            ReviewedBy = objGlobaldata.GetEmpHrNameById(dsCompetenceList.Tables[0].Rows[0]["ReviewedBy"].ToString()),
+                            ApprovedBy = objGlobaldata.GetEmpHrNameById(dsCompetenceList.Tables[0].Rows[0]["ApprovedBy"].ToString()),
+                            LoggedBy = objGlobaldata.GetEmpHrNameById(dsCompetenceList.Tables[0].Rows[0]["LoggedBy"].ToString()),
+                            Observation = (dsCompetenceList.Tables[0].Rows[0]["Observation"].ToString()),
+                            No_Emp = (dsCompetenceList.Tables[0].Rows[0]["No_Emp"].ToString()),
+                            branch = objGlobaldata.GetMultiCompanyBranchNameById(dsCompetenceList.Tables[0].Rows[0]["branch"].ToString()),
+                            Department = objGlobaldata.GetMultiDeptNameById(dsCompetenceList.Tables[0].Rows[0]["Department"].ToString()),
+                            Location = objGlobaldata.GetDivisionLocationById(dsCompetenceList.Tables[0].Rows[0]["Location"].ToString()),
+                        };
+
+                        DateTime dateValue;
+                        if (DateTime.TryParse(dsCompetenceList.Tables[0].Rows[0]["Plan_From"].ToString(), out dateValue))
+                        {
+                            objEmployeeCompetence.Plan_From = dateValue;
+                        }
+
+                        if (DateTime.TryParse(dsCompetenceList.Tables[0].Rows[0]["Plan_To"].ToString(), out dateValue))
+                        {
+                            objEmployeeCompetence.Plan_To = dateValue;
+                        }
+
+                        if (DateTime.TryParse(dsCompetenceList.Tables[0].Rows[0]["Plan_Date_Time"].ToString(), out dateValue))
+                        {
+                            objEmployeeCompetence.Plan_Date_Time = dateValue;
+                        }
+
+                        string sql = "select id_perform,Emergency_Plan_Id,action_details,perf_observation,perf_remarks,perf_location,drill_date,alarm_raised_by,assembly_point from t_emergency_plan_record_perform where Emergency_Plan_Id='" + sEmergency_Plan_Id + "'";
+                        dsCompetenceList = objGlobaldata.Getdetails(sql);
+                        if (dsCompetenceList.Tables.Count > 0 && dsCompetenceList.Tables[0].Rows.Count > 0)
+                        {
+
+                            objEmployeeCompetence.id_perform = dsCompetenceList.Tables[0].Rows[0]["id_perform"].ToString();
+                            objEmployeeCompetence.Emergency_Plan_Id = dsCompetenceList.Tables[0].Rows[0]["Emergency_Plan_Id"].ToString();
+                            objEmployeeCompetence.action_details = dsCompetenceList.Tables[0].Rows[0]["action_details"].ToString();
+                            objEmployeeCompetence.perf_observation = dsCompetenceList.Tables[0].Rows[0]["perf_observation"].ToString();
+                            objEmployeeCompetence.perf_remarks = dsCompetenceList.Tables[0].Rows[0]["perf_remarks"].ToString();
+                            objEmployeeCompetence.perf_location = dsCompetenceList.Tables[0].Rows[0]["perf_location"].ToString();
+                            objEmployeeCompetence.alarm_raised_by = dsCompetenceList.Tables[0].Rows[0]["alarm_raised_by"].ToString();
+                            objEmployeeCompetence.assembly_point = dsCompetenceList.Tables[0].Rows[0]["assembly_point"].ToString();
+
+
+                            if (DateTime.TryParse(dsCompetenceList.Tables[0].Rows[0]["drill_date"].ToString(), out dateValue))
+                            {
+                                objEmployeeCompetence.drill_date = dateValue;
+                            }
+                        }
+
+                        ViewBag.PlanTimeInHour = objGlobaldata.GetAuditTimeInHour();
+                        ViewBag.PlanTimeInMin = objGlobaldata.GetAuditTimeInMin();
+                        return View(objEmployeeCompetence);
+                    }
+                    else
+                    {
+                        TempData["alertdata"] = "No data exists";
+                        return RedirectToAction("EmergencyPlanNRecordList");
+                    }
+                }
+                else
+                {
+                    TempData["alertdata"] = "Plan Id cannot be null";
+                    return RedirectToAction("EmergencyPlanNRecordList");
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in EmergencyPlanPerformPlan: " + ex.ToString());
+                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+            }
+
+            return RedirectToAction("EmergencyPlanNRecordList");
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+   
+        public ActionResult EmergencyPlanPerformPlan(EmergencyPlanNRecordModels objEmergencyPlanNRecord, FormCollection form, HttpPostedFileBase Upload_Report)
+        {
+            try
+            {
+                string id_perform = form["id_perform"];
+                if (id_perform != "" && id_perform != null)
+                {
+                    DateTime dateValue;
+
+                    if(DateTime.TryParse(form["drill_date"], out dateValue) == true)
+                   {
+                        objEmergencyPlanNRecord.drill_date = dateValue;
+                        int iHr, iMin;
+                        if (form["PlanTimeInHour"] != null && int.TryParse(form["PlanTimeInHour"], out iHr) &&
+                            form["PlanTimeInMin"] != null && int.TryParse(form["PlanTimeInMin"], out iMin))
+                        {
+                            objEmergencyPlanNRecord.drill_date = DateTime.Parse(dateValue.ToString("dd/MM/yyyy") + " " + iHr + ":" + iMin + ":00");
+                        }
+                    }
+
+                    if (objEmergencyPlanNRecord.FunUpdatePerformPlan(objEmergencyPlanNRecord))
+                    {
+                        TempData["Successdata"] = "Perform Plan successfully";
+                    }
+                    else
+                    {
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                    }
+                }
+              else
+                {
+
+                    DateTime dateValue;
+
+                    if (DateTime.TryParse(form["drill_date"], out dateValue) == true)
+                    {
+                        objEmergencyPlanNRecord.drill_date = dateValue;
+                        int iHr, iMin;
+                        if (form["PlanTimeInHour"] != null && int.TryParse(form["PlanTimeInHour"], out iHr) &&
+                            form["PlanTimeInMin"] != null && int.TryParse(form["PlanTimeInMin"], out iMin))
+                        {
+                            objEmergencyPlanNRecord.drill_date = DateTime.Parse(dateValue.ToString("dd/MM/yyyy") + " " + iHr + ":" + iMin + ":00");
+                        }
+                    }
+
+                    if (objEmergencyPlanNRecord.FunAddPerformPlan(objEmergencyPlanNRecord))
+                    {
+                        TempData["Successdata"] = "Perform Plan successfully";
+                    }
+                    else
+                    {
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                    }
+                }
+               
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in EmergencyPlanPerformPlan: " + ex.ToString());
+                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+            }
+
+            return RedirectToAction("EmergencyPlanNRecordList");
+        }
+
     }
 }

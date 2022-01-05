@@ -1,0 +1,340 @@
+﻿@model ISOStd.Models.SupplierAuditElementsModels
+@using System.Data;
+
+@{
+    ViewBag.Title = "AddAuditElement";
+}
+
+<div class="groupedassets margin10">
+    <span class="groupedassetshead margin10 onestphdcolor">Add Audit Questions</span>
+</div>
+
+<br />
+<div id="divmsg">
+    @if (TempData["alertdata"] != null)
+    {
+        <span class="errMsg" style="color: red;font-weight: bold;">@TempData["alertdata"]</span>
+    }
+    @if (TempData["Successdata"] != null)
+    {
+        <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+    }
+</div>
+
+@using (Html.BeginForm("AddAuditElements", "SupplierAuditChecklist", FormMethod.Post, new { style = "float: left;width: 20%;", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <fieldset>
+        <legend>MeetingType</legend>
+
+        <div>            
+            <table id="tabcontent" style="width: 20%; padding-left: 30px; float:left;">
+                <tr>
+                    <td colspan="2" style="background-color: #4cc4dd; color: #fff; font-weight: bold; font-size: 14px;">Audit Questions Add / Remove</td>
+                </tr>
+                <tr>
+                                    
+                </tr>
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                           Business Nature
+                        </div>
+                    </td>
+                    <td>
+                         <div class="editor-field">
+                            <select id="Business" name="Business"  required>
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.Business != null && ViewBag.Business_Id != null)
+                                {
+                                    foreach (var item in ViewBag.Business)
+                                    {
+                                        if (item.Value == ViewBag.Business_Id)
+                                        {
+                                             <option value="@item.Value" selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                             <option value="@item.Value">@item.Text</option>
+                                        }
+                                    }
+                                }
+
+                                else if (ViewBag.Business != null)
+                                {
+                                    foreach (var item in ViewBag.Business)
+                                    {
+                                        <option value='@item.Value'>@item.Text</option>
+                                    }
+                                }
+                            </select>
+                             </div>
+                    </td>
+                    </tr>
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                           Department
+                        </div>
+                    </td>
+                     <td>
+                         <div class="editor-field">
+                            <select id="Department" name="Department" onchange="GetQuestions()" required>
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.Department != null && ViewBag.Department_Id != null)
+                                {
+                                    foreach (var item in ViewBag.Department)
+                                    {
+                                        if (item.Value == ViewBag.Department_Id)
+                                        {
+                                             <option value="@item.Value" selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                             <option value="@item.Value">@item.Text</option>
+                                        }
+                                    }
+                                }
+
+                                else if (ViewBag.Department != null)
+                                {
+                                    foreach (var item in ViewBag.Department)
+                                    {
+                                        <option value='@item.Value'>@item.Text</option>
+                                    }
+                                }
+                            </select>
+                             </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Audit_Elements)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                          
+                            <textarea id="Audit_Elements" name="Audit_Elements" required ></textarea>
+                            @*@Html.TextAreaFor(model => model.Audit_Elements)*@
+                            @Html.ValidationMessageFor(model => model.Audit_Elements)
+                           
+                        </div>
+                    </td>                   
+                </tr>
+               @* <tr>
+                    <td colspan="2">
+                        <input type="submit" value="Save" onclick="ProgressIconFunction('#form1')"/>
+
+                    </td>
+                </tr>*@
+            </table>
+             
+            </div>
+        <div>
+             @Html.ActionLink("Back to List", "AuditChecklistList", null, new {@class = "ActionLink", onclick="HyperLinkProgressIconFunction()" })
+             <input type="submit" value="Save" onclick="ProgressIconFunction('#form1')"/>
+        </div>
+        </fieldset>
+
+}
+@using (Html.BeginForm("AddAuditElements", "SupplierAuditChecklist", FormMethod.Post, new { style = "float: left;width: 70%;", id = "form2", name = "form2" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <fieldset>
+        <legend>Survey Rating</legend>
+
+        <div>
+             <input type="hidden" name="Business_id" id="Business_id" value="@ViewBag.Business_Id" />
+            <input type="hidden" name="Department_id" id="Department_id" value="@ViewBag.Department_Id" />
+           <input type="hidden" name="Survey_Id" id="Survey_Id" value="" />
+                 <table id="tblMeetingList" style="width: 70%; padding-left: 30px; float:left;">
+                     <tr>
+                         <td colspan="2" style="background-color: #4cc4dd; color: #fff; font-weight: bold; font-size: 14px; height: 30px;">Audit Questions</td>
+                     </tr>
+                     <tr style="background-color: #e5eafe; color: #0099ff; font-weight: bold; font-size: 14px; height: 30px;">
+                         <th>Name</th>
+                         <th>Action</th>
+                     </tr>
+                    @if (ViewBag.AuditElements != null)
+                    {
+
+                        int index = 2;
+                        foreach (var item in ViewBag.AuditElements)
+                        {
+                         <tr>
+                             <td>
+                                 <textarea id="Audit_Elements @item.Value" name="Audit_Elements @item.Value" cols="500"> @item.Text</textarea>                                 
+                             </td>
+                             <td>
+                                
+                                 <img src="@Url.Content("~/Images/updateIcon_small.png")" title="Update Audit Item"
+                                      onclick="UpdateQuestion(@item.Value)" style="cursor:pointer;" />
+
+                                 <img src="@Url.Content("~/Images/delete.png")" title="Delete Audt Item" 
+                                onclick="DeleteQuestion(@item.Value)" style="cursor:pointer;"/> 
+                                   
+                             </td>
+
+                         </tr>
+                            index++;
+                        }
+                    }
+                 </table>
+
+           <input type="hidden" id="id_element" name="id_element" value="@ViewBag.id_element"/>
+           
+        </div>
+    </fieldset>
+}
+
+
+@section Scripts {
+     <script type="text/javascript">
+         function DeleteQuestion(id_element) {
+             var Business = document.getElementById("Business_id").value;
+             var Department = document.getElementById("Department_Id").value;
+             jConfirm('Do you want to delete?', 'Are you Sure?', function (r) {
+                 if (r == true) {
+                     jQuery.ajax({
+                         url: '@Url.Action("AuditQuestionDelete1", "SupplierAuditChecklist")',
+                         type: 'POST',
+                         dataType: "json",
+                         data: { 'id_element': id_element, 'Business': Business, 'Department': Department },
+                         success: function (data) {
+                             var Business = document.getElementById("Business_id").value;
+                             var Department = document.getElementById("Department_Id").value;
+                             //var params = {
+                             //    View: 1
+                            
+                             //};
+                        
+                             //queryString = $.param(params);
+                             window.location.href =
+                                 window.location.protocol + "//" +
+                                 window.location.host +
+                                 window.location.pathname +
+                                '?sBusiness=' + Business;
+                          
+                         }
+                     });
+                     return true;
+                 }
+                 else if (r == false) {
+                     return false;
+                 }
+             });
+         }
+        
+
+         function UpdateQuestion(id_element) {
+          
+             var Element = document.getElementById("Audit_Elements " + id_element).value;
+
+             jQuery.ajax({
+                 url: '@Url.Action("AuditElementUpdate", "SupplierAuditChecklist")',
+                 type: 'GET',
+                 dataType: "json",
+                 data: { 'id_element': id_element, 'Audit_Elements': Element },
+                 success: function (result) {
+                     jAlert(result);
+                 
+                     window.location.href =
+                         window.location.protocol + "//" +
+                         window.location.host +
+                         window.location.pathname +
+                         createQueryString(queryString);
+                        
+                 }
+             });
+         }
+
+
+         function GetQuestions() {
+             var Business = $('#Business').val();
+             var Department = $('#Department').val();
+             document.getElementById("Survey_Id").value = Business;
+             if (Business != "") {
+                 jQuery.ajax({
+                     url: '@Url.Action("GetQuestions", "SupplierAuditChecklist")',
+                     type: 'POST',
+                     dataType: "json",
+                     data: { 'Business': Business, 'Department': Department },
+                     success: function (result) {
+
+                         var table = document.getElementById("tblMeetingList");
+                         //document.getElementById("divAgendasTitle").style.display = "";
+
+
+                         while (table.rows.length > 0) {
+                             table.deleteRow(0);
+                         }
+
+                         if (result != "") {
+
+                             document.getElementById("tblMeetingList").style.display = "";
+
+                             var thTitleRow = table.insertRow();
+                             thTitleRow.style = "background-color: #4cc4dd; color: #fff; font-weight: bold; font-size: 14px; height: 30px;";
+                             var cellTitle0 = thTitleRow.insertCell(0);
+
+                             cellTitle0.innerHTML = "Questions";
+                             table.rows[0].cells[0].colSpan = 2;
+                             table.rows[0].cells[0].style = "color:#fff";
+
+
+                             var theaderRow = table.insertRow();
+
+                             theaderRow.style = "background-color: #e5eafe; font-weight: bold; font-size: 14px;";
+                             var cellth0 = theaderRow.insertCell(0);
+                             var cellth1 = theaderRow.insertCell(1);
+                             //var cellth2 = theaderRow.insertCell(2);
+
+
+
+                             cellth0.innerHTML = "<th>Questions</th>";
+                             cellth1.innerHTML = "<th>Action</th>";
+                             //cellth2.innerHTML = "<th>Action</th>";
+
+                             table.rows[1].cells[0].style = "color:#0099ff";
+                             table.rows[1].cells[1].style = "color:#0099ff";
+                             //table.rows[1].cells[2].style = "color:#0099ff";
+
+                             var list = result;
+                             for (var i = 0; i < result.length; i++) {
+
+                                 // Create an empty <tr> element and add it to the 1st position of the table:
+                                 var row = table.insertRow();
+
+                                 // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                                 var cell0 = row.insertCell(0);
+                                 var cell1 = row.insertCell(1);
+
+                                 var Id = result[i].Value;
+
+                                 cell0.innerHTML = " <textarea id='Audit_Elements " + Id + "' name='Audit_Elements " + Id + "'>" + result[i].Text + "</textarea>";
+                                 cell1.innerHTML = "<img src='@Url.Content("~/Images/updateIcon_small.png")') style='cursor: pointer;' title='Update Question' onclick='UpdateQuestion(" + Id + ")'/>"
+                                  + "<a href='/SupplierAuditChecklist/AuditQuestionDelete?id_element=" + Id + "&Business=" + Business + "&Department=" + Department
+                                  + "' title='Delete Question'> <img src='@Url.Content("~/Images/delete.png")') title='Delete Question'/></a>";
+                             }
+                         }
+                         else {
+                             document.getElementById("tblMeetingList").style.display = "none";
+                             jAlert("No Item exists, please add Items and then try again");
+                         }
+
+                     }
+                 });
+             }
+         }
+
+     
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+
+}

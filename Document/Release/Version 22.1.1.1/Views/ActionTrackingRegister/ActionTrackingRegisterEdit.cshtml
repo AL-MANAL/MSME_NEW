@@ -1,0 +1,280 @@
+﻿@model ISOStd.Models.ActionTrackingRegisterModels
+@{
+    ViewBag.Title = "";
+}
+
+@section featured {
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Home</span>
+                    </a>
+                    <a href="@Url.Action("ActionTrackingRegisterList", "ActionTrackingRegister", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Quality Action Tracking Register</span>
+                    </a>
+                    <span class="breadcrumb-item active">Update Quality Action Tracking Register</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+}
+@using (Html.BeginForm("ActionTrackingRegisterEdit", "ActionTrackingRegister", FormMethod.Post,
+                     new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+ <input type="hidden" id="id_action" name="id_action" value="@Model.id_action" />
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Update Quality Action Tracking Register</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+
+                <table class="table table-lg">
+
+                    <tr class="row">
+                    
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Action_name)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @Html.DisplayFor(model => model.Action_name)
+			                </div>
+                        </td>
+                     
+                    </tr>
+		   <tr class="row">
+			<td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Target_date)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                       <td class="col">
+                            <div class="editor-field">
+                                 @if (Model.Target_date != null && Model.Target_date > Convert.ToDateTime("01/01/0001"))
+                        	{
+                            <input class="form-control" type="date" id="Target_date" name="Target_date" value="@Model.Target_date.ToString("yyyy-MM-dd")" required />
+                                }
+                        	else
+                        	{
+                            <input class="form-control" type="date" id="Target_date" name="Target_date" required />
+                        	}
+ 				@Html.ValidationMessageFor(model => model.Target_date)                      
+                            </div>
+                        </td>
+			<td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Completion_date)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                       <td class="col">
+                            <div class="editor-field">
+                                  @if (Model.Completion_date != null && Model.Completion_date > Convert.ToDateTime("01/01/0001"))
+                        	{
+                            <input class="form-control" type="date" id="Completion_date" name="Completion_date" value="@Model.Completion_date.ToString("yyyy-MM-dd")" required />
+                                }
+                        	else
+                        	{
+                            <input class="form-control" type="date" id="Completion_date" name="Completion_date" required />
+                        	}
+ 				@Html.ValidationMessageFor(model => model.Completion_date)                      
+                            </div>
+                        </td>
+	            </tr>
+ 		   <tr class="row">
+			<td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.ActionBy)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                              <select class="form-control select-search select2-hidden-accessible" data-fouc id="ActionBy" name="ActionBy" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.Employee != null)
+                                    {
+                                        foreach (var item in ViewBag.Employee)
+                                        {
+                                            if (item.Text == Model.ActionBy)
+                                        {
+                                            <option value='@item.Value' selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                        }
+                                    }
+                                </select>
+			        @Html.ValidationMessageFor(model => model.ActionBy)   
+                            </div>
+                        </td>
+			<td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Status)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                              <select class="form-control select-search select2-hidden-accessible" data-fouc id="Status" name="Status" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.Status != null)
+                                    {
+                                        foreach (var item in ViewBag.Status)
+                                        {
+                                            if (item.Text == Model.Status)
+                                        {
+                                            <option value='@item.Value' selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                        }
+                                    }
+                                </select>
+			        @Html.ValidationMessageFor(model => model.Status)   
+                            </div>
+                        </td>
+		   </tr>
+		   <tr class="row">
+ 			<td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Remarks)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                 <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="Remarks" name="Remarks">@Model.Remarks</textarea>                         
+                                
+			    </div>
+                        </td>
+ 			  <td class="col-xs-3 col-md-2">
+
+                            @Html.LabelFor(model => model.NotificationPeriod)
+
+                        </td>
+                        <td class="col">
+                            <div class="form-group form-group-float">
+                                <select class="form-control select-search select2-hidden-accessible" id="NotificationPeriod" name="NotificationPeriod" data-fouc>
+                                    @if (ViewBag.NotificationPeriod != null)
+                                    {
+                                        foreach (var data in ViewBag.NotificationPeriod)
+                                        {
+                                             if (data.Key == Model.NotificationPeriod)
+                                    {
+                                        <option value='@data.Key' selected>@data.Value</option>
+                                    }
+                                    else
+                                    {
+                                        <option value='@data.Key'>@data.Value</option>
+                                    }
+                                        }
+                                    }
+                                </select>
+
+                            </div>
+                            <div class="form-group form-group-float">
+                                <input class="form-control" type="number" id="NotificationValue" value="@Model.NotificationValue" name="NotificationValue" value="0" max="3" />
+
+                                <span class="form-text text-muted"><code>(Alert on or before Target date)</code></span>
+
+
+                            </div>
+                        </td>
+		   </tr>
+		  <tr class="row">
+			<td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.source_id)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                              <select class="form-control select-search select2-hidden-accessible" data-fouc id="source_id" name="source_id" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.Source != null)
+                                    {
+                                        foreach (var item in ViewBag.Source)
+                                        {
+                                             if (item.Text == Model.source_id)
+                                        {
+                                            <option value='@item.Value' selected>@item.Text</option>
+                                        }
+                                        }
+                                    }
+                                </select>
+			        @Html.ValidationMessageFor(model => model.source_id)   
+                            </div>
+                        </td>
+			<td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.report_no)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                   @Html.DisplayFor(model => model.report_no)
+                            </div>
+                        </td>
+		  </tr>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+            @Html.ActionLink("Back to List", "ActionTrackingRegisterList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+
+            <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Update</button>
+        </div>
+    </div>
+
+       
+        }
+
+@section Scripts {
+    <script>
+
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

@@ -243,6 +243,7 @@ namespace ISOStd.Controllers
                         {
                             IncidentReportModels objAction = new IncidentReportModels
                             {
+                               
                                 Incident_Id = objIncidentReport.Incident_Id,
                                 incident_action = form["incident_action " + i],
                                 resp_pers = form["resp_pers " + i],
@@ -649,7 +650,7 @@ namespace ISOStd.Controllers
                         objActionList.lstIncidentReportModels = new List<IncidentReportModels>();
 
                         sSqlstmt = "select id_incident_action,Incident_Id,incident_action,resp_pers,target_date,incident_status,contractor,"
-                        + " action_report from t_incident_action where Incident_Id = '" + sIncident_Id + "'";
+                        + " action_report,update_date,remarks from t_incident_action where Incident_Id = '" + sIncident_Id + "'";
 
                         dsIncident = objGlobaldata.Getdetails(sSqlstmt);
                         if (dsIncident.Tables.Count > 0 && dsIncident.Tables[0].Rows.Count > 0)
@@ -665,14 +666,18 @@ namespace ISOStd.Controllers
                                         resp_pers = objGlobaldata.GetEmpHrNameById(dsIncident.Tables[0].Rows[i]["resp_pers"].ToString()),
                                         contractor = (dsIncident.Tables[0].Rows[i]["contractor"].ToString()),
                                         incident_status = objGlobaldata.GetDropdownitemById(dsIncident.Tables[0].Rows[i]["incident_status"].ToString()),
-                                        action_report = dsIncident.Tables[0].Rows[i]["action_report"].ToString()
+                                        action_report = dsIncident.Tables[0].Rows[i]["action_report"].ToString(),
+                                        remarks = dsIncident.Tables[0].Rows[i]["remarks"].ToString()
                                     };
 
                                     if (DateTime.TryParse(dsIncident.Tables[0].Rows[i]["target_date"].ToString(), out dateValue))
                                     {
                                         objAction.target_date = dateValue;
                                     }
-
+                                    if (DateTime.TryParse(dsIncident.Tables[0].Rows[i]["update_date"].ToString(), out dateValue))
+                                    {
+                                        objAction.update_date = dateValue;
+                                    }
                                     objActionList.lstIncidentReportModels.Add(objAction);
                                 }
                                 catch (Exception ex)
@@ -1042,6 +1047,7 @@ namespace ISOStd.Controllers
                                 {
                                     IncidentReportModels objAction = new IncidentReportModels
                                     {
+                                        id_incident_action = dsIncident.Tables[0].Rows[i]["id_incident_action"].ToString(),
                                         Incident_Id = dsIncident.Tables[0].Rows[i]["Incident_Id"].ToString(),
                                         incident_action = (dsIncident.Tables[0].Rows[i]["incident_action"].ToString()),
                                         resp_pers = objGlobaldata.GetEmpHrNameById(dsIncident.Tables[0].Rows[i]["resp_pers"].ToString()),
@@ -1313,6 +1319,7 @@ namespace ISOStd.Controllers
                             IncidentReportModels objAction = new IncidentReportModels
                             {
                                 Incident_Id = objIncidentReport.Incident_Id,
+                                id_incident_action = form["id_incident_action " + i],
                                 incident_action = form["incident_action " + i],
                                 resp_pers = form["resp_pers " + i],
                                 incident_status = form["incident_status " + i],
@@ -1502,7 +1509,7 @@ namespace ISOStd.Controllers
                         objActionList.lstIncidentReportModels = new List<IncidentReportModels>();
 
                         sSqlstmt = "select id_incident_action,Incident_Id,incident_action,resp_pers,target_date,incident_status,contractor,"
-                        + " action_report from t_incident_action where Incident_Id = '" + sIncident_Id + "'";
+                        + " action_report,remarks,update_date from t_incident_action where Incident_Id = '" + sIncident_Id + "'";
 
                         dsIncident = objGlobaldata.Getdetails(sSqlstmt);
                         if (dsIncident.Tables.Count > 0 && dsIncident.Tables[0].Rows.Count > 0)
@@ -1518,14 +1525,18 @@ namespace ISOStd.Controllers
                                         resp_pers = objGlobaldata.GetEmpHrNameById(dsIncident.Tables[0].Rows[i]["resp_pers"].ToString()),
                                         contractor = (dsIncident.Tables[0].Rows[i]["contractor"].ToString()),
                                         incident_status = objGlobaldata.GetDropdownitemById(dsIncident.Tables[0].Rows[i]["incident_status"].ToString()),
-                                        action_report = dsIncident.Tables[0].Rows[i]["action_report"].ToString()
+                                        action_report = dsIncident.Tables[0].Rows[i]["action_report"].ToString(),
+                                        remarks = dsIncident.Tables[0].Rows[i]["remarks"].ToString()
                                     };
 
                                     if (DateTime.TryParse(dsIncident.Tables[0].Rows[i]["target_date"].ToString(), out dateValue))
                                     {
                                         objAction.target_date = dateValue;
                                     }
-
+                                    if (DateTime.TryParse(dsIncident.Tables[0].Rows[i]["update_date"].ToString(), out dateValue))
+                                    {
+                                        objAction.update_date = dateValue;
+                                    }
                                     objActionList.lstIncidentReportModels.Add(objAction);
                                 }
                                 catch (Exception ex)
@@ -1741,5 +1752,217 @@ namespace ISOStd.Controllers
 
             return Json(data);
         }
+
+
+
+        [HttpGet]
+        [AllowAnonymous]
+        public ActionResult IncidentReportUpdateActionStatus()
+        {
+            IncidentReportModels objIncidentReport = new IncidentReportModels();
+
+            // EquipmentCategoryModels objEqpModel = new EquipmentCategoryModels();
+            try
+            {
+                if (Request.QueryString["Incident_Id"] != null && Request.QueryString["Incident_Id"] != "")
+                {
+                    string sIncident_Id = Request.QueryString["Incident_Id"];
+                    ViewBag.CurrentEmp = objGlobaldata.GetCurrentUserSession().CompEmpId;
+                    string sSqlstmt = "SELECT Incident_Id, Incident_Num, Reported_On, PreparedBy, Incident_Type, Incident_Datetime, Location, Occurred_onJob, InWork_Premises, "
+                    + " WitnessedBy, Witness_StmtDoc, Incident_Desc, Consequences, Damages, Injury_Nature, Minor_InjuriesNo, Minor_Injuries_LTINo, "
+                    + " Major_InjuriesNo, FatalitiesNo, Actions_Taken, Incident_Reasons, Corrective_Measures, Corrective_ApprovedBy_ReviewedBy, DueDate,"
+                    + " ClosedOn, LoggedBy, Loggeddate,Injuries,CAPA,CAPA_Status,incident_cost,ReportToHSE,accident_reportno,risk_incident,hse_officer,witness_stmt,invest_team,report_upload,ext_witness,overall_status FROM t_incident_report where Incident_Id='" + sIncident_Id + "'";
+
+                    DataSet dsIncident = objGlobaldata.Getdetails(sSqlstmt);
+                    if (dsIncident.Tables.Count > 0)
+                    {
+                        objIncidentReport = new IncidentReportModels
+                        {
+                            Incident_Id = dsIncident.Tables[0].Rows[0]["Incident_Id"].ToString(),
+                            Incident_Num = (dsIncident.Tables[0].Rows[0]["Incident_Num"].ToString()),
+                            PreparedBy = objGlobaldata.GetEmpHrNameById(dsIncident.Tables[0].Rows[0]["PreparedBy"].ToString()),
+                            Incident_Type = objIncidentReport.GetIncidentTypeNameById(dsIncident.Tables[0].Rows[0]["Incident_Type"].ToString()),
+                            Location = objGlobaldata.GetCompanyBranchNameById(dsIncident.Tables[0].Rows[0]["Location"].ToString()),
+                            Occurred_onJob = (dsIncident.Tables[0].Rows[0]["Occurred_onJob"].ToString()),
+                            InWork_Premises = dsIncident.Tables[0].Rows[0]["InWork_Premises"].ToString(),
+                            WitnessedBy = objGlobaldata.GetMultiHrEmpNameById(dsIncident.Tables[0].Rows[0]["WitnessedBy"].ToString()),
+                            Witness_StmtDoc = dsIncident.Tables[0].Rows[0]["Witness_StmtDoc"].ToString(),
+                            Incident_Desc = dsIncident.Tables[0].Rows[0]["Incident_Desc"].ToString(),
+                            //Consequences = dsIncident.Tables[0].Rows[0]["Consequences"].ToString(),
+                            Damages = (dsIncident.Tables[0].Rows[0]["Damages"].ToString()),
+                            Injury_Nature = dsIncident.Tables[0].Rows[0]["Injury_Nature"].ToString(),
+                            Minor_InjuriesNo = objGlobaldata.GetMultiHrEmpNameById(dsIncident.Tables[0].Rows[0]["Minor_InjuriesNo"].ToString()),
+                            Minor_Injuries_LTINo = objGlobaldata.GetMultiHrEmpNameById(dsIncident.Tables[0].Rows[0]["Minor_Injuries_LTINo"].ToString()),
+                            Major_InjuriesNo = objGlobaldata.GetMultiHrEmpNameById(dsIncident.Tables[0].Rows[0]["Major_InjuriesNo"].ToString()),
+                            Actions_Taken = (dsIncident.Tables[0].Rows[0]["Actions_Taken"].ToString()),
+                            Incident_Reasons = dsIncident.Tables[0].Rows[0]["Incident_Reasons"].ToString(),
+                            Corrective_Measures = (dsIncident.Tables[0].Rows[0]["Corrective_Measures"].ToString()),
+                            Corrective_ApprovedBy_ReviewedBy = objGlobaldata.GetMultiHrEmpNameById(dsIncident.Tables[0].Rows[0]["Corrective_ApprovedBy_ReviewedBy"].ToString()),
+                            LoggedBy = objGlobaldata.GetEmpHrNameById(dsIncident.Tables[0].Rows[0]["LoggedBy"].ToString()),
+                            Injuries = dsIncident.Tables[0].Rows[0]["Injuries"].ToString(),
+                            CAPA = dsIncident.Tables[0].Rows[0]["CAPA"].ToString(),
+                            CAPA_Status = objGlobaldata.GetDropdownitemById(dsIncident.Tables[0].Rows[0]["CAPA_Status"].ToString()),
+                            incident_cost = dsIncident.Tables[0].Rows[0]["incident_cost"].ToString(),
+                            ReportToHSE = dsIncident.Tables[0].Rows[0]["ReportToHSE"].ToString(),
+                            accident_reportno = dsIncident.Tables[0].Rows[0]["accident_reportno"].ToString(),
+                            risk_incident = dsIncident.Tables[0].Rows[0]["risk_incident"].ToString(),
+                            hse_officer = objGlobaldata.GetMultiHrEmpNameById(dsIncident.Tables[0].Rows[0]["hse_officer"].ToString()),
+                            witness_stmt = dsIncident.Tables[0].Rows[0]["witness_stmt"].ToString(),
+                            invest_team = objGlobaldata.GetMultiHrEmpNameById(dsIncident.Tables[0].Rows[0]["invest_team"].ToString()),
+                            report_upload = dsIncident.Tables[0].Rows[0]["report_upload"].ToString(),
+                            ext_witness = dsIncident.Tables[0].Rows[0]["ext_witness"].ToString(),
+                            overall_status = objGlobaldata.GetDropdownitemById(dsIncident.Tables[0].Rows[0]["overall_status"].ToString()),
+                        };
+
+                        DateTime dateValue;
+                        if (DateTime.TryParse(dsIncident.Tables[0].Rows[0]["Reported_On"].ToString(), out dateValue))
+                        {
+                            objIncidentReport.Reported_On = dateValue;
+                        }
+
+                        if (DateTime.TryParse(dsIncident.Tables[0].Rows[0]["Incident_Datetime"].ToString(), out dateValue))
+                        {
+                            objIncidentReport.Incident_Datetime = dateValue;
+                        }
+
+
+                        string sSqlstmt1 = "select acc_date,reported_date,reported_by,details,Incident_Type,damage from t_accident_report"
+                + " where id_accident_rept = '" + objIncidentReport.accident_reportno + "'";
+                        DataSet dsAccident = objGlobaldata.Getdetails(sSqlstmt1);
+
+                        if (dsAccident.Tables.Count > 0 && dsAccident.Tables[0].Rows.Count > 0)
+                        {
+                            for (int i = 0; i < dsAccident.Tables[0].Rows.Count; i++)
+                            {
+                                objIncidentReport.reported_by = objGlobaldata.GetMultiHrEmpNameById(dsAccident.Tables[0].Rows[i]["reported_by"].ToString());
+                                objIncidentReport.details = dsAccident.Tables[0].Rows[i]["details"].ToString();
+                                objIncidentReport.Incident_Type = objIncidentReport.GetIncidentTypeNameById(dsAccident.Tables[0].Rows[i]["Incident_Type"].ToString());
+                                objIncidentReport.Consequences = (dsAccident.Tables[0].Rows[i]["damage"].ToString());
+
+                                DateTime dtDocDate;
+                                if (dsAccident.Tables[0].Rows[i]["acc_date"].ToString() != ""
+                                   && DateTime.TryParse(dsAccident.Tables[0].Rows[i]["acc_date"].ToString(), out dtDocDate))
+                                {
+                                    objIncidentReport.acc_date = dtDocDate;
+                                }
+                                if (dsAccident.Tables[0].Rows[i]["reported_date"].ToString() != ""
+                                   && DateTime.TryParse(dsAccident.Tables[0].Rows[i]["reported_date"].ToString(), out dtDocDate))
+                                {
+                                    objIncidentReport.reported_date = dtDocDate;
+                                }
+                            }
+                        }
+                        IncidentReportModelsList objActionList = new IncidentReportModelsList();
+                        objActionList.lstIncidentReportModels = new List<IncidentReportModels>();
+
+                        sSqlstmt = "select id_incident_action,Incident_Id,incident_action,resp_pers,incident_status,update_date,remarks"
+                        + " from t_incident_action where Incident_Id = '" + sIncident_Id + "'";
+
+                        dsIncident = objGlobaldata.Getdetails(sSqlstmt);
+                        if (dsIncident.Tables.Count > 0 && dsIncident.Tables[0].Rows.Count > 0)
+                        {
+                            for (int i = 0; i < dsIncident.Tables[0].Rows.Count; i++)
+                            {
+                                try
+                                {
+                                    IncidentReportModels objAction = new IncidentReportModels
+                                    {
+                                        id_incident_action = dsIncident.Tables[0].Rows[i]["id_incident_action"].ToString(),
+                                        Incident_Id = dsIncident.Tables[0].Rows[i]["Incident_Id"].ToString(),
+                                        incident_action = (dsIncident.Tables[0].Rows[i]["incident_action"].ToString()),
+                                        resp_pers = objGlobaldata.GetEmpHrNameById(dsIncident.Tables[0].Rows[i]["resp_pers"].ToString()),
+                                        incident_status = dsIncident.Tables[0].Rows[i]["incident_status"].ToString(),
+                                        remarks = dsIncident.Tables[0].Rows[i]["remarks"].ToString()
+                                    };
+
+                                    if (DateTime.TryParse(dsIncident.Tables[0].Rows[i]["update_date"].ToString(), out dateValue))
+                                    {
+                                        objAction.update_date = dateValue;
+                                    }
+
+                                    objActionList.lstIncidentReportModels.Add(objAction);
+                                }
+                                catch (Exception ex)
+                                {
+                                    objGlobaldata.AddFunctionalLog("Exception in IncidentReportEdit: " + ex.ToString());
+                                    TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                                }
+                            }
+                            ViewBag.objActionList = objActionList;
+                        }
+                        ViewBag.Status = objGlobaldata.GetDropdownList("Incident Status");
+                        return View(objIncidentReport);
+                    }
+                    else
+                    {
+                        TempData["alertdata"] = "No data exists";
+                        return RedirectToAction("IncidentReportList");
+                    }
+                }
+                else
+                {
+                    TempData["alertdata"] = "Id cannot be null";
+                    return RedirectToAction("IncidentReportList");
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in IncidentReportUpdateActionStatus: " + ex.ToString());
+                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+            }
+
+            return RedirectToAction("IncidentReportList");
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public ActionResult IncidentReportUpdateActionStatus(FormCollection form, IncidentReportModels objModel)
+        {
+            try
+            {
+                IncidentReportModelsList objActionList = new IncidentReportModelsList();
+                objActionList.lstIncidentReportModels = new List<IncidentReportModels>();
+                DateTime dateValue;
+                int iCnt = 0;
+                if (form["itemcnts"] != null && form["itemcnts"] != "" && int.TryParse(form["itemcnts"], out iCnt))
+                {
+                    for (int i = 0; i < Convert.ToInt16(form["itemcnts"]); i++)
+                    {
+                        if (form["incident_status " + i] != null)
+                        {
+                            IncidentReportModels objAction = new IncidentReportModels
+                            {
+                                
+                                id_incident_action = form["id_incident_action " + i],
+                                incident_status = form["incident_status " + i],
+                                remarks = form["remarks " + i],
+                               
+                            };
+                            if (DateTime.TryParse(form["update_date " + i], out dateValue) == true)
+                            {
+                                objAction.update_date = dateValue;
+                            }
+                            objActionList.lstIncidentReportModels.Add(objAction);
+                        }
+                    }
+                }
+
+                if (objModel.FunUpdateActionList(objActionList))
+                {
+                    TempData["Successdata"] = "Action status updated successfully";
+                }
+                else
+                {
+                    TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in IncidentReportUpdateActionStatus: " + ex.ToString());
+                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+            }
+            return RedirectToAction("IncidentReportList");
+        }
+
     }
 }

@@ -1,0 +1,509 @@
+﻿@model ISOStd.Models.TUVAuditModels
+
+@{
+    ViewBag.Title = "AddAudit";
+}
+
+<div class="groupedassets margin10">
+    <span class="groupedassetshead margin10 onestphdcolor">Add Audit</span>
+</div>
+<div id="divmsg">
+    @if (TempData["alertdata"] != null)
+    {
+        <span class="errMsg" style="color: red; font-weight: bold;">@TempData["alertdata"]</span>
+    }
+    @if (TempData["Successdata"] != null)
+    {
+        <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+    }
+</div>
+
+@using (Html.BeginForm("AddAudit", "TUV", FormMethod.Post,
+                         new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <fieldset>
+
+        <legend>CustomerModels</legend>
+        <div style="max-width: 50%;">
+            <table id="tabcontent" style="float: left;">
+                <tr>
+                    <td colspan="4" style="background-color: #4cc4dd; color: #fff; font-weight: bold; font-size: 14px;">Audit Planning</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.CustID)<text style="color: red;">*</text>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <select class="chosen-select" id="CustID" name="CustID" required onchange="SetProject()">
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.CustomerList != null)
+                                {
+                                    foreach (var item in ViewBag.CustomerList)
+                                    {
+                                    <option value='@item.Value'>@item.Text</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Project_no)<text style="color: red;">*</text>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <select class="chosen-select" id="Project_no" name="Project_no" required onchange="SetSupplier()">
+                                <option value='' hidden>Select</option>
+                            </select>
+                        </div>
+                    </td>
+
+                </tr>
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Audit_cycle)<text style="color: red;">*</text>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <select id="Audit_cycle" name="Audit_cycle" required>
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.AuditCycle != null)
+                                {
+                                    foreach (var item in ViewBag.AuditCycle)
+                                    {
+                                    <option value='@item'>@item</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Audit_date)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <input type="text" id="Audit_date" name="Audit_date" style="width: 150px" readonly />
+                        </div>
+                    </td>
+
+                </tr>
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Audit_criteria)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <textarea id="Audit_criteria" name="Audit_criteria" readonly required></textarea>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Location)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <input type="text" id="Location" name="Location" />
+                        </div>
+                    </td>
+
+                </tr>
+                <tr>
+                    <td colspan="4" style="text-align: center;">
+                        <p style="font-size: 11px;">(Add atleast a audit planning to Create Audit)</p>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div style="max-width: 50%; float: right;">
+            <table style="margin-top: 18px; margin-bottom: 20px;">
+                <tr>
+                    <td colspan="4" style="background-color: #4cc4dd; color: #fff; font-weight: bold; font-size: 14px;">Audit Plan detail</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.SupplierName)<text style="color: red;">*</text>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <select id="SupplierName" name="SupplierName">
+                                <option value='' hidden>Select</option>
+                            </select>
+                            <span class="field-validation-error"><span id="SupplierName-message" style="display: none;">Supplier field is required.</span></span>
+                            @Html.ValidationMessageFor(model => model.SupplierName)
+                        </div>
+                    </td>
+
+                    <td>
+                        <div class="editor-label">
+                            Audit Date Time<text style="color: red;">*</text>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <label style="padding-right: 4px;">From Hr: </label>@Html.DropDownList("AuditFromTimeInHour", new SelectList(ViewBag.AuditTimeInHour, "AuditFromTimeInHour"), new { @style = "width: 40px;" })
+                            Min: @Html.DropDownList("AuditFromTimeInMin", new SelectList(ViewBag.AuditTimeInMin, "AuditFromTimeInMin"), new { @style = "width: 40px;" })
+
+                        </div>
+
+                        <div class="editor-field">
+                            <label style="width: 48px;">To   Hr: </label>
+                            @Html.DropDownList("AuditToTimeInHour", new SelectList(ViewBag.AuditTimeInHour, "AuditToTimeInHour"), new { @style = "width: 40px;" })
+                            Min: @Html.DropDownList("AuditToTimeInMin", new SelectList(ViewBag.AuditTimeInMin, "AuditToTimeInMin"), new { @style = "width: 40px;margin-top: 4px;" })
+
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Audit_team)<text style="color: red;">*</text>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.Audit_team)
+                            <span class="field-validation-error"><span id="Audit_team-message" style="display: none;">Audit Team field is required.</span></span>
+                            @Html.ValidationMessageFor(model => model.Audit_team)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Auditee)<text style="color: red;">*</text>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.Auditee)
+                            <span class="field-validation-error"><span id="Auditee-message" style="display: none;">Audtee field is required.</span></span>
+                            @Html.ValidationMessageFor(model => model.Auditee)
+                        </div>
+                    </td>
+
+                </tr>
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Scheduled_date)<text style="color: red;">*</text>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <input type="text" id="Scheduled_date" name="Scheduled_date" style="width: 150px" readonly />
+                            <span class="field-validation-error"><span id="Scheduled_date-message" style="display: none;">Scheduled date field is required.</span></span>
+                            @Html.ValidationMessageFor(model => model.Scheduled_date)
+                        </div>
+                    </td>
+
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Audit_status)<text style="color: red;">*</text>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <select id="Audit_status" name="Audit_status">
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.Status != null)
+                                {
+                                    foreach (var item in ViewBag.Status)
+                                    {
+                                    <option value='@item'>@item</option>
+                                    }
+                                }
+                            </select>
+                            <span class="field-validation-error"><span id="Audit_status-message" style="display: none;">Audit Status field is required.</span></span>
+                            @Html.ValidationMessageFor(model => model.Audit_status)
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+            </table>
+        </div>
+    </fieldset>
+    <div style="width: 100%; padding-left: 136px;">
+        @Html.ActionLink("Back to List", "AuditList", "TUV", null, new { Class = "ActionLink", onclick = "HyperLinkProgressIconFunction()" })
+        <input type="submit" id="btnCreate" value="Save" style="display: none;" onclick="ProgressIconFunction('#form1')" />
+        <div style="float: right; padding-right: 200px;">
+            <input type="button" value="Add" onclick="AddAudit()" />
+        </div>
+    </div>
+    <div id="dvItems" style="overflow: auto; display: none;">
+        <input type="hidden" id="itemcnt" name="itemcnt" value="0" />
+        <div class="editor-label" style="background-color: #4cc4dd; width: 100%; height: 30px; cursor: pointer;">
+            <label for="Audit_Details" style="color: white; padding-left: 5px;">Audit Plan Detail</label>
+        </div>
+
+        <table id="team-list" style="width: 100%">
+            <tr>
+                <th>Action</th>
+                <th>Supplier</th>
+                <th>From time</th>
+                <th>To time</th>
+                <th>Audit Team</th>
+                <th>Auditee</th>
+                <th>Scheduled Date</th>
+                <th>Status</th>
+            </tr>
+        </table>
+    </div>         
+}
+
+@section Scripts {
+    <script>
+        
+        function SetProject() {
+            var CustID = $('#CustID').chosen().val();
+            $('#Project_no').find('option').not(':first').remove();
+            $('#SupplierName').find('option').not(':first').remove();
+            $("#Project_no").trigger("chosen:updated");
+            $("#SupplierName").trigger("chosen:updated");
+            jQuery.ajax({
+                url: '@Url.Action("FunGetProjectList", "TUV")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'CustID': CustID },
+                success: function (result) {
+                    if (result != null && result.length > 0) {
+
+                        $.each(result, function (index, item) {
+                            $("#Project_no").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                            $("#Project_no").trigger("chosen:updated");
+                        });
+                    }
+                    else {
+                        jAlert("No Project exists.");
+                    }
+                }
+            });
+        }
+        function SetSupplier() {
+            var Project_no = $('#Project_no').chosen().val();
+            $('#SupplierName').find('option').not(':first').remove();
+            $("#SupplierName").trigger("chosen:updated");
+            jQuery.ajax({
+                url: '@Url.Action("FunGetSupplierList", "TUV")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'Project_no': Project_no },
+                success: function (result) {
+                    if (result != null && result.length > 0) {
+
+                        $.each(result, function (index, item) {
+                            $("#SupplierName").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                            $("#SupplierName").trigger("chosen:updated");
+                        });
+                    }
+                    else {
+                        jAlert("No Supplier exists.");
+                    }
+                }
+            });
+
+            jQuery.ajax({
+                url: '@Url.Action("FunGetProjectAuditCriteria", "TUV")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'Project_no': Project_no },
+                success: function (result) {
+                    if (result != null && result != "") {
+                        document.getElementById("Audit_criteria").value = result;
+                    }
+                }
+            });
+        }
+
+
+        function Validation() {
+            var validflg = true;
+            var ssnMessage = "";
+            if (document.getElementById("SupplierName").value == "") {
+                ssnMessage = $('#SupplierName-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#SupplierName-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("Audit_team").value == "") {
+                ssnMessage = $('#Audit_team-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#Audit_team-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("Auditee").value == "") {
+                ssnMessage = $('#Auditee-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#Auditee-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("Scheduled_date").value == "") {
+                ssnMessage = $('#Scheduled_date-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#Scheduled_date-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("Audit_status").value == "") {
+                ssnMessage = $('#Audit_status-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#Audit_status-message');
+                ssnMessage.hide();
+            }
+            return validflg;
+        }
+
+        function AddAudit() {
+
+            if (Validation() == true) {
+              
+                document.getElementById("dvItems").style.display = "";
+                var cnt = document.getElementById("itemcnt").value;
+
+                document.getElementById("itemcnt").value = cnt;
+                // Find a <table> element with id="myTable":
+                var table = document.getElementById("team-list");
+
+
+                // Create an empty <tr> element and add it to the 1st position of the table:
+                var row = table.insertRow();
+
+                // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                var cell0 = row.insertCell(0);
+                var cell1 = row.insertCell(1);
+                var cell2 = row.insertCell(2);
+                var cell3 = row.insertCell(3);
+                var cell4 = row.insertCell(4);
+                var cell5 = row.insertCell(5);
+                var cell6 = row.insertCell(6);
+                var cell7 = row.insertCell(7);
+
+                var SupplierName = $('#SupplierName').val();
+                var SupName = document.getElementById("SupplierName");
+                var SupplierText = SupName.options[SupName.selectedIndex].text;
+
+                var AuditFromTimeInHour = $('#AuditFromTimeInHour').val();
+                var AuditFromTimeInMin = $('#AuditFromTimeInMin').val();
+                var AuditToTimeInHour = $('#AuditToTimeInHour').val();
+                var AuditToTimeInMin = $('#AuditToTimeInMin').val();
+                var Audit_team = $('#Audit_team').val();
+                var Auditee = $('#Auditee').val();
+                var Scheduled_date = $('#Scheduled_date').val();
+                var Audit_status = $('#Audit_status').val();
+
+
+                cell0.innerHTML = " <img src='@Url.Content("~/images/cancel.png")' onclick='deleteRow(this)' style='cursor:pointer; padding-right: 5px;'/>";
+                cell1.innerHTML = "<input type='hidden' id='SupplierName" + cnt + "' name='SupplierName" + cnt + "' value='" + SupplierName + "'>" + SupplierText;
+                cell2.innerHTML = "<input type='hidden' id='AuditFromTimeInHour" + cnt + "' name='AuditFromTimeInHour" + cnt + "' value='" + AuditFromTimeInHour + "'><input type='hidden' id='AuditFromTimeInMin" + cnt + "' name='AuditFromTimeInMin" + cnt + "' value='" + AuditFromTimeInMin + "'>" + AuditFromTimeInHour + ":" + AuditFromTimeInMin;
+                cell3.innerHTML = "<input type='hidden' id='AuditToTimeInHour" + cnt + "' name='AuditToTimeInHour" + cnt + "' value='" + AuditToTimeInHour + "'><input type='hidden' id='AuditToTimeInMin" + cnt + "' name='AuditToTimeInMin" + cnt + "' value='" + AuditToTimeInMin + "'>" + AuditToTimeInHour + ":" + AuditToTimeInMin;
+                cell4.innerHTML = "<input type='hidden' id='Audit_team" + cnt + "' name='Audit_team" + cnt + "' value='" + Audit_team + "'>" + Audit_team;
+                cell5.innerHTML = "<input type='hidden' id='Auditee" + cnt + "' name='Auditee" + cnt + "' value='" + Auditee + "'>" + Auditee;
+                cell6.innerHTML = "<input type='hidden' id='Scheduled_date" + cnt + "' name='Scheduled_date" + cnt + "' value='" + Scheduled_date + "'>" + Scheduled_date;
+                cell7.innerHTML = "<input type='hidden' id='Audit_status" + cnt + "' name='Audit_status" + cnt + "' value='" + Audit_status + "'>" + Audit_status;
+
+                cnt++;
+                document.getElementById("itemcnt").value = cnt;
+                document.getElementById("btnCreate").style.display = "";
+
+                ResetControl();
+            }
+
+        }
+
+        function ResetControl() {
+
+            $("#SupplierName").val('').trigger("chosen:updated");
+            document.getElementById("AuditFromTimeInHour").selectedIndex = "0";
+            document.getElementById("AuditFromTimeInMin").selectedIndex = "0";
+            document.getElementById("AuditToTimeInHour").selectedIndex = "0";
+            document.getElementById("AuditToTimeInMin").selectedIndex = "0";
+            document.getElementById("Audit_team").value = "";
+            document.getElementById("Auditee").value = "";
+            document.getElementById("Scheduled_date").value = "";
+            document.getElementById("Audit_status").value = "";
+
+            var ssnMessage = $('#SupplierName-message');
+            ssnMessage.hide();
+            ssnMessage = $('#Audit_team-message');
+            ssnMessage.hide();
+            ssnMessage = $('#Auditee-message');
+            ssnMessage.hide();
+            ssnMessage = $('#Scheduled_date-message');
+            ssnMessage.hide();
+            ssnMessage = $('#Audit_status-message');
+            ssnMessage.hide();
+        }
+
+        function deleteRow(btn) {
+            var row = btn.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+        }
+
+
+        $(function () {
+            $("#SupplierName").chosen();
+            $("#Project_no").chosen();
+            $("#CustID").chosen();
+            $.validator.setDefaults({ ignore: ":hidden:not('.chosen-select')" });
+            $('#Audit_date').datepicker({
+                dateFormat: "dd/mm/yy",
+                buttonImageOnly: true,
+                buttonImage: '../Images/Calender.png',
+                showOn: 'both',
+                changeMonth: true,
+                changeYear: true
+            });
+            $('#Scheduled_date').datepicker({
+                dateFormat: "dd/mm/yy",
+                buttonImageOnly: true,
+                buttonImage: '../Images/Calender.png',
+                showOn: 'both',
+                changeMonth: true,
+                changeYear: true
+            });
+
+            $("#Audit_date").datepicker("setDate", new Date());
+            $("#Scheduled_date").datepicker("setDate", new Date());
+        });
+
+
+        function FileFormatValidation(file) {
+            var ext = file.value.split(".").pop().toLowerCase();
+            if ($.inArray(ext, ["doc", "pdf", "docx", "jpg", "jpeg", "gif", "png"]) == -1) {
+                file.value = "";
+                jAlert("Invalid file format, please upload only doc, pdf, docx, jpg, jpeg, gif, png format");
+            }
+
+        }
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

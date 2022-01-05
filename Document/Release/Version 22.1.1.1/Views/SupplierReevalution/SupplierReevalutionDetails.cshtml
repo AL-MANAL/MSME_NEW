@@ -1,0 +1,545 @@
+﻿@model ISOStd.Models.SupplierReevalutionModels
+@using System.Data;
+
+@{
+    ViewBag.Title = "";
+    ISOStd.Models.SupplierReevalutionModelsList ObjTransList = new ISOStd.Models.SupplierReevalutionModelsList();
+    ISOStd.Models.SupplierReevalutionModelsList objQuestList = new ISOStd.Models.SupplierReevalutionModelsList();
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+
+    if (ViewBag.ObjTransList != null)
+    {
+        ObjTransList = ViewBag.ObjTransList;
+    }
+    if (ViewBag.ObjQuestList != null)
+    {
+        objQuestList = ViewBag.ObjQuestList;
+    }
+}
+
+@section featured {
+    <div class="page-header page-header-light">
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4><span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Home</span>
+                    </a>
+                    <a href="@Url.Action("SupplierReevalutionList", "SupplierReevalution", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Supplier Reevaluation</span>
+                    </a>
+                    <span class="breadcrumb-item active">Supplier Reevaluation Details</span>
+                </div>
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+            <div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        @using (Html.BeginForm("SupplierReevalutionPDF", "SupplierReevalution", FormMethod.Post, new { id = "form1", name = "form1" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" id="id_reevaluation" name="id_reevaluation" value="@Model.id_reevaluation" />
+
+                            <button type="submit" class="dropdown-item">
+                                <i class="icon-printer2"></i> Report
+                            </button>
+                        }
+                    </div>
+                    @*<div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i>All settings</a>
+                        </div>
+                    </div>*@
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<div class="card">
+
+    <div class="card-header header-elements-inline bg-primary">
+        <h5 class="card-title">Supplier Reevaluation Details</h5>
+        <div class="header-elements">
+            <div class="list-icons">
+                <a class="list-icons-item" data-action="collapse"></a>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <div class="card-header bg-white header-elements-sm-inline">
+            <div class="header-elements">
+                <div class="mt-2 mt-sm-0">
+                    <a class="btn bg-orange btn-labeled btn-labeled-left" data-style="radius" href='@Url.Action("SupplierReevalutionEdit", "SupplierReevalution", new { id_reevaluation = Model.id_reevaluation })' title="Edit" onclick="HyperLinkProgressIconFunction()">
+                        <b><i class="icon-add-to-list"></i></b>Edit
+                    </a>
+                    @Html.ActionLink("Back to List", "SupplierReevalutionList", null, new { @class = "btn btn-outline bg-orange text-orange border-orange", onclick = "HyperLinkProgressIconFunction()" })
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <div class="container-fluid">
+
+            <table class="table table-dark table-bordered table-striped table-hover bg-blue-800">
+                <thead></thead>
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.branch)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.branch)
+                        </span>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.Department)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.Department)
+                        </span>
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.perf_review_year)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.perf_review_year)
+                        </span>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.Location)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.Location)
+                        </span>
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.supplier)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.supplier)
+                        </span>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            Supplier Code
+                        </p>
+                    </td>
+                    <td class="col">
+                        <p class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.supp_code)
+                        </p>
+                    </td>
+                </tr>
+                <tr class="row">                  
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            Supplier Scope
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.supp_scope)
+                        </span>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div style="overflow-x:auto;">
+            <table class="table table-lg">
+                <thead>
+                    <tr>
+                        <th>
+                            Sl.No
+                        </th>
+                        <th>
+                            Questions
+                        </th>
+                        <th>
+                            Rating
+                        </th>                       
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (ViewBag.ObjQuestList != null)
+                    {
+                        int iSrno = 0;
+                        foreach (var item in objQuestList.EvalList)
+                        {
+                            iSrno = iSrno + 1;
+                             <tr>
+                                <td>
+                                    @iSrno
+                                </td>
+                                <td>
+                                    @item.SQId
+                                </td>
+                                <td>
+                                    @item.SQ_OptionsId
+                                </td>                                
+                            </tr>
+                        }                       
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <table class="table table-lg">
+            <tr>                
+                <th>Date</th>
+                <th>Customer Name</th>
+                <th>Compliment</th>
+                <th>Complaint</th>
+                <th>Complaint Ref. No</th>
+            </tr>
+            @if (ObjTransList.EvalList != null && ObjTransList.EvalList.Count > 0)
+            {
+                for (int index = 0; index < ObjTransList.EvalList.Count; index++)
+                {
+                    <tr>                       
+                        <td>
+                            @if (ObjTransList.EvalList[index].date_reevaluation != null && ObjTransList.EvalList[index].date_reevaluation > Convert.ToDateTime("0001/01/01"))
+                            {
+                               @ObjTransList.EvalList[index].date_reevaluation.ToString("dd/MM/yyyy")
+                            }
+                        </td>
+                        <td>
+                          @(ObjTransList.EvalList[index].cust_name)
+                        </td>
+                        <td>
+                           @(ObjTransList.EvalList[index].complaints)
+                        </td>
+                        <td>
+                           @(ObjTransList.EvalList[index].description_complaint)
+                        </td>
+                        <td>
+                           @(ObjTransList.EvalList[index].ref_no_complaint)
+                        </td>
+                    </tr>
+                }
+            }
+            </table>
+    </div>
+</div>
+
+
+<div class="card">
+    <div class="card-body">
+        <table class="table table-lg">
+            <tr class="row">
+                REVIEW BY QUALITY & HSE DEPARTMENT
+            </tr>
+            <tr class="row">
+                <td class="col-xs-3 col-md-2">
+                    <p class="bg-brown py-1 px-2 rounded">
+                        @Html.DisplayNameFor(model => model.certification)
+                    </p>
+                </td>
+                <td class="col">
+                    <span class="bg-dark py-1 px-2 rounded">
+                        @Html.DisplayFor(model => model.certification)
+                    </span>
+                </td>
+                <td class="col-xs-3 col-md-2">
+                    <p class="bg-brown py-1 px-2 rounded">
+                        @Html.DisplayNameFor(model => model.other_certification)
+                    </p>
+                </td>
+                <td class="col">
+                    <span class="bg-dark py-1 px-2 rounded">
+                        @Html.DisplayFor(model => model.other_certification)
+                    </span>
+                </td>
+
+            </tr>
+            <tr class="row">
+                <td class="col-xs-3 col-md-2">
+                    <p class="bg-brown py-1 px-2 rounded">
+                        @Html.DisplayNameFor(model => model.supp_required)
+                    </p>
+                </td>
+                <td class="col">
+                    <span class="bg-dark py-1 px-2 rounded">
+                        @Html.DisplayFor(model => model.supp_required)
+                    </span>
+                </td>
+                <td class="col-xs-3 col-md-2">
+                    <p class="bg-brown py-1 px-2 rounded">
+                        @Html.DisplayNameFor(model => model.auditor_name)
+                    </p>
+                </td>
+                <td class="col">
+                    <span class="bg-dark py-1 px-2 rounded">
+                        @Html.DisplayFor(model => model.auditor_name)
+                    </span>
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="col-xs-3 col-md-2">
+                    <p class="bg-brown py-1 px-2 rounded">
+                        @Html.DisplayNameFor(model => model.audit_date)
+                    </p>
+                </td>
+                <td class="col">
+                    <span class="bg-dark py-1 px-2 rounded">
+                        @if (Model.audit_date != null && Model.audit_date > Convert.ToDateTime("01/01/0001"))
+                        {
+                            @Html.Label(Model.audit_date.ToString("dd/MM/yyyy"))
+                        }
+                    </span>
+                </td>
+
+                <td class="col-xs-3 col-md-2">
+                    <p class="bg-brown py-1 px-2 rounded">
+                        @Html.DisplayNameFor(model => model.audit_upload)
+                    </p>
+                </td>
+                <td class="col">
+                    @if (Model.audit_upload != null && Model.audit_upload != "" && Model.audit_upload.Length > 0)
+                    {
+                        foreach (var docs in Model.audit_upload.Trim(',').Split(','))
+                        {
+                            <p class="bg-dark py-1 px-2 rounded">
+                                <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" style="color: orange;">
+                                    Preview
+                                </a>
+                            </p>
+                        }
+                    }
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="col-xs-12 col-md-8">
+                    <p class="bg-brown py-1 px-2 rounded">
+                        @Html.DisplayNameFor(model => model.supp_complaint)
+                    </p>
+                </td>
+                <td class="col">
+                    <span class="bg-dark py-1 px-2 rounded">
+                        @Html.DisplayFor(model => model.supp_complaint)
+                    </span>
+                </td>               
+            <tr class="row">
+                <td class="col-xs-12 col-md-8">
+                    <p class="bg-brown py-1 px-2 rounded">
+                        @Html.DisplayNameFor(model => model.issatisfactory)
+                    </p>
+                </td>
+                <td class="col">
+                    <span class="bg-dark py-1 px-2 rounded">
+                        @Html.DisplayFor(model => model.issatisfactory)
+                    </span>
+                </td>                
+            </tr>
+            <tr class="row">
+                <td class="col-xs-12 col-md-8">
+                    <p class="bg-brown py-1 px-2 rounded">
+                        @Html.DisplayNameFor(model => model.anycomplaint)
+                    </p>
+                </td>
+                <td class="col">
+                    <span class="bg-dark py-1 px-2 rounded">
+                        @Html.DisplayFor(model => model.anycomplaint)
+                    </span>
+                </td>                
+            </tr>
+            <tr class="row">
+                <td class="col-xs-12 col-md-8">
+                    <p class="bg-brown py-1 px-2 rounded">
+                        @Html.DisplayNameFor(model => model.ishandled)
+                    </p>
+                </td>
+                <td class="col">
+                    <span class="bg-dark py-1 px-2 rounded">
+                        @Html.DisplayFor(model => model.ishandled)
+                    </span>
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="col-xs-3 col-md-2">
+                    <p class="bg-brown py-1 px-2 rounded">
+                        @Html.DisplayNameFor(model => model.remark)
+                    </p>
+                </td>
+                <td class="col">
+                    <span class="bg-dark py-1 px-2 rounded">
+                        @Html.DisplayFor(model => model.remark)
+                    </span>
+                </td>                
+            </tr>
+            <tr class="row">
+                <td class="col-xs-3 col-md-2">
+                    <p class="bg-brown py-1 px-2 rounded">
+                        @Html.DisplayNameFor(model => model.visited)
+                    </p>
+                </td>
+                <td class="col">
+                    <p class="bg-brown py-1 px-2 rounded">
+                        @Html.DisplayFor(model => model.visited)
+                    </p>
+                </td>
+                <td class="col-xs-3 col-md-2">
+                    <p class="bg-brown py-1 px-2 rounded">
+                        @Html.DisplayNameFor(model => model.visit_upload)
+                    </p>
+                </td>
+                <td class="col">
+                    @if (Model.visit_upload != null && Model.visit_upload != "" && Model.visit_upload.Length > 0)
+                    {
+                        foreach (var docs in Model.visit_upload.Trim(',').Split(','))
+                        {
+                            <p class="bg-brown py-1 px-2 rounded">
+                                <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" style="color: orange;">
+                                    Preview
+                                </a>
+                            </p>
+                        }
+                    }
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="col-xs-3 col-md-2">
+                    <p class="bg-brown py-1 px-2 rounded">
+                        @Html.DisplayNameFor(model => model.date_visited)
+                    </p>
+                </td>
+                <td class="col">
+                    <span class="bg-dark py-1 px-2 rounded">
+                        @if (Model.date_visited != null && Model.date_visited > Convert.ToDateTime("01/01/0001"))
+                        {
+                            @Html.Label(Model.date_visited.ToString("dd/MM/yyyy"))
+                        }
+                    </span>
+                </td>
+                <td class="col-xs-3 col-md-2">
+                    <p class="bg-brown py-1 px-2 rounded">
+                        @Html.DisplayNameFor(model => model.visited_by)
+                    </p>
+                </td>
+                <td class="col">
+                    <p class="bg-brown py-1 px-2 rounded">
+                        @Html.DisplayFor(model => model.visited_by)
+                    </p>
+                </td>
+            </tr>
+            <tr class="row">
+                STATUS OF RE-EVALUATION
+            </tr>
+            <tr class="row">
+                <td class="col-xs-3 col-md-2">
+                    <p class="bg-brown py-1 px-2 rounded">
+                        @Html.DisplayNameFor(model => model.recommanded)
+                    </p>
+                </td>
+                <td class="col">
+                    <p class="bg-dark py-1 px-2 rounded">
+                        @Html.DisplayFor(model => model.recommanded)
+                    </p>
+                </td>
+                <td class="col-xs-3 col-md-2">
+                    <p class="bg-brown py-1 px-2 rounded">
+                        @Html.DisplayNameFor(model => model.recommanded_to)
+                    </p>
+                </td>
+                <td class="col">
+                    <p class="bg-dark py-1 px-2 rounded">
+                        @Html.DisplayFor(model => model.recommanded_to)
+                    </p>
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="col-xs-3 col-md-2">
+                    <p class="bg-brown py-1 px-2 rounded">
+                        @Html.DisplayNameFor(model => model.approved)
+                    </p>
+                </td>
+                <td class="col">
+                    <p class="bg-dark py-1 px-2 rounded">
+                        @Html.DisplayFor(model => model.approved)
+                    </p>
+                </td>
+                <td class="col-xs-3 col-md-2">
+                    <p class="bg-brown py-1 px-2 rounded">
+                        @Html.DisplayNameFor(model => model.approved_to)
+                    </p>
+                </td>
+                <td class="col">
+                    <p class="bg-dark py-1 px-2 rounded">
+                        @Html.DisplayFor(model => model.approved_to)
+                    </p>
+                </td>
+            </tr>
+            
+        </table>
+    </div>
+</div>
+@section scripts {
+    <script>
+                //----zzz
+
+
+                $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+                                        @:     text: '@TempData["alertdata"]',
+                                        @:     type: 'error'
+                                        @: }).show();
+                                                                         }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+                                        @:       text: '@TempData["Successdata"]',
+                                        @:       type: 'success'
+                @:}).show();
+                                    }
+                });
+
+    </script>
+
+
+}

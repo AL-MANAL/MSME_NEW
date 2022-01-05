@@ -160,7 +160,7 @@ namespace ISOStd.Models
         [Display(Name = "Target Date")]
         public DateTime target_date { get; set; }
 
-        [Display(Name = "Status")]
+        [Display(Name = "Action Status")]
         public string incident_status { get; set; }
 
         [Display(Name = "Contractor")]
@@ -205,6 +205,12 @@ namespace ISOStd.Models
 
         [Display(Name = "Investigation end date")]
         public DateTime invest_end_date { get; set; }
+
+        [Display(Name = "Remarks")]
+        public string remarks { get; set; }
+
+        [Display(Name = "Update Date")]
+        public DateTime update_date { get; set; }
 
         internal bool FunUpdateIncidentAction(string Incident_Id)
         {
@@ -348,30 +354,78 @@ namespace ISOStd.Models
         {
             try
             {
-                string sSqlstmt = "delete from t_incident_action where Incident_Id='" + objActionList.lstIncidentReportModels[0].Incident_Id + "'; ";
+                string sSqlstmt = "set sql_safe_updates=0;delete from t_incident_action where Incident_Id='" + objActionList.lstIncidentReportModels[0].Incident_Id + "'; ";
 
 
                 for (int i = 0; i < objActionList.lstIncidentReportModels.Count; i++)
                 {
-                    sSqlstmt = sSqlstmt + "insert into t_incident_action(Incident_Id,incident_action,resp_pers,incident_status,contractor,action_report";
+                    
+                    string sid_incident_action = "null";
+                    sSqlstmt = sSqlstmt + "insert into t_incident_action(id_incident_action,Incident_Id,incident_action,resp_pers,incident_status,contractor,action_report";
 
-                    string sFieldValue = "", sFields = "";
+                    string sFieldValue = "", sFields = "", sValue = "", sStatement = "";
+                    if (objActionList.lstIncidentReportModels[i].id_incident_action != null)
+                    {
+                        sid_incident_action = objActionList.lstIncidentReportModels[i].id_incident_action;
+                    }
                     if (objActionList.lstIncidentReportModels[i].target_date != null && objActionList.lstIncidentReportModels[i].target_date > Convert.ToDateTime("01/01/0001 00:00:00"))
                     {
+                        sStatement = sStatement + ", target_date= values(target_date)";
                         sFields = sFields + ", target_date";
                         sFieldValue = sFieldValue + ", '" + objActionList.lstIncidentReportModels[i].target_date.ToString("yyyy/MM/dd") + "'";
                     }
+                    if (objActionList.lstIncidentReportModels[i].update_date != null && objActionList.lstIncidentReportModels[i].update_date > Convert.ToDateTime("01/01/0001 00:00:00"))
+                    {
+                        sStatement = sStatement + ", update_date= values(update_date)";
+                        sFields = sFields + ", update_date";
+                        sFieldValue = sFieldValue + ", '" + objActionList.lstIncidentReportModels[i].update_date.ToString("yyyy/MM/dd") + "'";
+                    }
                     sSqlstmt = sSqlstmt + sFields;
-                    sSqlstmt = sSqlstmt + ") values('" + objActionList.lstIncidentReportModels[0].Incident_Id + "', '" + objActionList.lstIncidentReportModels[i].incident_action + "', '" + objActionList.lstIncidentReportModels[i].resp_pers + "', '" + objActionList.lstIncidentReportModels[i].incident_status + "', '" + objActionList.lstIncidentReportModels[i].contractor + "', '" + objActionList.lstIncidentReportModels[i].action_report + "'";
-                      
-                    sSqlstmt = sSqlstmt + sFieldValue + ");";
+                    sSqlstmt = sSqlstmt + ") values(" + sid_incident_action + ",'" + objActionList.lstIncidentReportModels[0].Incident_Id + "','" + objActionList.lstIncidentReportModels[i].incident_action + "','" + objActionList.lstIncidentReportModels[i].resp_pers + "'"
+                        + ",'" + objActionList.lstIncidentReportModels[i].incident_status + "','" + objActionList.lstIncidentReportModels[i].contractor + "','" + objActionList.lstIncidentReportModels[i].action_report + "'";
+                    sSqlstmt = sSqlstmt + sFieldValue + ")";
+                    sValue = " ON DUPLICATE KEY UPDATE "
+                    + " id_incident_action= values(id_incident_action), Incident_Id= values(Incident_Id), incident_action = values(incident_action), resp_pers= values(resp_pers), incident_status= values(incident_status), contractor= values(contractor), action_report= values(action_report)";
+                    sSqlstmt = sSqlstmt + sValue;
+                    sSqlstmt = sSqlstmt + sStatement + ";";
                 }
 
                 return objGlobalData.ExecuteQuery(sSqlstmt);
+
             }
             catch (Exception ex)
             {
                 objGlobalData.AddFunctionalLog("Exception in FunAddActionList: " + ex.ToString());
+            }
+            return false;
+        }
+
+        internal bool FunUpdateActionList(IncidentReportModelsList objActionList)
+        {
+            try
+            {
+                string sSqlstmt = "";
+                for (int i = 0; i < objActionList.lstIncidentReportModels.Count; i++)
+                {
+
+                    sSqlstmt = sSqlstmt+ "update t_incident_action set  incident_status='" + objActionList.lstIncidentReportModels[i].incident_status
+                    + "', remarks='" + objActionList.lstIncidentReportModels[i].remarks + "'";
+
+                    if (objActionList.lstIncidentReportModels[i].update_date > Convert.ToDateTime("01/01/0001"))
+                    {
+                        sSqlstmt = sSqlstmt + ", update_date='" + objActionList.lstIncidentReportModels[i].update_date.ToString("yyyy-MM-dd HH':'mm':'ss") + "' ";
+                    }
+
+                    sSqlstmt = sSqlstmt + " where id_incident_action='" + objActionList.lstIncidentReportModels[i].id_incident_action + "';";
+
+                }
+
+                return objGlobalData.ExecuteQuery(sSqlstmt);
+
+            }
+            catch (Exception ex)
+            {
+                objGlobalData.AddFunctionalLog("Exception in FunUpdateActionList: " + ex.ToString());
             }
             return false;
         }

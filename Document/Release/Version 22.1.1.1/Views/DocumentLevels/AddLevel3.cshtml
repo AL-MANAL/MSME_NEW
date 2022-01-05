@@ -1,0 +1,914 @@
+﻿@model ISOStd.Models.DocumentLevelsModels
+@using System.Data;
+
+@{ ViewBag.Title = "DocumentLevelsModels";
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+
+    DataSet Doclevel = new DataSet();
+    Doclevel = ViewBag.DocLevelDetails;
+
+    DataSet dsDoclevel = new DataSet();
+
+    if (ViewBag.dsDoclevel != null)
+    {
+        dsDoclevel = ViewBag.dsDoclevel;
+    } }
+
+
+
+@section featured {
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+
+                    <span class="breadcrumb-item active"> Document Level</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            <div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<div class="header-elements">
+    <div class="d-flex justify-content-center">
+        <a href="@Url.Action("AddDirectoratecode", "DocumentLevels", null)" class="btn btn-link btn-float text-default"><i class="icon-2x icon-barcode2 text-primary"></i><span>Directorate (xxx)</span></a>
+        <a href="@Url.Action("AddGroupcode", "DocumentLevels", null)" class="btn btn-link btn-float text-default"><i class="icon-2x icon-barcode2 text-primary"></i> <span>Group (yyy)</span></a>
+        <a href="@Url.Action("AddTeamcode", "DocumentLevels", null)" class="btn btn-link btn-float text-default"><i class="icon-2x icon-barcode2 text-primary"></i> <span>Team (zzz)</span></a>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6">
+
+        <!-- Basic layout-->
+        <div class="card">
+            <div class="card-header header-elements-inline">
+                <h5 class="card-title">Document Level Add / Remove</h5>
+                <div class="header-elements">
+                    <div class="list-icons">
+                        <a class="list-icons-item" data-action="collapse"></a>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body">
+                @using (Html.BeginForm("AddLevel", "DocumentLevels", FormMethod.Post, new { id = "form1", name = "form1" }))
+                {
+    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary(true)
+
+                                    <div class="container-fluid">
+                                        <table class="table table-lg">
+                                            <tbody>
+                                                <tr>
+                                                    <td>
+                                                        Document Level
+                                                    </td>
+                                                    <td>
+                                                        @Html.EditorFor(m => m.Document_Level, new { htmlAttributes = new { @required = "required", @class = "form-control" } })
+                                                        @Html.ValidationMessageFor(m => m.Document_Level)
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        Prepared By
+                                                    </td>
+                                                    <td>
+                                                        <select class="form-control select-fixed-multiple" multiple="multiple" data-fouc id="Prepared_by" name="Prepared_by" required>
+                                                    
+                                                            @if (ViewBag.Roles != null)
+                                                            {
+                                                                foreach (var item in ViewBag.Roles)
+                                                                {
+
+                                                    <option value='@item.Value'>@item.Text</option>
+}
+                                            }
+                                                        </select>
+                                                        @Html.ValidationMessageFor(m => m.Prepared_by)
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        Updated By
+                                                    </td>
+                                                    <td>
+                                                        <select class="form-control select-fixed-multiple" multiple="multiple" data-fouc id="Updated_by" name="Updated_by" required>
+                                                            @*<option value='' hidden>Select</option>*@
+                                                            @if (ViewBag.Roles != null)
+                                                            {
+                                                                foreach (var item in ViewBag.Roles)
+                                                                {
+
+                                                    <option value='@item.Value'>@item.Text</option>}
+                                                                    }
+                                                        </select>
+
+                                                        @Html.ValidationMessageFor(m => m.Updated_by)
+                                                    </td>
+                                                </tr>
+
+                                                <tr>
+                                                    <td>
+                                                        Checked By
+                                                    </td>
+                                                    <td>
+                                                        <select class="form-control select-fixed-multiple" multiple="multiple" data-fouc id="Checked_by" name="Checked_by" required>
+                                                            @*<option value='' hidden>Select</option>*@
+                                                            @if (ViewBag.Roles != null)
+                                                            {
+                                                                foreach (var item in ViewBag.Roles)
+                                                                {
+
+                                                    <option value='@item.Value'>@item.Text</option>}
+                                                                    }
+                                                        </select>
+
+                                                        @Html.ValidationMessageFor(m => m.Checked_by)
+
+                                                    </td>
+                                                </tr>
+
+                                                <tr>
+                                                    <td>
+                                                        Reviewed By
+                                                    </td>
+                                                    <td>
+
+                                                       
+
+
+
+                                                        <select class="form-control select-fixed-multiple" multiple="multiple" data-fouc id="Reviewed_by" name="Reviewed_by" required>
+                                                         
+                                                            @if (ViewBag.Roles != null)
+                                                            {
+                                                                foreach (var item in ViewBag.Roles)
+                                                                {
+
+                                                    <option value='@item.Value'>@item.Text</option>
+}
+                                            }
+                                                        </select>
+
+
+                                                        @Html.ValidationMessageFor(m => m.Reviewed_by)
+
+
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        Approved By
+                                                    </td>
+                                                    <td>
+                                                        <select class="form-control select-fixed-multiple" multiple="multiple" data-fouc id="Approved_by" name="Approved_by" required>
+                                                            @*<option value='' hidden>Select</option>*@
+                                                            @if (ViewBag.Roles != null)
+                                                            {
+                                                                foreach (var item in ViewBag.Roles)
+                                                                {
+
+                                                    <option value='@item.Value'>@item.Text</option>}
+                                                                    }
+                                                        </select>
+                                                        @Html.ValidationMessageFor(m => m.Approved_by)
+
+                                                    </td>
+                                                </tr>
+
+                                                <tr>
+                                                    <td>
+                                                        Format Specifier
+                                                    </td>
+                                                    <td>
+                                                        @Html.ValidationMessageFor(m => m.Format_Specifier)
+                                                        <input type="radio" class="Format_Specifier" name="Format_Specifier" value="KIPIC/ xxx /yyy /zzz / Serial" required /> <label class="form-check-label"> KIPIC/ xxx /yyy /zzz / Serial</label>
+                                                        <br />
+                                                        <input type="radio" class="Format_Specifier" name="Format_Specifier" value="KIPIC/ xxx /yyy / zzz / Serial.Fxx" required />  <label class="form-check-label"> KIPIC/ xxx /yyy /zzz / Serial.Fxx</label>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                                    <div class="card-footer bg-white ml-auto">
+                                                        <button type="submit" name="button" id="button" value="Save" class="btn bg-indigo-400 float-right" onclick="ProgressIconFunction('#form1')">Submit<i class="icon-paperplane ml-2"></i></button>
+                                                    </div>}
+            </div>
+        </div>
+        <!-- /basic layout -->
+
+    </div>
+    <div class="col-md-6">
+
+        <!-- Basic layout-->
+        <div class="card">
+            <div class="card-header header-elements-inline">
+                <h5 class="card-title">Document List</h5>
+                <div class="header-elements">
+                    <div class="list-icons">
+                        <a class="list-icons-item" data-action="collapse"></a>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body">
+
+
+                <div class="container-fluid">
+
+
+                    <div>
+                        @if (Doclevel.Tables.Count > 0 && Doclevel.Tables[0].Rows.Count > 0)
+                        {
+
+                    <table id="tblMeetingList" class="table table-xs">
+
+                        <tbody>
+
+
+                            <tr style="background-color: #e5eafe; color: #0099ff; font-weight: bold;">
+                                <th>Document Level Details</th>
+
+                                <th>Action</th>
+                            </tr>
+
+                            @{ int index = 2; }
+                            @for (int item = 0; item < Doclevel.Tables[0].Rows.Count; item++)
+
+                            {
+                            <tr>
+                                <td>
+
+                                    @if (Doclevel.Tables[0].Rows[item]["id_doc_level"].ToString() == ViewBag.DocLevelId)
+                                    {<div class="row bg-info" id="row_@Doclevel.Tables[0].Rows[item]["id_doc_level"].ToString()">
+                                            <div class="col">
+                                                <input type="radio" class="DocLevelList" name="DocLevelList" value="@Doclevel.Tables[0].Rows[item]["id_doc_level"].ToString()" checked="checked" onclick="PopulateDocLevel(@Doclevel.Tables[0].Rows[item]["id_doc_level"].ToString(),@index)" />
+                                                @Doclevel.Tables[0].Rows[item]["Document_Level"].ToString()
+                                            </div>
+
+                                        </div>}
+                                    else
+                                    {
+                                <div class="row" id="row_@Doclevel.Tables[0].Rows[item]["id_doc_level"].ToString()">
+                                    <div class="col">
+                                        <input type="radio" class="DocLevelList" name="DocLevelList" value="@Doclevel.Tables[0].Rows[item]["id_doc_level"].ToString()" onclick="PopulateDocLevel(@Doclevel.Tables[0].Rows[item]["id_doc_level"].ToString(),@index)" />
+                                        @Doclevel.Tables[0].Rows[item]["Document_Level"].ToString()
+                                    </div>
+
+                                </div>}
+
+                                    <div class="mt-5">Prepared By</div>
+                                    <select class="form-control select-fixed-multiple" multiple="multiple" data-fouc id="Prepared_by_@Doclevel.Tables[0].Rows[item]["id_doc_level"].ToString()" name="Prepared_by_@Doclevel.Tables[0].Rows[item]["id_doc_level"].ToString()" required>
+
+                                        @if (ViewBag.Roles != null)
+                                        {
+                                            foreach (var item2 in ViewBag.Roles)
+                                            {
+
+                                                if (Array.IndexOf(Doclevel.Tables[0].Rows[item]["Prepared_by"].ToString().Split(','), item2.Value) >= 0)
+                                                {
+                                <option value='@item2.Value' selected>@item2.Text</option>
+ }
+
+                            else
+                            {
+                                <option value='@item2.Value'> @item2.Text </option>}
+                                                        }
+
+
+
+                                                    }
+                                    </select>
+
+
+                                    <div>Updated By</div>
+                                    <select class="form-control select-fixed-multiple" multiple="multiple" data-fouc id="Updated_by_@Doclevel.Tables[0].Rows[item]["id_doc_level"].ToString()" name="Updated_by_@Doclevel.Tables[0].Rows[item]["id_doc_level"].ToString()" required>
+
+                                        @if (ViewBag.Roles != null)
+                                        {
+                                            foreach (var item2 in ViewBag.Roles)
+                                            {
+
+                                                if (Array.IndexOf(Doclevel.Tables[0].Rows[item]["Updated_by"].ToString().Split(','), item2.Value) >= 0)
+                                                {
+                                <option value='@item2.Value' selected>@item2.Text</option> }
+
+                                                            else
+                                                            {
+                                <option value='@item2.Value'> @item2.Text </option>
+}
+                        }
+
+
+
+
+                    }
+
+                                    </select>
+
+                                    <div>Checked By</div>
+                                    <select class="form-control select-fixed-multiple" multiple="multiple" data-fouc id="Checked_by_@Doclevel.Tables[0].Rows[item]["id_doc_level"].ToString()" name="Checked_by_@Doclevel.Tables[0].Rows[item]["id_doc_level"].ToString()" required>
+
+                                        @if (ViewBag.Roles != null)
+                                        {
+                                            foreach (var item2 in ViewBag.Roles)
+                                            {
+
+                                                if (Array.IndexOf(Doclevel.Tables[0].Rows[item]["Checked_by"].ToString().Split(','), item2.Value) >= 0)
+                                                {
+                                <option value='@item2.Value' selected>@item2.Text</option> }
+
+                                                            else
+                                                            {
+                                <option value='@item2.Value'> @item2.Text </option>
+}
+                        }
+
+
+
+
+                    }
+
+                                    </select>
+
+
+
+                                    <div>Reviewed By</div>
+                                    <select class="form-control select-fixed-multiple" multiple="multiple" data-fouc id="Reviewed_by_@Doclevel.Tables[0].Rows[item]["id_doc_level"].ToString()" name="Reviewed_by_@Doclevel.Tables[0].Rows[item]["id_doc_level"].ToString()" required>
+
+                                        @if (ViewBag.Roles != null)
+                                        {
+                                            foreach (var item2 in ViewBag.Roles)
+                                            {
+                                                if (Array.IndexOf(Doclevel.Tables[0].Rows[item]["Reviewed_by"].ToString().Split(','), item2.Value) >= 0)
+                                                {
+                                <option value='@item2.Value' selected>@item2.Text</option> }
+
+                                                            else
+                                                            {
+                                <option value='@item2.Value'> @item2.Text </option>
+}
+                        }
+
+
+
+
+                    }
+                                        }
+                                    </select>
+                                    <div>Approved By</div>
+                                    <select class="form-control select-fixed-multiple" multiple="multiple" data-fouc id="Approved_by_@Doclevel.Tables[0].Rows[item]["id_doc_level"].ToString()" name="Approved_by_@Doclevel.Tables[0].Rows[item]["id_doc_level"].ToString()" required>
+
+                                        @if (ViewBag.Roles != null)
+                                        {
+                                            foreach (var item2 in ViewBag.Roles)
+                                            {
+
+                                                if (Array.IndexOf(Doclevel.Tables[0].Rows[item]["Approved_by"].ToString().Split(','), item2.Value) >= 0)
+                                                {
+                                <option value='@item2.Value' selected>@item2.Text</option> }
+
+                                                            else
+                                                            {
+                                <option value='@item2.Value'> @item2.Text </option>
+}
+
+                        }
+
+
+
+
+                    }
+
+                                    </select>
+                                    <div>Level Name</div>
+                                    <input class="form-control" type="text" id="Document_level_@Doclevel.Tables[0].Rows[item]["id_doc_level"].ToString()" name="Document_level_@Doclevel.Tables[0].Rows[item]["id_doc_level"].ToString()" value="@Doclevel.Tables[0].Rows[item]["Document_Level"].ToString()" />
+
+                                    <div>Format</div>
+                                    @if (Doclevel.Tables[0].Rows[item]["Format_Specifier"].ToString() == "KIPIC/ xxx /yyy /zzz / Serial")
+                                    {
+                                <input type="radio" class="Format_Specifier_@Doclevel.Tables[0].Rows[item]["id_doc_level"].ToString()" name="Format_Specifier_@Doclevel.Tables[0].Rows[item]["id_doc_level"].ToString()" value="KIPIC/ xxx /yyy /zzz / Serial" required checked/> <label class="form-check-label"> KIPIC/ xxx /yyy /zzz / Serial</label>
+                                                        <br />
+                                                                                <input type="radio" class="Format_Specifier_@Doclevel.Tables[0].Rows[item]["id_doc_level"].ToString()" name="Format_Specifier_@Doclevel.Tables[0].Rows[item]["id_doc_level"].ToString()" value="KIPIC/ xxx /yyy / zzz / Serial.Fxx" required /> <label class="form-check-label"> KIPIC/ xxx /yyy /zzz / Serial.Fxx</label>}
+                                    @if (Doclevel.Tables[0].Rows[item]["Format_Specifier"].ToString() == "KIPIC/ xxx /yyy / zzz / Serial.Fxx")
+                                    {
+                                        <input type="radio" class="Format_Specifier_@Doclevel.Tables[0].Rows[item]["id_doc_level"].ToString()" name="Format_Specifier_@Doclevel.Tables[0].Rows[item]["id_doc_level"].ToString()" value="KIPIC/ xxx /yyy /zzz / Serial" required /> <label class="form-check-label"> KIPIC/ xxx /yyy /zzz / Serial</label>
+                                                                <br />
+                                                                                        <input type="radio" class="Format_Specifier_@Doclevel.Tables[0].Rows[item]["id_doc_level"].ToString()" name="Format_Specifier_@Doclevel.Tables[0].Rows[item]["id_doc_level"].ToString()" value="KIPIC/ xxx /yyy / zzz / Serial.Fxx" required checked /> <label class="form-check-label"> KIPIC/ xxx /yyy /zzz / Serial.Fxx</label>}
+
+
+
+                                    }
+
+
+
+
+                                </td>
+
+                                <td>
+
+                                    <a onclick="EditItem('@Doclevel.Tables[0].Rows[item]["id_doc_level"].ToString()')" title="Edit Level">
+                                        <span class="badge badge-info" title="Edit Level" style="cursor:pointer;">Edit</span>
+                                    </a>
+                                    <a onclick="DeleteItem('@Doclevel.Tables[0].Rows[item]["id_doc_level"].ToString()')" title="Delete Level">
+                                        <span class="badge badge-danger" title="Delete Level" style="cursor:pointer;">Delete</span>
+                                    </a>
+
+
+                                </td>
+                            </tr>index++;
+                            }
+                        </tbody>
+                    </table>}
+
+
+                        @using (Html.BeginForm("AddLevelDetails", "DocumentLevels", FormMethod.Post, new { id = "form2", name = "form2" }))
+                        {
+                    @Html.AntiForgeryToken()
+                                    @Html.ValidationSummary(true) string sDisplay = "None";
+
+
+                    if (ViewBag.DocLevelId != null)
+                    {
+                        sDisplay = "";
+                    }
+
+                                    <input  type="hidden" id="DocLevelId" name="DocLevelId" value="@ViewBag.DocLevelId" />
+                                                    <table class="table table-lg" id="tabmeetingAgenda" style="display:@sDisplay;">
+
+                                                        <tr style="background-color: #e5eafe; color: #0099ff; font-weight: bold;">
+                                                            <td colspan="2">
+                                                                Add To Document Level
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th>Document Type Description</th>
+                                                            <th>Document Details</th>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>
+
+                                                                <input class="form-control" type="text" id="Type_Desc" name="Type_Desc" required />
+                                                                <span class="field-validation-error"><span id="Type_Desc-message" style="display: none;">Type name is required.</span></span>
+
+                                                            </td>
+                                                            <td>
+
+                                                                <input class="form-control" type="text" id="Type_Details" name="Type_Details" required />
+
+                                                            </td>
+
+
+                                                        </tr>
+
+
+                                                        <tr>
+                                                            <td colspan="2">
+                                                                <input type="submit" class="btn bg-indigo-400" name="button" id="button2" value="Save Document Level" onclick="ProgressIconFunction('#form2')" />
+                                                            </td>
+                                                        </tr>
+
+                                                    </table>
+                                                                    <br />}
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+        <!-- /basic layout -->
+
+    </div>
+</div>
+
+
+<div class="card invisible" id="hidden card">
+    <div class="card-header header-elements-inline">
+        <h5 class="card-title">Details</h5>
+        <div class="header-elements">
+            <div class="list-icons">
+                <a class="list-icons-item" data-action="collapse"></a>
+
+
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <table class="table table-lg" id="tbl_Agenda">
+            @if (dsDoclevel.Tables.Count > 0 && dsDoclevel.Tables[0].Rows.Count > 0)
+            {
+<tr class="row">
+    <td class="col" colspan="3" style="background-color: #4cc4dd; color: #fff; font-weight: bold;">Document List</td>
+</tr>
+                <tr class="row" style="background-color: #e5eafe; color: #0099ff; font-weight: bold;">
+                    <th class="col col-xs-10">Name</th>
+                    <th class="col col-xs-10">Details</th>
+                    <th class="col col-xs-2">Actions</th>
+                </tr>
+ for (int item = 0; item < dsDoclevel.Tables[0].Rows.Count; item++)
+                {
+<tr class="row">
+    <td class="col col-xs-10">
+        @*<input class="form-control" type="text" id="Agenda_Desc @dsAgenda.Tables[0].Rows[item]["Agenda_Id"].ToString()"
+            name="Agenda_Desc @dsAgenda.Tables[0].Rows[item]["Agenda_Id"].ToString()" value="@dsAgenda.Tables[0].Rows[item]["Agenda_Desc"].ToString()" />*@
+
+        <textarea class='form-control elastic maxlength-badge-position' maxlength='25' placeholder='Textarea' style='overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;' rows='4' cols='4' id='Type_Desc @dsDoclevel.Tables[0].Rows[item]["DocLevelDetails_id"].ToString()' name='Type_Desc @dsDoclevel.Tables[0].Rows[item]["DocLevelDetails_id"].ToString()'>@dsDoclevel.Tables[0].Rows[item]["Type_Desc"].ToString()</textarea>
+    </td>
+    <td class="col col-xs-10">
+        @*<input class="form-control" type="text" id="Agenda_Details @dsAgenda.Tables[0].Rows[item]["Agenda_Id"].ToString()"
+            name="Agenda_Details @dsAgenda.Tables[0].Rows[item]["Agenda_Id"].ToString()" value="@dsAgenda.Tables[0].Rows[item]["Agenda_Details"].ToString()" />*@
+        <textarea class='form-control elastic maxlength-badge-position' maxlength='25' placeholder='Textarea' style='overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;' rows='4' cols='4' id='Type_Details @dsDoclevel.Tables[0].Rows[item]["DocLevelDetails_id"].ToString()' name='Type_Details @dsDoclevel.Tables[0].Rows[item]["DocLevelDetails_id"].ToString()'>@dsDoclevel.Tables[0].Rows[item]["Type_Details"].ToString()</textarea>
+    </td>
+
+    <td class="col col-xs-2">
+
+        <span class='badge badge-info' style='cursor: pointer;' title='Update Document Details' onclick='UpdateDocDetails(@dsDoclevel.Tables[0].Rows[item]["DocLevelDetails_id"].ToString())'>Edit</span>
+        <span class='badge badge-danger' onclick='DeleteDocDetails(@dsDoclevel.Tables[0].Rows[item]["DocLevelDetails_id"].ToString())' style='cursor:pointer;' title='Delete Document Details'>Delete</span>
+
+    </td>
+
+</tr>
+}
+}
+        </table>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    <script type="text/javascript">
+        var showClass = 'is-visible';
+        var hideClass = 'invisible';
+        var previousid='@ViewBag.DocLevelId';
+
+    $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+
+
+           @if (dsDoclevel.Tables.Count > 0 && dsDoclevel.Tables[0].Rows.Count > 0)
+           {
+               @:document.getElementById("hidden card").classList.remove(hideClass);
+               @:document.getElementById("hidden card").classList.add(showClass);
+
+           }
+
+
+    });
+
+
+    function DeleteItem(id) {
+        jQuery.ajax({
+        url: '@Url.Action("DocLevelDelete", "DocumentLevels")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'id': id },
+                success: function (result) {
+
+                       window.location.href =
+                                window.location.protocol + "//" +
+                                window.location.host +
+                                window.location.pathname;
+                  }
+              });
+          }
+
+
+        function EditItem(id) {
+
+            var Prepared_by = $('#Prepared_by_' + id).val().toString();
+            var Updated_by = $('#Updated_by_' + id).val().toString();
+            var Checked_by = $('#Checked_by_' + id).val().toString();
+            var Reviewed_by = $('#Reviewed_by_' + id).val().toString();
+            var Approved_by = $('#Approved_by_' + id).val().toString();
+            var Format_Specifier = $("input[name='Format_Specifier_"+id +"']:checked").val();
+            var Document_Level = document.getElementById("Document_level_" + id).value;
+
+
+
+            jQuery.ajax({
+                url: '@Url.Action("doesDocNameExist", "DocumentLevels")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'Document_Level': Document_Level },
+                  success: function (result) {
+                      if (result) {
+
+
+
+                          if (Prepared_by != "" && Updated_by != "" && Checked_by != "" && Checked_by != "" && Reviewed_by != "" && Approved_by != "") {
+
+                               var data = JSON.stringify({
+
+
+                                  objLevel: {
+
+
+                                      Prepared_by: Prepared_by,
+                                      Updated_by: Updated_by,
+                                      Checked_by: Checked_by,
+                                      Reviewed_by: Reviewed_by,
+                                      Approved_by: Approved_by,
+
+                                      Format_Specifier: Format_Specifier,
+                                      Document_Level: Document_Level,
+                                      id_doc_level: id,
+
+
+
+                                  }
+
+                              });
+
+                              jQuery.ajax({
+                                  url: '@Url.Action("DocLevelUpdate", "DocumentLevels")',
+                                  type: 'POST',
+                                  contentType: 'application/json',
+                                  data: data,
+                                  success: function (result) {
+
+
+
+                                      var sDocLevelId = $("input[name='DocLevelList']:checked").val();
+
+
+                                      window.location.href =
+                                          window.location.protocol + "//" +
+                                          window.location.host +
+                                          window.location.pathname +
+                                          '?sDocLevelId=' + sDocLevelId;
+
+
+
+                                  }
+                              });
+
+                          }
+                          else {
+
+                              bootbox.alert({
+                                  title: 'Edit By',
+                                  message: 'Please fill in all details'
+                              });
+
+
+
+                          }
+
+                      }
+                      else {
+                          bootbox.alert({
+                              title: 'Level',
+                              message: 'Document Level exists'
+                          });
+
+
+                      }
+                  }
+              });
+
+
+
+          }
+
+
+
+
+
+        function PopulateDocLevel(DocId, tabIndex) {
+
+            if (previousid != '') {
+
+                document.getElementById("row_"+previousid).classList.remove("bg-info");
+
+            }
+            previousid = DocId;
+            document.getElementById("row_" + DocId).classList.add("bg-info");
+         //var MeetingTypeId = $('#MeetingType').val();
+            document.getElementById("DocLevelId").value = DocId;
+         //document.getElementById("MeetingTypeId").value = MeetingTypeId;
+            document.getElementById("tabmeetingAgenda").style.display = "";
+            document.getElementById("hidden card").classList.remove(hideClass);
+            document.getElementById("hidden card").classList.add(showClass);
+         jQuery.ajax({
+             url: '@Url.Action("GetDocLevelList", "DocumentLevels")',
+                    type: 'POST',
+                    dataType: "json",
+             data: { 'sDocId': DocId },
+                 success: function (result) {
+
+     var table = document.getElementById("tbl_Agenda");
+     //document.getElementById("dvAgendaItems").style.display = "";
+     //document.getElementById("divAgendasTitle").style.display = "";
+
+
+     while (table.rows.length > 0) {
+         table.deleteRow(0);
+     }
+
+     if (result != "") {
+
+
+         var thTitleRow = table.insertRow();
+         thTitleRow.style = "background-color: #4cc4dd; color: #fff; font-weight: bold;";
+         var cellTitle0 = thTitleRow.insertCell(0);
+         thTitleRow.className = "row";
+         cellTitle0.innerHTML = "Document Level List";
+         table.rows[0].cells[0].colSpan = 3;
+         table.rows[0].cells[0].style = "color:#fff";
+
+
+         var theaderRow = table.insertRow();
+         theaderRow.className = "row";
+         theaderRow.style = "background-color: #e5eafe; font-weight: bold;";
+         var cellth0 = theaderRow.insertCell(0);
+         cellth0.className = "col col-xs-10";
+         var cellth1 = theaderRow.insertCell(1);
+         cellth1.className = "col col-xs-10";
+         var cellth2 = theaderRow.insertCell(2);
+         cellth2.className = "col col-xs-2";
+
+
+         cellth0.innerHTML = "<th>Name</th>";
+         //cellth1.innerHTML = "<th>Action</th>";
+         cellth1.innerHTML = "<th>Details</th>";
+         cellth2.innerHTML = "<th>Actions</th>";
+
+
+         table.rows[1].cells[0].style = "color:#0099ff";
+         table.rows[1].cells[1].style = "color:#0099ff";
+         table.rows[1].cells[2].style = "color:#0099ff";
+
+         var list = result;
+                            $.each(list, function (index, item) {
+
+             // Create an empty <tr> element and add it to the 1st position of the table:
+             var row = table.insertRow();
+             row.className = "row";
+             // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+             var cell0 = row.insertCell(0);
+             cell0.className = "col col-xs-10";
+             var cell1 = row.insertCell(1);
+             cell1.className = "col col-xs-10";
+             var cell2 = row.insertCell(2);
+             cell2.className = "col col-xs-2";
+
+             var AgendaName = item.Text;
+             var Id = item.Value;
+
+             var data = item.Text;
+
+             var dataarray = new Array();
+
+             dataarray = data.split("_");
+
+             // cell0.innerHTML = AgendaName;
+             cell0.innerHTML = dataarray[0];
+             cell1.innerHTML = dataarray[1];
+
+             cell0.innerHTML = " <textarea class='form-control elastic maxlength-badge-position' maxlength = '25' placeholder = 'Textarea' style = 'overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;' rows = '4' cols = '4' id='Type_Desc " + Id + "' name='Type_Desc " + Id + "'>" + dataarray[0] + "</textarea>";
+             cell1.innerHTML = " <textarea class='form-control elastic maxlength-badge-position' maxlength = '25' placeholder = 'Textarea' style = 'overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;' rows = '4' cols = '4' id='Type_Details " + Id + "' name='Type_Details " + Id + "'>" + dataarray[1] + "</textarea>";
+
+                                cell2.innerHTML = "<span class='badge badge-info' style='cursor: pointer;' title='Update Document Details' onclick='UpdateDocDetails(" + Id + ")'>Edit</span>"
+                                    + " <span class='badge badge-danger' onclick='DeleteDocDetails(" + Id + ")' style='cursor:pointer;' title='Delete Document Details'>Delete</span>";
+                               @* cell1.innerHTML = " <img src='@Url.Content("~/images/cancel.png")' id='imgAgenda" + Id + "' onclick='DisplayAgenda(" + Id
+                                    + ")' title='" + AgendaName + "' style='cursor:pointer; padding-right: 5px;'/>";*@
+
+                                autosize($('.elastic'));
+                                $('.maxlength-badge-position').maxlength({
+                                    alwaysShow: true,
+                                    placement: 'top'
+                                });
+                            });
+                        }
+                      else {
+                          bootbox.alert({
+                              title: 'Details',
+                              message: 'No Document Detais exists, please add Details and then try again'
+                          });
+                        }
+                    }
+                });
+        }
+
+
+        function UpdateDocDetails(id_element) {
+
+             var Element = document.getElementById("Type_Desc " + id_element).value;
+             var Element2 = document.getElementById("Type_Details " + id_element).value;
+
+             jQuery.ajax({
+                 url: '@Url.Action("DocDetailsUpdate", "DocumentLevels")',
+                 type: 'POST',
+                 dataType: "json",
+                 data: { 'id_element': id_element, 'Type_Desc': Element, 'Type_Details': Element2 },
+                 success: function (result) {
+                     bootbox.alert({
+                         title: 'Document Level',
+                         message: 'Your Document Details has been updated.'
+                     });
+                 }
+             });
+         }
+
+        function DeleteDocDetails(id_element, MeetingType) {
+
+            var MeetingType = $("input[name='DocLevelList']:checked").val();
+
+             bootbox.confirm({
+                 title: 'Confirm dialog',
+                 message: 'Are you Sure you want to Delete the current Record?',
+                 buttons: {
+                     confirm: {
+                         label: 'Yes',
+                         className: 'btn-primary'
+                     },
+                     cancel: {
+                         label: 'Cancel',
+                         className: 'btn-link'
+                     }
+                 },
+                 callback: function (r) {
+                     if (r == true) {
+                     jQuery.ajax({
+                         url: '@Url.Action("DocDetailsDelete", "DocumentLevels")',
+                         type: 'POST',
+                         dataType: "json",
+                         data: { 'id_element': id_element, 'MeetingType': MeetingType },
+                         success: function (data) {
+
+                             var sDocLevelId = $("input[name='DocLevelList']:checked").val();
+
+                             window.location.href =
+                                 window.location.protocol + "//" +
+                                 window.location.host +
+                                 window.location.pathname +
+                             '?sDocLevelId=' + sDocLevelId;
+                         }
+                     });
+                         return true;
+                     }
+                     else if (r == false) {
+                         bootbox.hideAll();
+                         return false;
+                     }
+                 }
+             });
+         }
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+
+}

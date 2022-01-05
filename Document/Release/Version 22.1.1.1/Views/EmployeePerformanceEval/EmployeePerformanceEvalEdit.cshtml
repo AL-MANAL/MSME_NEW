@@ -1,0 +1,1101 @@
+﻿@model ISOStd.Models.EmpPerformanceEvalModels
+
+@{
+    ViewBag.Title = "EmployeePerformanceEvalEdit";
+    System.Data.DataSet dsrating = new System.Data.DataSet();
+    ISOStd.Models.clsGlobal objGlobaldata = new ISOStd.Models.clsGlobal();
+
+    if (ViewBag.PerformanceRating != null)
+    {
+        dsrating = ViewBag.PerformanceRating;
+    }
+
+    //ISOStd.Models.EmpPerformanceElementsModelsList objEmpPerformanceEvalList = new ISOStd.Models.EmpPerformanceElementsModelsList();
+
+    //if (ViewBag.PerformanceElement != null)
+    //{
+    //    objEmpPerformanceEvalList = ViewBag.PerformanceElement;
+    //}
+    ISOStd.Models.EmpPerformanceEvalModelsList objList = new ISOStd.Models.EmpPerformanceEvalModelsList();
+    Dictionary<string, string> dicPerformanceElements = new Dictionary<string, string>();
+    if (ViewBag.dicPerformanceElement != null)
+    {
+        dicPerformanceElements = ViewBag.dicPerformanceElement;
+    }
+
+    System.Data.DataSet dsElements = new System.Data.DataSet();
+    if (ViewBag.dsElements != null)
+    {
+        dsElements = ViewBag.dsElements;
+    }
+    var z = ""; var QId = 0;
+    var nnn = 0; var mmm = 0;
+    int not_cnt = 0;
+    string[] NotifiedToArray = new string[0];
+
+    if (ViewBag.NotifiedToArray != null)
+    {
+        NotifiedToArray = ViewBag.NotifiedToArray;
+        not_cnt = NotifiedToArray.Length;
+    }
+
+    int icnt = 0;
+    if (ViewBag.objList != null)
+    {
+        objList = ViewBag.objList;
+        icnt = objList.lstEmpPerformanceEvalModels.Count;
+    }
+
+}
+
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Home</span>
+                    </a>
+                    <a href="@Url.Action("EmployeePerformanceEvalList", "EmployeePerformanceEval", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Performance Evaluation</span>
+                    </a>
+                    <span class="breadcrumb-item active">Update Performance Evaluation</span>
+
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                    <div class="breadcrumb justify-content-center">
+
+
+                        <div class="breadcrumb-elements-item dropdown p-0">
+                            <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                                <i class="icon-gear mr-2"></i>
+                                Settings
+                            </a>
+
+                            <div class="dropdown-menu dropdown-menu-right">
+
+                                <div class="dropdown-divider"></div>
+                                <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>*@
+        </div>
+    </div>
+}
+
+
+@using (Html.BeginForm("EmployeePerformanceEvalEdit", "EmployeePerformanceEval", FormMethod.Post,
+                                             new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <input type="hidden" id="Performance_EvalId" name="Performance_EvalId" value="@Model.Performance_EvalId" />
+    <input type="hidden" id="itemcnt" name="itemcnt" value="@icnt" />
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Update Performance Evaluation</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+
+                <table class="table table-lg">
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.emp_id)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="emp_id" name="emp_id" required onchange="GetEmpInfo()">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.EmpList != null)
+                                    {
+                                        foreach (var item in ViewBag.EmpList)
+                                        {
+                                            if (item.Value == Model.emp_id)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                                @Html.ValidationMessageFor(model => model.emp_id)
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Evaluation_DoneOn)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @if (Model.Evaluation_DoneOn != null && Model.Evaluation_DoneOn > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    <input class="form-control" type="date" id="Evaluation_DoneOn" name="Evaluation_DoneOn" value="@Model.Evaluation_DoneOn.ToString("yyyy-MM-dd")" required />
+                                }
+                                else
+                                {
+                                    <input class="form-control" type="date" id="Evaluation_DoneOn" name="Evaluation_DoneOn" required />
+                                }
+                                @Html.ValidationMessageFor(model => model.Evaluation_DoneOn)
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+
+                            <div class="editor-label">
+                                @*@Html.LabelFor(model => model.Date_of_join)*@
+                                Date of Join
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-3">
+                            <div class="editor-field">
+                                <input class="form-control" type="date" id="Date_of_join" name="Date_of_join" required disabled />
+
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Evaluated_From)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @if (Model.Evaluated_From != null && Model.Evaluated_From > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    <input class="form-control" type="date" id="Evaluated_From" name="Evaluated_From" value="@Model.Evaluated_From.ToString("yyyy-MM-dd")" required />
+                                }
+                                else
+                                {
+                                    <input class="form-control" type="date" id="Evaluated_From" name="Evaluated_From" required />
+                                }
+                                @Html.ValidationMessageFor(model => model.Evaluated_From)
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Evaluated_To)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @if (Model.Evaluated_To != null && Model.Evaluated_To > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    <input class="form-control" type="date" id="Evaluated_To" name="Evaluated_To" value="@Model.Evaluated_To.ToString("yyyy-MM-dd")" required />
+                                }
+                                else
+                                {
+                                    <input class="form-control" type="date" id="Evaluated_To" name="Evaluated_To" required />
+                                }
+                                @Html.ValidationMessageFor(model => model.Evaluated_To)
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Eval_DoneBy)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-3">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="Eval_DoneBy" name="Eval_DoneBy" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.EmpHead != null)
+                                    {
+                                        foreach (var item in ViewBag.EmpHead)
+                                        {
+                                            if (item.Value == Model.Eval_DoneBy)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                                @Html.ValidationMessageFor(model => model.Eval_DoneBy)
+                            </div>
+                        </td>
+                    </tr>
+                  
+
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.eval_period)<text style="color: red;">*</text>
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <select class="form-control select-search select2-hidden-accessible" data-fouc id="eval_period" name="eval_period" required onchange="GetQuestions()">
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.eval_period != null && ViewBag.eval_period_Id != null)
+                                {
+                                    foreach (var item in ViewBag.eval_period)
+                                    {
+                                        if (item.Value == ViewBag.eval_period_Id)
+                                        {
+                                            <option value="@item.Value" selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@item.Value">@item.Text</option>
+                                        }
+                                    }
+                                }
+
+                                else if (ViewBag.eval_period != null)
+                                {
+                                    foreach (var item in ViewBag.eval_period)
+                                    {
+                                        if (item.Value == Model.eval_period)
+                                        {
+                                            <option value='@item.Value' selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.eval_category)<text style="color: red;">*</text>
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <select class="form-control select-search select2-hidden-accessible" data-fouc id="eval_category" name="eval_category" required onchange="GetQuestions()">
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.eval_category != null && ViewBag.eval_category_Id != null)
+                                {
+                                    foreach (var item in ViewBag.eval_category)
+                                    {
+                                        if (item.Value == ViewBag.eval_category_Id)
+                                        {
+                                            <option value="@item.Value" selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@item.Value">@item.Text</option>
+                                        }
+                                    }
+                                }
+
+                                else if (ViewBag.eval_category != null)
+                                {
+                                    foreach (var item in ViewBag.eval_category)
+                                    {
+                                        if (item.Value == Model.eval_category)
+                                        {
+                                            <option value='@item.Value' selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+
+                        </td>
+                    </tr>
+
+                </table>
+            </div>
+           
+        </div>
+
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div style="overflow-x:auto;">
+                <table class="table table-lg">
+                    <thead>
+
+                        <tr>
+                            <th>
+                                Sl.No
+                            </th>
+                            <th>
+                                Questions
+                            </th>
+                            @if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                            {
+                                for (int item = 0; item < dsrating.Tables[0].Rows.Count; item++)
+                                {
+                                    <th>
+                                        @dsrating.Tables[0].Rows[item]["RatingOptions"].ToString()
+                                    </th>
+                                }
+                            }
+                    </thead>
+                    <tbody>
+                        @{
+                            int ncount = dsElements.Tables[0].Rows.Count;
+                            int n = 0, c = 0;
+                        }
+                        @if (ViewBag.PerformanceQuestions != null)
+                        {
+                            int iSrno = 0, itmctn = 0;
+                            foreach (var item in ViewBag.PerformanceQuestions)
+                            {
+                                iSrno = iSrno + 1;
+                                itmctn = itmctn + 1;
+                                nnn = 0;
+                                //if (ncount >= 1)
+                                //{
+                                //    ncount--;
+                                //}
+                                //else
+                                //{
+                                //    n = 1;
+                                //    c = 2;
+                                //}
+                                foreach (var data in ViewBag.PeformanceSection)
+                                {
+                                    if (nnn >= mmm || QId == 0)
+                                    {
+                                        if (z == "")
+                                        {
+                                            <tr>
+                                                <td colspan="2">@data.Text</td>
+
+                                                @if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                                                {
+                                                    for (int rating = 0; rating < dsrating.Tables[0].Rows.Count; rating++)
+                                                    {
+                                                        <td></td>
+                                                    }
+                                                }
+
+                                            </tr>
+
+                                            z = data.Text;
+                                            break;
+                                        }
+                                        else if (Convert.ToInt32(data.Value) != QId && z != data.Text)
+                                        {
+                                            <tr>
+                                                <td colspan="2">@data.Text</td>
+                                                @if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                                                {
+                                                    for (int rating = 0; rating < dsrating.Tables[0].Rows.Count; rating++)
+                                                    {
+                                                        <td></td>
+                                                    }
+                                                }
+
+                                            </tr>
+                                            z = data.Text;
+                                            break;
+                                        }
+                                        else if (Convert.ToInt32(data.Value) != QId && z == data.Text)
+                                        {
+                                            break;
+                                        }
+                                    }
+                                    nnn++;
+                                }
+
+                                <tr>
+                                    @*@if (n == c)
+                                        {*@
+                                    <td>
+                                        @iSrno
+                                    </td>
+                                    <td>
+                                        @item.Text
+                                        <input type="hidden" id="Question @item.Value" name="Question @item.Value" value="@item.Value" />
+                                    </td>
+
+                                    @if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                                    {
+
+                                        if (dicPerformanceElements.ContainsKey(item.Value))
+                                        {
+                                            for (int rating = 0; rating < dsrating.Tables[0].Rows.Count; rating++)
+                                            {
+                                                <td>
+                                                    @if (ViewBag.PerformanceElement != null)
+                                                    {
+
+                                                        if (dicPerformanceElements[item.Value] == dsrating.Tables[0].Rows[rating]["SQ_OptionsId"].ToString())
+                                                        {
+                                                            <input type="radio" id="SQ_OptionsId @item.Value" name="SQ_OptionsId @item.Value" class="radioClass"
+                                                                   value="@dsrating.Tables[0].Rows[rating]["SQ_OptionsId"].ToString()" checked required />
+                                                        }
+                                                        else
+                                                        {
+                                                            <input type="radio" id="SQ_OptionsId @item.Value" name="SQ_OptionsId @item.Value" class="radioClass"
+                                                                   value="@dsrating.Tables[0].Rows[rating]["SQ_OptionsId"].ToString()" required />
+                                                        }
+                                                        <input type="hidden" id="Performance_Id @item.Value" name="Performance_Id @item.Value" value="@item.Value" />
+                                                    }
+
+                                                </td>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            for (int rating = 0; rating < dsrating.Tables[0].Rows.Count; rating++)
+                                            {
+                                                <td>
+                                                    @if (ViewBag.PerformanceElement != null)
+                                                    {
+                                                        <input type="radio" id="SQ_OptionsId @item.Value" name="SQ_OptionsId @item.Value" class="radioClass"
+                                                               value="@dsrating.Tables[0].Rows[rating]["SQ_OptionsId"].ToString()" required />
+                                                    }
+
+                                                </td>
+                                            }
+                                        }
+                                    }
+                                    @*}
+                                        @{
+                                                 c = c + 1;
+                                                 n = n + 1;
+                                         }*@
+                                </tr>
+                                QId = Convert.ToInt32(item.Value);
+                                mmm++;
+                            }
+                            <div>
+                                <input type="hidden" id="itmctn" name="itmctn" value="@itmctn" />
+                            </div>
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+            @Html.ActionLink("Back to List", "EmployeePerformanceEvalList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+
+            <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Update</button>
+        </div>
+
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="container-fluid">
+                <table class="table table-lg">
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Weakness)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="Weakness" name="Weakness" required>@Model.Weakness</textarea>
+                                @Html.ValidationMessageFor(model => model.Weakness)
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Strengths)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="Strengths" name="Strengths" required>@Model.Strengths</textarea>
+                                @Html.ValidationMessageFor(model => model.Strengths)
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        @*<td class="col-xs-3 col-md-2">
+                <div class="editor-label">
+                    @Html.LabelFor(model => model.Training_Reqd)<text style="color:red;">*</text>
+                </div>
+            </td>
+            <td class="col">
+                <div class="editor-field">
+                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="Training_Reqd" name="Training_Reqd" required>
+                        <option value='' hidden>Select</option>
+                        @if (ViewBag.YesNo != null)
+                        {
+                            foreach (var item in ViewBag.YesNo)
+                            {
+                                if (item == Model.Training_Reqd)
+                                {
+                                    <option value='@item' selected>@item</option>
+                                }
+                                else
+                                {
+                                    <option value='@item'>@item</option>
+                                }
+                            }
+                        }
+                    </select>
+                    @Html.ValidationMessageFor(model => model.Training_Reqd)
+                </div>
+            </td>*@
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Actions_Taken)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="Actions_Taken" name="Actions_Taken" required>@Model.Actions_Taken</textarea>
+                                @Html.ValidationMessageFor(model => model.Actions_Taken)
+                            </div>
+                        </td>
+
+                        @*<td class="col-xs-3 col-md-2">
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.Eval_ReviewedBy)<text style="color:red;">*</text>
+                    </div>
+                </td>
+                <td class="col">
+                    <div class="editor-field">
+                        <select class="form-control select-search select2-hidden-accessible" data-fouc  id="Eval_ReviewedBy" name="Eval_ReviewedBy" required>
+                            <option value='' hidden>Select</option>
+                            @if (ViewBag.EmpHead != null)
+                            {
+                                foreach (var item in ViewBag.EmpHead)
+                                {
+                                if (item.Value == Model.Eval_ReviewedBy)
+                                    {
+                                        <option value='@item.Value' selected>@item.Text</option>
+                                    }
+                                    else
+                                    {
+                                        <option value='@item.Value'>@item.Text</option>
+                                    }
+                                }
+                            }
+                        </select>
+            @Html.ValidationMessageFor(model => model.Eval_ReviewedBy)
+                    </div>
+                </td>*@
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.DocUploadPath)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input type="file" name="fileUploader" id="fileUploader" onchange="FileFormatValidation(this)" accept=".pdf,.xlsx,.xls,.doc,.docx" class="bootstrap-uploader" data-fouc />
+                                @if (Model.DocUploadPath != "")
+                                {
+                                    <span class="bg-dark py-1 px-2 rounded">
+                                        <a href='@Url.Action("DisplayDocument", "Reports", new { Document = Model.DocUploadPath})' target="_blank">Preview</a>
+                                    </span>
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.training_need)<text style="color: red;">*</text>
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <select class="form-control select-search select2-hidden-accessible" data-fouc id="training_need" name="training_need" required onchange="setTraining()">
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.TrainingNeed != null)
+                                {
+                                    foreach (var item in ViewBag.TrainingNeed)
+                                    {
+                                        if (item == Model.training_need)
+                                        {
+                                            <option value='@item' selected>@item</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@item'>@item</option>
+                                        }
+
+                                    }
+                                }
+                            </select>
+
+                        </td>
+                    </tr>
+                    </table>
+                <div id="training" style="display:none">
+                    <fieldset class="border p-2">
+                        <legend class="font-weight-semibold text-success">Training</legend>
+                        <table class="table table-lg">
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+                                    @Html.DisplayNameFor(model => model.training_topic)<text style="color: red;">*</text>
+                                </td>
+                                <td class="col">
+                                    <input type="text" class="form-control" id="training_topic" name="training_topic" />
+                                    <span class="field-validation-error"><span id="training_topic-message" style="display: none;">This field is required.</span></span>
+                                    @Html.ValidationMessageFor(model => model.training_topic)
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.DisplayNameFor(model => model.criticality)<text style="color: red;">*</text>
+                                    </div>
+                                </td>
+                                <td class="col">
+                                    <div class="editor-field">
+                                        <select class="form-control select-search select2-hidden-accessible" data-fouc id="criticality" name="criticality">
+                                            <option value='' hidden>Select</option>
+                                            @if (ViewBag.Citicality != null)
+                                            {
+                                                foreach (var item in ViewBag.Citicality)
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+
+                                                }
+                                            }
+                                        </select>
+                                        <span class="field-validation-error"><span id="criticality-message" style="display: none;">This field is required.</span></span>
+                                        @Html.ValidationMessageFor(model => model.criticality)
+                                    </div>
+                                </td>
+                                <td class="col-xs-3 col-md-1">
+                                    <input type="button" value="Add" class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" onclick="AddData()" />
+                                </td>
+                            </tr>
+                        </table>
+                    </fieldset>
+                </div>
+                <br />
+                <div class="card" id="hidden card" style="display:none">
+                    <div class="card-body scrollbar-container">
+                        <div class="card card-table table-responsive shadow-0 mb-0 scrollbar">
+                            <table class="table" id="team-list">
+                                <tr class="bg-blue">
+                                    <th>Delete</th>
+                                    <th>Training topic</th>
+                                    <th>Criticality</th>
+                                </tr>
+                                @if (objList.lstEmpPerformanceEvalModels != null && objList.lstEmpPerformanceEvalModels.Count > 0)
+                                {
+                                    for (int index = 0; index < objList.lstEmpPerformanceEvalModels.Count; index++)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <span class="badge badge-info" onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span>
+
+                                            </td>
+                                            <td>
+                                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="6" class="form-control elastic maxlength-badge-position" id='training_topic @index' name="training_topic @index">@objList.lstEmpPerformanceEvalModels[index].training_topic</textarea>
+                                            </td>
+                                            <td>
+                                                <select class="form-control select-search select2-hidden-accessible" id="criticality @index" name="criticality @index">
+                                                    <option value='' hidden>Select</option>
+                                                    @if (ViewBag.Citicality != null)
+                                                    {
+                                                        foreach (var item in ViewBag.Citicality)
+                                                        {
+                                                            if (item.Value == objList.lstEmpPerformanceEvalModels[index].criticality)
+                                                            {
+                                                                <option value='@item.Value' selected>@item.Text</option>
+                                                            }
+                                                            else
+                                                            {
+                                                                <option value='@item.Value'>@item.Text</option>
+                                                            }
+                                                        }
+                                                    }
+                                                </select>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <table class="table table-lg">
+                    <tr class="row">
+
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.recommendation)
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="recommendation" name="recommendation">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.Recommendation != null)
+                                    {
+                                        foreach (var item in ViewBag.Recommendation)
+                                        {
+                                            if (item.Value == Model.recommendation)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.remarks)
+                        </td>
+                        <td class="col">
+                            <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="remarks" name="remarks">@Model.remarks</textarea>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.notified_to)
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="notified_to" name="notified_to" onchange="GetNotifiedByDetails()">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.NotifiedEmpList != null)
+                                    {
+                                        foreach (var item in ViewBag.NotifiedEmpList)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+                <div id="notified" style="display:none">
+                    <div class="card-body">
+                        <input type="hidden" id="notified_cnt" name="notified_cnt" value="@not_cnt" />
+
+                        <div class="card card-table table-responsive shadow-0 mb-0">
+                            <table class="table" id="notified-list">
+                                <tr class="bg-blue">
+                                    <th>Action</th>
+                                    <th>Id</th>
+                                    <th>Notified To</th>
+                                    <th>Division</th>
+                                    <th>Location</th>
+                                    <th>Department</th>
+                                    <th>Email</th>
+                                </tr>
+
+                                @if (ViewBag.NotifiedToArray != null && NotifiedToArray != null && NotifiedToArray.Length > 0)
+                                {
+                                    for (int index = 0; index < NotifiedToArray.Length; index++)
+                                    {
+                                        //string[] sEmp = @objIncidentLTIList.lstIncidentLTIModels[index].Emp_Id.Split(';');
+                                        <tr>
+                                            <td>
+                                                <span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span>
+                                                @*<img src='@Url.Content("~/images/cancel.png")' onclick='deleteRow1(this)' style='cursor:pointer; padding-right: 5px;' />Remove*@
+                                                <input type='hidden' id='empno @index' name="empno @index" value='@NotifiedToArray[index]' />
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='empid @index' name="empid @index" readonly>@objGlobaldata.GetEmpIDByEmpNo(NotifiedToArray[index])
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='empname @index' name="empname @index" readonly>@objGlobaldata.GetEmpHrNameById(NotifiedToArray[index])
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='empdiv @index' name="empdiv @index" readonly>@objGlobaldata.GetCompanyBranchNameById(objGlobaldata.GetDivisionIdByHrEmpId(NotifiedToArray[index]))
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='emploc @index' name="emploc @index" readonly>@objGlobaldata.GetDivisionLocationById(objGlobaldata.GetWorkLocationIdByHrEmpId(NotifiedToArray[index]))
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='empdept @index' name="empdept @index" readonly>@objGlobaldata.GetDeptNameById(objGlobaldata.GetDeptIdByHrEmpId(NotifiedToArray[index]))
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='empemail @index' name="empemail @index" readonly>@objGlobaldata.GetHrEmpEmailIdById(NotifiedToArray[index])
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+            @Html.ActionLink("Back to List", "EmployeePerformanceEvalList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+
+            <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Save</button>
+        </div>
+
+    </div>
+                            }
+
+@section Scripts {
+    <script>
+        GetEmpInfo();
+        function GetEmpInfo() {
+            var emp_no = $('#emp_id').val();
+            jQuery.ajax({
+                url: '@Url.Action("FunGetEmpDetails", "EmployeeDetails")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'semp_no': emp_no },
+                success: function (result) {
+
+                    var dateString = result.Date_of_join.substr(6);
+                    var currentTime = new Date(parseInt(dateString));
+                    var month = currentTime.getMonth() + 1;
+                    if (month.toString().length == 1) {
+                        month = '0' + month;
+
+                    }
+                    var day = currentTime.getDate();
+                    if (day.toString().length == 1) {
+                        day = '0' + day;
+
+                    }
+                    var year = currentTime.getFullYear();
+                    // var date = month + "/" + day + "/" + year;
+                    var date = year + "-" + month + "-" + day;
+
+                    document.getElementById("Date_of_join").value = date
+                }
+            });
+        }
+        function GetQuestions() {
+
+            var eval_period = $('#eval_period').val();
+            var eval_category = $('#eval_category').val();
+            var Performance_EvalId = document.getElementById("Performance_EvalId").value;
+            if (eval_period != "" && eval_category != "") {
+                var params = {
+                    eval_period: eval_period,
+                    eval_category: eval_category,
+                    Performance_EvalId: Performance_EvalId
+                };
+
+                queryString = $.param(params);
+
+                window.location.href =
+                    window.location.protocol + "//" +
+                    window.location.host +
+                    window.location.pathname +
+                   '?' + queryString;
+            }
+        }
+
+        function FileFormatValidation(file) {
+            var ext = file.value.split(".").pop().toLowerCase();
+            if ($.inArray(ext, ["pdf"]) == -1) {
+                file.value = "";
+                jAlert("Invalid file format, please upload only pdf format");
+            }
+        }
+          function GetNotifiedByDetails() {
+            var notified_to = $('#notified_to').val();
+            if (notified_to != "" && notified_to != null) {
+                jQuery.ajax({
+                    url: '@Url.Action("FunGetEmpDetails", "NC")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'semp_no': notified_to },
+                    success: function (result) {
+                        if (result != null) {
+
+                            document.getElementById("notified").style.display = 'block';
+
+                            var empno = $('#notified_to option:Selected').val();
+                            var empid = result.emp_id;
+                            var empname = result.empname;
+                            var empdiv = result.division;
+                            var empdept = result.department;
+                            var emploc = result.location;
+                            var empemail = result.EmailId;
+
+                            if (empid != null) {
+                                var cnt = document.getElementById("notified_cnt").value;
+
+                                document.getElementById("notified_cnt").value = cnt;
+                                // Find a <table> element with id="myTable":
+                                var table = document.getElementById("notified-list");
+
+                                // Create an empty <tr> element and add it to the 1st position of the table:
+                                var row = table.insertRow();
+
+
+                                // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                                var cell0 = row.insertCell(0);
+                                var cell1 = row.insertCell(1);
+                                var cell2 = row.insertCell(2);
+                                var cell3 = row.insertCell(3);
+                                var cell4 = row.insertCell(4);
+                                var cell5 = row.insertCell(5);
+                                var cell6 = row.insertCell(6);
+
+                                cell0.innerHTML = "<span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span> <input type = 'hidden' id = 'empno " + cnt + "' name = 'empno " + cnt + "' value = '" + empno + "'>";
+                                cell1.innerHTML = "<input type='hidden' id='empid " + cnt + "' name='empid " + cnt + "' value='" + empid + "'>" + empid;
+                                cell2.innerHTML = "<input type='hidden' id='empname " + cnt + "' name='empname " + cnt + "' value='" + empname + "'>" + empname;
+                                cell3.innerHTML = "<input type='hidden' id='empdiv " + cnt + "' name='empdiv " + cnt + "' value='" + empdiv + "'>" + empdiv;
+                                cell4.innerHTML = "<input type='hidden' id='emploc " + cnt + "' name='emploc " + cnt + "' value='" + emploc + "'>" + emploc;
+                                cell5.innerHTML = "<input type='hidden' id='empdept " + cnt + "' name='empdept " + cnt + "' value='" + empdept + "'>" + empdept;
+                                cell6.innerHTML = "<input type='hidden' id='empemail " + cnt + "' name='empemail " + cnt + "' value='" + empemail + "'>" + empemail;
+
+                                cnt++;
+                                document.getElementById("notified_cnt").value = cnt;
+
+
+                                $("#notified_to").val('').trigger('change');
+                            }
+
+                        }
+                    }
+                });
+            }
+        }
+
+        var cnt = document.getElementById("notified_cnt").value;
+        if (cnt > 0) {
+            document.getElementById("notified").style.display = "block";
+        }
+
+        var cnt = document.getElementById("itemcnt").value;
+        if (cnt > 0) {
+            document.getElementById("training").style.display = "block";
+            document.getElementById("hidden card").style.display = "block";
+        }
+
+        var sType = $('#training_need option:selected').text();
+        if (sType == "Yes") {
+            document.getElementById("training").style.display = "block";
+            document.getElementById("hidden card").style.display = "block";
+        }
+        else {
+            document.getElementById("training").style.display = "none";
+            document.getElementById("itemcnt").value = "0";
+            document.getElementById("hidden card").style.display = "none";
+        }
+        function setTraining() {
+            var sType = $('#training_need option:selected').text();
+            if (sType == "Yes") {
+                document.getElementById("training").style.display = "block";
+            }
+            else {
+                document.getElementById("training").style.display = "none";
+                document.getElementById("itemcnt").value = "0";
+                document.getElementById("hidden card").style.display = "none";
+            }
+
+        }
+        var showClass = 'is-visible';
+        var hideClass = 'invisible';
+        function deleteRow(btn) {
+            var row = btn.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+        }
+        function Validation() {
+            var validflg = true;
+            var ssnMessage = "";
+            if (document.getElementById("training_topic").value == "") {
+                ssnMessage = $('#training_topic-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#training_topic-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("criticality").value == "") {
+                ssnMessage = $('#criticality-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#criticality-message');
+                ssnMessage.hide();
+            }
+            return validflg;
+        }
+        function AddData() {
+            if (Validation() == true) {
+                document.getElementById("hidden card").style.display = "block";
+                var cnt = document.getElementById("itemcnt").value;
+
+                document.getElementById("itemcnt").value = cnt;
+                // Find a <table> element with id="myTable":
+                var table = document.getElementById("team-list");
+
+
+                // Create an empty <tr> element and add it to the 1st position of the table:
+                var row = table.insertRow();
+
+                // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                var cell0 = row.insertCell(0);
+                var cell1 = row.insertCell(1);
+                var cell2 = row.insertCell(2);
+
+                var training_topic = $('#training_topic').val();
+                var criticality = $.map($("#criticality option:selected"), function (el, i) {
+                    return $(el).text();
+                });
+                var criticalityVal = $("#criticality").val();
+
+                cell0.innerHTML = "<span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span>";
+                cell1.innerHTML = "<textarea id='training_topic " + cnt + "' name='training_topic " + cnt + "' style='overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;' class='form-control elastic maxlength-badge-position' cols='4' rows='4' placeholder='Textarea' maxlength='2000'>" + training_topic + "</textarea>";
+                cell2.innerHTML = "<select class='select-fixed-single' id='criticality " + cnt + "' name='criticality " + cnt + "'><option value='" + criticalityVal + "' selected>" + criticality + "</option>@if (ViewBag.Citicality != null)
+                {
+                    foreach (var item in ViewBag.Citicality)
+                    { <option value='@item.Value'>@item.Text</option> }
+                    }</select>";
+
+                    cnt++;
+                    document.getElementById("itemcnt").value = cnt;
+
+                    //reintialisation
+
+                    // Badge position
+                    $('.maxlength-badge-position').maxlength({
+                        alwaysShow: true,
+                        placement: 'top'
+                    });
+                    //auto resize
+                    autosize($('.elastic'));
+                    $('.select-fixed-single').select2({
+                        minimumResultsForSearch: Infinity,
+                        width: 150
+                    });
+
+                    document.getElementById("hidden card").classList.remove(hideClass);
+                    document.getElementById("hidden card").classList.add(showClass);
+
+                    document.getElementById("training_topic").value = "";
+                    $("#criticality").val('').trigger('change');
+                }
+            }
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

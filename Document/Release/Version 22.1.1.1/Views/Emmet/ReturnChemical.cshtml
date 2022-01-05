@@ -1,0 +1,140 @@
+﻿@model ISOStd.Models.EmmetModels
+@{
+    ViewBag.Title = "";
+}
+<div style="max-width: 80%; padding-left: 200px;">
+    <div class="groupedassets margin10">
+        <span class="groupedassetshead margin10 onestphdcolor">Return Chemical/Paints</span>
+    </div>
+    <div id="divmsg">
+        @if (TempData["alertdata"] != null)
+        {
+            <span class="errMsg" style="color: red; font-weight: bold;">@TempData["alertdata"]</span>
+        }
+        @if (TempData["Successdata"] != null)
+        {
+            <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+        }
+    </div>
+
+    @using (Html.BeginForm("ReturnChemical", "Emmet", FormMethod.Post,
+            new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true)
+
+        <fieldset>
+            <legend></legend>
+            <input type="hidden" id="id_chemical_issue" name="id_chemical_issue" value="@Model.id_chemical_issue" />
+              <input type="hidden" id="id_chemical_issue_trans" name="id_chemical_issue_trans" value="@Model.id_chemical_issue_trans" />
+              <input type="hidden" id="balance_qty" name="balance_qty" value="@Model.balance_qty" />
+
+            <table id="tabcontent">
+                <tr>
+                     <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.balance_qty)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                             @Html.DisplayFor(model => model.balance_qty)
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                     <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.return_date)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <input type="text" id="return_date" name="return_date" style="width: 150px;" required />
+                        </div>
+                    </td>
+                      <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.return_qty)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <input type="number" id="return_qty" name="return_qty" min="0" required onchange="CheckQty()" />
+                        </div>
+                    </td>
+              
+                     
+                </tr>
+                <tr>
+                       <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.return_status)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <select class="chosen-select" id="return_status" name="return_status" required>                         
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.Status != null)
+                                {
+                                    foreach (var item in ViewBag.Status)
+                                    {
+                                        <option value='@item.Value'>@item.Text</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                </td>  
+                </tr>
+             
+            </table>
+        </fieldset>
+
+        <div style="width: 100%; text-align: center;">
+            @Html.ActionLink("Back to List", "ReturnChemicalList",new { id_chemical_issue = Model.id_chemical_issue }, new { Class = "ActionLink", onclick = "HyperLinkProgressIconFunction()" })
+            <input type="submit" value="Save" onclick="ProgressIconFunction('#form1')" />
+        </div>
+    }
+</div>
+@section Scripts {
+    <script>  
+        $(function () {
+            $("#return_status").chosen();
+            $.validator.setDefaults({ ignore: ":hidden:not('.chosen-select')" });
+
+            $('#return_date').datepicker({
+                dateFormat: "dd/mm/yy",
+                buttonImageOnly: true,
+                buttonImage: '../Images/Calender.png',
+                showOn: 'both',
+                changeMonth: true,
+                changeYear: true,
+            });
+
+            $("#return_date").datepicker("setDate", new Date());
+
+
+            $('#return_qty').on('change keyup', function () {
+                var sanitized = $(this).val().replace(/[^0-9]/g, '');
+                $(this).val(sanitized);
+            });
+        });
+        function CheckQty() {
+            var balance_qty = document.getElementById("balance_qty").value;
+            var return_qty = document.getElementById("return_qty").value;
+          
+            if (parseFloat(return_qty) <= 0) {
+                jAlert("Return Qty is should be greater than zero");
+                document.getElementById("return_qty").value = "";
+            }
+
+            if (parseFloat(return_qty) > parseFloat(balance_qty)) {
+                    jAlert("Return Qty is greater than Balance");
+                    document.getElementById("return_qty").value = "";
+                }
+       
+        }
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

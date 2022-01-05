@@ -1,0 +1,98 @@
+﻿@model IEnumerable<ISOStd.Models.ManagementChangeModels>
+    @using System.Data
+
+    @{
+        Layout = null;
+        DataSet dsActionDetails = ViewBag.ActionDetails;
+
+        ISOStd.Models.clsGlobal obj = new ISOStd.Models.clsGlobal();
+
+    }
+    <div class="card alpha-success border-success">
+        <div class="card-header bg-info text-white">
+            <h4 class="text-center">Management Of Change Info</h4>
+        </div>
+
+        <div class="card-body">
+            @foreach (var item in Model)
+            {
+                <p>
+                   Division:<code> @item.branch</code>
+                   Department:<code> @item.Department</code>
+                </p>
+                <p>
+                    Change Requested Date:<code>
+                        @if (item.ChangeInitiatedDate != null && item.ChangeInitiatedDate > Convert.ToDateTime("01/01/0001"))
+                        {
+                            @item.ChangeInitiatedDate.ToString("dd/MM/yyyy");
+                        }
+                    </code>
+
+                    Location:<code> @item.Location  </code>
+                </p>
+                <p>
+                    Change In:<code> @item.ChangeIn</code>
+                    Change Reuested By:<code> @item.ChangeRequestedBy  </code>
+                </p>
+                <p>
+                    Change Type:<code> @item.ChangeType</code>
+                    Risk Level:<code> @item.RiskLevel</code>
+                </p>
+                <p>
+                    Approved By:<code> @item.ApprovedBy</code>
+                    Approved Status:<code> @item.ApproveStatus</code>
+                </p>
+                <p>Change Status:<code> @item.ChangeStatus</code></p>
+
+
+            }
+            @if (dsActionDetails != null && dsActionDetails.Tables.Count > 0 && dsActionDetails.Tables[0].Rows.Count > 0)
+            {
+
+                <div class="w-100 bg-primary"><h5>Actions taken to mitigate the impact on consequences</h5></div>
+
+                <table class="table-xs table-bordered table-striped w-50">
+                    <thead class="bg-blue">
+                        <tr>
+                            <th>Action</th>
+                            <th>Target Date</th>
+                            <th>Completion Date</th>
+                            <th>Person Responsible</th>
+                            <th>Action Status</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < dsActionDetails.Tables[0].Rows.Count; i++)
+                        {
+                            <tr>
+                                <td style="width:150px;min-width:150px; max-width:150px;word-wrap:break-word">
+                                    @dsActionDetails.Tables[0].Rows[i]["Action"].ToString()
+                                </td>
+                                <td>
+                                    @Convert.ToDateTime(dsActionDetails.Tables[0].Rows[i]["TargetDate"].ToString()).ToString("dd/MM/yyyy")
+                                </td>
+                                <td>
+                                    @if (dsActionDetails.Tables[0].Rows[i]["ActionCompletionDate"].ToString() != "" && dsActionDetails.Tables[0].Rows[i]["ActionCompletionDate"].ToString() != null)
+                                    {
+                                        @Convert.ToDateTime(dsActionDetails.Tables[0].Rows[i]["ActionCompletionDate"].ToString()).ToString("dd/MM/yyyy")
+                                    }
+
+                                </td>
+                                <td>
+                                    @obj.GetEmpHrNameById(dsActionDetails.Tables[0].Rows[i]["PersonResponsible"].ToString())
+                                </td>
+                                <td>
+
+                                    @dsActionDetails.Tables[0].Rows[i]["Action_Status"].ToString()
+                                </td>
+
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+            }
+        </div>
+
+    </div>

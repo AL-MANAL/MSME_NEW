@@ -1,0 +1,166 @@
+﻿@model ISOStd.Models.EquipmentModels
+@using System.Data
+@{
+    Layout = null;
+    DataSet dsMaintenance = ViewBag.Maintenance;
+    DataSet dsPMaintenance = ViewBag.PMaintenance;
+
+}
+<h4 style="text-align:center;border-bottom:1px solid #808080">Machinery Info</h4>
+<p>
+    <label><b>Division:</b></label>@Html.DisplayFor(model => model.branch)
+</p>
+<p>
+    <label><b>Department:</b></label>@Html.DisplayFor(model => model.Department)
+    <label><b>Location:</b></label>@Html.DisplayFor(model => model.location)
+</p>
+<p>
+    <label><b>Equipment Type:</b></label>@Html.DisplayFor(model => model.equp_type)
+    <label><b>Equipment Location:</b></label>@Html.DisplayFor(model => model.Equipment_location)
+</p>
+<p>
+    <label><b>Equipment Name:</b></label>@Html.DisplayFor(model => model.Equipment_Name)
+    <label><b>Manufacturer:</b></label>@Html.DisplayFor(model => model.Manufacturer)
+</p>
+<p>
+    <label><b>Serial Number / Equipment No:</b></label>@Html.DisplayFor(model => model.Equipment_serial_no)
+    <label><b>Model Number:</b></label>@Html.DisplayFor(model => model.Model_No)
+</p>
+<p>
+    <label><b>Application:</b></label>@Html.DisplayFor(model => model.Equipment_Application)
+    <label><b>Source of calibration:</b></label>@Html.DisplayFor(model => model.Source_of_calibration)
+</p>
+<p>
+    <label><b>Calibration Frequency:</b></label>@Html.DisplayFor(model => model.Freq_of_calibration)
+    <label><b>Commissioning Date:</b></label>
+    @if (Model.Commissioning_Date != null && Model.Commissioning_Date > Convert.ToDateTime("01/01/0001"))
+    {
+        @Model.Commissioning_Date.ToString("dd/MM/yyyy")
+    }
+</p>
+<p>
+    <label><b>Status:</b></label> @Html.Raw(HttpUtility.HtmlDecode(Model.Equipment_status))
+    @*<label><b>Department:</b></label>@Html.DisplayFor(model => model.Department)</p>*@
+    <label><b>Responsible Person:</b></label>@Html.DisplayFor(model => model.RespPerson)
+</p>
+<p>
+    <label><b>Updated On:</b></label>
+    @if (Model.Logged_date != null && Model.Logged_date > Convert.ToDateTime("01/01/0001"))
+    {
+        @Model.Logged_date.ToString("dd/MM/yyyy")
+    }
+    @*<label><b>Next Maintenance Date:</b></label>
+    @if (Model.Next_Maint_Date != null && Model.Next_Maint_Date > Convert.ToDateTime("01/01/0001"))
+    {
+        @Model.Next_Maint_Date.ToString("dd/MM/yyyy")
+    }*@
+</p>
+
+@if (dsPMaintenance != null && dsPMaintenance.Tables.Count > 0 && dsPMaintenance.Tables[0].Rows.Count > 0)
+{
+    <div id="Items">
+        <div class="editor-label">
+            <label for="Complaint Details" style="background-color: #4cc4dd; width: 100%; color: white; padding-left: 5px;">Preventive Maintenance Details</label>
+        </div>
+        <table id="team-list">
+            <tr>
+                <th>Maintenance Date</th>
+                <th>Document</th>
+                <th>Next Maintaince Date</th>
+                <th>Done By</th>
+                <th>Amount Spent</th>
+                <th>Remarks</th>
+            </tr>
+            @for (int i = 0; i < dsPMaintenance.Tables[0].Rows.Count; i++)
+            {
+                <tr>
+                    <td>
+                        @if (dsPMaintenance.Tables[0].Rows[i]["Maintenance_Date"].ToString() != null && Convert.ToDateTime(dsPMaintenance.Tables[0].Rows[i]["Maintenance_Date"].ToString()) > Convert.ToDateTime("01/01/0001"))
+                        {
+                            @Convert.ToDateTime(dsPMaintenance.Tables[0].Rows[i]["Maintenance_Date"].ToString()).ToString("dd/MM/yyyy")
+                        }
+                    </td>
+                    <td>
+                        @if (dsPMaintenance.Tables[0].Rows[i]["Maintenance_Details"].ToString() != "")
+                        {
+                            <a href='@Url.Action("DisplayDocument", "Reports", new { Document = dsPMaintenance.Tables[0].Rows[i]["Maintenance_Details"].ToString() })' target="_blank">Preview</a>
+                        }
+                    </td>
+                    <td>
+                        @if (dsPMaintenance.Tables[0].Rows[i]["Next_Maint_Date"].ToString() != null && Convert.ToDateTime(dsPMaintenance.Tables[0].Rows[i]["Next_Maint_Date"].ToString()) > Convert.ToDateTime("01/01/0001"))
+                        {
+                            @Convert.ToDateTime(dsPMaintenance.Tables[0].Rows[i]["Next_Maint_Date"].ToString()).ToString("dd/MM/yyyy")
+                        }
+                    </td>
+                    <td>
+                        @dsPMaintenance.Tables[0].Rows[i]["done_by"].ToString()
+                    </td>
+                    <td>
+                        @dsPMaintenance.Tables[0].Rows[i]["Amt_Spent"].ToString()
+                    </td>
+                    <td>
+                        @dsPMaintenance.Tables[0].Rows[i]["Remarks"].ToString()
+                    </td>
+                </tr>
+            }
+        </table>
+    </div>
+}
+<br />
+
+@if (dsMaintenance != null && dsMaintenance.Tables.Count > 0 && dsMaintenance.Tables[0].Rows.Count > 0)
+{
+    <div id="Items">
+        <div class="editor-label">
+            <label for="Complaint Details" style="background-color: #4cc4dd; width: 100%; color: white; padding-left: 5px;">Breakdowm Maintenance Details</label>
+        </div>
+        <table id="team-list">
+            <tr>
+                <th>Maintenance Date</th>
+                <th>Details of Rectification Work</th>
+                <th>Down Time from</th>
+                <th>Down Time to</th>
+                <th>Spare Used</th>
+                <th>Amount Spent</th>
+                <th>Remarks</th>
+            </tr>
+
+            @for (int i = 0; i < dsMaintenance.Tables[0].Rows.Count; i++)
+            {
+                <tr>
+                    <td>
+                        @if (dsMaintenance.Tables[0].Rows[i]["Maintenance_Date"].ToString() != null && Convert.ToDateTime(dsMaintenance.Tables[0].Rows[i]["Maintenance_Date"].ToString()) > Convert.ToDateTime("01/01/0001"))
+                        {
+                            @Convert.ToDateTime(dsMaintenance.Tables[0].Rows[i]["Maintenance_Date"].ToString()).ToString("dd/MM/yyyy")
+                        }
+                    </td>
+
+                    <td>
+                        @dsMaintenance.Tables[0].Rows[i]["Maintenance_RectificationWork"].ToString()
+                    </td>
+                    <td>
+                        @if (dsMaintenance.Tables[0].Rows[i]["Down_Time_From"].ToString() != null && Convert.ToDateTime(dsMaintenance.Tables[0].Rows[i]["Down_Time_From"].ToString()) > Convert.ToDateTime("01/01/0001"))
+                        {
+                            @Convert.ToDateTime(dsMaintenance.Tables[0].Rows[i]["Down_Time_From"].ToString()).ToString("dd/MM/yyyy hh:mm")
+                        }
+                    </td>
+                    <td>
+                        @if (dsMaintenance.Tables[0].Rows[i]["Down_Time_To"].ToString() != null && Convert.ToDateTime(dsMaintenance.Tables[0].Rows[i]["Down_Time_To"].ToString()) > Convert.ToDateTime("01/01/0001"))
+                        {
+                            @Convert.ToDateTime(dsMaintenance.Tables[0].Rows[i]["Down_Time_To"].ToString()).ToString("dd/MM/yyyy hh:mm")
+                        }
+                    </td>
+                    <td>
+                        @dsMaintenance.Tables[0].Rows[i]["Spare_Used"].ToString()
+                    </td>
+                    <td>
+                        @Convert.ToDecimal(dsMaintenance.Tables[0].Rows[i]["Amt_Spent"].ToString())
+                    </td>
+                    <td>
+                        @dsMaintenance.Tables[0].Rows[i]["Remarks"].ToString()
+                    </td>
+                </tr>
+            }
+        </table>
+    </div>
+}

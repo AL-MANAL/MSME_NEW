@@ -1,0 +1,109 @@
+﻿@using System.Data;
+@{
+    Layout = "~/Views/Shared/_PrintLayout.cshtml";
+    ViewBag.Title = "Objectives Report";
+    
+    DataSet dsObjective=new DataSet();
+    
+    if(ViewBag.dsObjectivesList != null)
+    {
+        dsObjective=ViewBag.dsObjectivesList;
+    }
+
+    string fromdateValue = DateTime.Now.AddMonths(-1).ToString("dd/MM/yyy"), toDateValue = DateTime.Now.ToString("dd/MM/yyy");
+    if (ViewBag.fromdateValue != null)
+    {
+        fromdateValue = ViewBag.fromdateValue;
+    }
+
+    if (ViewBag.toDateValue != null)
+    {
+        toDateValue = ViewBag.toDateValue;
+    }
+    
+}
+
+
+
+<div class="card">
+
+ 	   <div class="card-header header-elements-inline bg-primary text-center">
+                <h5 class="card-title">Objectives Report</h5>
+                
+            </div>
+ 	   
+ 	   <div class="card-body">
+ @if (dsObjective != null && dsObjective.Tables.Count > 0 && dsObjective.Tables[0].Rows.Count > 0)
+    {
+ <div class="card">
+                <table>
+                    <tr>
+                        <td>
+                            <div id="logo" style="padding-left: 30px;">
+                                <img src="@Url.Content(dsObjective.Tables[0].Rows[0]["logo"].ToString())" style="width: 150px;height: 100px;" />
+                            </div>
+                        </td>
+                        <td style="text-align: center; font-weight: bold; width: 80%; font-size: 16px;">
+                            <span>@dsObjective.Tables[0].Rows[0]["CompanyName"].ToString()</span>
+                            <br />
+                            <span>OBJECTIVE REPORT</span>
+                        </td>
+                    </tr>
+                </table>
+ </div>
+  <div>
+                <table class="table table-lg table-bordered">
+                    <thead>
+                      
+                    <tr class="bg-blue font-weight-bold">
+                 <th>Sl No</th>
+                <th>Obj. Level</th>
+                <th>Obj‎. ‎Ref‎.‎</th>
+                <th>Obj. Value</th>               
+                <th>Department‎‎</th>               
+                <th>Frequency of Evaluation.‎‎</th>
+                <th>Person of Responsible</th>
+                <th>Base Line Value</th>
+                <th>Target value to be achieved</th>
+                <th>Target Date</th>     
+                <th>Approved By‎‎</th>
+              
+                    </tr>
+                    </thead>
+
+                    @for (int i = 0, j = 1; i < dsObjective.Tables[0].Rows.Count; i++, j++)
+                    {
+                      <tbody>
+                        <tr>
+                            <td>@dsObjective.Tables[0].Rows[i]["slno"].ToString()</td>
+                <td>@dsObjective.Tables[0].Rows[i]["objective_level"].ToString()</td>
+                <td>@dsObjective.Tables[0].Rows[i]["obj_ref"].ToString()</td>
+                <td>@dsObjective.Tables[0].Rows[i]["Objectives_val"].ToString()</td>
+                @*<td>@Convert.ToDateTime(dsObjective.Tables[0].Rows[i]["obj_estld_on"].ToString()).ToString("dd/MM/yyyy")</td>*@
+                <td>@dsObjective.Tables[0].Rows[i]["deptname"].ToString()</td>
+                <td>@dsObjective.Tables[0].Rows[i]["freq_of_Eval"].ToString()</td>
+                <td>@dsObjective.Tables[0].Rows[i]["personal_responsible"].ToString()</td>
+                <td>@dsObjective.Tables[0].Rows[i]["base_line_value"].ToString()</td>
+                <td>@dsObjective.Tables[0].Rows[i]["Obj_Target"].ToString()</td>
+                @*<td>@dsObjective.Tables[0].Rows[i]["Monitoring_Mechanism"].ToString()</td>*@
+               <td>@Convert.ToDateTime(dsObjective.Tables[0].Rows[i]["Target_Date"].ToString()).ToString("dd/MM/yyyy")</td>
+                @*<td>@dsObjective.Tables[0].Rows[i]["AuditCriteria"].ToString()</td>*@
+                @*<td>@dsObjective.Tables[0].Rows[i]["estalished_by"].ToString()</td>*@
+                <td>@dsObjective.Tables[0].Rows[i]["approved_by"].ToString()</td>
+                @*<td>@dsObjective.Tables[0].Rows[i]["Approved_Status"].ToString()</td>*@
+
+                        </tr>
+                          </tbody>
+                    }
+                </table>
+              </div>
+}
+	   </div>
+</div>
+    
+
+@section Scripts {
+    <script>
+      
+    </script>
+}

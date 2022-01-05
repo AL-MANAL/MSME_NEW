@@ -1,0 +1,632 @@
+﻿@model ISOStd.Models.SuppliedMaterialModels
+
+@{
+    ViewBag.Title = "AddSuppliedMaterial";
+}
+
+@section featured {
+    <div class="page-header page-header-light">
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("SuppliedMaterialList", "SuppliedMaterial", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Purchase Details</span>
+                    </a>
+                    <span class="breadcrumb-item active">Add Purchase Details</span>
+                </div>
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+}
+
+@using (Html.BeginForm("AddSuppliedMaterial", "SuppliedMaterial", FormMethod.Post,
+                     new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Add Purchase Details</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+
+                <table class="table table-lg">
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.branch)
+                        </td>
+                        <td class="col">
+                            <select class="form-control select-fixed-multiple" multiple="multiple" data-fouc id="branch" name="branch" onchange="GetDeptList()">
+                                @*<option value='' hidden>Select</option>*@
+                                @if (ViewBag.Branch != null)
+                                {
+                                    foreach (var data in ViewBag.Branch)
+                                    {
+                                        if (Array.IndexOf(Model.branch.ToString().Split(','), data.Value) >= 0)
+                                        {
+                                            <option value='@data.Value' selected>@data.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@data.Value'>@data.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.Department)<text style="color:red;">*</text>
+                        </td>
+                        <td class="col">
+                            <select class="form-control select-fixed-multiple" data-fouc id="Department" name="Department" multiple="multiple" @*onchange="EmployeeList()"*@ required>
+                                @if (ViewBag.Department != null)
+                                {
+                                    foreach (var item in ViewBag.Department)
+                                    {
+                                        if (Array.IndexOf(Model.Department.ToString().Split(','), item.Value) >= 0)
+                                        {
+                                            <option value='@item.Value' selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                            <br />
+                            @Html.ValidationMessageFor(m => m.Department)
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.orderno)<text style="color:red;">*</text>
+                        </td>
+                        <td class="col">
+                            <input class="form-control" type="text" id="orderno" name="orderno" required />
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.order_date)
+                        </td>
+                        <td class="col">
+                            <input class="form-control" type="date" id="order_date" name="order_date" />
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.provider_type)<text style="color:red;">*</text>
+                        </td>
+                        <td class="col">
+                            @if (ViewBag.ProviderType != null)
+                            {
+                                foreach (var item in ViewBag.ProviderType)
+                                {
+                                    <label><input type="radio" id="provider_type" name="provider_type" value="@item.Value" onchange="GetProviderTypeInfo()" required />@item.Text</label>
+                                }
+                            }
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.Location)<text style="color:red;">*</text>
+                        </td>
+                        <td class="col">
+                            <select class="form-control select-fixed-multiple" data-fouc id="Location" name="Location" multiple="multiple" @*onchange="EmployeeList()"*@ required>
+                                @if (ViewBag.Location != null)
+                                {
+                                    foreach (var item in ViewBag.Location)
+                                    {
+                                        if (Array.IndexOf(Model.Location.ToString().Split(','), item.Value) >= 0)
+                                        {
+                                            <option value='@item.Value' selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                            <br />
+                            @Html.ValidationMessageFor(m => m.Location)
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.supplier_name)<text style="color:red;">*</text>
+                        </td>
+                        <td class="col">
+
+                            <select class="form-control select-search select2-hidden-accessible" data-fouc id="supplier_name" name="supplier_name" disabled>
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.Supplier != null)
+                                {
+                                    foreach (var item in ViewBag.Supplier)
+                                    {
+                                        <option value='@item.Value'>@item.Text</option>
+                                    }
+                                }
+                            </select>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.customer_name)<text style="color:red;">*</text>
+                        </td>
+                        <td class="col">
+
+                            <select class="form-control select-search select2-hidden-accessible" data-fouc id="customer_name" name="customer_name" disabled>
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.Customer != null)
+                                {
+                                    foreach (var item in ViewBag.Customer)
+                                    {
+                                        <option value='@item.Value'>@item.Text</option>
+                                    }
+                                }
+                            </select>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.remark)
+                        </td>
+                        <td class="col">
+                            <textarea class="form-control" id="remark" name="remark"></textarea>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.details)
+                        </td>
+                        <td class="col">
+                            <textarea class="form-control" id="details" name="details"></textarea>
+                        </td>
+                    </tr>
+                </table>
+                <br />
+                @*Fire Equpiment Type*@
+                <fieldset class="border p-2">
+                    <legend class="font-weight-semibold">
+                        <i class="icon-file-text mr-2"></i>Supplied Material Details
+                    </legend>
+
+                    <table class="table table-lg" id="table1">
+                        <tbody>
+                            <tr class="row">
+                                @*<th class="col-xs-3 col-md-2" style="font-weight: bold;">Matrial Id</th>
+                    <td class="col">
+                        <input class="form-control" type="text" id="id_materials" name="id_materials" />
+                        @Html.ValidationMessageFor(model => model.id_materials)
+                        <span class="field-validation-error"><span id="id_materials-message" style="display: none;">Please select Matrial Id.</span></span>
+                    </td>*@
+                                <th class="col-xs-3 col-md-2" style="font-weight: bold;">Date</th>
+                                <td class="col">
+                                    <input class="form-control" type='date' id='qty_date' name="qty_date" />
+                                    @Html.ValidationMessageFor(model => model.qty_date)
+                                    <span class="field-validation-error"><span id="qty_date-message" style="display: none;" for="basic">Please select Quantity Date.</span></span>
+                                </td>
+
+                                <th class="col-xs-3 col-md-2" style="font-weight: bold;">Operation Type</th>
+                                <td class="col">
+                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="operation_type" name="operation_type" onchange="CheckIssue()">
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.OperationType != null)
+                                        {
+                                            foreach (var item in ViewBag.OperationType)
+                                            {
+                                                <option value='@item'>@item</option>
+                                            }
+                                        }
+                                    </select>
+                                    @Html.ValidationMessageFor(model => model.operation_type)
+                                    <span class="field-validation-error"><span id="operation_type-message" style="display: none;">Please select Type of Operation.</span></span>
+                                </td>
+                            </tr>
+                            <tr class="row">
+                                <th class="col-xs-3 col-md-2" style="font-weight: bold;">Quantity</th>
+                                <td class="col">
+                                    <input class="form-control" type='number' id='quantity' name="quantity" min="0" onchange="GetBalance()" />
+                                    @Html.ValidationMessageFor(model => model.quantity)
+                                    <span class="field-validation-error"><span id="quantity-message" style="display: none;" for="basic">Please select Quantity.</span></span>
+                                </td>
+
+                                <th class="col-xs-3 col-md-2" style="font-weight: bold;">Done by</th>
+                                <td class="col">
+                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="done_by" name="done_by">
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.EmpList != null)
+                                        {
+                                            foreach (var item in ViewBag.EmpList)
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    </select>
+                                    @Html.ValidationMessageFor(model => model.done_by)
+                                    <span class="field-validation-error"><span id="done_by-message" style="display: none;">Please select Person Name.</span></span>
+                                </td>
+                                <td class="col-xs-9 col-md-2">
+                                    <span>
+                                        <img src='@Url.Content("~/images/icon_add.png")' onclick='AddSuppliedMaterialInfo()' style='cursor:pointer; padding-right: 5px;' title="Press to add N number in Supplied Material Details" />Add
+                                    </span>
+                                    <span class="form-text text-muted"><code>Please click Add or Plus button to add N number of Supplied Material details</code></span>
+                                </td>
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+                    <span>
+                        <b>Balance Quantity :  </b><input type="text" id="bal" name="bal" style="color:red;font-weight:bolder;text-align:center" value="0" disabled />
+                        <br />
+                    </span>
+                </fieldset>
+
+                <div class="card invisible" id="hidden_card" @*style="display:none"*@>
+                    <div class="card-header header-elements-inline">
+                        <h5 class="card-title">Supplier Material Details</h5>
+                        <div class="header-elements">
+                            <div class="list-icons">
+                                <a class="list-icons-item" data-action="collapse"></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+                        <input type="hidden" id="itemcnt" name="itemcnt" value="0" />
+                        <div class="card card-table table-responsive shadow-0 mb-0">
+                            <table class="table" id="team-list">
+                                <tr class="bg-blue">
+                                    <th>Action</th>
+                                    @*<th>Matrial ID</th>*@
+                                    <th>Date</th>
+                                    <th>Operation Type</th>
+                                    <th>Quantity</th>
+                                    <th>Done By</th>                                   
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+            @Html.ActionLink("Back to List", "SuppliedMaterialList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+            <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Add</button>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        var showClass = 'is-visible';
+        var hideClass = 'invisible';
+             
+
+        function AddSuppliedMaterialInfo() {
+
+        if (Validation() == true) {
+           
+                var Quantity = parseInt(document.getElementById("quantity").value);
+            var OperationType = $("#operation_type option:selected").text();
+                var Balance = parseInt(document.getElementById("bal").value);
+            if (Quantity > 0 && OperationType== "Issued") {
+                Balance = Balance - Quantity;                
+                document.getElementById("bal").value = Math.round(Balance);
+            }
+            else if (Quantity > 0 && OperationType == "Received") {
+                Balance = Balance + Quantity;
+                document.getElementById("bal").value = Math.round(Balance);
+            }
+
+            var cnt = document.getElementById("itemcnt").value;
+
+            document.getElementById("itemcnt").value = cnt;
+            // Find a <table> element with id="myTable":
+            var table = document.getElementById("team-list");
+
+
+            // Create an empty <tr> element and add it to the 1st position of the table:
+            var row = table.insertRow();
+
+            // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+            var cell0 = row.insertCell(0);
+            var cell1 = row.insertCell(1);
+            var cell2 = row.insertCell(2);
+            var cell3 = row.insertCell(3);
+            var cell4 = row.insertCell(4);            
+            //var cell5 = row.insertCell(5);     
+
+            var operation_type = $('#operation_type').val();
+            var operation_typeName = $("#operation_type option:selected").text();
+
+            var done_by = $('#done_by').val();
+            var done_byName = $("#done_by option:selected").text();
+
+            //var id_materials = $('#id_materials').val();
+            var quantity = $('#quantity').val();
+
+            var qty_date = reformatDate($("#qty_date").val());            
+
+            cell0.innerHTML = " <img src='@Url.Content("~/images/cancel.png")' onclick='deleteRow(this)' style='cursor:pointer; padding-right: 5px;'/>Remove";
+            //cell1.innerHTML = "<input type='hidden' id='id_materials" + cnt + "' name='id_materials" + cnt + "' value='" + id_materials + "'>" + id_materials;
+            cell1.innerHTML = "<input type='hidden' id='qty_date" + cnt + "' name='qty_date" + cnt + "' value='" + qty_date + "'>" + qty_date;
+            cell2.innerHTML = "<input type='hidden' id='operation_type" + cnt + "' name='operation_type" + cnt + "' value='" + operation_type + "'>" + operation_typeName;
+            cell3.innerHTML = "<input type='hidden' id='quantity" + cnt + "' name='quantity" + cnt + "' value='" + quantity + "'>" + quantity;
+            cell4.innerHTML = "<input type='hidden' id='done_by" + cnt + "' name='done_by" + cnt + "' value='" + done_by + "'>" + done_byName;
+            
+            cnt++;
+            document.getElementById("itemcnt").value = cnt;
+
+            document.getElementById("hidden_card").classList.remove(hideClass);
+            document.getElementById("hidden_card").classList.add(showClass);
+            ResetControl();
+            }
+        }
+
+        function Validation() {
+            var validflg = true;
+            var ssnMessage = "";
+
+            //if (document.getElementById("id_materials").value == "") {
+            //    ssnMessage = $('#id_materials-message');
+            //    ssnMessage.show();
+            //    validflg = false;
+            //}
+            //else {
+            //    ssnMessage = $('#id_materials-message');
+            //    ssnMessage.hide();
+            //}
+
+            if (document.getElementById("qty_date").value == "") {
+                ssnMessage = $('#qty_date-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#qty_date-message');
+                ssnMessage.hide();
+            }
+
+            if (document.getElementById("operation_type").value == "") {
+                ssnMessage = $('#operation_type-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#operation_type-message');
+                ssnMessage.hide();
+            }
+
+            if (document.getElementById("quantity").value == "") {
+                ssnMessage = $('#quantity-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#quantity-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("done_by").value == "") {
+                ssnMessage = $('#done_by-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#done_by-message');
+                ssnMessage.hide();
+            }           
+            return validflg;
+        }
+
+        function ResetControl() {
+            $("#operation_type").val('').trigger('change');
+            $("#done_by").val('').trigger('change');
+           
+            //document.getElementById("id_materials").value = "";
+            document.getElementById("qty_date").value = "";
+            document.getElementById("quantity").value = "";                    
+        }
+        
+        function reformatDate(dateStr) {
+            dArr = dateStr.split("-");  // ex input 2010-01-18
+            return dArr[2] + "/" + dArr[1] + "/" + dArr[0]; //ex out: 2018/01/10
+        }
+
+        function deleteRow(btn) {
+            var row = btn.parentNode.parentNode;
+            var Qty = parseInt(row.cells[3].getElementsByTagName('input')[0].value);
+            var OpType = row.cells[2].getElementsByTagName('input')[0].value;
+            var Balance = parseInt(document.getElementById("bal").value)
+            if ( OpType == "Issued") {
+                Balance = Balance + Qty;
+                document.getElementById("bal").value = Math.round(Balance);
+                row.parentNode.removeChild(row);
+                var cnt = document.getElementById("itemcnt").value;
+                cnt--;
+                if (cnt == "0") {
+                    document.getElementById("hidden_card").classList.remove(showClass);
+                    document.getElementById("hidden_card").classList.add(hideClass);
+                }
+            }
+            else if (OpType == "Received") {
+                Balance = Balance - Qty;
+                if (Balance >= 0) {
+                    document.getElementById("bal").value = Math.round(Balance);
+
+                    row.parentNode.removeChild(row);
+                    var cnt = document.getElementById("itemcnt").value;
+                    cnt--;
+                    if (cnt == "0") {
+                        document.getElementById("hidden_card").classList.remove(showClass);
+                        document.getElementById("hidden_card").classList.add(hideClass);
+                    }
+                }
+                else {                   
+                    bootbox.alert({
+                        title: 'Cant Remove Row',
+                        message: 'Balance is less than Zero. Hence cant remove row'
+                    });
+                }
+               
+            }
+            
+        }
+
+        function GetProviderTypeInfo() {
+            //var Type = $("#provider_type option:checked").text();
+            var Type = $("input[name='provider_type']:checked").parent('label').text();
+            
+            if (Type.toLowerCase() == "supplier") {
+                $('#supplier_name').attr("disabled", false);
+                $('#supplier_name').attr("required", true);
+                $('#customer_name').attr("disabled", true);
+                $('#customer_name').attr("required", false);
+                $("#customer_name").val('').trigger('change');
+            }
+            else if (Type.toLowerCase() == "customer") {
+                $('#customer_name').attr("disabled", false);
+                $('#supplier_name').attr("disabled", true);
+                $('#supplier_name').attr("required", false);
+                $('#customer_name').attr("required", true);
+                $("#supplier_name").val('').trigger('change');
+            }            
+        }
+
+        function GetBalance() {
+            var Quantity = parseInt(document.getElementById("quantity").value);
+            var OperationType = $("#operation_type option:selected").text();
+      
+            if (OperationType != "Select") {
+                var Balance = parseInt(document.getElementById("bal").value);
+
+                if (Quantity > 0 && OperationType == "Received") {
+                    Balance = Balance+Quantity;
+                    //document.getElementById("bal").value = Math.round(Balance);
+                }
+                else if (Quantity > 0 && OperationType == "Issued") {
+                    var sBalance = Balance-Quantity;
+
+                    if (Quantity > 0 && sBalance < 0) {
+                        bootbox.alert({
+                            title: 'Cant Issue',
+                            message: 'Balance is less than Zero. Hence cant Issue the Item'
+                        });
+                        document.getElementById("quantity").value = "";
+                        return;
+                    }
+                    //document.getElementById("bal").value = Math.round(sBalance);
+                }
+            }
+            else {
+                bootbox.alert({
+                    title: 'Operation Type',
+                    message: 'Please select operation type'
+                });
+                document.getElementById("quantity").value = "";
+            }
+        }
+
+        function CheckIssue() {
+            var Balance = document.getElementById("bal").value;
+            var OperationType = $("#operation_type option:selected").text();
+            if (Balance <= 0 && OperationType == "Issued") {
+                //$("#operation_type").val('Select').trigger('change');
+                bootbox.alert({
+                    title: 'Cant Issue',
+                    message: 'Balance is Zero. Hence cant Issue the Item'
+                });               
+            }
+        }
+
+        
+        
+      function GetDeptList() {
+            var selectedValues = [];
+            $("#branch :selected").each(function () {
+                selectedValues.push($(this).val());
+            });  
+                jQuery.ajax({
+                    url: '@Url.Action("FunGetAllDeptList", "EmployeeDetails")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'branch': selectedValues },
+                    success: function (result) {
+                        GetLocList(selectedValues);
+                        $("#Department").children('option').remove();
+                        $("#Department").trigger('change');
+                        if (result != null && result.length > 0) {
+                            $.each(result, function (index, item) {
+                                $("#Department").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                                $("#Department").trigger('change');
+                            });
+                            return;
+                        }
+                        //else {
+                        //    bootbox.alert({
+                        //        title: 'Department List',
+                        //        message: 'No Department exists.'
+                        //    });
+                        //}
+                    }
+                });          
+        }
+
+
+        function GetLocList(selectedValues) {                   
+            jQuery.ajax({
+                url: '@Url.Action("FunGetAllLocList", "EmployeeDetails")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'branch': selectedValues },
+                success: function (result) {
+                    $("#Location").children('option').remove();
+                    $("#Location").trigger('change');
+                    if (result != null && result.length > 0) {
+                        $.each(result, function (index, item) {
+                            $("#Location").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                            $("#Location").trigger('change');
+                        });
+                        return;
+                    }
+                    //else {
+                    //    bootbox.alert({
+                    //        title: 'Location List',
+                    //        message: 'No Location exists.'
+                    //    });
+                    //}
+                }
+            });       
+        }
+
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

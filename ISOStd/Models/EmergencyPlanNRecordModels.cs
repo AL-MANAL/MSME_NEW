@@ -104,6 +104,31 @@ namespace ISOStd.Models
         [Display(Name = "Division")]
         public string branch { get; set; }
 
+        [Display(Name = "Id")]
+        public string id_perform { get; set; }
+
+        [Display(Name = "Action Details")]
+        public string action_details { get; set; }
+
+        [Display(Name = "Alarm raised by")]
+        public string alarm_raised_by { get; set; }
+
+        [Display(Name = "Assembly point")]
+        public string assembly_point { get; set; }
+
+        [Display(Name = "Date and time of drill")]
+        public DateTime drill_date { get; set; }
+
+        [Display(Name = "Observation")]
+        public string perf_observation { get; set; }
+
+        [Display(Name = "Remarks")]
+        public string perf_remarks { get; set; }
+
+        [Display(Name = "Location")]
+        public string perf_location { get; set; }
+
+
         internal bool FunDeleteEmergencyPlanDoc(string sEmergency_Plan_Id)
         {
             try
@@ -289,6 +314,58 @@ namespace ISOStd.Models
                 objGlobalData.AddFunctionalLog("Exception in FunUpdateEmergencyPlan: " + ex.ToString());
             }
             return false;
+        }
+
+        internal bool FunUpdatePerformPlan(EmergencyPlanNRecordModels objEmergencyPlanNRecord)
+        {
+            try
+            {
+                string sSqlstmt = " update t_emergency_plan_record_perform set action_details='" + objEmergencyPlanNRecord.action_details + "', perf_observation='" + objEmergencyPlanNRecord.perf_observation
+                    + "', perf_remarks='" + objEmergencyPlanNRecord.perf_remarks + "', perf_location='" + objEmergencyPlanNRecord.perf_location
+                    + "', alarm_raised_by='" + objEmergencyPlanNRecord.alarm_raised_by + "', assembly_point='" + objEmergencyPlanNRecord.assembly_point + "'";
+
+
+                if (objEmergencyPlanNRecord.drill_date > Convert.ToDateTime("01/01/0001"))
+                {
+                    sSqlstmt = sSqlstmt + ", drill_date='" + objEmergencyPlanNRecord.drill_date.ToString("yyyy-MM-dd HH':'mm':'ss") + "' ";
+                }
+
+
+                sSqlstmt = sSqlstmt + " where id_perform='" + objEmergencyPlanNRecord.id_perform + "'";
+                return objGlobalData.ExecuteQuery(sSqlstmt);
+            }
+            catch (Exception ex)
+            {
+                objGlobalData.AddFunctionalLog("Exception in FunUpdatePerformPlan: " + ex.ToString());
+            }
+            return false;
+        }
+        internal bool FunAddPerformPlan(EmergencyPlanNRecordModels objEmergencyPlanNRecord)
+        {
+            try
+            {
+
+                string sColumn = "", sValues = "";
+                string sSqlstmt = "insert into t_emergency_plan_record_perform (Emergency_Plan_Id,action_details,perf_observation,perf_remarks,perf_location,alarm_raised_by,assembly_point";
+               
+                if (objEmergencyPlanNRecord.drill_date > Convert.ToDateTime("01/01/0001"))
+                {
+                    sColumn = sColumn + ", drill_date";
+                    sValues = sValues + ", '" + objEmergencyPlanNRecord.drill_date.ToString("yyyy-MM-dd HH':'mm':'ss") + "' ";
+                }
+
+                sSqlstmt = sSqlstmt + sColumn + ") values('" + Emergency_Plan_Id+ "','" + action_details + "','" + perf_observation + "','" + perf_remarks + "','" + perf_location + "','" + alarm_raised_by + "','" + assembly_point + "'";
+
+                sSqlstmt = sSqlstmt + sValues + ")";
+
+                return objGlobalData.ExecuteQuery(sSqlstmt);
+            }
+            catch (Exception ex)
+            {
+                objGlobalData.AddFunctionalLog("Exception in FunAddEmergencyPlan: " + ex.ToString());
+            }
+            return false;
+
         }
 
         internal string GetEmergencyTypeNameById(string sEmergency)

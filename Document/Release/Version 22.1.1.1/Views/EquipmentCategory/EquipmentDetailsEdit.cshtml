@@ -1,0 +1,385 @@
+﻿@model ISOStd.Models.EquipmentDetailModels
+
+@{
+    ViewBag.Title = "EditEquipmentDetails";
+}
+
+<html>
+    <body onload="setCategory()">
+<div style="max-width: 80%; padding-left: 200px;">
+
+    <div class="groupedassets margin10">
+        <span class="groupedassetshead margin10 onestphdcolor">Edit Equipment Details</span>
+    </div>
+    <br />
+    <div id="divmsg">
+        @if (TempData["alertdata"] != null)
+        {
+            <span class="errMsg" style="color: red; font-weight: bold;">@TempData["alertdata"]</span>
+        }
+        @if (TempData["Successdata"] != null)
+        {
+            <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+        }
+    </div>
+
+    @using (Html.BeginForm("EquipmentDetailsEdit", "EquipmentCategory", FormMethod.Post,
+                         new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true)
+
+          <div id="div2">
+                <input type="hidden" id="id_trailer" name="id_trailer" value="@Model.id_trailer" />
+             <table id="tabcontent">
+                 <tr>
+                    <th colspan="4" style="background-color: #4cc4dd; color: #fff; font-weight: bold; font-size: 14px;">Equipment Details</th>
+                </tr>
+               <tr>
+                   <td>
+                       <div class="editor-label">
+                            @Html.LabelFor(model => model.Cat_name)<text style="color: red;">*</text>
+                        </div>
+                   </td>
+                    <td>
+                        <div class="editor-field">
+                            <select id="Cat_name" name="Cat_name" required>
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.Equipment != null)
+                                {
+                                    foreach (var item in ViewBag.Equipment)
+                                    {
+                                        if (item.Text == Model.Cat_name)
+                                        {
+                                        <option value='@item.Value' selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                        <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </td>
+                    <td>
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.trailerno)
+                            </div>
+                        </td>
+                        <td>
+                            <div class="editor-field">
+                                <input type="text" id="trailerno" name="trailerno" value="@Model.trailerno"/>
+                            </div>
+                        </td>
+                </tr>
+               <tr>
+                   <td>
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.trailerreg)
+                            </div>
+                        </td>
+                        <td>
+                            <div class="editor-field">
+                                <input type="text" id="trailerreg" name="trailerreg" value="@Model.trailerreg"  />
+                            </div>
+                        </td>
+                   <td>
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.reg_date)
+                            </div>
+                        </td>
+                        <td>
+                            <div class="editor-field">
+                                <input type="text" id="reg_date" name="reg_date" style="width: 150px;" value="@Model.reg_date.ToString("dd/MM/yyyy")"  />
+                            </div>
+                        </td>
+               </tr>
+                <tr>
+                     <td>
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.exp_date)
+                            </div>
+                        </td>
+                        <td>
+                            <div class="editor-field">
+                                <input type="text" id="exp_date" name="exp_date" style="width: 150px;"  value="@Model.exp_date.ToString("dd/MM/yyyy")" />
+                            </div>
+                        </td>
+                    <td>
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.passing_date)
+                            </div>
+                        </td>
+                        <td>
+                            <div class="editor-field">
+                                <input type="text" id="passing_date" name="passing_date" style="width: 150px;" value="@Model.passing_date.ToString("dd/MM/yyyy")" />
+                            </div>
+                        </td>
+                </tr>
+               <tr>
+                   <td>
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.cur_location)
+                            </div>
+                        </td>
+                        <td>
+                            <div class="editor-field">
+                                <input type="text" id="cur_location" name="cur_location"  value="@Model.cur_location"  />
+                            </div>
+                        </td>
+                  
+                        <td>
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.yom)
+                            </div>
+                        </td>
+                        <td>
+                            <div class="editor-field">
+                                <input type="text" id="yom" name="yom" value="@Model.yom"  />
+                            </div>
+                        </td>
+               
+               </tr>
+                <tr>
+               
+                        <td>
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.chasisno)
+                            </div>
+                        </td>
+                        <td>
+                            <div class="editor-field">
+                                <input type="text" id="chasisno" name="chasisno" value="@Model.chasisno" />
+                            </div>
+                        </td>
+                
+                    
+                        <td>
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.trailerlen)
+                            </div>
+                        </td>
+                        <td>
+                            <div class="editor-field">
+                                <input type="text" id="trailerlen" name="trailerlen" value="@Model.trailerlen"  />
+                            </div>
+                        </td>
+                 
+                </tr>
+                <tr>
+                       <td>
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.trailertype)
+                            </div>
+                        </td>
+                        <td>
+                            <div class="editor-field">
+                                <select id="trailertype" name="trailertype" required>
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.TrailerType != null)
+                                {
+                                    foreach (var item in ViewBag.TrailerType)
+                                    {
+                                        if(item.Text==Model.trailertype)
+                                        {
+                                         <option value='@item.Value' selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                         <option value='@item.Value'>@item.Text</option>
+                                        }
+                                   
+                                    }
+                                }
+                            </select>
+                            </div>
+                        </td>
+                    <td>
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.height)
+                            </div>
+                        </td>
+                        <td>
+                            <div class="editor-field">
+                                <input type="text" id="height" name="height" value="@Model.height" />
+                            </div>
+                        </td>
+                
+                </tr>
+                <tr>
+                    <td>
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.company)
+                            </div>
+                        </td>
+                        <td>
+                            <div class="editor-field">
+                                <select id="company" name="company" required>
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.Company != null)
+                                {
+                                    foreach (var item in ViewBag.Company)
+                                    {
+                                        if (item.Text == Model.company)
+                                        {
+                                         <option value='@item.Value' selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                         <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                            </div>
+                        </td>
+                     <td>
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.GVW)
+                            </div>
+                        </td>
+                        <td>
+                            <div class="editor-field">
+                                <input type="text" id="GVW" name="GVW" value="@Model.GVW" />
+                            </div>
+                        </td>
+                </tr>
+                <tr>
+                    <td>
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.suspensiontype)
+                            </div>
+                        </td>
+                        <td>
+                            <div class="editor-field">
+                                <select id="suspensiontype" name="suspensiontype" required>
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.Suspension != null)
+                                {
+                                    foreach (var item in ViewBag.Suspension)
+                                    {
+                                        if(item.Text==Model.suspensiontype)
+                                        {
+                                        <option value='@item.Value' selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                        <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    
+                                    }
+                                }
+                            </select>
+                            </div>
+                        </td>
+                     <td>
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.remarks)
+                            </div>
+                        </td>
+                        <td>
+                            <div class="editor-field">
+                                @Html.TextAreaFor(model => model.remarks)
+                            </div>
+                        </td>
+                </tr>
+               
+            </table>
+            
+        </div>
+       
+    <br />
+        <div style="width: 100%; text-align: center;">
+            @Html.ActionLink("Back to List", "TrailerList", null, new { @class = "ActionLink", onclick = "HyperLinkProgressIconFunction()" })
+            <input type="submit" value="Update" onclick="ProgressIconFunction('#form1')" />
+        </div>
+    }
+
+</div>
+        </body>
+</html>
+@section Scripts {
+    <script>
+
+      
+        $(function () {
+            $('#vehicle_renewal_date').datepicker({
+                dateFormat: "dd/mm/yy",
+                buttonImageOnly: true,
+                buttonImage: '../Images/Calender.png',
+                showOn: 'both',
+                changeMonth: true,
+                changeYear: true,
+                gotoCurrent: true
+            });
+
+            $('#vehicle_renewal_due_date').datepicker({
+                dateFormat: "dd/mm/yy",
+                buttonImageOnly: true,
+                buttonImage: '../Images/Calender.png',
+                showOn: 'both',
+                changeMonth: true,
+                changeYear: true,
+                gotoCurrent: true,
+            });
+            $('#passing_date').datepicker({
+                dateFormat: "dd/mm/yy",
+                buttonImageOnly: true,
+                buttonImage: '../Images/Calender.png',
+                showOn: 'both',
+                changeMonth: true,
+                changeYear: true,
+                gotoCurrent: true,
+            });
+            $('#card_expdate').datepicker({
+                dateFormat: "dd/mm/yy",
+                buttonImageOnly: true,
+                buttonImage: '../Images/Calender.png',
+                showOn: 'both',
+                changeMonth: true,
+                changeYear: true,
+                gotoCurrent: true,
+            });
+            $('#reg_date').datepicker({
+                dateFormat: "dd/mm/yy",
+                buttonImageOnly: true,
+                buttonImage: '../Images/Calender.png',
+                showOn: 'both',
+                changeMonth: true,
+                changeYear: true,
+                gotoCurrent: true,
+            });
+            $('#exp_date').datepicker({
+                dateFormat: "dd/mm/yy",
+                buttonImageOnly: true,
+                buttonImage: '../Images/Calender.png',
+                showOn: 'both',
+                changeMonth: true,
+                changeYear: true,
+                gotoCurrent: true,
+            });
+            $("#QCDocsVal").click(function () {
+                if ($("#QCDocsVal").prop('checked')) {
+                    {
+                        $(this).prop('checked', true);
+                    }
+                }
+                else {
+
+                    $(this).prop('checked', false);
+                    document.getElementById("QCDocsValselectall").value = "DeleteQC";
+                }
+
+            });
+        });
+        function FileFormatValidation(file) {
+            var ext = file.value.split(".").pop().toLowerCase();
+            if ($.inArray(ext, ["pdf", "xlsx", "xls","png","jpg"]) == -1) {
+                file.value = "";
+                jAlert("Invalid file format, please upload only pdf format");
+            }
+        }
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

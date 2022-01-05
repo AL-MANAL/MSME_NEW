@@ -1,0 +1,659 @@
+﻿@using PagedList;
+@using PagedList.Mvc;
+
+@model List<ISOStd.Models.CalibrationModels>
+
+    @{
+        ViewBag.Title = "";
+        ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+    }
+               @{
+
+                   var ShowEdit = Obj.GetCurrentUserSession().Calibration.Contains("3") ? true : false;
+                   var ShowDownld = Obj.GetCurrentUserSession().Calibration.Contains("4") ? true : false;
+                   var ShowDel = Obj.GetCurrentUserSession().Calibration.Contains("5") ? true : false;
+
+               }
+    @section featured {
+        <div class="page-header page-header-light">
+
+            <div class="page-header-content header-elements-md-inline">
+                <div class="page-title d-flex">
+                    <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+                </div>
+            </div>
+
+            <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+                <div class="d-flex">
+                    <div class="breadcrumb">
+
+                        <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                            <span class="breadcrumb-item"> Home</span>
+                        </a>
+                        <span class="breadcrumb-item active">Calibration </span>
+                    </div>
+
+                    <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+                </div>
+
+                @*<div class="header-elements d-none">
+                    <div class="breadcrumb justify-content-center">
+
+
+                        <div class="breadcrumb-elements-item dropdown p-0">
+                            <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                                <i class="icon-gear mr-2"></i>
+                                Settings
+                            </a>
+
+                            <div class="dropdown-menu dropdown-menu-right">
+
+                                <div class="dropdown-divider"></div>
+                                <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>*@
+            </div>
+        </div>
+    }
+        <style>
+            .hidden {
+                display: none !important;
+            }
+        </style>
+
+        <div class="card">
+
+            <div class="card-header header-elements-inline bg-primary">
+                <h5 class="card-title">Calibration</h5>
+                <div class="header-elements">
+                    <div class="list-icons">
+                        <a class="list-icons-item" data-action="collapse"></a>
+
+                    </div>
+                </div>
+            </div>
+            @if (Obj.GetCurrentUserSession().Calibration.Contains("3"))
+            {
+                <div>
+                    <div class="card-header bg-white header-elements-sm-inline">
+                        <div class="header-elements">
+                            <a class="btn btn-outline bg-orange text-orange border-orange btn-ladda btn-ladda-progress ladda-button" data-style="radius" href='@Url.Action("AddCalibration", "Equipment")' title="Add New">
+                                <span class="ladda-label">Add Calibration</span>
+                                <span class="ladda-spinner"></span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+            <div class="card-body">
+                <div class="options d-flex flex-fill">
+                    @using (Html.BeginForm("CalibrationList", "Equipment", FormMethod.Post, new { id = "form1", name = "form1", style = "width:25%" }))
+                    {
+                        if (ViewBag.Branch != null)
+                        {
+                            <select class="form-control select-search select2-hidden-accessible" data-fouc id="branch_name" name="branch_name" onchange="getDetails()">
+                                <option value='' hidden>Division</option>
+                                @if (ViewBag.Branch != null)
+                                {
+                                    foreach (var item in ViewBag.Branch)
+                                    {
+                                        if (item.Value == ViewBag.Branch_name)
+                                        {
+                                            <option value='@item.Value' selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                        }
+                    }
+                </div>
+            </div>
+
+            <div class="card-body">
+                <table class="table table-bordered table-striped table-hover datatable-responsive" id="equipment">
+                    <thead>
+                        <tr>
+                            <th>
+                                Sl No
+                            </th>
+                            <th>
+                                Equipment Name
+                            </th>
+                            <th>
+                                Department
+                            </th>
+                            <th>
+                                Calibration Frequency
+                            </th>
+
+                            <th>
+                                @Html.DisplayNameFor(model => model.First().CalibrationDate)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.First().due_date)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.First().certificate_no)
+                            </th>
+                            @*<th>
+                                @Html.DisplayNameFor(model => model.First().calibration_status)
+                            </th>
+                            <th class="not-export-column">
+                                @Html.DisplayNameFor(model => model.First().calibration_report_ref)
+                            </th>
+                            <th class="not-export-column">
+                                @Html.DisplayNameFor(model => model.First().calibration_certificate)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.First().due_date)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.First().Ref_no)
+                            </th>*@
+                            @*<th class="not-export-column">
+                                History
+                            </th>
+                            <th class="not-export-column">Edit</th>
+                            <th class="not-export-column">Delete</th>*@                           
+                            <th data-priority="2" class="text-center not-export-column">Actions</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Count() > 0)
+                        {
+                            int i = 0;
+                            foreach (var item in Model)
+                            {
+                                i = i + 1;
+                                <tr>
+                                    <td>
+                                        @i
+                                    </td>
+                                    <td>
+
+                                        @Html.ActionLink(item.Equipment_Id.ToString(), "CalibrationDetails", new { calibration_id = item.calibration_id.ToString() }, new { data_toggle = "popover", data_trigger = "hover", id = item.calibration_id, onclick = "HyperLinkProgressIconFunction()" })
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Department)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Freq_of_calibration)
+                                    </td>
+                                    <td>
+                                        @if (item.CalibrationDate > Convert.ToDateTime("01/01/0001"))
+                                        {
+                                            @item.CalibrationDate.ToString("dd/MM/yyyy")
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (item.due_date > Convert.ToDateTime("01/01/0001"))
+                                        {
+                                            @item.due_date.ToString("dd/MM/yyyy")
+                                        }
+                                    </td>
+
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.certificate_no)
+                                    </td>
+                                    @*<td>
+                                        @Html.DisplayFor(modelItem => item.calibration_status)
+                                    </td>
+                                    <td>
+                                        @if (item.calibration_report_ref != "")
+                                        {
+                                            <a href='@Url.Action("DisplayDocument", "Reports", new { Document = item.calibration_report_ref })' target="_blank">Preview</a>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (item.calibration_certificate != "")
+                                        {
+                                            <a href='@Url.Action("DisplayDocument", "Reports", new { Document = item.calibration_certificate })' target="_blank">Preview</a>
+                                        }
+                                    </td>
+                                    
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Ref_no)
+                                    </td>*@
+                                    <td class="text-center">
+                                        <div class="list-icons">
+                                            <div class="list-icons-item dropdown">
+                                                <a href="#" class="list-icons-item caret-0 dropdown-toggle" data-toggle="dropdown">
+                                                    <i class="icon-gear mr-2"></i>
+                                                </a>
+
+                                                <div class="dropdown-menu dropdown-menu-right">
+                                                    <a class="dropdown-item" href='@Url.Action("CalibrationDetail", "Equipment", new { calibration_id = item.calibration_id.ToString() })' title="View History" onclick="HyperLinkProgressIconFunction()">
+                                                        <i class="icon-history"></i>View calibration detail
+                                                    </a>
+                                                    <a class="dropdown-item" href='@Url.Action("CalibrationHistoryList", "Equipment", new { calibration_id = item.calibration_id.ToString() })' title="View History" onclick="HyperLinkProgressIconFunction()">
+                                                        <i class="icon-history"></i>View History
+                                                    </a>
+
+                                                    @if (ShowEdit)
+                                                    {
+
+                                                        <a class="dropdown-item" href='@Url.Action("CalibrationEdit", "Equipment", new { calibration_id = item.calibration_id })' title="Edit" onclick="HyperLinkProgressIconFunction()">
+                                                            <i class="icon-pencil7"></i>Edit
+                                                        </a>
+                                                    }
+                                                    <div class="dropdown-divider"></div>
+                                                    @if (ShowDel)
+                                                    {
+                                                        <span class="dropdown-item text-center" title="Delete" onclick="DeleteItems(@item.calibration_id)" style="cursor:pointer;"><i class="icon-bin"></i>Delete</span>
+
+                                                    }
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+
+
+
+                                    @*<td>
+                                        <a href='@Url.Action("CalibrationHistoryList", "Equipment", new { calibration_id = item.calibration_id.ToString() })' title="View History" onclick="HyperLinkProgressIconFunction()">
+                                            <i class="icon-history"></i>
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href='@Url.Action("CalibrationEdit", "Equipment", new { calibration_id = item.calibration_id })' title="Edit" onclick="HyperLinkProgressIconFunction()">
+                                            <span class="badge badge-info">Edit</span>
+                                        </a>
+                                    </td>
+                                    <td>
+                                            <span class="badge badge-danger" title="Delete" onclick="DeleteItems(@item.calibration_id)" style="cursor:pointer;">Delete</span>
+                                    </td>*@ 
+                                </tr>
+                            }
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+     @section scripts {
+                <script type="text/javascript">
+
+
+
+                       //----zzz
+    $(document).ready(function () {
+
+        @if (TempData["alertdata"] != null ) {
+
+           @: new Noty({
+           @:     text: '@TempData["alertdata"]',
+           @:     type: 'error'
+           @: }).show();
+        }
+
+        @if (@TempData["Successdata"] != null ) {
+
+        @:    new Noty({
+         @:       text: '@TempData["Successdata"]',
+         @:       type: 'success'
+         @:   }).show();
+        }
+    });
+    //zzz----
+
+
+         function setData(id) {
+
+                var set_data = '';
+                var element = $(this);
+                var id = element.attr("id");
+                $.ajax({
+                   url: '@Url.Action("CalibrationInfo", "Equipment")',
+                    methos: "post",
+                    async: false,
+                    data: { id: id },
+                    success: function (data) {
+                        set_data = data;
+
+                    }
+
+                });
+
+                return set_data;
+        }
+
+
+         var equipment = function () {
+                @*var ShowEdit = @(Obj.GetCurrentUserSession().Calibration.Contains("3") ? "true" : "false");
+                var ShowDownld = @(Obj.GetCurrentUserSession().Calibration.Contains("4") ? "true" : "false");
+                var ShowDel = @(Obj.GetCurrentUserSession().Calibration.Contains("5") ? "true" : "false");*@
+
+                    // Basic Datatable examples
+                    var _componentDatatableBasic = function () {
+                        if (!$().DataTable) {
+                            console.warn('Warning - datatables.min.js is not loaded.');
+                            return;
+                        }
+
+                        //Setting datatable defaults
+                        $.extend($.fn.dataTable.defaults, {
+                            autoWidth: false,
+                            responsive: true,
+                            columnDefs: [{
+                                orderable: false,
+                                //width: 100,
+                                targets: 'not-export-column'
+                 
+                            }],
+                            responsivePriority: 2, targets: -1,
+
+                            colReorder: false,
+                            dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                            //dom: 'lBfrtip',
+                            language: {
+                                search: '<span>Filter:</span> _INPUT_',
+                                searchPlaceholder: 'Type to filter...',
+                                lengthMenu: '<span>Show:</span> _MENU_',
+                                paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                            }
+                        });
+
+                var myClass = "";
+                var Delclass= @(Obj.GetCurrentUserSession().Calibration.Contains("4") ? "true" : "false");
+                if (Delclass == false) { myClass = 'hidden'  };
+
+                        var table = $('#equipment').DataTable({
+                            drawCallback: function () {
+                                $('[data-toggle="popover"]').popover({
+                                    html: true,
+                                    content: setData,
+                                    container: 'body'
+                                    //data: setData,
+                                });
+                                var dropdownMenu;
+
+                                // and when you show it, move it to the body                                     
+                                $('.datatable-responsive').on('show.bs.dropdown', function (e) {
+                        
+                                    // grab the menu        
+                                    dropdownMenu = $(e.target).find('.dropdown-menu');
+
+                                    // detach it and append it to the body
+                                    $('body').append(dropdownMenu.detach());
+
+                                    // grab the new offset position
+                                    var eOffset = $(e.target).offset();
+
+                                    // make sure to place it where it would normally go (this could be improved)
+                                    dropdownMenu.css({
+                                        'display': 'block',
+                                        'top': eOffset.top + $(e.target).outerHeight(),
+                                        'left': eOffset.left
+                                    });
+                                });
+
+                                // and when you hide it, reattach the drop down, and hide it normally                                                   
+                                $('.datatable-responsive').on('hide.bs.dropdown', function (e) {
+                                    $(e.target).append(dropdownMenu.detach());
+                                    dropdownMenu.hide();
+                                });
+                            },
+                            lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                            colReorder: {
+                                fixedColumnsLeft: 1
+                            },
+                            stateSave: true,
+                            //stateSaveParams: function (settings, data) {
+                            //    for (var i = 0, ien = data.columns.length; i < ien; i++) {
+                            //        delete data.columns[i].visible;
+                            //        delete data.columns[i].search;
+                            //    }
+                            //},
+                            //scrollY: '350px',
+                            scrollCollapse: true,                         
+
+                            keys: {
+                                className: 'focus focus-success'
+                            },
+
+                            buttons: {
+                                buttons: [
+                                    {
+                                        extend: 'copyHtml5',
+                                        className: myClass,
+                                        title: 'calibration Data export',
+                                        exportOptions: {
+                                            columns: ':visible :not(.not-export-column)'
+                                        },
+                                    },
+                                    {
+                                        extend: 'excelHtml5',
+                                        className: myClass,
+                                        title: 'calibration Data export',
+                                        exportOptions: {
+                                            columns: ':visible :not(.not-export-column)'
+                                        },
+
+                                    },
+                                    {
+                                        extend: 'pdfHtml5',
+                                        className: myClass,
+                                        title: 'calibration Data export',
+                                        exportOptions: {
+                                            columns: ':visible :not(.not-export-column)'
+                                        },
+                                    },
+                                    {
+                                        extend: 'csvHtml5',
+                                        className: myClass,
+                                        title: 'calibration Data export',
+                                        exportOptions: {
+                                            columns: ':visible :not(.not-export-column)'
+                                        },
+                                    },
+                                    {
+                                        extend: 'print',
+                                        className: myClass,
+                                        title: 'calibration Data export',
+                                        exportOptions: {
+                                            columns: ':visible :not(.not-export-column)'
+                                        },
+                                    },
+
+                                    {
+                                        extend: 'colvis',
+                                        text: '<i class="icon-three-bars"></i>',
+                                        className: 'btn bg-blue btn-icon dropdown-toggle',
+                                        columns: ':visible:not(.not-export-column)'
+                                    }
+                                ]
+                            }
+                        });
+                        // Adjust columns on window resize
+                        setTimeout(function () {
+                            $(window).on('resize', function () {
+                                table.columns.adjust();
+                            });
+                        }, 100);
+
+
+                        //Redraw table on click toggle. -------table.columns.adjust doesn't work properly upon calling after toggle (width increase/decrease = redraw table.).
+                        $('.sidebar-control').on('click', function () {
+
+                            setTimeout(function () {
+                                //alert("gii");
+
+                                table.columns.adjust().draw();
+                                $("#equipment").resize();
+                            }, 100);
+
+                        });
+                        //}
+
+                        $('#equipment').on('page.dt', function () {
+                            //table.draw();
+                            //alert("zzz1");
+                            $("#equipment").resize();
+
+                        });
+
+                        $('#equipment').on('column-visibility.dt', function () {
+                            //table.draw();
+                            //alert("zzz2");
+                            $("#equipment").resize();
+
+                        });
+
+                        $('#equipment').on('order.dt', function () {
+                            //table.draw();
+                            //alert("zzz3");
+                            $("#equipment").resize();
+
+                        });
+
+
+                        $('#equipment').on('responsive-display.dt', function () {
+                            //table.draw();
+                            //alert("zzz4");
+                            $("#equipment").resize();
+
+                        });
+
+
+                        $('#equipment').on('responsive-resize.dt', function () {
+                            //table.draw();
+                            //alert("zzz4");
+                            $("#equipment").resize();
+
+                        });
+
+
+                        //.on('order.dt', function () {
+                        //    table.columns.adjust().draw();
+                        //    $("#qhse").resize(); })
+                        //.on('search.dt', function () {
+                        //    table.columns.adjust().draw();
+                        //    $("#qhse").resize(); })
+
+                        //.on('column-visibility.dt', function () {
+                        //    table.columns.adjust().draw();
+                        //    $("#qhse").resize();
+                        //})
+
+
+
+                    };
+
+                    // Select2 for length menu styling
+                    var _componentSelect2 = function () {
+                        if (!$().select2) {
+                            console.warn('Warning - select2.min.js is not loaded.');
+                            return;
+                        }
+
+                        // Initialize
+                        $('.dataTables_length select').select2({
+                            minimumResultsForSearch: Infinity,
+                            dropdownAutoWidth: true,
+                            width: 'auto'
+                        });
+                    };
+
+
+                    //
+                    // Return objects assigned to module
+                    //
+
+                    return {
+                        init: function () {
+                            _componentDatatableBasic();
+                            _componentSelect2();
+                        }
+                    }
+                }();
+
+
+                // Initialize module
+                // ------------------------------
+
+                document.addEventListener('DOMContentLoaded', function () {
+                    equipment.init();
+                });
+
+                function DeleteItems(calibration_id) {
+            bootbox.confirm({
+                title: 'Confirm dialog',
+                message: 'Are you Sure you want to Delete the current Record?',
+                buttons: {
+                    confirm: {
+                        label: 'Yes',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'Cancel',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (r) {
+                    if (r == true) {
+                      jQuery.ajax({
+
+                       url: '@Url.Action("CalibrationDocDelete", "equipment")',
+                        type: 'POST',
+                        dataType: "json",
+                        data: { 'calibration_id': calibration_id },
+                        success: function (result) {
+
+
+                            //// Add new params to the querystring dictionary
+
+
+                            window.location.href =
+                                window.location.protocol + "//" +
+                                window.location.host +
+                                window.location.pathname
+
+                        }
+                    });
+                    return true;
+                }
+                else if (r == false) {
+                        bootbox.hideAll();
+                        return false;
+                    }
+
+                }
+            });
+        }
+              function getDetails() {
+                var branch_name = document.getElementById("branch_name").value;
+
+                   jQuery.ajax({
+                                url: '@Url.Action("CalibrationListSearch", "Equipment")',
+                        type: 'POST',
+                        dataType: "json",
+                        data: { 'branch_name': branch_name },
+                        success: function (result) {
+                            var params = {
+                                branch_name: branch_name
+                            };
+                            queryString = $.param(params);
+
+                            window.location.href =
+                                window.location.protocol + "//" +
+                                window.location.host +
+                                window.location.pathname +
+                               '?' + queryString;
+
+                        }
+                    });  
+                    }
+                </script>
+
+            }

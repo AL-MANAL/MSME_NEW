@@ -1,0 +1,414 @@
+﻿@model ISOStd.Models.HazardNotificationModels
+
+@{
+    ViewBag.Title = "HazardNotificationDetails";
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+    string role = Obj.GetMultiRoleById(Obj.GetCurrentUserSession().role);
+}
+
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("HazardNotificationList", "HazardNotification", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> HSE Hazard/Aspect Notification</span>
+                    </a>
+                    <span class="breadcrumb-item active"> HSE Hazard/Aspect Notification Details</span>
+                </div>
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            <div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+                    @*@if (Obj.GetCurrentUserSession().EmpPerfEval.Contains("4"))
+                    {*@
+                        @using (Html.BeginForm("HazardNotificationPDF", "HazardNotification", FormMethod.Post, new { id = "form1", name = "form1" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            <div class="breadcrumb-elements-item dropdown p-0">
+                                <input type="hidden" id="id_notification" name="id_notification" value="@Model.id_notification" />
+                                <button type="submit" class="dropdown-item">
+                                    <i class="icon-printer2"></i> Report
+                                </button>
+                            </div>
+                        }
+                    @*}*@
+                    @*<div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>*@
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<div class="card">
+    <div class="card-header header-elements-inline bg-primary">
+        <h5 class="card-title">HSE Hazard/Aspect Notification Details</h5>
+        <div class="header-elements">
+            <div class="list-icons">
+                <a class="list-icons-item" data-action="collapse"></a>
+            </div>
+        </div>
+    </div>
+    <div>
+        <div class="card-header bg-white header-elements-sm-inline">
+            <div class="header-elements">
+                @*@if (Obj.GetCurrentUserSession().ObservCard.Contains("3"))
+        {*@
+
+                @if (role.Contains("DMR"))
+                {
+                    <a class="btn bg-orange btn-labeled btn-labeled-left" data-style="radius" href='@Url.Action("HazardNotificationDMREdit", "HazardNotification", new { id_notification = Model.id_notification }   )' title="Edit" onclick="HyperLinkProgressIconFunction()">
+                        <b>  <i class="icon-add-to-list"></i></b> Edit
+                    </a>
+                }
+                else if (Model.level_risk == "")
+                {
+                    <a class="btn bg-orange btn-labeled btn-labeled-left" data-style="radius" href='@Url.Action("HazardNotificationEdit", "HazardNotification", new { id_notification = Model.id_notification }   )' title="Edit" onclick="HyperLinkProgressIconFunction()">
+                        <b>  <i class="icon-add-to-list"></i></b> Edit
+                    </a>
+                }
+                @*}*@
+                @Html.ActionLink("Back to List", "HazardNotificationList", null, new { @class = "btn btn-outline bg-orange text-orange border-orange ml-3", onclick = "HyperLinkProgressIconFunction()" })
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="container-fluid">
+            <table class="table table-dark table-bordered table-striped table-hover bg-blue-800">
+                <thead></thead>
+                <tbody>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded ">
+                                @Html.DisplayNameFor(model => model.control_no)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.control_no)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded ">
+                                @Html.DisplayNameFor(model => model.notify_date)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-brown py-1 px-2 rounded ">
+                                @if (Model.notify_date > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    @Html.DisplayFor(model => model.notify_date)
+                                }
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded ">
+                                @Html.DisplayNameFor(model => model.observed_by)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.observed_by)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded ">
+                                @Html.DisplayNameFor(model => model.reported_by)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.reported_by)
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded ">
+                                @Html.DisplayNameFor(model => model.branch)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.branch)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded ">
+                                @Html.DisplayNameFor(model => model.dept)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.dept)
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded ">
+                                @Html.DisplayNameFor(model => model.location)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.location)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded ">
+                                @Html.DisplayNameFor(model => model.Hazard_loc)
+                            </p>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.Hazard_loc)
+                            </p>
+                        </td>
+                    </tr>
+               <tr class="row">
+                       <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded ">
+                                @Html.DisplayNameFor(model => model.activity_type)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.activity_type)
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col">
+                            <p class="bg-brown py-1 px-2 rounded col-xs-3 col-md-4 ">
+                                @Html.DisplayNameFor(model => model.description)
+                            </p>
+                     
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.description)
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col">
+                            <p class="bg-brown py-1 px-2 rounded col-xs-6 col-md-4">
+                                @Html.DisplayNameFor(model => model.hazard_aspect)
+                            </p>
+                   
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.hazard_aspect)
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col">
+                            <p class="bg-brown py-1 px-2 rounded col-xs-6 col-md-6">
+                                @Html.DisplayNameFor(model => model.condition_impact)
+                            </p>
+                        
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.condition_impact)
+                            </p>
+                        </td>
+                    </tr>
+
+                    <tr class="row">
+                        <td class="col">
+                            <p class="bg-brown py-1 px-2 rounded col-xs-6 col-md-4 ">
+                                @Html.DisplayNameFor(model => model.affected_env)
+                            </p>
+                      
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.affected_env)
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded ">
+                                @Html.DisplayNameFor(model => model.upload)
+                            </p>
+                        </td>
+                        <td class="col">
+                            @if (Model.upload != null && Model.upload != "" && Model.upload.Length > 0)
+                            {
+                                foreach (var docs in Model.upload.Trim(',').Split(','))
+                                {
+                                    <p class="bg-dark py-1 px-2 rounded">
+
+                                        <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" style="color: orange;">
+                                            Preview
+                                        </a>
+                                    </p>
+                                }
+                            }
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded ">
+                                @Html.DisplayNameFor(model => model.reviewed_by)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.reviewed_by)
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded ">
+                                @Html.DisplayNameFor(model => model.level_risk)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.level_risk)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded ">
+                                @Html.DisplayNameFor(model => model.work_stopped)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.work_stopped)
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded ">
+                                @Html.DisplayNameFor(model => model.control_measure)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.control_measure)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded ">
+                                @Html.DisplayNameFor(model => model.incorporated_HIRA)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.incorporated_HIRA)
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded ">
+                                @Html.DisplayNameFor(model => model.incorporated_by)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.incorporated_by)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded ">
+                                @Html.DisplayNameFor(model => model.incorporated_date)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-brown py-1 px-2 rounded ">
+                                @if (Model.incorporated_date > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    @Html.DisplayFor(model => model.incorporated_date)
+                                }
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded ">
+                                @Html.DisplayNameFor(model => model.dept_head)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.dept_head)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded ">
+                                @Html.DisplayNameFor(model => model.cmr_name)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.cmr_name)
+                            </p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+
+</div>
+
+
+
+@section scripts {
+    <script>
+    //----zzz
+    $(document).ready(function () {
+
+                                        @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+    });
+    //zzz----
+
+
+    </script>
+
+
+}
+
+
+
+

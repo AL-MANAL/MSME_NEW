@@ -1,0 +1,465 @@
+﻿@model ISOStd.Models.InternalAuditFindingsLog
+
+@{
+    ViewBag.Title = "AddInternalAuditFindingsLog";
+}
+
+<div class="groupedassets margin10">
+    <span class="groupedassetshead margin10 onestphdcolor">Add Internal Audit No Findings Log </span>
+</div>
+<div id="divmsg">
+    @if (TempData["alertdata"] != null)
+    {
+        <span class="errMsg" style="color: red;font-weight: bold;">@TempData["alertdata"]</span>
+    }
+    @if (TempData["Successdata"] != null)
+    {
+        <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+    }
+</div>
+
+
+@using (Html.BeginForm("AddInternalAuditNoFindingsLog", "Audit", FormMethod.Post, new {enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <fieldset>
+        <legend>InternalAuditFindingsLog</legend>
+        <input type="hidden" id="AuditTransID" name="AuditTransID" value="@ViewBag.AuditTransID" />
+        <input type="hidden" id="AuditNum" name="AuditNum" value="@ViewBag.AuditNum" />
+        <table id="tabcontent">
+
+            <tr>
+                <td>
+                    <div class="editor-label">
+                        ISO Standard<text style="color:red;">*</text>
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <select id="ISOstandardID" name="ISOstandardID" multiple style="height: 100px; width: 180px;" }>
+                            @if (ViewBag.IsoStdList != null)
+                            {
+                                foreach (var item in ViewBag.IsoStdList)
+                                {
+                                    <option value='@item.Value'>@item.Text</option>
+                                }
+                            }
+                        </select>
+                        <span class="field-validation-error"><span id="ISOstandardID-message" style="display: none;">ISO standard field is required.</span></span>
+                        @Html.ValidationMessageFor(model => model.ISOstandardID)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.FindingCategory)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <select id="FindingCategory" name="FindingCategory" disabled>
+                            <option value='' hidden>Select</option>
+                            @if (ViewBag.FindingCategory != null)
+                            {
+                                foreach (var item in ViewBag.FindingCategory)
+                                {
+                                    if (item.Text=="No findings")
+                                    {
+                                        <option value='@item.Value' selected>@item.Text</option>
+                                    }
+
+                                }
+                            }
+                        </select>
+                        @Html.ValidationMessageFor(model => model.FindingCategory)
+                    </div>
+                </td>
+
+            </tr>
+            <tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.NCRDesc)<text style="color:red;">*</text>
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <textarea id="NCRDesc" name="NCRDesc"></textarea>
+                        <span class="field-validation-error"><span id="NCRDesc-message" style="display: none;">NCR Description field is required.</span></span>
+                        @Html.ValidationMessageFor(model => model.NCRDesc)
+                    </div>
+                </td>
+              @*  <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.ISO_standard_clause)<text style="color:red;">*</text>
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <textarea id="ISO_standard_clause" name="ISO_standard_clause"></textarea>
+                        <span class="field-validation-error"><span id="ISO_standard_clause-message" style="display: none;">Correction Date field is required.</span></span>
+                        @Html.ValidationMessageFor(model => model.ISO_standard_clause)
+                    </div>
+                </td>*@
+           
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.Reviewed_by)<text style="color:red;">*</text>
+                    </div>
+                </td>
+                <td>
+                    <d iv class="editor-field">
+                        <select id="Reviewed_by" name="Reviewed_by">
+                            <option value='' hidden>Select</option>
+                            @if (ViewBag.EmpLists != null)
+                            {
+                                foreach (var item in ViewBag.EmpLists)
+                                {
+                                    <option value='@item.Value'>@item.Text</option>
+                                }
+                            }
+                        </select>
+                        <span class="field-validation-error"><span id="Reviewed_by-message" style="display: none;">Reviewed By field is required.</span></span>
+                        @Html.ValidationMessageFor(model => model.Reviewed_by)
+                    </d>
+                </td>
+</tr>
+            <tr>
+                <td>
+                        <div class="editor-label">
+                        @Html.LabelFor(model => model.Checklist)
+                       </div>
+                    </td>
+                    <td>
+                         <div class="editor-field">
+                            <input type="file" name="fileUploader" id="file" onchange="FileFormatValidation(this)" accept=".pdf" style="height: 38px;" />
+                        </div>
+                    </td>
+                @*<td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.CorrectionDate)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <input type="text" id="CorrectionDate" name="CorrectionDate" readonly />
+                        <span class="field-validation-error"><span id="CorrectionDate-message" style="display: none;">Correction Date field is required.</span></span>
+                        @Html.ValidationMessageFor(model => model.CorrectionDate)
+                    </div>
+                </td>*@
+            </tr>
+            
+            @*<tr id="caption">
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.NCRNo)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <input type="text" id="NCRNo" name="NCRNo" />
+                        <span class="field-validation-error"><span id="NCRNo-message" style="display: none;">NCR Num. field is required.</span></span>
+                        @Html.ValidationMessageFor(model => model.NCRNo)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.ReportStatus)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <select id="ReportStatus" name="ReportStatus" required="">
+                            @if (ViewBag.ReportStatus != null)
+                            {
+                                foreach (var item in ViewBag.ReportStatus)
+                                {
+                                    <option value='@item'>@item</option>
+                                }
+                            }
+                        </select>
+                        @Html.ValidationMessageFor(model => model.ReportStatus)
+                    </div>
+                </td>
+            </tr>
+            <tr id="caption1">
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.CorrectiveActionDate)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <input type="text" id="CorrectiveActionDate" name="CorrectiveActionDate" readonly />
+                        <span class="field-validation-error"><span id="CorrectiveActionDate-message" style="display: none;">Corrective Action Date field is required.</span></span>
+                        @Html.ValidationMessageFor(model => model.CorrectiveActionDate)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.Followupdate)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <input type="text" id="Followupdate" name="Followupdate" readonly />
+                        <span class="field-validation-error"><span id="Followupdate-message" style="display: none;">Follow up Date field is required.</span></span>
+                        @Html.ValidationMessageFor(model => model.Followupdate)
+                    </div>
+                </td>
+            </tr>*@
+            @*<tr>
+                    <td>
+                         <span class="field-validation-error"><span id="PageValidation-message" style="display: none;">Please add atleast one Findings Log.</span></span>
+                    </td>
+                </tr>*@
+        </table>
+    </fieldset>
+
+    <div style="width: 100%; padding-left: 136px;">
+        @Html.ActionLink("Back to List", "InternalAuditFindingsLogList", new { AuditTransID = ViewBag.AuditTransID, AuditNum = ViewBag.AuditNum },
+        new {@class="ActionLink", onclick = "HyperLinkProgressIconFunction()" })
+        <input type="submit" value="Save" id="btnCreate" style="display:none;" onclick="ProgressIconFunction('#form1')" />
+        <div style="float: right; padding-right: 200px;">
+            <input type="button" value="Add" onclick="AddAudit()" />
+        </div>
+    </div>
+    <div id="dvItems" style="overflow: auto; display: none;">
+        <input type="hidden" id="itemcnt" name="itemcnt" value="0" />
+        <div class="editor-label" style="background-color: #4cc4dd; width: 100%; height: 30px; cursor: pointer;">
+            <label for="Plan_Details" style="color: white; padding-left: 5px;">Finding Log</label>
+        </div>
+
+        <table id="team-list" style="width: 100%">
+            <tr>
+               
+               
+                <th>Action</th>
+                <th>ISO Standard</th>
+                <th>NCR Description</th>
+                <th>Finding Category</th>  
+                <th>Reviewed By</th>
+           
+            </tr>
+        </table>
+    </div>
+}
+
+
+
+@section Scripts {
+
+    <script type="text/javascript">
+        $(function () {
+
+            $("#ISOstandardID").chosen();
+            $("#Reviewed_by").chosen();
+        });
+
+        function PageSubmitValidation() {
+            //var validflg = true;
+            var rowscnt = document.getElementById('team-list').rows.length - 1;
+
+            var ssnMessage = "";
+            if (parseInt(rowscnt) <= 0) {
+                jAlert("Please add atleast One Findings Log");
+                ssnMessage = $('#PageValidation-message');
+                ssnMessage.show();
+                return false;
+            }
+            else {
+                ssnMessage = $('#PageValidation-message');
+                ssnMessage.hide();
+            }
+            return true;
+        }
+
+        function Validation() {
+            var validflg = true;
+            var ssnMessage = "";
+            if (document.getElementById("ISOstandardID").value == "") {
+                ssnMessage = $('#ISOstandardID-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#ISOstandardID-message');
+                ssnMessage.hide();
+            }
+            //if (document.getElementById("NCRNo").value == "") {
+            //    ssnMessage = $('#NCRNo-message');
+            //    ssnMessage.show();
+            //    validflg = false;
+            //}
+            //else {
+            //    ssnMessage = $('#NCRNo-message');
+            //    ssnMessage.hide();
+            //}
+            if (document.getElementById("NCRDesc").value == "") {
+                ssnMessage = $('#NCRDesc-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#NCRDesc-message');
+                ssnMessage.hide();
+            }
+            //if (document.getElementById("ISO_standard_clause").value == "") {
+            //    ssnMessage = $('#ISO_standard_clause-message');
+            //    ssnMessage.show();
+            //    validflg = false;
+            //}
+            //else {
+            //    ssnMessage = $('#ISO_standard_clause-message');
+            //    ssnMessage.hide();
+            //}
+
+            if (document.getElementById("FindingCategory").value == "") {
+                ssnMessage = $('#FindingCategory-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#FindingCategory-message');
+                ssnMessage.hide();
+            }
+            //if (document.getElementById("CorrectionDate").value == "") {
+            //    ssnMessage = $('#CorrectionDate-message');
+            //    ssnMessage.show();
+            //    validflg = false;
+            //}
+            //else {
+            //    ssnMessage = $('#CorrectionDate-message');
+            //    ssnMessage.hide();
+            //}
+            if (document.getElementById("Reviewed_by").value == "") {
+                ssnMessage = $('#Reviewed_by-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#Reviewed_by-message');
+                ssnMessage.hide();
+            }
+            //if (document.getElementById("CorrectiveActionDate").value == "") {
+            //    ssnMessage = $('#CorrectiveActionDate-message');
+            //    ssnMessage.show();
+            //    validflg = false;
+            //}
+            //else {
+            //    ssnMessage = $('#CorrectiveActionDate-message');
+            //    ssnMessage.hide();
+            //}
+
+            //if (document.getElementById("Followupdate").value == "") {
+            //    ssnMessage = $('#Followupdate-message');
+            //    ssnMessage.show();
+            //    validflg = false;
+            //}
+            //else {
+            //    ssnMessage = $('#Followupdate-message');
+            //    ssnMessage.hide();
+            //}
+
+            return validflg;
+        }
+
+        function AddAudit() {
+
+            if (Validation() == true) {
+
+                document.getElementById("dvItems").style.display = "";
+                var cnt = document.getElementById("itemcnt").value;
+
+                document.getElementById("itemcnt").value = cnt;
+                // Find a <table> element with id="myTable":
+                var table = document.getElementById("team-list");
+
+
+                // Create an empty <tr> element and add it to the 1st position of the table:
+                var row = table.insertRow();
+
+                // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                var cell0 = row.insertCell(0);
+                var cell1 = row.insertCell(1);
+                var cell2 = row.insertCell(2);
+                var cell3 = row.insertCell(3);
+                var cell4 = row.insertCell(4);
+                //var cell5 = row.insertCell(5);
+
+
+                var ISOstandardID = [];
+                // Action_taken_by = $('#Action_taken_by option:selected').text();
+                var ISOstandardIDText = $.map($("#ISOstandardID option:selected"), function (el, i) {
+                    return $(el).text();
+                });
+                var ISOstandardIDVal = $("#ISOstandardID").val();
+
+                //var NCRNo = $('#NCRNo').val();
+                var NCRDesc = $('#NCRDesc').val();
+                var ISO_standard_clause = $('#ISO_standard_clause').val();
+
+                //var status = document.getElementById("FindingCategory");
+                //var FindingCategory = status.options[status.selectedIndex].text;
+
+                var FindingCategory = [];
+                var FindingCategoryText = $.map($("#FindingCategory option:selected"), function (el, i) {
+                    return $(el).text();
+                });
+                var FindingCategoryVal = $("#FindingCategory").val();
+
+                var Reviewed_by = [];
+                var Reviewed_byText = $.map($("#Reviewed_by option:selected"), function (el, i) {
+                    return $(el).text();
+                });
+                var Reviewed_byVal = $("#Reviewed_by").val();
+
+                //var ReportStatus = $('#ReportStatus').val();
+
+                //var CorrectiveActionDate = $('#CorrectiveActionDate').val();
+                //var Followupdate = $('#Followupdate').val();
+
+                cell0.innerHTML = " <img src='@Url.Content("~/images/cancel.png")' onclick='deleteRow(this)' style='cursor:pointer; padding-right: 5px;'/>";
+                cell1.innerHTML = "<input type='hidden' id='ISOstandardID" + cnt + "' name='ISOstandardID" + cnt + "' value='" + ISOstandardIDVal + "'>" + ISOstandardIDText;
+                //cell2.innerHTML = "<input type='hidden' id='NCRNo" + cnt + "' name='NCRNo" + cnt + "' value='" + NCRNo + "'>" + NCRNo;
+                cell2.innerHTML = "<input type='hidden' id='NCRDesc" + cnt + "' name='NCRDesc" + cnt + "' value='" + NCRDesc + "'>" + NCRDesc;
+                //cell3.innerHTML = "<input type='hidden' id='ISO_standard_clause" + cnt + "' name='ISO_standard_clause" + cnt + "' value='" + ISO_standard_clause + "'>" + ISO_standard_clause;
+                cell3.innerHTML = "<input type='hidden' id='FindingCategory" + cnt + "' name='FindingCategory" + cnt + "' value='" + FindingCategoryVal + "'>" + FindingCategoryText;
+                //cell6.innerHTML = "<input type='hidden' id='CorrectionDate" + cnt + "' name='CorrectionDate" + cnt + "' value='" + CorrectionDate + "'>" + CorrectionDate;
+                cell4.innerHTML = "<input type='hidden' id='Reviewed_by" + cnt + "' name='Reviewed_by" + cnt + "' value='" + Reviewed_byVal + "'>" + Reviewed_byText;
+                //cell8.innerHTML = "<input type='hidden' id='ReportStatus" + cnt + "' name='ReportStatus" + cnt + "' value='" + ReportStatus + "'>" + ReportStatus;
+                //cell9.innerHTML = "<input type='hidden' id='CorrectiveActionDate" + cnt + "' name='CorrectiveActionDate" + cnt + "' value='" + CorrectiveActionDate + "'>" + CorrectiveActionDate;
+                //cell10.innerHTML = "<input type='hidden' id='Followupdate" + cnt + "' name='Followupdate" + cnt + "' value='" + Followupdate + "'>" + Followupdate;
+
+                cnt++;
+                document.getElementById("itemcnt").value = cnt;
+                document.getElementById("btnCreate").style.display = "";
+                ResetControl();
+            }
+
+        }
+
+        function ResetControl() {
+            document.getElementById("DeptName").selectedIndex = "0";
+            document.getElementById("AuditFromTimeInHour").selectedIndex = "0";
+            document.getElementById("AuditFromTimeInMin").selectedIndex = "0";
+            document.getElementById("AuditToTimeInHour").selectedIndex = "0";
+            document.getElementById("AuditToTimeInMin").selectedIndex = "0";
+            document.getElementById("Auditor").value = "";
+            document.getElementById("Auditee").value = "";
+            document.getElementById("Audit_Prepared_by").selectedIndex = "0";
+            document.getElementById("AuditStatus").selectedIndex = "0";
+
+ 
+        }
+
+        function deleteRow(btn) {
+            var row = btn.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+        }
+
+       
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

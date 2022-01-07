@@ -399,7 +399,8 @@ namespace ISOStd.Models
                     {
                         string sObj_Estld_OnDate = objObjectivesModelsList.ObjectivesMList[i].Obj_Estld_On.ToString("yyyy-MM-dd HH':'mm':'ss");
                         string sTarget_Date = objObjectivesModelsList.ObjectivesMList[i].Target_Date.ToString("yyyy-MM-dd HH':'mm':'ss");
-                        DataSet dsData = objGlobalData.GetReportNo("OBJ", "", objGlobalData.GetCompanyBranchNameById(sBranch));
+                        //DataSet dsData = objGlobalData.GetReportNo("OBJ", "", objGlobalData.GetCompanyBranchNameById(sBranch));
+                        DataSet dsData = objGlobalData.GetReportNoDeptWise("OBJ", "", objGlobalData.GetCompanyBranchNameById(sBranch), objGlobalData.GetDeptNameById(sDept));
                         if (dsData != null && dsData.Tables.Count > 0)
                         {
                             Obj_Ref = dsData.Tables[0].Rows[0]["ReportNO"].ToString();

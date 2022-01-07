@@ -1,0 +1,183 @@
+﻿@model ISOStd.Models.ManagementChangeModels
+@using System.Data;
+
+@{
+    ViewBag.Title = "ChangeManagementEdit";
+    DataSet dsActionDetails = ViewBag.ActionDetails;
+    string sId = "",sIdMgmt="", sAction = "", sPersonResponsible = "", sAction_Status = "", SubmitFinding = "SubmitFinding", Save = "Save"; ;
+    DateTime dtTargetDate = new DateTime();
+
+    if (dsActionDetails != null && dsActionDetails.Tables.Count > 0 && dsActionDetails.Tables[0].Rows.Count > 0)
+    {
+        sId = dsActionDetails.Tables[0].Rows[0]["Id"].ToString();
+        sIdMgmt = dsActionDetails.Tables[0].Rows[0]["IdMgmt"].ToString();
+        sAction = dsActionDetails.Tables[0].Rows[0]["Action"].ToString();
+        sPersonResponsible = dsActionDetails.Tables[0].Rows[0]["PersonResponsible"].ToString();
+        sAction_Status = dsActionDetails.Tables[0].Rows[0]["Action_Status"].ToString();
+        dtTargetDate = Convert.ToDateTime(dsActionDetails.Tables[0].Rows[0]["TargetDate"].ToString());
+
+    }
+}
+
+
+         @using (Html.BeginForm("ChangeManagementUpdatePlan", "ChangeManagement", FormMethod.Post, new
+         {
+             enctype = "multipart/form-data",
+             id = "form1",
+             name = "form1"
+         }))
+         {
+            @Html.ValidationSummary(true)
+             @Html.AntiForgeryToken()
+             <div>
+                 <input type="hidden" id="Id" name="Id" value="@sId"/>
+                 <input type="hidden" id="IdMgmt" name="IdMgmt" value="@sIdMgmt"/>
+                
+                 <table>
+                     <tr>
+                         <td colspan="4" style="background-color: #4cc4dd; color: #fff; font-weight: bold; font-size: 14px;">Actions taken to mitigate the impact on consequences</td>
+                     </tr>
+                     <tr>
+                         <td>
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Action)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="editor-field">
+                                <textarea id="Action" name="Action" value="@sAction" required>@sAction</textarea>
+                              
+                            </div>
+                        </td>
+
+                   
+                        <td>
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.TargetDate)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="editor-field">
+                                <input type="text" id="TargetDate" name="TargetDate" value="@dtTargetDate.ToString("dd/MM/yyyy")" required readonly  style="width: 150px;"/>
+                                
+                               
+                            </div>
+                        </td>
+                     </tr>
+                     <tr>
+                           <td>
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.PersonResponsible)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="editor-field">
+
+                         
+                           <select class="chosen-select" id="PersonResponsible" name="PersonResponsible" required>
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.EmpList != null)
+                                {
+                                    foreach (var data in ViewBag.EmpList)
+                                    {
+                                        if (data.Value == sPersonResponsible)
+                                        {
+                                            <option value='@data.Value' selected>@data.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@data.Value'>@data.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                               
+                            </div>
+                        </td>
+                    
+                        <td>
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Action_Status)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="editor-field">
+                                <select class="chosen-select" id="Action_Status" name="Action_Status" required>
+                                <option value='' hidden>Select</option>
+                                 @if (ViewBag.ActionStatus != null)
+                                 {
+                                     foreach (var data in ViewBag.ActionStatus)
+                                     {
+                                         if (data == sAction_Status)
+                                         {
+                                         <option value='@data' selected>@data</option>
+                                         }
+                                         else
+                                         {
+                                         <option value='@data'>@data</option>
+                                         }
+                                     }
+                                 }
+                            </select>
+
+                               
+                            </div>
+                        </td>
+                     </tr>
+                     <tr>
+                          <td>
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.ActionCompletionDate)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="editor-field">
+                                <input type="text" id="ActionCompletionDate" name="ActionCompletionDate" required readonly  style="width: 150px;"/>
+                                
+                               
+                            </div>
+                        </td>
+                     </tr>
+                    
+                 </table>
+                 <div style="padding-right: 200px; text-align:center;">
+
+                      <input type="submit" value="Update" onclick="ProgressIconFunction('#form1')" />
+                       @Html.ActionLink("Back to List", "ChangeManagementDetails", null, new {IdMgmt=sIdMgmt},new {@class="ActionLink",onclick="HyperLinkProgressIconFunction()" })
+                     
+                 </div>
+             </div>
+         }
+
+@section Scripts {
+       <script type="text/javascript">
+
+           $(function () {
+               $("#PersonResponsible").chosen();
+               $("#Action_Status").chosen();
+               $.validator.setDefaults({ ignore: ":hidden:not('.chosen-select')" });
+
+               $('#TargetDate').datepicker({
+                   dateFormat: "dd/mm/yy",
+                   buttonImageOnly: true,
+                   buttonImage: '../Images/Calender.png',
+                   showOn: 'both',
+                   changeMonth: true,
+                   changeYear: true,
+                   gotoCurrent: true
+               });
+
+             
+               $('#ActionCompletionDate').datepicker({
+                   dateFormat: "dd/mm/yy",
+                   buttonImageOnly: true,
+                   buttonImage: '../Images/Calender.png',
+                   showOn: 'both',
+                   changeMonth: true,
+                   changeYear: true
+               });
+           });
+           </script>
+    @Scripts.Render("~/bundles/jqueryval")
+  
+}

@@ -35,7 +35,7 @@ namespace ISOStd.Models
         {
             try
             {
-                DataSet dsDoc = objGlobalData.Getdetails("select Document_Level from t_document_levels where Document_Level='" + sDocName + "'");
+                DataSet dsDoc = objGlobalData.Getdetails("select Document_Level from t_document_levels where Document_Level='" + sDocName + "' and active=1");
 
                 if (dsDoc.Tables.Count > 0 && dsDoc.Tables[0].Rows.Count > 0)
                 {

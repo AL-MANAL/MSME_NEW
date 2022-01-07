@@ -1,0 +1,687 @@
+﻿@using PagedList;
+@using PagedList.Mvc;
+
+@model List<ISOStd.Models.ExternalAuditModels>
+
+    @{
+        ViewBag.Title = "ExternalAuditList";
+        ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+    }
+    @{
+
+        var ShowEdit = Obj.GetCurrentUserSession().ExterAudit.Contains("3") ? true : false;
+        var ShowDownld = Obj.GetCurrentUserSession().ExterAudit.Contains("4") ? true : false;
+        var ShowDel = Obj.GetCurrentUserSession().ExterAudit.Contains("5") ? true : false;
+
+    }
+    @section featured {
+
+        <div class="page-header page-header-light">
+
+            <div class="page-header-content header-elements-md-inline">
+                <div class="page-title d-flex">
+                    <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+                </div>
+            </div>
+
+            <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+                <div class="d-flex">
+                    <div class="breadcrumb">
+
+                        <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                            <span class="breadcrumb-item"> Home</span>
+                        </a>
+                        <span class="breadcrumb-item active"> External Audit Details List</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    }
+
+    <style>
+        .hidden {
+            display: none !important;
+        }
+    </style>
+
+
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">External Audit Details List</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+
+                </div>
+            </div>
+        </div>
+
+        @if (Obj.GetCurrentUserSession().ExterAudit.Contains("3"))
+            {
+            <div class="card-body">
+                <a class="btn btn-outline bg-orange text-orange border-orange btn-ladda btn-ladda-progress ladda-button" data-style="radius" href='@Url.Action("addExternalAudit", "ExternalAudit")' title="Add New">
+                    <span class="ladda-label">External Audit Plan</span>
+                    <span class="ladda-spinner"></span>
+                </a>
+            </div>
+        }
+        @*<div class="card-body">
+            <div class="options d-flex flex-fill">
+                @using (Html.BeginForm("ExternalAuditList", "ExternalAudit", FormMethod.Post, new { id = "form1", name = "form1", style = "width:25%" }))
+                {
+                    if (ViewBag.Branch != null)
+                    {
+                        <select class="form-control select-search select2-hidden-accessible" data-fouc id="branch_name" name="branch_name" onchange="getDetails()">
+                            <option value='' hidden>Directorate</option>
+                            @if (ViewBag.Branch != null)
+                            {
+                                foreach (var item in ViewBag.Branch)
+                                {
+                                    if (item.Value == ViewBag.Branch_name)
+                                    {
+                                        <option value='@item.Value' selected>@item.Text</option>
+                                    }
+                                    else
+                                    {
+                                        <option value='@item.Value'>@item.Text</option>
+                                    }
+                                }
+                            }
+                        </select>
+                    }
+                }
+            </div>
+        </div>*@
+
+        <table class="table table-bordered table-striped table-hover datatable-responsive" id="table1">
+            <thead>
+                <tr>
+                    <th>
+                        Sl No
+                    </th>
+                    @*<th>
+                        @Html.DisplayNameFor(model => model.First().audit_category)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().audit_no)
+                    </th>
+                    
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().entity_name)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().audit_type)
+                    </th>*@
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().audit_criteria)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().company_name)
+                    </th>
+                    @*<th>
+                        @Html.DisplayNameFor(model => model.First().notification_to)
+                    </th>*@
+                    @*<th>
+                        @Html.DisplayNameFor(model => model.First().directorate)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().group_name)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().team)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().location)
+                    </th>*@
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().audit_status)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().audit_start_date)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().audit_complete_date)
+                    </th>
+                    @*<th>
+                        @Html.DisplayNameFor(model => model.First().audit_status_date)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().major_nc)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().minor_nc)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().no_observation)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().no_noteworthy)
+                    </th>*@
+                    <th data-priority="2" class="text-center not-export-column">Actions</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Count() > 0)
+                    {
+                        int i = 0;
+                        foreach (var item in Model)
+                        {
+                            i = i + 1;
+                    <tr>
+                        <td>
+                            @Html.ActionLink(i.ToString(), "ExternalAuditDetails", new { id_external_audit = item.id_external_audit.ToString() }, new { onclick = "HyperLinkProgressIconFunction()" })
+                        </td>
+
+                        @*<td>
+                            @Html.DisplayFor(modelItem => item.audit_category)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.audit_no)
+                        </td>
+                       
+                        <td>
+                            @Html.DisplayFor(modelItem => item.entity_name)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.audit_type)
+                        </td>*@
+                        <td>
+                            @Html.DisplayFor(modelItem => item.audit_criteria)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.company_name)
+                        </td>
+                        @*<td>
+                            @Html.DisplayFor(modelItem => item.notification_to)
+                        </td>*@
+                        @*<td>
+                            @Html.DisplayFor(modelItem => item.directorate)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.group_name)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.team)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.location)
+                        </td>*@
+                        <td>
+                            @Html.DisplayFor(modelItem => item.audit_status)
+                        </td>
+                        <td>
+                            @if (item.audit_start_date > Convert.ToDateTime("01/01/0001"))
+                            {
+                                @item.audit_start_date.ToString("dd/MM/yyyy")
+                            }
+                        </td>
+                        <td>
+                            @if (item.audit_complete_date > Convert.ToDateTime("01/01/0001"))
+                            {
+                                @item.audit_complete_date.ToString("dd/MM/yyyy")
+                            }
+                        </td>
+                        @*<td>
+                            @if (item.audit_status_date > Convert.ToDateTime("01/01/0001"))
+                            {
+                                @item.audit_status_date.ToString("dd/MM/yyyy")
+                            }
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.major_nc)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.minor_nc)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.no_observation)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.no_noteworthy)
+                        </td>*@
+                        <td class="text-center">
+                            <div class="list-icons">
+                                <div class="list-icons-item dropdown">
+                                    <a href="#" class="list-icons-item caret-0 dropdown-toggle" data-toggle="dropdown">
+                                        <i class="icon-gear mr-2"></i>
+                                    </a>
+
+                                    <div class="dropdown-menu dropdown-menu-right">
+                                        @using (Html.BeginForm("ExternalAuditPDF", "ExternalAudit", FormMethod.Post, new { id = "form1", name = "form1" }))
+                                        {
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" id="id_external_audit" name="id_external_audit" value="@item.id_external_audit" />
+                                            <button class="dropdown-item"><i class="icon-printer2"></i>Generate Audit Details Report </button>
+                                        }
+                                        <a class="dropdown-item" data-toggle="popover_auditee" data-trigger="hover" id="@item.id_external_audit" title="">
+                                            <i class="icon-pencil7"></i>Auditee List
+                                        </a>
+                                        <a class="dropdown-item" data-toggle="popover_auditor" data-trigger="hover" id="@item.id_external_audit" title="">
+                                            <i class="icon-pencil7"></i>Auditor List
+                                        </a>
+                                       @if (item.logged_by.Contains(Obj.GetCurrentUserSession().empid))
+                                       {
+                                        <a class="dropdown-item" href='@Url.Action("AuditStatusUpdate", "ExternalAudit", new { id_external_audit = item.id_external_audit })' title="Update Audit Status" onclick="HyperLinkProgressIconFunction()">
+                                            <i class="icon-pencil7"></i>Audit Status
+                                        </a>
+                                        }
+                                        @if (ShowEdit)
+                                        {
+                                        <a class="dropdown-item" href='@Url.Action("ExternalAuditEdit", "ExternalAudit", new { id_external_audit = item.id_external_audit })' title="Edit"
+                                           onclick="HyperLinkProgressIconFunction()">
+                                            <i class="icon-pencil7"></i>Edit
+                                        </a>
+                                        }
+                                        <div class="dropdown-divider"></div>
+                                        @if (ShowDel)
+                                        {
+                                        <span class="dropdown-item text-center" title="Delete" onclick="DeleteItems(@item.id_external_audit)" style="cursor:pointer;"><i class="icon-bin"></i>Delete</span>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+
+
+
+                        @*<td>
+
+                                <a href='@Url.Action("ExternalAuditEdit", "ExternalAudit", new { AuditID = item.AuditID })' title="Edit External Audit details"
+                                   onclick="HyperLinkProgressIconFunction()">
+                                    <span class="badge badge-info">Edit</span>
+                                </a>
+
+
+                            </td>
+                            <td>
+
+
+                                <span class="badge badge-danger" title="Delete QHSE Planner" onclick="DeleteItems(@item.AuditID)" style="cursor:pointer;">Delete</span>
+                            </td>*@
+                    </tr>
+                        }
+                    }
+            </tbody>
+        </table>
+    </div>
+    @section scripts {
+        <script>
+            $(document).ready(function () {
+
+                @if (TempData["alertdata"] != null)
+                                {
+                                    @: new Noty({
+                                                            @:     text: '@TempData["alertdata"]',
+                                                        @:     type: 'error'
+                                                        @: }).show();
+                                       }
+                @if (@TempData["Successdata"] != null)
+                       {
+
+                           @:new Noty({
+                                                   @:text: '@TempData["Successdata"]',
+                                               @: type: 'success'
+                                               @:}).show();
+                                       }
+            });
+            function setDataAuditee(id) {
+                var set_data = '';
+                var element = $(this);
+                var id = element.attr("id");
+                $.ajax({
+                    url: '@Url.Action("AuditeeListInfo", "ExternalAudit")',
+                    methos: "post",
+                    async: false,
+                    data: { id: id },
+                    success: function (data) {
+                        set_data = data;
+
+                    }
+                });
+                return set_data;
+            }
+            function setDataAuditor(id) {
+                var set_data = '';
+                var element = $(this);
+                var id = element.attr("id");
+                $.ajax({
+                    url: '@Url.Action("AuditorListInfo", "ExternalAudit")',
+                    methos: "post",
+                    async: false,
+                    data: { id: id },
+                    success: function (data) {
+                        set_data = data;
+
+                    }
+                });
+                return set_data;
+            }
+
+            var table1 = function () {
+                var ShowEdit = @(Obj.GetCurrentUserSession().ExterAudit.Contains("3") ? "true" : "false");
+                var ShowDownld = @(Obj.GetCurrentUserSession().ExterAudit.Contains("4") ? "true" : "false");
+                var ShowDel = @(Obj.GetCurrentUserSession().ExterAudit.Contains("5") ? "true" : "false");
+
+                // Basic Datatable examples
+                var _componentDatatableBasic = function () {
+                    if (!$().DataTable) {
+                        console.warn('Warning - datatables.min.js is not loaded.');
+                        return;
+                    }
+
+                    //Setting datatable defaults
+                    $.extend($.fn.dataTable.defaults, {
+                        autoWidth: false,
+                        responsive:true,
+                        columnDefs: [{
+                            orderable: false,
+                            //width: 100,
+                            targets: 'not-export-column'
+
+                        }],
+                        responsivePriority: 2, targets: -1,
+                        colReorder: false,
+                        dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                        //dom: 'lBfrtip',
+                        language: {
+                            search: '<span>Filter:</span> _INPUT_',
+                            searchPlaceholder: 'Type to filter...',
+                            lengthMenu: '<span>Show:</span> _MENU_',
+                            paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                        }
+                    });
+
+                    var myClass = "";
+                    var Delclass= @(Obj.GetCurrentUserSession().ExterAudit.Contains("4") ? "true" : "false");
+                    if (Delclass == false) { myClass = 'hidden'  };
+
+                    var table = $('#table1').DataTable({
+                        drawCallback: function () {
+                            $('[data-toggle="popover_auditor"]').popover({
+                                html: true,
+
+                                content: setDataAuditor,
+                                container: 'body',
+
+                                //data: setData,
+                            });
+                            $('[data-toggle="popover_auditee"]').popover({
+                                html: true,
+
+                                content: setDataAuditee,
+                                container: 'body',
+
+                                //data: setData,
+                            });
+                            var dropdownMenu;
+
+                            // and when you show it, move it to the body
+                            $('.datatable-responsive').on('show.bs.dropdown', function (e) {
+
+                                // grab the menu
+                                dropdownMenu = $(e.target).find('.dropdown-menu');
+
+                                // detach it and append it to the body
+                                $('body').append(dropdownMenu.detach());
+
+                                // grab the new offset position
+                                var eOffset = $(e.target).offset();
+
+                                // make sure to place it where it would normally go (this could be improved)
+                                dropdownMenu.css({
+                                    'display': 'block',
+                                    'top': eOffset.top + $(e.target).outerHeight(),
+                                    'left': eOffset.left
+                                });
+                            });
+
+                            // and when you hide it, reattach the drop down, and hide it normally
+                            $('.datatable-responsive').on('hide.bs.dropdown', function (e) {
+                                $(e.target).append(dropdownMenu.detach());
+                                dropdownMenu.hide();
+                            });
+
+                        },
+
+                        lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                        colReorder: {
+                            fixedColumnsLeft: 1
+                        },
+                        //stateSave: true,
+                        //stateSaveParams: function (settings, data) {
+                        //    for (var i = 0, ien = data.columns.length; i < ien; i++) {
+                        //        delete data.columns[i].visible;
+                        //        delete data.columns[i].search;
+                        //    }
+                        //},
+                        scrollY: '350px',
+                        scrollCollapse: true,
+
+                        keys: {
+                            className: 'focus focus-success'
+                        },
+
+                        buttons: {
+                            buttons: [
+                                {
+                                    extend: 'copyHtml5',
+                                    className: myClass,//className: 'btn btn-light',
+                                    title: 'Internal Document History Data export',
+                                    exportOptions: {
+                                        columns: ':visible :not(.not-export-column)'
+                                    },
+                                },
+                                {
+                                    extend: 'excelHtml5',
+                                    className: myClass,//className: 'btn btn-light',
+                                    title: 'Internal Document  Data export',
+                                    exportOptions: {
+                                        columns: ':visible :not(.not-export-column)'
+                                    },
+
+                                },
+                                {
+                                    extend: 'pdfHtml5',
+                                    className: myClass,//className: 'btn btn-light',
+                                    title: 'Internal Document  Data export',
+                                    exportOptions: {
+                                        columns: ':visible :not(.not-export-column)'
+                                    },
+                                },
+                                {
+                                    extend: 'csvHtml5',
+                                    className: myClass,//className: 'btn btn-light',
+                                    title: 'Internal Document  Data export',
+                                    exportOptions: {
+                                        columns: ':visible :not(.not-export-column)'
+                                    },
+                                },
+                                {
+                                    extend: 'print',
+                                    className: myClass,//className: 'btn btn-light',
+                                    title: 'Internal Document  Data export',
+                                    exportOptions: {
+                                        columns: ':visible :not(.not-export-column)'
+                                    },
+                                },
+
+                                {
+                                    extend: 'colvis',
+                                    text: '<i class="icon-three-bars"></i>',
+                                    className: 'btn bg-blue btn-icon dropdown-toggle',
+                                    columns: ':visible:not(.not-export-column)'
+                                }
+                            ]
+                        }
+
+                    });
+                    // Adjust columns on window resize
+                    setTimeout(function () {
+                        $(window).on('resize', function () {
+                            table.columns.adjust();
+                        });
+                    }, 100);
+
+
+                    //Redraw table on click toggle. -------table.columns.adjust doesn't work properly upon calling after toggle (width increase/decrease = redraw table.).
+                    $('.sidebar-control').on('click', function () {
+
+                        setTimeout(function () {
+                            //alert("gii");
+
+                            table.columns.adjust().draw();
+                            $("#table1").resize();
+                        } , 100);
+
+                    });
+                    //}
+
+                    $('#table1').on('page.dt', function () {
+                        //table.draw();
+                        //alert("zzz1");
+                        $("#table1").resize();
+
+                    });
+
+                    $('#table1').on('column-visibility.dt', function () {
+                        //table.draw();
+                        //alert("zzz2");
+                        $("#table1").resize();
+
+                    });
+
+                    $('#table1').on('order.dt', function () {
+                        //table.draw();
+                        //alert("zzz3");
+                        $("#table1").resize();
+
+                    });
+
+
+                    $('#table1').on('responsive-display.dt', function () {
+                        //table.draw();
+                        //alert("zzz4");
+                        $("#table1").resize();
+
+                    });
+
+
+                    $('#table1').on('responsive-resize.dt', function () {
+                        //table.draw();
+                        //alert("zzz4");
+                        $("#table1").resize();
+
+                    });
+
+
+                    //.on('order.dt', function () {
+                    //    table.columns.adjust().draw();
+                    //    $("#qhse").resize(); })
+                    //.on('search.dt', function () {
+                    //    table.columns.adjust().draw();
+                    //    $("#qhse").resize(); })
+
+                    //.on('column-visibility.dt', function () {
+                    //    table.columns.adjust().draw();
+                    //    $("#qhse").resize();
+                    //})
+                };
+
+                // Select2 for length menu styling
+                var _componentSelect2 = function () {
+                    if (!$().select2) {
+                        console.warn('Warning - select2.min.js is not loaded.');
+                        return;
+                    }
+
+                    // Initialize
+                    $('.dataTables_length select').select2({
+                        minimumResultsForSearch: Infinity,
+                        dropdownAutoWidth: true,
+                        width: 'auto'
+                    });
+                };
+
+
+                //
+                // Return objects assigned to module
+                //
+
+                return {
+                    init: function () {
+                        _componentDatatableBasic();
+                        _componentSelect2();
+                    }
+                }
+            }();
+
+
+            // Initialize module
+            // ------------------------------
+
+            document.addEventListener('DOMContentLoaded', function () {
+                table1.init();
+            });
+
+
+
+            function DeleteItems(id_external_audit) {
+                bootbox.confirm({
+                    title: 'Confirm dialog',
+                    message: 'Are you Sure you want to Delete the current Record?',
+                    buttons: {
+                        confirm: {
+                            label: 'Yes',
+                            className: 'btn-primary'
+                        },
+                        cancel: {
+                            label: 'Cancel',
+                            className: 'btn-link'
+                        }
+                    },
+                    callback: function (r) {
+                        if (r == true) {
+                            jQuery.ajax({
+                                url: '@Url.Action("ExternalAuditDocDelete", "ExternalAudit")',
+                                data: { Id: id_external_audit },
+                                type: 'POST',
+                                dataType: "json",
+                                success: function (result) {
+                                    //// Add new params to the querystring dictionary
+                                    window.location.href =
+                                        window.location.protocol + "//" +
+                                        window.location.host +
+                                        window.location.pathname
+
+                                }
+                            });
+                            return true;
+                        }
+                        else if (r == false) {
+                            bootbox.hideAll();
+                            return false;
+                        }
+
+                    }
+                });
+            }
+
+            function getDetails() {
+                var branch_name = document.getElementById("branch_name").value;
+                var params = {
+                    branch_name: branch_name
+                };
+                queryString = $.param(params);
+
+                window.location.href =
+                    window.location.protocol + "//" +
+                    window.location.host +
+                    window.location.pathname +
+                   '?' + queryString;
+            }
+        </script>
+
+    }

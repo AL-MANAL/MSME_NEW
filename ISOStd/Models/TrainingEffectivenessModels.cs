@@ -71,8 +71,8 @@ namespace ISOStd.Models
             try
             {
                 string sSsqlstmt = "select TrainingID as Id, report_no as Name from t_trainings where RequestStatus=1 " +
-                    "and Training_Actual_Date > '01/01/0001' and Training_Actual_Completion_Date  > '01/01/0001' order by TrainingID Desc";
-
+                    "and Training_Actual_Date > '01/01/0001' and Training_Actual_Completion_Date  > '01/01/0001' " +
+                    " UNION select id_training_plan as Id,ref_no as Name from t_training_plan t1,dropdownitems t2 where active = 1 and t1.training_status = t2.item_id and item_desc = 'Completed'";
                 DataSet dsReportType = objGlobalData.Getdetails(sSsqlstmt);
                 if (dsReportType.Tables.Count > 0 && dsReportType.Tables[0].Rows.Count > 0)
                 {

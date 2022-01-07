@@ -181,6 +181,9 @@ namespace ISOStd.Models
         [Display(Name = "Color Code")]
         public string color_code_curr { get; set; }
 
+        [Display(Name = "Origin of the risk")]
+        public string origin_risk { get; set; }
+
         internal bool FunUpdateApprove(RiskMgmtModels objManagement)
         {
             try
@@ -564,13 +567,13 @@ namespace ISOStd.Models
                 string sSubmission_date = DateTime.Now.ToString("yyyy/MM/dd");
                
                 string sSqlstmt = "insert into risk_register (risk_status_id, risk_desc, dept, reg_id, branch_id, source_id,risk_owner, risk_manager,"
-                    + "assessment, notes, submission_date, submitted_by, impact_id, like_id, consequences,opp_desc,Issue,Location,notified_to,Risk_Type)"
+                    + "assessment, notes, submission_date, submitted_by, impact_id, like_id, consequences,opp_desc,Issue,Location,notified_to,Risk_Type,origin_risk)"
                 + " values('" + objRiskMgmtModels.risk_status_id + "','" + objRiskMgmtModels.risk_desc + "','" + objRiskMgmtModels.dept
                 + "','" + objRiskMgmtModels.reg_id + "','" + objRiskMgmtModels.branch_id + "','" + objRiskMgmtModels.source_id
                 + "','" + objRiskMgmtModels.risk_owner + "','" + objRiskMgmtModels.risk_manager
                 + "','" + objRiskMgmtModels.assessment + "','" + objRiskMgmtModels.notes + "','" + sSubmission_date + "','" + objRiskMgmtModels.submitted_by
                 + "','" + objRiskMgmtModels.impact_id + "','" + objRiskMgmtModels.like_id + "','" + objRiskMgmtModels.consequences + "','" + objRiskMgmtModels.opp_desc 
-                + "','" + objRiskMgmtModels.Issue + "','" + objRiskMgmtModels.Location + "','" + objRiskMgmtModels.notified_to + "','" + objRiskMgmtModels.Risk_Type + "')";
+                + "','" + objRiskMgmtModels.Issue + "','" + objRiskMgmtModels.Location + "','" + objRiskMgmtModels.notified_to + "','" + objRiskMgmtModels.Risk_Type + "','" + objRiskMgmtModels.origin_risk + "')";
 
                 int risk_id = 0;
 
@@ -687,7 +690,7 @@ namespace ISOStd.Models
                 string sSqlstmt = "update risk_register set  risk_desc='" + objRiskMgmtModels.risk_desc + "', "
                     + "dept='" + objRiskMgmtModels.dept + "', branch_id='" + objRiskMgmtModels.branch_id + "', Issue='" + objRiskMgmtModels.Issue + "', notified_to='" + objRiskMgmtModels.notified_to + "', source_id='" + objRiskMgmtModels.source_id
                    + "', risk_owner='" + objRiskMgmtModels.risk_owner + "', Risk_Type='" + objRiskMgmtModels.Risk_Type
-                   + "', consequences='" + objRiskMgmtModels.consequences + "', Location='" + objRiskMgmtModels.Location + "'";
+                   + "', consequences='" + objRiskMgmtModels.consequences + "', Location='" + objRiskMgmtModels.Location + "', origin_risk='" + objRiskMgmtModels.origin_risk + "'";
                  
 
                 //if (GetRiskStatusNameById(objRiskMgmtModels.risk_status_id).ToLower() == "closed")

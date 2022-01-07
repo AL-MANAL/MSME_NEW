@@ -1,0 +1,244 @@
+﻿@using System.Data
+@using ISOStd.Models;
+
+@{
+    ViewBag.Title = "PerformInductionPdf";
+
+    ISOStd.Models.InductionTrainingModels obj = new ISOStd.Models.InductionTrainingModels();
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+    ISOStd.Models.InductionTrainingModelsList objMatList = new ISOStd.Models.InductionTrainingModelsList();
+
+
+    if (ViewBag.TrainList != null)
+    {
+        obj = ViewBag.TrainList;
+    }
+
+    if (ViewBag.objMatList != null)
+    {
+        objMatList = ViewBag.objMatList;
+    }
+
+    DataSet dsCompany = new DataSet();
+    if (ViewBag.CompanyInfo != null)
+    {
+        dsCompany = ViewBag.CompanyInfo;
+    }
+
+    //DataSet objReporterList = new DataSet();
+    //if (ViewBag.objReporterList != null)
+    //{
+    //    objReporterList = ViewBag.objReporterList;
+    //}
+
+    Layout = "~/Views/Shared/_PrintLayout.cshtml";
+}
+
+<STYLE TYPE="text/css">
+    .breakhere {
+        page-break-after: always;
+    }
+</STYLE>
+
+@Html.Partial("_ReportHeader", dsCompany)
+
+<div style="background-color:white">
+    <div>
+        <table class="table table-lg table-bordered">
+            <tr class="row">
+                <td colspan="4">
+                    <h3>Report Details</h3>
+                </td>
+            </tr>
+            @*<tr class="row">
+            <td class="font-size-lg font-weight-bold">
+
+                Division
+
+            </td>
+            <td class="font-size-lg">
+                <div>
+                    @obj.branch
+                </div>
+            </td>
+
+            <td class="font-size-lg font-weight-bold">
+                Department
+            </td>
+            <td class="font-size-lg">
+                <div>
+                    @obj.Department
+                </div>
+            </td>
+        </tr>*@
+
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+                    Training Employee
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @ViewBag.semployee_Name
+                    </div>
+                </td>
+                <td class="font-size-lg font-weight-bold">
+                    Division
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.division
+                    </div>
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+                    Department
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.department
+                    </div>
+                </td>
+                <td class="font-size-lg font-weight-bold">
+                    Location
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.location
+                    </div>
+                </td>
+            </tr>           
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+                    Start Date
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @if (obj.start_date.ToString() != "" && obj.start_date.ToString() != null)
+                        {
+                            @*@Convert.ToDateTime(obj.start_date.ToString("dd/MM/yyyy"));*@
+                            @obj.start_date.ToString()
+                        }
+                    </div>
+                </td>
+                <td class="font-size-lg font-weight-bold">
+                    Completed on
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @if (obj.end_date.ToString() != "" && obj.end_date.ToString() != null)
+                        {
+                            @*@Convert.ToDateTime(obj.end_date.ToString("dd/MM/yyyy"));*@
+                            @obj.end_date.ToString()
+                        }
+                    </div>
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+                    Training Topic
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.training_topic
+                    </div>
+                </td>
+            </tr>
+        </table>
+
+
+        @if (objMatList.lstInd != null && objMatList.lstInd.Count > 0)
+        {
+            <h2 class="bg-dark pl-sm-2">  Material Details</h2>
+            <div class="table-responsive">
+                <table class="table-sm table-dark table-bordered table-striped table-hover bg-orange-800">
+
+                    <thead>
+                        <tr class="bg-brown">
+                            <th>Material</th>
+                            <th>Attachment</th>
+                            <th>Start Date</th>
+                            <th>Completion Date</th>
+                            <th>Comments</th>
+                            <th>Need further explanation</th>
+                            <th>Training Notified To</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @for (int index = 0; index < objMatList.lstInd.Count; index++)
+                        {
+                            <tr>
+                                <td>@objMatList.lstInd[index].mat_description</td>
+                                <td>
+                                    @if (objMatList.lstInd[index].upload != null && objMatList.lstInd[index].upload != "")
+                                    {
+                                        <a href='@Url.Action("DisplayDocument", "Reports", new { Document = objMatList.lstInd[index].upload })' target="_blank" style="color: orange;">
+                                            Preview
+                                        </a>
+                                    }
+                                </td>
+                                <td>
+                                    @if (objMatList.lstInd[index].traing_start_date != null && objMatList.lstInd[index].traing_start_date > Convert.ToDateTime("01/01/0001"))
+                                    {
+                                        @objMatList.lstInd[index].traing_start_date.ToString("dd/MM/yyyy")
+                                    }
+                                </td>
+                                <td>
+                                    @if (objMatList.lstInd[index].compled_date != null && objMatList.lstInd[index].compled_date > Convert.ToDateTime("01/01/0001"))
+                                    {
+                                        @objMatList.lstInd[index].compled_date.ToString("dd/MM/yyyy")
+                                    }
+                                </td>
+                                <td>@objMatList.lstInd[index].comments</td>
+                                <td>@objMatList.lstInd[index].explain</td>
+                                <td>@objMatList.lstInd[index].notify_to</td>
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        }
+
+            <table class="table table-lg table-bordered">
+                <tr class="row">
+                    <td class="font-size-lg font-weight-bold">
+                        Training Status
+                    </td>
+                    <td class="font-size-lg">
+                        <div>
+                            @obj.final_status
+                        </div>
+                    </td>
+                    <td class="font-size-lg font-weight-bold">
+                        Training Effectiveness
+                    </td>
+                    <td class="font-size-lg">
+                        <div>
+                            @obj.effectness
+                        </div>
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td class="font-size-lg font-weight-bold">
+                        Suggestion
+                    </td>
+                    <td class="font-size-lg">
+                        <div>
+                            @obj.suggestion
+                        </div>
+                    </td>
+                    <td class="font-size-lg font-weight-bold">
+                        Further Training
+                    </td>
+                    <td class="font-size-lg">
+                        <div>
+                            @obj.further_training
+                        </div>
+                    </td>
+                </tr>              
+            </table>
+
+    </div>
+</div>

@@ -1,0 +1,331 @@
+﻿@model ISOStd.Models.SupplierDiscrepencyLogModels
+
+@{
+    ViewBag.Title = "";
+}
+
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Home</span>
+                    </a>
+                    <a href="@Url.Action("DiscrepancyLogList", "Supplier", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Discrepancy Log List</span>
+                    </a>
+                    <span class="breadcrumb-item active">Add Discrepancy Log</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            <div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@using (Html.BeginForm("AddDiscrepancyLog", "Supplier", FormMethod.Post,
+                     new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Add Discrepancy Log</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+
+                <table class="table table-lg">
+
+                    <tr class="row">
+                    
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                 Supplier Name<text style="color:red;"> *</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                  <select class="form-control select-search select2-hidden-accessible" data-fouc id="SupplierId" name="SupplierId" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.SupplierList != null)
+                                    {
+                                        foreach (var item in ViewBag.SupplierList)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                                 @Html.ValidationMessageFor(model => model.SupplierId)
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Discrepency_LoggedDate)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                             <input class="form-control" type="date" id="Discrepency_LoggedDate" name="Discrepency_LoggedDate" required/>
+                                  @Html.ValidationMessageFor(model => model.Discrepency_LoggedDate)
+                            </div>
+                        </td>
+                    </tr>
+
+		   <tr class="row">                    
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.PONo)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                   @Html.EditorFor(model => model.PONo, new { htmlAttributes = new {  @class = "form-control"  } }) 
+                                 @Html.ValidationMessageFor(model => model.PONo)
+                            </div>
+                        </td>
+                 <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.po_date)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                             <input class="form-control" type="date" id="po_date" name="po_date" />
+                                 
+                            </div>
+                        </td>
+               </tr>
+ <tr class="row">               
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Discrepency_Desc)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                             <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="Discrepency_Desc" name="Discrepency_Desc" required></textarea>                         
+                              @Html.ValidationMessageFor(model => model.Discrepency_Desc)
+			   </div>
+                        </td>
+                               
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.ActionTaken)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                               <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="ActionTaken" name="ActionTaken" required></textarea>                         
+                              @Html.ValidationMessageFor(model => model.ActionTaken)                         
+                            </div>
+                        </td>
+     </tr>
+                      <tr class="row">
+                     <td class="col-xs-3 col-md-2">
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.providertype)
+                        </div>
+                    </td>
+                    <td class="col">
+                        <div class="editor-field">
+                           <select class="form-control select-search select2-hidden-accessible" data-fouc id="providertype" name="providertype">
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.External != null)
+                                {
+                                    foreach (var item in ViewBag.External)
+                                    {
+                                        <option value='@item.Value'>@item.Text</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </td>
+                     <td class="col-xs-3 col-md-2">
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.nc_identified)
+                        </div>
+                    </td>
+                    <td class="col">
+                        <div class="editor-field">
+                          <select class="form-control select-search select2-hidden-accessible" data-fouc id="nc_identified" name="nc_identified">
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.NC != null)
+                                {
+                                    foreach (var item in ViewBag.NC)
+                                    {
+                                        <option value='@item.Value'>@item.Text</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </td>
+                </tr>
+               
+                  <tr class="row">
+                     <td class="col-xs-3 col-md-2">
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.discrepancy_type)
+                        </div>
+                    </td>
+                    <td class="col">
+                        <div class="editor-field">
+                             <select class="form-control select-search select2-hidden-accessible" data-fouc id="discrepancy_type" name="discrepancy_type">
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.Type != null)
+                                {
+                                    foreach (var item in ViewBag.Type)
+                                    {
+                                        <option value='@item.Value'>@item.Text</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </td>
+                     <td class="col-xs-3 col-md-2">
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.ncr_ref)
+                        </div>
+                    </td>
+                    <td class="col">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.ncr_ref, new { htmlAttributes = new {  @class = "form-control"  } })
+                        </div>
+                    </td>
+                </tr>
+                  <tr class="row">
+                  
+                     <td class="col-xs-3 col-md-2">
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.supplier_ref)
+                        </div>
+                    </td>
+                    <td class="col">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.supplier_ref, new { htmlAttributes = new {  @class = "form-control"  } })
+                        </div>
+                    </td>
+                        <td class="col-xs-3 col-md-2">
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.impact)
+                        </div>
+                    </td>
+                    <td class="col">
+                        <div class="editor-field">
+                         <select class="form-control select-search select2-hidden-accessible" data-fouc id="impact" name="impact">
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.YesNo != null)
+                                {
+                                    foreach (var item in ViewBag.YesNo)
+                                    {
+                                        <option value='@item'>@item</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </td>
+                </tr>
+                  <tr class="row">
+                     <td class="col-xs-3 col-md-2">
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.disc_status)
+                        </div>
+                    </td>
+                    <td class="col">
+                        <div class="editor-field">
+                           <select class="form-control select-search select2-hidden-accessible" data-fouc id="disc_status" name="disc_status">
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.Status != null)
+                                {
+                                    foreach (var item in ViewBag.Status)
+                                    {
+                                        <option value='@item.Value'>@item.Text</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.remarks)
+                        </div>
+                    </td>
+                    <td class="col">
+                        <div class="editor-field">
+                           <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="remarks" name="remarks"></textarea>        
+                        </div>
+                    </td>
+                </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Upload)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                 <input type="file" name="Upload" id="Upload" onchange="FileFormatValidation(this)" accept=".pdf,.xlsx,.xls,.doc,.docx" class="bootstrap-uploader" data-fouc />                        
+                            </div>
+                        </td>
+                    </tr>
+ 		   
+                </table>
+            </div>
+        </div>
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+            @Html.ActionLink("Back to List", "DiscrepancyLogList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+            <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Add</button>
+        </div>
+    </div>
+
+       
+        }
+
+@section Scripts {
+    <script>
+
+        function FileFormatValidation(file) {
+            var ext = file.value.split(".").pop().toLowerCase();
+            if ($.inArray(ext, ["doc", "pdf", "docx", "jpg", "jpeg", "gif", "png"]) == -1) {
+                file.value = "";
+                jAlert("Invalid file format, please upload only doc, pdf, docx, jpg, jpeg, gif, png format");
+            }
+        }
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

@@ -1,0 +1,218 @@
+﻿@model ISOStd.Models.CustComplaintModels
+
+@{
+    ViewBag.Title = "";
+}
+
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                  <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Home</span>
+                    </a>
+                    <a href="@Url.Action("CustomerComplaintList", "CustComplaint", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Customer Complaints </span>
+                    </a>
+                    <span class="breadcrumb-item active">Update Customer Complaints</span>
+                </div>
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+}
+@using (Html.BeginForm("ActionCustomerComplaint", "CustComplaint", FormMethod.Post,
+                     new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+     <input type="hidden" id="id_complaint" name="id_complaint" value="@Model.id_complaint" />
+     <input type="hidden" id="id_complaint_assign" name="id_complaint_assign" value="@Model.id_complaint_assign" />
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Add Customer Complaints</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+                <table class="table table-lg">
+                    <tr class="row"> 
+                        <td class="col-xs-3 col-md-2">  
+                         <div class="editor-label">
+                                @Html.LabelFor(model => model.ComplaintNo)
+                            </div>
+                        </td>
+                       <td class="col">
+                            <div class="editor-field">
+                                 @Html.DisplayFor(model => model.ComplaintNo)
+                            </div>
+                        </td>     
+                    </tr>
+   		            <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Details)
+                            </div>
+                        </td>
+                        <td class="col" colspan="3">
+                            <div class="editor-field">
+                                   @Html.Raw(HttpUtility.HtmlDecode(Model.Details))
+                            </div>
+                        </td>
+                       
+                    </tr>
+		    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.ReasonForProblem)
+                            </div>
+                        </td>
+                        <td class="col" colspan="3">
+                            <div class="editor-field">
+                                   @Html.TextAreaFor(model => model.ReasonForProblem, new { @id = "editor-full3", @rows = "4", @cols = "4" })
+                            </div>
+                        </td>
+                       
+                    </tr>
+   			<tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Reason_document)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                       <td class="col-xs-3 col-md-4">
+                            <div class="editor-field">
+                             <input type="file" name="Reason_document" id="Reason_document" onchange="FileFormatValidation(this)" accept=".pdf,.xlsx,.xls,.doc,.docx,.png,.jpg,.jpeg" class="bootstrap-uploader" data-fouc required />                               
+                            @Html.ValidationMessageFor(m => m.Reason_document)
+			 </div>
+                        </td>
+                       
+                    </tr>
+		  <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.ImmediateAction)
+                            </div>
+                        </td>
+                        <td class="col" colspan="3">
+                            <div class="editor-field">
+                                   @Html.TextAreaFor(model => model.ImmediateAction, new { @id = "editor-full2", @rows = "4", @cols = "4" })
+                            </div>
+                        </td>
+                       
+                    </tr>
+  			
+   			<tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.ImmediateAction_document)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col" colspan="3">
+                            <div class="editor-field">
+                             <input type="file" name="ImmediateAction_document" id="ImmediateAction_document" onchange="FileFormatValidation(this)" accept=".pdf,.xlsx,.xls,.doc,.docx,.jpg,.jpeg,.png" class="bootstrap-uploader" data-fouc required />                               
+                            @Html.ValidationMessageFor(m => m.ImmediateAction_document)
+			 </div>
+                        </td>
+                          <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.ImmediateAction_TargetDate)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                 <input class="form-control" type="date" id="ImmediateAction_TargetDate" name="ImmediateAction_TargetDate" required />
+                                 @Html.ValidationMessageFor(m => m.ImmediateAction_TargetDate)
+                            </div>
+                        </td>
+                    </tr>
+ 		   <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.CorrectiveAction)
+                            </div>
+                        </td>
+                        <td class="col" colspan="3">
+                            <div class="editor-field">
+                                   @Html.TextAreaFor(model => model.CorrectiveAction, new { @id = "editor-full1", @rows = "4", @cols = "4" })
+                            </div>
+                        </td>
+                       
+                    </tr>
+		<tr class="row">
+                         <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.CorrectiveAction_TargetDate)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <div class="editor-field">
+                                 <input class="form-control" type="date" id="CorrectiveAction_TargetDate" name="CorrectiveAction_TargetDate" required />
+                                 @Html.ValidationMessageFor(m => m.CorrectiveAction_TargetDate)
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+            @Html.ActionLink("Back to List", "CustomerComplaintDetails", new { id_complaint = Model.id_complaint }, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+
+            <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Add</button>
+        </div>
+    </div>
+        }
+
+@section Scripts {
+    <script>
+
+        function FileFormatValidation(file) {
+            var ext = file.value.split(".").pop().toLowerCase();
+            if ($.inArray(ext, ["doc", "pdf", "docx", "jpg", "jpeg", "gif", "png"]) == -1) {
+                file.value = "";
+                jAlert("Invalid file format, please upload only doc, pdf, docx, jpg, jpeg, gif, png format");
+            }
+        }
+        CKEDITOR.replace('editor-full1', {
+            height: 400,
+            extraPlugins: 'forms'
+        });
+        CKEDITOR.replace('editor-full2', {
+            height: 400,
+            extraPlugins: 'forms'
+        });
+        CKEDITOR.replace('editor-full3', {
+            height: 400,
+            extraPlugins: 'forms'
+        });
+</script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

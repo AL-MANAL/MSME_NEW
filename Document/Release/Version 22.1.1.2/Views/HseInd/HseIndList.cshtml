@@ -1,0 +1,621 @@
+﻿@using PagedList;
+@using PagedList.Mvc;
+
+@model List<ISOStd.Models.HseIndModels>
+
+    @{
+        ViewBag.Title = "HseIndList";
+        Layout = "~/Views/Shared/_Layout.cshtml";
+        ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+    }
+
+    @section featured {
+
+        <div class="page-header page-header-light">
+
+            <div class="page-header-content header-elements-md-inline">
+                <div class="page-title d-flex">
+                    <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+                </div>
+            </div>
+
+            <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+                <div class="d-flex">
+                    <div class="breadcrumb">
+
+                        <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                            <span class="breadcrumb-item"> Home</span>
+                        </a>
+
+                        <span class="breadcrumb-item active">Hse Induction List </span>
+                    </div>
+
+                    <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+                </div>
+
+                <div class="header-elements d-none">
+                    <div class="breadcrumb justify-content-center">
+
+
+                        <div class="breadcrumb-elements-item dropdown p-0">
+                            <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                                <i class="icon-gear mr-2"></i>
+                                Settings
+                            </a>
+
+                            <div class="dropdown-menu dropdown-menu-right">
+
+                                <div class="dropdown-divider"></div>
+                                <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        }
+
+        <style>
+            .hidden {
+                display: none !important;
+            }
+        </style>
+
+        <div class="card">
+            <div class="card-header header-elements-inline bg-primary">
+                <h5 class="card-title">Hse Ind List</h5>
+                <div class="header-elements">
+                    <div class="list-icons">
+                        <a class="list-icons-item" data-action="collapse"></a>
+                    </div>
+                </div>
+            </div>
+            @if (Obj.GetCurrentUserSession().HseIndu.Contains("3"))
+            {
+                <div class="card-body">
+                    <a class="btn btn-outline bg-orange text-orange border-orange btn-ladda btn-ladda-progress ladda-button" data-style="radius" href='@Url.Action("AddHseInd", "HseInd")' title="Add New">
+                        <span class="ladda-label">Add New</span>
+                        <span class="ladda-spinner"></span>
+                    </a>
+                </div>
+            }
+            <div class="card-body">
+                <div class="options d-flex flex-fill">
+                    @using (Html.BeginForm("HseIndList", "HseInd", FormMethod.Post, new { id = "form1", name = "form1", style = "width:25%" }))
+                    {
+                        if (ViewBag.Branch != null)
+                        {
+                            <select class="form-control select-search select2-hidden-accessible" data-fouc id="branch_name" name="branch_name" onchange="getDetails()">
+                                <option value='' hidden>Division</option>
+                                @if (ViewBag.Branch != null)
+                                {
+                                    foreach (var item in ViewBag.Branch)
+                                    {
+                                        if (item.Value == ViewBag.Branch_name)
+                                        {
+                                            <option value='@item.Value' selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                        }
+                    }
+                </div>
+            </div>
+            <table class="table table-bordered table-striped table-hover datatable-responsive" id="hse">
+                <thead>
+
+                    <tr>
+                        <th>
+                            Sl No
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.First().Hse_DateTime)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.First().Project)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.First().Location)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.First().ReportNo)
+                        </th>
+                        <th>
+                            Type of person HSE Indution given to
+                        </th>
+                        <th>
+                            @*@Html.DisplayNameFor(model => model.First().Employee)*@
+                            Name of Employee/Visitors
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.First().Dept)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.First().General_Behavior)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.First().Site_Details_Responsibilities)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.First().Personal_Protective_Equipments_Compliance)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.First().First_Aid)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.First().Emergency_Assistance)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.First().IMS)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.First().Equipments_Procedures)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.First().Induction_given_by)
+                        </th>
+
+                        <th class="not-export-column">Edit</th>
+                        <th class="not-export-column">Delete</th>                      
+
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Count() > 0)
+                    {
+                        int i = 0;
+                        foreach (var item in Model)
+                        {
+                            i = i + 1;
+                            <tr>
+                                <td>
+                                    @i
+                                </td>
+                                <td>
+
+                                    @Html.ActionLink(item.Hse_DateTime.ToString(), "HseIndDetails", new { id_Hse_insp = item.id_Hse_insp }, new { data_toggle = "popover", data_trigger = "hover", id = item.id_Hse_insp, onclick = "HyperLinkProgressIconFunction()" })
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Project)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Location)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.ReportNo)
+                                </td>
+                                <td>
+                                    @if (item.Employee != null && item.Employee != "")
+                                    {
+                                        @Html.DisplayNameFor(model => model.First().Employee)
+                                    }
+                                    else if (item.Visitors != null && item.Visitors != "")
+                                    {
+                                        @Html.DisplayNameFor(model => model.First().Visitors)
+                                    }
+                                    else if (item.Others != null && item.Others != "")
+                                    {
+                                        @Html.DisplayNameFor(model => model.First().Others)
+                                    }
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Employee)
+                                    @Html.DisplayFor(modelItem => item.Visitors)
+                                    @Html.DisplayFor(modelItem => item.Others)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Dept)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.General_Behavior)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Site_Details_Responsibilities)
+
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Personal_Protective_Equipments_Compliance)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.First_Aid)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Emergency_Assistance)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.IMS)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Equipments_Procedures)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Induction_given_by)
+                                </td>
+                                <td>
+                                    <a href='@Url.Action("HseIndEdit", "HseInd", new { id_Hse_insp  = item.id_Hse_insp  })' title="Edit Hse Ind details" onclick="HyperLinkProgressIconFunction()">
+                                        <span class="badge badge-info">Edit</span>
+                                    </a>
+                                </td>
+                                    <td>
+                                        <span class="badge badge-danger" title="Delete Document" onclick="DeleteItems(@item.id_Hse_insp)" style="cursor:pointer;">Delete</span>
+                                    </td> 
+                            </tr>
+                        }
+                    }
+
+                </tbody>
+            </table>
+        </div>
+   
+
+    @section scripts {
+        @Scripts.Render("~/bundles/jqueryval")
+        <script type="text/javascript">
+
+            
+                         $(document).ready(function () {
+
+
+
+        @if (TempData["alertdata"] != null ) {
+
+           @: new Noty({
+           @:     text: '@TempData["alertdata"]',
+           @:     type: 'error'
+           @: }).show();
+        }
+
+        @if (@TempData["Successdata"] != null ) {
+
+        @:    new Noty({
+         @:       text: '@TempData["Successdata"]',
+         @:       type: 'success'
+         @:   }).show();
+        }
+    });
+    //zzz----
+
+
+              function setData(id) {
+
+                var set_data = '';
+                var element = $(this);
+                var id = element.attr("id");
+                $.ajax({
+                 url: '@Url.Action("HseIndInfo", "HseInd")',
+                    methos: "post",
+                    async: false,
+                    data: { id: id },
+                    success: function (data) {
+                        set_data = data;
+                    }
+
+                });
+
+                return set_data;
+            }
+
+
+            var Document1 = function () {
+
+                var ShowEdit = @(Obj.GetCurrentUserSession().HseIndu.Contains("3") ? "true" : "false");
+                var ShowDel = @(Obj.GetCurrentUserSession().HseIndu.Contains("5") ? "true" : "false");
+
+                //
+                // Setup module components
+                //
+
+                // Basic Datatable examples
+                var _componentDatatableBasic = function () {
+                    if (!$().DataTable) {
+                        console.warn('Warning - datatables.min.js is not loaded.');
+                        return;
+                    }
+
+                    //Setting datatable defaults
+                    $.extend($.fn.dataTable.defaults, {
+                        autoWidth: false,
+                        responsive: true,
+                        columnDefs: [{
+                            orderable: false,
+                            width: 100,
+                            targets: [16, 17]
+                        }, {
+                                'targets': [17],
+                                'visible': ShowDel
+                            }, {
+                                'targets': [16],
+                                'visible': ShowEdit
+                            }],
+
+                        colReorder: false,
+                        dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                        //dom: 'lBfrtip',
+                        language: {
+                            search: '<span>Filter:</span> _INPUT_',
+                            searchPlaceholder: 'Type to filter...',
+                            lengthMenu: '<span>Show:</span> _MENU_',
+                            paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                        }
+                    });
+
+                var myClass = "";
+                var Delclass= @(Obj.GetCurrentUserSession().HseIndu.Contains("4") ? "true" : "false");
+                if (Delclass == false) { myClass = 'hidden'  };
+
+                    var table = $('#hse').DataTable({
+                        drawCallback: function () {
+                            $('[data-toggle="popover"]').popover({
+
+                                html: true,
+                                content: setData,
+                                container: 'body'
+                                //data: setData,
+
+
+                            });
+                        },
+                        lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                        colReorder: {
+                            fixedColumnsLeft: 1
+                        },
+                        stateSave: true,
+                        stateSaveParams: function (settings, data) {
+                            for (var i = 0, ien = data.columns.length; i < ien; i++) {
+                                delete data.columns[i].visible;
+                                delete data.columns[i].search;
+                            }
+                        },
+                        scrollY: '350px',
+                        scrollCollapse: true,
+
+
+                        keys: {
+                            className: 'focus focus-success'
+                        },
+
+                        buttons: {
+                            buttons: [
+                                {
+                                    extend: 'copyHtml5',
+                                    className: myClass,//className: 'btn btn-light',
+                                    title: 'Hse Ind Data export',
+                                    exportOptions: {
+                                        columns: ':visible :not(.not-export-column)'
+                                    },
+                                },
+                                {
+                                    extend: 'excelHtml5',
+                                    className: myClass,//className: 'btn btn-light',
+                                    title: 'Hse Ind Data export',
+                                    exportOptions: {
+                                        columns: ':visible :not(.not-export-column)'
+                                    },
+
+                                },
+                                {
+                                    extend: 'pdfHtml5',
+                                    className: myClass,
+                                    //className: 'btn btn-light',
+                                    title: 'Hse Ind Data export',
+                                    exportOptions: {
+                                        columns: ':visible :not(.not-export-column)'
+                                    },
+                                },
+                                {
+                                    extend: 'csvHtml5',
+                                    className: myClass,
+                                    //className: 'btn btn-light',
+                                    title: 'Hse Ind Data export',
+                                    exportOptions: {
+                                        columns: ':visible :not(.not-export-column)'
+                                    },
+                                },
+                                {
+                                    extend: 'print',
+                                    className: myClass,
+                                    //className: 'btn btn-light',
+                                    title: 'Hse Ind Data export',
+                                    exportOptions: {
+                                        columns: ':visible :not(.not-export-column)'
+                                    },
+                                },
+
+                                {
+                                    extend: 'colvis',
+                                    text: '<i class="icon-three-bars"></i>',
+                                    className: 'btn bg-blue btn-icon dropdown-toggle',
+                                    columns: ':visible:not(.not-export-column)'
+                                }
+                            ]
+                        }
+                    });
+                    // Adjust columns on window resize
+                    setTimeout(function () {
+                        $(window).on('resize', function () {
+                            table.columns.adjust();
+                        });
+                    }, 100);
+
+
+                    //Redraw table on click toggle. -------table.columns.adjust doesn't work properly upon calling after toggle (width increase/decrease = redraw table.).
+                    $('.sidebar-control').on('click', function () {
+
+                        setTimeout(function () {
+                            //alert("gii");
+
+                            table.columns.adjust().draw();
+                            $("#hse").resize();
+                        }, 100);
+
+                    });
+                    //}
+
+                    $('#hse').on('page.dt', function () {
+                        //table.draw();
+                        //alert("zzz1");
+                        $("#hse").resize();
+
+                    });
+
+                    $('#hse').on('column-visibility.dt', function () {
+                        //table.draw();
+                        //alert("zzz2");
+                        $("#hse").resize();
+
+                    });
+
+                    $('#hse').on('order.dt', function () {
+                        //table.draw();
+                        //alert("zzz3");
+                        $("#hse").resize();
+
+                    });
+
+
+                    $('#hse').on('responsive-display.dt', function () {
+
+                        $("#hse").resize();
+
+                    });
+
+
+                    $('#hse').on('responsive-resize.dt', function () {
+
+                        $("#hse").resize();
+
+                    });
+
+
+
+
+
+
+                };
+
+
+
+
+
+
+                // Select2 for length menu styling
+                var _componentSelect2 = function () {
+                    if (!$().select2) {
+                        console.warn('Warning - select2.min.js is not loaded.');
+                        return;
+                    }
+
+                    // Initialize
+                    $('.dataTables_length select').select2({
+                        minimumResultsForSearch: Infinity,
+                        dropdownAutoWidth: true,
+                        width: 'auto'
+                    });
+                };
+
+
+                //
+                // Return objects assigned to module
+                //
+
+                return {
+                    init: function () {
+                        _componentDatatableBasic();
+                        _componentSelect2();
+                    }
+                }
+            }();
+
+
+            // Initialize module
+            // ------------------------------
+
+            document.addEventListener('DOMContentLoaded', function () {
+                Document1.init();
+            });
+
+      
+
+      
+
+            function DeleteItems(id_Hse_insp) {
+            bootbox.confirm({
+                title: 'Confirm dialog',
+                message: 'Are you Sure you want to Delete the current Record?',
+                buttons: {
+                    confirm: {
+                        label: 'Yes',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'Cancel',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (r) {
+                 
+                  if (r == true) {
+                       jQuery.ajax({
+                           url: '@Url.Action("HseIndDelete", "HseInd")',
+                           type: 'POST',
+                           dataType: "json",
+                           data: { 'id_Hse_insp': id_Hse_insp },
+                        success: function (result) {
+                      
+
+                            //// Add new params to the querystring dictionary
+
+
+                            window.location.href =
+                                window.location.protocol + "//" +
+                                window.location.host +
+                                window.location.pathname
+
+                        }
+                    });
+                    return true;
+                }
+                else if (r == false) {
+                        bootbox.hideAll();
+                        return false;
+                    }
+
+                }
+            });
+        }
+function getDetails() {
+                var branch_name = document.getElementById("branch_name").value;
+
+                   jQuery.ajax({
+                                url: '@Url.Action("HseIndListSearch", "HseInd")',
+                        type: 'POST',
+                        dataType: "json",
+                        data: { 'branch_name': branch_name },
+                        success: function (result) {
+                            var params = {
+                                branch_name: branch_name
+                            };
+                            queryString = $.param(params);
+
+                            window.location.href =
+                                window.location.protocol + "//" +
+                                window.location.host +
+                                window.location.pathname +
+                               '?' + queryString;
+
+                        }
+                    });  
+            }
+        
+        </script>
+
+    }
+
+
+

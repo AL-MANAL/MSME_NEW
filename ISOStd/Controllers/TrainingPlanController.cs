@@ -103,7 +103,7 @@ namespace ISOStd.Controllers
 
                     string id_training_plan = Request.QueryString["id_training_plan"];
 
-                    string sSqlstmt = "select id_training_plan,division,department,location,topic,emp_id,from_date,to_date,source_id,trainer_name,reviewed_by,approved_by,ext_entity"
+                    string sSqlstmt = "select id_training_plan,division,department,location,topic,emp_id,from_date,to_date,source_id,trainer_name,reviewed_by,approved_by,ext_entity,ref_no"
 
                         + " from t_training_plan where id_training_plan = '" + id_training_plan + "'";
 
@@ -124,7 +124,7 @@ namespace ISOStd.Controllers
                             reviewed_by = (dsList.Tables[0].Rows[0]["reviewed_by"].ToString()),
                             ext_entity = (dsList.Tables[0].Rows[0]["ext_entity"].ToString()),
                             approved_by = (dsList.Tables[0].Rows[0]["approved_by"].ToString()),
-                         
+                            ref_no = (dsList.Tables[0].Rows[0]["ref_no"].ToString()),
                         };
                         DateTime dtDocDate;
                         if (dsList.Tables[0].Rows[0]["from_date"].ToString() != ""
@@ -207,7 +207,7 @@ namespace ISOStd.Controllers
                 string sBranchtree = objGlobaldata.GetCurrentUserSession().BranchTree;
                 ViewBag.Branch = objGlobaldata.GetMultiBranchListByID(sBranchtree);
 
-                string sSqlstmt = "select id_training_plan,topic,department,from_date,to_date,training_status," +
+                string sSqlstmt = "select id_training_plan,topic,department,from_date,to_date,training_status,ref_no," +
                  "(CASE WHEN approval_status = '0' THEN 'Pending for Review' WHEN approval_status = '1' THEN 'Review Rejected' WHEN approval_status = '2' THEN 'Reviewed,Pending for Approval' WHEN approval_status = '3' THEN 'Rejected' WHEN approval_status = '4' THEN 'Approved' END) as  approval_status" +
                     " from t_training_plan where active = 1";
 
@@ -237,6 +237,7 @@ namespace ISOStd.Controllers
                                 topic =objGlobaldata.GetTrainingTopicById(dsList.Tables[0].Rows[i]["topic"].ToString()),
                                 approval_status = (dsList.Tables[0].Rows[i]["approval_status"].ToString()),
                                 training_status = objGlobaldata.GetDropdownitemById(dsList.Tables[0].Rows[i]["training_status"].ToString()),
+                                ref_no = dsList.Tables[0].Rows[i]["ref_no"].ToString(),
                             };
 
                             DateTime dtDocDate;
@@ -283,7 +284,7 @@ namespace ISOStd.Controllers
                     string sSqlstmt = "select id_training_plan,division,department,location,topic,emp_id,from_date,to_date,source_id,trainer_name,reviewed_by,approved_by,ext_entity,"
                          +  "(CASE WHEN approval_status = '0' THEN 'Pending for Review' WHEN approval_status = '1' THEN 'Review Rejected' WHEN approval_status = '2' THEN 'Reviewed,Pending for Approval' WHEN approval_status = '3' THEN 'Rejected' WHEN approval_status = '4' THEN 'Approved' END) as  approval_status,"
                          + "(CASE  WHEN review_status = '1' THEN 'Review Rejected' WHEN review_status = '2' THEN 'Reviewed'  END) as  review_status"
-                        + " ,approval_status as approval_status_id,reviewer_comments,reviewed_date,approver_comments,approved_date,training_status,status_updated_date,training_start_date,training_completed_date,upload,reshedule_from_date,reshedule_to_date,reason_reschedule,reason_cancell from t_training_plan where id_training_plan = '" + id_training_plan + "'";
+                        + " ,approval_status as approval_status_id,reviewer_comments,reviewed_date,approver_comments,approved_date,training_status,status_updated_date,training_start_date,training_completed_date,upload,reshedule_from_date,reshedule_to_date,reason_reschedule,reason_cancell,ref_no from t_training_plan where id_training_plan = '" + id_training_plan + "'";
 
                     DataSet dsList = objGlobaldata.Getdetails(sSqlstmt);
 
@@ -314,6 +315,7 @@ namespace ISOStd.Controllers
                             reason_reschedule = dsList.Tables[0].Rows[0]["reason_reschedule"].ToString(),
                             reason_cancell = dsList.Tables[0].Rows[0]["reason_cancell"].ToString(),
                             training_status =objGlobaldata.GetDropdownitemById(dsList.Tables[0].Rows[0]["training_status"].ToString()),
+                            ref_no = dsList.Tables[0].Rows[0]["ref_no"].ToString(),
                         };
                         DateTime dtDocDate;
                         if (dsList.Tables[0].Rows[0]["from_date"].ToString() != ""

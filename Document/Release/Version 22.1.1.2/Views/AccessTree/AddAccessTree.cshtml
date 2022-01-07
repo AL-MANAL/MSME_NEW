@@ -1,0 +1,465 @@
+﻿@using PagedList;
+@using PagedList.Mvc;
+
+@model IPagedList<ISOStd.Models.AccessTreeModels>
+
+    @{
+        ViewBag.Title = "AddAccessTree";
+        ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+    }
+
+   @section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Home</span>
+                    </a>
+                    <a href="@Url.Action("RoleGroupList", "Role", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Manage Access Privileges</span>
+                    </a>
+                    <span class="breadcrumb-item active">Division Access</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+}
+<style>
+     span {
+            cursor: pointer;
+        }
+     ul li {
+            list-style-type: none
+        }
+</style>
+ <div class="card">
+					<div class="card-header header-elements-inline">
+						<h6 class="card-title">@ViewBag.Role</h6>
+						<div class="header-elements">
+							<div class="list-icons">
+		                		<a class="list-icons-item" data-action="collapse"></a>
+		                		<a class="list-icons-item" data-action="reload"></a>
+		                		<a class="list-icons-item" data-action="remove"></a>
+		                	</div>
+	                	</div>
+					</div>
+
+				
+					 @if (Model != null && Model.Count() > 0)
+        {
+            int i = 0;
+            foreach (var item in Model)
+            {
+                     <input type="hidden" id="Id" name="Id" value="@ViewBag.Id" />
+            <input type="hidden" id="role_id" name="role_id" value="@ViewBag.role_id" />
+					<div  id="checkboxes">
+					  <ul class="tree-child" style="display:block">
+                            @*<ul id="treeview" class="hummingbird-base">*@
+                            @if (item.parent_level == "0")
+                            {
+
+                                <li tyle="margin-left:10px;">
+                                    <span>
+                                        <i class="icon-minus2"></i>
+
+                                        @*@if (item.BranchTree.ToString().Contains(item.id))*@
+                                        @if (Array.IndexOf(item.BranchTree.ToString().Split(','), item.id) >= 0)
+                                        {
+                                            <input type="checkbox"  @*name="checkname"*@ id="select" value="@item.BranchName" name="@item.id" checked />
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" @*name="checkname"*@ id="select" value="@item.BranchName" name="@item.id" />
+                                        }
+                                        @Html.DisplayFor(modelItem => item.BranchName)
+                                    </span>
+                                    <ul>
+                                        @foreach (var y in Model)
+                                        {
+                                            if (y.parent_level == item.id)
+                                            {
+                                                <li style="margin-left:30px;">
+                                                    <span>
+                                                        <i class="icon-minus2"></i>
+                                                        @if (Array.IndexOf(item.BranchTree.ToString().Split(','), y.id) >= 0)
+                                                        {
+                                                            <input type="checkbox" id="select" value="@y.BranchName" name="@y.id" checked />
+                                                        }
+                                                        else
+                                                        {
+                                                            <input type="checkbox"  id="select" value="@y.BranchName" name="@y.id" />
+                                                        }
+
+                                                        @Html.DisplayFor(modelItem => y.BranchName)
+                                                    </span>
+                                                    <ul>
+                                                        @foreach (var z in Model)
+                                                        {
+                                                            if (z.parent_level == y.id)
+                                                            {
+                                                                <li style="margin-left:50px;">
+                                                                    <span>
+                                                                        <i class="icon-minus2"></i>
+                                                                        @if (Array.IndexOf(item.BranchTree.ToString().Split(','), z.id) >= 0)
+                                                                        {
+                                                                            <input type="checkbox" id="select" value="@z.BranchName" name="@z.id" checked />
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <input type="checkbox" id="select" value="@z.BranchName" name="@z.id" />
+                                                                        }
+
+                                                                        @Html.DisplayFor(modelItem => z.BranchName)
+                                                                    </span>
+                                                                    <ul>
+                                                                        @foreach (var x in Model)
+                                                                        {
+                                                                            if (x.parent_level == z.id)
+                                                                            {
+                                                                        <li style="margin-left:30px;">
+                                                                            <span>
+                                                                                <i class="icon-minus2"></i>
+                                                                                @if (Array.IndexOf(item.BranchTree.ToString().Split(','), x.id) >= 0)
+                                                                                {
+                                                                                    <input type="checkbox" id="select" value="@x.BranchName" name="@x.id" checked />
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    <input type="checkbox" id="select" value="@x.BranchName" name="@x.id" />
+                                                                                }
+
+                                                                                @Html.DisplayFor(modelItem => x.BranchName)
+                                                                            </span>
+
+                                                                            <ul>
+                                                                                @foreach (var p in Model)
+                                                                                {
+                                                                                    if (p.parent_level == x.id)
+                                                                                    {
+                                                                                        <li style="margin-left:30px;">
+                                                                                            <span>
+                                                                                                <i class="icon-minus2"></i>
+                                                                                                @if (Array.IndexOf(item.BranchTree.ToString().Split(','), p.id) >= 0)
+                                                                                                {
+                                                                                                    <input type="checkbox" id="select" value="@p.BranchName" name="@p.id" checked />
+                                                                                                }
+                                                                                                else
+                                                                                                {
+                                                                                                    <input type="checkbox" id="select" value="@p.BranchName" name="@p.id" />
+                                                                                                }
+
+                                                                                                @Html.DisplayFor(modelItem => p.BranchName)
+                                                                                            </span>
+                                                                                        </li>
+                                                                                    }
+                                                                                }
+                                                                            </ul>
+                                                                        </li>
+                                                                            }
+                                                                        }
+                                                                    </ul>
+
+                                                                </li>
+                                                            }
+                                                        }
+                                                    </ul>
+                                                </li>
+                                            }
+                                        }
+                                    </ul>
+                                </li>
+                            }
+                        </ul>
+	
+					</div>
+            }
+ 	    i = i + 1;
+      }
+				</div>
+     <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+          @* <input type="button" name="checkAll" id="checkAll" class="btn bg-indigo-400" value="checkAll" onclick="CheckAll()" />
+            <input type="button" name="uncheckAll" id="uncheckAll"  class="btn bg-indigo-400" value="uncheckAll" onclick="UnCheckAll()" />
+            <input type="button" name="expand" id="expand" value="Expand" class="btn bg-indigo-400" onclick="ExpandTree()" />
+            <input type="button" name="collapse" id="collapse" value="collapse" class="btn bg-indigo-400" onclick="CollapseTree()" />*@
+              @Html.ActionLink("Back to List", "RoleGroupList", "Role",null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+
+         <button type="submit" id="btnCreate" onclick="Send()" value="Save" class="btn bg-indigo-400"><i class="icon-checkmark3 mr-2"></i>Submit</button>
+        </div>
+
+  @section scripts {
+        @Scripts.Render("~/bundles/jqueryval")
+        <script type="text/javascript">
+
+            //$(function () {
+            //    $("#select").click(function () {
+            //        if ($("#select").prop('checked')) {
+            //            {
+            //                $(this).prop('checked', true);
+            //                //var id = $(this).attr('name')
+            //                //var value = $(this).attr('value')
+            //                ////alert(value);
+            //                //SetAccess(id,value,1);
+            //            }
+            //        }
+            //        else {
+            //            $(this).prop('checked', false);
+            //        }
+            //    });
+            //});
+
+            function ExpandTree() {
+                $(".tree-child li>ul").css('display', 'block');
+            }
+
+            function CollapseTree() {
+                $(".tree-child li>ul").css('display', 'none');
+            }
+
+            $(document).ready(function () {
+                //$(".tree-child li>ul").css('display', 'none');
+
+              @*   $('[data-toggle="popover"]').popover({
+
+                title: setData,
+                html: true,
+                placement: 'right',
+                container: 'body'
+            });
+
+            function setData(id) {
+                var set_data = '';
+                var element = $(this);
+                var id = element.attr("id");
+                $.ajax({
+                    url: '@Url.Action("EmployeePerformanceEvalInfo", "EmployeePerformanceEval")',
+                    methos: "post",
+                    async: false,
+                    data: { id: id },
+                    success: function (data) {
+                        set_data = data;
+                    }
+
+                });
+                return set_data;
+            }*@
+          });
+
+
+            //var main_check = document.getElementById("checkname");
+            //var all_check = document.getElementsByName('all[]');
+
+            //main_check.onchange = checkAll;
+
+            //for (var i = 0; i < all_check.length; i++) {
+            //    all_check[i].onchange = childChanged;
+            //}
+
+            //function checkAll() {
+            //    for (var i = 0; i < all_check.length; i++) {
+            //        all_check[i].checked = main_check.checked;
+            //    }
+            //}
+
+            //function childChanged() {
+            //    if (!this.checked) {
+            //        main_check.checked = false;
+            //        return;
+            //    }
+
+            //    // Check if main checkbox should be checked
+            //    for (var i = 0; i < all_check.length; i++) {
+            //        if (!all_check[i].checked) return;
+            //    }
+
+            //    main_check.checked = true;
+            //}
+
+            ////$.fn.hummingbird.defaults.collapsedSymbol = "fa-arrow-circle-o-right";
+            ////$.fn.hummingbird.defaults.expandedSymbol = "fa-arrow-circle-o-down";
+            ////$.fn.hummingbird.defaults.checkDoubles = true;
+            //$("#treeview").hummingbird();
+
+            //$("#treeview").hummingbird("checkAll");
+
+
+            ////function CheckAllH() {
+            ////    $("#treeview").hummingbird("checkAll");
+            ////}
+            ////$("#checkAll").click(function () {
+            ////    $("#treeview").hummingbird("checkAll");
+            ////});
+            //$("#uncheckAll").click(function () {
+            //    $("#treeview").hummingbird("uncheckAll");
+            //});
+            //$("#collapseAll").click(function () {
+            //    $("#treeview").hummingbird("collapseAll");
+            //});
+            //$("#checkNode").click(function () {
+            //    $("#treeview").hummingbird("checkNode", { attr: "id", name: "node-0-2-2", expandParents: false });
+            //});
+
+            ////$("#treeview").on("nodeChecked", function () {
+            ////    // do something
+            ////    alert("Node Checked");
+            ////});
+
+            ////$("#treeview").on("nodeUnchecked", function () {
+            ////    alert("Node Unchecked");
+            //// });
+
+
+            $('li :checkbox').on('click', function (event) {
+                var $chk = $(this),
+                    $li = $chk.closest('li'),
+                    $ul, $parent;
+                if ($li.has('ul')) {
+                    $li.find(':checkbox').not(this).prop('checked', this.checked)
+                }
+                do {
+                    $ul = $li.parent();
+                    $parent = $ul.siblings(':checkbox');
+                    if ($chk.is(':checked')) {
+                        $parent.prop('checked', $ul.has(':checkbox:not(:checked)').length == 0)
+                    } else {
+                        $parent.prop('checked', false)
+                    }
+                    $chk = $parent;
+                    $li = $chk.closest('li');
+                } while ($ul.is(':not(.someclass)'));
+                event.stopPropagation();
+            });
+
+            $('span').on('click', function () {
+                $(this).next('ul').slideToggle();
+                if ($(this).find('i').hasClass("icon-minus2"))
+                {
+                    $(this).find('i').removeClass("icon-minus2");
+                    $(this).find('i').addClass("icon-plus2");
+                }
+            else
+                {
+                    $(this).find('i').removeClass("icon-plus2");
+                    $(this).find('i').addClass("icon-minus2");
+            }
+                
+            });
+
+            //function CheckAll() {
+            //    var items = document.getElementById("select");
+
+            //    for (var i = 0; i < items.length; i++) {
+            //        if (items[i].type == 'checkbox')
+            //            items[i].checked = true;
+            //    }
+            //    //$("#checkAll").click(function () {
+            //    //    $('input:checkbox').not(this).prop('checked', this.checked);
+            //    //});
+            //}
+
+            function CheckAll() {
+                $("#checkboxes").each(function () {
+                    $(this).find("input").prop('checked', true);
+                });
+            }
+
+            function UnCheckAll() {
+                $("#checkboxes").each(function () {
+                    $(this).find("input").prop('checked', false);
+                });
+            }
+
+
+
+            //$(function () {
+            //    $('li').has('ul').click(function (event) {
+            //        if (this == event.target) {
+            //            $(this).toggleClass('open');
+            //            $(this).children('ul').toggle();
+            //            if ($(this).siblings().hasClass('open')) {
+            //                $(this).siblings().addClass('closed').removeClass('open').children('ul').hide();
+            //            }
+            //        }
+            //    }).addClass('closed').children('ul').hide();
+            //});
+
+
+
+
+
+            function Send() {
+                var selected = "";
+                var selected1 = "";
+                $('#checkboxes input:checked').each(function () {
+                    // selected.push($(this).attr('name'));
+                    selected = selected + $(this).attr('name') + ",";
+                    //selected = selected + $(this).attr('value') + ",";
+                });
+
+                if (selected != "") {
+                    SetAccess(selected);
+                }
+                else {
+                    SetAccess(selected);
+                    bootbox.alert({
+                        title: 'Division List',
+                        message: 'No Divisions exists.'
+                    });
+                }
+
+                function SetAccess(selected) {
+                    var Id = document.getElementById("Id").value;
+                    var role_id = document.getElementById("role_id").value;
+                    var data = { 'selected': selected, 'Id': Id, 'role_id': role_id };
+                    jQuery.ajax({
+                        url: '@Url.Action("UpdateAccessTree", "AccessTree")',
+                type: 'POST',
+                dataType: "json",
+                data: data,
+                success: function (result) {
+                    @if (true ) {
+
+           @: new Noty({
+                                                             @:     text: 'Updated Successfully',
+                                                             @:     type: 'success'
+           @:}).show();
+        }
+                }
+            });
+        }
+
+    }
+        </script>
+
+    }

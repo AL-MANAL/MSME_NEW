@@ -164,7 +164,7 @@ namespace ISOStd.Controllers
                         TrainingEffectivenessModels objTraining = new TrainingEffectivenessModels
                         {
                             id_training_evalution = dsTraining.Tables[0].Rows[i]["id_training_evalution"].ToString(),
-                            report_no = objModel.GetTrainingReportNoById(dsTraining.Tables[0].Rows[i]["report_no"].ToString()),
+                            report_no = (dsTraining.Tables[0].Rows[i]["report_no"].ToString()),
                             perf_monitor_period = objGlobaldata.GetDropdownitemById(dsTraining.Tables[0].Rows[i]["perf_monitor_period"].ToString()),
                             emp_name = objGlobaldata.GetEmpHrNameById(dsTraining.Tables[0].Rows[i]["emp_name"].ToString()),
                             logged_by = objGlobaldata.GetEmpHrNameById(dsTraining.Tables[0].Rows[i]["logged_by"].ToString()),
@@ -236,7 +236,7 @@ namespace ISOStd.Controllers
                         TrainingEffectivenessModels objTraining = new TrainingEffectivenessModels
                         {
                             id_training_evalution = dsTraining.Tables[0].Rows[i]["id_training_evalution"].ToString(),
-                            report_no = objModel.GetTrainingReportNoById(dsTraining.Tables[0].Rows[i]["report_no"].ToString()),
+                            report_no = (dsTraining.Tables[0].Rows[i]["report_no"].ToString()),
                             perf_monitor_period = objGlobaldata.GetDropdownitemById(dsTraining.Tables[0].Rows[i]["perf_monitor_period"].ToString()),
                             emp_name = objGlobaldata.GetEmpHrNameById(dsTraining.Tables[0].Rows[i]["emp_name"].ToString()),
                             logged_by = objGlobaldata.GetEmpHrNameById(dsTraining.Tables[0].Rows[i]["logged_by"].ToString()),
@@ -292,7 +292,7 @@ namespace ISOStd.Controllers
                         objModel = new TrainingEffectivenessModels
                         {
                             id_training_evalution = dsTraining.Tables[0].Rows[0]["id_training_evalution"].ToString(),
-                            report_no = objModel.GetTrainingReportNoById(dsTraining.Tables[0].Rows[0]["report_no"].ToString()),
+                            report_no = (dsTraining.Tables[0].Rows[0]["report_no"].ToString()),
                             perf_monitor_period = /*objModel.GetPefpMonitoringPeriodById*/(dsTraining.Tables[0].Rows[0]["perf_monitor_period"].ToString()),
                             emp_name = /*objGlobaldata.GetEmpHrNameById*/(dsTraining.Tables[0].Rows[0]["emp_name"].ToString()),
                             upload = dsTraining.Tables[0].Rows[0]["upload"].ToString(),
@@ -340,7 +340,8 @@ namespace ISOStd.Controllers
                         ViewBag.SurveyQuestions = objSurvey.GetSurveyTypeListbox("Training Effectiveness Survey");
                         ViewBag.SurveyRating = objSurvey.GetSurveyRating(objSurvey.getSurveyIDByName("Training Effectiveness Survey"));
                         ViewBag.YesNo = objGlobaldata.GetConstantValue("YesNo");
-                        ViewBag.EmpList = objModel.GetTainingEmpList(dsTraining.Tables[0].Rows[0]["report_no"].ToString());
+                        ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
+                        //ViewBag.EmpList = objModel.GetTainingEmpList(dsTraining.Tables[0].Rows[0]["report_no"].ToString());
                         ViewBag.PerfPeriod = objGlobaldata.GetDropdownList("Performance Monitoring Period");
                         ViewBag.ReportNo = objModel.GetTrainingReportNoList();
                         ViewBag.PlannedObjective = objGlobaldata.GetDropdownList("Training Planned Objectives");
@@ -486,7 +487,7 @@ namespace ISOStd.Controllers
                         objModel = new TrainingEffectivenessModels
                         {
                             id_training_evalution = dsTraining.Tables[0].Rows[0]["id_training_evalution"].ToString(),
-                            report_no = objModel.GetTrainingReportNoById(dsTraining.Tables[0].Rows[0]["report_no"].ToString()),
+                            report_no = (dsTraining.Tables[0].Rows[0]["report_no"].ToString()),
                             perf_monitor_period = objGlobaldata.GetDropdownitemById(dsTraining.Tables[0].Rows[0]["perf_monitor_period"].ToString()),
                             emp_name = objGlobaldata.GetEmpHrNameById(dsTraining.Tables[0].Rows[0]["emp_name"].ToString()),
                             upload = dsTraining.Tables[0].Rows[0]["upload"].ToString(),
@@ -494,12 +495,31 @@ namespace ISOStd.Controllers
                             emp_perf_improved = dsTraining.Tables[0].Rows[0]["emp_perf_improved"].ToString(),
                             action_taken = (dsTraining.Tables[0].Rows[0]["action_taken"].ToString()),
                             planned_objective = objGlobaldata.GetDropdownitemById(dsTraining.Tables[0].Rows[0]["planned_objective"].ToString()),
-                            Training_Topic = objModel.GetTrainingTopicByReportNo(dsTraining.Tables[0].Rows[0]["report_no"].ToString()),
-                            Sourceof_Training = TrainingModel.GetTrainingSourceNameById(objModel.GetSorceofTrainingByReportNo(dsTraining.Tables[0].Rows[0]["report_no"].ToString())),
+                           
                             //Trainer_Name =/* objModel.GetTrainingReportNoById*/(dsTraining.Tables[0].Rows[0]["report_no"].ToString()),
                             method_eval = objGlobaldata.GetDropdownitemById(dsTraining.Tables[0].Rows[0]["method_eval"].ToString()),
                             further_training = (dsTraining.Tables[0].Rows[0]["further_training"].ToString()),
                         };
+                        string sql = "select Training_Topic,Sourceof_Training from t_trainings where report_no= '" + objModel.report_no + "'";
+                        DataSet dsData = objGlobaldata.Getdetails(sql);
+                        if (dsData.Tables.Count > 0 && dsData.Tables[0].Rows.Count > 0)
+                        {
+
+                            objModel.Training_Topic = objGlobaldata.GetTrainingTopicById(dsData.Tables[0].Rows[0]["Training_Topic"].ToString());
+                            objModel.Sourceof_Training = objGlobaldata.GetDropdownitemById(dsData.Tables[0].Rows[0]["Sourceof_Training"].ToString());
+                        }
+                        else
+                        {
+                            sql = "select topic,source_id from t_training_plan where ref_no= '" + objModel.report_no + "'";
+                            dsData = objGlobaldata.Getdetails(sql);
+                            if (dsData.Tables.Count > 0 && dsData.Tables[0].Rows.Count > 0)
+                            {
+
+                                objModel.Training_Topic = objGlobaldata.GetTrainingTopicById(dsData.Tables[0].Rows[0]["topic"].ToString());
+                                objModel.Sourceof_Training = objGlobaldata.GetDropdownitemById(dsData.Tables[0].Rows[0]["source_id"].ToString());
+                            }
+                        }
+
 
                         //DateTime dtValue;
                         //if (DateTime.TryParse(dsSupplier.Tables[0].Rows[0]["evalu_date"].ToString(), out dtValue))
@@ -575,7 +595,7 @@ namespace ISOStd.Controllers
                     objModel = new TrainingEffectivenessModels
                     {
                         id_training_evalution = dsTraining.Tables[0].Rows[0]["id_training_evalution"].ToString(),
-                        report_no = objModel.GetTrainingReportNoById(dsTraining.Tables[0].Rows[0]["report_no"].ToString()),
+                        report_no = (dsTraining.Tables[0].Rows[0]["report_no"].ToString()),
                         perf_monitor_period = objGlobaldata.GetDropdownitemById(dsTraining.Tables[0].Rows[0]["perf_monitor_period"].ToString()),
                         emp_name = objGlobaldata.GetEmpHrNameById(dsTraining.Tables[0].Rows[0]["emp_name"].ToString()),
                         upload = dsTraining.Tables[0].Rows[0]["upload"].ToString(),
@@ -653,7 +673,7 @@ namespace ISOStd.Controllers
                         objModel = new TrainingEffectivenessModels
                         {
                             id_training_evalution = dsTraining.Tables[0].Rows[0]["id_training_evalution"].ToString(),
-                            report_no = objModel.GetTrainingReportNoById(dsTraining.Tables[0].Rows[0]["report_no"].ToString()),
+                            report_no = (dsTraining.Tables[0].Rows[0]["report_no"].ToString()),
                             perf_monitor_period = objGlobaldata.GetDropdownitemById(dsTraining.Tables[0].Rows[0]["perf_monitor_period"].ToString()),
                             emp_name = objGlobaldata.GetEmpHrNameById(dsTraining.Tables[0].Rows[0]["emp_name"].ToString()),
                             upload = dsTraining.Tables[0].Rows[0]["upload"].ToString(),
@@ -661,10 +681,29 @@ namespace ISOStd.Controllers
                             emp_perf_improved = dsTraining.Tables[0].Rows[0]["emp_perf_improved"].ToString(),
                             action_taken = (dsTraining.Tables[0].Rows[0]["action_taken"].ToString()),
                             planned_objective = objGlobaldata.GetDropdownitemById(dsTraining.Tables[0].Rows[0]["planned_objective"].ToString()),
-                            Training_Topic = objModel.GetTrainingTopicByReportNo(dsTraining.Tables[0].Rows[0]["report_no"].ToString()),
-                            Sourceof_Training = TrainingModel.GetTrainingSourceNameById(objModel.GetSorceofTrainingByReportNo(dsTraining.Tables[0].Rows[0]["report_no"].ToString())),
+                            //Training_Topic = objModel.GetTrainingTopicByReportNo(dsTraining.Tables[0].Rows[0]["report_no"].ToString()),
+                            //Sourceof_Training = TrainingModel.GetTrainingSourceNameById(objModel.GetSorceofTrainingByReportNo(dsTraining.Tables[0].Rows[0]["report_no"].ToString())),
                             //Trainer_Name =/* objModel.GetTrainingReportNoById*/(dsTraining.Tables[0].Rows[0]["report_no"].ToString()),
                         };
+                        string sql = "select Training_Topic,Sourceof_Training from t_trainings where report_no= '" + objModel.report_no + "'";
+                        DataSet dsData = objGlobaldata.Getdetails(sql);
+                        if (dsData.Tables.Count > 0 && dsData.Tables[0].Rows.Count > 0)
+                        {
+
+                            objModel.Training_Topic = objGlobaldata.GetTrainingTopicById(dsData.Tables[0].Rows[0]["Training_Topic"].ToString());
+                            objModel.Sourceof_Training = objGlobaldata.GetDropdownitemById(dsData.Tables[0].Rows[0]["Sourceof_Training"].ToString());
+                        }
+                        else
+                        {
+                            sql = "select topic,source_id from t_training_plan where ref_no= '" + objModel.report_no + "'";
+                            dsData = objGlobaldata.Getdetails(sql);
+                            if (dsData.Tables.Count > 0 && dsData.Tables[0].Rows.Count > 0)
+                            {
+
+                                objModel.Training_Topic = objGlobaldata.GetTrainingTopicById(dsData.Tables[0].Rows[0]["topic"].ToString());
+                                objModel.Sourceof_Training = objGlobaldata.GetDropdownitemById(dsData.Tables[0].Rows[0]["source_id"].ToString());
+                            }
+                        }
 
                         sSqlstmt = "SELECT id_train_trans, id_training_evalution, SQId, SQ_OptionsId FROM t_trainings_evalution_trans where id_training_evalution='"
                              + sid_training_evalution + "'";
@@ -725,10 +764,10 @@ namespace ISOStd.Controllers
         public JsonResult FunGetTrainingDetails(string report_no)
         {
             TrainingsModels objModel = new TrainingsModels();
-
+           
             if (report_no != "")
             {
-                string sql = "select Training_Topic,Sourceof_Training,Trainer_Name,Ext_Trainer_Name from t_trainings where TrainingID= '" + report_no + "' and active=1";
+                string sql = "select Training_Topic,Sourceof_Training,Trainer_Name,Ext_Trainer_Name from t_trainings where report_no= '" + report_no + "' and active=1";
                 DataSet dsData = objGlobaldata.Getdetails(sql);
                 if (dsData.Tables.Count > 0 && dsData.Tables[0].Rows.Count > 0)
                 {
@@ -739,6 +778,24 @@ namespace ISOStd.Controllers
                         Trainer_Name = objGlobaldata.GetEmpHrNameById(dsData.Tables[0].Rows[0]["Trainer_Name"].ToString()),
                         Ext_Trainer_Name = dsData.Tables[0].Rows[0]["Ext_Trainer_Name"].ToString(),
                     };
+                }
+                else
+                {
+                    sql = "select topic,source_id,trainer_name,ext_entity from t_training_plan where ref_no= '" + report_no + "'";
+                    dsData = objGlobaldata.Getdetails(sql);
+                    if (dsData.Tables.Count > 0 && dsData.Tables[0].Rows.Count > 0)
+                    {
+                        objModel = new TrainingsModels()
+                        {
+                            Training_Topic = objGlobaldata.GetTrainingTopicById(dsData.Tables[0].Rows[0]["topic"].ToString()),
+                            Sourceof_Training = objGlobaldata.GetDropdownitemById(dsData.Tables[0].Rows[0]["source_id"].ToString()),
+                            Trainer_Name = objGlobaldata.GetEmpHrNameById(dsData.Tables[0].Rows[0]["trainer_name"].ToString()),
+                            Ext_Trainer_Name = (dsData.Tables[0].Rows[0]["ext_entity"].ToString()),
+
+                        };
+                    }
+                   
+                   
                 }
             }
             return Json(objModel);

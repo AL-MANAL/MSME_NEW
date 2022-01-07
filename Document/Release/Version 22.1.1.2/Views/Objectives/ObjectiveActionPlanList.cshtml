@@ -1,0 +1,473 @@
+﻿@model IEnumerable<ISOStd.Models.ObjectivesModels>
+
+@{
+    ViewBag.Title = "ObjectiveActionPlanList";
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+}
+
+
+@section featured {
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item active"> Home</span>
+                    </a>
+
+                    <a class="breadcrumb-item" onclick="HyperLinkProgressIconFunction();" href='@Url.Action("ObjectivesDetails", "Objectives", new { Objectives_Id = ViewBag.Objectives_Id,View=ViewBag.View } )'>
+                        <span class="breadcrumb-item active"> Objective Details</span>
+                    </a>
+                    <span class="breadcrumb-item active">Objective Action Plan</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+}
+
+
+<style>
+    .hidden {
+        display: none !important;
+    }
+</style>
+
+<div class="card">
+    <div class="card-header header-elements-inline bg-primary">
+        <h5 class="card-title">Objective Action Plan</h5>
+        <div class="header-elements">
+            <div class="list-icons">
+                <a class="list-icons-item" data-action="collapse"></a>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body">
+
+        @if (Obj.GetCurrentUserSession().Objectives.Contains("3"))
+        {
+            <a onclick="HyperLinkProgressIconFunction();" class="btn btn-outline bg-orange text-orange border-orange btn-ladda btn-ladda-progress ladda-button" data-style="radius" href='@Url.Action("AddObjectiveActionPlan", "Objectives",new { ObjectivesTrans_Id = ViewBag.ObjectivesTrans_Id , View = ViewBag.View} )' title="Add New">
+                <span class="ladda-label">Add New</span>
+                <span class="ladda-spinner"></span>
+            </a>
+        }
+        @Html.ActionLink("Back to List", "ObjectivesDetails", new { Objectives_Id = ViewBag.Objectives_Id, View = ViewBag.View }, new { @class = "btn btn-outline bg-orange text-orange border-orange", onclick = "HyperLinkProgressIconFunction()" })
+
+    </div>
+
+    <div class="container-fluid">
+        <input type="hidden" id="view" name="view" value="@ViewBag.View" />
+        <table class="table table-lg">
+            <tbody>
+                <tr class="row">
+                    @*<td class="col-xs-3 col-md-2">
+                            Obj Reference
+                        </td>
+                        <td class="col">
+                            <input class="form-control" type="text" id="Obj_Ref" name="Obj_Ref" value="@ViewBag.Obj_ref" disabled />
+                        </td>*@
+                    <td class="col-xs-3 col-md-2">
+                        Objective Description
+                    </td>
+                    <td class="col">
+                        <textarea id="Objectives_val" name="Objectives_val" class="form-control" readonly>@ViewBag.Objectives_val </textarea>
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        Target Value
+                    </td>
+                    <td class="col">
+                        <input type="text" id="Obj_Target" name="Obj_Target" value="@ViewBag.Obj_Target" class="form-control" readonly />
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        Baseline Value
+                    </td>
+                    <td class="col">
+                        <input type="text" id="Base_Line_Value" name="Base_Line_Value" value="@ViewBag.Base_Line_Value" class="form-control" readonly />
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        Monitoring Mechanism
+                    </td>
+                    <td class="col">
+                        <input type="text" id="Monitoring_Mechanism" name="Monitoring_Mechanism" value="@ViewBag.Monitoring_Mechanism" class="form-control" readonly />
+
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        Target Date
+                    </td>
+                    <td class="col">
+                        <input type="text" id="Target_Date" name="Target_Date" value="@ViewBag.Target_Date" class="form-control" readonly />
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <br />
+
+    <h2 class="bg-dark pl-sm-2"> Objective Action Plan List</h2>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped table-hover datatable-responsive" id="table1">
+            <thead>
+                <tr class="bg-blue">
+                    <th>
+                        Action No
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.begin_date)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.actionplan)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.resource)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.end_date)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.resp_person)
+                    </th>
+                    <th class="not-export-column">
+                        @Html.DisplayNameFor(model => model.upload)
+                    </th>
+                    <th class="not-export-column">Edit</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Count() > 0)
+                {
+                    int i = 0;
+                    foreach (var item in Model)
+                    {
+                        i = i + 1;
+                <tr>
+                    <td>
+                        @i.ToString()
+                    </td>
+                    <td>
+                        @if (item.begin_date != null && item.begin_date > Convert.ToDateTime("01/01/0001"))
+                        {
+                            @Html.Label(item.begin_date.ToString("dd/MM/yyyy"))
+                        }
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.actionplan)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.resource)
+                    </td>
+                    <td>
+                        @if (item.end_date != null && item.end_date > Convert.ToDateTime("01/01/0001"))
+                        {
+                            @Html.Label(item.end_date.ToString("dd/MM/yyyy"))
+                        }
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.resp_person)
+                    </td>
+                    <td>
+                        @*@if (item.upload != "")
+            {
+                <a href='@Url.Action("DisplayDocument", "Reports", new { Document = item.upload })' target="_blank">Preview</a>
+            }
+            else
+            {
+                <span class="badge badge-danger">No File was Uploaded</span>
+            }*@
+                        @if (item.upload != null && item.upload != "" && item.upload.Length > 0)
+                        {
+                            foreach (var docs in item.upload.Trim(',').Split(','))
+                            {
+                                <p style="margin: 0px;">
+
+                                    <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" style="color: orange;">
+                                        Preview
+                                    </a>
+                                </p>
+                            }
+                        }
+                        else
+                        {
+                            <span class="badge badge-danger">No File was Uploaded</span>
+                        }
+                    </td>
+                    <td>
+                        <a href='@Url.Action("ObjectiveActionPlanEdit", "Objectives", new { id_objective_action = item.id_objective_action , View= ViewBag.View })' title="Edit Objective Plan details"
+                           onclick="HyperLinkProgressIconFunction()">
+                            <span class="badge badge-info">Edit</span>
+                        </a>
+                    </td>
+                </tr>
+                    }
+                }
+
+            </tbody>
+        </table>
+    </div>
+
+</div>
+@section scripts {
+
+    <script type="text/javascript">
+
+       $(document).ready(function () {
+
+        @if (TempData["alertdata"] != null ) {
+
+           @: new Noty({
+           @:     text: '@TempData["alertdata"]',
+           @:     type: 'error'
+           @: }).show();
+        }
+
+        @if (@TempData["Successdata"] != null ) {
+
+        @:    new Noty({
+         @:       text: '@TempData["Successdata"]',
+         @:       type: 'success'
+         @:   }).show();
+        }
+
+            });
+
+    //zzz----
+
+
+                    var table1 = function () {
+                var ShowEdit = @(Obj.GetCurrentUserSession().Objectives.Contains("3") ? "true" : "false");
+                var ShowDownld = @(Obj.GetCurrentUserSession().Objectives.Contains("4") ? "true" : "false");
+
+                        // Basic Datatable examples
+                        var _componentDatatableBasic = function () {
+                            if (!$().DataTable) {
+                                console.warn('Warning - datatables.min.js is not loaded.');
+                                return;
+                            }
+
+                            //Setting datatable defaults
+                            $.extend($.fn.dataTable.defaults, {
+                                autoWidth: false,
+                                responsive: true,
+                                columnDefs: [{
+                                    orderable: false,
+                                    width: 100,
+                                    targets: [3,6]
+                                }, {
+                                        'targets': [3],
+                                        'visible': ShowDownld
+                                    }, {
+                                        'targets': [6],
+                                        'visible': ShowEdit
+                                    }],
+
+                                colReorder: false,
+                                dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                                //dom: 'lBfrtip',
+                                language: {
+                                    search: '<span>Filter:</span> _INPUT_',
+                                    searchPlaceholder: 'Type to filter...',
+                                    lengthMenu: '<span>Show:</span> _MENU_',
+                                    paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                                }
+                            });
+
+                var myClass = "";
+                var Delclass= @(Obj.GetCurrentUserSession().Objectives.Contains("4") ? "true" : "false");
+                if (Delclass == false) { myClass = 'hidden'  };
+                            var table = $('#table1').DataTable({
+                                lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                                colReorder: {
+                                    fixedColumnsLeft: 1
+                                },
+                                stateSave: true,
+                                stateSaveParams: function (settings, data) {
+                                    for (var i = 0, ien = data.columns.length; i < ien; i++) {
+                                        delete data.columns[i].visible;
+                                        delete data.columns[i].search;
+                                    }
+                                },
+                                scrollY: '350px',
+                                scrollCollapse: true,
+                                keys: {
+                                    className: 'focus focus-success'
+                                },
+                                buttons: {
+                                    buttons: [
+                                        {
+                                            extend: 'copyHtml5',
+                                            className: myClass,
+                                            //className: 'btn btn-light',
+                                            title: 'Objective Plan Data export',
+                                            exportOptions: {
+                                                columns: ':visible :not(.not-export-column)'
+                                            },
+                                        },
+                                        {
+                                            extend: 'excelHtml5',
+                                            className: myClass,//className: 'btn btn-light',
+                                            title: 'Objective Plan Data export',
+                                            exportOptions: {
+                                                columns: ':visible :not(.not-export-column)'
+                                            },
+
+                                        },
+                                        {
+                                            extend: 'pdfHtml5',
+                                            className: myClass,//className: 'btn btn-light',
+                                            title: 'Objective Plan Data export',
+                                            exportOptions: {
+                                                columns: ':visible :not(.not-export-column)'
+                                            },
+                                        },
+                                        {
+                                            extend: 'csvHtml5',
+                                            className: myClass,//className: 'btn btn-light',
+                                            title: 'Objective Plan Data export',
+                                            exportOptions: {
+                                                columns: ':visible :not(.not-export-column)'
+                                            },
+                                        },
+                                        {
+                                            extend: 'print',
+                                            className: myClass,//className: 'btn btn-light',
+                                            title: 'Objective Plan Data export',
+                                            exportOptions: {
+                                                columns: ':visible :not(.not-export-column)'
+                                            },
+                                        },
+                                        {
+                                            extend: 'colvis',
+                                            text: '<i class="icon-three-bars"></i>',
+                                            className: 'btn bg-blue btn-icon dropdown-toggle',
+                                            columns: ':visible:not(.not-export-column)'
+                                        }
+                                    ]
+                                }
+
+                            });
+                            // Adjust columns on window resize
+                            setTimeout(function () {
+                                $(window).on('resize', function () {
+                                    table.columns.adjust();
+                                });
+                            }, 100);
+
+
+                            //Redraw table on click toggle. -------table.columns.adjust doesn't work properly upon calling after toggle (width increase/decrease = redraw table.).
+                            $('.sidebar-control').on('click', function () {
+
+                                setTimeout(function () {
+                                    //alert("gii");
+                                    table.columns.adjust().draw();
+                                    $("#table1").resize();
+                                }, 100);
+
+                            });
+                            //}
+
+                            $('#table1').on('page.dt', function () {
+                                //table.draw();
+                                //alert("zzz1");
+                                $("#table1").resize();
+
+                            });
+
+                            $('#table1').on('column-visibility.dt', function () {
+                                //table.draw();
+                                //alert("zzz2");
+                                $("#table1").resize();
+
+                            });
+
+                            $('#table1').on('order.dt', function () {
+                                //table.draw();
+                                //alert("zzz3");
+                                $("#table1").resize();
+
+                            });
+
+
+                            $('#table1').on('responsive-display.dt', function () {
+                                //table.draw();
+                                //alert("zzz4");
+                                $("#table1").resize();
+
+                            });
+
+
+                            $('#table1').on('responsive-resize.dt', function () {
+                                //table.draw();
+                                //alert("zzz4");
+                                $("#table1").resize();
+
+                            });
+                        };
+
+                        // Select2 for length menu styling
+                        var _componentSelect2 = function () {
+                            if (!$().select2) {
+                                console.warn('Warning - select2.min.js is not loaded.');
+                                return;
+                            }
+                            // Initialize
+                            $('.dataTables_length select').select2({
+                                minimumResultsForSearch: Infinity,
+                                dropdownAutoWidth: true,
+                                width: 'auto'
+                            });
+                        };
+
+
+                        //
+                        // Return objects assigned to module
+                        //
+
+                        return {
+                            init: function () {
+                                _componentDatatableBasic();
+                                _componentSelect2();
+                            }
+                        }
+                    }();
+
+
+                    // Initialize module
+                    // ------------------------------
+
+                    document.addEventListener('DOMContentLoaded', function () {
+                        table1.init();
+                    });
+    </script>
+
+}

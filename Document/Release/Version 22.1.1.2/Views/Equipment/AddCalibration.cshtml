@@ -1,0 +1,434 @@
+﻿@model ISOStd.Models.CalibrationModels
+
+@{
+    ViewBag.Title = "";
+}
+
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Home</span>
+                    </a>
+                    <a href="@Url.Action("CalibrationList", "Equipment", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Calibration</span>
+                    </a>
+                    <span class="breadcrumb-item active">Add Calibration</span>
+                </div>
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+}
+
+
+
+@using (Html.BeginForm("AddCalibration", "Equipment", FormMethod.Post,
+                     new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Add Calibration</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+
+                <table class="table table-lg">
+
+                    <tr class="row">
+
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Equipment_Id)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="Equipment_Id" name="Equipment_Id" onchange="GetDetails()" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.Equipmentnames != null)
+                                    {
+                                        foreach (var item in ViewBag.Equipmentnames)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                                <br />
+                                @Html.ValidationMessageFor(m => m.Equipment_Id)
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                Frequency of Calibration
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input type="text" class="form-control" id="Freq_of_calibration" name="Freq_of_calibration" readonly style="background-color:lightgray" />
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                Division
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input type="text" class="form-control" id="branch" name="branch" readonly style="background-color:lightgray" />
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                Department
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input type="text" class="form-control" id="Department" name="Department" readonly style="background-color:lightgray" />
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                       
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                Location
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input type="text" class="form-control" id="Location" name="Location" readonly style="background-color:lightgray" />
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.calibration_by)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.calibration_by, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.calibration_by)
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.method_of_calibration)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.method_of_calibration, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.method_of_calibration)
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.accuracy)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.accuracy, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.accuracy)
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Person_Responsible)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="Person_Responsible" name="Person_Responsible" required multiple>
+                                    @*<option value='' hidden>Select</option>*@
+                                    @if (ViewBag.EmpLists != null)
+                                    {
+                                        foreach (var item in ViewBag.EmpLists)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                                <br />
+                                @Html.ValidationMessageFor(m => m.Person_Responsible)
+                            </div>
+                        </td>
+
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.certificate_no)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.certificate_no, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.certificate_no)
+                            </div>
+                        </td>
+                       
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.calibration_report_ref)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input type="file" name="calibration_report_ref" id="calibration_report_ref" onchange="FileFormatValidation(this)" accept=".pdf,.xlsx,.xls,.doc,.docx,.image/*,.png,.jpeg,.jpg"  class="bootstrap-uploader" data-fouc multiple/>
+                               
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.calibration_certificate)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input type="file" name="calibration_certificate" id="calibration_certificate" onchange="FileFormatValidation(this)" accept=".pdf,.xlsx,.xls,.doc,.docx,.image/*,.png,.jpeg,.jpg" class="bootstrap-uploader" required data-fouc multiple/>
+                                <br />
+                                @Html.ValidationMessage("fileCert", "This feild is required")
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr class="row">
+                       
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.CalibrationDate)<text style="color:red;"> *</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input class="form-control" type="date" id="CalibrationDate" name="CalibrationDate" onchange="setDueDate()" required />
+                                <br />
+                                @Html.ValidationMessageFor(m => m.CalibrationDate)
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.due_date)<text style="color:red;"> *</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input class="form-control" type="date" id="due_date" name="due_date" required />
+                                <br />
+                                @Html.ValidationMessageFor(m => m.due_date)
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+
+                     
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.calibration_status)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="calibration_status" name="calibration_status" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.calibration_status != null)
+                                    {
+                                        foreach (var item in ViewBag.calibration_status)
+                                        {
+                                            <option value='@item'>@item</option>
+                                        }
+                                    }
+                                </select>
+                                <br />
+                                @Html.ValidationMessageFor(m => m.calibration_status)
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Remarks)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="Remarks" name="Remarks"></textarea>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr class="row">
+
+                        <td class="col-xs-3 col-md-2">
+
+                            @Html.LabelFor(model => model.NotificationPeriod)
+
+                        </td>
+                        <td class="col">
+                            <div class="form-group form-group-float">
+                                <select class="form-control select-search select2-hidden-accessible" id="NotificationPeriod" name="NotificationPeriod" data-fouc>
+                                    @if (ViewBag.NotificationPeriod != null)
+                                    {
+                                        foreach (var item in ViewBag.NotificationPeriod)
+                                        {
+                                            <option value='@item.Key'>@item.Value</option>
+                                        }
+                                    }
+                                </select>
+
+                            </div>
+                            <div class="form-group form-group-float">
+                                <input class="form-control" type="number" id="NotificationValue" name="NotificationValue"   />
+                                <span class="form-text text-muted"><code>(Alert on or before Target date)</code></span>
+                            </div>
+                        </td>
+                        @*<td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Ref_no)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.Ref_no, new { htmlAttributes = new { @class = "form-control" } })
+                            </div>
+                        </td>*@
+                    </tr>
+
+
+
+                </table>
+            </div>
+        </div>
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+            @Html.ActionLink("Back to List", "CalibrationList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+
+            <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Add</button>
+        </div>
+    </div>
+
+       
+        }
+
+@section Scripts {
+    <script>
+
+        function FileFormatValidation(file) {
+            var ext = file.value.split(".").pop().toLowerCase();
+            if ($.inArray(ext, ["doc", "pdf", "docx", "xls", "xlsx", , "png", "jpg", "jpeg"]) == -1) {
+                file.value = "";
+                alert("Invalid file format, please upload only doc, pdf, docx, xls, xlsx, png, jpeg, jpg format");
+            }
+        }
+
+        function setDueDate()
+        {
+            var Freq_of_calibration = document.getElementById("Freq_of_calibration").value;
+            var cal_date = document.getElementById("CalibrationDate").value;
+           
+            var dt = new Date(cal_date);
+            if (cal_date != "" && Freq_of_calibration != "")
+            {
+                if (Freq_of_calibration == "Annually")
+                {
+                    var cal_dates = new Date(cal_date);
+                    dt.setDate(cal_dates.getDate() + 364);
+                    document.getElementById("due_date").value = dt.toISOString().slice(0, 10);
+                }
+                if (Freq_of_calibration == "Monthly") {
+                    var cal_dates = new Date(cal_date);
+                    dt.setDate(cal_dates.getDate() + 29);
+                    document.getElementById("due_date").value = dt.toISOString().slice(0, 10);
+                }
+                if (Freq_of_calibration == "Periodical") {
+                    var cal_dates = new Date(cal_date);
+                    dt.setDate(cal_dates.getDate() + 1);
+                    document.getElementById("due_date").value = dt.toISOString().slice(0, 10);
+                }
+                if (Freq_of_calibration == "Quarterly") {
+                    var cal_dates = new Date(cal_date);
+                    dt.setDate(cal_dates.getDate() + 89);
+                    document.getElementById("due_date").value = dt.toISOString().slice(0, 10);
+                }
+                if (Freq_of_calibration == "Semi Annually") {
+                    var cal_dates = new Date(cal_date);
+                    dt.setDate(cal_dates.getDate() + 181);
+                    document.getElementById("due_date").value = dt.toISOString().slice(0, 10);
+                }
+            }
+        }
+
+        function GetDetails() {
+            var EquipmentId = $("#Equipment_Id").val();
+            if (EquipmentId != "" && EquipmentId != null) {
+                jQuery.ajax({
+                    url: '@Url.Action("FunGetEquipmentDetails", "Equipment")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'EquipmentId': EquipmentId },
+                    success: function (result) {
+                        if (result == "") {                            
+                            document.getElementById("branch").value = "";
+                            document.getElementById("Department").value = "";
+                            document.getElementById("Location").value = "";
+                        }
+                        else {
+                            document.getElementById("branch").value = result.branch;
+                            document.getElementById("Department").value = result.Department;
+                            document.getElementById("Location").value = result.location;
+                            document.getElementById("Freq_of_calibration").value = result.Freq_of_calibration;
+                        }
+                    }
+                });
+         }
+        }
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}
+

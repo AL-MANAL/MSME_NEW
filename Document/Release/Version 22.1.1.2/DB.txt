@@ -1,0 +1,142 @@
+"INSERT INTO `msme_new`.`sequence_generator` (`module_name`, `modifier`, `next_no`, `init_no`, `next_year`, `active`, `next_month`) VALUES ('Training Plan', 'TRGPLAN', '0', '1', '2023', '1', 'February');
+UPDATE `msme_new`.`sequence_generator` SET `active`='1' WHERE `seq_id`='75';
+"
+
+"ALTER TABLE `msme_new`.`t_training_plan` 
+ADD COLUMN `ref_no` VARCHAR(100) NULL AFTER `review_status`;"
+
+"if vmodname='Training Plan' then
+
+if vyearname!=vnextyear then
+update sequence_generator
+set next_no=next_no+init_no
+where module_name=vmodname;
+
+select next_no into vnextno from sequence_generator where module_name=vmodname;
+if vnextno < 10 then
+select concat('0',vnextno) into vnextno;
+end if;
+
+select month(now()) into vmonth;
+if vmonth < 10 then
+select concat('0',vmonth) into vmonth;
+end if;
+
+select concat(modifier,'-',brname,'-',vnextno) as ReportNO
+from sequence_generator where module_name=vmodname;
+
+
+else
+
+update sequence_generator
+set next_no=init_no,next_year=year(date_add(now(), interval 1 year))
+where module_name=vmodname;
+
+select concat(modifier,'-',brname,'-',vnextno) as ReportNO
+from sequence_generator where module_name=vmodname;
+
+end if;
+end if;"
+
+"ALTER TABLE `msme_new`.`risk_register` 
+ADD COLUMN `origin_risk` VARCHAR(100) NULL AFTER `apprv_comment`;"
+
+"CREATE TABLE `sequence_generator_trans` (
+  `seq_id` int(11) NOT NULL AUTO_INCREMENT,
+  `module_name` varchar(100) DEFAULT NULL,
+  `modifier` varchar(45) DEFAULT NULL,
+  `department` varchar(45) DEFAULT NULL,
+  `next_no` int(11) DEFAULT NULL,
+  `init_no` int(11) DEFAULT NULL,
+  `next_year` varchar(45) DEFAULT NULL,
+  `active` int(11) DEFAULT NULL,
+  `next_month` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`seq_id`)
+) ;"
+
+"INSERT INTO `msme_new`.`sequence_generator_trans` (`module_name`, `modifier`, `department`, `next_no`, `init_no`, `next_year`, `active`, `next_month`) VALUES ('OBJ', 'OBJ', 'HR & Admin', '0', '1', '2023', '1', 'February');
+INSERT INTO `msme_new`.`sequence_generator_trans` (`module_name`, `modifier`, `department`, `next_no`, `init_no`, `next_year`, `active`, `next_month`) VALUES ('OBJ', 'OBJ', 'Purchase and Store', '0', '1', '2023', '1', 'February');
+INSERT INTO `msme_new`.`sequence_generator_trans` (`module_name`, `modifier`, `department`, `next_no`, `init_no`, `next_year`, `active`, `next_month`) VALUES ('OBJ', 'OBJ', 'Design  and development', '0', '1', '2023', '1', 'February');
+INSERT INTO `msme_new`.`sequence_generator_trans` (`module_name`, `modifier`, `department`, `next_no`, `init_no`, `next_year`, `active`, `next_month`) VALUES ('OBJ', 'OBJ', 'Maintenance & Electrical', '0', '1', '2023', '1', 'February');
+INSERT INTO `msme_new`.`sequence_generator_trans` (`module_name`, `modifier`, `department`, `next_no`, `init_no`, `next_year`, `active`, `next_month`) VALUES ('OBJ', 'OBJ', 'Machine Shop', '0', '1', '2023', '1', 'February');
+INSERT INTO `msme_new`.`sequence_generator_trans` (`module_name`, `modifier`, `department`, `next_no`, `init_no`, `next_year`, `active`, `next_month`) VALUES ('OBJ', 'OBJ', 'PPC', '0', '1', '2023', '1', 'February');
+INSERT INTO `msme_new`.`sequence_generator_trans` (`module_name`, `modifier`, `department`, `next_no`, `init_no`, `next_year`, `active`, `next_month`) VALUES ('OBJ', 'OBJ', 'Marketing and Business Development', '0', '1', '2023', '1', 'February');
+INSERT INTO `msme_new`.`sequence_generator_trans` (`module_name`, `modifier`, `department`, `next_no`, `init_no`, `next_year`, `active`, `next_month`) VALUES ('OBJ', 'OBJ', 'CNC/VMC Shop', '0', '1', '2023', '1', 'February');
+INSERT INTO `msme_new`.`sequence_generator_trans` (`module_name`, `modifier`, `department`, `next_no`, `init_no`, `next_year`, `active`, `next_month`) VALUES ('OBJ', 'OBJ', 'Fabrication Shop', '0', '1', '2023', '1', 'February');
+INSERT INTO `msme_new`.`sequence_generator_trans` (`module_name`, `modifier`, `department`, `next_no`, `init_no`, `next_year`, `active`, `next_month`) VALUES ('OBJ', 'OBJ', 'Assembly shop', '0', '1', '2023', '1', 'February');
+INSERT INTO `msme_new`.`sequence_generator_trans` (`module_name`, `modifier`, `department`, `next_no`, `init_no`, `next_year`, `active`, `next_month`) VALUES ('OBJ', 'OBJ', 'Top Management', '0', '1', '2023', '1', 'February');
+INSERT INTO `msme_new`.`sequence_generator_trans` (`module_name`, `modifier`, `department`, `next_no`, `init_no`, `next_year`, `active`, `next_month`) VALUES ('OBJ', 'OBJ', 'MARKETING, DESIGN & QHSE', '0', '1', '2023', '1', 'February');
+INSERT INTO `msme_new`.`sequence_generator_trans` (`module_name`, `modifier`, `department`, `next_no`, `init_no`, `next_year`, `active`, `next_month`) VALUES ('OBJ', 'OBJ', 'Sub contract', '0', '1', '2023', '1', 'February');
+INSERT INTO `msme_new`.`sequence_generator_trans` (`module_name`, `modifier`, `department`, `next_no`, `init_no`, `next_year`, `active`, `next_month`) VALUES ('OBJ', 'OBJ', 'QA/QC', '0', '1', '2023', '1', 'February');
+"
+
+"CREATE DEFINER=`root`@`localhost` PROCEDURE `Get_next_no_trans`(IN vmodname varchar(50),IN vproject varchar(60),
+IN brname varchar(100),vempid varchar(45),vdept varchar(45))
+BEGIN
+declare vyearname varchar(45);
+declare vnextyear varchar(45);
+declare vmonthname varchar(45);
+declare vlogby varchar(10);
+declare vbranchname varchar(45);
+declare vmonno varchar(45);
+declare vmod varchar(45);
+declare vnextmonth varchar(45);
+declare vmonth varchar(45);
+declare vnextno varchar(45);
+declare divcode varchar(45);
+declare vdeptname varchar(45);
+declare vdivcode varchar(45);
+
+
+SET SQL_SAFE_UPDATES=0;
+
+select year(now()) into vyearname;
+select next_year into vnextyear from sequence_generator_trans where module_name=vmodname and department=vdept;
+
+select monthname(now()) into vmonthname;
+if month(now()) < 10 then
+select  concat('0',month(now())) into vmonno;
+else
+select  month(now()) into vmonno;
+end if;
+select next_month into vnextmonth from sequence_generator_trans where module_name=vmodname and department=vdept;
+select next_year into vnextyear from sequence_generator_trans where module_name=vmodname and department=vdept;
+
+
+
+SET SQL_SAFE_UPDATES=0;
+if vmodname='OBJ' then
+
+if vyearname!=vnextyear then
+update sequence_generator_trans
+set next_no=next_no+init_no
+where module_name=vmodname and department=vdept;
+
+select next_no into vnextno from sequence_generator_trans where module_name=vmodname and department=vdept;
+if vnextno < 10 then
+select concat('0',vnextno) into vnextno;
+end if;
+
+select month(now()) into vmonth;
+if vmonth < 10 then
+select concat('0',vmonth) into vmonth;
+end if;
+
+select concat(modifier,'-',brname,'-',year(NOW()),'-',vnextno) as ReportNO
+from sequence_generator_trans where module_name=vmodname and department=vdept;
+
+
+else
+
+update sequence_generator_trans
+set next_no=init_no,next_year=year(date_add(now(), interval 1 year))
+where module_name=vmodname and department=vdept;
+
+select concat(modifier,'-',brname,'-',year(NOW()),'-',vnextno) as ReportNO
+from sequence_generator_trans where module_name=vmodname and department=vdept;
+
+end if;
+end if;
+
+
+end"

@@ -1,0 +1,361 @@
+﻿@using PagedList;
+@using PagedList.Mvc;
+
+@model IPagedList<ISOStd.Models.EquipmentDetailModels>
+
+@{
+    ViewBag.Title = "EquipmentDetailModels";
+    
+}
+
+<div class="groupedassets margin10">
+    <span class="groupedassetshead margin10 onestphdcolor">Vehicle List</span>
+</div>
+    
+<div id="divmsg">
+    @if (TempData["alertdata"] != null)
+    {
+        <span class="errMsg" style="color: red;font-weight: bold;">@TempData["alertdata"]</span>
+    }
+    @if (TempData["Successdata"] != null)
+    {
+        <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+    }
+</div>
+    <br />
+
+    <div class="editor-field">
+       @using (Html.BeginForm("EquipmentDetailsList", "EquipmentCategory", FormMethod.Post, new { id = "form1", name = "form1", style = "width:25%" }))
+       {
+             @Html.TextBox("SearchText", (string)ViewBag.SearchText, new { placeholder = "Search by Regno or make or model", style = "width: 30%; " })
+                <button type="submit" class="btn btn-info" onclick="ProgressIconFunction('#form1')">
+                    <span class="glyphicon glyphicon-search"></span> Search
+                </button>
+            <span style="margin-left:20px"> @Html.ActionLink("Add New", "AddVehicleDetails", null, new { @class = "ActionLink",onclick = "HyperLinkProgressIconFunction()" })</span>
+         <span style="margin-left: 20px"> <img src="@Url.Content("~/Images/excel.png")" title="Export as Excel" style="cursor:pointer; " id="downloadLink" />Download</span>
+
+       }  
+
+   </div>   
+
+<br />
+
+<br />
+
+    @Html.PagedListPager(Model, page => Url.Action("EquipmentDetailsList",
+    new
+    {
+        page,
+        SearchText = Request.QueryString["SearchText"],
+
+    }),
+    new PagedListRenderOptions() { Display = PagedListDisplayMode.IfNeeded, DisplayPageCountAndCurrentLocation = true })
+
+
+<div id="content">
+    <table id="table1">
+        <thead>
+            <tr>
+                 <th style="width:60px; min-width:60px; max-width:60px;">Action</th>
+                 @if (ViewBag.DeleteFlg != null && ViewBag.DeleteFlg == true)
+                  {
+                <th style="width:60px;min-width:60px; max-width:60px;">Delete </th>
+                    }
+                <th style="width:100px;min-width:100px; max-width:100px;">
+                    Add Insurance Details
+                </th>
+                 <th style="width:100px;min-width:100px; max-width:100px;">
+                    Add Pass Details
+                </th>
+                 <th style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayNameFor(model => model.First().Cat_name)
+                </th>
+                 <th style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayNameFor(model => model.First().vehicle_no)
+                </th>
+                 <th style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayNameFor(model => model.First().vehicle_reg)
+                </th> 
+                 <th style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayNameFor(model => model.First().vehicle_renewal_date)
+                </th>
+                <th style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayNameFor(model => model.First().vehicle_renewal_due_date)
+                </th>
+                 <th style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayNameFor(model => model.First().vehicle_model)
+                </th> 
+                 <th style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayNameFor(model => model.First().vehicle_make)
+                </th> 
+                 <th style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayNameFor(model => model.First().chasis_no)
+                </th> 
+                 <th style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayNameFor(model => model.First().engine_no)
+                </th> 
+              
+                 <th style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayNameFor(model => model.First().location)
+                </th>
+                   <th style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayNameFor(model => model.First().gpsno)
+                </th> 
+                 <th style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayNameFor(model => model.First().status)
+                </th>   
+                <th style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayNameFor(model => model.First().vehicle_color)
+                </th>
+                <th style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayNameFor(model => model.First().plate_type)
+                </th>
+                <th style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayNameFor(model => model.First().driver)
+                </th>
+                <th style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayNameFor(model => model.First().card)
+                </th>
+                <th style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayNameFor(model => model.First().card_no)
+                </th>
+                <th style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayNameFor(model => model.First().card_expdate)
+                </th>
+                <th style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayNameFor(model => model.First().ADPC_stickers)
+                </th>
+                <th style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayNameFor(model => model.First().ADPC_RFID)
+                </th>
+                <th style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayNameFor(model => model.First().star_energy)
+                </th>
+                <th style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayNameFor(model => model.First().GCC_drivers)
+                </th>
+                <th style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayNameFor(model => model.First().civildefence_card)
+                </th>
+                      <th style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayNameFor(model => model.First().civildefence_expiry)
+                </th>
+                     
+                     
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Count() > 0)
+            {
+                foreach (var item in Model)
+                {
+                    <tr>
+                          <td style="width:60px; min-width:60px; max-width:60px;word-wrap:break-word">
+                           
+                            <a href='@Url.Action("VehicleDetailsEdit", "EquipmentCategory", new { id_equipment = item.id_equipment })' title="Edit Vehicle details" onclick="HyperLinkProgressIconFunction()">
+                                <span class="glyphicon glyphicon glyphicon-edit iocnstatus-edit" onclick="HyperLinkProgressIconFunction()"></span>
+                            </a>
+
+                        </td>
+                          @if (ViewBag.DeleteFlg != null && ViewBag.DeleteFlg == true)
+                          {
+                            <td style="width: 60px; min-width: 60px; max-width: 60px;">
+                                <img src="@Url.Content("~/Images/delete.png")" title="Delete Equipment" onclick="DeleteItems(@item.id_equipment)" style="cursor:pointer;" />
+                            </td>
+                          }
+                        
+                       
+                         <td style="width:100px;min-width:100px; max-width:100px;">
+                     <a href='@Url.Action("AddVehicleInsuranceDetails", "EquipmentCategory", new { id_equipment=item.id_equipment.ToString() })'>
+                         <img src="@Url.Content("~/Images/icon_add.png")" title="Add Insurance Details"/></a>
+                       <a href='@Url.Action("InsuranceList", "EquipmentCategory", new { id_equipment=item.id_equipment.ToString() })'>
+                         <img src="@Url.Content("~/Images/icon_list.png")" title="View Insurance Details"/></a>
+                       </td> 
+                       <td style="width:100px;min-width:100px; max-width:100px;">
+                     <a href='@Url.Action("AddVehiclePassDetails", "EquipmentCategory", new { id_equipment = item.id_equipment.ToString() })'>
+                         <img src="@Url.Content("~/Images/icon_add.png")" title="Add Pass Details"/></a>
+                       <a href='@Url.Action("VehiclePassList", "EquipmentCategory", new { id_equipment = item.id_equipment.ToString() })'>
+                         <img src="@Url.Content("~/Images/icon_list.png")" title="View Pass Details"/></a>
+                </td> 
+                         <td style="width:150px; min-width:150px; max-width:150px;">
+                               @Html.ActionLink(item.Cat_name.ToString(), "VehicleDetails", new { id_equipment = item.id_equipment.ToString() }, new { onclick = "HyperLinkProgressIconFunction()" })
+                       </td>
+                         <td style="width:150px; min-width:150px; max-width:150px;">
+                        @Html.DisplayFor(model=>item.vehicle_no)
+                       </td>
+                         <td style="width:150px; min-width:150px; max-width:150px;">
+                        @Html.DisplayFor(model=>item.vehicle_reg)
+                       </td>
+                        <td style="width:150px; min-width:150px; max-width:150px;">             
+                         @if (item.vehicle_renewal_date > Convert.ToDateTime("01/01/0001"))
+                        {
+                          @item.vehicle_renewal_date.ToString("dd/MM/yyyy")
+                        }       
+                        </td>
+                         <td style="width:150px; min-width:150px; max-width:150px;">             
+                         @if (item.vehicle_renewal_due_date > Convert.ToDateTime("01/01/0001"))
+                        {
+                          @item.vehicle_renewal_due_date.ToString("dd/MM/yyyy")
+                        }       
+                        </td>
+                       
+                                <td style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayFor(model => item.vehicle_model)
+                </td> 
+                 <td style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayFor(model => item.vehicle_make)
+                </td> 
+                 <td style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayFor(model => item.chasis_no)
+                </td> 
+                 <td style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayFor(model => item.engine_no)
+                </td> 
+                         <td style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayFor(model => item.location)
+                </td>
+                 <td style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayFor(model => item.gpsno)
+                </td>
+                <td style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayFor(model => item.status)
+                </td>
+                          
+                     <td style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayFor(model => item.vehicle_color)
+                </td>  
+                        <td style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayFor(model => item.plate_type)
+                </td>  
+                        <td style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayFor(model => item.driver)
+                </td>  
+                        <td style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayFor(model => item.card)
+                </td>  
+                        <td style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayFor(model => item.card_no)
+                </td>  
+                        <td style="width:150px;min-width:150px; max-width:150px;">
+                   @if (item.card_expdate > Convert.ToDateTime("01/01/0001"))
+                   {
+                          @item.card_expdate.ToString("dd/MM/yyyy")
+                   } 
+                </td>  
+                        <td style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayFor(model => item.ADPC_stickers)
+                </td>  
+                        <td style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayFor(model => item.ADPC_RFID)
+                </td>  
+                        <td style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayFor(model => item.star_energy)
+                </td>  
+                        <td style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayFor(model => item.GCC_drivers)
+                </td>  
+                        <td style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayFor(model => item.civildefence_card)
+                </td>     
+                        <td style="width:150px; min-width:150px; max-width:150px;">             
+                         @if (item.civildefence_expiry > Convert.ToDateTime("01/01/0001"))
+                        {
+                          @item.civildefence_expiry.ToString("dd/MM/yyyy")
+                        }       
+                        </td>
+                         
+                       
+                       
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="10">
+                        <div style="text-align: center;">
+                            <h4 style="color: grey;">No data exists</h4>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+</table>
+</div>
+@section scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript">
+
+        function DeleteItems(id_equipment) {
+            jConfirm('Do you want to delete?', 'Are you Sure?', function (r) {
+                if (r == true) {
+                    jQuery.ajax({
+                        url: '@Url.Action("EquipmentDetailsDelete", "EquipmentCategory")',
+                        type: 'POST',
+                        dataType: "json",
+                        data: { 'id_equipment': id_equipment },
+                        success: function (result) {
+                            var params = {
+                                View: 1
+                            };
+
+                            //// Add new params to the querystring dictionary
+                            queryString = $.param(params);
+
+                            window.location.href =
+                                window.location.protocol + "//" +
+                                window.location.host +
+                                window.location.pathname +
+                               '?' + queryString;
+                        }
+                    });
+                    return true;
+                }
+                else if (r == false) {
+                    return false;
+                }
+            });
+        }
+
+        function downloadInnerHtml(filename, elId) {
+            var $table = $('#table1');
+            $rows = $table.find('tr');
+
+            var csvData = "";
+
+            for (var i = 0; i < $rows.length; i++) {
+                var $cells = $($rows[i]).children('th,td'); //header or content cells
+
+                for (var y = 0; y < $cells.length; y++) {
+                    if (y > 0) {
+                        csvData += ",";
+                    }
+
+                    var txt = ($($cells[y]).text()).toString().trim();
+
+                    if (txt.indexOf(',') >= 0 || txt.indexOf('\"') >= 0 || txt.indexOf('\n') >= 0) {
+                        txt = "\"" + txt.replace(/\"/g, "\"\"") + "\"";
+                    }
+                    csvData += txt;
+                }
+                csvData += '\n';
+            }
+
+
+            var elHtml = csvData;
+            var link = document.createElement('a');
+            mimeType = 'application/csv;charset=utf-8';
+
+            link.setAttribute('download', filename);
+            link.setAttribute('href', 'data:' + mimeType + ';charset=utf-8,' + encodeURIComponent(elHtml));
+            link.click();
+        }
+
+        var fileName = 'TruckDetails.csv'; // You can use the .txt extension if you want
+
+        $('#downloadLink').click(function () {
+            downloadInnerHtml(fileName, 'content');
+        });
+    </script>
+
+}

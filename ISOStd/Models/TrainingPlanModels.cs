@@ -116,6 +116,9 @@ namespace ISOStd.Models
         [Display(Name = "Certificate Updated On")]
         public DateTime updated_date { get; set; }
 
+        [Display(Name = "Training No")]
+        public string ref_no { get; set; }
+
         internal bool FunAddTrainingPlan(TrainingPlanModels objModel)
         {
             try
@@ -156,6 +159,16 @@ namespace ISOStd.Models
                         sql = sql + "insert into t_training_plan_certificate(id_training_plan,emp_id) values ('" + id_training_plan + "','" + item + "');";
                     }
                     objGlobalData.ExecuteQuery(sql);
+
+                    string sName = objGlobalData.GetBranchShortNameByID(division);
+                    DataSet dsData = objGlobalData.GetReportNo("Training Plan", "", sName);
+                 
+                    if (dsData != null && dsData.Tables.Count > 0)
+                    {
+                        ref_no = dsData.Tables[0].Rows[0]["ReportNO"].ToString();
+                    }
+                    objGlobalData.ExecuteQuery("Update t_training_plan set ref_no = '" + ref_no + "' where id_training_plan= '" + id_training_plan + "'");
+                    
                     return sendTrainingPlanMail(id_training_plan,"Training Plan for Review");
                 }
                

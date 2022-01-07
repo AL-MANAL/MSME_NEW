@@ -1,0 +1,310 @@
+﻿@using System.Data
+@using ISOStd.Models;
+
+@{
+    ViewBag.Title = "AccidentReportToPDF";
+
+    ISOStd.Models.AccidentReportModels obj = new ISOStd.Models.AccidentReportModels();
+    ISOStd.Models.clsGlobal ObjGolbal = new ISOStd.Models.clsGlobal();
+    if (ViewBag.objAccidentList != null)
+    {
+        obj = ViewBag.objAccidentList;
+    }
+
+    DataSet objAccTypeList = new DataSet();
+    if (ViewBag.objAccTypeList != null)
+    {
+        objAccTypeList = ViewBag.objAccTypeList;
+    }
+
+    DataSet objReporterList = new DataSet();
+    if (ViewBag.objReporterList != null)
+    {
+        objReporterList = ViewBag.objReporterList;
+    }
+
+    DataSet dsCompany = new DataSet();
+    if (ViewBag.CompanyInfo != null)
+    {
+        dsCompany = ViewBag.CompanyInfo;
+    }
+   
+    Layout = "~/Views/Shared/_PrintLayout.cshtml";
+}
+
+<STYLE TYPE="text/css">
+    .breakhere {
+        page-break-after: always;
+    }
+</STYLE>
+
+@Html.Partial("_ReportHeader", dsCompany)
+
+<div style="background-color:white">
+    <div>
+        <table class="table table-lg table-bordered">
+            <tr class="row">
+                <td colspan="4">
+                    <h3>Incident Report Details</h3>
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+
+                    Division
+
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.branch
+                    </div>
+                </td>
+
+                <td class="font-size-lg font-weight-bold">
+                    Department
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.Department
+                    </div>
+                </td>
+            </tr>
+            <tr class="row">
+                @*<td class="font-size-lg font-weight-bold">
+
+                Report Number
+
+            </td>
+            <td class="font-size-lg">
+                <div>
+                    @obj.report_no
+                </div>
+            </td>*@
+                @*<td class="font-size-lg font-weight-bold">
+
+                    Accident Investigation Report Number
+
+            </td>
+            <td class="font-size-lg">
+                <div>
+                    @obj.invest_reportno
+                </div>
+            </td>*@
+                <td class="font-size-lg font-weight-bold">
+
+                    Type of Accident
+
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.Incident_Type
+                    </div>
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+
+                    Date & Timing of Accident
+
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @if (obj.acc_date.ToString() != "" && obj.acc_date.ToString() != null)
+                        {
+                            @Convert.ToDateTime(obj.acc_date.ToString("dd/MM/yyyy HH:mm:ss"));
+                        }
+                    </div>
+                </td>
+                <td class="font-size-lg font-weight-bold">
+
+                    Reported on
+
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @if (obj.reported_date.ToString() != "" && obj.reported_date.ToString() != null)
+                        {
+                            @Convert.ToDateTime(obj.reported_date.ToString("dd/MM/yyyy"));
+                        }
+                    </div>
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+
+                    Reported by
+
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.reported_by
+                    </div>
+                </td>
+                <td class="font-size-lg font-weight-bold">
+
+                    Location or area of accident
+
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.location
+                    </div>
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+
+                    Details of accident
+
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.details
+                    </div>
+                </td>
+                <td class="font-size-lg font-weight-bold">
+
+                   Consequences
+
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.damage
+                    </div>
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+
+                    Equipment Involved
+
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.eqp_involved
+                    </div>
+                </td>
+                <td class="font-size-lg font-weight-bold">
+
+                    Type of Job
+
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.job_type
+                    </div>
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+
+                    PPE
+
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.ppe
+                    </div>
+                </td>
+               
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+
+                    Need of thorough investigation?
+
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.invest_need
+                    </div>
+                </td>
+                @if (obj.invest_need == "Yes")
+                {
+                    <td class="font-size-lg font-weight-bold">
+
+                        Justify
+
+                    </td>
+                    <td class="font-size-lg">
+                        <div>
+                            @obj.justify
+                        </div>
+                    </td>
+                }
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+
+                    Immediate actions taken(containment action)
+
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.Actions_Taken
+                    </div>
+                </td>
+            </tr>
+        </table>
+       
+     
+        @if (objAccTypeList != null && objAccTypeList.Tables.Count > 0 && objAccTypeList.Tables[0].Rows.Count > 0)
+        {
+            <h5 for="Incident Details" style="background-color: #4cc4dd;  color: white; padding-left: 5px;">Accident Details</h5>
+
+            <table class="table table-lg">
+               <tr class="row">
+                    <th>Accident Type</th>
+                   <th>Person Name</th>
+                    <th>No of Person</th>
+                </tr>
+                @for (int i = 0; i < objAccTypeList.Tables[0].Rows.Count; i++)
+                {
+                   <tr class="row">
+                        <td class="font-size-lg font-weight-bold">
+                            @ObjGolbal.GetDropdownitemById(objAccTypeList.Tables[0].Rows[i]["injury_type"].ToString())
+                        </td>
+                       <td class="font-size-lg font-weight-bold">
+                           @ObjGolbal.GetMultiHrEmpNameById(objAccTypeList.Tables[0].Rows[i]["pers_name"].ToString())
+                       </td>
+                        <td class="font-size-lg font-weight-bold">
+                            @(objAccTypeList.Tables[0].Rows[i]["no_person"].ToString())
+                        </td>
+                    </tr>
+                }
+            </table>
+
+        }
+
+
+        @if (objReporterList != null && objReporterList.Tables.Count > 0 && objReporterList.Tables[0].Rows.Count > 0)
+        {
+            <h5 for="Incident Details" style="background-color: #4cc4dd;  color: white; padding-left: 5px;">Accident Report Details</h5>
+
+            <table class="table table-lg">
+               <tr class="row">
+                   <th>Reported To</th>
+                    <th>Reported Date</th>
+                    <th>Safety Inspector Comments</th>
+                </tr>
+                @for (int i = 0; i < objReporterList.Tables[0].Rows.Count; i++)
+                {
+                   <tr class="row">
+                        <td class="font-size-lg font-weight-bold">
+                            @ObjGolbal.GetMultiHrEmpNameById(objReporterList.Tables[0].Rows[i]["reported_to"].ToString())
+                        </td>
+                        <td class="font-size-lg font-weight-bold">
+                            @if (objReporterList.Tables[0].Rows[i]["reportedon_date"] != null)
+                            {
+                                @Convert.ToDateTime(objReporterList.Tables[0].Rows[i]["reportedon_date"].ToString()).ToString("dd/MM/yyyy")
+                            }
+                        </td>
+                        <td class="font-size-lg font-weight-bold">
+                            @(objReporterList.Tables[0].Rows[i]["comments"].ToString())
+                        </td>
+                    </tr>
+                }
+            </table>
+        }
+        </div>
+</div>

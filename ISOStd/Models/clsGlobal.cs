@@ -25,6 +25,43 @@ namespace ISOStd.Models
         private object fileUploader;
         private object mail;
 
+        //report no generation according to department
+        public DataSet GetReportNoDeptWise(string smod, string sProject, string slocation, string sDept)
+        {
+            DataSet dsData = new DataSet();
+            MySqlConnection con = new MySqlConnection(System.Web.Configuration.WebConfigurationManager.ConnectionStrings["IsoSoftDBContext"].ConnectionString);
+            try
+            {
+                string empid = GetCurrentUserSession().empid;
+
+                con.Open();
+                MySqlCommand cmd = new MySqlCommand("Get_next_no_trans", con);
+                cmd.CommandType = CommandType.StoredProcedure;
+
+
+                cmd.Parameters.AddWithValue("@vmodname", smod);
+                cmd.Parameters.AddWithValue("@vproject", sProject);
+                cmd.Parameters.AddWithValue("@brname", slocation);
+                cmd.Parameters.AddWithValue("@vempid", empid);
+                cmd.Parameters.AddWithValue("@vdept", sDept);
+
+                MySqlDataAdapter objAdap = new MySqlDataAdapter();
+
+                objAdap.SelectCommand = cmd;
+
+                objAdap.Fill(dsData);
+                con.Close();
+            }
+            catch (Exception ex)
+            {
+                AddFunctionalLog("Exception in GetReportNoDeptWise: " + ex.ToString());
+            }
+            finally
+            {
+                con.Close();
+            }
+            return dsData;
+        }
         //accident hse officer list
         public MultiSelectList GetHSEOfficerListbox()
         {

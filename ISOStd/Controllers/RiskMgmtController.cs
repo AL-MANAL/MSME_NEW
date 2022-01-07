@@ -1128,7 +1128,7 @@ namespace ISOStd.Controllers
                     string risk_id = Request.QueryString["risk_id"];
                     //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS
                     string sSqlstmt = "select risk_id, risk_refno,risk_status_id, risk_desc, dept, reg_id, branch_id, source_id, cat_id, tech_id, risk_owner, risk_manager,"
-                        + "assessment, notes,notified_to, submission_date, close_date, close_by, submitted_by, impact_id, like_id,opp_desc, consequences,Risk_Type,Issue,Location from risk_register where risk_id='"
+                        + "assessment, notes,notified_to, submission_date, close_date, close_by, submitted_by, impact_id, like_id,opp_desc, consequences,Risk_Type,Issue,Location,origin_risk from risk_register where risk_id='"
                         + risk_id + "'";
 
                     DataSet dsRiskModels = objGlobaldata.Getdetails(sSqlstmt);
@@ -1163,6 +1163,7 @@ namespace ISOStd.Controllers
                             opp_desc = dsRiskModels.Tables[0].Rows[0]["opp_desc"].ToString(),
                             Location = /*objGlobaldata.GetDivisionLocationById*/(dsRiskModels.Tables[0].Rows[0]["Location"].ToString()),
                             risk_refno = (dsRiskModels.Tables[0].Rows[0]["risk_refno"].ToString()),
+                            origin_risk = (dsRiskModels.Tables[0].Rows[0]["origin_risk"].ToString()),
                         };
                         ViewBag.Location = objGlobaldata.GetLocationbyMultiDivision(dsRiskModels.Tables[0].Rows[0]["branch_id"].ToString());
                         ViewBag.Department = objGlobaldata.GetDepartmentList1(dsRiskModels.Tables[0].Rows[0]["branch_id"].ToString());
@@ -2126,7 +2127,7 @@ namespace ISOStd.Controllers
                     int count = dsRiskModels1.Tables[0].Rows.Count;
                     if (count >= 1)
                     {
-                        sSqlstmt = "select risk_id_trans,tt.risk_id_trans,t.risk_id,t.risk_refno,t.risk_desc,t.dept,t.branch_id,t.source_id,t.risk_owner,t.risk_manager,t.submission_date,t.submitted_by,t.consequences,t.Location,tt.evaluation_date,tt.approved_by,tt.approved_date,tt.reeval_due_date,tt.impact_id,tt.like_id,t.Issue,t.Risk_Type,"
+                        sSqlstmt = "select risk_id_trans,tt.risk_id_trans,t.risk_id,t.risk_refno,t.risk_desc,t.dept,t.branch_id,t.source_id,t.risk_owner,t.risk_manager,t.submission_date,t.submitted_by,t.consequences,t.Location,tt.evaluation_date,tt.approved_by,tt.approved_date,tt.reeval_due_date,tt.impact_id,tt.like_id,t.Issue,t.Risk_Type,t.origin_risk"
                            + "(CASE WHEN tt.apprv_status='0' THEN 'Pending for Approval' WHEN tt.apprv_status='1' THEN 'Rejected' WHEN tt.apprv_status='2' THEN 'Approved' END) as apprv_status,tt.apprv_comment"
                         + " from risk_register t left join  risk_register_trans tt on t.risk_id = tt.risk_id  where t.risk_id = '" + srisk_id + "' order by risk_id_trans desc limit 1";
 
@@ -2162,6 +2163,7 @@ namespace ISOStd.Controllers
                                 apprv_status = dsRiskModels.Tables[0].Rows[0]["apprv_status"].ToString(),
                                 apprv_comment = dsRiskModels.Tables[0].Rows[0]["apprv_comment"].ToString(),
                                 approved_by_Id = (dsRiskModels.Tables[0].Rows[0]["approved_by"].ToString()),
+                                origin_risk = (dsRiskModels.Tables[0].Rows[0]["origin_risk"].ToString()),
                             };
                             DateTime dtValue;
                             if (DateTime.TryParse(dsRiskModels.Tables[0].Rows[0]["evaluation_date"].ToString(), out dtValue))
@@ -2197,7 +2199,7 @@ namespace ISOStd.Controllers
                     {
                         sSqlstmt = "select risk_id,risk_refno,risk_desc,dept,branch_id,source_id,risk_owner,risk_manager,submission_date,submitted_by,"
                         + "(CASE WHEN apprv_status='0' THEN 'Pending for Approval' WHEN apprv_status='1' THEN 'Rejected' WHEN apprv_status='2' THEN 'Approved' END) as apprv_status,apprv_comment,"
-                        + "consequences,Location,evaluation_date,approved_by,approved_date,reeval_due_date,impact_id,like_id,Issue,Risk_Type from risk_register"
+                        + "consequences,Location,evaluation_date,approved_by,approved_date,reeval_due_date,impact_id,like_id,Issue,Risk_Type,origin_risk from risk_register"
                         + " where risk_id='" + srisk_id + "' ";
 
                         DataSet dsRiskModels = objGlobaldata.Getdetails(sSqlstmt);
@@ -2231,6 +2233,7 @@ namespace ISOStd.Controllers
                                 apprv_status = dsRiskModels.Tables[0].Rows[0]["apprv_status"].ToString(),
                                 apprv_comment = dsRiskModels.Tables[0].Rows[0]["apprv_comment"].ToString(),
                                 approved_by_Id = (dsRiskModels.Tables[0].Rows[0]["approved_by"].ToString()),
+                                origin_risk = (dsRiskModels.Tables[0].Rows[0]["origin_risk"].ToString()),
                             };
                             DateTime dtValue;
                             if (DateTime.TryParse(dsRiskModels.Tables[0].Rows[0]["evaluation_date"].ToString(), out dtValue))

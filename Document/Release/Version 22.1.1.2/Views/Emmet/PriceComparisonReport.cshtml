@@ -1,0 +1,433 @@
+﻿@model ISOStd.Models.EmmetModels
+@using System.Data;
+@{
+    //Layout = "~/Views/Shared/_PrintLayout.cshtml";
+    ViewBag.Title = "Stock Report";
+    
+   
+
+    string fromdateValue = DateTime.Now.AddMonths(-1).ToString("dd/MM/yyy"), toDateValue = DateTime.Now.ToString("dd/MM/yyy");
+    if (ViewBag.fromdateValue != null)
+    {
+        fromdateValue = ViewBag.fromdateValue;
+    }
+
+    if (ViewBag.toDateValue != null)
+    {
+        toDateValue = ViewBag.toDateValue;
+    }  
+}
+
+<div class="groupedassets margin10">
+    <span class="groupedassetshead margin10 onestphdcolor">Price Comparison Report</span>
+</div>
+
+<fieldset>
+        <legend></legend>
+        <table id="tabcontent">
+            <tr>
+                <td>
+                    <div class="editor-label">
+                        From
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                         <input type="text" id="FromDate" name="FromDate" value="@fromdateValue" required readonly/><input type="hidden" id="FromDateval" name="FromDateval" value="@fromdateValue" />
+                        <span class="field-validation-error"><span id="FromDate-message" style="display: none;">Please select From date</span></span>
+                    </div>
+                </td>
+                 <td>
+                    <div class="editor-label">
+                        To
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <input type="text" id="ToDate" name="ToDate" value="@toDateValue" required readonly/><input type="hidden" id="toDateValue" name="toDateValue" value="@toDateValue" />
+                        <span class="field-validation-error"><span id="ToDate-message" style="display: none;">Please select To date</span></span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="editor-label">
+                        Supplier
+                    </div>
+                </td>
+                <td colspan="3">
+                    <div class="editor-field">
+                        <select class="chosen-select" id="supplier" name="supplier" multiple style="width:1000px" required>
+                        
+                            @if (ViewBag.Supplier != null && ViewBag.Supplier_id !=null)
+                            {
+                                foreach (var item in ViewBag.Supplier)
+                                {
+                                    if (Array.IndexOf(ViewBag.Supplier_id.ToString().Split(','), item.Value) >= 0)
+                                    {
+                                        <option value='@item.Value' selected>@item.Text</option>
+                                    }
+                                    else
+                                    {
+                                        <option value='@item.Value'>@item.Text</option>
+                                    }            
+                                }
+                            }
+                            else
+                            {
+                                foreach (var item in ViewBag.Supplier)
+                                {
+                                    <option value='@item.Value'>@item.Text</option>
+                                }
+                            }
+                        </select>
+                         <span class="field-validation-error"><span id="supplier-message" style="display: none;">Please select</span></span>
+                            @Html.ValidationMessageFor(model => model.supplier)
+
+                    </div>
+                </td>
+                </tr>
+            <tr>
+                  <td>
+                    <div class="editor-label">
+                        Material
+                    </div>
+                </td>
+                <td colspan="3">
+                    <div class="editor-field">
+                        <select class="chosen-select" id="material" name="material" required>
+                        <option value=''>Select</option>
+                            @if (ViewBag.Material != null)
+                            {
+                                foreach (var item in ViewBag.Material)
+                                {
+                                    <option value='@item.Value'>@item.Text</option>
+                                }
+                            }
+                          
+                        </select>
+                         <span class="field-validation-error"><span id="material-message" style="display: none;">Please select</span></span>
+                            @Html.ValidationMessageFor(model => model.material)
+                    </div>
+                </td>
+            </tr>
+            </table>     
+        
+    </fieldset> 
+    <div style="width: 100%; text-align: center;">
+        <button type="button" onclick="getData()">Generate</button>
+    </div>
+<br />
+<br />
+    <div id="divPrint" style="float:left;width:50%">
+        									
+        <table id="table1">
+            <thead>
+            <tr style="font-weight: bold;">
+               @* <th style="background-color: #4cc4dd; width:50px; color: white;  text-align: center;font-size:14px">Sl No</th>*@
+                <th style="background-color: #4cc4dd; width: 200px; color: white;  text-align: center;font-size:14px">Supplier</th>
+                 <th style="background-color: #4cc4dd; width: 200px; color: white;  text-align: center;font-size:14px">RATE PER UNIT -FIRST PURCHASE</th>
+                 <th style="background-color: #4cc4dd; width: 200px; color: white;  text-align: center;font-size:14px">RATE PER UNIT -SECOND PURCHASE</th>
+                <th style="background-color: #4cc4dd; width: 200px; color: white;  text-align: center;font-size:14px">RATE PER UNIT -3rd  PURCHASE</th>
+            </tr>
+            </thead>
+            <tbody class="tbody"></tbody>
+         
+        </table>
+
+    </div>
+    
+
+	<!-- Basic line -->
+				<div class="card" style="float:right;width:50%">
+					<div class="card-header header-elements-inline">
+
+						<div class="header-elements">
+							<div class="list-icons">
+		                		<a class="list-icons-item" data-action="collapse"></a>
+		                		<a class="list-icons-item" data-action="reload"></a>
+		                		<a class="list-icons-item" data-action="remove"></a>
+		                	</div>
+	                	</div>
+					</div>
+
+					<div class="card-body">
+						<div class="chart-container">
+							<div class="chart has-fixed-height" id="column_basic"></div>
+						</div>
+					</div>
+				</div>
+				<!-- /basic line -->
+
+
+				
+@section Scripts {
+    <script>
+        $(function () {
+
+            $('#FromDate').datepicker({
+                dateFormat: "dd/mm/yy",
+                buttonImageOnly: true,
+                buttonImage: '../Images/Calender.png',
+                showOn: 'both',
+                changeMonth: true,
+                changeYear: true,
+                gotoCurrent: true
+            });
+
+            $('#ToDate').datepicker({
+                dateFormat: "dd/mm/yy",
+                buttonImageOnly: true,
+                buttonImage: '../Images/Calender.png',
+                showOn: 'both',
+                changeMonth: true,
+                changeYear: true,
+                gotoCurrent: true
+            });
+
+            $('#supplier').chosen();
+            $('#material').chosen();
+            $.validator.setDefaults({ ignore: ":hidden:not('.chosen-select')" });
+        });
+        function loadData(data) {
+            var html = '';
+            $.each(data, function (key, item) {
+                $.each(item, function (key, item) {
+                        html += '<tr>';
+                        html += '<td style="width:200px">' + item.SupplierName + '</td>';
+                        html += '<td style="width:200px">' + item.rate_first + '</td>';
+                        html += '<td style="width:200px">' + item.rate_second + '</td>';
+                        html += '<td style="width:200px">' + item.rate_third + '</td>';
+                        html += '</tr>';
+                });
+                    });
+                    $('.tbody').html(html);
+            
+        }
+
+        function Validation() {
+            var validflg = true;
+            var ssnMessage = "";
+            if (document.getElementById("supplier").value == "") {
+                ssnMessage = $('#supplier-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#supplier-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("material").value == "") {
+                ssnMessage = $('#material-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#material-message');
+                ssnMessage.hide();
+            }
+            return validflg;
+        }
+        function getData() {
+            if (Validation() == true) {
+
+
+
+                var FromDate = $('#FromDate').datepicker().val();
+                var ToDate = $('#ToDate').datepicker().val();
+                var supplier = $('#supplier').val();
+                var material = $('#material').val();
+
+                var column_basic_element = document.getElementById('column_basic');
+
+
+                jQuery.ajax({
+                    url: '@Url.Action("getPriceCompReport", "Emmet")',
+                    type: 'POST',
+                    dataType: "json",
+                    ////data: JSON.stringify(objModel),
+                    data: { 'FromDate': FromDate, 'ToDate': ToDate, 'supplier': supplier, 'material': material },
+                    success: function (result) {
+
+                        var data = JSON.parse(result);
+                        loadData(data);
+
+                  
+                        var columnchart = echarts.init(column_basic_element);
+
+                            var sup = [];
+                            var first_rate = [];
+                            var second_rate = [];
+                            var third_rate = [];
+
+                            $.each(data, function (key, item) {
+                                $.each(item, function (key, item) {
+
+                                    sup.push(item.SupplierName);
+                                    first_rate.push(item.rate_first);
+                                    second_rate.push(item.rate_second);
+                                    third_rate.push(item.rate_third);
+                                });
+
+                            });
+                         
+                            columnchart.setOption({
+
+                                // Define colors
+                                color: ['#2ec7c9', '#b6a2de', '#5ab1ef', '#ffb980', '#d87a80'],
+
+                                // Global text styles
+                                textStyle: {
+                                    fontFamily: 'Roboto, Arial, Verdana, sans-serif',
+                                    fontSize: 13
+                                },
+
+                                // Chart animation duration
+                                animationDuration: 750,
+
+                                // Setup grid
+                                grid: {
+                                    left: 0,
+                                    right: 40,
+                                    top: 35,
+                                    bottom: 0,
+                                    containLabel: true
+                                },
+
+                                // Add legend
+                                legend: {
+                                    data: ['First Purchase', 'Second Purchase', 'Third Purchase'],
+                                    itemHeight: 8,
+                                    itemGap: 20,
+                                    textStyle: {
+                                        padding: [0, 5]
+                                    }
+                                },
+
+                                // Add tooltip
+                                tooltip: {
+                                    trigger: 'axis',
+                                    backgroundColor: 'rgba(0,0,0,0.75)',
+                                    padding: [10, 15],
+                                    textStyle: {
+                                        fontSize: 13,
+                                        fontFamily: 'Roboto, sans-serif'
+                                    }
+                                },
+
+                                // Horizontal axis
+                                xAxis: [{
+                                    type: 'category',
+                                    data: sup,
+                                    axisLabel: {
+                                        color: '#333'
+                                    },
+                                    axisLine: {
+                                        lineStyle: {
+                                            color: '#999'
+                                        }
+                                    },
+                                    splitLine: {
+                                        show: true,
+                                        lineStyle: {
+                                            color: '#eee',
+                                            type: 'dashed'
+                                        }
+                                    }
+                                }],
+
+                                // Vertical axis
+                                yAxis: [{
+                                    type: 'value',
+                                    axisLabel: {
+                                        color: '#333'
+                                    },
+                                    axisLine: {
+                                        lineStyle: {
+                                            color: '#999'
+                                        }
+                                    },
+                                    splitLine: {
+                                        lineStyle: {
+                                            color: ['#eee']
+                                        }
+                                    },
+                                    splitArea: {
+                                        show: true,
+                                        areaStyle: {
+                                            color: ['rgba(250,250,250,0.1)', 'rgba(0,0,0,0.01)']
+                                        }
+                                    }
+                                }],
+
+                                // Add series
+                                series: [
+                                    {
+                                        name: 'First Purchase',
+                                        type: 'bar',
+                                        data: first_rate,
+                                        itemStyle: {
+                                            normal: {
+                                                label: {
+                                                    show: true,
+                                                    position: 'top',
+                                                    textStyle: {
+                                                        fontWeight: 500
+                                                    }
+                                                }
+                                            }
+                                        },
+                                      
+                                    },
+                                      {
+                                          name: 'Second Purchase',
+                                          type: 'bar',
+                                          data: second_rate,
+                                          itemStyle: {
+                                              normal: {
+                                                  label: {
+                                                      show: true,
+                                                      position: 'top',
+                                                      textStyle: {
+                                                          fontWeight: 500
+                                                      }
+                                                  }
+                                              }
+                                          },
+
+                                      },
+                                        {
+                                            name: 'Third Purchase',
+                                            type: 'bar',
+                                            data: third_rate,
+                                            itemStyle: {
+                                                normal: {
+                                                    label: {
+                                                        show: true,
+                                                        position: 'top',
+                                                        textStyle: {
+                                                            fontWeight: 500
+                                                        }
+                                                    }
+                                                }
+                                            },
+
+                                        }
+                               
+                                ]
+                            });
+                
+                    }
+                });
+
+
+
+            }
+        }
+      
+
+
+
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

@@ -1,0 +1,592 @@
+﻿@using PagedList;
+@using PagedList.Mvc;
+
+@model List<ISOStd.Models.EnvRiskModels>
+
+    @{
+        ViewBag.Title = "RiskList";
+        ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+        var ShowEdit = Obj.GetCurrentUserSession().HazardRiskReg.Contains("3") ? true : false;
+        var ShowDel = Obj.GetCurrentUserSession().HazardRiskReg.Contains("5") ? true : false;
+    }
+
+    @section featured {
+
+        <div class="page-header page-header-light">
+            <div class="page-header-content header-elements-md-inline">
+                <div class="page-title d-flex">
+                    <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+                </div>
+            </div>
+
+            <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+                <div class="d-flex">
+                    <div class="breadcrumb">
+
+                        <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                            <span class="breadcrumb-item"> Home</span>
+                        </a>
+                        <span class="breadcrumb-item active">Environmental Risk Assessment</span>
+                    </div>
+
+                    <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+                </div>
+
+                @*<div class="header-elements d-none">
+                    <div class="breadcrumb justify-content-center">
+                        <div class="breadcrumb-elements-item dropdown p-0">
+                            <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                                <i class="icon-gear mr-2"></i>
+                                Settings
+                            </a>
+
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <div class="dropdown-divider"></div>
+                                <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>*@
+            </div>
+        </div>
+    }
+    <style>
+        .hidden {
+            display: none !important;
+        }
+    </style>
+
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Environmental Risk Assessment</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+@if (Obj.GetCurrentUserSession().HazardRiskReg.Contains("3"))
+{
+        <div>
+            <div class="card-header bg-white header-elements-sm-inline">
+                <div class="header-elements">
+                    <a class="btn btn-outline bg-orange text-orange border-orange btn-ladda btn-ladda-progress ladda-button" data-style="radius" href='@Url.Action("AddEnvRisk", "EnvRisk")' title="Add New">
+                        <span class="ladda-label">Report Environmental Risk Assessment</span>
+                        <span class="ladda-spinner"></span>
+                    </a>
+                </div>
+            </div>
+        </div>
+}
+        <div class="card-body">
+            <div class="row">
+                <div class="col-sm-4">
+
+                    @*@using (Html.BeginForm("EnvList", "EnvRisk", FormMethod.Post, new { id = "form1", name = "form1" }))
+            {*@
+                    @if (ViewBag.Branch != null)
+                    {
+                        <select class="form-control select-search select2-hidden-accessible" data-fouc id="branch_name" name="branch_name" onchange="getDetails()">
+                            <option value='' hidden>Division</option>
+                            @if (ViewBag.Branch != null)
+                            {
+                                foreach (var item in ViewBag.Branch)
+                                {
+                                    if (item.Value == ViewBag.Branch_name)
+                                    {
+                            <option value='@item.Value' selected>@item.Text</option>
+                                    }
+                                    else
+                                    {
+                            <option value='@item.Value'>@item.Text</option>
+                                    }
+                                }
+                            }
+                        </select>
+                    }
+                    @*}*@
+                </div>
+                </div>
+        </div>
+
+        <div class="card-body">
+            <table class="table table-bordered table-striped table-hover datatable-responsive" id="risk">
+
+                <thead>
+                    <tr>
+                        <th>
+                            Sl No.
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.First().branch_id)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.First().dept)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.First().env_refno)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.First().source_id)
+                        </th>
+
+                        <th>
+                            @Html.DisplayNameFor(model => model.First().activity)
+                        </th>
+
+                        
+
+                        <th>
+
+                            Initial Risk Rating
+                        </th>
+                        <th>
+                            Current Risk Rating
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.First().product)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.First().mitmeasure)
+                        </th>
+                        <th data-priority="2" class="text-center not-export-column">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Count() > 0)
+                    {
+                        int i = 0;
+                        foreach (var item in Model)
+                        {
+                            i = i + 1;
+                            <tr>
+
+                                <td>
+                                    @Html.ActionLink(i.ToString(), "HazardDetails", new { id_env_risk = item.id_env_risk.ToString() }, new { onclick = "HyperLinkProgressIconFunction()" })
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.branch_id)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.dept)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.env_refno)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.source_id)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.activity)
+                                </td>
+                               
+
+                                <td style="background-color:@item.color_code;font-weight: bold;">
+
+                                    @Html.DisplayFor(modelItem => item.RiskRating)
+                                </td>
+                                <td style="background-color:@item.color_code_curr;font-weight: bold;">
+
+                                    @Html.DisplayFor(modelItem => item.RiskRating_curr)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.product)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.mitmeasure)
+                                </td>
+                                <td class="text-center">
+                                    <div class="list-icons">
+                                        <div class="list-icons-item dropdown">
+                                            <a href="#" class="list-icons-item caret-0 dropdown-toggle" data-toggle="dropdown">
+                                                <i class="icon-gear mr-2"></i>
+                                            </a>
+
+                                            <div class="dropdown-menu dropdown-menu-right">
+                                                <a class="dropdown-item" href='@Url.Action("AddRiskEvaluation", "EnvRisk", new { id_env_risk = item.id_env_risk.ToString() })' title="Initial Risk Evaluation" onclick="HyperLinkProgressIconFunction()">
+                                                    <i class="icon-history"></i>Initial Risk Evaluation
+                                                </a>
+                                                <a class="dropdown-item" href='@Url.Action("AddRiskMitigations", "EnvRisk", new { id_env_risk = item.id_env_risk.ToString() })' title="Risk Mitigation" onclick="HyperLinkProgressIconFunction()">
+                                                    <i class="icon-history"></i>Mitigation Measures
+                                                </a>
+                                                <a class="dropdown-item" href='@Url.Action("AddRiskReEvaluation", "EnvRisk", new { id_env_risk = item.id_env_risk.ToString() })' title="Risk ReEvaluation" onclick="HyperLinkProgressIconFunction()">
+                                                    <i class="icon-history"></i>Risk ReEvaluation
+                                                </a>
+                                                <a class="dropdown-item" href='@Url.Action("FurtherRiskMitigations", "EnvRisk", new { id_env_risk = item.id_env_risk.ToString() })' title="Risk Mitigation" onclick="HyperLinkProgressIconFunction()">
+                                                    <i class="icon-history"></i>Further Mitigation Measures
+                                                </a>
+                                                <a class="dropdown-item" href='@Url.Action("HazardHistoryList", "EnvRisk", new { id_env_risk = item.id_env_risk.ToString() })' title="Risk History" onclick="HyperLinkProgressIconFunction()">
+                                                    <i class="icon-history"></i>Risk History
+                                                </a>
+                                                <a class="dropdown-item" href='@Url.Action("AddReportOFI", "OFI", new { risk_id = item.id_env_risk.ToString()+ ":ER" })' title="Report Improvement Opportunity" onclick="HyperLinkProgressIconFunction()">
+                                                    <i class="icon-history"></i>Report IO
+                                                </a>
+                                                @if (ShowEdit)
+                                                {
+                                                    <a class="dropdown-item" href='@Url.Action("EditHazard", "EnvRisk", new { id_env_risk = item.id_env_risk })' title="Edit Risk details" onclick="HyperLinkProgressIconFunction()">
+                                                        <i class="icon-pencil7"></i>Edit
+                                                    </a>
+                                                }
+                                                <div class="dropdown-divider"></div>
+                                                @if (ShowDel)
+                                                {
+                                                    <span class="dropdown-item text-center" title="Delete Document" onclick="DeleteItems(@item.id_env_risk)" style="cursor:pointer;"><i class="icon-bin"></i>Delete</span>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+
+
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    @section scripts {
+
+        <script type="text/javascript">
+
+                       //----zzz
+    $(document).ready(function () {
+
+        @if (TempData["alertdata"] != null ) {
+
+           @: new Noty({
+           @:     text: '@TempData["alertdata"]',
+           @:     type: 'error'
+           @: }).show();
+        }
+
+        @if (@TempData["Successdata"] != null ) {
+
+        @:    new Noty({
+         @:       text: '@TempData["Successdata"]',
+         @:       type: 'success'
+         @:   }).show();
+        }
+    });
+
+                    var risk = function () {
+                        var ShowEdit = @(Obj.GetCurrentUserSession().HazardRiskReg.Contains("3") ? "true" : "false");
+                        var ShowDel = @(Obj.GetCurrentUserSession().HazardRiskReg.Contains("5") ? "true" : "false");
+
+                        // Basic Datatable examples
+                        var _componentDatatableBasic = function () {
+                            if (!$().DataTable) {
+                                console.warn('Warning - datatables.min.js is not loaded.');
+                                return;
+                            }
+
+                            //Setting datatable defaults
+                            $.extend($.fn.dataTable.defaults, {
+                                autoWidth: false,
+                                responsive: true,
+                                columnDefs: [{
+                                    orderable: false,
+                                    //width: 100,
+                                    targets: 'not-export-column'
+
+                                }],
+                                responsivePriority: 2, targets: -1,
+                                colReorder: false,
+                                dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                                //dom: 'lBfrtip',
+                                language: {
+                                    search: '<span>Filter:</span> _INPUT_',
+                                    searchPlaceholder: 'Type to filter...',
+                                    lengthMenu: '<span>Show:</span> _MENU_',
+                                    paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                                }
+                            });
+
+                             var myClass = "";
+                var Delclass= @(Obj.GetCurrentUserSession().HazardRiskReg.Contains("4") ? "true" : "false");
+                            if (Delclass == false) { myClass = 'hidden' };
+
+                            var table = $('#risk').DataTable({
+                                drawCallback: function () {
+
+                                    var dropdownMenu;
+
+                                    // and when you show it, move it to the body
+                                    $('.datatable-responsive').on('show.bs.dropdown', function (e) {
+
+                                        // grab the menu
+                                        dropdownMenu = $(e.target).find('.dropdown-menu');
+
+                                        // detach it and append it to the body
+                                        $('body').append(dropdownMenu.detach());
+
+                                        // grab the new offset position
+                                        var eOffset = $(e.target).offset();
+
+                                        // make sure to place it where it would normally go (this could be improved)
+                                        dropdownMenu.css({
+                                            'display': 'block',
+                                            'top': eOffset.top + $(e.target).outerHeight(),
+                                            'left': eOffset.left
+                                        });
+                                    });
+
+                                    // and when you hide it, reattach the drop down, and hide it normally
+                                    $('.datatable-responsive').on('hide.bs.dropdown', function (e) {
+                                        $(e.target).append(dropdownMenu.detach());
+                                        dropdownMenu.hide();
+                                    });
+                                },
+                                lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                                colReorder: {
+                                    fixedColumnsLeft: 1
+                                },
+                                stateSave: true,
+                                //stateSaveParams: function (settings, data) {
+                                //    for (var i = 0, ien = data.columns.length; i < ien; i++) {
+                                //        delete data.columns[i].visible;
+                                //        delete data.columns[i].search;
+                                //    }
+                                //},
+                                //scrollY: '350px',
+                                scrollCollapse: true,
+
+
+                                keys: {
+                                    className: 'focus focus-success'
+                                },
+
+                                buttons: {
+                                    buttons: [
+                                        {
+                                            extend: 'copyHtml5',
+                                            className: myClass,
+                                            //className: 'btn btn-light',
+                                            title: 'Risk Data export',
+                                            exportOptions: {
+                                                columns: ':visible :not(.not-export-column)'
+                                            },
+                                        },
+                                        {
+                                            extend: 'excelHtml5',
+                                            className: myClass,
+                                            //className: 'btn btn-light',
+                                            title: 'Risk Data export',
+                                            exportOptions: {
+                                                columns: ':visible :not(.not-export-column)'
+                                            },
+
+                                        },
+                                        {
+                                            extend: 'pdfHtml5',
+                                            className: myClass,
+                                            //className: 'btn btn-light',
+                                            title: 'Risk Data export',
+                                            exportOptions: {
+                                                columns: ':visible :not(.not-export-column)'
+                                            },
+                                        },
+                                        {
+                                            extend: 'csvHtml5',
+                                            className: myClass,
+                                            //className: 'btn btn-light',
+                                            title: 'Risk Data export',
+                                            exportOptions: {
+                                                columns: ':visible :not(.not-export-column)'
+                                            },
+                                        },
+                                        {
+                                            extend: 'print',
+                                            className: myClass,
+                                            //className: 'btn btn-light',
+                                            title: 'Risk Data export',
+                                            exportOptions: {
+                                                columns: ':visible :not(.not-export-column)'
+                                            },
+                                        },
+
+                                        {
+                                            extend: 'colvis',
+                                            text: '<i class="icon-three-bars"></i>',
+                                            className: 'btn bg-blue btn-icon dropdown-toggle',
+                                            columns: ':visible:not(.not-export-column)'
+                                        }
+                                    ]
+                                }
+                            });
+
+                            // Adjust columns on window resize
+                            setTimeout(function () {
+                                $(window).on('resize', function () {
+                                    table.columns.adjust();
+                                });
+                            }, 100);
+
+
+                            //Redraw table on click toggle. -------table.columns.adjust doesn't work properly upon calling after toggle (width increase/decrease = redraw table.).
+                            $('.sidebar-control').on('click', function () {
+
+                                setTimeout(function () {
+                                    //alert("gii");
+
+                                    table.columns.adjust().draw();
+                                    $("#risk").resize();
+                                }, 100);
+
+                            });
+                            //}
+
+                            $('#risk').on('page.dt', function () {
+                                //table.draw();
+                                //alert("zzz1");
+                                $("#risk").resize();
+
+                            });
+
+                            $('#risk').on('column-visibility.dt', function () {
+                                //table.draw();
+                                //alert("zzz2");
+                                $("#risk").resize();
+
+                            });
+
+                            $('#risk').on('order.dt', function () {
+                                //table.draw();
+                                //alert("zzz3");
+                                $("#risk").resize();
+
+                            });
+
+                            $('#risk').on('responsive-display.dt', function () {
+                                //table.draw();
+                                //alert("zzz4");
+                                $("#risk").resize();
+
+                            });
+
+                            $('#risk').on('responsive-resize.dt', function () {
+                                //table.draw();
+                                //alert("zzz4");
+                                $("#risk").resize();
+
+                            });
+
+                            //.on('order.dt', function () {
+                            //    table.columns.adjust().draw();
+                            //    $("#qhse").resize(); })
+                            //.on('search.dt', function () {
+                            //    table.columns.adjust().draw();
+                            //    $("#qhse").resize(); })
+
+                            //.on('column-visibility.dt', function () {
+                            //    table.columns.adjust().draw();
+                            //    $("#qhse").resize();
+                            //})
+
+                        };
+
+                        // Select2 for length menu styling
+                        var _componentSelect2 = function () {
+                            if (!$().select2) {
+                                console.warn('Warning - select2.min.js is not loaded.');
+                                return;
+                            }
+
+                            // Initialize
+                            $('.dataTables_length select').select2({
+                                minimumResultsForSearch: Infinity,
+                                dropdownAutoWidth: true,
+                                width: 'auto'
+                            });
+                        };
+
+                        //
+                        // Return objects assigned to module
+                        //
+
+                        return {
+                            init: function () {
+                                _componentDatatableBasic();
+                                _componentSelect2();
+                            }
+                        }
+                    }();
+
+
+                    // Initialize module
+                    // ------------------------------
+
+                    document.addEventListener('DOMContentLoaded', function () {
+                        risk.init();
+                    });
+
+
+           function DeleteItems(id_env_risk) {
+            bootbox.confirm({
+                title: 'Confirm dialog',
+                message: 'Are you Sure you want to Delete the current Record?',
+                buttons: {
+                    confirm: {
+                        label: 'Yes',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'Cancel',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (r) {
+                    if (r == true) {
+                             jQuery.ajax({
+                                 url: '@Url.Action("HazardDelete", "EnvRisk")',
+                                 data: { id_env_risk: id_env_risk },
+                        type: 'POST',
+                        dataType: "json",
+                        success: function (result) {
+                            //// Add new params to the querystring dictionary
+                            window.location.href =
+                                window.location.protocol + "//" +
+                                window.location.host +
+                                window.location.pathname
+
+                        }
+                    });
+                    return true;
+                }
+                else if (r == false) {
+                        bootbox.hideAll();
+                        return false;
+                    }
+
+                }
+               });
+           }
+
+                    function getDetails() {
+                var branch_name = document.getElementById("branch_name").value;
+
+                   jQuery.ajax({
+                                url: '@Url.Action("EnvListSearch", "EnvRisk")',
+                        type: 'POST',
+                        dataType: "json",
+                        data: { 'branch_name': branch_name },
+                        success: function (result) {
+                            var params = {
+                                branch_name: branch_name
+                            };
+                            queryString = $.param(params);
+
+                            window.location.href =
+                                window.location.protocol + "//" +
+                                window.location.host +
+                                window.location.pathname +
+                               '?' + queryString;
+
+                        }
+                    });
+            }
+
+        </script>
+
+    }

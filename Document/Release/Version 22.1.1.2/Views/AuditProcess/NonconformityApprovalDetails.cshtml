@@ -1,0 +1,660 @@
+﻿@model ISOStd.Models.AuditProcessModels
+@using System.Data
+
+@{
+    ViewBag.Title = "";
+  
+    ISOStd.Models.clsGlobal obj = new ISOStd.Models.clsGlobal();
+}
+
+@section featured {
+
+    <div class="page-header page-header-light">
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <span class="breadcrumb-item active">Audit Noncomformity Detail</span>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<style>
+    .hidden {
+        display: none !important;
+    }
+</style>
+
+
+
+<div class="card">
+    <div class="card-header header-elements-inline bg-primary">
+        <h5 class="card-title">Audit Noncomformity Detail</h5>
+        <div class="header-elements">
+            <div class="list-icons">
+                <a class="list-icons-item" data-action="collapse"></a>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <div class="container-fluid">
+            <table class="table table-dark table-bordered table-striped table-hover bg-blue-800">
+                <thead></thead>
+                <tbody>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.Audit_no)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.Audit_no)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.nc_no)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.nc_no)
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.nc_date)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @if (Model.nc_date != null && Model.nc_date > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    @Html.Label(Model.nc_date.ToString("dd/MM/yyyy"))
+                                }
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.finding_details)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.finding_details)
+                            </p>
+                        </td>
+                       
+                    </tr>
+                    <tr class="row">
+
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.upload)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            @if (Model.upload != null && Model.upload != "" && Model.upload.Length > 0)
+                            {
+                                foreach (var docs in Model.upload.Trim(',').Split(','))
+                                {
+                                    <p style="margin: 0px;">
+
+                                        <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" style="color: orange;">
+                                            Preview
+                                        </a>
+                                    </p>
+                                        <br />
+                                }
+                            }
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.finding_category)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.finding_category)
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.Audit_criteria)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.Audit_criteria)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.audit_clause)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.audit_clause)
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.description)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.description)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.apprv_status)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.apprv_status)
+                            </p>
+                        </td>
+                    </tr>
+                   
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                               NC Raised By
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.logged_by)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                               NC Raised Date
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @if (Model.logged_date != null && Model.logged_date > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    @Html.Label(Model.logged_date.ToString("dd/MM/yyyy"))
+                                }
+                            </p>
+                        </td>
+                    </tr>
+
+                    @if (Model.apprv_status == "Approved")
+                    {
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                NC Approved By
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.apprvby_auditee)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                Approved Date
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @if (Model.aprvrejct_date != null && Model.aprvrejct_date > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    @Html.Label(Model.aprvrejct_date.ToString("dd/MM/yyyy hh:mm:ss"))
+                                }
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.corrective_action_date)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @if (Model.corrective_action_date != null && Model.corrective_action_date > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    @Html.Label(Model.corrective_action_date.ToString("dd/MM/yyyy"))
+                                }
+                            </p>
+                        </td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+           <br />
+                @if (ViewBag.status == "auditee")
+                {
+                    using (Html.BeginForm("NonconformityAuditeeApproval", "AuditProcess", FormMethod.Post,
+                                         new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+                    {
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary(true)
+                    <input type="hidden" id="id_nc" name="id_nc" value="@Model.id_nc" />
+                    <input type="hidden" id="Plan_Id" name="Plan_Id" value="@Model.Plan_Id" />
+                    <input type="hidden" id="nc_date" name="nc_date" value="@Model.nc_date.ToString("yyyy-MM-dd")" />
+                    <table class="table table-dark table-bordered table-striped table-hover bg-blue-800">
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    Approve <text style="color:red;">*</text>
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @if (ViewBag.ApprStatus != null)
+                                    {
+                                        foreach (var item in ViewBag.ApprStatus)
+                                        {
+                                            <input type="radio" name="apprv_status" id="apprv_status" data-name='@item.Value' value='@item.Key' onclick="setType()" required />@item.Value
+                                        }
+                                    }
+                                </p>
+                            </td>
+                        </tr>
+                        <tr class="row" id="approve" style="display:none">
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.LabelFor(model => model.corrective_action_date)<text style="color: red;">*</text>
+                                </p>
+                            </td>
+                            <td class="col-xs-3 col-md-4">
+                                
+                                    <input class="form-control" type='date' id='corrective_action_date' name="corrective_action_date" onchange="checkCorrectiveDate()" />
+                               
+                            </td>
+                        </tr>
+                        <tr class="row" id="reject" style="display:none">
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                   @Html.LabelFor(model => model.reason_rejection)<text style="color: red;">*</text>
+                                </p>
+                            </td>
+                            <td class="col">
+                                <div class="bg-dark py-1 px-2 rounded">
+                                    <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="reason_rejection" name="reason_rejection"></textarea>
+                                </div>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.LabelFor(model => model.upload_evidence)<text style="color: red;">*</text>
+                                </p>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <input type="file" name="upload_evidence" id="upload_evidence" onchange="FileFormatValidation(this)" multiple accept=".pdf,.xlsx,.xls,.doc,.docx,.image/*,.png,.jpeg,.jpg" @*class="bootstrap-uploader" data-fouc*@ />
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                    <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+                        <button type="submit" id="btnCreate" value="Submit" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Submit</button>
+                    </div>
+                    }
+                }
+            @if (ViewBag.status == "auditor")
+            {
+                using (Html.BeginForm("NonconformityAuditorUpdate", "AuditProcess", FormMethod.Post,
+                                     new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary(true)
+                    <input type="hidden" id="id_nc" name="id_nc" value="@Model.id_nc" />
+                    <input type="hidden" id="Plan_Id" name="Plan_Id" value="@Model.Plan_Id" />
+                  
+                    <table class="table table-dark table-bordered table-striped table-hover bg-blue-800">
+                      
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.LabelFor(model => model.followup_date)<text style="color: red;">*</text>
+                                </p>
+                            </td>
+                            <td class="col-xs-3 col-md-4">
+                                <input class="form-control" type='date' id='followup_date' name="followup_date" />
+                            </td>
+                        </tr>
+                       
+                    </table>
+                    <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+                        <button type="submit" id="btnCreate" value="Submit" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Submit</button>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script type="text/javascript">
+        //----zzz
+
+
+$(document).ready(function () {
+
+          @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+        });
+        function checkCorrectiveDate() {
+
+            var dt1 = document.getElementById("nc_date").value;
+            var dt2 = document.getElementById("corrective_action_date").value;
+            if (new Date(dt2).getTime() <= new Date(dt1).getTime()) {
+                bootbox.alert({
+                    title: 'Corrective action Date',
+                    message: 'Corrective action date must be greater than NC date'
+                });
+                $('#corrective_action_date').val("");
+            }
+        }
+        function FileFormatValidation(file) {
+            var ext = file.value.split(".").pop().toLowerCase();
+            if ($.inArray(ext, ["doc", "pdf", "docx", "xls", "xlsx", , "png", "jpg", "jpeg"]) == -1) {
+                file.value = "";
+                jAlert("Invalid file format, please upload only doc, pdf, docx, xls, xlsx, png, jpeg, jpg format");
+            }
+        }
+
+        function setType() {
+            var radioValue = $("input[name='apprv_status']:checked").data('name');
+            if (radioValue == "Accept") {
+                document.getElementById("approve").style.display = "block";
+                document.getElementById("reject").style.display = "none";
+                document.getElementById("corrective_action_date").required = true;
+                document.getElementById("reason_rejection").required = false;
+                document.getElementById("upload_evidence").required = false;
+                document.getElementById("reason_rejection").value = "";
+                document.getElementById("upload_evidence").value = "";
+            }
+            else {
+                document.getElementById("reject").style.display = "block";
+                document.getElementById("approve").style.display = "none";
+                document.getElementById("corrective_action_date").required = false;
+                document.getElementById("reason_rejection").required = true;
+                document.getElementById("upload_evidence").required = true;
+                document.getElementById("corrective_action_date").value = "";
+           
+            }
+        }
+        function ssetType(i) {
+            var radioValue = $("input[name='apprv_status"+i+"']:checked").data('name');
+            if (radioValue == "Approve") {
+                document.getElementById("comments"+i).required = false;
+
+            }
+            else {
+                document.getElementById("comments"+i).required = true;
+            }
+        }
+
+        var table1 = function () {
+
+
+            //
+            // Setup module components
+            //
+
+            // Basic Datatable examples
+            var _componentDatatableBasic = function () {
+                if (!$().DataTable) {
+                    console.warn('Warning - datatables.min.js is not loaded.');
+                    return;
+                }
+
+                //Setting datatable defaults
+                $.extend($.fn.dataTable.defaults, {
+                    autoWidth: false,
+                    responsive: true,
+
+
+                    colReorder: false,
+                    dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                    //dom: 'lBfrtip',
+                    language: {
+                        search: '<span>Filter:</span> _INPUT_',
+                        searchPlaceholder: 'Type to filter...',
+                        lengthMenu: '<span>Show:</span> _MENU_',
+                        paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                    }
+                });
+
+                var myClass = "";
+                @*var Delclass= @(obj.GetCurrentUserSession().ChangeMgmt.Contains("4") ? "true" : "false");
+                if (Delclass == false) { myClass = 'hidden'  };*@
+                var table = $('#table1').DataTable({
+
+                    lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                    colReorder: {
+                        fixedColumnsLeft: 1
+                    },
+                    stateSave: true,
+                    stateSaveParams: function (settings, data) {
+                        for (var i = 0, ien = data.columns.length; i < ien; i++) {
+                            delete data.columns[i].visible;
+                            delete data.columns[i].search;
+                        }
+                    },
+
+                    scrollY: '350px',
+                    scrollCollapse: true,
+
+
+                    keys: {
+                        className: 'focus focus-success'
+                    },
+
+                    buttons: {
+                        buttons: [
+                            {
+                                extend: 'copyHtml5',
+                                className: myClass,
+                                //className: 'btn btn-light',
+                                title: 'Change Management Details',
+                                exportOptions: {
+                                    columns: ':visible :not(.not-export-column)'
+                                },
+                            },
+                            {
+                                extend: 'excelHtml5',
+                                className: myClass,
+                                //className: 'btn btn-light',
+                                title: 'Change Management Details',
+                                exportOptions: {
+                                    columns: ':visible :not(.not-export-column)'
+                                },
+
+                            },
+                            {
+                                extend: 'pdfHtml5',
+                                className: myClass,
+                                //className: 'btn btn-light',
+                                title: 'Change Management Details',
+                                exportOptions: {
+                                    columns: ':visible :not(.not-export-column)'
+                                },
+                            },
+                            {
+                                extend: 'csvHtml5',
+                                className: myClass,
+                                //className: 'btn btn-light',
+                                title: 'Change Management Details',
+                                exportOptions: {
+                                    columns: ':visible :not(.not-export-column)'
+                                },
+                            },
+                            {
+                                extend: 'print',
+                                className: myClass,
+                                //className: 'btn btn-light',
+                                title: 'Change Management Details',
+                                exportOptions: {
+                                    columns: ':visible :not(.not-export-column)'
+                                },
+                            },
+
+                            {
+                                extend: 'colvis',
+                                text: '<i class="icon-three-bars"></i>',
+                                className: 'btn bg-blue btn-icon dropdown-toggle',
+                                columns: ':visible:not(.not-export-column)'
+                            }
+                        ]
+                    }
+
+
+
+
+                });
+                // Adjust columns on window resize
+                setTimeout(function () {
+                    $(window).on('resize', function () {
+                        table.columns.adjust();
+                    });
+                }, 100);
+
+
+                //Redraw table on click toggle. -------table.columns.adjust doesn't work properly upon calling after toggle (width increase/decrease = redraw table.).
+                $('.sidebar-control').on('click', function () {
+
+                    setTimeout(function () {
+                        //alert("gii");
+
+                        table.columns.adjust().draw();
+                        $("#table1").resize();
+                    }, 100);
+
+                });
+                //}
+
+                $('#table1').on('page.dt', function () {
+                    //table.draw();
+                    //alert("zzz1");
+                    $("#table1").resize();
+
+                });
+
+                $('#table1').on('column-visibility.dt', function () {
+                    //table.draw();
+                    //alert("zzz2");
+                    $("#table1").resize();
+
+                });
+
+                $('#table1').on('order.dt', function () {
+                    //table.draw();
+                    //alert("zzz3");
+                    $("#table1").resize();
+
+                });
+
+
+                $('#table1').on('responsive-display.dt', function () {
+                    //table.draw();
+                    //alert("zzz4");
+                    $("#table1").resize();
+
+                });
+
+
+                $('#table1').on('responsive-resize.dt', function () {
+                    //table.draw();
+                    //alert("zzz4");
+                    $("#table1").resize();
+
+                });
+
+
+
+
+
+
+            };
+
+
+
+
+
+
+            // Select2 for length menu styling
+            var _componentSelect2 = function () {
+                if (!$().select2) {
+                    console.warn('Warning - select2.min.js is not loaded.');
+                    return;
+                }
+
+                // Initialize
+                $('.dataTables_length select').select2({
+                    minimumResultsForSearch: Infinity,
+                    dropdownAutoWidth: true,
+                    width: 'auto'
+                });
+            };
+
+
+            //
+            // Return objects assigned to module
+            //
+
+            return {
+                init: function () {
+                    _componentDatatableBasic();
+                    _componentSelect2();
+                }
+            }
+        }();
+
+
+        // Initialize module
+        // ------------------------------
+
+        document.addEventListener('DOMContentLoaded', function () {
+            table1.init();
+        });
+
+
+    </script>
+
+}

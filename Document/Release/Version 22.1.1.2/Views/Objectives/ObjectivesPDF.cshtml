@@ -1,0 +1,587 @@
+﻿@using System.Data
+@model ISOStd.Models.ObjectivesModels
+
+@{
+    ViewBag.Title = "ObjectivesPDF";
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+    ISOStd.Models.ObjectivesModels objModel = new ISOStd.Models.ObjectivesModels();
+    ISOStd.Models.ObjectivesModelsList ObjectPCFF = new ISOStd.Models.ObjectivesModelsList();
+    ISOStd.Models.ObjectivesModelsList ObjectPlan = new ISOStd.Models.ObjectivesModelsList();
+    ISOStd.Models.ObjectivesModelsList EvalList = new ISOStd.Models.ObjectivesModelsList();
+
+
+    if (ViewBag.ObjectPCFF != null)
+    {
+        ObjectPCFF = ViewBag.ObjectPCFF;
+    }
+
+    if (ViewBag.ObjectPlan != null)
+    {
+        ObjectPlan = ViewBag.ObjectPlan;
+    }
+
+    if (ViewBag.EvalList != null)
+    {
+        EvalList = ViewBag.EvalList;
+    }
+
+    if (ViewBag.ObjectivesDetails != null)
+    {
+        objModel = ViewBag.ObjectivesDetails;
+    }
+
+    DataSet dsCompany = new DataSet();
+    if (ViewBag.CompanyInfo != null)
+    {
+        dsCompany = ViewBag.CompanyInfo;
+    }
+    Layout = "~/Views/Shared/_PrintLayout.cshtml";
+}
+
+<style type="text/css">
+
+    .page {
+        page-break-before: always !important;
+    }
+
+    * {
+        overflow: visible !important;
+    }
+
+    .page-breaker {
+        display: block;
+        clear: both;
+        page-break-after: always;
+    }
+
+    .page_break_inside_avoid {
+        page-break-inside: avoid !important;
+    }
+</style>
+
+@*@Html.Partial("_ReportHeader", dsCompany)*@
+@Html.Partial("_RptHeader", dsCompany)
+
+<div style="background-color:white">
+    <div>
+        <table class="table table-lg table-bordered">
+            @*<tr class="row">
+                <td colspan="4">
+                    <h3>Details</h3>
+                </td>
+            </tr>*@
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+                    <div class="editor-label">
+                        Mgmt System Std(s)
+                    </div>
+                </td>
+                <td class="font-size-lg">
+                    <div class="editor-field">
+                        @objModel.Audit_Criteria
+                    </div>
+                </td>
+                <td class="font-size-lg font-weight-bold">
+                    <div class="editor-label">
+                        Established By
+                    </div>
+                </td>
+                <td class="font-size-lg">
+                    <div class="editor-field">
+                        @objModel.Estld_by
+                    </div>
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+                    Objective Level
+                </td>
+                <td class="font-size-lg">
+                    @objModel.objective_level
+                </td>
+                <td class="font-size-lg font-weight-bold">
+                    Division
+                </td>
+                <td class="font-size-lg">
+                    @objModel.branch
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+                    Department
+                </td>
+                <td class="font-size-lg">
+                    @objModel.Dept
+                </td>
+                <td class="font-size-lg font-weight-bold">
+                    Location
+                </td>
+                <td class="font-size-lg">
+                    @objModel.Location
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+                    Objective Reference
+                </td>
+                <td class="font-size-lg">
+                    @objModel.Obj_Ref
+                </td>
+                <td class="font-size-lg font-weight-bold">
+                    Established On
+                </td>
+                <td class="font-size-lg">
+                    @if (objModel.Obj_Estld_On != null && objModel.Obj_Estld_On > Convert.ToDateTime("01/01/0001"))
+                    {
+                        @objModel.Obj_Estld_On.ToShortDateString()
+                    }
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+                    Objective Description
+                </td>
+                <td class="font-size-lg">
+                    @objModel.Objectives_val
+                </td>
+                <td class="font-size-lg font-weight-bold">
+                    Base Line Value
+                </td>
+                <td class="font-size-lg">
+                    @objModel.Base_Line_Value
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+                    Source of Baseline Data
+                </td>
+                <td class="font-size-lg">
+                    @objModel.baseline_data
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+                    Target Value
+                </td>
+                <td class="font-size-lg">
+                    @objModel.Obj_Target
+                </td>
+                <td class="font-size-lg font-weight-bold">
+                    Accepted Value
+                </td>
+                <td class="font-size-lg">
+                    @objModel.Accepted_Value
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+                    Unit of measurement
+                </td>
+                <td class="font-size-lg">
+                    @objModel.unit
+                </td>
+                <td class="font-size-lg font-weight-bold">
+                    Target Date to Achieve
+                </td>
+                <td class="font-size-lg">
+                    @if (objModel.Target_Date != null && objModel.Target_Date > Convert.ToDateTime("01/01/0001"))
+                    {
+                        @objModel.Target_Date.ToShortDateString()
+                    }
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+                    Frequency of Evaluation
+                </td>
+                <td class="font-size-lg">
+                    @objModel.Freq_of_Eval
+                </td>
+                <td class="font-size-lg font-weight-bold">
+                    Monitoring Parameters
+                </td>
+                <td class="font-size-lg">
+                    @objModel.Monitoring_Mechanism
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+                    Objective Inline With
+                </td>
+                <td class="font-size-lg">
+                    @objModel.obj_inline
+                </td>
+                <td class="font-size-lg font-weight-bold">
+                    Risk, if not achieved
+                </td>
+                <td class="font-size-lg">
+                    @objModel.Risk_ifObjFails
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+                    To be approved by
+                </td>
+                <td class="font-size-lg">
+                    @objModel.Approved_By
+                </td>
+                @if (objModel.Approved_Status_id == "1")
+                {
+                    <td class="font-size-lg font-weight-bold">
+                        Approved Date
+                    </td>
+                    <td class="font-size-lg">
+                        @if (objModel.ApprovedDate != null && objModel.ApprovedDate > Convert.ToDateTime("01/01/0001"))
+                        {
+                            @objModel.ApprovedDate.ToShortDateString()
+                        }
+                    </td>
+                }
+            </tr>
+        </table>
+    </div>
+    <br />
+    <br />
+
+    @*PCFF*@
+    @if (ViewBag.ObjectPCFF != null && ObjectPCFF.ObjectivesMList != null && ObjectPCFF.ObjectivesMList.Count > 0)
+    {
+
+        <div class="table-responsive page_break_inside_avoid">
+            <h2 class="bg-dark pl-sm-2"> Objective Potential Causes for Failure Details</h2>
+            <table class="table table-bordered table-striped table-hover datatable-responsive" id="table11">
+                <thead>
+                    <tr class="bg-brown">
+                        <th>
+                            Action No
+                        </th>
+                        <th>
+                            Potential Cause
+                        </th>
+                        <th>
+                            Impact
+                        </th>
+                        <th>
+                            Mitigation Measure(s)
+                        </th>
+                        <th>
+                            Target Date to implement the measure
+                        </th>
+                        <th>
+                            Status Updated On
+                        </th>
+                        <th>
+                            Status
+                        </th>
+                        <th>
+                            Notified To
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < ObjectPCFF.ObjectivesMList.Count; i++)
+                    {
+                        <tr>
+                            <td>
+                                @(i + 1)
+                            </td>
+                            <td>
+                                @ObjectPCFF.ObjectivesMList[i].potential_causes
+                            </td>
+                            <td>
+                                @ObjectPCFF.ObjectivesMList[i].impact
+                            </td>
+                            <td>
+                                @ObjectPCFF.ObjectivesMList[i].mitigation_measure
+                            </td>
+                            <td>
+                                @if (ObjectPCFF.ObjectivesMList[i].targeted_on.ToString() != "" && ObjectPCFF.ObjectivesMList[i].targeted_on > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    @Convert.ToDateTime(ObjectPCFF.ObjectivesMList[i].targeted_on.ToString()).ToString("dd/MM/yyyy")
+                                }
+                            </td>
+                            <td>
+                                @if (ObjectPCFF.ObjectivesMList[i].updated_on.ToString() != "" && ObjectPCFF.ObjectivesMList[i].updated_on > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    @Convert.ToDateTime(ObjectPCFF.ObjectivesMList[i].updated_on.ToString()).ToString("dd/MM/yyyy")
+                                }
+                            </td>
+                            <td>
+                                @(ObjectPCFF.ObjectivesMList[i].potential_status)
+                            </td>
+                            <td>
+                                @(ObjectPCFF.ObjectivesMList[i].Pcff_Notify)
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    <br />
+
+    @*Objective Action Plan*@
+    @if (ViewBag.ObjectPlan != null && ObjectPlan.ObjectivesMList != null && ObjectPlan.ObjectivesMList.Count > 0)
+    {
+        <div class="table-responsive page_break_inside_avoid">
+            <h2 class="bg-dark pl-sm-2"> Objective Action Plan Details</h2>
+            <table class="table table-bordered table-striped table-hover datatable-responsive" id="table1">
+                <thead>
+                    <tr class="bg-brown">
+                        <th>
+                            Action No
+                        </th>
+                        <th>
+                            Ref. Action Plan
+                        </th>
+                        <th>
+                            Planned On
+                        </th>
+                        <th>
+                            Action to be taken
+                        </th>
+                        <th>
+                            Resource Required
+                        </th>
+                        <th>
+                            Target completion date
+                        </th>
+                        <th>
+                            Personnel Responsible
+                        </th>
+                        @*<th class="not-export-column">
+                                File Upload
+                            </th>*@
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < ObjectPlan.ObjectivesMList.Count; i++)
+                    {
+                        <tr>
+                            <td>
+                                @(i + 1)
+                            </td>
+                            <td>
+                                @ObjectPlan.ObjectivesMList[i].action_ref_no
+                            </td>
+                            <td>
+                                @if (ObjectPlan.ObjectivesMList[i].begin_date.ToString() != "" && ObjectPlan.ObjectivesMList[i].begin_date > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    @Convert.ToDateTime(ObjectPlan.ObjectivesMList[i].begin_date.ToString()).ToString("dd/MM/yyyy")
+                                }
+                            </td>
+                            <td>
+                                @ObjectPlan.ObjectivesMList[i].actionplan
+                            </td>
+                            <td>
+                                @ObjectPlan.ObjectivesMList[i].resource
+                            </td>
+                            <td>
+                                @if (ObjectPlan.ObjectivesMList[i].end_date.ToString() != "" && ObjectPlan.ObjectivesMList[i].end_date > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    @Convert.ToDateTime(ObjectPlan.ObjectivesMList[i].end_date.ToString()).ToString("dd/MM/yyyy")
+                                }
+                            </td>
+                            <td>
+                                @*ObjGlobal.GetMultiHrEmpNameById*@ @(ObjectPlan.ObjectivesMList[i].resp_person)
+                            </td>
+
+
+                            @*<td>
+                                    @if (ObjectPlan.ObjectivesMList[i].upload != "")
+                                    {
+                                        <span class="bg-dark py-1 px-2 rounded">
+                                            <a href='@Url.Action("DisplayDocument", "Reports", new { Document = ObjectPlan.ObjectivesMList[i].upload })' target="_blank">Preview</a>
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <p class="bg-dark py-1 px-2 rounded text-danger">No File</p>
+                                    }
+                                </td>*@
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    <br />
+
+    @*Objective Action Plan Status*@
+    @if (ViewBag.ObjectPlan != null && ObjectPlan.ObjectivesMList != null && ObjectPlan.ObjectivesMList.Count > 0)
+    {
+        <div class="table-responsive page_break_inside_avoid">
+            <h2 class="bg-dark pl-sm-2"> Objective Action Plan Status Details</h2>
+            <table class="table table-bordered table-striped table-hover datatable-responsive" id="table1">
+                <thead>
+                    <tr class="bg-brown">
+                        <th>
+                            Action No
+                        </th>
+                        <th>
+                            Ref. Action Plan
+                        </th>
+                        <th>
+                            Action to be taken
+                        </th>
+                        <th>
+                            Target completion date
+                        </th>
+                        <th>
+                            Action Status
+                        </th>
+                        <th>
+                            Reasons for not completing
+                        </th>
+                        <th>
+                            Status Updated On
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < ObjectPlan.ObjectivesMList.Count; i++)
+                    {
+                    <tr>
+                        <td>
+                            @(i + 1)
+                        </td>
+                        <td>
+                            @ObjectPlan.ObjectivesMList[i].action_ref_no
+                        </td>
+                        <td>
+                            @ObjectPlan.ObjectivesMList[i].actionplan
+                        </td>
+                        <td>
+                            @if (ObjectPlan.ObjectivesMList[i].end_date.ToString() != "" && ObjectPlan.ObjectivesMList[i].end_date > Convert.ToDateTime("01/01/0001"))
+                            {
+                                @Convert.ToDateTime(ObjectPlan.ObjectivesMList[i].end_date.ToString()).ToString("dd/MM/yyyy")
+                            }
+                        </td>
+                        <td>
+                            @ObjectPlan.ObjectivesMList[i].action_status
+                        </td>
+                        <td>
+                            @ObjectPlan.ObjectivesMList[i].reason_notcomplete
+                        </td>
+                        <td>
+                            @if (ObjectPlan.ObjectivesMList[i].status_updated_on.ToString() != "" && ObjectPlan.ObjectivesMList[i].status_updated_on > Convert.ToDateTime("01/01/0001"))
+                            {
+                                @Convert.ToDateTime(ObjectPlan.ObjectivesMList[i].status_updated_on.ToString()).ToString("dd/MM/yyyy")
+                            }
+                        </td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    <br />
+
+    @*Objective Evaluation Plan*@
+    @if (ViewBag.EvalList != null && EvalList.ObjectivesMList != null && EvalList.ObjectivesMList.Count > 0)
+    {
+        <div class="table-responsive page_break_inside_avoid">
+            <h2 class="bg-dark pl-sm-2"> Objective Evaluation Details</h2>
+            <table class="table table-bordered table-striped table-hover datatable-responsive" id="table2">
+                <thead>
+                    <tr class="bg-brown">
+                        <th>
+                            Action No
+                        </th>
+                        <th>
+                            Evaluation Date
+                        </th>
+                        <th>
+                            Evaluation Period
+                        </th>
+                        <th>
+                            Source of Data
+                        </th>
+                        @*<th>
+                                Upload
+                            </th>*@
+                        <th>
+                            Method of Evaluation
+                        </th>
+                        <th>
+                            Measured Value
+                        </th>
+                        @*<th>
+                                Objective Status for the period
+                            </th>
+                            <th>
+                                Overall Objective Status
+                            </th>
+                            <th>
+                                Remarks
+                            </th>*@
+                        <th>
+                            Notified To
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < EvalList.ObjectivesMList.Count; i++)
+                    {
+                        <tr>
+                            <td>
+                                @(i + 1)
+                            </td>
+                            <td>
+                                @if (EvalList.ObjectivesMList[i].Obj_Eval_On.ToString() != "" && EvalList.ObjectivesMList[i].Obj_Eval_On > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    @Convert.ToDateTime(EvalList.ObjectivesMList[i].Obj_Eval_On.ToString()).ToString("dd/MM/yyyy")
+                                }
+                            </td>
+                            <td>
+                                @if (EvalList.ObjectivesMList[i].FromPeriod.ToString() != "" && EvalList.ObjectivesMList[i].FromPeriod > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    @Convert.ToDateTime(EvalList.ObjectivesMList[i].FromPeriod.ToString()).ToString("dd/MM/yyyy")
+                                }
+                                -
+                                @if (EvalList.ObjectivesMList[i].ToPeriod.ToString() != "" && EvalList.ObjectivesMList[i].ToPeriod > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    @Convert.ToDateTime(EvalList.ObjectivesMList[i].ToPeriod.ToString()).ToString("dd/MM/yyyy")
+                                }
+                            </td>
+                            <td>
+                                @EvalList.ObjectivesMList[i].Obj_Achieved_Val
+                            </td>
+                            @*<td>
+                                    @if (EvalList.ObjectivesMList[i].Evidence != "")
+                                    {
+                                        <span class="bg-dark py-1 px-2 rounded">
+                                            <a href='@Url.Action("DisplayDocument", "Reports", new { Document = EvalList.ObjectivesMList[i].Evidence })' target="_blank">Preview</a>
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <p class="bg-dark py-1 px-2 rounded text-danger">No File</p>
+                                    }
+                                </td>*@
+                            <td>
+                                @EvalList.ObjectivesMList[i].Trend
+                            </td>
+                            <td>
+                                @EvalList.ObjectivesMList[i].Status_Obj_Eval
+                            </td>
+                            @*<td>
+                                    @EvalList.ObjectivesMList[i].Source_data
+                                </td>
+                                <td>
+                                    @EvalList.ObjectivesMList[i].Method_eval
+                                </td>
+                                <td>
+                                    @EvalList.ObjectivesMList[i].Remark
+                                </td>*@
+                            <td>
+                                @Obj.GetMultiHrEmpNameById(EvalList.ObjectivesMList[i].Notified_to)
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+
+</div>

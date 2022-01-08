@@ -1,0 +1,988 @@
+﻿@model ISOStd.Models.EquipmentModels
+@using System.Data;
+
+@{
+    ViewBag.Title = "EquipmentDetails";
+    DataSet dsMaintenance = ViewBag.Maintenance;
+    DataSet dsPMaintenance = ViewBag.PMaintenance;
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+}
+
+
+@section featured {
+    <div class="page-header page-header-light">
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4><span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Home</span>
+                    </a>
+                    <a href="@Url.Action("EquipmentList", "Equipment", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Machinery</span>
+                    </a>
+                    <span class="breadcrumb-item active">Machinery Details</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i>All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+
+
+}
+    <style>
+        .hidden {
+            display: none !important;
+        }
+    </style>
+
+<div class="card">
+
+    <div class="card-header header-elements-inline bg-primary">
+        <h5 class="card-title">Machinery Details</h5>
+        <div class="header-elements">
+            <div class="list-icons">
+                <a class="list-icons-item" data-action="collapse"></a>
+
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <div class="card-header bg-white header-elements-sm-inline">
+
+            <div class="header-elements">
+                <div class="mt-2 mt-sm-0">
+                    @if (Obj.GetCurrentUserSession().Maintenance.Contains("3"))
+                    {
+                        <a class="btn bg-orange btn-labeled btn-labeled-left" data-style="radius" href='@Url.Action("EquipmentEdit", "Equipment", new { Equipment_Id = Model.Equipment_Id })' title="Edit" onclick="HyperLinkProgressIconFunction()">
+                            <b><i class="icon-add-to-list"></i></b>Edit
+                        </a>
+                    }
+                    @Html.ActionLink("Back to List", "EquipmentList", null, new { @class = "btn btn-outline bg-orange text-orange border-orange", onclick = "HyperLinkProgressIconFunction()" })
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="card-body">
+        <div class="container-fluid">
+
+            <table class="table table-dark table-bordered table-striped table-hover bg-blue-800">
+                <thead></thead>
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.branch)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.branch)
+                        </span>
+                    </td>                    
+                </tr>
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.Department)
+                        </p>
+                    </td>
+
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.Department)
+                        </span>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.location)
+                        </p>
+                    </td>
+
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.location)
+                        </span>
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.equp_type)
+                        </p>
+                    </td>
+
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.equp_type)
+                        </span>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.Equipment_location)
+                        </p>
+                    </td>
+
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.Equipment_location)
+                        </span>
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.Equipment_Name)
+                        </p>
+                    </td>
+
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.Equipment_Name)
+                        </span>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.Manufacturer)
+                        </p>
+                    </td>
+
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.Manufacturer)
+                        </span>
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.Equipment_serial_no)
+                        </p>
+                    </td>
+
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.Equipment_serial_no)
+                        </span>
+                    </td>
+
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.Model_No)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.Model_No)
+                        </span>
+                    </td>
+                </tr>
+
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.Equipment_Application)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.Equipment_Application)
+                        </span>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.Source_of_calibration)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.Source_of_calibration)
+                        </span>
+                    </td>
+                </tr>
+
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.Freq_of_calibration)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.Freq_of_calibration)
+                        </span>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.Commissioning_Date)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @if (Model.Commissioning_Date != null && Model.Commissioning_Date > Convert.ToDateTime("01/01/0001"))
+                            {
+                                @Html.Label(Model.Commissioning_Date.ToString("dd/MM/yyyy"))
+                            }
+                        </span>
+                    </td>
+                </tr>
+
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.Equipment_status)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.Equipment_status)
+                        </span>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.RespPerson)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.RespPerson)
+                        </span>
+                    </td>
+                </tr>
+
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.Logged_date)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @if (Model.Logged_date != null && Model.Logged_date > Convert.ToDateTime("01/01/0001"))
+                            {
+                                @Html.Label(Model.Logged_date.ToString("dd/MM/yyyy"))
+                            }
+                        </span>
+                    </td>
+
+                    @*<td class="col-xs-3 col-md-2">
+                    <p class="bg-brown py-1 px-2 rounded">
+                        Next Maintenance Date
+                    </p>
+                </td>
+                <td class="col">
+                    <span class="bg-dark py-1 px-2 rounded">
+                        @if (Model.Next_Maint_Date != null && Model.Next_Maint_Date > Convert.ToDateTime("01/01/0001"))
+                        {
+                            @Html.Label(Model.Next_Maint_Date.ToString("dd/MM/yyyy"))
+                        }
+                    </span>
+                </td>
+            </tr>
+
+            <tr class="row">*@
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.DocUploadPath)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+
+                            @if (Obj.GetCurrentUserSession().Maintenance.Contains("4"))
+                            {
+                                if (Model.DocUploadPath != "" && Model.DocUploadPath != null && Model.DocUploadPath.Length > 0)
+                                {
+                                    foreach (var docs in Model.DocUploadPath.Trim(',').Split(','))
+                                    {
+                                        <span class="bg-dark py-1 px-2 rounded">
+                                            <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank">Preview</a>
+                                        </span>
+                                    }
+                                }
+                                else
+                                {
+
+                                    <span class="bg-dark py-1 px-2 rounded text-danger">No File</span>
+                                }
+                            }
+                        </span>
+                    </td>
+                </tr>
+            </table>
+
+            @if (dsPMaintenance != null && dsPMaintenance.Tables.Count > 0 && dsPMaintenance.Tables[0].Rows.Count > 0)
+            {
+                <br />
+                <h2 class="bg-dark pl-sm-2">Preventive Maintenance Details</h2>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped table-hover datatable-responsive" id="table1">
+                        <thead>
+                            <tr class="bg-brown">
+
+                                <th>Maintanance Date</th>
+                                <th>Document</th>
+                                <th>Next Maintaince Date</th>
+                                <th>Done By</th>
+                                <th>Amount Spent</th>
+                                <th>Remarks</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i < dsPMaintenance.Tables[0].Rows.Count; i++)
+                            {
+                                <tr>
+                                    <td>
+                                        @if (dsPMaintenance.Tables[0].Rows[i]["Maintenance_Date"].ToString() != null && Convert.ToDateTime(dsPMaintenance.Tables[0].Rows[i]["Maintenance_Date"].ToString()) > Convert.ToDateTime("01/01/0001"))
+                                        {
+                                            @Convert.ToDateTime(dsPMaintenance.Tables[0].Rows[i]["Maintenance_Date"].ToString()).ToString("dd/MM/yyyy")
+                                        }
+                                    </td>
+                                    <td>
+
+                                        @if (dsPMaintenance.Tables[0].Rows[i]["Maintenance_Details"].ToString() != "")
+                                            {
+                                                <a href='@Url.Action("DisplayDocument", "Reports", new { Document = dsPMaintenance.Tables[0].Rows[i]["Maintenance_Details"].ToString() })' target="_blank">Preview</a>
+                                            }
+                                       
+                                    </td>
+                                    <td>
+                                        @if (dsPMaintenance.Tables[0].Rows[i]["Next_Maint_Date"].ToString() != null && Convert.ToDateTime(dsPMaintenance.Tables[0].Rows[i]["Next_Maint_Date"].ToString()) > Convert.ToDateTime("01/01/0001"))
+                                        {
+                                            @Convert.ToDateTime(dsPMaintenance.Tables[0].Rows[i]["Next_Maint_Date"].ToString()).ToString("dd/MM/yyyy")
+                                        }
+                                    </td>
+                                    <td>
+                                        @dsPMaintenance.Tables[0].Rows[i]["done_by"].ToString()
+                                    </td>
+                                    <td>
+                                        @dsPMaintenance.Tables[0].Rows[i]["Amt_Spent"].ToString()
+                                    </td>
+                                    <td>
+                                        @dsPMaintenance.Tables[0].Rows[i]["Remarks"].ToString()
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+
+
+                </div>
+            }
+
+            @if (dsMaintenance != null && dsMaintenance.Tables.Count > 0 && dsMaintenance.Tables[0].Rows.Count > 0)
+            {
+                <br />
+                <h2 class="bg-dark pl-sm-2">Breakdown Maintenance Details</h2>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped table-hover datatable-responsive" id="table2">
+                        <thead>
+                            <tr class="bg-brown">
+
+                                <th>Maintanance Date</th>
+                                <th>Document</th>
+                                <th>Details of Rectification Work</th>
+                                <th>Down Time from</th>
+                                <th>Down Time to</th>
+                                <th>Spare Used</th>
+                                <th>Amount Spent</th>
+                                <th>Remarks</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i < dsMaintenance.Tables[0].Rows.Count; i++)
+                            {
+                                <tr>
+                                    <td>
+                                        @if (dsMaintenance.Tables[0].Rows[i]["Maintenance_Date"].ToString() != null && Convert.ToDateTime(dsMaintenance.Tables[0].Rows[i]["Maintenance_Date"].ToString()) > Convert.ToDateTime("01/01/0001"))
+                                        {
+                                            @Convert.ToDateTime(dsMaintenance.Tables[0].Rows[i]["Maintenance_Date"].ToString()).ToString("dd/MM/yyyy")
+                                        }
+                                    </td>
+                                    <td>
+
+                                       
+                                            @if (dsMaintenance.Tables[0].Rows[i]["Maintenance_Details"].ToString() != "")
+                                            {
+                                                <a href='@Url.Action("DisplayDocument", "Reports", new { Document = dsMaintenance.Tables[0].Rows[i]["Maintenance_Details"].ToString() })' target="_blank">Preview</a>
+                                            }
+                                        
+                                    </td>
+                                    <td>
+                                        @dsMaintenance.Tables[0].Rows[i]["Maintenance_RectificationWork"].ToString()
+                                    </td>
+                                    <td>
+                                        @if (dsMaintenance.Tables[0].Rows[i]["Down_Time_From"].ToString() != null && Convert.ToDateTime(dsMaintenance.Tables[0].Rows[i]["Down_Time_From"].ToString()) > Convert.ToDateTime("01/01/0001"))
+                                        {
+                                            @Convert.ToDateTime(dsMaintenance.Tables[0].Rows[i]["Down_Time_From"].ToString()).ToString("dd/MM/yyyy hh:mm")
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (dsMaintenance.Tables[0].Rows[i]["Down_Time_To"].ToString() != null && Convert.ToDateTime(dsMaintenance.Tables[0].Rows[i]["Down_Time_To"].ToString()) > Convert.ToDateTime("01/01/0001"))
+                                        {
+                                            @Convert.ToDateTime(dsMaintenance.Tables[0].Rows[i]["Down_Time_To"].ToString()).ToString("dd/MM/yyyy hh:mm")
+                                        }
+                                    </td>
+                                    <td>
+                                        @dsMaintenance.Tables[0].Rows[i]["Spare_Used"].ToString()
+                                    </td>
+                                    <td>
+                                        @dsMaintenance.Tables[0].Rows[i]["Amt_Spent"].ToString()
+                                    </td>
+                                    <td>
+                                        @dsMaintenance.Tables[0].Rows[i]["Remarks"].ToString()
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+
+
+                </div>
+            }
+
+        </div>
+    </div>
+
+</div>
+
+
+@section scripts {
+    <script>
+        //----zzz
+
+
+        $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+                                @:     text: '@TempData["alertdata"]',
+                                @:     type: 'error'
+                                @: }).show();
+                                             }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+                                @:       text: '@TempData["Successdata"]',
+                                @:       type: 'success'
+                @:}).show();
+        }
+});
+
+//zzz----
+
+
+
+var table1 = function () {
+
+   var ShowDownld = @(Obj.GetCurrentUserSession().Maintenance.Contains("4") ? "true" : "false");
+    //
+    // Setup module components
+    //
+
+    // Basic Datatable examples
+    var _componentDatatableBasic = function () {
+        if (!$().DataTable) {
+            console.warn('Warning - datatables.min.js is not loaded.');
+            return;
+        }
+
+        //Setting datatable defaults
+        $.extend($.fn.dataTable.defaults, {
+            autoWidth: false,
+            responsive: true,
+            columnDefs: [{
+                orderable: false,
+                width: 100,
+                targets: [1, 5]
+            }, {
+                    'targets': [1],
+                    'visible': ShowDownld
+                }],
+
+            colReorder: false,
+            dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+            //dom: 'lBfrtip',
+            language: {
+                search: '<span>Filter:</span> _INPUT_',
+                searchPlaceholder: 'Type to filter...',
+                lengthMenu: '<span>Show:</span> _MENU_',
+                paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+            }
+        });
+
+          var myClass = "";
+                var Delclass= @(Obj.GetCurrentUserSession().Maintenance.Contains("4") ? "true" : "false");
+                if (Delclass == false) { myClass = 'hidden'  };
+
+
+        var table = $('#table1').DataTable({
+
+            lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+            colReorder: {
+                fixedColumnsLeft: 1
+            },
+            stateSave: true,
+            stateSaveParams: function (settings, data) {
+                for (var i = 0, ien = data.columns.length; i < ien; i++) {
+                    delete data.columns[i].visible;
+                    delete data.columns[i].search;
+                }
+            },
+            scrollY: '350px',
+            scrollCollapse: true,
+
+
+            keys: {
+                className: 'focus focus-success'
+            },
+
+            buttons: {
+                buttons: [
+                    {
+                        extend: 'copyHtml5',
+                        className: myClass,//className: 'btn btn-light',
+                        title: 'Data export',
+                        exportOptions: {
+                            columns: ':visible :not(.not-export-column)'
+                        },
+                    },
+                    {
+                        extend: 'excelHtml5',
+                        className: myClass,//className: 'btn btn-light',
+                        title: 'Data export',
+                        exportOptions: {
+                            columns: ':visible :not(.not-export-column)'
+                        },
+
+                    },
+                    {
+                        extend: 'pdfHtml5',
+                        className: myClass,//className: 'btn btn-light',
+                        title: 'Data export',
+                        exportOptions: {
+                            columns: ':visible :not(.not-export-column)'
+                        },
+                    },
+                    {
+                        extend: 'csvHtml5',
+                        className: myClass,//className: 'btn btn-light',
+                        title: 'Data export',
+                        exportOptions: {
+                            columns: ':visible :not(.not-export-column)'
+                        },
+                    },
+                    {
+                        extend: 'print',
+                        className: myClass,//className: 'btn btn-light',
+                        title: 'Data export',
+                        exportOptions: {
+                            columns: ':visible :not(.not-export-column)'
+                        },
+                    },
+
+                    {
+                        extend: 'colvis',
+                        text: '<i class="icon-three-bars"></i>',
+                        className: 'btn bg-blue btn-icon dropdown-toggle',
+                        columns: ':visible:not(.not-export-column)'
+                    }
+                ]
+            }
+
+
+
+
+        });
+        // Adjust columns on window resize
+        setTimeout(function () {
+            $(window).on('resize', function () {
+                table.columns.adjust();
+            });
+        }, 100);
+
+
+        //Redraw table on click toggle. -------table.columns.adjust doesn't work properly upon calling after toggle (width increase/decrease = redraw table.).
+        $('.sidebar-control').on('click', function () {
+
+            setTimeout(function () {
+                //alert("gii");
+
+                table.columns.adjust().draw();
+                $("#table1").resize();
+            }, 100);
+
+        });
+        //}
+
+        $('#table1').on('page.dt', function () {
+            //table.draw();
+            //alert("zzz1");
+            $("#table1").resize();
+
+        });
+
+        $('#table1').on('column-visibility.dt', function () {
+            //table.draw();
+            //alert("zzz2");
+            $("#table1").resize();
+
+        });
+
+        $('#table1').on('order.dt', function () {
+            //table.draw();
+            //alert("zzz3");
+            $("#table1").resize();
+
+        });
+
+
+        $('#table1').on('responsive-display.dt', function () {
+            //table.draw();
+            //alert("zzz4");
+            $("#table1").resize();
+
+        });
+
+
+        $('#table1').on('responsive-resize.dt', function () {
+            //table.draw();
+            //alert("zzz4");
+            $("#table1").resize();
+
+        });
+
+
+        //.on('order.dt', function () {
+        //    table.columns.adjust().draw();
+        //    $("#qhse").resize(); })
+        //.on('search.dt', function () {
+        //    table.columns.adjust().draw();
+        //    $("#qhse").resize(); })
+
+        //.on('column-visibility.dt', function () {
+        //    table.columns.adjust().draw();
+        //    $("#qhse").resize();
+        //})
+
+
+
+    };
+
+
+
+
+
+
+    // Select2 for length menu styling
+    var _componentSelect2 = function () {
+        if (!$().select2) {
+            console.warn('Warning - select2.min.js is not loaded.');
+            return;
+        }
+
+        // Initialize
+        $('.dataTables_length select').select2({
+            minimumResultsForSearch: Infinity,
+            dropdownAutoWidth: true,
+            width: 'auto'
+        });
+    };
+
+
+    //
+    // Return objects assigned to module
+    //
+
+    return {
+        init: function () {
+            _componentDatatableBasic();
+            _componentSelect2();
+        }
+    }
+}();
+
+var table2 = function () {
+
+     var ShowDownld = @(Obj.GetCurrentUserSession().Maintenance.Contains("4") ? "true" : "false");
+    //
+    // Setup module components
+    //
+
+    // Basic Datatable examples
+    var _componentDatatableBasic = function () {
+        if (!$().DataTable) {
+            console.warn('Warning - datatables.min.js is not loaded.');
+            return;
+        }
+
+        //Setting datatable defaults
+        $.extend($.fn.dataTable.defaults, {
+            autoWidth: false,
+            responsive: true,
+            columnDefs: [{
+                orderable: false,
+                width: 100,
+                targets: [1, 7]
+            }, {
+                    'targets': [1],
+                    'visible': ShowDownld
+                }],
+
+            colReorder: false,
+            dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+            //dom: 'lBfrtip',
+            language: {
+                search: '<span>Filter:</span> _INPUT_',
+                searchPlaceholder: 'Type to filter...',
+                lengthMenu: '<span>Show:</span> _MENU_',
+                paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+            }
+        });
+
+          var myClass = "";
+                var Delclass= @(Obj.GetCurrentUserSession().Maintenance.Contains("4") ? "true" : "false");
+                if (Delclass == false) { myClass = 'hidden'  };
+        var table = $('#table2').DataTable({
+
+            lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+            colReorder: {
+                fixedColumnsLeft: 1
+            },
+            stateSave: true,
+            stateSaveParams: function (settings, data) {
+                for (var i = 0, ien = data.columns.length; i < ien; i++) {
+                    delete data.columns[i].visible;
+                    delete data.columns[i].search;
+                }
+            },
+            scrollY: '350px',
+            scrollCollapse: true,
+
+
+            keys: {
+                className: 'focus focus-success'
+            },
+
+            buttons: {
+                buttons: [
+                    {
+                        extend: 'copyHtml5',
+
+                        className: myClass,//className: 'btn btn-light',
+                        title: 'Data export',
+                        exportOptions: {
+                            columns: ':visible :not(.not-export-column)'
+                        },
+                    },
+                    {
+                        extend: 'excelHtml5',
+
+                        className: myClass,// className: 'btn btn-light',
+                        title: 'Data export',
+                        exportOptions: {
+                            columns: ':visible :not(.not-export-column)'
+                        },
+
+                    },
+                    {
+                        extend: 'pdfHtml5',
+                        className: myClass,//className: 'btn btn-light',
+                        title: 'Data export',
+                        exportOptions: {
+                            columns: ':visible :not(.not-export-column)'
+                        },
+                    },
+                    {
+                        extend: 'csvHtml5',
+                        className: myClass,//className: 'btn btn-light',
+                        title: 'Data export',
+                        exportOptions: {
+                            columns: ':visible :not(.not-export-column)'
+                        },
+                    },
+                    {
+                        extend: 'print',
+                        className: myClass,
+                        //className: 'btn btn-light',
+                        title: 'Data export',
+                        exportOptions: {
+                            columns: ':visible :not(.not-export-column)'
+                        },
+                    },
+
+                    {
+                        extend: 'colvis',
+                        text: '<i class="icon-three-bars"></i>',
+                        className: 'btn bg-blue btn-icon dropdown-toggle',
+                        columns: ':visible:not(.not-export-column)'
+                    }
+                ]
+            }
+
+
+
+
+        });
+        // Adjust columns on window resize
+        setTimeout(function () {
+            $(window).on('resize', function () {
+                table.columns.adjust();
+            });
+        }, 100);
+
+
+        //Redraw table on click toggle. -------table.columns.adjust doesn't work properly upon calling after toggle (width increase/decrease = redraw table.).
+        $('.sidebar-control').on('click', function () {
+
+            setTimeout(function () {
+                //alert("gii");
+
+                table.columns.adjust().draw();
+                $("#table2").resize();
+            }, 100);
+
+        });
+        //}
+
+        $('#table2').on('page.dt', function () {
+            //table.draw();
+            //alert("zzz1");
+            $("#table2").resize();
+
+        });
+
+        $('#table2').on('column-visibility.dt', function () {
+            //table.draw();
+            //alert("zzz2");
+            $("#table2").resize();
+
+        });
+
+        $('#table2').on('order.dt', function () {
+            //table.draw();
+            //alert("zzz3");
+            $("#table2").resize();
+
+        });
+
+
+        $('#table2').on('responsive-display.dt', function () {
+            //table.draw();
+            //alert("zzz4");
+            $("#table2").resize();
+
+        });
+
+
+        $('#table2').on('responsive-resize.dt', function () {
+            //table.draw();
+            //alert("zzz4");
+            $("#table2").resize();
+
+        });
+
+
+        //.on('order.dt', function () {
+        //    table.columns.adjust().draw();
+        //    $("#qhse").resize(); })
+        //.on('search.dt', function () {
+        //    table.columns.adjust().draw();
+        //    $("#qhse").resize(); })
+
+        //.on('column-visibility.dt', function () {
+        //    table.columns.adjust().draw();
+        //    $("#qhse").resize();
+        //})
+
+
+
+    };
+
+
+
+
+
+
+    // Select2 for length menu styling
+    var _componentSelect2 = function () {
+        if (!$().select2) {
+            console.warn('Warning - select2.min.js is not loaded.');
+            return;
+        }
+
+        // Initialize
+        $('.dataTables_length select').select2({
+            minimumResultsForSearch: Infinity,
+            dropdownAutoWidth: true,
+            width: 'auto'
+        });
+    };
+
+
+    //
+    // Return objects assigned to module
+    //
+
+    return {
+        init: function () {
+            _componentDatatableBasic();
+            _componentSelect2();
+        }
+    }
+}();
+
+
+
+
+// Initialize module
+// ------------------------------
+
+document.addEventListener('DOMContentLoaded', function () {
+    table1.init();
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+    table2.init();
+});
+
+    </script>
+
+
+}

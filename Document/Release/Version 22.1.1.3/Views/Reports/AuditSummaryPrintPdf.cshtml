@@ -1,0 +1,248 @@
+﻿@using System.Data;
+@{
+    Layout = "~/Views/Shared/_PrintLayout.cshtml";
+    ViewBag.Title = "AuditSummaryReport";
+    DataSet dsNCReport = new DataSet();
+    string AuditDate = "", AuditLocation = "", AuditorNames = "", AuditeeNames = "", AuditCriteria = "";
+    ISOStd.Models.clsGlobal obj = new ISOStd.Models.clsGlobal();
+    if (ViewBag.dsAusditReport != null)
+    {
+        dsNCReport = ViewBag.dsAusditReport;
+        if (dsNCReport.Tables.Count > 0 && dsNCReport.Tables[0].Rows.Count > 0)
+        {
+
+            for (int i = 0; i < dsNCReport.Tables[0].Rows.Count; i++)
+            {
+                AuditDate = AuditDate + Convert.ToDateTime(dsNCReport.Tables[0].Rows[i]["AuditDate"].ToString()).ToString("dd/MM/yyyy HH:mm") + ", ";
+            }
+            AuditDate = AuditDate.Trim().TrimEnd(',');
+            for (int i = 0; i < dsNCReport.Tables[0].Rows.Count; i++)
+            {
+                AuditLocation = AuditLocation + dsNCReport.Tables[0].Rows[i]["AuditLocation"].ToString() + ", ";
+            }
+            AuditLocation = AuditLocation.Trim().TrimEnd(',');
+
+            for (int i = 0; i < dsNCReport.Tables[0].Rows.Count; i++)
+            {
+                AuditorNames = AuditorNames + dsNCReport.Tables[0].Rows[i]["DeptAudited"].ToString()
+                    + ": " + dsNCReport.Tables[0].Rows[i]["AuditorNames"].ToString() + ", ";
+            }
+            AuditorNames = AuditorNames.Trim().TrimEnd(',');
+            for (int i = 0; i < dsNCReport.Tables[0].Rows.Count; i++)
+            {
+                AuditeeNames = AuditeeNames + dsNCReport.Tables[0].Rows[i]["DeptAudited"].ToString()
+                   + ": " + dsNCReport.Tables[0].Rows[i]["AuditeeNames"].ToString() + ", ";
+            }
+            AuditeeNames = AuditeeNames.Trim().TrimEnd(',');
+
+            for (int i = 0; i < dsNCReport.Tables[0].Rows.Count; i++)
+            {
+                AuditCriteria = AuditCriteria + dsNCReport.Tables[0].Rows[i]["AuditCriteria"].ToString() + ", ";
+            }
+            AuditCriteria = AuditCriteria.Trim().TrimEnd(',');
+        }
+    }
+}
+
+
+
+
+  
+    <div class="card">
+
+        <div class="card-header header-elements-inline bg-primary text-center">
+            <h5 class="card-title">Audit Summary Report</h5>
+           
+        </div>
+      
+        <div class="card-body">
+            @if (dsNCReport.Tables.Count > 0 && dsNCReport.Tables[0].Rows.Count > 0)
+            {     
+                <div class="card">
+                    <table>
+                        <tr>
+                            <td>
+                                <div id="logo" style="padding-left: 30px;">
+                                    <img src="@Url.Content(dsNCReport.Tables[0].Rows[0]["logo"].ToString())" style="width: 150px;height: 100px;" />
+                                </div>
+                            </td>
+                           <td style="text-align: center; font-weight: bold; width: 80%; font-size: 16px;">
+                                <span>@dsNCReport.Tables[0].Rows[0]["CompanyName"].ToString()</span>
+                                <br />
+                                <span>INTERNAL AUDIT SUMMARY REPORT</span>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div>
+                    <table class="table table-lg">
+                        <tr>
+                            <td class="font-size-lg">Audit Number
+                            </td>
+                            <td class="font-size-lg">
+                                @dsNCReport.Tables[0].Rows[0]["AuditNum"].ToString()
+                            </td>
+                            <td class="font-size-lg">Audit Criteria
+                            </td>
+                            <td class="font-size-lg">
+                                @AuditCriteria
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="4" class="font-size-lg">Scope of Management System     
+                              <br />
+                                <br />
+                                <br />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="font-size-lg">Date of audits
+                            </td>
+                            <td class="font-size-lg">
+                                @AuditDate
+                            </td>
+                            <td class="font-size-lg">Location of audit
+                            </td>
+                            <td class="font-size-lg">
+                                @obj.GetMultiWorkLocationById(AuditLocation)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="font-size-lg">Auditors
+                            </td>
+                            <td class="font-size-lg">
+                                @AuditorNames
+                            </td>
+                            <td class="font-size-lg">Auditee audited / interviewed
+                            </td>
+                            <td class="font-size-lg">
+                                @AuditeeNames
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="font-size-lg">Audit evidence collected through
+                            </td>
+                            <td class="font-size-lg">
+                                <ul>
+                                    <li>By reviewing documents</li>
+                                    <li>By reviewing records</li>
+                                    <li>Interviewing auditee and staff</li>
+                                    <li>By observing activities performed during the audit</li>
+                                </ul>
+                            </td>
+                            <td class="font-size-lg">Audit methodology
+                            </td>
+                            <td class="font-size-lg">
+                                <ul>
+                                    <li>Sampling (few samples from each
+                    		process verified to conform to the
+                    		management system requirements)
+                                    </li>
+                                </ul>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="font-size-lg">Auditors
+                            </td>
+                            <td class="font-size-lg">
+                                @AuditorNames
+                            </td>
+                            <td class="font-size-lg">Auditee audited / interviewed
+                            </td>
+                            <td class="font-size-lg">
+                                @AuditeeNames
+                            </td>
+                        </tr>
+                    </table>
+
+                </div>
+               
+                <div class="table-responsive">
+                    <table class="table table-lg table-bordered">
+                        <thead>
+                            <tr class="bg-blue font-weight-bold">
+                                <td colspan="5">Audit Details
+                                </td>
+                            </tr>
+                            <tr class="bg-blue font-weight-bold">
+                                <td>Sl No</td>
+                                <td>Dept Audited</td>
+                                <td>No. of major findings</td>
+                                <td>No. of minor findings</td>
+                                <td>No. of observations</td>
+                            </tr>
+                        </thead>
+                        @if (dsNCReport.Tables.Count > 0 && dsNCReport.Tables[0].Rows.Count > 0)
+                        {
+                            for (int i = 0, j = 1; i < dsNCReport.Tables[0].Rows.Count; i++, j++)
+                            {
+                            <tbody>
+                                <tr>
+                                    <td>@j</td>
+                                    <td>@dsNCReport.Tables[0].Rows[i]["DeptAudited"].ToString()</td>
+                                    <td>@dsNCReport.Tables[0].Rows[i]["No_Major"].ToString()</td>
+                                    <td>@dsNCReport.Tables[0].Rows[i]["No_Minor"].ToString()</td>
+                                    <td>@dsNCReport.Tables[0].Rows[i]["No_obsern"].ToString()</td>
+                                </tr>
+                            </tbody>
+                            }
+                        }
+                        <tr>
+                            <td colspan="3">Positive observations
+                        <br />
+                                <br />
+                                <br />
+                            </td>
+                            <td colspan="3">Areas of concerns / improvements required
+                        <br />
+                                <br />
+                                <br />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <br />
+                <div class="table-responsive">
+                    <table class="table table-lg table-bordered">
+                        <thead>
+                            <tr class="bg-blue font-weight-bold">
+                                <td colspan="3">Prepared By</td>
+                                <td colspan="3">Reviewed By</td>
+                            </tr>
+                            <tr class="bg-blue font-weight-bold">
+                                <th>Name</th>
+                                <th>Position‎‎</th>
+                                <th>Department‎‎</th>
+                                <th>Name</th>
+                                <th>Position‎‎</th>
+                                <th>Department‎‎</th>
+                            </tr>
+                        </thead>
+                        @if (dsNCReport.Tables.Count > 0 && dsNCReport.Tables[1].Rows.Count > 0)
+                        {
+                            for (int i = 0; i < dsNCReport.Tables[1].Rows.Count; i++)
+                            {
+                            <tr>
+                                <td>@dsNCReport.Tables[1].Rows[i]["AuditPrepared_name"].ToString()</td>
+                                <td>@dsNCReport.Tables[1].Rows[i]["AuditPrepared_position"].ToString()</td>
+                                <td>@dsNCReport.Tables[1].Rows[i]["AuditPrepared_department"].ToString()</td>
+                                <td>@dsNCReport.Tables[1].Rows[i]["AuditReviewed_name"].ToString()</td>
+                                <td>@dsNCReport.Tables[1].Rows[i]["AuditReviewed_position"].ToString()</td>
+                                <td>@dsNCReport.Tables[1].Rows[i]["Auditreviewed_department"].ToString()</td>
+
+                            </tr>
+                            }
+                        }
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+  
+
+
+@section Scripts {
+    <script>
+      
+    </script>
+}

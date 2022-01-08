@@ -1,0 +1,987 @@
+﻿@model ISOStd.Models.AuditProcessModels
+@using System.Data;
+
+@{
+
+    ViewBag.Title = "AuditNonConfirmity";
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+
+    var user = Obj.GetCurrentUserSession().empid;
+    //DataSet dsAudit = new DataSet();
+
+    //if (ViewBag.objAudit != null)
+    //{
+    //    dsAudit = ViewBag.objAudit;
+    //}
+    //int itmctn = 0;
+}
+
+@section featured {
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("AuditProcessList", "AuditProcess", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Audit List</span>
+                    </a>
+                    <a href="@Url.Action("AuditDetails", "AuditProcess", new { Audit_Id = Model.Audit_Id })" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Audits Details</span>
+                    </a>
+                    <span class="breadcrumb-item active">Non Confirmity Details</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            <div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+                    @*@if (Obj.GetCurrentUserSession().IncidentRpt.Contains("4"))
+                    {*@
+                        @using (Html.BeginForm("AuditNonConfirmityPDF", "AuditProcess", FormMethod.Post, new { id = "formNC", name = "formNC" }))
+                        {
+                            @Html.AntiForgeryToken()
+                     <div class="breadcrumb-elements-item dropdown p-0">
+                        <input type="hidden" id="Audit_Id" name="Audit_Id" value="@Model.Audit_Id" />
+                        <input type="hidden" id="id_audit_process_perform" name="id_audit_process_perform" value="@Model.id_audit_process_perform" />
+
+                        <button type="submit" class="dropdown-item">
+                            <i class="icon-printer2"></i> Report
+                        </button>
+                    </div>
+                        }
+                    @*}*@
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">
+                Non Confrimity Details
+            </h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+        @*<div>
+            <div class="card-header bg-white header-elements-sm-inline">
+                <div class="header-elements">
+
+                    @Html.ActionLink("Back to List", "AuditProcessList", null, new { @class = "btn btn-outline bg-orange text-orange border-orange ml-3", onclick = "HyperLinkProgressIconFunction()" })
+                </div>
+            </div>
+        </div>*@
+        <div class="card-body">
+            <div class="container-fluid">
+                <input type="hidden" id="ca_date1" name="ca_date1" value="@Model.ca_date.ToString("yyyy-MM-dd")" />
+                <table class="table table-dark table-bordered table-striped table-hover bg-blue-800">
+                    <thead></thead>
+                    <tbody>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.Audit_no)
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @Html.DisplayFor(model => model.Audit_no)
+                                </p>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    NC Number
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @Html.DisplayFor(model => model.Non_comformance)
+                                </p>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.division)
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @Html.DisplayFor(model => model.division)
+                                </p>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.dept)
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @Html.DisplayFor(model => model.dept)
+                                </p>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.location)
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @Html.DisplayFor(model => model.location)
+                                </p>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.Audit_criteria)
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @Html.DisplayFor(model => model.Audit_criteria)
+                                </p>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.AuditDate)
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @if (Model.AuditDate != null && Model.AuditDate > Convert.ToDateTime("01/01/0001"))
+                                    {
+                                        @Html.Label(Model.AuditDate.ToString("dd/MM/yyyy"))
+                                        <input type="hidden" id="AuditDate" name="AuditDate" value="@Model.AuditDate.ToString("yyyy-MM-dd")" />
+                                    }
+                                </p>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.Notified_To)
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @Html.DisplayFor(model => model.Notified_To)
+                                </p>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.internal_audit_team)
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @Html.DisplayFor(model => model.internal_audit_team)
+                                </p>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.auditee_team)
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @Html.DisplayFor(model => model.auditee_team)
+                                </p>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.Details)
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @Html.DisplayFor(model => model.Details)
+                                </p>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.Evidence)
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @Html.DisplayFor(model => model.Evidence)
+                                </p>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @*@Html.DisplayNameFor(model => model.Conformance)*@
+                                    Why it is NC?
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @Html.DisplayFor(model => model.Conformance)
+                                </p>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    Document Upload
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @if (Model.evidence_upload != "")
+                                    {
+                                        <a href='@Url.Action("DisplayDocument", "Reports", new { Document = Model.evidence_upload })' target="_blank" style="color:orange">Preview</a>
+                                    }
+                                </p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        @if (Model.nc_step_status == "" && Model.why_nc == "" && Model.internal_audit_teamId.Split(',').Contains(user))
+        {
+            using (Html.BeginForm("AuditNonConfirmity", "AuditProcess", FormMethod.Post,
+                         new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+            {
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary(true)
+                <input type="hidden" id="Audit_Id" name="Audit_Id" value="@Model.Audit_Id" />
+                <input type="hidden" id="id_audit_process_perform" name="id_audit_process_perform" value="@Model.id_audit_process_perform" />
+                <div class="container-fluid">
+                    <table class="table table-dark table-bordered table-striped table-hover bg-blue-800">
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    Remarks
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    <textarea class="form-control" id="why_nc" name="why_nc" required>@Model.why_nc</textarea>
+                                </p>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+                        <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Submit</button>
+                    </div>
+                </div>
+            }
+        }
+        else if (Model.nc_step_status == "1" && Model.auditee_teamId.Split(',').Contains(user))
+        {
+            using (Html.BeginForm("AuditNonConfirmity1", "AuditProcess", FormMethod.Post,
+                         new { enctype = "multipart/form-data", id = "form2", name = "form2" }))
+            {
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary(true)
+                <input type="hidden" id="Audit_Id" name="Audit_Id" value="@Model.Audit_Id" />
+                <input type="hidden" id="id_audit_process_perform" name="id_audit_process_perform" value="@Model.id_audit_process_perform" />
+                <div class="container-fluid">
+                    <table class="table table-dark table-bordered table-striped table-hover bg-blue-800">
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    Remarks?
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @Html.DisplayFor(model => model.why_nc)
+                                </p>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.auditee_acceptance)
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="auditee_acceptance" name="auditee_acceptance" onchange="GetAuditeeAcceptanceResult()">
+                                        @if (Model.auditee_acceptance == "Accepted")
+                                        {
+                                            <option value='Accepted' selected>Accepted</option>
+                                            <option value='Rejected'>Rejected</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='Accepted'>Accepted</option>
+                                            <option value='Rejected'>Rejected</option>
+                                        }
+                                    </select>
+                                </p>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.ca_date)
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @if (Model.ca_date > Convert.ToDateTime("01/01/0001"))
+                                    {
+                                        <input type="date" class="form-control" id="ca_date" name="ca_date" value="@Model.ca_date.ToString("yyyy-MM-dd")" required onchange="ChkDateValidity()"/>
+                                    }
+                                    else
+                                    {
+                                        <input type="date" class="form-control" id="ca_date" name="ca_date" required onchange="ChkDateValidity()" />
+                                    }
+                                </p>
+                            </td>
+                        </tr>
+                    </table>
+                    <div id="Auditee_response" style="display:none">
+                        <table class="table table-dark table-bordered table-striped table-hover bg-blue-800">
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+                                    Reason for Rejection
+                                </td>
+                                <td class="col">
+                                   <textarea class="form-control" id="nc_reject_reason" name="nc_reject_reason"></textarea>  
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+                                    Upload Document
+                                </td>
+                                <td class="col">
+                                    <input type="file" name="nc_reject_upload" id="nc_reject_upload" title="Documents for Rejection" multiple="multiple" onchange="FileFormatValidation(this)" accept=".pdf, .doc, .docx, .jpg, .jpeg,.png,.xls,.xlsx,image/*" @*class="bootstrap-uploader"*@ />
+                                    <span class="form-text text-muted"><code>(Hold Ctrl Key in case of multiple files)</code></span>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+                        <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form2')"><i class="icon-checkmark3 mr-2"></i> Submit</button>
+                    </div>
+                </div>
+            }
+        }
+        else if (Model.nc_step_status == "2" && Model.internal_audit_teamId.Split(',').Contains(user))
+        {
+            using (Html.BeginForm("AuditNonConfirmity2", "AuditProcess", FormMethod.Post,
+                         new { enctype = "multipart/form-data", id = "form3", name = "form3" }))
+            {
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary(true)
+                <input type="hidden" id="Audit_Id" name="Audit_Id" value="@Model.Audit_Id" />
+                <input type="hidden" id="id_audit_process_perform" name="id_audit_process_perform" value="@Model.id_audit_process_perform" />
+                <div class="container-fluid">
+                    <table class="table table-dark table-bordered table-striped table-hover bg-blue-800">
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    Remarks?
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @Html.DisplayFor(model => model.why_nc)
+                                </p>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.auditee_acceptance)
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @Html.DisplayFor(model => model.auditee_acceptance)
+                                </p>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.ca_date)
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @if (Model.ca_date != null && Model.ca_date > Convert.ToDateTime("01/01/0001"))
+                                    {
+                                        @Html.Label(Model.ca_date.ToString("dd/MM/yyyy"))
+                                    }
+                                </p>
+                            </td>
+                        </tr>
+                        @if (Model.auditee_acceptance == "Rejected")
+                        {
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+                                    <p class="bg-brown py-1 px-2 rounded">
+                                        NC Rejection Reason
+                                    </p>
+                                </td>
+                                <td class="col">
+                                    <p class="bg-dark py-1 px-2 rounded">
+                                        @Html.DisplayFor(model => model.nc_reject_reason)
+                                    </p>
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+                                    <p class="bg-brown py-1 px-2 rounded">
+                                        Uploaded Document
+                                    </p>
+                                </td>
+                                <td class="col">
+                                    <p class="bg-dark py-1 px-2 rounded">
+                                        @if (Model.nc_reject_upload != "")
+                                        {
+                                            foreach (var doc in Model.nc_reject_upload.Trim(',').Split(','))
+                                            {
+                                                <a href='@Url.Action("DisplayDocument", "Reports", new { Document = doc })' target="_blank">Preview</a>
+                                            }
+                                        }
+                                    </p>
+                                </td>
+                            </tr>
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+                                    <p class="bg-brown py-1 px-2 rounded">
+                                        Auditor Accept Reason for Rejection
+                                    </p>
+                                </td>
+                                <td class="col-xs-6 col-md-4">
+                                    <p class="bg-dark py-1 px-2 rounded">
+                                        <select class="form-control select-search select2-hidden-accessible" data-fouc id="nc_reject_response" name="nc_reject_response" required>
+                                            @if (Model.nc_reject_response == "Yes")
+                                            {
+                                                <option value='Yes' selected>Yes</option>
+                                                <option value='No'>No</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='Yes'>Yes</option>
+                                                <option value='No'>No</option>
+                                            }
+                                        </select>
+                                    </p>
+                                </td>                               
+                            </tr>
+                        }
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+                                    <p class="bg-brown py-1 px-2 rounded">
+                                        @Html.DisplayNameFor(model => model.followup_date)
+                                    </p>
+                                </td>
+                                <td class="col">
+                                    <p class="bg-dark py-1 px-2 rounded">
+                                        @if (Model.followup_date > Convert.ToDateTime("01/01/0001"))
+                                        {
+                                            <input type="date" class="form-control" id="followup_date" name="followup_date" value="@Model.followup_date.ToString("yyyy-MM-dd")" required onchange="ChkFollowDateValidity()"/>
+                                        }
+                                        else
+                                        {
+                                            <input type="date" class="form-control" id="followup_date" name="followup_date" required onchange="ChkFollowDateValidity()"/>
+                                        }
+                                    </p>
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+                                    <p class="bg-brown py-1 px-2 rounded">
+                                        Auditor NC Status
+                                    </p>
+                                </td>
+                                <td class="col">
+                                    <p class="bg-dark py-1 px-2 rounded">
+                                        <select class="form-control select-search select2-hidden-accessible" data-fouc id="nc_status" name="nc_status" required>
+                                            @if (Model.nc_status == "Open")
+                                            {
+                                                <option value='Open' selected>Open</option>
+                                                <option value='Close'>Close</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='Open'>Open</option>
+                                                <option value='Close'>Close</option>
+                                            }
+                                        </select>
+                                    </p>
+                                </td>
+                            </tr>
+                    </table>
+
+                    <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+                        <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form3')"><i class="icon-checkmark3 mr-2"></i> Submit</button>
+                    </div>
+                </div>
+            }
+        }
+        else if (Model.nc_step_status == "3")
+        {
+            <div class="container-fluid">
+                <table class="table table-dark table-bordered table-striped table-hover bg-blue-800">
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                Remarks?
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.why_nc)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                NC Status
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.nc_status)
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.auditee_acceptance)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.auditee_acceptance)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.ca_date)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @if (Model.ca_date != null && Model.ca_date > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    @Html.Label(Model.ca_date.ToString("dd/MM/yyyy"))
+                                }
+                            </p>
+                        </td>
+                    </tr>
+                    @if (Model.auditee_acceptance == "Rejected")
+                    {
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    NC Rejection Reason
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @Html.DisplayFor(model => model.nc_reject_reason)
+                                </p>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    Uploaded Document
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @if (Model.nc_reject_upload != "")
+                                    {
+                                        foreach(var doc in Model.nc_reject_upload.Trim(',').Split(','))
+                                        {
+                                           <a href='@Url.Action("DisplayDocument", "Reports", new { Document = doc })' target="_blank">Preview</a>
+                                        }                                        
+                                    }
+                                </p>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    Auditor Accept Reson for Rejection
+                                </p>
+                            </td>
+                            <td class="col-xs-6 col-md-4">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @Html.DisplayFor(model => model.nc_reject_response)
+                                </p>
+                            </td>
+                        </tr>
+                    }
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.followup_date)
+                            </p>
+                        </td>
+                        <td class="col-xs-6 col-md-4">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @if (Model.followup_date != null && Model.followup_date > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    @Html.Label(Model.followup_date.ToString("dd/MM/yyyy"))
+                                }
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div><h2 style="text-align:center">Not Authorised Preson</h2></div>
+        }
+
+        @*@if (Model.followup_date.ToString() != null && Model.followup_date.ToString() != "" && Model.followup_date > Convert.ToDateTime("01/01/0001"))
+        {
+                <div class="container-fluid">
+                    <table class="table table-dark table-bordered table-striped table-hover bg-blue-800">
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    Remarks?
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @Html.DisplayFor(model => model.why_nc)
+                                </p>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.auditee_acceptance)
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @Html.DisplayFor(model => model.auditee_acceptance)
+                                </p>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.ca_date)
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @if (Model.ca_date != null && Model.ca_date > Convert.ToDateTime("01/01/0001"))
+                                    {
+                                        @Html.Label(Model.ca_date.ToString("dd/MM/yyyy"))
+                                    }
+                                </p>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.followup_date)
+                                </p>
+                            </td>
+                            <td class="col-xs-6 col-md-4">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @if (Model.followup_date != null && Model.followup_date > Convert.ToDateTime("01/01/0001"))
+                                    {
+                                        @Html.Label(Model.followup_date.ToString("dd/MM/yyyy"))
+                                    }
+                                </p>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+        }
+        else if((Model.why_nc == null || Model.why_nc == "")&& Model.internal_audit_teamId.Split(',').Contains(user) )
+        {
+            using (Html.BeginForm("AuditNonConfirmity", "AuditProcess", FormMethod.Post,
+                         new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+            {
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary(true)
+                <input type="hidden" id="Audit_Id" name="Audit_Id" value="@Model.Audit_Id" />
+                <input type="hidden" id="id_audit_process_perform" name="id_audit_process_perform" value="@Model.id_audit_process_perform" />
+                <div class="container-fluid">
+                    <table class="table table-dark table-bordered table-striped table-hover bg-blue-800">
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    Remarks?
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    <textarea class="form-control" id="why_nc" name="why_nc">@Model.why_nc</textarea>
+                                </p>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+                        <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Submit</button>
+                    </div>
+                </div>
+            }
+        }
+
+         else if (Model.auditee_acceptance == "Accepted" && Model.internal_audit_teamId.Split(',').Contains(user) && (Model.followup_date.ToString() == "" || Model.followup_date == null || Model.followup_date <= Convert.ToDateTime("01/01/0001")))
+        {
+        using (Html.BeginForm("AuditNonConfirmity2", "AuditProcess", FormMethod.Post,
+                     new { enctype = "multipart/form-data", id = "form3", name = "form3" }))
+             {
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary(true)
+                <input type="hidden" id="Audit_Id" name="Audit_Id" value="@Model.Audit_Id" />
+                <input type="hidden" id="id_audit_process_perform" name="id_audit_process_perform" value="@Model.id_audit_process_perform" />
+                <div class="container-fluid">
+                    <table class="table table-dark table-bordered table-striped table-hover bg-blue-800">
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    Remarks?
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @Html.DisplayFor(model => model.why_nc)
+                                </p>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.auditee_acceptance)
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @Html.DisplayFor(model => model.auditee_acceptance)
+                                </p>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.ca_date)
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @if (Model.ca_date != null && Model.ca_date > Convert.ToDateTime("01/01/0001"))
+                                    {
+                                        @Html.Label(Model.ca_date.ToString("dd/MM/yyyy"))
+                                    }
+                                </p>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.followup_date)
+                                </p>
+                            </td>
+                            <td class="col-xs-6 col-md-4">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @if (Model.followup_date > Convert.ToDateTime("01/01/0001"))
+                                    {
+                                        <input type="date" class="form-control" id="followup_date" name="followup_date" value="@Model.followup_date.ToString("yyyy-MM-dd")" />
+                                    }
+                                    else
+                                    {
+                                        <input type="date" class="form-control" id="followup_date" name="followup_date" />
+                                    }
+                                </p>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+                        <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form3')"><i class="icon-checkmark3 mr-2"></i> Submit</button>
+                    </div>
+                </div>
+            }
+        }
+
+
+        else if (Model.why_nc != null && Model.why_nc != "" && (Model.PlannedById.Split(',').Contains(user) || Model.dept_head.Split(',').Contains(user)) )
+        {
+            using (Html.BeginForm("AuditNonConfirmity1", "AuditProcess", FormMethod.Post,
+                         new { enctype = "multipart/form-data", id = "form2", name = "form2" }))
+            {
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary(true)
+                <input type="hidden" id="Audit_Id" name="Audit_Id" value="@Model.Audit_Id" />
+                <input type="hidden" id="id_audit_process_perform" name="id_audit_process_perform" value="@Model.id_audit_process_perform" />
+                <div class="container-fluid">
+                    <table class="table table-dark table-bordered table-striped table-hover bg-blue-800">
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    Remarks?
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @Html.DisplayFor(model => model.why_nc)
+                                </p>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.auditee_acceptance)
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="auditee_acceptance" name="auditee_acceptance">
+                                        @if (Model.auditee_acceptance == "Accepted")
+                                        {
+                                            <option value='Accepted' selected>Accepted</option>
+                                            <option value='Rejected'>Rejected</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='Accepted'>Accepted</option>
+                                            <option value='Rejected' selected>Rejected</option>
+                                        }
+                                    </select>
+                                </p>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.ca_date)
+                                </p>
+                            </td>
+                            <td class="col">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @if (Model.ca_date > Convert.ToDateTime("01/01/0001"))
+                                    {
+                                        <input type="date" class="form-control" id="ca_date" name="ca_date" value="@Model.ca_date.ToString("yyyy-MM-dd")" />
+                                    }
+                                    else
+                                    {
+                                        <input type="date" class="form-control" id="ca_date" name="ca_date" />
+                                    }
+                                </p>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+                        <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form2')"><i class="icon-checkmark3 mr-2"></i> Submit</button>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+           <div>Not Authorised Preson</div>
+        }*@
+
+    </div>
+
+@section Scripts {
+    <script type="text/javascript">
+
+     $(document).ready(function () {
+
+                @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+        });
+
+        function GetAuditeeAcceptanceResult() {
+            var auditee_acceptance = $('#auditee_acceptance').val();
+
+            if (auditee_acceptance == "Rejected") {
+                document.getElementById('Auditee_response').style.display = "block";
+            }
+            else {
+                document.getElementById('Auditee_response').style.display = "none";
+            }
+        }
+
+        function FileFormatValidation(file) {
+            var ext = file.value.split(".").pop().toLowerCase();
+            if ($.inArray(ext, ["pdf", "xlsx", "xls", "doc", "docx","jpg","jpeg","png"]) == -1) {
+                file.value = "";
+                bootbox.alert({
+                    title: 'File type',
+                    message: 'Invalid file format, please upload only doc, pdf, docx, jpg, jpeg, gif, png format'
+                });
+            }
+        }
+
+        function ChkDateValidity(){
+            var ca_date = document.getElementById("ca_date").value;
+            var AuditDate = document.getElementById("AuditDate").value;
+            if (ca_date != null && ca_date > ("01/01/0001")) {
+                if (new Date(ca_date).getTime() < new Date(AuditDate).getTime()) {
+                    bootbox.alert({
+                        title: 'Date',
+                        message: 'Corrective Action date has to be greater than Audit date'
+                    });
+                    $("#ca_date").val('');
+                }
+            }
+        }
+
+
+        function ChkFollowDateValidity() {
+            var ca_date = document.getElementById("ca_date1").value;
+            var followup_date = document.getElementById("followup_date").value;
+            if (followup_date != null && followup_date > ("01/01/0001")) {
+                if (new Date(followup_date).getTime() < new Date(ca_date).getTime()) {
+                    bootbox.alert({
+                        title: 'Date',
+                        message: 'Follow up date has to be greater than Corrective Action date'
+                    });
+                    $("#followup_date").val('');
+                }
+            }
+        }
+    </script>
+}
+
+
+
+
+

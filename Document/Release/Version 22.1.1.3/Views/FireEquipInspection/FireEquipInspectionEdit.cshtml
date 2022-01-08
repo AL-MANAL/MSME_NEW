@@ -1,0 +1,534 @@
+﻿@model ISOStd.Models.FireEquipInspectionModels
+@{
+    ViewBag.Title = "FireEquipInspection";
+}
+
+@section featured {
+    <div class="page-header page-header-light">
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("FireEquipInspectionList", "FireEquipInspection", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Fire Equip Inspection List</span>
+                    </a>
+                    <span class="breadcrumb-item active"> Update Fire Equip Inspection</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            <div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+}
+
+
+@using (Html.BeginForm("FireEquipInspectionEdit", "FireEquipInspection", FormMethod.Post,
+    new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+
+
+    <input type="hidden" id="id_FireEquip" name="id_FireEquip" value="@Model.id_FireEquip" />
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Update Fire Equip Inspection</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+
+                <table class="table table-lg">
+
+                    <tbody>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.Fire_DateTime)<text style="color:red;"> *</text>
+
+                            </td>
+                            <td class="col">
+
+                                @if (Model.Fire_DateTime > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    <input type="date" id="Fire_DateTime" name="Fire_DateTime" value="@Model.Fire_DateTime.ToString("yyyy-MM-dd")" required="required"
+                                           class="form-control" />
+                                }
+                                else
+                                {
+                                    <input type="date" id="Fire_DateTime" name="Fire_DateTime" readonly required="required" class="form-control" />
+                                }
+                                Hr: <select name="PlanTimeInHour" id="PlanTimeInHour" class="select-fixed-single" data-fouc>
+                                    @if (ViewBag.PlanTimeInHour != null)
+                                    {
+                                        foreach (var data in ViewBag.PlanTimeInHour)
+                                        {
+                                            if (Convert.ToInt16(Model.Fire_DateTime.ToString("HH")) == Convert.ToInt16(data))
+                                            {
+                                                <option value='@data' selected>@data</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@data'>@data</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                                Min:
+                                <select name="PlanTimeInMin" id="PlanTimeInMin" class="select-fixed-single" data-fouc>
+                                    @if (ViewBag.PlanTimeInMin != null)
+                                    {
+                                        foreach (var data in ViewBag.PlanTimeInMin)
+                                        {
+                                            if (Convert.ToInt16(Model.Fire_DateTime.ToString("mm")) == Convert.ToInt16(data))
+                                            {
+                                                <option value='@data' selected>@data</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@data'>@data</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.FireNext_DateTime)<text style="color: red;">*</text>
+
+                            </td>
+                            <td class="col">
+
+
+                                <input class="form-control" type="date" id="FireNext_DateTime" name="FireNext_DateTime" value="@Model.FireNext_DateTime.ToString("yyyy-MM-dd")" required onchange="checkDate();" />
+
+                            </td>
+
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.Location)<text style="color:red;"> *</text>
+
+                            </td>
+
+                            <td class="col">
+
+
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="Location" name="Location" onchange="getReportNo()" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.Location != null)
+                                    {
+                                        foreach (var item in ViewBag.Location)
+                                        {
+                                            if (item.Text == Model.Location)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+
+                            </td>
+
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.Project)
+
+                            </td>
+
+                            <td class="col">
+
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="Project" name="Project">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.Project != null)
+                                    {
+                                        foreach (var item in ViewBag.Project)
+                                        {
+                                            if (Model.Project.Contains(item.Text))
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.ReportNo)
+
+                            </td>
+                            <td class="col">
+
+                                @Html.EditorFor(model => model.ReportNo, new { htmlAttributes = new { @readonly = "readonly", style = "background: #efefe6;width:250px;", @class = "form-control" } })
+
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.Smoke_Detector)<text style="color: red;">*</text>
+
+                            </td>
+                            <td class="col">
+
+                                <input class="form-control" type="number" id="Smoke_Detector" name="Smoke_Detector" value="@Model.Smoke_Detector" required min="1" max="30" />
+
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.Smoke_Detector_Remarks)<text style="color: red;">*</text>
+
+                            </td>
+                            <td class="col">
+
+                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="Smoke_Detector_Remarks" name="Smoke_Detector_Remarks" required>@Model.Smoke_Detector_Remarks</textarea>
+
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.Fire_Alarm)<text style="color: red;">*</text>
+
+                            </td>
+                            <td class="col">
+
+                                <input class="form-control" type="number" id="Fire_Alarm" name="Fire_Alarm" value="@Model.Fire_Alarm" min="1" max="30" />
+
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.Fire_Alarm_Remarks)<text style="color: red;">*</text>
+
+                            </td>
+                            <td class="col">
+
+                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="Fire_Alarm_Remarks" name="Fire_Alarm_Remarks" required>@Model.Fire_Alarm_Remarks</textarea>
+
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.Fire_Water_Pumps)<text style="color: red;">*</text>
+
+                            </td>
+                            <td class="col">
+
+                                <input class="form-control" type="number" id="Fire_Water_Pumps" name="Fire_Water_Pumps" value="@Model.Fire_Water_Pumps" min="1" max="30" />
+
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.Fire_Water_Pumps_Remarks)<text style="color: red;">*</text>
+
+                            </td>
+                            <td class="col">
+
+                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="Fire_Water_Pumps_Remarks" name="Fire_Water_Pumps_Remarks" required>@Model.Fire_Water_Pumps_Remarks</textarea>
+
+
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.Fire_Box_No)<text style="color: red;">*</text>
+
+                            </td>
+                            <td class="col">
+
+                                <input maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" type="text" id="Fire_Box_No" name="Fire_Box_No" value="@Model.Fire_Box_No" required style="width: 150px;" />
+
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.Fire_Box_No_Remarks)<text style="color: red;">*</text>
+
+                            </td>
+                            <td class="col">
+
+                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="Fire_Box_No_Remarks" name="Fire_Box_No_Remarks" required>@Model.Fire_Box_No_Remarks</textarea>
+
+
+                            </td>
+                        </tr>
+
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.Fire_Box_No_Location)<text style="color:red;"> *</text>
+
+                            </td>
+                            <td class="col">
+
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="Fire_Box_No_Location" name="Fire_Box_No_Location" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.FireLocation != null)
+                                    {
+                                        foreach (var item in ViewBag.FireLocation)
+                                        {
+                                            if (item.Text == Model.Fire_Box_No_Location)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.Fire_Box_No_Type)<text style="color:red;"> *</text>
+
+                            </td>
+                            <td class="col">
+
+
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="Fire_Box_No_Type" name="Fire_Box_No_Type" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.FireType != null)
+                                    {
+                                        foreach (var item in ViewBag.FireType)
+                                        {
+                                            if (item.Text == Model.Fire_Box_No_Type)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.Fire_Hydrants)<text style="color: red;">*</text>
+
+                            </td>
+                            <td class="col">
+
+                                <input class="form-control" type="number" id="Fire_Hydrants" name="Fire_Hydrants" value="@Model.Fire_Hydrants" required style="width: 150px;" min="1" max="30" />
+
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.Fire_Box_No_Type_Remarks)<text style="color: red;">*</text>
+
+                            </td>
+                            <td class="col">
+
+                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="Fire_Box_No_Type_Remarks" name="Fire_Box_No_Type_Remarks" required>@Model.Fire_Box_No_Type_Remarks</textarea>
+
+                            </td>
+
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.Fire_Hydrants_Remarks)<text style="color: red;">*</text>
+
+                            </td>
+                            <td class="col">
+
+                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="Fire_Hydrants_Remarks" name="Fire_Hydrants_Remarks" required>@Model.Fire_Hydrants_Remarks</textarea>
+
+                            </td>
+                        </tr>
+
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.upload)                               
+                            </td>
+                            <td class="col">
+                                <input type="file" name="upload" id="upload" onchange="FileFormatValidation(this)" multiple="multiple" accept=".pdf,.xls,.xlsx, .doc, .docx,image/*" class="bootstrap-uploader" data-fouc" />
+                                @*@if (Model.upload != "")
+                                {
+                                    <a href='@Url.Action("DisplayDocument", "Reports", new { Document = Model.Upload_Path })' target="_blank" style="color: orange;">Preview</a>
+                                }*@
+
+                               <p style="font-size: 11px; margin: 0px;">(Hold Ctrl Key in case of multiple files)</p>
+                      
+                        @if (Model.upload != null && Model.upload != "" && Model.upload.Length > 0)
+                        {
+                            <div class="editor-label">
+                                <p style="font-weight: bold; margin: 0px;"> Docs. List:</p>
+                            </div>
+                            <p style="font-size: 11px; margin: 0px; color: red;">(Uncheck in case to remove a uploaded file)</p>
+                            foreach (var docs in Model.upload.Trim(',').Split(','))
+                            {
+                                <p style="margin: 0px;">
+                                    <input type="checkbox" id="QCDocsVal" name="QCDocsVal" class="QCDocsVal" value="@docs.Trim(',')" checked title="Uncheck in case to remove a uploaded file" />
+                                    <input type="hidden" id="QCDocsValselectall" name="QCDocsValselectall" />
+                                    <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" style="color: orange;">
+                                       Preview
+                                    </a>
+                                </p>
+                            }
+                        }
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+
+            @Html.ActionLink("Back to List", "FireEquipInspectionList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+
+            <button class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" type="submit" value="Save" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Update</button>
+
+        </div>
+    </div>
+
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+
+                                           //----zzz
+                    $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+
+   $("#QCDocsVal").click(function () {
+                if ($("#QCDocsVal").prop('checked')) {
+                    {
+                        $(this).prop('checked', true);
+                    }
+                }
+                else {
+
+                    $(this).prop('checked', false);
+                    document.getElementById("QCDocsValselectall").value = "DeleteQC";
+                }
+
+            });
+                    });
+
+    //zzz----
+
+        function checkDate() {
+
+
+            var dt2 = document.getElementById("FireNext_DateTime").value;
+            var dt1 = document.getElementById("Fire_DateTime").value;
+
+            if (new Date(dt1).getTime() > new Date(dt2).getTime()) {
+
+                bootbox.alert({
+                    title: 'Follow up',
+                    message: 'Follow up date cannot be before Planned date.'
+                });
+                $('#FireNext_DateTime').val("");
+            }
+        }
+
+
+
+
+         function getReportNo()
+           {
+                var Location = $('#Location :selected').text();
+
+                if (Location != "Select") {
+
+                jQuery.ajax({
+                    url: '@Url.Action("FunGetReportNo", "FireEquipInspection")',
+                    type: 'POST',
+                    dataType: "json",
+
+                    data: { 'Location': Location },
+                    success: function (result) {
+                        document.getElementById("ReportNo").value = result;
+                    }
+                });
+              }
+        }
+
+        function FileFormatValidation(file) {
+            var ext = file.value.split(".").pop().toLowerCase();
+            if ($.inArray(ext, ["doc", "pdf", "docx", "jpg", "jpeg", "gif", "png"]) == -1) {
+                file.value = "";
+                jAlert("Invalid file format, please upload only doc, pdf, docx, jpg, jpeg, gif, png format");
+            }
+        }
+    </script>
+}

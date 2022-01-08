@@ -1,0 +1,1223 @@
+﻿@model ISOStd.Models.ImprovementActionModels
+@{
+    ViewBag.Title = "ImprovementEdit";
+}
+
+<script src='@Url.Content("~/global_assets/js/demo_pages/form_ImpleAction.js")'></script>
+
+@*<script src='@Url.Content("~/global_assets/js/plugins/editors/ckeditor/ckeditor.js")'></script>*@
+
+@section featured {
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("ImprovementList", "ImprovementAction", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Improvement Action</span>
+                    </a>
+                    <span class="breadcrumb-item active">Update Improvement Action</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+}
+
+<div class="card">
+    <div class="card-header header-elements-inline bg-primary">
+        <h5 class="card-title">Update Improvement Action</h5>
+        <div class="header-elements">
+            <div class="list-icons">
+                <a class="list-icons-item" data-action="collapse"></a>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="container-fluid">
+
+            <form class="wizard-form steps-validation-edit" data-fouc id="form1">
+                <input type="hidden" id="id_action" name="id_action" value="@Model.id_action" />
+                <h6>Improvement Action</h6>
+                <fieldset>
+                    <table class="table table-lg">
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.ca_no)
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    @Html.DisplayFor(model => model.ca_no)
+                                </div>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.actoin_date)<text style="color:red;">*</text>
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    @if (Model.actoin_date != null && Model.actoin_date > Convert.ToDateTime("01/01/0001"))
+                                    {
+                                        <input class="form-control required" type="date" id="actoin_date" name="actoin_date" value="@Model.actoin_date.ToString("yyyy-MM-dd")" />
+                                    }
+                                    else
+                                    {
+                                        <input class="form-control required" type="date" id="actoin_date" name="actoin_date" />
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.branch)
+                            </td>
+                            <td class="col">
+                                <select class="form-control form-control-select3" multiple="multiple" data-fouc id="branch" name="branch" onchange="GetDeptList()">
+                                    @*<option value='' hidden>Select</option>*@
+                                    @if (ViewBag.Branch != null)
+                                    {
+                                        foreach (var data in ViewBag.Branch)
+                                        {
+                                            if (Array.IndexOf(Model.branch.ToString().Split(','), data.Value) >= 0)
+                                            {
+                                                <option value='@data.Value' selected>@data.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@data.Value'>@data.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.Department)<text style="color:red;">*</text>
+                            </td>
+                            <td class="col">
+                                <select class="form-control form-control-select3" data-fouc id="Department" name="Department" multiple="multiple" required>
+                                    @if (ViewBag.Department != null)
+                                    {
+                                        foreach (var item in ViewBag.Department)
+                                        {
+                                            if (Array.IndexOf(Model.Department.ToString().Split(','), item.Value) >= 0)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                                <br />
+                                @Html.ValidationMessageFor(m => m.Department)
+                            </td>
+
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.Location)<text style="color:red;">*</text>
+                            </td>
+                            <td class="col">
+                                <select class="form-control form-control-select3" data-fouc id="Location" name="Location" multiple="multiple" required>
+                                    @if (ViewBag.Location != null)
+                                    {
+                                        foreach (var item in ViewBag.Location)
+                                        {
+                                            if (Array.IndexOf(Model.Location.ToString().Split(','), item.Value) >= 0)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                                <br />
+                                @Html.ValidationMessageFor(m => m.Location)
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-6 col-md-4">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.complaint)<text style="color:red;">*</text>
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    @if (ViewBag.Complaint != null)
+                                    {
+                                        foreach (var item in ViewBag.Complaint)
+                                        {
+                                            if (item.Value == Model.complaint)
+                                            {
+                                                <input type="radio" name="complaint" value='@item.Value' checked required />@item.Text
+                                            }
+                                            else
+                                            {
+                                                <input type="radio" name="complaint" value='@item.Value' required />@item.Text
+                                            }
+                                        }
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.complaint_desc)
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="complaint_desc" name="complaint_desc">@Model.complaint_desc</textarea>
+                                </div>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.reference)
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="reference" name="reference">@Model.reference</textarea>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.non_conf)
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="non_conf" name="non_conf">@Model.non_conf</textarea>
+                                </div>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.risk_complaint)
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="risk_complaint" name="risk_complaint">@Model.risk_complaint</textarea>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.receivedby) <text style="color:red;">*</text>
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <select class="form-control form-control-select3" data-fouc id="receivedby" name="receivedby" required>
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.Receivedby != null)
+                                        {
+                                            foreach (var item in ViewBag.Receivedby)
+                                            {
+                                                if (item.Value == Model.receivedby)
+                                                {
+                                                    <option value='@item.Value' selected>@item.Text</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                    <span class="field-validation-error">
+                                        <label id="receivedby-message" class="validation-invalid-label" style="display: none" for="basic">This field is required.</label>
+                                    </span>
+                                </div>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.severity) <text style="color:red;">*</text>
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <select class="form-control form-control-select3" data-fouc id="severity" name="severity" required>
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.Severity != null)
+                                        {
+                                            foreach (var item in ViewBag.Severity)
+                                            {
+                                                if (item.Value == Model.severity)
+                                                {
+                                                    <option value='@item.Value' selected>@item.Text</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                    <span class="field-validation-error">
+                                        <label id="severity-message" class="validation-invalid-label" style="display: none" for="basic">This field is required.</label>
+                                    </span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.disposition)
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <select class="form-control form-control-select3" data-fouc id="disposition" name="disposition" multiple>
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.Disposition != null)
+                                        {
+                                            foreach (var item in ViewBag.Disposition)
+                                            {
+                                                if (Array.IndexOf(Model.disposition.ToString().Split(','), item.Value) >= 0)
+                                                {
+                                                    <option value='@item.Value' selected>@item.Text</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                    <span class="field-validation-error">
+                                        <label id="disposition-message" class="validation-invalid-label" style="display: none" for="basic">This field is required.</label>
+                                    </span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.qty_coordinator)
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <select class="form-control form-control-select3" data-fouc id="qty_coordinator" name="qty_coordinator" onchange="GetDeptHead()">
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.EmpList != null)
+                                        {
+                                            foreach (var item in ViewBag.EmpList)
+                                            {
+                                                if (item.Value == Model.qty_coordinator)
+                                                {
+                                                    <option value='@item.Value' selected>@item.Text</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                    <span class="field-validation-error">
+                                        <label id="qty_coordinator-message" class="validation-invalid-label" style="display: none" for="basic">This field is required.</label>
+                                    </span>
+                                </div>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    Department Head
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <input class="form-control" type="text" id="dept_head" name="dept_head" style="display:none;" readonly />
+
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </fieldset>
+
+                <h6>Corrective Action</h6>
+                <fieldset>
+                    @*<table class="table table-lg">
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.task_performer)<text style="color:red;">*</text>
+                        </div>
+                    </td>
+                    <td class="col-xs-3 col-md-3">
+                        <div class="editor-field">
+                            @if (ViewBag.Task != null)
+                            {
+                                foreach (var item in ViewBag.Task)
+                                {
+                                    <input type="radio" name="task_performer" id="task_performer" data-name='@item' value='@item' onclick="setType()" required /> @item
+                                }
+                            }
+                        </div>
+                    </td>
+                </tr>
+            </table>*@
+                    <fieldset class="border p-2">
+                        <legend class="font-weight-semibold text-success">Corrective Action</legend>
+
+                        <table class="table table-lg">
+
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.LabelFor(model => model.analysis)
+                                    </div>
+                                </td>
+                                <td class="col">
+                                    <div class="editor-field">
+                                        <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="analysis" name="analysis">@Model.analysis</textarea>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.LabelFor(model => model.qty_coordinator1)
+                                    </div>
+                                </td>
+                                <td class="col">
+                                    <div class="editor-field">
+                                        <select class="form-control form-control-select3" data-fouc id="qty_coordinator1" name="qty_coordinator1" onchange="GetDeptHead1()">
+                                            <option value='' hidden>Select</option>
+                                            @if (ViewBag.EmpList != null)
+                                            {
+                                                foreach (var item in ViewBag.EmpList)
+                                                {
+                                                    if (item.Value == Model.qty_coordinator1)
+                                                    {
+                                                        <option value='@item.Value' selected>@item.Text</option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value='@item.Value'>@item.Text</option>
+                                                    }
+                                                }
+                                            }
+                                        </select>
+                                        <span class="field-validation-error">
+                                            <label id="qty_coordinator1-message" class="validation-invalid-label" style="display: none" for="basic">This field is required.</label>
+                                        </span>
+                                    </div>
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        Department Head
+                                    </div>
+                                </td>
+                                <td class="col">
+                                    <div class="editor-field">
+                                        <input class="form-control" type="text" id="dept_head1" name="dept_head1" style="display:none;" readonly />
+
+                                    </div>
+                                </td>
+                            </tr>
+                            @*<tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.corrective_action)
+                        </td>
+                        <td class="col" colspan="3">
+                            @Html.TextAreaFor(model => model.corrective_action, new { @id = "editor-full", @rows = "4", @cols = "4" })
+                        </td>
+                    </tr>*@
+                            <tr class="row">
+                                @*<td class="col" colspan="4">
+                            <div class="editor-label">
+                                Corrective Action
+                            </div>
+                            <div class="editor-field">
+                                @Html.TextAreaFor(model => model.corrective_action, new { @id = "editor-full", @rows = "4", @cols = "4" })
+                            </div>
+                        </td>*@
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.LabelFor(model => model.corrective_action)
+                                    </div>
+                                </td>
+                                <td class="col">
+                                    <div class="editor-field">
+                                        <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="corrective_action" name="corrective_action">@Model.corrective_action</textarea>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.LabelFor(model => model.qty_coordinator2)
+                                    </div>
+                                </td>
+                                <td class="col">
+                                    <div class="editor-field">
+                                        <select class="form-control form-control-select3" data-fouc id="qty_coordinator2" name="qty_coordinator2" onchange="GetDeptHead2()">
+                                            <option value='' hidden>Select</option>
+                                            @if (ViewBag.EmpList != null)
+                                            {
+                                                foreach (var item in ViewBag.EmpList)
+                                                {
+                                                    if (item.Value == Model.qty_coordinator2)
+                                                    {
+                                                        <option value='@item.Value' selected>@item.Text</option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value='@item.Value'>@item.Text</option>
+                                                    }
+                                                }
+                                            }
+                                        </select>
+                                        <span class="field-validation-error">
+                                            <label id="qty_coordinator2-message" class="validation-invalid-label" style="display: none" for="basic">This field is required.</label>
+                                        </span>
+                                    </div>
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        Department Head
+                                    </div>
+                                </td>
+                                <td class="col">
+                                    <div class="editor-field">
+                                        <input class="form-control" type="text" id="dept_head2" name="dept_head2" style="display:none;" readonly />
+
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="row">
+                                <td class="col-xs-9 col-md-6">
+                                    <div class="editor-label">
+                                        If Corrective Action not taken or Corrective Action Not Effective or Risk Not Mitigated;
+                                    </div>
+                                </td>
+
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.LabelFor(model => model.consequence)
+                                    </div>
+                                </td>
+                                <td class="col">
+                                    <div class="editor-field">
+                                        <select class="form-control form-control-select3" data-fouc id="consequence" name="consequence" multiple="multiple">
+                                            <option value='' hidden>Select</option>
+                                            @if (ViewBag.Consequence != null)
+                                            {
+                                                foreach (var item in ViewBag.Consequence)
+                                                {
+                                                    if (Array.IndexOf(Model.consequence.ToString().Split(','), item.Value) >= 0)
+                                                    {
+                                                        <option value='@item.Value' selected>@item.Text</option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value='@item.Value'>@item.Text</option>
+                                                    }
+                                                }
+                                            }
+                                        </select>
+                                        <span class="field-validation-error">
+                                            <label id="consequence-message" class="validation-invalid-label" style="display: none" for="basic">This field is required.</label>
+                                        </span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.LabelFor(model => model.completion_date) <text style="color:red;">*</text>
+                                    </div>
+                                </td>
+                                <td class="col">
+                                    <div class="editor-field">
+                                        @if (Model.completion_date != null && Model.completion_date > Convert.ToDateTime("01/01/0001"))
+                                        {
+                                            <input class="form-control required" type="date" id="completion_date" name="completion_date" value="@Model.completion_date.ToString("yyyy-MM-dd")" />
+                                        }
+                                        else
+                                        {
+                                            <input class="form-control required" type="date" id="completion_date" name="completion_date" />
+                                        }
+                                    </div>
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.LabelFor(model => model.monitoring_period)
+                                    </div>
+                                </td>
+                                <td class="col">
+
+                                    <div class="editor-field">
+                                        <select class="form-control form-control-select3" data-fouc id="monitoring_period" name="monitoring_period">
+                                            <option value='' hidden>Select</option>
+                                            @if (ViewBag.MonitoringPeriod != null)
+                                            {
+                                                foreach (var item in ViewBag.MonitoringPeriod)
+                                                {
+                                                    if (item.Value == Model.monitoring_period)
+                                                    {
+                                                        <option value='@item.Value' selected>@item.Text</option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value='@item.Value'>@item.Text</option>
+                                                    }
+                                                }
+                                            }
+                                        </select>
+                                        @*<span class="field-validation-error">
+                                    <label id="monitoring_period-message" class="validation-invalid-label" style="display: none" for="basic">This field is required.</label>
+                                </span>*@
+                                    </div>
+                                    <br />
+                                    <div class="form-group form-group-float">
+                                        <input class="form-control" type="number" id="monitoring_value" name="monitoring_value" min="1" value="@Model.monitoring_value" />
+                                    </div>
+                                    @*<div class="form-group form-group-float">
+                                <select class="select-fixed-single" data-fouc id="monitoring_period" name="monitoring_period">
+                                    @if (ViewBag.MonitoringPeriod != null)
+                                    {
+                                        foreach (var item in ViewBag.MonitoringPeriod)
+                                        {
+                                            <option value='@item.Text'>@item.Value</option>
+                                        }
+                                    }
+                                </select>
+
+                            </div>
+                            <div class="form-group form-group-float">
+                                <input class="form-control" type="number" id="monitoring_value" name="monitoring_value" value="0" min="3" />
+
+                            </div>*@
+                                </td>
+                            </tr>
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.LabelFor(model => model.compeltion_action)
+                                    </div>
+                                </td>
+                                <td class="col">
+                                    <div class="editor-field">
+                                        <input class="form-control" type="text" id="compeltion_action" name="compeltion_action" value="@Model.compeltion_action" />
+                                        <span class="field-validation-error">
+                                            <label id="compeltion_action-message" class="validation-invalid-label" style="display: none" for="basic">This field is required.</label>
+                                        </span>
+                                    </div>
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.LabelFor(model => model.assesed_risk)
+                                    </div>
+                                </td>
+                                <td class="col">
+                                    <div class="editor-field">
+                                        <select class="form-control form-control-select3" data-fouc id="assesed_risk" name="assesed_risk">
+                                            <option value='' hidden>Select</option>
+                                            @if (ViewBag.Severity != null)
+                                            {
+                                                foreach (var item in ViewBag.Severity)
+                                                {
+                                                    if (item.Value == Model.assesed_risk)
+                                                    {
+                                                        <option value='@item.Value' selected>@item.Text</option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value='@item.Value'>@item.Text</option>
+                                                    }
+                                                }
+                                            }
+                                        </select>
+                                        <span class="field-validation-error">
+                                            <label id="assesed_risk-message" class="validation-invalid-label" style="display: none" for="basic">This field is required.</label>
+                                        </span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </fieldset>
+
+                </fieldset>
+
+                <h6>Implementation Check</h6>
+                <fieldset>
+                    <fieldset class="border p-2">
+                        <legend class="font-weight-semibold text-success">Implementation Check</legend>
+
+                        <table class="table table-lg">
+                            <tr class="row">
+
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.LabelFor(model => model.closedout_date)<text style="color:red;">*</text>
+                                    </div>
+                                </td>
+                                <td class="col">
+                                    <div class="editor-field">
+                                        @if (Model.closedout_date != null && Model.closedout_date > Convert.ToDateTime("01/01/0001"))
+                                        {
+                                            <input class="form-control required" type="date" id="closedout_date" name="closedout_date" value="@Model.closedout_date.ToString("yyyy-MM-dd")" />
+                                        }
+                                        else
+                                        {
+                                            <input class="form-control required" type="date" id="closedout_date" name="closedout_date" />
+                                        }
+                                    </div>
+                                </td>
+
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.LabelFor(model => model.verifiedby)
+                                    </div>
+                                </td>
+                                <td class="col">
+                                    <div class="editor-field">
+                                        <select class="form-control form-control-select3" data-fouc id="verifiedby" name="verifiedby">
+                                            <option value='' hidden>Select</option>
+                                            @if (ViewBag.EmpList != null)
+                                            {
+                                                foreach (var item in ViewBag.EmpList)
+                                                {
+                                                    if (item.Value == Model.verifiedby)
+                                                    {
+                                                        <option value='@item.Value' selected>@item.Text</option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value='@item.Value'>@item.Text</option>
+                                                    }
+                                                }
+                                            }
+                                        </select>
+                                        <span class="field-validation-error">
+                                            <label id="verifiedby-message" class="validation-invalid-label" style="display: none" for="basic">This field is required.</label>
+                                        </span>
+                                    </div>
+                                </td>
+                            </tr>
+                            @*<tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.probability)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control form-control-select3" data-fouc id="probability" name="probability" onchange="GetRiskRating()">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.probability != null)
+                                    {
+                                        foreach (var item in ViewBag.probability)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                                <span class="field-validation-error">
+                                    <label id="probability-message" class="validation-invalid-label" style="display: none" for="basic">This field is required.</label>
+                                </span>
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.risk_rating)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input class="form-control" type="text" id="risk_rating" name="risk_rating" style="display:none;" readonly />
+
+                            </div>
+                        </td>
+                    </tr>*@
+
+                        </table>
+                    </fieldset>
+
+                </fieldset>
+
+
+            </form>
+        </div>
+    </div>
+</div>
+
+@*}*@
+
+<script>
+           var summary = {
+               summaryUrl: '@Url.Action("ImprovementEdit", "ImprovementAction")',
+           };
+</script>
+
+
+
+
+@section Scripts {
+    <script>
+
+ $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+
+     GetDeptHead();
+     GetDeptHead1();
+     GetDeptHead2();
+    });
+
+        //CKEDITOR.replace('editor-full', {
+        //    height: 200,
+        //    extraPlugins: 'forms'
+        //});
+
+        //var showClass = 'is-visible';
+        //var hideClass = 'invisible';
+
+        //function Validation() {
+        //    var validflg = true;
+        //    var ssnMessage = "";
+
+        //    if (document.getElementById("pers_name").value == "") {
+        //        ssnMessage = $('#pers_name-message');
+        //        ssnMessage.show();
+        //        validflg = false;
+        //    }
+        //    else {
+        //        ssnMessage = $('#pers_name-message');
+        //        ssnMessage.hide();
+        //    }
+        //    if (document.getElementById("designation").value == "") {
+        //        ssnMessage = $('#designation-message');
+        //        ssnMessage.show();
+        //        validflg = false;
+        //    }
+        //    else {
+        //        ssnMessage = $('#designation-message');
+        //        ssnMessage.hide();
+        //    }
+        //    return validflg;
+        //}
+        //function Validation1() {
+        //    var validflg = true;
+        //    var ssnMessage = "";
+
+        //    if (document.getElementById("activity").value == "") {
+        //        ssnMessage = $('#activity-message');
+        //        ssnMessage.show();
+        //        validflg = false;
+        //    }
+        //    else {
+        //        ssnMessage = $('#activity-message');
+        //        ssnMessage.hide();
+        //    }
+        //    if (document.getElementById("hazards").value == "") {
+        //        ssnMessage = $('#hazards-message');
+        //        ssnMessage.show();
+        //        validflg = false;
+        //    }
+        //    else {
+        //        ssnMessage = $('#hazards-message');
+        //        ssnMessage.hide();
+        //    }
+        //    if (document.getElementById("causes").value == "") {
+        //        ssnMessage = $('#causes-message');
+        //        ssnMessage.show();
+        //        validflg = false;
+        //    }
+        //    else {
+        //        ssnMessage = $('#causes-message');
+        //        ssnMessage.hide();
+        //    }
+        //    if (document.getElementById("consequences").value == "") {
+        //        ssnMessage = $('#consequences-message');
+        //        ssnMessage.show();
+        //        validflg = false;
+        //    }
+        //    else {
+        //        ssnMessage = $('#consequences-message');
+        //        ssnMessage.hide();
+        //    }
+        //    if (document.getElementById("existing_measure").value == "") {
+        //        ssnMessage = $('#existing_measure-message');
+        //        ssnMessage.show();
+        //        validflg = false;
+        //    }
+        //    else {
+        //        ssnMessage = $('#existing_measure-message');
+        //        ssnMessage.hide();
+        //    }
+        //    if (document.getElementById("severity").value == "") {
+        //        ssnMessage = $('#severity-message');
+        //        ssnMessage.show();
+        //        validflg = false;
+        //    }
+        //    else {
+        //        ssnMessage = $('#severity-message');
+        //        ssnMessage.hide();
+        //    }
+        //    if (document.getElementById("probability").value == "") {
+        //        ssnMessage = $('#probability-message');
+        //        ssnMessage.show();
+        //        validflg = false;
+        //    }
+        //    else {
+        //        ssnMessage = $('#probability-message');
+        //        ssnMessage.hide();
+        //    }
+        //    return validflg;
+        //}
+        //function deleteRow(btn) {
+        //    var row = btn.parentNode.parentNode;
+        //    row.parentNode.removeChild(row);
+        //}
+        @*function AddPers() {
+
+            if (Validation() == true) {
+
+                var cnt = document.getElementById("itemcnt").value;
+
+                document.getElementById("itemcnt").value = cnt;
+                // Find a <table> element with id="myTable":
+                var table = document.getElementById("team-list");
+
+
+
+                // Create an empty <tr> element and add it to the 1st position of the table:
+                var row = table.insertRow();
+
+
+                // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                var cell0 = row.insertCell(0);
+                var cell1 = row.insertCell(1);
+                var cell2 = row.insertCell(2);
+
+
+                var pers_name = $('#pers_name').val();
+                var designation = $('#designation').val();
+
+                cell0.innerHTML = " <img src='@Url.Content("~/images/cancel.png")' onclick='deleteRow(this)' style='cursor:pointer; padding-right: 5px;'/>";
+                cell1.innerHTML = "<input class='form-control' type='text' id='pers_name " + cnt + "' name='pers_name " + cnt + "' value='" + pers_name + "'/>";
+                cell2.innerHTML = "<input class='form-control' type='text' id='designation " + cnt + "' name='designation " + cnt + "' value='" + designation + "' />";
+
+                cnt++;
+                document.getElementById("itemcnt").value = cnt;
+
+                document.getElementById("hidden card").classList.remove(hideClass);
+                document.getElementById("hidden card").classList.add(showClass);
+
+                document.getElementById("pers_name").value = "";
+                document.getElementById("designation").value = "";
+
+                ssnMessage = $('#pers_name-message');
+                ssnMessage.hide();
+                ssnMessage = $('#designation-message');
+                ssnMessage.hide();
+
+            }
+
+        }*@
+        @*function AddRisk() {
+
+            if (Validation1() == true) {
+
+                var cnt = document.getElementById("itemcnts").value;
+
+                document.getElementById("itemcnts").value = cnt;
+                // Find a <table> element with id="myTable":
+                var table = document.getElementById("team-list1");
+
+                // Create an empty <tr> element and add it to the 1st position of the table:
+                var row = table.insertRow();
+
+
+                // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                var cell0 = row.insertCell(0);
+                var cell1 = row.insertCell(1);
+                var cell2 = row.insertCell(2);
+                var cell3 = row.insertCell(3);
+                var cell4 = row.insertCell(4);
+
+                var cell5 = row.insertCell(5);
+                var cell6 = row.insertCell(6);
+                var cell7 = row.insertCell(7);
+                var cell8 = row.insertCell(8);
+
+                cell0.style = "width: 70px; min-width: 70px; max-width: 70px;word-wrap:break-word";
+                cell1.style = "width: 100px; min-width: 100px; max-width: 100px;word-wrap:break-word";
+                cell2.style = "width: 100px; min-width: 100px; max-width: 100px;word-wrap:break-word";
+                cell3.style = "width: 100px; min-width: 100px; max-width: 100px;word-wrap:break-word";
+                cell4.style = "width: 100px; min-width: 100px; max-width: 100px;word-wrap:break-word";
+                cell5.style = "width: 100px; min-width: 100px; max-width: 100px;word-wrap:break-word";
+                cell6.style = "width: 70px; min-width: 70px; max-width: 70px;word-wrap:break-word";
+                cell7.style = "width: 70px; min-width: 70px; max-width: 70px;word-wrap:break-word";
+                cell8.style = "width: 70px; min-width: 70px; max-width: 70px;word-wrap:break-word";
+
+                var activity = $('#activity').val();
+                var hazards = $('#hazards').val();
+                var causes = $('#causes').val();
+                var consequences = $('#consequences').val();
+                var existing_measure = $('#existing_measure').val();
+
+                var risk_rating = $('#risk_rating').val();
+
+                var severity = $('#severity').val();
+                var severity_val = document.getElementById("severity");
+                var severity_text = severity_val.options[severity_val.selectedIndex].text;
+
+                var probability = $('#probability').val();
+                var probability_val = document.getElementById("probability");
+                var probability_text = probability_val.options[probability_val.selectedIndex].text;
+
+                cell0.innerHTML = " <img src='@Url.Content("~/images/cancel.png")' onclick='deleteRow(this)' style='cursor:pointer; padding-right: 5px;'/>";
+                cell1.innerHTML = "<textarea maxlength='2000' placeholder='Textarea' style='overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;' rows='4' cols='4' class='form-control elastic maxlength-badge-position' id='activity " + cnt + "' name='activity " + cnt + "' value='" + activity + "'/>" + activity + "</textarea>";
+                cell2.innerHTML = "<textarea maxlength='2000' placeholder='Textarea' style='overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;' rows='4' cols='4' class='form-control elastic maxlength-badge-position' id='hazards " + cnt + "' name='hazards " + cnt + "' value='" + hazards + "' />" + hazards + "</textarea>";
+                cell3.innerHTML = "<textarea maxlength='2000' placeholder='Textarea' style='overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;' rows='4' cols='4' class='form-control elastic maxlength-badge-position' id='causes " + cnt + "' name='causes " + cnt + "' value='" + causes + "' />" + causes + "</textarea>";
+                cell4.innerHTML = "<textarea maxlength='2000' placeholder='Textarea' style='overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;' rows='4' cols='4' class='form-control elastic maxlength-badge-position' id='consequences " + cnt + "' name='consequences " + cnt + "' value='" + consequences + "' />" + consequences + "</textarea>";
+
+                cell5.innerHTML = "<textarea maxlength='2000' placeholder='Textarea' style='overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;' rows='4' cols='4' class='form-control elastic maxlength-badge-position' id='existing_measure " + cnt + "' name='existing_measure " + cnt + "' value='" + existing_measure + "' />" + existing_measure + "</textarea>";
+                cell6.innerHTML = "<input type='hidden' id='severity " + cnt + "' name='severity " + cnt + "' value='" + severity + "' />" + severity_text;
+                cell7.innerHTML = "<input type='hidden' id='probability " + cnt + "' name='probability " + cnt + "' value='" + probability + "' />" + probability_text;
+                cell8.innerHTML = "<input type='hidden' id='risk_rating " + cnt + "' name='risk_rating " + cnt + "' value='" + risk_rating + "' />" + risk_rating;
+
+
+                cnt++;
+                document.getElementById("itemcnts").value = cnt;
+
+                document.getElementById("hidden card1").classList.remove(hideClass);
+                document.getElementById("hidden card1").classList.add(showClass);
+
+                document.getElementById("activity").value = "";
+                document.getElementById("hazards").value = "";
+                document.getElementById("causes").value = "";
+                document.getElementById("consequences").value = "";
+                document.getElementById("existing_measure").value = "";
+                $("#severity").val('').trigger('change');
+                $("#probability").val('').trigger('change');
+                document.getElementById("risk_rating").value = "";
+
+
+
+                ssnMessage = $('#activity-message');
+                ssnMessage.hide();
+                ssnMessage = $('#hazards-message');
+                ssnMessage.hide();
+                ssnMessage = $('#causes-message');
+                ssnMessage.hide();
+                ssnMessage = $('#consequences-message');
+                ssnMessage.hide();
+                ssnMessage = $('#existing_measure-message');
+                ssnMessage.hide();
+                ssnMessage = $('#severity-message');
+                ssnMessage.hide();
+                ssnMessage = $('#probability-message');
+                ssnMessage.hide();
+
+            }
+
+        }*@
+
+        function GetDeptHead() {
+            var qty_coordinator = $('#qty_coordinator').val();
+
+            if (qty_coordinator != "" && qty_coordinator != null) {
+                jQuery.ajax({
+                    url: '@Url.Action("FunGetDeptHead", "ImprovementAction")',
+                    type: 'POST',
+                    dataType: "json",
+                    //data: { impact: impact, like: like },
+                    data: { qty_coordinator: qty_coordinator},
+                    success: function (result) {
+                        if (result != null) {
+                            document.getElementById("dept_head").style.display = 'block';
+                            document.getElementById("dept_head").value = result;
+                        }
+                    }
+                });
+            }
+        }
+
+        function GetDeptHead1() {
+            var qty_coordinator = $('#qty_coordinator1').val();
+
+            if (qty_coordinator != "" && qty_coordinator != null) {
+                jQuery.ajax({
+                    url: '@Url.Action("FunGetDeptHead", "ImprovementAction")',
+                    type: 'POST',
+                    dataType: "json",
+                    //data: { impact: impact, like: like },
+                    data: { qty_coordinator: qty_coordinator},
+                    success: function (result) {
+                        if (result != null) {
+                            document.getElementById("dept_head1").style.display = 'block';
+                            document.getElementById("dept_head1").value = result;
+                        }
+                    }
+                });
+            }
+        }
+
+        function GetDeptHead2() {
+            var qty_coordinator = $('#qty_coordinator2').val();
+
+            if (qty_coordinator != "" && qty_coordinator != null) {
+                jQuery.ajax({
+                    url: '@Url.Action("FunGetDeptHead", "ImprovementAction")',
+                    type: 'POST',
+                    dataType: "json",
+                    //data: { impact: impact, like: like },
+                    data: { qty_coordinator: qty_coordinator},
+                    success: function (result) {
+                        if (result != null) {
+                            document.getElementById("dept_head2").style.display = 'block';
+                            document.getElementById("dept_head2").value = result;
+                        }
+                    }
+                });
+            }
+        }
+
+         function GetRiskRating() {
+            var severity = $('#severity').val();
+             var probability = $('#probability').val();
+
+            if (severity != "" && probability != "") {
+                jQuery.ajax({
+                    url: '@Url.Action("FunGetRiskRating", "TRA")',
+                    type: 'POST',
+                    dataType: "json",
+                    //data: { impact: impact, like: like },
+                    data: { severity: severity, probability: probability },
+                    success: function (result) {
+                        if (result != null) {
+                            document.getElementById("risk_rating").style.display = 'block';
+                            document.getElementById("risk_rating").value = result;
+                        }
+                    }
+                });
+            }
+        }
+
+        function GetDeptList() {
+            var selectedValues = [];
+            $("#branch :selected").each(function () {
+                selectedValues.push($(this).val());
+            });  
+                jQuery.ajax({
+                    url: '@Url.Action("FunGetAllDeptList", "EmployeeDetails")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'branch': selectedValues },
+                    success: function (result) {
+                        GetLocList(selectedValues);
+                        $("#Department").children('option').remove();
+                        $("#Department").trigger('change');
+                        if (result != null && result.length > 0) {
+                            $.each(result, function (index, item) {
+                                $("#Department").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                                $("#Department").trigger('change');
+                            });
+                            return;
+                        }
+                        //else {
+                        //    bootbox.alert({
+                        //        title: 'Department List',
+                        //        message: 'No Department exists.'
+                        //    });
+                        //}
+                    }
+                });          
+        }
+
+
+        function GetLocList(selectedValues) {                   
+            jQuery.ajax({
+                url: '@Url.Action("FunGetAllLocList", "EmployeeDetails")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'branch': selectedValues },
+                success: function (result) {
+                    $("#Location").children('option').remove();
+                    $("#Location").trigger('change');
+                    if (result != null && result.length > 0) {
+                        $.each(result, function (index, item) {
+                            $("#Location").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                            $("#Location").trigger('change');
+                        });
+                        return;
+                    }
+                    //else {
+                    //    bootbox.alert({
+                    //        title: 'Location List',
+                    //        message: 'No Location exists.'
+                    //    });
+                    //}
+                }
+            });       
+        }
+
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
+
+

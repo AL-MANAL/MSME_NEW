@@ -203,11 +203,11 @@ namespace ISOStd.Models
             try
             {
                 string sSqlstmt = "delete from t_accident_info where id_accident_rept='" + objAccInfoList.AccidentList[0].id_accident_rept + "'; ";
-
+                string sTime = DateTime.Now.ToString("HH':'mm':'ss");
                 for (int i = 0; i < objAccInfoList.AccidentList.Count; i++)
                 {
                     string sid_accident_info = "null";
-                    string sreportedon_date = objAccInfoList.AccidentList[i].reportedon_date.ToString("yyyy-MM-dd");
+                    string sreportedon_date = objAccInfoList.AccidentList[i].reportedon_date.ToString("yyyy-MM-dd"+" "+ sTime);
 
                     if (objAccInfoList.AccidentList[i].id_accident_info != null)
                     {

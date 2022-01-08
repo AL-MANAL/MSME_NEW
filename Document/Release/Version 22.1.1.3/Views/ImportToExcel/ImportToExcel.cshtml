@@ -1,0 +1,91 @@
+﻿@{
+    ViewBag.Title = "Import excel";
+}
+
+<div class="groupedassets margin10">
+    <span class="groupedassetshead margin10 onestphdcolor">File upload feature</span>
+</div>
+ <div id="divmsg">
+        @if (TempData["alertdata"] != null)
+        {
+            <span class="errMsg" style="color: red;font-weight: bold;">@TempData["alertdata"]</span>
+        }
+        @if (TempData["Successdata"] != null)
+        {
+            <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+        }
+    </div>
+
+@using (Html.BeginForm("ImportToExcel", "ImportToExcel", FormMethod.Post,
+    new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    
+   
+     @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true)
+
+        <fieldset>
+            <legend>ImportToExcel</legend>
+            <table id="tabcontent">
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                           File Type<text style="color: red;">*</text>
+                        </div>
+                    </td>
+                    <td>
+                         <div class="editor-field">
+                            <select id="leavetype" name="leavetype" onchange="SetExcel()">
+                                <option value=''>Select</option>
+                                @if (ViewBag.LeaveType != null)
+                                {
+                                    foreach (var item in ViewBag.LeaveType)
+                                    {
+                                   <option value='@item.Value'>@item.Text</option>
+                                    }
+
+                                }
+                            </select>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-label">
+                           File<text style="color: red;">*</text>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <input type="file" name="file" id="file" onchange="FileFormatValidation(this)" accept=".xls,.xlsx" style="height: 38px;" required/>
+                        </div>
+
+                    </td>
+                   
+                </tr>
+               
+            </table>
+        </fieldset>
+    
+        <div style="width: 100%; text-align: center;">
+         
+            <input type="submit" value="Save" onclick="ProgressIconFunction('#form1')" />
+        </div>
+}
+@section Scripts {
+     <script>
+         function FileFormatValidation(file) {
+             var ext = file.value.split(".").pop().toLowerCase();
+             if ($.inArray(ext, ["xlsx", "xls"]) == -1) {
+                 file.value = "";
+                 jAlert("Invalid file format, please upload only pdf format");
+             }
+         }
+
+         function SetExcel() {
+
+
+         }
+
+        
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

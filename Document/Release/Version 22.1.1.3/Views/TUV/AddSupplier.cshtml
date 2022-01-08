@@ -1,0 +1,308 @@
+﻿@model ISOStd.Models.TUVSupplierModels
+
+@{
+    ViewBag.Title = "AddSupplier";
+}
+
+<div class="groupedassets margin10">
+    <span class="groupedassetshead margin10 onestphdcolor">Add Supplier</span>
+</div>
+<div id="divmsg">
+    @if (TempData["alertdata"] != null)
+    {
+        <span class="errMsg" style="color: red; font-weight: bold;">@TempData["alertdata"]</span>
+    }
+    @if (TempData["Successdata"] != null)
+    {
+        <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+    }
+</div>
+
+@using (Html.BeginForm("AddSupplier", "TUV", FormMethod.Post,
+                         new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+
+    <fieldset>
+        <legend>SupplierModels</legend>
+        <input type="hidden" id="id_project" name="id_project" value="@ViewBag.id_project"
+        <div id="content">
+            <table id="tabcontent">
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.SupplierCode)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            @* <input type="text" id="SupplierCode" name="SupplierCode" required/>*@
+                            @Html.EditorFor(model => model.SupplierCode)
+
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.SupplierName)<text style="color: red;"> *</text>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                           <input type="text" id="SupplierName" name="SupplierName" required />
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.RefNo)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.RefNo)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Supplier_type)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <select id="Supplier_type" name="Supplier_type">
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.SupplierType != null)
+                                {
+                                    foreach (var item in ViewBag.SupplierType)
+                                    {
+                                    <option value='@item.Value'>@item.Text</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </td>
+
+                </tr>
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Country)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.Country)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.City)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.City)
+                        </div>
+                    </td>
+
+
+                </tr>
+
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.ContactPerson)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.ContactPerson)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.ContactNo)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.ContactNo)
+                        </div>
+                    </td>
+
+                </tr>
+
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Address)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            @Html.TextAreaFor(model => model.Address)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.FaxNo)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.FaxNo)
+                        </div>
+                    </td>
+
+                </tr>
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.PO_No)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.PO_No)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.SupplyScope)<text style="color: red;">*</text>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <textarea id="SupplyScope" name="SupplyScope" required></textarea>
+                        </div>
+                    </td>
+
+                </tr>
+
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.ApprovalCriteria)<text style="color: red;">*</text>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <select class="chosen-select" id="ApprovalCriteria" name="ApprovalCriteria" required multiple style="height: 100px; width: 200px">
+                                @if (ViewBag.ApprovalCriteria != null)
+                                {
+                                    foreach (var item in ViewBag.ApprovalCriteria)
+                                    {
+                                    <option value='@item.Value'>@item.Text</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.SupportingDoc)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <input type="file" name="SupportingDoc" id="SupportingDoc" title="Documents" onchange="FileFormatValidation(this)"
+                                multiple="multiple" accept=".pdf, .doc, .docx,image/*" style="height: 38px;" />
+
+                            <p style="font-size: 11px; margin: 0px;">(Hold Ctrl Key in case of multiple files)</p>
+                        </div>
+                    </td>
+
+                </tr>
+
+                <tr>
+                    
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Remarks)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <textarea id="Remarks" name="Remarks"></textarea>
+                        </div>
+                    </td>
+
+                </tr>
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Email)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.Email)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.VatNo)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.VatNo)
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Payment_term)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <select id="Payment_term" name="Payment_term">
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.paymentTerm != null)
+                                {
+                                    foreach (var item in ViewBag.paymentTerm)
+                                    {
+                                    <option value='@item.Value'>@item.Text</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+              <div style="width: 100%; text-align: center;">
+            @Html.ActionLink("Back to List", "ProjectList", null, new { @class = "ActionLink", onclick = "HyperLinkProgressIconFunction()" })
+            <input type="submit" value="Save" onclick="ProgressIconFunction('#form1')" />
+        </div>
+        </div>
+       
+      
+    </fieldset>
+}
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript">
+        $(function () {
+            $("#ApprovalCriteria").chosen();
+            $("#ApprovedBy").chosen();
+            $.validator.setDefaults({ ignore: ":hidden:not('.chosen-select')" });
+
+        });
+        function FileFormatValidation(file) {
+            var ext = file.value.split(".").pop().toLowerCase();
+            if ($.inArray(ext, ["doc", "pdf", "docx", "jpg", "jpeg", "gif", "png"]) == -1) {
+                file.value = "";
+                jAlert("Invalid file format, please upload only doc, pdf, docx, jpg, jpeg, gif, png format");
+            }
+        }
+
+
+    </script>
+}

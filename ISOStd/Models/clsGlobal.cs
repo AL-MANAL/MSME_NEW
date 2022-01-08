@@ -25,6 +25,26 @@ namespace ISOStd.Models
         private object fileUploader;
         private object mail;
 
+        //return accident report no 
+        public string GetAccidentReportNoById(string id_accident_rept)
+        {
+            try
+            {
+                if (id_accident_rept != "")
+                {
+                    DataSet dsComp = Getdetails("select invest_reportno from t_accident_report where id_accident_rept='" + id_accident_rept + "'");
+                    if (dsComp.Tables.Count > 0 && dsComp.Tables[0].Rows.Count > 0)
+                    {
+                        return (dsComp.Tables[0].Rows[0]["invest_reportno"].ToString());
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                AddFunctionalLog("Exception in GetAccidentReportNoById: " + ex.ToString());
+            }
+            return "";
+        }
         //report no generation according to department
         public DataSet GetReportNoDeptWise(string smod, string sProject, string slocation, string sDept)
         {

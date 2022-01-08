@@ -1,0 +1,163 @@
+﻿@using PagedList;
+@using PagedList.Mvc;
+
+
+@model IPagedList<ISOStd.Models.EmmetModels>
+    @{
+        ViewBag.Title = "";
+        string chked = Convert.ToString(ViewBag.chkAll);
+    }
+
+    <div class="groupedassets margin10">
+        <span class="groupedassetshead margin10 onestphdcolor">Return Chemicals/Paints</span>
+    </div>
+
+    <br />
+    <div id="divmsg">
+        @if (TempData["alertdata"] != null)
+        {
+            <span class="errMsg" style="color: red;font-weight: bold;">@TempData["alertdata"]</span>
+        }
+        @if (TempData["Successdata"] != null)
+        {
+            <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+        }
+    </div>
+ 
+    @Html.PagedListPager(Model, page => Url.Action("ReturnChemicalList",
+            new
+            {
+                page,
+                Approvestatus = Request.QueryString["Approvestatus"],
+                SearchText = Request.QueryString["SearchText"],
+
+            }),
+            new PagedListRenderOptions() { Display = PagedListDisplayMode.IfNeeded, DisplayPageCountAndCurrentLocation = true })
+
+
+
+
+    <div id="content">
+        <table id="table1">
+            <thead>
+                @if (Model != null && Model.Count() > 0)
+                {
+                <tr>
+                    <th style="width:40px;min-width:40px; max-width:100px;">
+                        Sl No
+                    </th>
+                 
+                    <th style="width:150px;min-width:150px; max-width:150px;">
+                        @Html.DisplayNameFor(model => model.First().issue_date)
+                    </th>
+                     <th style="width:150px;min-width:150px; max-width:150px;">
+                        @Html.DisplayNameFor(model => model.First().jobno)
+                    </th>
+                    <th style="width:150px;min-width:150px; max-width:150px;">
+                        @Html.DisplayNameFor(model => model.First().po)
+                    </th>
+                      <th style="width:150px;min-width:150px; max-width:150px;">
+                        @Html.DisplayNameFor(model => model.First().empid)
+                    </th>
+                     <th style="width:150px;min-width:150px; max-width:150px;">
+                        @Html.DisplayNameFor(model => model.First().category)
+                    </th>
+                     <th style="width:150px;min-width:150px; max-width:150px;">
+                        @Html.DisplayNameFor(model => model.First().material)
+                    </th>
+                     <th style="width:150px;min-width:150px; max-width:150px;">
+                        @Html.DisplayNameFor(model => model.First().issue_qty)
+                    </th>
+                     <th style="width:150px;min-width:150px; max-width:150px;">
+                        @Html.DisplayNameFor(model => model.First().return_qty)
+                    </th>
+                     <th style="width:150px;min-width:150px; max-width:150px;">
+                        @Html.DisplayNameFor(model => model.First().balance_qty)
+                    </th>
+                    <th style="width:150px;min-width:150px; max-width:150px;">
+                       Return Chemicals/Paints
+                    </th>
+                </tr>
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="11">
+                            <div style="text-align: center;">
+                                <h4 style="color: grey;">No data exists</h4>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Count() > 0)
+                {
+                    int i = 0;
+                    foreach (var item in Model)
+                    {
+                        i = i + 1;
+                <tr>
+                    <td style="width:40px;min-width:40px; max-width:100px;">
+                         @i
+                    </td>
+                  
+                     <td style="width:150px;min-width:150px; max-width:150px;word-wrap:break-word">
+                         @if (item.issue_date != null && item.issue_date > Convert.ToDateTime("01/01/0001"))
+                        {
+                            @Html.Label(item.issue_date.ToString("dd/MM/yyyy"))
+                        }
+                    </td>
+                      <td style="width:150px;min-width:150px; max-width:150px;word-wrap:break-word">
+                         @Html.DisplayFor(modelItem => item.jobno)
+                    </td>
+                   <td style="width:150px;min-width:150px; max-width:150px;word-wrap:break-word">
+                         @Html.DisplayFor(modelItem => item.po)
+                    </td>
+                     <td style="width:150px;min-width:150px; max-width:150px;word-wrap:break-word">
+                         @Html.DisplayFor(modelItem => item.empid)
+                    </td>
+                      <td style="width:150px;min-width:150px; max-width:150px;word-wrap:break-word">
+                         @Html.DisplayFor(modelItem => item.category)
+                    </td>
+                      <td style="width:150px;min-width:150px; max-width:150px;word-wrap:break-word">
+                         @Html.DisplayFor(modelItem => item.material)
+                    </td>
+                      <td style="width:150px;min-width:150px; max-width:150px;word-wrap:break-word">
+                         @Html.DisplayFor(modelItem => item.issue_qty)
+                    </td>
+                      <td style="width:150px;min-width:150px; max-width:150px;word-wrap:break-word">
+                         @Html.DisplayFor(modelItem => item.return_qty)
+                    </td>
+                      <td style="width:150px;min-width:150px; max-width:150px;word-wrap:break-word">
+                         @Html.DisplayFor(modelItem => item.balance_qty)
+                    </td>
+                    <td style="width:150px;min-width:150px; max-width:150px;word-wrap:break-word">    
+                        <a href='@Url.Action("ReturnChemical", "Emmet", new { id_chemical_issue_trans=item.id_chemical_issue_trans,id_chemical_issue=item.id_chemical_issue })'>
+                         <img src="@Url.Content("~/Images/icon_add.png")" title="Return"/></a>
+                        <a href='@Url.Action("ReturnChemicalTransList", "Emmet", new { id_chemical_issue_trans=item.id_chemical_issue_trans,id_chemical_issue=item.id_chemical_issue })'>
+                         <img src="@Url.Content("~/Images/icon_list.png")" title="Return list"/></a>                        
+                    </td>
+                </tr>
+                    }
+                }
+
+            </tbody>
+        </table>
+    </div>
+    @Styles.Render("~/Content/popover")
+    @section scripts {
+
+        <script type="text/javascript">
+         
+            $(function () {
+            
+            });
+      
+        </script>
+        @Scripts.Render("~/bundles/jqueryval")
+    }
+
+
+
+

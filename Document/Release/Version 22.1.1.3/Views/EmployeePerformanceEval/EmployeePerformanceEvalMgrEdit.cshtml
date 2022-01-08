@@ -1,0 +1,145 @@
+﻿@model ISOStd.Models.EmpPerformanceEvalModels
+
+@{
+    ViewBag.Title = "EmployeePerformanceEvalMgrEdit";
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+    string user = Obj.GetCurrentUserSession().empid;
+}
+
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Home</span>
+                    </a>
+                    <a href="@Url.Action("EmployeePerformanceEvalList", "EmployeePerformanceEval", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Employee Performance Evaluation</span>
+                    </a>
+                    <span class="breadcrumb-item active">Add Employee Performance Evaluation Comments</span>
+
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+}
+
+
+@using (Html.BeginForm("EmployeePerformanceEvalMgrEdit", "EmployeePerformanceEval", FormMethod.Post,
+                     new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <input type="hidden" id="Performance_EvalId" name="Performance_EvalId" value="@Model.Performance_EvalId" />
+
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Update Employee Performance Evaluation Comments</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+
+                <table class="table table-lg">
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.emp_id)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @Html.DisplayFor(model => model.emp_id)
+                                @*<input type="text" name="emp_id" id="emp_id" value="@Model.emp_id" readonly />*@
+                            </div>
+                        </td>
+                    </tr>
+
+                    @if (Model.Comment_SrMgr == "" && user == Model.JrMgr)
+                    {
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.Comment_JrMgr)<text style="color:red;">*</text>
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="Comment_JrMgr" name="Comment_JrMgr" required>@Model.Comment_JrMgr</textarea>
+                                    @Html.ValidationMessageFor(model => model.Comment_JrMgr)
+                                </div>
+                            </td>
+                        </tr>
+                    }
+
+                    @if (Model.Comment_JrMgr != "" && user == Model.SrMgr)
+                    {
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.Comment_SrMgr)<text style="color:red;">*</text>
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="Comment_SrMgr" name="Comment_SrMgr" required>@Model.Comment_SrMgr</textarea>
+                                    @Html.ValidationMessageFor(model => model.Comment_SrMgr)
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </table>
+            </div>
+        </div>
+  
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+            @Html.ActionLink("Back to List", "EmployeePerformanceEvalList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+
+            <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Update</button>
+        </div>
+
+    </div>
+
+}
+
+@section Scripts {
+    <script>
+        
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}
+

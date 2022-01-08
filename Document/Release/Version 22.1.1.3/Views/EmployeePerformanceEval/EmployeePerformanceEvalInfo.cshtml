@@ -1,0 +1,232 @@
+﻿@model ISOStd.Models.EmpPerformanceEvalModels
+@{
+    Layout = null;
+
+    ISOStd.Models.EmpPerformanceElementsModelsList objEmpPerformanceEvalList = new ISOStd.Models.EmpPerformanceElementsModelsList();
+
+    if (ViewBag.PerformanceElement != null)
+    {
+        objEmpPerformanceEvalList = ViewBag.PerformanceElement;
+    }
+    int iSrno = 0; int Weightage = 0;
+    decimal TotalScore = 0;
+    var SectionId = "";
+
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+
+    System.Data.DataSet ObjMaxRate = new System.Data.DataSet();
+    if (ViewBag.MaxRate != null)
+    {
+        ObjMaxRate = ViewBag.MaxRate;
+    }
+
+    int sObjMaxRate = 0;
+}
+<h4 style="text-align:center;border-bottom:1px solid #808080">Performance Evaluation Info</h4>
+<p>
+    <label><b>Employee Name:</b></label>@Html.DisplayFor(model => model.emp_id)
+    <label><b>Evaluation Date:</b></label>
+    @if (Model.Evaluation_DoneOn != null && Model.Evaluation_DoneOn > Convert.ToDateTime("01/01/0001"))
+    {
+        @Model.Evaluation_DoneOn.ToString("dd/MM/yyyy")
+    }
+</p>
+<p>
+    <label><b>Evaluation Form:</b></label>
+    @if (Model.Evaluated_From != null && Model.Evaluated_From > Convert.ToDateTime("01/01/0001"))
+    {
+        @Model.Evaluated_From.ToString("dd/MM/yyyy")
+    }
+
+    <label><b>Evaluation To:</b></label>
+    @if (Model.Evaluated_To != null && Model.Evaluated_To > Convert.ToDateTime("01/01/0001"))
+    {
+        @Model.Evaluated_To.ToString("dd/MM/yyyy")
+    }
+</p>
+<p>
+    <label><b>Evaluation done by:</b></label>@Html.DisplayFor(model => model.Eval_DoneBy)
+    <label><b>Weakness:</b></label>@Html.DisplayFor(model => model.Weakness)
+</p>
+<p>
+    <label><b>Strength:</b></label>@Html.DisplayFor(model => model.Strengths)
+    <label><b>Need of training to enhance competence:</b></label>@Html.DisplayFor(model => model.Training_Reqd)
+</p>
+<p>
+    <label><b>If employee performance is not adequate, actions to be taken:</b></label>@Html.DisplayFor(model => model.Actions_Taken)
+    @*<label><b>Evaluation Reviewed By:</b></label>@Html.DisplayFor(model => model.Eval_ReviewedBy)*@
+</p>
+
+<p>
+    <label><b>Reviewed By:</b></label>@Html.DisplayFor(model => model.JrMgr)
+    <label><b>Approved By:</b></label>@Html.DisplayFor(model => model.SrMgr)
+</p>
+@if (Model.Comment_JrMgr != "")
+{
+    <p>
+        <label><b>Reviewd Date:</b></label>
+        @if (Model.JrMgr_Comment_Date != null && Model.JrMgr_Comment_Date > Convert.ToDateTime("01/01/0001"))
+        {
+            @Model.JrMgr_Comment_Date.ToString("dd/MM/yyyy")
+        }
+        <label><b>Reviewed Comments:</b></label>@Html.DisplayFor(model => model.Comment_JrMgr)
+    </p>
+}
+@if (Model.Comment_SrMgr != "")
+{
+    <p>
+        <label><b>Approved Date:</b></label>
+        @if (Model.SrMgr_Comment_Date != null && Model.SrMgr_Comment_Date > Convert.ToDateTime("01/01/0001"))
+        {
+            @Model.SrMgr_Comment_Date.ToString("dd/MM/yyyy")
+        }
+        <label><b>Approved Comments:</b></label>@Html.DisplayFor(model => model.Comment_SrMgr)
+    </p>
+}
+    <p>
+        <label><b>Status:</b></label>@Html.DisplayFor(model => model.sstatus)
+    </p>
+
+    <table style="width: 90%;">
+        <tr>
+            <th style="background-color: #e5eafe; color: #0099ff;">
+                Sr. No.
+            </th>
+            <th style="background-color: #e5eafe; color: #0099ff;">
+                Element
+            </th>
+            <th style="background-color: #e5eafe; color: #0099ff;">
+                Rating
+            </th>
+            <th style="background-color: #e5eafe; color: #0099ff;">
+                Weightage
+            </th>
+        </tr>
+        @if (ObjMaxRate.Tables.Count > 0)
+        {
+            sObjMaxRate = Convert.ToInt32(ObjMaxRate.Tables[0].Rows[0]["Weightage"].ToString());
+        }
+        @{
+            int Sq_No = 0; decimal GrandTotal = 0; int Sectionrate = 0; string Msg = "";
+        }
+        @foreach (var item in objEmpPerformanceEvalList.lstEmpPerformanceElements)
+        {
+            iSrno = iSrno + 1;
+            Sq_No = Sq_No + 1;
+
+            if (iSrno == 1)
+            {
+                Weightage = Convert.ToInt32(item.SQ_Weightage);
+            }
+
+
+            if (iSrno != 1 && SectionId != item.Section)
+            {
+
+                TotalScore = Weightage * Sectionrate / ((Sq_No - 1) * sObjMaxRate);
+                <tr>
+                    <td>Section Weightage</td>
+                    <td>@Weightage</td>
+                </tr>
+                <tr>
+                    <td>Total Score of above section (Weightage:@Sectionrate)</td>
+                    <td>@TotalScore (out of @Sectionrate)</td>
+                </tr>
+                GrandTotal = GrandTotal + TotalScore;
+            }
+
+            if (iSrno == 1 || SectionId != item.Section)
+            {
+                <tr>
+
+                    <td colspan="4" style="font:bolder">
+                        @Obj.GetDropdownitemById(item.Section) &nbsp;&nbsp;&#45;&nbsp;&nbsp;Weightage&#58;&nbsp;&nbsp;
+                        @item.Section_Weightage
+                    </td>
+                </tr>
+                {
+                    Sq_No = 1;
+                }
+
+            }
+
+            <tr>
+                <td>
+                    @*@iSrno*@
+                    @Sq_No
+                </td>
+                <td>
+                    @item.SQId
+                </td>
+                <td>
+                    @item.SQ_OptionsId
+                </td>
+                <td align="center">
+                    @item.SQ_Weightage
+                </td>
+            </tr>
+
+            if (iSrno != 1 && SectionId != item.Section)
+            {
+                Weightage = Convert.ToInt32(item.SQ_Weightage);
+            }
+            if (SectionId == item.Section)
+            {
+                int vv = 0;
+                if (item.SQ_Weightage!="")
+                {
+                    vv = Convert.ToInt32(item.SQ_Weightage);
+                }
+                Weightage = Weightage + vv;
+            }
+            SectionId = (item.Section);
+            Sectionrate = Convert.ToInt32(item.Section_Weightage);
+
+        }
+        <tr>
+            @{
+                TotalScore = Weightage * Sectionrate / (Sq_No * sObjMaxRate);
+                GrandTotal = GrandTotal + TotalScore;
+            }
+
+
+        <tr>
+            <td>Section Weightage</td>
+            <td>@Weightage</td>
+        </tr>
+        <tr>
+            <td>Total Score of above section (Weightage:@Sectionrate)</td>
+            <td>@TotalScore (out of @Sectionrate)</td>
+        </tr>
+     
+        @if (GrandTotal == 100)
+        {
+            Msg = "Outstanding";
+        }
+        else if (GrandTotal >= 80 && GrandTotal < 99)
+        {
+            Msg = "Excellent";
+        }
+        else if (GrandTotal >= 60 && GrandTotal < 79)
+        {
+            Msg = "Good";
+        }
+        else if (GrandTotal >= 40 && GrandTotal < 59)
+        {
+            Msg = "Moderate";
+        }
+        else if (GrandTotal >= 20 && GrandTotal < 39)
+        {
+            Msg = "Average";
+        }
+        else if (GrandTotal >= 1 && GrandTotal < 19)
+        {
+            Msg = "Poor";
+        }
+
+        <tr>
+            <td>Grand total Weightage</td>
+            <td>@GrandTotal % &nbsp;&nbsp;&#45;&nbsp;&nbsp;( @Msg )</td>
+        </tr>
+
+    </table>

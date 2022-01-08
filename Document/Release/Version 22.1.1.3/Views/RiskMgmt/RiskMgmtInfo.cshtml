@@ -1,0 +1,140 @@
+﻿@model ISOStd.Models.RiskMgmtModels
+@{
+    Layout = null;
+    ISOStd.Models.RiskMitigationModels objMitigation = new ISOStd.Models.RiskMitigationModels();
+    ISOStd.Models.RiskReviewModelsList objRiskReviewlst = new ISOStd.Models.RiskReviewModelsList();
+
+    if (ViewBag.objMitigation != null)
+    {
+        objMitigation = ViewBag.objMitigation;
+    }
+
+    if (ViewBag.objRiskReview != null)
+    {
+        objRiskReviewlst = ViewBag.objRiskReview;
+    }   
+}
+
+
+<div class="card alpha-success border-success">
+    <div class="card-header bg-info text-white">
+        <h4 class="text-center">Risk Identification</h4>
+    </div>
+
+    <div class="card-body">
+        <p>
+            Branch office: <code>
+                @Html.DisplayFor(model => model.branch_id)
+            </code>
+        </p>
+        <p>
+            Department:<code>
+                @Html.DisplayFor(model => model.dept)
+            </code>
+            Lcoation:<code>
+                @Html.DisplayFor(model => model.Location)
+            </code>
+        </p>
+        <p>
+            Risk Status: <code>
+                @Html.DisplayFor(model => model.risk_status_id)
+            </code>
+            Risk Description: <code> @Html.DisplayFor(model => model.risk_desc)</code>
+        </p>
+        <p>          
+            Criteria:<code>  @Html.DisplayFor(model => model.reg_id)</code>
+            Source: <code> @Html.DisplayFor(model => model.source_id)</code>
+        </p>
+        <p>
+            Prepared By:<code>
+                @Html.DisplayFor(model => model.risk_owner)
+            </code>
+            Approved By: <code> @Html.DisplayFor(model => model.risk_manager)</code>
+        </p>
+        <p>
+            Opportunity Description:<code>
+                @Html.DisplayFor(model => model.opp_desc)
+            </code>
+            Issue: <code>                    @Html.DisplayFor(model => model.Issue)</code>
+        </p>
+        <h4 style="text-align:center;border-bottom:1px solid #808080">Risk Assesment</h4>
+        @* <p><label><b>Assessment:</b></label>  @Html.DisplayFor(model => model.assessment)</p>*@
+        <p>
+            Severity: <code>
+                @Html.DisplayFor(model => model.impact_id)
+            </code>
+            Current likelyhood: <code> @Html.DisplayFor(model => model.like_id)</code>
+        </p>
+        <p>
+            Consequences: <code>
+                @Html.DisplayFor(model => model.consequences)
+            </code>
+            Notes: <code> @Html.DisplayFor(model => model.notes)</code>
+        </p>
+        <p>
+            Risk Rating: <code> @Html.DisplayFor(model => model.RiskRating) </code>
+            Risk Type: <code> @Html.DisplayFor(model => model.Risk_Type) </code>
+        </p>
+
+
+
+        @if (ViewBag.objMitigation != null && objMitigation != null)
+        {
+            <h4 style="text-align:center;border-bottom:1px solid #808080">Mitigation</h4>
+            <p>
+                Strategy Plan:<code>
+                    @objMitigation.eval_id
+                </code>
+                Mitigation Effort:<code>@objMitigation.effort_id</code>
+            </p>
+            <p>Proposed Mitigation Control:<code>@objMitigation.current_solution</code></p>
+            <p>
+                Risk Evaluation Status:<code>
+                    @objMitigation.eval_id
+                </code>
+                Submission Date:
+
+                @if (objMitigation.submission_date != null && objMitigation.submission_date > Convert.ToDateTime("01/01/0001"))
+                {
+
+                    <code>
+                        @objMitigation.submission_date.ToString("dd/MM/yyyy")
+                    </code>
+                }
+            </p>
+            <p>Submitted By:<code>@objMitigation.submitted_by</code></p>
+        }
+
+    </div>
+</div>
+        @* @if (ViewBag.objRiskReview != null)
+            {
+                <table>
+                    <tr>
+                        <td colspan="4" style="background-color: #4cc4dd; color: #fff; font-weight: bold; font-size: 14px;">Risk Review Comments</td>
+                    </tr>
+                    <tr style="background-color: #e5eafe; color: #0099ff;">
+                        <th>Comments</th>
+                        <th>Reviewer</th>
+                        <th>Submitted Date</th>
+                        <th>Level</th>
+                    </tr>
+                    @for (int i = 0; i < objRiskReviewlst.lstRiskReviewModels.Count; i++)
+                    {
+                        <tr>
+                            <td>
+                                @objRiskReviewlst.lstRiskReviewModels[i].comments
+                            </td>
+                            <td>
+                                @objRiskReviewlst.lstRiskReviewModels[i].reviewer
+                            </td>
+                            <td>
+                                @objRiskReviewlst.lstRiskReviewModels[i].submission_date.ToString("dd/MM/yyyy")
+                            </td>
+                            <td>
+                                @objRiskReviewlst.lstRiskReviewModels[i].level_id
+                            </td>
+                        </tr>
+                    }
+                </table>
+            }*@

@@ -212,6 +212,9 @@ namespace ISOStd.Models
         [Display(Name = "Update Date")]
         public DateTime update_date { get; set; }
 
+        [Display(Name = "Consequences of an Accident")]
+        public string damage { get; set; }
+
         internal bool FunUpdateIncidentAction(string Incident_Id)
         {
             try
@@ -267,7 +270,7 @@ namespace ISOStd.Models
                 string sSqlstmt = "insert into t_incident_report ( PreparedBy, Incident_Type, Location, Occurred_onJob,"
                 + " InWork_Premises, WitnessedBy, Incident_Desc, Consequences, Damages, Injury_Nature, Minor_InjuriesNo, Minor_Injuries_LTINo, "
                 + " Major_InjuriesNo, FatalitiesNo, Actions_Taken, Incident_Reasons, Corrective_Measures, Corrective_ApprovedBy_ReviewedBy, LoggedBy,Injuries,CAPA,CAPA_Status,incident_cost,"
-                + "ReportToHSE,branch,accident_reportno,risk_incident,hse_officer,witness_stmt,invest_team,report_upload,ext_witness,overall_status";
+                + "ReportToHSE,branch,accident_reportno,risk_incident,hse_officer,witness_stmt,invest_team,report_upload,ext_witness,overall_status,Incident_Num";
 
                 if (objIncidentReport.Reported_On > Convert.ToDateTime("01/01/0001"))
                 {
@@ -313,7 +316,7 @@ namespace ISOStd.Models
                     + "','" + objIncidentReport.FatalitiesNo + "','" + objIncidentReport.Actions_Taken + "','" + objIncidentReport.Incident_Reasons + "','" + objIncidentReport.Corrective_Measures
                     + "','" + objIncidentReport.Corrective_ApprovedBy_ReviewedBy + "','" + user
                     + "','" + objIncidentReport.Injuries + "','" + objIncidentReport.CAPA + "','" + objIncidentReport.CAPA_Status + "','" + objIncidentReport.incident_cost + "','" + objIncidentReport.ReportToHSE + "','" + sBranch + "'"
-                    +",'" + objIncidentReport.accident_reportno + "','" + objIncidentReport.risk_incident + "','" + objIncidentReport.hse_officer + "','" + objIncidentReport.witness_stmt + "','" + objIncidentReport.invest_team + "','" + objIncidentReport.report_upload + "','" + objIncidentReport.ext_witness + "','" + objIncidentReport.overall_status + "'";
+                    +",'" + objIncidentReport.accident_reportno + "','" + objIncidentReport.risk_incident + "','" + objIncidentReport.hse_officer + "','" + objIncidentReport.witness_stmt + "','" + objIncidentReport.invest_team + "','" + objIncidentReport.report_upload + "','" + objIncidentReport.ext_witness + "','" + objIncidentReport.overall_status + "','" + objIncidentReport.accident_reportno + "'";
 
                 sSqlstmt = sSqlstmt + sValues + ")";
                 int iIncidentId = 0;
@@ -330,17 +333,19 @@ namespace ISOStd.Models
                         objActionList.lstIncidentReportModels[0].Incident_Id = iIncidentId.ToString();
                         FunAddActionList(objActionList);
                     }
-                    DataSet dsData = objGlobalData.GetReportNo("INC", "", objGlobalData.GetCompanyBranchNameById(sBranch));
-                    if (dsData != null && dsData.Tables.Count > 0)
-                    {
-                        Incident_Num = dsData.Tables[0].Rows[0]["ReportNO"].ToString();
-                    }
-                    string sql = "update t_incident_report set Incident_Num='" + Incident_Num + "' where Incident_Id='" + iIncidentId + "'";
-                    if (objGlobalData.ExecuteQuery(sql))
-                    {
-                        SendIncidentEmail(objIncidentReport);
-                        return true;
-                    }
+                     SendIncidentEmail(objIncidentReport);
+                     return true;
+                    //DataSet dsData = objGlobalData.GetReportNo("INC", "", objGlobalData.GetCompanyBranchNameById(sBranch));
+                    //if (dsData != null && dsData.Tables.Count > 0)
+                    //{
+                    //    Incident_Num = dsData.Tables[0].Rows[0]["ReportNO"].ToString();
+                    //}
+                    //string sql = "update t_incident_report set Incident_Num='" + Incident_Num + "' where Incident_Id='" + iIncidentId + "'";
+                    //if (objGlobalData.ExecuteQuery(sql))
+                    //{
+                    //    SendIncidentEmail(objIncidentReport);
+                    //    return true;
+                    //}
                 }
 
             }
@@ -468,13 +473,13 @@ namespace ISOStd.Models
                 string sToEmailId = objGlobalData.GetMultiHrEmpEmailIdById(objGlobalData.GetHSEEmployee());
                 string sUserName = objGlobalData.GetMultiHrEmpNameById(objGlobalData.GetHSEEmployee());
              
-                sInformation = "Incident Reported"
+                sInformation = "Accident Reported"
                 + " <br />"
-               + "Incident No:'" + objReport.Incident_Num + "'"
-                +" <br />"
-             + "Incident Date and Timing:'" + objReport.Incident_Datetime.ToString("yyyy-MM-dd HH':'mm':'ss") + "'"
+               + "Accident No:'" + objGlobalData.GetAccidentReportNoById(accident_reportno) + "'"
+               +" <br />"
+               + "Accident Date and Timing:'" + acc_date.ToString("dd-MM-yyyy hh:mm:ss") + "'"
                + " <br />"
-             + "Description:'" + objReport.Incident_Desc + "'";
+                + "Description:'" + objReport.details + "'";
                 sHeader = sHeader + sInformation;
 
                 sToEmailId = Regex.Replace(sToEmailId, ",+", ",");
@@ -513,7 +518,7 @@ namespace ISOStd.Models
                     + "', Corrective_ApprovedBy_ReviewedBy='" + objIncidentReport.Corrective_ApprovedBy_ReviewedBy
                     + "', Injuries='" + objIncidentReport.Injuries + "', CAPA='" + objIncidentReport.CAPA + "', CAPA_Status='" + objIncidentReport.CAPA_Status + "', incident_cost='" + objIncidentReport.incident_cost + "', ReportToHSE='" + objIncidentReport.ReportToHSE + "'"
                     + ", accident_reportno='" + objIncidentReport.accident_reportno + "', risk_incident='" + objIncidentReport.risk_incident + "', hse_officer='" + objIncidentReport.hse_officer + "', witness_stmt='" + objIncidentReport.witness_stmt + "', invest_team='" + objIncidentReport.invest_team + "', report_upload='" + objIncidentReport.report_upload + "', ext_witness='" + objIncidentReport.ext_witness + "'"
-                    + ", overall_status='" + objIncidentReport.overall_status + "'";
+                    + ", overall_status='" + objIncidentReport.overall_status + "', Incident_Num='" + objIncidentReport.accident_reportno + "'";
 
                 if (objIncidentReport.Reported_On > Convert.ToDateTime("01/01/0001"))
                 {

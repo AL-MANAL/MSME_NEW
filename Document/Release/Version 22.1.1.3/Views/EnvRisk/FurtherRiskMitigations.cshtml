@@ -1,0 +1,669 @@
+﻿@model ISOStd.Models.EnvRiskModels
+
+@{
+    ViewBag.Title = "";
+
+    ISOStd.Models.EnvRiskModelsList objMitList = new ISOStd.Models.EnvRiskModelsList();
+    int icnt = 0;
+    if (ViewBag.objMitList != null)
+    {
+        objMitList = ViewBag.objMitList;
+        icnt = objMitList.lstHazard.Count;
+    }
+    DateTime today = DateTime.Now;
+}
+
+<script src='@Url.Content("~/global_assets/js/demo_pages/EnvFurmit_form_wizard.js")'></script>
+
+@section featured {
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("EnvList", "EnvRisk", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Environmental Risk Assessment</span>
+                    </a>
+                    <span class="breadcrumb-item active">Further Mitigation Measures</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+}
+<!-- Basic setup -->
+<div class="card">
+    <div class="card-header header-elements-inline bg-primary">
+        <h5 class="card-title">Further Mitigation Measures</h5>
+        <div class="header-elements">
+            <div class="list-icons">
+                <a class="list-icons-item" data-action="collapse"></a>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="container-fluid">
+
+            <form class="wizard-form steps-validation" action="@Url.Action("FurtherRiskMitigations", "EnvRisk")" data-fouc id="form1">
+                <input type="hidden" id="id_env_risk" name="id_env_risk" value="@ViewBag.id_env_risk" />
+                <input type="hidden" id="impact_id" name="impact_id" value="@Model.impact_id" />
+                <input type="hidden" id="like_id" name="like_id" value="@Model.like_id" />
+                <input type="hidden" id="itemcnt" name="itemcnt" value="@icnt" />
+                <input type="hidden" id="id_env_risk_trans" name="id_env_risk_trans" value="@Model.id_env_risk_trans" />
+                <h6>Risk Mitigation</h6>
+                <fieldset>
+                    <table class="table table-lg">
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.env_refno)
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    @Html.DisplayFor(model => model.env_refno)
+                                </div>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    Initial Risk Rating
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <input class="form-control" type="text" id="rating" name="rating" style="display:none;" readonly />
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.branch_id)
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    @Html.DisplayFor(model => model.branch_id)
+                                </div>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.dept)
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    @Html.DisplayFor(model => model.dept)
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.Location)
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    @Html.DisplayFor(model => model.Location)
+                                </div>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.source_id)
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    @Html.DisplayFor(model => model.source_id)
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.Issue)
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    @Html.DisplayFor(model => model.Issue)
+                                </div>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.impact)
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    @Html.DisplayFor(model => model.impact)
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.area_affected)
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    @Html.DisplayFor(model => model.area_affected)
+                                </div>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.activity)
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    @Html.DisplayFor(model => model.activity)
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.product)
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    @Html.DisplayFor(model => model.product)
+                                </div>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.aspects)
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    @Html.DisplayFor(model => model.aspects)
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.reported_date)
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    @if (Model.reported_date != null && Model.reported_date > Convert.ToDateTime("01/01/0001"))
+                                    {
+                                        @Html.Label(Model.reported_date.ToString("dd/MM/yyyy"))
+                                    }
+                                </div>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.reported_by)
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    @Html.DisplayFor(model => model.reported_by)
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.activity_type)
+                                </div>
+                            </td>
+                            <td class="col-xs-3 col-md-4">
+                                <div class="editor-field">
+                                    @Html.DisplayFor(model => model.activity_type)
+                                </div>
+                            </td>
+                        </tr>
+
+                    </table>
+                    <fieldset class="border p-2">
+                        <legend class="font-weight-semibold text-success">Mitigation Measures</legend>
+                        <table class="table table-lg">
+                            <tr class="row">
+
+                                <td class="col-xs-3 col-md-3">
+                                    <div class="editor-label">
+                                        Control Type
+                                    </div>
+                                </td>
+                                <td class="col-xs-3 col-md-3">
+                                    <div class="editor-field">
+                                        <select class="select-search1" data-fouc id="cnt_type" name="cnt_type">
+                                            <option value='' hidden>Select</option>
+                                            @if (ViewBag.Control != null)
+                                            {
+                                                foreach (var item in ViewBag.Control)
+                                                {
+                                                    <option value='@item'>@item</option>
+                                                }
+                                            }
+                                        </select>
+                                        <span class="field-validation-error">
+                                            <label id="cnt_type-message" class="validation-invalid-label" style="display: none" for="basic">This field is required.</label>
+                                        </span>
+                                    </div>
+                                </td>
+                                <td class="col-xs-3 col-md-3">
+                                    <div class="editor-label">
+                                        Control Description
+                                    </div>
+                                </td>
+                                <td class="col-xs-3 col-md-3">
+                                    <div class="editor-field">
+                                        <input class="form-control" type="text" id="cnt_desc" name="cnt_desc" />
+                                        <span class="field-validation-error">
+                                            <label id="cnt_desc-message" class="validation-invalid-label" style="display: none" for="basic">This field is required.</label>
+                                        </span>
+                                    </div>
+                                </td>
+                                <td class="col-xs-3 col-md-3">
+                                    <div class="editor-label">
+                                        Person Responsible
+                                    </div>
+                                </td>
+                                <td class="col-xs-3 col-md-3">
+                                    <div class="editor-field">
+                                        <select class="select-search1" data-fouc id="pers_resp" name="pers_resp">
+                                            <option value='' hidden>Select</option>
+                                            @if (ViewBag.EmpList != null)
+                                            {
+                                                foreach (var item in ViewBag.EmpList)
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+                                                }
+                                            }
+                                        </select>
+                                        <span class="field-validation-error">
+                                            <label id="pers_resp-message" class="validation-invalid-label" style="display: none" for="basic">This field is required.</label>
+                                        </span>
+                                    </div>
+                                </td>
+
+                                <td class="col-xs-3 col-md-3">
+                                    <div class="editor-label">
+                                        Target Date
+                                    </div>
+                                </td>
+                                <td class="col-xs-3 col-md-3">
+                                    <div class="editor-field">
+                                        <input class="form-control" type="date" id="target_date" name="target_date" value="@today.ToString("yyyy-MM-dd")" />
+                                        <span class="field-validation-error">
+                                            <label id="target_date-message" class="validation-invalid-label" style="display: none" for="basic">This field is required.</label>
+                                        </span>
+                                    </div>
+                                </td>
+                                <td class="col-xs-3 col-md-5">
+                                    <input type="button" value="Add" class="btn btn-success" onclick="AddMitigation()" /> <span class="text-primary font-italic">(Please click ADD button to add multiple entries)</span>
+                                </td>
+                            </tr>
+                        </table>
+                    </fieldset>
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="card card-table table-responsive shadow-0 mb-0">
+                                <table class="table" id="team-list">
+                                    <tr class="bg-blue">
+                                        <th>Action</th>
+                                        <th>Control Type</th>
+                                        <th>Control Description</th>
+                                        <th>Person Responsible</th>
+                                        <th>Target Date</th>
+                                    </tr>
+                                    @if (objMitList.lstHazard != null && objMitList.lstHazard.Count > 0)
+                                    {
+                                        for (int index = 0; index < objMitList.lstHazard.Count; index++)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    <span class="badge badge-info" onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span>
+                                                    <input type='hidden' id='mit_id @index' name="mit_id @index" value='@objMitList.lstHazard[index].mit_id' />
+                                                    <input type='hidden' id='mit_id_trans @index' name="mit_id_trans @index" value='@objMitList.lstHazard[index].mit_id_trans' />
+                                                </td>
+                                                <td>
+                                                    <select class="select-search1" data-fouc required id='cnt_type @index' name="cnt_type @index">
+                                                        <option value='' hidden>Select</option>
+                                                        @if (ViewBag.Control != null)
+                                                        {
+                                                            foreach (var item in ViewBag.Control)
+                                                            {
+                                                                if (item == objMitList.lstHazard[index].cnt_type)
+                                                                {
+                                                                    <option value='@item' selected>@item</option>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <option value='@item'>@item</option>
+                                                                }
+                                                            }
+                                                        }
+                                                    </select>
+                                                </td>
+                                                <td>
+                                                    <input class='form-control' type='text' required id='cnt_desc @index' name="cnt_desc @index" value='@objMitList.lstHazard[index].cnt_desc'>
+                                                </td>
+                                                <td>
+                                                    <select class="select-search1" data-fouc required id='pers_resp @index' name="pers_resp @index">
+                                                        <option value='' hidden>Select</option>
+                                                        @if (ViewBag.EmpList != null)
+                                                        {
+                                                            foreach (var item in ViewBag.EmpList)
+                                                            {
+                                                                if (item.Value == objMitList.lstHazard[index].pers_resp)
+                                                                {
+                                                                    <option value='@item.Value' selected>@item.Text</option>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <option value='@item.Value'>@item.Text</option>
+                                                                }
+                                                            }
+                                                        }
+                                                    </select>
+                                                </td>
+                                                <td>
+                                                    @if (objMitList.lstHazard[index].target_date != null && objMitList.lstHazard[index].target_date > Convert.ToDateTime("01/01/0001"))
+                                                    {
+                                                        <input class="form-control required" type="date" id='target_date @index' name="target_date @index" value="@objMitList.lstHazard[index].target_date.ToString("yyyy-MM-dd")" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <input class="form-control required" type="date" id='target_date @index' name="target_date @index" required />
+                                                    }
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                </table>
+
+                            </div>
+                        </div>
+                    </div>
+                    <table class="table table-lg">
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.mit_evaluated_by)<text style="color:red;">*</text>
+                                </div>
+                            </td>
+                            <td class="col-xs-3 col-md-3">
+                                <div class="editor-field">
+                                    <select class="select-search1" data-fouc id="mit_evaluated_by" name="mit_evaluated_by" required>
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.Approver != null)
+                                        {
+                                            foreach (var item in ViewBag.Approver)
+                                            {
+                                                if (item.Value == Model.mit_evaluated_by)
+                                                {
+                                                    <option value='@item.Value' selected>@item.Text</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.mit_notified_to)<text style="color:red;">*</text>
+                                </div>
+                            </td>
+                            <td class="col-xs-3 col-md-3">
+                                <div class="editor-field">
+                                    <select class="select-search1" data-fouc id="mit_notified_to" name="mit_notified_to" required multiple>
+                                        @*<option value='' hidden>Select</option>*@
+                                        @if (ViewBag.EmpList != null)
+                                        {
+                                            foreach (var data in ViewBag.EmpList)
+                                            {
+                                                if (Array.IndexOf(Model.mit_notified_to.ToString().Split(','), data.Value) >= 0)
+                                                {
+                                                    <option value='@data.Value' selected>@data.Text</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@data.Value'>@data.Text</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.proposed_date)<text style="color:red;">*</text>
+                                </div>
+                            </td>
+                            <td class="col-xs-3 col-md-3">
+                                <div class="editor-field">
+                                    @if (Model.proposed_date != null && Model.proposed_date > Convert.ToDateTime("01/01/0001"))
+                                    {
+                                        <input class="form-control required" type="date" id="proposed_date" name="proposed_date" value="@Model.proposed_date.ToString("yyyy-MM-dd")" />
+                                    }
+                                    else
+                                    {
+                                        <input class="form-control required" type="date" id="proposed_date" name="proposed_date" />
+                                    }
+                                </div>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.reeval_due_date)<text style="color:red;">*</text>
+                                </div>
+                            </td>
+                            <td class="col-xs-3 col-md-3">
+                                <div class="editor-field">
+                                    @if (Model.reeval_due_date != null && Model.reeval_due_date > Convert.ToDateTime("01/01/0001"))
+                                    {
+                                        <input class="form-control required" type="date" id="reeval_due_date" name="reeval_due_date" value="@Model.reeval_due_date.ToString("yyyy-MM-dd")" />
+                                    }
+                                    else
+                                    {
+                                        <input class="form-control required" type="date" id="reeval_due_date" name="reeval_due_date" />
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </fieldset>
+
+            </form>
+        </div>
+    </div>
+</div>
+<!-- /basic setup -->
+
+<script src='@Url.Content("~/global_assets/js/plugins/forms/wizards/steps2.min.js")'></script>
+<script>
+       var summary = {
+           summaryUrl: '@Url.Action("FurtherRiskMitigations", "EnvRisk")'
+
+       };
+       var $ = jQuery.noConflict();
+</script>
+
+@section Scripts {
+    <script>
+        var impact = document.getElementById("impact_id").value;
+        var like = document.getElementById("like_id").value;
+
+        if (impact != "" && like != "") {
+
+            jQuery.ajax({
+                url: '@Url.Action("FunGetRiskRating", "RiskMgmt")',
+                type: 'POST',
+                dataType: "json",
+                //data: { impact: impact, like: like },
+                data: { like: like, impact: impact },
+                success: function (result) {
+                    if (result != null) {
+                        document.getElementById("rating").style.display = 'block';
+                        document.getElementById("rating").value = result.RiskRating;
+                        document.getElementById("rating").style.backgroundColor = result.color_code;
+                    }
+
+                }
+            });
+
+        }
+        var showClass = 'is-visible';
+        var hideClass = 'invisible';
+
+        function Validation() {
+            var validflg = true;
+            var ssnMessage = "";
+
+            if (document.getElementById("cnt_type").value == "") {
+                ssnMessage = $('#cnt_type-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#cnt_type-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("cnt_desc").value == "") {
+                ssnMessage = $('#cnt_desc-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#cnt_desc-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("pers_resp").value == "") {
+                ssnMessage = $('#pers_resp-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#pers_resp-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("target_date").value == "") {
+                ssnMessage = $('#target_date-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#target_date-message');
+                ssnMessage.hide();
+            }
+            return validflg;
+        }
+
+        function deleteRow(btn) {
+            var row = btn.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+        }
+
+        function AddMitigation() {
+            if (Validation() == true) {
+
+                var cnt = document.getElementById("itemcnt").value;
+
+                document.getElementById("itemcnt").value = cnt;
+                // Find a <table> element with id="myTable":
+                var table = document.getElementById("team-list");
+
+                // Create an empty <tr> element and add it to the 1st position of the table:
+                var row = table.insertRow();
+
+
+                // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                var cell0 = row.insertCell(0);
+                var cell1 = row.insertCell(1);
+                var cell2 = row.insertCell(2);
+                var cell3 = row.insertCell(3);
+                var cell4 = row.insertCell(4);
+
+                var cnt_desc = $('#cnt_desc').val();
+                var target_date = $('#target_date').val();
+                var pers_resp = $('#pers_resp').val();
+                var pers_resp_val = document.getElementById("pers_resp");
+                var pers_resp_text = pers_resp_val.options[pers_resp_val.selectedIndex].text;
+
+                var cnt_type = $('#cnt_type').val();
+                var cnt_type_val = document.getElementById("cnt_type");
+                var cnt_type_text = cnt_type_val.options[cnt_type_val.selectedIndex].text;
+
+
+                cell0.innerHTML = "<span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span>";
+                cell1.innerHTML = "<select id='cnt_type " + cnt + "' name='cnt_type " + cnt + "' style='width:200px' ><option value='" + cnt_type + "' selected>" + cnt_type_text + "</option>@if (ViewBag.Control != null)
+                {
+                    foreach (var item in ViewBag.Control)
+                    { <option value='@item'>@item</option> }
+                }</select>";
+                cell2.innerHTML = "<input class='form-control' type='text' required id='cnt_desc " + cnt + "' name='cnt_desc " + cnt + "' value='" + cnt_desc + "'/>";
+                //cell2.innerHTML = "<input class='form-control' type='text' id='pers_resp " + cnt + "' name='pers_resp " + cnt + "' value='" + pers_resp + "' />";
+                cell3.innerHTML = "<select id='pers_resp " + cnt + "' name='pers_resp " + cnt + "' style='width:200px' ><option value='" + pers_resp + "' selected>" + pers_resp_text + "</option>@if (ViewBag.EmpList != null)
+                {
+                    foreach (var item in ViewBag.EmpList)
+                    { <option value='@item.Value'>@item.Text</option> }
+                    }</select>";
+                cell4.innerHTML = "<input class='form-control required' type='date' id='target_date " + cnt + "' name='target_date " + cnt + "' value='" + target_date + "' style='width:150px' />";
+
+                cnt++;
+                document.getElementById("itemcnt").value = cnt;
+
+                //document.getElementById("hidden card").classList.remove(hideClass);
+                //document.getElementById("hidden card").classList.add(showClass);
+                $("#cnt_type").val('').trigger('change');
+                document.getElementById("cnt_desc").value = "";
+                $("#pers_resp").val('').trigger('change');
+                document.getElementById("target_date").value = "";
+
+                ssnMessage = $('#cnt_type-message');
+                ssnMessage.hide();
+                ssnMessage = $('#cnt_desc-message');
+                ssnMessage.hide();
+                ssnMessage = $('#pers_resp-message');
+                ssnMessage.hide();
+                ssnMessage = $('#target_date-message');
+                ssnMessage.hide();
+            }
+        }
+
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

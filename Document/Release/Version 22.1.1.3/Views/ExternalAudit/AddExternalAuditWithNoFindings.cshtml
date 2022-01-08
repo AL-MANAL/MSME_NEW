@@ -1,0 +1,316 @@
+﻿@model ISOStd.Models.ExternalAuditModels
+
+@{
+    ViewBag.Title = "AddExternalAudit";
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+}
+
+
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("ExternalAuditList", "ExternalAudit", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> External Audit List</span>
+                    </a>
+                    <span class="breadcrumb-item active"> Add External Audit Report </span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            <div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@using (Html.BeginForm("AddExternalAuditWithNoFindings", "ExternalAudit", FormMethod.Post, new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Findings detail</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+
+                <table class="table table-lg">
+
+                    <tbody>
+
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                Certificate Body<text style="color:red;">*</text>
+                            </td>
+                            <td class="col">
+
+                                @Html.EditorFor(model => model.CertID, new { htmlAttributes = new { @required = "required", @class = "form-control" } })
+
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+
+
+                                @Html.LabelFor(model => model.Auditor_name)<text style="color:red;">*</text>
+
+                            </td>
+                            <td class="col">
+
+                                @Html.EditorFor(model => model.Auditor_name, new { htmlAttributes = new { @required = "required", @class = "form-control" } })
+
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.AuditNum)<text style="color:red;">*</text>
+
+                            </td>
+                            <td class="col">
+
+                                @Html.EditorFor(model => model.AuditNum, new { htmlAttributes = new { @required = "required", @class = "form-control" } })
+
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+
+
+                                @Html.LabelFor(model => model.AuditDate)<text style="color:red;">*</text>
+
+                            </td>
+                            <td class="col">
+
+                                <input class="form-control" type="date" id="AuditDate" name="AuditDate" required />
+
+                            </td>
+                        </tr>
+                        @*<tr>
+                            <td>
+
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.MajorFindingsNo)
+                                </div>
+                            </td>
+                            <td>
+                                <div class="editor-field">
+                                    <input type="number" id="MajorFindingsNo" name="MajorFindingsNo" onchange="cal1()" required />
+
+                                </div>
+                            </td>
+                            <td>
+
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.MinorFindingNo)
+                                </div>
+                            </td>
+                            <td>
+                                <div class="editor-field">
+                                    <input type="number" id="MinorFindingNo" name="MinorFindingNo" onchange="cal2()" required />
+                                </div>
+                            </td>
+                        </tr>*@
+                        <tr class="row">
+                            @*<td>
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.ObservationNo)
+                                </div>
+                            </td>
+                            <td>
+                                <div class="editor-field">
+                                    <input type="number" id="ObservationNo" name="ObservationNo" onchange="cal3()" required />
+                                </div>
+                            </td>*@
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.AuditLocation)<text style="color:red;">*</text>
+
+                            </td>
+                            <td class="col">
+
+                                <select class="form-control select-fixed-multiple" multiple="multiple" data-fouc id="AuditLocation" name="AuditLocation" required="required">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.Branch != null)
+                                    {
+                                        foreach (var data in ViewBag.Branch)
+                                        {
+                                            if (Array.IndexOf(Model.AuditLocation.ToString().Split(','), data.Value) >= 0)
+                                            {
+                                                <option value='@data.Value' selected>@data.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@data.Value'>@data.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.Remarks)<text style="color:red;">*</text>
+
+                            </td>
+                            <td class="col">
+
+                                @Html.TextAreaFor(model => model.Remarks, new { @required = "required", @maxlength = "225", @placeholder = "Textarea", @style = "overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;", @rows = "4", @cols = "4", @class = "form-control elastic maxlength-badge-position" })
+
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.upload)
+
+                            </td>
+                            <td class="col">
+
+                                @*@Html.EditorFor(model => model.Action_Plan, new { style="width: 180px;height: 60px;"})*@
+                                <input type="file" name="upload" id="upload" title="upload" onchange="FileFormatValidation(this)" accept=".pdf, .doc, .docx,image/*"
+                                       class="bootstrap-uploader" data-fouc />
+
+
+
+
+                            </td>
+                        </tr>
+
+
+
+
+
+
+
+                    </tbody>
+
+                </table>
+            </div>
+
+        </div>
+
+
+
+
+
+        @*<div style="float: left; padding-right: 200px;">
+
+            <input type="submit" value="Save" onclick="ProgressIconFunction('#form1')" />
+        </div>*@
+        @if (Obj.GetCurrentUserSession().ExtAuditRpt.Contains("3"))
+        {
+            <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+
+
+
+                <button type="submit" id="btnCreate" value="Save" class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Save</button>
+
+
+                @*<input type="submit" id="btnCreate" value="Save" class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" onclick="ProgressIconFunction('#form1')" />*@
+                @*<input type="button" value="Add" class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" onclick="AddPlanner()" />*@
+            </div>
+        }
+
+
+    </div>
+}
+
+@section Scripts {
+    <script>
+       //----zzz
+    $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+    });
+    //zzz----
+        //commented part
+        function cal1() {
+            var i = document.getElementById("MajorFindingsNo").value;
+            if (i != 0) {
+                jAlert("Major finidings should be zero");
+                document.getElementById("MajorFindingsNo").value = "";
+            }
+        }
+
+        function cal2() {
+            var i = document.getElementById("MinorFindingNo").value;
+            if (i != 0) {
+                jAlert("Minor finidings should be zero");
+                document.getElementById("MinorFindingNo").value = "";
+            }
+        }
+        function cal3() {
+            var i = document.getElementById("ObservationNo").value;
+            if (i != 0) {
+                jAlert("Observation should be zero");
+                document.getElementById("ObservationNo").value = "";
+            }
+        }
+
+         //commented part ends
+
+        function FileFormatValidation(file) {
+            var ext = file.value.split(".").pop().toLowerCase();
+            if ($.inArray(ext, ["doc", "pdf", "docx", "jpg", "jpeg", "gif", "png"]) == -1) {
+                file.value = "";
+                bootbox.alert({
+                    title: 'File type',
+                    message: 'Invalid file format, please upload only pdf format.'
+                });
+            }
+        }
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

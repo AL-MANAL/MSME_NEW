@@ -1,0 +1,708 @@
+﻿@model ISOStd.Models.InternalAuditModels
+
+@{
+    ViewBag.Title = "AddInternalAudit";
+}
+
+
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+
+
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("InternalAuditList", "Audit", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Internal Audit List</span>
+                    </a>
+                    <span class="breadcrumb-item active"> Add Internal Audit </span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            <div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+}
+
+@using (Html.BeginForm("AddInternalAudit", "Audit", FormMethod.Post, new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary()
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Internal Audit</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <fieldset class="border p-2">
+                        <legend class="font-weight-semibold"><i class="icon-file-text mr-2"></i> Audit details</legend>
+                       @* <div class="form-group">
+                            @Html.LabelFor(model => model.AuditNum)<text style="color: red;"> *</text>
+
+                            @Html.EditorFor(model => model.AuditNum, new { htmlAttributes = new { @required = "required", @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.AuditNum)
+                        </div>*@
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.AuditDate)<text style="color: red;"> *</text>
+
+                            <input type="date" class="form-control" id="AuditDate" name="AuditDate" required />
+                            <input type="hidden" id="dp" />
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.AuditCriteria)<text style="color: red;"> *</text>
+
+                            @*@Html.DropDownList("AuditCriteria", new SelectList(ViewBag.IsoStdList, "AuditCriteria"))*@
+
+                            <select class="form-control select-fixed-multiple" multiple="multiple" data-fouc id="AuditCriteria" name="AuditCriteria" required>
+                                @if (ViewBag.IsoStdList != null)
+                                {
+                                    foreach (var item in ViewBag.IsoStdList)
+                                    {
+                                        <option value='@item.Value'>@item.Text</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.AuditLocation)<text style="color: red;"> *</text>
+
+                            <select class="form-control select-fixed-multiple" data-fouc id="AuditLocation" name="AuditLocation" multiple="multiple" required>
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.Branch != null)
+                                {
+                                   foreach (var data in ViewBag.Branch)
+                                        {
+                                            if (Array.IndexOf(Model.AuditLocation.ToString().Split(','), data.Value) >= 0)
+                                            {
+                                                <option value='@data.Value' selected>@data.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@data.Value'>@data.Text</option>
+                                            }
+                                        }
+                                }
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Audit_Prepared_by)<text style="color: red;"> *</text>
+
+
+                            <select class="form-control select-search select2-hidden-accessible" data-fouc id="Audit_Prepared_by" name="Audit_Prepared_by" required>
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.EmpList != null)
+                                {
+                                    foreach (var item in ViewBag.EmpList)
+                                    {
+                                        <option value='@item.Value'>@item.Text</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Audit_Approved_by)<text style="color: red;"> *</text>
+
+                            <select class="form-control select-search select2-hidden-accessible" data-fouc id="ApprovedBy" name="ApprovedBy" required>
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.EmpList != null)
+                                {
+                                    foreach (var item in ViewBag.EmpList)
+                                    {
+                                        <option value='@item.Value'>@item.Text</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.upload)
+
+                            <input type="file" name="upload" id="upload" onchange="FileFormatValidation(this)" accept=".pdf,.xlsx" class="bootstrap-uploader" data-fouc />
+                        </div>
+
+                        <span class="form-text text-muted"><code>(Add atleast a Plan to Create Inetrnal Audit)</code></span>
+
+
+                    </fieldset>
+                </div>
+                <div class="col-md-6 border-dark bg-dark-alpha border p-2 text-dark">
+                    <fieldset class="border p-2">
+                        <legend class="font-weight-semibold"><i class="icon-newspaper2"></i>Plan details</legend>
+                        <div class="form-group">
+
+                            @Html.LabelFor(model => model.DeptName)<text style="color: red;"> *</text>
+
+                            <select class="form-control select-search select2-hidden-accessible" data-fouc id="DeptName" name="DeptName">
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.DeptList != null)
+                                {
+                                    foreach (var item in ViewBag.DeptList)
+                                    {
+                                        <option value='@item.Value'>@item.Text</option>
+                                    }
+                                }
+                            </select>
+                            <span class="field-validation-error"><span id="DeptName-message" style="display: none;">Department field is required.</span></span>
+                            @Html.ValidationMessageFor(model => model.DeptName)
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.AuditTime)<text style="color: red;"> *</text>
+                            <br />
+                            <label>From Hr: </label>@Html.DropDownList("AuditFromTimeInHour", new SelectList(ViewBag.AuditTimeInHour, "AuditFromTimeInHour"), new { @class = "select-fixed-single" })
+                            Min: @Html.DropDownList("AuditFromTimeInMin", new SelectList(ViewBag.AuditTimeInMin, "AuditFromTimeInMin"), new { @class = "select-fixed-single" })
+                            @Html.ValidationMessageFor(model => model.AuditTime)
+                            @*@Html.EditorFor(model => model.AuditTime, new { @class = "date" })*@
+                        </div>
+
+                        <div class="form-group">
+                            <label>To   Hr: </label>
+                            @Html.DropDownList("AuditToTimeInHour", new SelectList(ViewBag.AuditTimeInHour, "AuditToTimeInHour"), new { @class = "select-fixed-single" })
+                            Min: @Html.DropDownList("AuditToTimeInMin", new SelectList(ViewBag.AuditTimeInMin, "AuditToTimeInMin"), new { @class = "select-fixed-single" })
+                            @Html.ValidationMessageFor(model => model.AuditTime)
+                            @*@Html.EditorFor(model => model.AuditTime, new { @class = "date" })*@
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Auditor)<text style="color: red;"> *</text>
+
+                            @*@Html.EditorFor(model => model.Auditor)*@
+                            @Html.ListBox("Auditor", (MultiSelectList)ViewBag.EmpLists, new { @class = "form-control select-fixed-multiple" })
+                            <span class="field-validation-error"><span id="Auditor-message" style="display: none;">Auditor field is required.</span></span>
+                            @Html.ValidationMessageFor(model => model.Auditor)
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Auditee)<text style="color: red;"> *</text>
+
+                            @*@Html.EditorFor(model => model.Auditee)*@
+                            @Html.ListBox("Auditee", (MultiSelectList)ViewBag.EmpLists, new { @class = "form-control select-fixed-multiple" })
+                            <span class="field-validation-error"><span id="Auditee-message" style="display: none;">Auditee field is required.</span></span>
+                            @Html.ValidationMessageFor(model => model.Auditee)
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Audit_Planned_Date)<text style="color: red;"> *</text>
+
+                            <input type="date" class="form-control" id="Audit_Planned_Date" name="Audit_Planned_Date" onchange="checkDate();" />
+                            <span class="field-validation-error"><span id="Audit_Planned_Date-message" style="display: none;">Audit Prepared Date field is required.</span></span>
+                            @Html.ValidationMessageFor(model => model.Audit_Planned_Date)
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.DateScheduled)<text style="color: red;"> *</text>
+
+                            <input type="date" id="DateScheduled" name="DateScheduled" class="form-control" onchange="checkDate2();" />
+                            <span class="field-validation-error"><span id="DateScheduled-message" style="display: none;">Audit Prepared Date field is required.</span></span>
+                            @Html.ValidationMessageFor(model => model.DateScheduled)
+                        </div>
+
+
+                        @*  <td>
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.AuditStatus)<text style="color: red;"> *</text>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="editor-field">
+                                    <select id="AuditStatus" name="AuditStatus">
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.AuditStatus != null)
+                                        {
+                                            foreach (var item in ViewBag.AuditStatus)
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    </select>
+                                    <span class="field-validation-error"><span id="AuditStatus-message" style="display: none;">Audit Status By field is required.</span></span>
+                                    @Html.ValidationMessageFor(model => model.AuditStatus)
+                                </div>
+                            </td>*@
+
+                        @* approved by *@
+
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Audit_Activity)<text style="color: red;"> *</text>
+
+                            <span class="field-validation-error"><span id="Audit_Activity-message" style="display: none;">Audit Activity By field is required.</span></span>
+                            @Html.ValidationMessageFor(model => model.Audit_Activity)
+
+                            <textarea maxlength="225" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="Activity" name="Activity"></textarea>
+                        </div>
+
+
+
+
+
+
+                    </fieldset>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+            @Html.ActionLink("Back to List", "InternalAuditList", "Audit", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+            <div class="mt-2 mt-sm-0">
+                <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400 invisible" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Save</button>
+                <input type="button" value="Add" class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" onclick="AddAudit()" />
+            </div>
+
+        </div>
+    </div>
+
+    <div class="card invisible" id="hidden card">
+        <div class="card-header header-elements-inline">
+            <h5 class="card-title">Plan Detail</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+
+                    <a class="list-icons-item" data-action="remove"></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body">
+
+
+            <input type="hidden" id="itemcnt" name="itemcnt" value="0" />
+
+            <div class="card card-table table-responsive shadow-0 mb-0">
+                <table class="table" id="team-list">
+                    <tr class="bg-blue">
+                        <th>Action</th>
+                        <th>Dept</th>
+                        <th>From Time</th>
+                        <th>To Time</th>
+                        <th>Auditor(s)</th>
+                        <th>Auditee(s)</th>
+                        <th>Audit Prepared Date</th>
+                        <th>Scheduled Date</th>
+                        @*   <th>Audit Prepared by</th>*@
+                        @* <th>Status</th>*@
+                        @* <th>Audit Approved by</th>*@
+                        <th>Audit Activity</th>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+}
+
+
+@section Scripts {
+    <script>
+
+      $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+    });
+    //zzz----
+        var showClass = 'is-visible';
+        var hideClass = 'invisible';
+        function Validation() {
+            var validflg = true;
+            var ssnMessage = "";
+            if (document.getElementById("DeptName").value == "") {
+                ssnMessage = $('#DeptName-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#DeptName-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("Auditor").value == "") {
+                ssnMessage = $('#Auditor-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#Auditor-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("Auditee").value == "") {
+                ssnMessage = $('#Auditee-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#Auditee-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("Audit_Planned_Date").value == "") {
+                ssnMessage = $('#Audit_Planned_Date-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#Audit_Planned_Date-message');
+                ssnMessage.hide();
+            }
+
+            if (document.getElementById("DateScheduled").value == "") {
+                ssnMessage = $('#DateScheduled-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#DateScheduled-message');
+                ssnMessage.hide();
+            }
+            //if (document.getElementById("Audit_Prepared_by").value == "") {
+            //    ssnMessage = $('#Audit_Prepared_by-message');
+            //    ssnMessage.show();
+            //    validflg = false;
+            //}
+            //else {
+            //    ssnMessage = $('#Audit_Prepared_by-message');
+            //    ssnMessage.hide();
+            //}
+
+            //if (document.getElementById("AuditStatus").value == "") {
+            //    ssnMessage = $('#AuditStatus-message');
+            //    ssnMessage.show();
+            //    validflg = false;
+            //}
+            //else {
+            //    ssnMessage = $('#AuditStatus-message');
+            //    ssnMessage.hide();
+            //}
+
+            //if (document.getElementById("ApprovedBy").value == "") {
+            //    ssnMessage = $('#AuditApprovedby-message');
+            //    ssnMessage.show();
+            //    validflg = false;
+            //}
+            //else {
+            //    ssnMessage = $('#AuditApprovedby-message');
+            //    ssnMessage.hide();
+            //}
+
+            if (document.getElementById("Activity").value == "") {
+                ssnMessage = $('#Audit_Activity-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#Audit_Activity-message');
+                ssnMessage.hide();
+            }
+
+            return validflg;
+        }
+
+
+        function reformatDate(dateStr) {
+            dArr = dateStr.split("-");  // ex input 2010-01-18
+            return dArr[2] + "/" + dArr[1] + "/" + dArr[0]; //ex out: 2018/01/10
+        }
+
+
+        function AddAudit() {
+
+            if (Validation() == true) {
+
+              
+                var cnt = document.getElementById("itemcnt").value;
+
+                document.getElementById("itemcnt").value = cnt;
+                // Find a <table> element with id="myTable":
+                var table = document.getElementById("team-list");
+
+
+                // Create an empty <tr> element and add it to the 1st position of the table:
+                var row = table.insertRow();
+
+                // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                var cell0 = row.insertCell(0);
+                var cell1 = row.insertCell(1);
+                var cell2 = row.insertCell(2);
+                var cell3 = row.insertCell(3);
+                var cell4 = row.insertCell(4);
+                var cell5 = row.insertCell(5);
+                var cell6 = row.insertCell(6);
+                var cell7 = row.insertCell(7);
+                var cell8 = row.insertCell(8);
+                //var cell9 = row.insertCell(9);
+                //var cell10 = row.insertCell(10);
+                //var cell11 = row.insertCell(11);
+
+                var DeptName = [];
+                // Action_taken_by = $('#Action_taken_by option:selected').text();
+                var DeptNameText = $.map($("#DeptName option:selected"), function (el, i) {
+                    return $(el).text();
+                });
+                var DeptNameVal = $("#DeptName").val();
+
+                var AuditFromTimeInHour = $('#AuditFromTimeInHour').val();
+                var AuditFromTimeInMin = $('#AuditFromTimeInMin').val();
+                var AuditToTimeInHour = $('#AuditToTimeInHour').val();
+                var AuditToTimeInMin = $('#AuditToTimeInMin').val();
+
+                var Auditor = [];
+                var AuditorText = $.map($("#Auditor option:selected"), function (el, i) {
+                    return $(el).text();
+                });
+                var AuditorVal = $("#Auditor").val();
+
+                var Auditee = [];
+                var AuditeeText = $.map($("#Auditee option:selected"), function (el, i) {
+                    return $(el).text();
+                });
+                var AuditeeVal = $("#Auditee").val();
+
+                var Audit_Planned_Date = reformatDate($('#Audit_Planned_Date').val());
+                var DateScheduled = reformatDate($('#DateScheduled').val());
+                //var Audit_Prepared_byText = $('#Audit_Prepared_by option:selected').text();
+                //var Audit_Prepared_byval = $('#Audit_Prepared_by').val();
+                //var AuditStatus = $('#AuditStatus').val();
+                //var status = document.getElementById("AuditStatus");
+                //var AStatus = status.options[status.selectedIndex].text;
+                //var Audit_Approved_byText = $('#ApprovedBy option:selected').text();
+                //var Audit_Approved_byval = $('#ApprovedBy').val();
+                var Audit_Activity_byval = $('#Activity').val();
+
+                cell0.innerHTML = " <img src='@Url.Content("~/images/cancel.png")' onclick='deleteRow(this)' style='cursor:pointer; padding-right: 5px;'/>";
+                cell1.innerHTML = "<input type='hidden' id='DeptName" + cnt + "' name='DeptName" + cnt + "' value='" + DeptNameVal + "'>" + DeptNameText;
+                cell2.innerHTML = "<input type='hidden' id='AuditFromTimeInHour" + cnt + "' name='AuditFromTimeInHour" + cnt + "' value='" + AuditFromTimeInHour + "'><input type='hidden' id='AuditFromTimeInMin" + cnt + "' name='AuditFromTimeInMin" + cnt + "' value='" + AuditFromTimeInMin + "'>" + AuditFromTimeInHour + ":" + AuditFromTimeInMin;
+                cell3.innerHTML = "<input type='hidden' id='AuditToTimeInHour" + cnt + "' name='AuditToTimeInHour" + cnt + "' value='" + AuditToTimeInHour + "'><input type='hidden' id='AuditToTimeInMin" + cnt + "' name='AuditToTimeInMin" + cnt + "' value='" + AuditToTimeInMin + "'>" + AuditToTimeInHour + ":" + AuditToTimeInMin;
+                cell4.innerHTML = "<input type='hidden' id='Auditor" + cnt + "' name='Auditor" + cnt + "' value='" + AuditorVal + "'>" + AuditorText;
+                cell5.innerHTML = "<input type='hidden' id='Auditee" + cnt + "' name='Auditee" + cnt + "' value='" + AuditeeVal + "'>" + AuditeeText;
+                cell6.innerHTML = "<input type='hidden' id='Audit_Planned_Date" + cnt + "' name='Audit_Planned_Date" + cnt + "' value='" + Audit_Planned_Date + "'>" + Audit_Planned_Date;
+                cell7.innerHTML = "<input type='hidden' id='DateScheduled" + cnt + "' name='DateScheduled" + cnt + "' value='" + DateScheduled + "'>" + DateScheduled;
+                //cell8.innerHTML = "<input type='hidden' id='Audit_Prepared_by" + cnt + "' name='Audit_Prepared_by" + cnt + "' value='" + Audit_Prepared_byval + "'>" + Audit_Prepared_byText;
+                //cell9.innerHTML = "<input type='hidden' id='AuditStatus" + cnt + "' name='AuditStatus" + cnt + "' value='" + AuditStatus + "'>" + AStatus;
+                //cell9.innerHTML = "<input type='hidden' id='ApprovedBy" + cnt + "' name='ApprovedBy" + cnt + "' value='" + Audit_Approved_byval + "'>" + Audit_Approved_byText;
+                cell8.innerHTML = "<input type='hidden' id='AuditActivity" + cnt + "' name='AuditActivity" + cnt + "' value='" + Audit_Activity_byval + "'>" + Audit_Activity_byval;
+
+                cnt++;
+                document.getElementById("itemcnt").value = cnt;
+
+                document.getElementById("btnCreate").classList.remove(hideClass);
+                document.getElementById("btnCreate").classList.add(showClass);
+                document.getElementById("hidden card").classList.remove(hideClass);
+                document.getElementById("hidden card").classList.add(showClass);
+                ResetControl();
+            }
+
+        }
+
+        function ResetControl() {
+
+            $("#DeptName").val('').trigger('change');
+            document.getElementById("AuditFromTimeInHour").selectedIndex = "0";
+            document.getElementById("AuditFromTimeInMin").selectedIndex = "0";
+            document.getElementById("AuditToTimeInHour").selectedIndex = "0";
+            document.getElementById("AuditToTimeInMin").selectedIndex = "0";
+
+            $("#Auditor").val('').trigger('change');
+            $("#Auditee").val('').trigger('change');
+
+            $("#AuditFromTimeInHour").val('').trigger('change');
+            $("#AuditFromTimeInMin").val('').trigger('change');
+            $("#AuditToTimeInHour").val('').trigger('change');
+            $("#AuditToTimeInMin").val('').trigger('change');
+
+
+
+            document.getElementById("Audit_Planned_Date").value = "";
+            document.getElementById("DateScheduled").value = "";
+
+            //$("#ApprovedBy").val('').trigger("chosen:updated");
+            $("#Activity").val('');
+            var ssnMessage = $('#DeptName-message');
+            ssnMessage.hide();
+            ssnMessage = $('#Auditor-message');
+            ssnMessage.hide();
+            ssnMessage = $('#Auditee-message');
+            ssnMessage.hide();
+            ssnMessage = $('#Audit_Planned_Date-message');
+            ssnMessage.hide();
+            ssnMessage = $('#DateScheduled-message');
+            ssnMessage.hide();
+            //ssnMessage = $('#Audit_Prepared_by-message');
+            //ssnMessage.hide();
+            //ssnMessage = $('#AuditStatus-message');
+            //ssnMessage.hide();
+            //ssnMessage = $('#ApprovedBy');
+            //ssnMessage.hide();
+            ssnMessage = $('#AuditActivityby-message');
+            ssnMessage.hide();
+
+        }
+
+        function deleteRow(btn) {
+            var row = btn.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+            var cnt = document.getElementById("itemcnt").value;
+            cnt--;
+
+            document.getElementById("itemcnt").value = cnt;
+            if (cnt == "0") {
+
+                document.getElementById("btnCreate").classList.add(hideClass);
+                document.getElementById("btnCreate").classList.remove(showClass);
+                document.getElementById("hidden card").classList.remove(showClass);
+                document.getElementById("hidden card").classList.add(hideClass);
+            }
+        }
+        function FileFormatValidation(file) {
+            var ext = file.value.split(".").pop().toLowerCase();
+            if ($.inArray(ext, ["doc", "pdf", "docx", "jpg", "jpeg", "gif", "png"]) == -1) {
+                file.value = "";
+                bootbox.alert({
+                    title: 'File type',
+                    message: 'Invalid file format, please upload a doc,pdf,doc,jpg,jpeg,gif,png format.'
+                });
+            }
+
+        }
+
+
+
+        function checkDate() {
+
+
+            var dt2 = document.getElementById("AuditDate").value;
+            var dt1 = document.getElementById("Audit_Planned_Date").value;
+
+         
+
+
+
+
+            if (new Date(dt2).getTime() > new Date(dt1).getTime()) {
+
+                bootbox.alert({
+                    title: 'Audit prepared date',
+                    message: 'Audit prepared date cannot be after Audit date.'
+                });
+                $('#Audit_Planned_Date').val("");
+            }
+        }
+
+
+        function checkDate2() {
+
+
+            var dt2 = document.getElementById("AuditDate").value;
+            var dt1 = document.getElementById("DateScheduled").value;
+
+
+            if (new Date(dt1).getTime() < new Date(dt2).getTime()) {
+
+                bootbox.alert({
+                    title: 'Audit scheduled date',
+                    message: 'Audit scheduled date cannot be before Audit date.'
+                });
+                $('#DateScheduled').val("");
+            }
+        }
+        //$(function () {
+
+        //    $('#AuditDate').datepicker({
+        //        dateFormat: "dd/mm/yy",
+        //        buttonImageOnly: true,
+        //        buttonImage: '../Images/Calender.png',
+        //        showOn: 'both',
+        //        changeMonth: true,
+        //        changeYear: true
+        //    });
+
+        //    $('#Audit_Planned_Date').datepicker({
+        //        dateFormat: "dd/mm/yy",
+        //        buttonImageOnly: true,
+        //        buttonImage: '../Images/Calender.png',
+        //        showOn: 'both',
+        //        changeMonth: true,
+        //        changeYear: true,
+        //        onClose: function () {
+        //            var dt1 = $('#Audit_Planned_Date').datepicker('getDate');
+        //            var dt2 = $('#AuditDate').datepicker('getDate');
+        //            //check to prevent a user from entering a date below date of dt1
+        //            if (dt2 > dt1) {
+        //                jAlert("Audit prepared date cannot be after Audit date");
+        //                $('#Audit_Planned_Date').val("");
+        //            }
+        //        }
+        //    });
+        //    $('#DateScheduled').datepicker({
+        //        dateFormat: "dd/mm/yy",
+        //        buttonImageOnly: true,
+        //        buttonImage: '../Images/Calender.png',
+        //        showOn: 'both',
+        //        changeMonth: true,
+        //        changeYear: true,
+        //        onClose: function () {
+        //            var dt1 = $('#DateScheduled').datepicker('getDate');
+        //            var dt2 = $('#AuditDate').datepicker('getDate');
+        //            //check to prevent a user from entering a date below date of dt1
+        //            if (dt2 > dt1) {
+        //                jAlert("Audit scheduled date cannot be before Audit date");
+        //                $('#DateScheduled').val("");
+        //            }
+        //        }
+        //    });
+        //    $("#AuditDate").datepicker("setDate", new Date());
+        //    $("#Audit_Planned_Date").datepicker("setDate", new Date());
+        //    $("#DateScheduled").datepicker("setDate", new Date());
+
+        //});
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

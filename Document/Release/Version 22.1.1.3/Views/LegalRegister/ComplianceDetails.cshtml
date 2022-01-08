@@ -1,0 +1,610 @@
+﻿@model ISOStd.Models.LegalRegisterModel
+@using System.Data;
+
+@{
+    ViewBag.Title = "";
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+    ISOStd.Models.LegalRegisterModelsList ObjList = new ISOStd.Models.LegalRegisterModelsList();
+    ISOStd.Models.LegalRegisterModelsList ObjAmendList = new ISOStd.Models.LegalRegisterModelsList();
+
+
+    if (ViewBag.Law_article != null)
+    {
+        ObjList=ViewBag.Law_article;
+    }
+
+    if(ViewBag.Ammendment != null)
+    {
+        ObjAmendList = ViewBag.Ammendment;
+    }
+}
+
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Home</span>
+                    </a>
+                    <a href="@Url.Action("ComplianceList", "LegalRegister", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Legal Register</span>
+                    </a>
+                    <span class="breadcrumb-item active">Legal Register Details</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            <div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+                    @*@using (Html.BeginForm("AccidentReportDetails", "LegalRegister", FormMethod.Post, new { id = "form1", name = "form1" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <div class="breadcrumb-elements-item dropdown p-0">
+                            <input type="hidden" id="id_law" name="id_law" value="@Model.id_law" />
+
+                            <button type="submit" class="dropdown-item">
+                                <i class="icon-printer2"></i> Report
+                            </button>
+
+                        </div>
+                    }*@
+
+                    <a class="breadcrumb-elements-item dropdown p-0" href='@Url.Action("CompliancePDF", "LegalRegister", new { id_law = Model.id_law })' title="Report">
+                        <i class="icon-printer2"></i>  Generate Report
+                    </a>
+                    @*<div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>*@
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+<div class="card">
+
+       <div class="card-header header-elements-inline bg-primary">
+           <h5 class="card-title">Legal Register Details</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+
+                </div>
+            </div>
+        </div>
+
+      <div>
+            <div class="card-header bg-white header-elements-sm-inline">
+
+                <div class="header-elements">
+                    <div class="mt-2 mt-sm-0">
+
+                        @if (Obj.GetCurrentUserSession().Legal.Contains("3"))
+                        {
+                            <a class="btn bg-orange btn-labeled btn-labeled-left" data-style="radius" href='@Url.Action("ComplianceEdit", "LegalRegister", new { id_law= Model.id_law })' title="Edit" onclick="HyperLinkProgressIconFunction()">
+                                <b>  <i class="icon-add-to-list"></i></b> Edit
+                            </a>
+                        }
+                        @Html.ActionLink("Back to List", "ComplianceList", null, new { @class = "btn btn-outline bg-orange text-orange border-orange", onclick = "HyperLinkProgressIconFunction()" })
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+      <div class="card-body">
+          <div class="container-fluid">
+
+              <table class="table table-dark table-bordered table-striped table-hover bg-blue-800">
+                  <thead></thead>
+                  <tr class="row">
+                      <td class="col-xs-3 col-md-2">
+                          <p class="bg-brown py-1 px-2 rounded">
+                              @Html.DisplayNameFor(model => model.branch)
+                          </p>
+                      </td>
+                      <td class="col">
+                          <span class="bg-dark py-1 px-2 rounded">
+                              @Html.DisplayFor(model => model.branch)
+                          </span>
+                      </td>
+                  </tr>
+                  <tr class="row">
+                      <td class="col-xs-3 col-md-2">
+                          <p class="bg-brown py-1 px-2 rounded">
+                              @Html.DisplayNameFor(model => model.deptid)
+                          </p>
+                      </td>
+                      <td class="col">
+                          <span class="bg-dark py-1 px-2 rounded">
+                              @Html.DisplayFor(model => model.deptid)
+                          </span>
+                      </td>
+                      <td class="col-xs-3 col-md-2">
+                          <p class="bg-brown py-1 px-2 rounded">
+                              @Html.DisplayNameFor(model => model.Location)
+                          </p>
+                      </td>
+                      <td class="col">
+                          <span class="bg-dark py-1 px-2 rounded">
+                              @Html.DisplayFor(model => model.Location)
+                          </span>
+                      </td>
+                  </tr>
+                  <tr class="row">
+                      <td class="col-xs-3 col-md-2">
+                          <p class="bg-brown py-1 px-2 rounded">
+                              @Html.DisplayNameFor(model => model.lawNo)
+                          </p>
+                      </td>
+                      <td class="col">
+                          <span class="bg-dark py-1 px-2 rounded">
+                              @Html.DisplayFor(model => model.lawNo)
+                          </span>
+                      </td>
+                      <td class="col-xs-3 col-md-2">
+                          <p class="bg-brown py-1 px-2 rounded">
+                              @Html.DisplayNameFor(model => model.lawTitle)
+                          </p>
+                      </td>
+
+                      <td class="col">
+                          <span class="bg-dark py-1 px-2 rounded">
+                              @Html.DisplayFor(model => model.lawTitle)
+                          </span>
+                      </td>
+                  </tr>
+                  <tr class="row">
+                      <td class="col-xs-3 col-md-2">
+                          <p class="bg-brown py-1 px-2 rounded">
+                              @Html.DisplayNameFor(model => model.law_issue_authority)
+                          </p>
+                      </td>
+                      <td class="col">
+                          <span class="bg-dark py-1 px-2 rounded">
+                              @Html.DisplayFor(model => model.law_issue_authority)
+                          </span>
+                      </td>
+                      <td class="col-xs-3 col-md-2">
+                          <p class="bg-brown py-1 px-2 rounded">
+                              @Html.DisplayNameFor(model => model.law_issued_by)
+                          </p>
+                      </td>
+
+                      <td class="col">
+                          <span class="bg-dark py-1 px-2 rounded">
+                              @Html.DisplayFor(model => model.law_issued_by)
+                          </span>
+                      </td>
+                  </tr>
+                  <tr class="row">
+                      <td class="col-xs-3 col-md-2">
+                          <p class="bg-brown py-1 px-2 rounded">
+                              @Html.DisplayNameFor(model => model.law_relevant_to)
+                          </p>
+                      </td>
+                      <td class="col">
+                          <span class="bg-dark py-1 px-2 rounded">
+                              @Html.DisplayFor(model => model.law_relevant_to)
+                          </span>
+                      </td>
+                  </tr>
+                  <tr class="row">
+                      <td class="col-xs-3 col-md-2">
+                          <p class="bg-brown py-1 px-2 rounded">
+                              @Html.DisplayNameFor(model => model.Eve_date)
+                          </p>
+                      </td>
+                      <td class="col">
+                          <span class="bg-dark py-1 px-2 rounded">
+                              @if (Model.Eve_date != null && Model.Eve_date > Convert.ToDateTime("01/01/0001"))
+                              {
+                                  @Html.Label(Model.Eve_date.ToString("dd/MM/yyyy"))
+                              }
+                          </span>
+                      </td>
+                      <td class="col-xs-3 col-md-2">
+                          <p class="bg-brown py-1 px-2 rounded">
+                              @Html.DisplayNameFor(model => model.Revision_No)
+                          </p>
+                      </td>
+                      <td class="col">
+                          <span class="bg-dark py-1 px-2 rounded">
+                              @Html.DisplayFor(model => model.Revision_No)
+                          </span>
+                      </td>
+                  </tr>                 
+
+                  <tr class="row">
+
+                      <td class="col-xs-3 col-md-2">
+                          <p class="bg-brown py-1 px-2 rounded">
+                              @Html.DisplayNameFor(model => model.url)
+                          </p>
+                      </td>
+                      <td class="col">
+                          <span class="bg-dark py-1 px-2 rounded">
+                              <a href="@Html.DisplayFor(model => model.url)" target="_blank" style="color: orange;">
+                                  @Html.DisplayFor(model => model.url)
+                              </a>
+                          </span>
+                      </td>
+
+                      <td class="col-xs-3 col-md-2">
+                          <p class="bg-brown py-1 px-2 rounded">
+                              @Html.DisplayNameFor(model => model.upload)
+                          </p>
+                      </td>
+                      @if (Obj.GetCurrentUserSession().Legal.Contains("4"))
+                      {
+                          <td class="col">
+                              <span class="bg-dark py-1 px-2 rounded">
+                                  @if (Model.upload != "" && Model.upload != null && Model.upload.Length > 0)
+                                  {
+                                      foreach (var docs in Model.upload.Trim(',').Split(','))
+                                      {
+                                          <span class="bg-dark py-1 px-2 rounded">
+                                              <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs})' target="_blank">Preview</a>
+                                          </span>
+                                      }
+                                  }
+                                  else
+                                  {
+                                      <span class="bg-dark py-1 px-2 rounded text-danger">No File</span>
+                                  }
+                              </span>
+                          </td>
+                      }
+                  </tr>
+                  <tr class="row">
+                      @*<td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.frequency_eval)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.frequency_eval)
+                        </span>
+                    </td>*@
+                      <td class="col-xs-3 col-md-2">
+                          <p class="bg-brown py-1 px-2 rounded">
+                              @Html.DisplayNameFor(model => model.notified_to)
+                          </p>
+                      </td>
+                      <td class="col">
+                          <span class="bg-dark py-1 px-2 rounded">
+                              @Html.DisplayFor(model => model.notified_to)
+                          </span>
+                      </td>
+                      <td class="col-xs-3 col-md-2">
+                          <p class="bg-brown py-1 px-2 rounded">
+                              @Html.DisplayNameFor(model => model.frequency_review)
+                          </p>
+                      </td>
+                      <td class="col">
+                          <span class="bg-dark py-1 px-2 rounded">
+                              @Html.DisplayFor(model => model.frequency_review)
+                          </span>
+                      </td>
+                  </tr>
+                  <tr class="row">
+                      <td class="col-md-12">Amendment Details</td>
+                  </tr>
+                  <tr class="row">
+                      <td class="col-xs-3 col-md-2">
+                          <p class="bg-brown py-1 px-2 rounded">
+                              @Html.DisplayNameFor(model => model.ammend_date)
+                          </p>
+                      </td>
+                      <td class="col">
+                          <span class="bg-dark py-1 px-2 rounded">
+                              @if (Model.ammend_date != null && Model.ammend_date > Convert.ToDateTime("01/01/0001"))
+                              {
+                                  @Html.Label(Model.ammend_date.ToString("dd/MM/yyyy"))
+                              }
+                          </span>
+                      </td>
+                      <td class="col-xs-3 col-md-2">
+                          <p class="bg-brown py-1 px-2 rounded">
+                              @Html.DisplayNameFor(model => model.ammend_detail)
+                          </p>
+                      </td>
+                      <td class="col">
+                          <span class="bg-dark py-1 px-2 rounded">
+                              @Html.DisplayFor(model => model.ammend_detail)
+                          </span>
+                      </td>
+                  </tr>
+                  <tr class="row">
+                      <td class="col-xs-3 col-md-2">
+                          <p class="bg-brown py-1 px-2 rounded">
+                              @Html.DisplayNameFor(model => model.amend_review_date)
+                          </p>
+                      </td>
+                      <td class="col">
+                          <span class="bg-dark py-1 px-2 rounded">
+                              @if (Model.amend_review_date != null && Model.amend_review_date > Convert.ToDateTime("01/01/0001"))
+                              {
+                                  @Html.Label(Model.amend_review_date.ToString("dd/MM/yyyy"))
+                              }
+                          </span>
+                      </td>
+                      <td class="col-xs-3 col-md-2">
+                          <p class="bg-brown py-1 px-2 rounded">
+                              @Html.DisplayNameFor(model => model.amend_review_by)
+                          </p>
+                      </td>
+                      <td class="col">
+                          <span class="bg-dark py-1 px-2 rounded">
+                              @Html.DisplayFor(model => model.amend_review_by)
+                          </span>
+                      </td>
+                  </tr>
+                  <tr class="row">
+                      <td class="col-xs-3 col-md-2">
+                          <p class="bg-brown py-1 px-2 rounded">
+                              @Html.DisplayNameFor(model => model.amend_review_detail)
+                          </p>
+                      </td>
+                      <td class="col">
+                          <span class="bg-dark py-1 px-2 rounded">
+                              @Html.DisplayFor(model => model.amend_review_detail)
+                          </span>
+                      </td>
+                      <td class="col-xs-3 col-md-2">
+                          <p class="bg-brown py-1 px-2 rounded">
+                              @Html.DisplayNameFor(model => model.amend_actions)
+                          </p>
+                      </td>
+                      <td class="col">
+                          <span class="bg-dark py-1 px-2 rounded">
+                              @Html.DisplayFor(model => model.amend_actions)
+                          </span>
+                      </td>
+                  </tr>
+                  <tr class="row">
+                      <td class="col-xs-3 col-md-2">
+                          <p class="bg-brown py-1 px-2 rounded">
+                              @Html.DisplayNameFor(model => model.amend_notified_to)
+                          </p>
+                      </td>
+                      <td class="col">
+                          <span class="bg-dark py-1 px-2 rounded">
+                              @Html.DisplayFor(model => model.amend_notified_to)
+                          </span>
+                      </td>
+                  </tr>
+              </table>
+          </div>
+          <br />
+          <br />
+          @if (ViewBag.Law_article != null && ObjList.LegalRegisterMList != null && ObjList.LegalRegisterMList.Count > 0)
+          {
+              <h2 class="bg-dark pl-sm-2"> Law-Article Details</h2>
+              <div class="table-responsive">
+                  <table class="table-sm table-bordered table-striped table-hover">
+
+                      <thead>
+                          <tr class="bg-brown">
+                              <th>Article Date</th>
+                              <th>ACT/RULE/CLAUSE/SECTION </th>
+                              <th>Applicable Requirement</th>
+                              <th>Compliance to be done</th>
+                              <th>Monitoring</th>
+                              <th>Record Form Number</th>
+                              <th>Compliance evaluation frequency</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+
+                          @for (int index = 0; index < ObjList.LegalRegisterMList.Count; index++)
+                          {
+                              <tr>
+                                  <td>
+                                      @if (ObjList.LegalRegisterMList[index].article_date != null && ObjList.LegalRegisterMList[index].article_date > Convert.ToDateTime("01/01/0001"))
+                                      {
+                                          @ObjList.LegalRegisterMList[index].article_date.ToString("yyyy-MM-dd");
+                                      }
+                                  </td>
+                                  <td>@ObjList.LegalRegisterMList[index].article_no</td>
+                                  <td>@ObjList.LegalRegisterMList[index].article_detail</td>
+                                  <td>@ObjList.LegalRegisterMList[index].compliance_done</td>
+                                  <td>@ObjList.LegalRegisterMList[index].monitoring</td>
+                                  <td>@ObjList.LegalRegisterMList[index].article_recordno</td>
+                                  <td>@ObjList.LegalRegisterMList[index].frequency_eval</td>
+                              </tr>
+                          }
+
+                      </tbody>
+                  </table>
+              </div>
+          }
+
+          <br />
+          <br />
+          @if (ViewBag.Law_article != null && ObjList.LegalRegisterMList != null && ObjList.LegalRegisterMList.Count > 0)
+          {
+              if (ObjList.LegalRegisterMList[0].compliance_status != null && ObjList.LegalRegisterMList[0].compliance_status != "")
+              {
+                  <h2 class="bg-dark pl-sm-2">Compliance Evaluation Details</h2>
+                  <div class="table-responsive">
+                      <table class="table-sm table-bordered table-striped table-hover">
+
+                          <thead>
+                              <tr class="bg-brown">
+                                  <th>Compliance Status</th>
+                                  <th>Description</th>
+                                  <th>Action To Be Taken</th>
+                                  <th>Target Date</th>
+                                  <th>Report Date</th>
+                                  <th>Personnel Responsible</th>
+                                  <th>Upload Document</th>
+                              </tr>
+                          </thead>
+                          <tbody>
+
+                              @for (int index = 0; index < ObjList.LegalRegisterMList.Count; index++)
+                              {
+                                  <tr>
+                                      <td>@ObjList.LegalRegisterMList[index].compliance_status</td>
+                                      <td>@ObjList.LegalRegisterMList[index].article_desc</td>
+                                      <td>@ObjList.LegalRegisterMList[index].action_taken</td>
+                                      <td>
+                                          @if (ObjList.LegalRegisterMList[index].target_date != null && ObjList.LegalRegisterMList[index].target_date > Convert.ToDateTime("01/01/0001"))
+                                          {
+                                              @ObjList.LegalRegisterMList[index].target_date.ToString("yyyy-MM-dd");
+                                          }
+                                      </td>
+                                      <td>
+                                          @if (ObjList.LegalRegisterMList[index].report_date != null && ObjList.LegalRegisterMList[index].report_date > Convert.ToDateTime("01/01/0001"))
+                                          {
+                                              @ObjList.LegalRegisterMList[index].report_date.ToString("yyyy-MM-dd");
+                                          }
+                                      </td>
+                                      <td>@ObjList.LegalRegisterMList[index].person_resp</td>
+                                      <td>
+                                          @if (ObjList.LegalRegisterMList[index].article_upload != null && ObjList.LegalRegisterMList[index].article_upload != "")
+                                          {
+                                              <a href='@Url.Action("DisplayDocument", "Reports", new { Document = ObjList.LegalRegisterMList[index].article_upload })' target="_blank" style="color: orange;">
+                                                  Preview
+                                              </a>
+                                          }
+                                      </td>
+                                  </tr>
+                              }
+                          </tbody>
+                      </table>
+                  </div>
+              }
+          }
+
+          <br />
+          <br />
+          @if (ViewBag.Law_article != null && ObjList.LegalRegisterMList != null && ObjList.LegalRegisterMList.Count > 0)
+          {
+              if (ObjList.LegalRegisterMList[0].compliance_status != null && ObjList.LegalRegisterMList[0].compliance_status != "")
+              {
+                  <h2 class="bg-dark pl-sm-2">Status Of Action Details</h2>
+                  <div class="table-responsive">
+                      <table class="table-sm table-bordered table-striped table-hover">
+
+                          <thead>
+                              <tr class="bg-brown">
+                                  <th>Action Status</th>
+                                  <th>Status Updated On</th>
+                                  <th>Reason for pending</th>
+                              </tr>
+                          </thead>
+                          <tbody>
+
+                              @for (int index = 0; index < ObjList.LegalRegisterMList.Count; index++)
+                              {
+                                  <tr>
+                                      <td>@ObjList.LegalRegisterMList[index].action_status</td>
+                                      <td>
+                                          @if (ObjList.LegalRegisterMList[index].status_updatedon != null && ObjList.LegalRegisterMList[index].status_updatedon > Convert.ToDateTime("01/01/0001"))
+                                          {
+                                              ObjList.LegalRegisterMList[index].status_updatedon.ToShortDateString();
+                                          }
+                                      </td>
+                                      <td>@ObjList.LegalRegisterMList[index].pending_reason</td>
+                                  </tr>
+                              }
+                          </tbody>
+                      </table>
+                  </div>
+              }
+          }
+
+          <br />
+          <br />
+          @if (ViewBag.Ammendment != null && ObjAmendList.LegalRegisterMList != null && ObjAmendList.LegalRegisterMList.Count > 0)
+          {
+              if (ObjAmendList.LegalRegisterMList[0].ammend_detail != null && ObjAmendList.LegalRegisterMList[0].ammend_detail != "")
+              {
+                  <h2 class="bg-dark pl-sm-2">Amendment Details</h2>
+                  <div class="table-responsive">
+                      <table class="table-sm table-bordered table-striped table-hover">
+
+                          <thead>
+                              <tr class="bg-brown">                                 
+                                  <th>Amendment Date</th>
+                                  <th>Amendment Details</th>
+                              </tr>
+                          </thead>
+                          <tbody>
+
+                              @for (int index = 0; index < ObjAmendList.LegalRegisterMList.Count; index++)
+                              {
+                                  <tr>                                    
+                                      <td>
+                                          @if (ObjAmendList.LegalRegisterMList[index].ammend_date != null && ObjAmendList.LegalRegisterMList[index].ammend_date > Convert.ToDateTime("01/01/0001"))
+                                          {
+                                              @ObjAmendList.LegalRegisterMList[index].ammend_date.ToString("yyyy-MM-dd")
+                                          }
+                                      </td>
+                                      <td>@ObjAmendList.LegalRegisterMList[index].ammend_detail</td>
+                                  </tr>
+                              }
+                          </tbody>
+                      </table>
+                  </div>
+              }
+          }
+
+      </div>
+
+</div>
+ @section scripts {
+            <script>
+                //----zzz
+
+
+                $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+                                @:     text: '@TempData["alertdata"]',
+                                @:     type: 'error'
+                                @: }).show();
+                                                     }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+                                @:       text: '@TempData["Successdata"]',
+                                @:       type: 'success'
+        @:
+}).show();
+                                            }
+                });
+
+</script>
+
+
+        }

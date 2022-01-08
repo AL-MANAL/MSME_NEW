@@ -1,0 +1,562 @@
+﻿@model List<ISOStd.Models.MgmtDocumentsModels>
+
+    @{
+        ViewBag.Title = "AnnexureList";
+        ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+    } 
+
+
+    @section featured {
+
+        <div class="page-header page-header-light">
+
+            <div class="page-header-content header-elements-md-inline">
+                <div class="page-title d-flex">
+                    <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+                </div>
+            </div>
+
+            <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+                <div class="d-flex">
+                    <div class="breadcrumb">
+
+                        <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                            <span class="breadcrumb-item"> Home</span>
+                        </a>
+                        <a href="@Url.Action("MgmtDocumentsList", "MgmtDocuments", null)" class="breadcrumb-item">
+                            <span class="breadcrumb-item"> Internal Documents</span>
+                        </a>
+                        <span class="breadcrumb-item active">Annexure</span>
+                    </div>
+
+                    <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+                </div>
+
+                @*<div class="header-elements d-none">
+                    <div class="breadcrumb justify-content-center">
+
+
+                        <div class="breadcrumb-elements-item dropdown p-0">
+                            <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                                <i class="icon-gear mr-2"></i>
+                                Settings
+                            </a>
+
+                            <div class="dropdown-menu dropdown-menu-right">
+
+                                <div class="dropdown-divider"></div>
+                                <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>*@
+            </div>
+        </div>
+    }
+
+        <style>
+            .hidden {
+                display: none !important;
+            }
+        </style>
+
+        <div class="card">
+            <div class="card-header header-elements-inline bg-primary">
+                <h5 class="card-title">Annexure for: @ViewBag.GetDocType</h5>
+                <div class="header-elements">
+                    <div class="list-icons">
+                        <a class="list-icons-item" data-action="collapse"></a>
+
+                    </div>
+                </div>
+            </div>
+
+            @if (Obj.GetCurrentUserSession().InternalDoc.Contains("3"))
+            {
+                <div class="card-body">
+                    @*@Html.ActionLink("Add New", "AddAnnexure", new { idMgmt = ViewBag.idMgmt.ToString() }, new { Class = "ActionLink", onclick = "HyperLinkProgressIconFunction()" })*@
+                    <a class="btn btn-outline bg-orange text-orange border-orange btn-ladda btn-ladda-progress ladda-button" data-style="radius" href='@Url.Action("AddAnnexure", "MgmtDocuments",new { idMgmt = ViewBag.idMgmt.ToString() })' title="Add New">
+                        <span class="ladda-label">Add New</span>
+                        <span class="ladda-spinner"></span>
+                    </a>
+                </div>
+            }
+
+            <table class="table table-bordered table-striped table-hover datatable-responsive" id="Annexure">
+                <thead>
+                    <tr>
+                        <th>
+                            Doc. Ref.
+                        </th>
+                        <th>
+                            Doc. Name
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.First().IssueNo)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.First().RevNo)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.First().PreparedBy)
+                        </th>
+                        <th>
+                            @*@Html.DisplayNameFor(model => model.First().ApprovedBy)*@
+                            Approval By
+                        </th>
+                        <th>
+                            @*@Html.DisplayNameFor(model => model.First().ApprovedBy)*@
+                            Approval Status
+                        </th>
+                        <th class="not-export-column">
+                            Document
+                        </th>
+                        <th class="not-export-column">Doc. History</th>
+                        <th class="not-export-column">Edit</th>
+                        <th class="not-export-column">Delete</th>                       
+
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Count() > 0)
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.ActionLink(item.DocRef.ToString(), "AnnexureDetails", new { idAnnexure = item.idAnnexure, idMgmt = item.idMgmt.ToString() }, new { data_toggle = "popover", data_trigger = "hover", id = item.idAnnexure, onclick = "HyperLinkProgressIconFunction()" })
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.DocName)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.IssueNo)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.RevNo)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.PreparedBy)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.ApprovedBy)
+                                </td>
+                                @if (item.ApprovedStatus == "1")
+                                {
+                                    <td> Approved</td>
+                                }
+                                else
+                                {
+                                    <td>Not Approved</td>
+                                }
+                                @if (item.ApprovedStatus == "1")
+                                {
+                                    <td>
+                                        @if (item.DocUploadPath != "")
+                                        {
+                                            <a href='@Url.Action("DisplayDocument", "Reports", new { Document = item.DocUploadPath })' target="_blank" class="text-orange">Preview</a>
+                                        }
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td><span class="badge badge-danger">Document Not Approved</span> </td>
+                                }
+                                <td>
+                                    <a href='@Url.Action("AnnexureHistoryList", "MgmtDocuments", new { idAnnexure = item.idAnnexure.ToString() })' title="View Docmunet history" onclick="HyperLinkProgressIconFunction()">
+                                        <i class="icon-history"></i>
+                                    </a>
+                                </td>
+                                <td>
+                                    <a href='@Url.Action("AnnexureEdit", "MgmtDocuments", new { idAnnexure = item.idAnnexure.ToString() })' title="Edit Annexure details" onclick="HyperLinkProgressIconFunction()">
+                                        <span class="badge badge-info">Edit</span>
+                                    </a>
+                                </td>
+                                 <td>
+                                        @*<a href='@Url.Action("CustomerEnquiryDelete", "CustomerEnquiry", new { enquiry_id = item.Enquiry_id.ToString() })' title="Delete Enquiry" >*@
+                                        <span class="badge badge-danger" title="Delete Annexure" onclick="DeleteItems(@item.idAnnexure)" style="cursor:pointer;">Delete</span>
+                                 </td>                                
+                            </tr>
+                        }
+                    }
+
+                </tbody>
+            </table>
+            <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+                @Html.ActionLink("Douments List", "MgmtDocumentsList", null, null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+
+            </div>
+        </div>
+
+            @section scripts {
+
+                <script type="text/javascript">
+                  
+                           $(document).ready(function () {
+
+        @if (TempData["alertdata"] != null ) {
+
+           @: new Noty({
+           @:     text: '@TempData["alertdata"]',
+           @:     type: 'error'
+           @: }).show();
+        }
+
+        @if (@TempData["Successdata"] != null ) {
+
+        @:    new Noty({
+         @:       text: '@TempData["Successdata"]',
+         @:       type: 'success'
+         @:   }).show();
+        }
+    });
+    //zzz----
+
+         function setData(id) {
+                var set_data = '';
+                var element = $(this);
+                var id = element.attr("id");
+                $.ajax({
+                    url: '@Url.Action("AnnexureInfo", "MgmtDocuments")',
+                    methos: "post",
+                    async: false,
+                    data: { id: id },
+                    success: function (data) {
+                        set_data = data;
+                    }
+
+                });
+
+                return set_data;
+            }
+
+
+       
+var Annexure = function () {
+
+var ShowEdit = @(Obj.GetCurrentUserSession().InternalDoc.Contains("3") ? "true" : "false");
+                var ShowDownld = @(Obj.GetCurrentUserSession().InternalDoc.Contains("4") ? "true" : "false");
+                var ShowDel = @(Obj.GetCurrentUserSession().InternalDoc.Contains("5") ? "true" : "false");
+
+            // Basic Datatable examples
+            var _componentDatatableBasic = function () {
+                if (!$().DataTable) {
+                    console.warn('Warning - datatables.min.js is not loaded.');
+                    return;
+                }
+
+                //Setting datatable defaults
+                $.extend($.fn.dataTable.defaults, {
+                    autoWidth: false,
+                    responsive:true,
+                    columnDefs: [{
+                        orderable: false,
+                        width: 100,
+                        targets: [8,9, 10]
+                    }, {
+                            'targets': [10],
+                            'visible': ShowDel
+                        }, {
+                            'targets': [9],
+                            'visible': ShowEdit
+                        }, {
+                            'targets': [7],
+                            'visible': ShowDownld
+                        }],
+
+                    colReorder: false,
+                    dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                    //dom: 'lBfrtip',
+                    language: {
+                        search: '<span>Filter:</span> _INPUT_',
+                        searchPlaceholder: 'Type to filter...',
+                        lengthMenu: '<span>Show:</span> _MENU_',
+                        paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                    }
+                });
+
+                var myClass = "";
+                var Delclass= @(Obj.GetCurrentUserSession().InternalDoc.Contains("4") ? "true" : "false");
+                if (Delclass == false) { myClass = 'hidden'  };
+
+                var table = $('#Annexure').DataTable({
+                    drawCallback: function () {
+                        $('[data-toggle="popover"]').popover({
+                            html: true,
+                            content: setData,
+                            container: 'body'
+                            //data: setData,
+                        });
+                    },
+                    lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                    colReorder: {
+                        fixedColumnsLeft: 1
+                    },
+                    stateSave: true,
+                    stateSaveParams: function (settings, data) {
+                        for (var i = 0, ien = data.columns.length; i < ien; i++) {
+                            delete data.columns[i].visible;
+                            delete data.columns[i].search;
+                        }
+                    },                 
+                    scrollY: '350px',
+                    scrollCollapse: true,                   
+
+                    keys: {
+                        className: 'focus focus-success'
+                    },
+
+                    buttons: {
+                        buttons: [
+                            {
+                                extend: 'copyHtml5',
+                                className: myClass, //className: 'btn btn-light',
+                                title: 'Annexure Data export',
+                                exportOptions: {
+                                    columns: ':visible :not(.not-export-column)'
+                                },
+                            },
+                            {
+                                extend: 'excelHtml5',
+                                className: myClass,
+                                //className: 'btn btn-light',
+                                title: 'Annexure Data export',
+                                exportOptions: {
+                                    columns: ':visible :not(.not-export-column)'
+                                },
+
+                            },
+                            {
+                                extend: 'pdfHtml5',
+                                className: myClass,
+                                //className: 'btn btn-light',
+                                title: 'Annexure Data export',
+                                exportOptions: {
+                                    columns: ':visible :not(.not-export-column)'
+                                },
+                            },
+                            {
+                                extend: 'csvHtml5',
+                                className: myClass,
+                                //className: 'btn btn-light',
+                                title: 'Annexure Data export',
+                                exportOptions: {
+                                    columns: ':visible :not(.not-export-column)'
+                                },
+                            },
+                            {
+                                extend: 'print',
+                                className: myClass,
+                                //className: 'btn btn-light',
+                                title: 'Annexure Data export',
+                                exportOptions: {
+                                    columns: ':visible :not(.not-export-column)'
+                                },
+                            },
+
+                            {
+                                extend: 'colvis',
+                                text: '<i class="icon-three-bars"></i>',
+                                className: 'btn bg-blue btn-icon dropdown-toggle',
+                                columns: ':visible:not(.not-export-column)'
+                            }
+                        ]
+                    }
+
+
+
+
+                });
+                // Adjust columns on window resize
+                setTimeout(function () {
+                    $(window).on('resize', function () {
+                        table.columns.adjust();
+                    });
+                }, 100);
+
+
+                //Redraw table on click toggle. -------table.columns.adjust doesn't work properly upon calling after toggle (width increase/decrease = redraw table.).
+                $('.sidebar-control').on('click', function () {
+
+                    setTimeout(function () {
+                        //alert("gii");
+
+                        table.columns.adjust().draw();
+                        $("#MgmtDocuments").resize();
+                    } , 100);
+
+                    });
+                //}
+
+                $('#Annexure').on('page.dt', function () {
+                    //table.draw();
+                    //alert("zzz1");
+                    $("#Annexure").resize();
+
+                });
+
+                $('#Annexure').on('column-visibility.dt', function () {
+                    //table.draw();
+                    //alert("zzz2");
+                    $("#Annexure").resize();
+
+                });
+
+                $('#Annexure').on('order.dt', function () {
+                    //table.draw();
+                    //alert("zzz3");
+                    $("#Annexure").resize();
+
+                });
+
+
+                $('#Annexure').on('responsive-display.dt', function () {
+                    //table.draw();
+                    //alert("zzz4");
+                    $("#Annexure").resize();
+
+                });
+
+
+                $('#Annexure').on('responsive-resize.dt', function () {
+                    //table.draw();
+                    //alert("zzz4");
+                    $("#Annexure").resize();
+
+                });
+
+
+                
+
+
+
+            };
+
+
+
+
+
+
+            // Select2 for length menu styling
+            var _componentSelect2 = function () {
+                if (!$().select2) {
+                    console.warn('Warning - select2.min.js is not loaded.');
+                    return;
+                }
+
+                // Initialize
+                $('.dataTables_length select').select2({
+                    minimumResultsForSearch: Infinity,
+                    dropdownAutoWidth: true,
+                    width: 'auto'
+                });
+            };
+
+
+            //
+            // Return objects assigned to module
+            //
+
+            return {
+                init: function () {
+                    _componentDatatableBasic();
+                    _componentSelect2();
+                }
+            }
+        }();
+
+
+        // Initialize module
+        // ------------------------------
+
+        document.addEventListener('DOMContentLoaded', function () {
+            Annexure.init();
+        });
+
+       function DeleteItems(idAnnexure) {
+           bootbox.confirm({
+               title: 'Confirm dialog',
+               message: 'Are you Sure you want to Delete the current Record?',
+               buttons: {
+                   confirm: {
+                       label: 'Yes',
+                       className: 'btn-primary'
+                   },
+                   cancel: {
+                       label: 'Cancel',
+                       className: 'btn-link'
+                   }
+               },
+               callback: function (r) {
+                   if (r == true)  {
+                    jQuery.ajax({
+                        url: '@Url.Action("AnnexureDelete", "MgmtDocuments")',
+                        type: 'POST',
+                        dataType: "json",
+                        data: { 'idAnnexure': idAnnexure },
+                        success: function (result) {
+                         
+
+                            //// Add new params to the querystring dictionary
+                            queryString = $.param(params);
+
+                            window.location.href =
+                                window.location.protocol + "//" +
+                                window.location.host +
+                                window.location.pathname 
+                               
+                        }
+                    });
+                    return true;
+                }
+                   else if (r == false) {
+                       bootbox.hideAll();
+                       return false;
+                   }
+               }
+            });
+        }
+
+ @*function downloadInnerHtml(filename, elId) {
+            var $table = $('#table1');
+            $rows = $table.find('tr');
+
+            var csvData = "";
+
+            for (var i = 0; i < $rows.length; i++) {
+                var $cells = $($rows[i]).children('th,td'); //header or content cells
+
+                for (var y = 0; y < $cells.length; y++) {
+                    if (y > 0) {
+                        csvData += ",";
+                    }
+
+                    var txt = ($($cells[y]).text()).toString().trim();
+
+                    if (txt.indexOf(',') >= 0 || txt.indexOf('\"') >= 0 || txt.indexOf('\n') >= 0) {
+                        txt = "\"" + txt.replace(/\"/g, "\"\"") + "\"";
+                    }
+                    csvData += txt;
+                }
+                csvData += '\n';
+            }
+
+
+            var elHtml = csvData;
+            var link = document.createElement('a');
+            mimeType = 'application/csv;charset=utf-8';
+
+            link.setAttribute('download', filename);
+            link.setAttribute('href', 'data:' + mimeType + ';charset=utf-8,' + encodeURIComponent(elHtml));
+            link.click();
+        }
+
+        var fileName = 'AnnexureList.csv'; // You can use the .txt extension if you want
+
+        $('#downloadLink').click(function () {
+            downloadInnerHtml(fileName, 'content');
+        });*@
+                </script>
+
+            }

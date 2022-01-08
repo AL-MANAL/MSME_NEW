@@ -1,0 +1,582 @@
+﻿@model ISOStd.Models.PPEIssueLogModels
+
+@{
+    ViewBag.Title = "AddPPEIssueLog";
+
+  
+}
+
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("PPEIssueLogList", "PPEIssueLog", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> PPE </span>
+                    </a>
+                    <span class="breadcrumb-item active">Add PPE</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+}
+
+
+@using (Html.BeginForm("AddPPEIssueLog", "PPEIssueLog", FormMethod.Post,
+    new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Add PPE</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+
+                <table class="table table-lg">
+                 
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.branch)
+                            </td>
+                            <td class="col">
+                                <select class="form-control select-fixed-multiple" multiple="multiple" data-fouc id="branch" name="branch" onchange="GetDeptList()">
+                                    @*<option value='' hidden>Select</option>*@
+                                    @if (ViewBag.Branch != null)
+                                    {
+                                        foreach (var data in ViewBag.Branch)
+                                        {
+                                            if (Array.IndexOf(Model.branch.ToString().Split(','), data.Value) >= 0)
+                                            {
+                                                <option value='@data.Value' selected>@data.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@data.Value'>@data.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.Department)<text style="color:red;">*</text>
+                            </td>
+                            <td class="col">
+                                <select class="form-control select-fixed-multiple" data-fouc id="Department" name="Department" multiple="multiple" required>
+                                    @if (ViewBag.Department != null)
+                                    {
+                                        foreach (var item in ViewBag.Department)
+                                        {
+                                            if (Array.IndexOf(Model.Department.ToString().Split(','), item.Value) >= 0)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                              </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.Issue_Date)<text style="color:red;"> *</text>
+
+                            </td>
+                            <td class="col">
+
+                                <input class="form-control" type="date" id="Issue_Date" name="Issue_Date" required />
+
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.Work_Location)
+
+                            </td>
+                            <td class="col">
+
+                                <select class="form-control select-fixed-multiple" data-fouc id="Work_Location" name="Work_Location" multiple="multiple">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.Location != null)
+                                    {
+                                        foreach (var item in ViewBag.Location)
+                                        {
+                                            if (Array.IndexOf(Model.Work_Location.ToString().Split(','), item.Value) >= 0)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+
+                            </td>
+
+                        </tr>
+                        <tr class="row">
+                            @*<td>
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.Position)
+                                </div>
+                            </td>
+                            <td>
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.Position)
+                                </div>
+                            </td>*@
+                            @*<td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.Cust_Project_Name)
+
+                            </td>
+                            <td class="col">
+
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="Cust_Project_Name" name="Cust_Project_Name">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.Project != null)
+                                    {
+                                        foreach (var item in ViewBag.Project)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+
+                            </td>*@
+
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.PPE_Issue_Voucher)
+
+                            </td>
+                            <td class="col">
+
+
+                                <input type="file" name="PPE_Issue_Voucher" id="PPE_Issue_Voucher" title="Issue Report documents" onchange="FileFormatValidation(this)"
+                                       accept=".pdf,.xlsx,.xls,.jpeg,.jpg,.png,.doc,.docx,image/*" class="bootstrap-uploader" data-fouc />
+
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.Receiver_Name)
+
+                            </td>
+                            <td class="col">
+
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="Receiver_Name" name="Receiver_Name" onchange="GetDetails()" required><text style="color: red;">*</text>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.EmpList != null)
+                                    {
+                                        foreach (var item in ViewBag.EmpList)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+
+                            </td>
+                             <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.PPE_Issued)<text style="color: red;">*</text>
+
+                            </td>
+                            <td class="col">
+
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="PPE_Issued" name="PPE_Issued" required multiple>
+                                    @*<option value='' hidden>Select</option>*@
+                                    @if (ViewBag.PPEIssued != null)
+                                    {
+                                        foreach (var item in ViewBag.PPEIssued)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+
+                            </td>
+                        </tr>
+                        </table>
+                <div id="recieverdiv" style="display:none">
+                    <div class="card-body">
+                        <input type="hidden" id="itemcnt" name="itemcnt" value="0" />
+                        <h5 class="card-title">Receiver Name</h5>
+                        <div class="card card-table table-responsive shadow-0 mb-0">
+                            <table class="table" id="team-list">
+                                <tr class="bg-blue">
+                                  
+                                    <th>Id</th>
+                                    <th>Receiver Name</th>
+                                    <th>Division</th>
+                                    <th>Location</th>
+                                    <th>Department</th>
+                                    <th>Email</th>
+                                </tr>
+                              
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+               <table class="table table-lg">
+                   <tr class="row">
+                       <td class="col-xs-3 col-md-2">
+                           @Html.LabelFor(model => model.ppe_detail)
+                       </td>
+                       <td class="col">
+                           @Html.TextAreaFor(model => model.ppe_detail, new { @maxlength = "2000", @placeholder = "Textarea", @style = "overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;", @rows = "4", @cols = "4", @class = "form-control elastic maxlength-badge-position" })
+                       </td>
+                       <td class="col-xs-3 col-md-2">
+                           @Html.LabelFor(model => model.ppe_qty)
+                       </td>
+                       <td class="col">
+                          <input type="number" class="form-control" id="ppe_qty" name="ppe_qty"/>
+                       </td>
+                   </tr>
+    <tr class="row">
+        <td class="col-xs-3 col-md-2">
+
+            @Html.LabelFor(model => model.PPE_Issued_Last_Date)
+
+        </td>
+        <td class="col">
+
+            <input class="form-control" type="date" id="PPE_Issued_Last_Date" name="PPE_Issued_Last_Date" onchange="checkdate();" />
+
+        </td>
+        <td class="col-xs-3 col-md-2">
+
+
+            @Html.LabelFor(model => model.Issued_By)<text style="color: red;">*</text>
+
+        </td>
+        <td class="col">
+
+            <select class="form-control select-search select2-hidden-accessible" data-fouc id="Issued_By" name="Issued_By" required>
+                <option value='' hidden>Select</option>
+                @if (ViewBag.IssueBy != null)
+                {
+                    foreach (var item in ViewBag.IssueBy)
+                    {
+                        <option value='@item.Value'>@item.Text</option>
+                    }
+                }
+            </select>
+
+        </td>
+    </tr>
+
+  
+        </table>
+            </div>
+
+
+        </div>
+
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+
+            @Html.ActionLink("Back to List", "PPEIssueLogList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+
+            <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Save</button>
+
+            @*<input type="submit" id="btnCreate" value="Save" class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" onclick="ProgressIconFunction('#form1')" />*@
+            @*<input type="button" value="Add" class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" onclick="AddPlanner()" />*@
+        </div>
+
+
+    </div>
+      
+    }
+
+    @section Scripts {
+        @Scripts.Render("~/bundles/jqueryval")
+        <script>
+           
+         $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+    
+
+ 
+    });
+
+
+            function GetReceiverDetails() {
+                var Receiver_Name = $('#Receiver_Name').val();
+                if (Receiver_Name != "" && Receiver_Name != null) {
+                    jQuery.ajax({
+                        url: '@Url.Action("FunGetEmpDetails", "EmployeeDetails")',
+                        type: 'POST',
+                        dataType: "json",
+                        data: { 'semp_no': Receiver_Name },
+                        success: function (result) {
+                            if (result != null) {
+                                document.getElementById("recieverdiv").style.display = 'block';
+
+                                var Receiver_Name = $('#Receiver_Name option:selected').val();
+                                var empid = result.emp_id;
+                                var empname = result.empname;
+                                var empdivision = result.division;
+                                var empdept = result.department;
+                                var emploc = result.location;
+                                var empemail = result.EmailId;
+
+                                if (empid != "") {
+                                    var cnt = document.getElementById("itemcnt").value;
+
+                                    document.getElementById("itemcnt").value = cnt;
+                                    // Find a <table> element with id="myTable":
+                                    var table = document.getElementById("team-list");
+                                    if(cnt > 0)
+                                    {
+                                          table.deleteRow(1);
+                                    }
+                                  
+                                    // Create an empty <tr> element and add it to the 1st position of the table:
+                                    var row = table.insertRow();
+
+
+                                    // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                                    var cell0 = row.insertCell(0);
+                                    var cell1 = row.insertCell(1);
+                                    var cell2 = row.insertCell(2);
+                                    var cell3 = row.insertCell(3);
+                                    var cell4 = row.insertCell(4);
+                                    var cell5 = row.insertCell(5);
+                                  
+
+                                    //cell0.innerHTML = "<span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span> <input type='hidden' id='empno " + cnt + "' name='empno " + cnt + "' value='" + Receiver_Name + "'>";
+                                    cell0.innerHTML = "<input type='hidden' id='empid " + cnt + "' name='empid " + cnt + "' value='" + empid + "'>" + empid;
+                                    cell1.innerHTML = "<input type='hidden' id='empname " + cnt + "' name='empname " + cnt + "' value='" + empname + "'>" + empname;
+                                    cell2.innerHTML = "<input type='hidden' id='empdivision " + cnt + "' name='empdivision " + cnt + "' value='" + empdivision + "'>" + empdivision;
+                                    cell3.innerHTML = "<input type='hidden' id='emploc " + cnt + "' name='emploc " + cnt + "' value='" + emploc + "'>" + emploc;
+                                    cell4.innerHTML = "<input type='hidden' id='empdept " + cnt + "' name='empdept " + cnt + "' value='" + empdept + "'>" + empdept;
+                                    cell5.innerHTML = "<input type='hidden' id='empemail " + cnt + "' name='empemail " + cnt + "' value='" + empemail + "'>" + empemail;
+
+                                    cnt++;
+                                    document.getElementById("itemcnt").value = cnt;
+
+                                   // $("#Receiver_Name").val('').trigger('change');
+                                }
+                            }
+                        }
+                    });
+                    document.getElementById("PPE_Issued_Last_Date").value = "";
+                    jQuery.ajax({
+                     
+                        url: '@Url.Action("FunGetLastIssueDate", "PPEIssueLog")',
+                        type: 'POST',
+                        dataType: "json",
+                        data: { 'Receiver_Name': Receiver_Name },
+                        success: function (result) {
+
+                            var dateString = result.substr(6);
+                            var currentTime = new Date(parseInt(dateString));
+                            var month = currentTime.getMonth() + 1;
+                            if (month.toString().length == 1) {
+                                month = '0' + month;
+
+                            }
+                            var day = currentTime.getDate();
+                            if (day.toString().length == 1) {
+                                day = '0' + day;
+
+                            }
+                            var year = currentTime.getFullYear();
+                           // var date = month + "/" + day + "/" + year;
+                            var date = year + "-" + month + "-" + day;
+
+                            document.getElementById("PPE_Issued_Last_Date").value = date
+                        }
+                    });
+                }
+            }
+            function GetDetails() {
+
+                var Receiver_Name = $('#Receiver_Name').val();
+                jQuery.ajax({
+                    url: '@Url.Action("doesEmployeeExist", "PPEIssueLog")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'Receiver_Name': Receiver_Name },
+                    success: function (result) {
+                        if (result == "false") {
+                            
+                            bootbox.alert({
+                                title: '',
+                                message: 'Employee already exist'
+                            });
+                            $('#Receiver_Name').val('').trigger("change");
+                            document.getElementById("PPE_Issued_Last_Date").value = "";
+                            document.getElementById("recieverdiv").style.display = 'none';
+
+                        }
+                        else {
+                            GetReceiverDetails();
+                        }
+
+                    }
+                });
+            }
+            function checkDate() {
+
+
+                var dt2 = document.getElementById("Issue_Date").value;
+                var dt1 = document.getElementById("PPE_Issued_Last_Date").value;
+
+
+
+
+
+
+                if (new Date(dt2).getTime() < new Date(dt1).getTime()) {
+
+                    bootbox.alert({
+                        title: 'Issue last',
+                        message: 'Issue last date cannot be after issue Date.'
+                    });
+                    $('#PPE_Issued_Last_Date').val("");
+                }
+            }
+
+
+
+            function FileFormatValidation(file) {
+                var ext = file.value.split(".").pop().toLowerCase();
+                if ($.inArray(ext, ["pdf", "xlsx", "xls", "doc", "docx", "jpeg", "jpg", "png"]) == -1) {
+                    file.value = "";
+                    bootbox.alert({
+                        title: 'File type',
+                        message: 'Invalid file format, please upload only xlsx,xls,pdf,jpeg,jpg,png format.'
+                    });
+                }
+            }
+
+         function GetDeptList() {
+            var selectedValues = [];
+            $("#branch :selected").each(function () {
+                selectedValues.push($(this).val());
+            });  
+                jQuery.ajax({
+                    url: '@Url.Action("FunGetAllDeptList", "EmployeeDetails")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'branch': selectedValues },
+                    success: function (result) {
+                        GetLocList(selectedValues);
+                        $("#Department").children('option').remove();
+                        $("#Department").trigger('change');
+                        if (result != null && result.length > 0) {
+                            $.each(result, function (index, item) {
+                                $("#Department").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                                $("#Department").trigger('change');
+                            });
+                            return;
+                        }
+                        //else {
+                        //    bootbox.alert({
+                        //        title: 'Department List',
+                        //        message: 'No Department exists.'
+                        //    });
+                        //}
+                    }
+                });          
+        }
+
+
+        function GetLocList(selectedValues) {                   
+            jQuery.ajax({
+                url: '@Url.Action("FunGetAllLocList", "EmployeeDetails")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'branch': selectedValues },
+                success: function (result) {
+                    $("#Work_Location").children('option').remove();
+                    $("#Work_Location").trigger('change');
+                    if (result != null && result.length > 0) {
+                        $.each(result, function (index, item) {
+                            $("#Work_Location").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                            $("#Work_Location").trigger('change');
+                        });
+                        return;
+                    }
+                    //else {
+                    //    bootbox.alert({
+                    //        title: 'Location List',
+                    //        message: 'No Location exists.'
+                    //    });
+                    //}
+                }
+            });       
+        }
+  
+         
+
+         
+        </script>
+    }

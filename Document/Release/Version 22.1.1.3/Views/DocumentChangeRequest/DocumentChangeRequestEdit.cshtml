@@ -1,0 +1,397 @@
+﻿@model ISOStd.Models.DocumentChangeRequestModels
+
+@{
+    ViewBag.Title = "DocumentCHangeRequestEdit";
+}
+
+
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+
+
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("DocumentChangeRequestList", "DocumentChangeRequest", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Document Revise Request</span>
+                    </a>
+                    <span class="breadcrumb-item active">Update Document Revise Request</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+
+
+}
+
+
+@using (Html.BeginForm("DocumentChangeRequestEdit", "DocumentChangeRequest", FormMethod.Post,
+                     new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Update Document Revise Request</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <input type="hidden" id="Id" name="Id" value="@Model.Id" />
+            <div class="container-fluid">
+
+                <table class="table table-lg">
+                    <tbody>
+
+
+                        <tr class="row">
+                            <td><span class="font-weight-black text-nowrap">Revise Requested By</span> </td>
+                            <td><span class="bg-primary py-1 px-2 rounded">@ViewBag.Name</span></td>
+
+                            <td class="text-nowrap">
+                                <span class="font-weight-black">Department:</span> <span class="bg-primary py-1 px-2 rounded text-nowrap">@ViewBag.DeptName</span>
+                            </td>
+                            <td><span class="font-weight-black">Designation:</span> <span class="bg-primary py-1 px-2 rounded text-nowrap">@ViewBag.Designation</span></td>
+
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.DocRef)<text style="color:red;">*</text>
+                                </div>
+                            </td>
+                            <td class="col">
+
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="DocRef" name="DocRef" required onchange="GetDocName();">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.DocumentRef != null)
+                                    {
+                                        foreach (var data in ViewBag.DocumentRef)
+                                        {
+
+                                            if (data.Value == Model.DocRef)
+                                            {
+                                                <option value='@data.Value' selected>@data.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@data.Value'>@data.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                                @Html.ValidationMessageFor(model => model.DocRef)
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.DocName)<text style="color:red;">*</text>
+
+                            </td>
+                            <td class="col">
+
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="DocName" name="DocName" required @*onchange="GetDocRef();"*@>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.DocumentName != null)
+                                    {
+                                        foreach (var data in ViewBag.DocumentName)
+                                        {
+                                            if (data.Value == Model.DocName)
+                                            {
+                                                <option value='@data.Value' selected>@data.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@data.Value'>@data.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+
+                                @Html.ValidationMessageFor(model => model.DocName)
+
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.IssueNo)
+                                <text style="color:red;">*</text>
+
+                            </td>
+                            <td class="col">
+
+                                <input type="number" id="IssueNo" name="IssueNo" required min="0" value="@Model.IssueNo" class="form-control w-75" />
+                                @Html.ValidationMessageFor(model => model.IssueNo)
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.RevNo)
+                                <text style="color:red;">*</text>
+
+                            </td>
+                            <td class="col">
+
+                                <input type="text" id="RevNo" name="RevNo" min="0" required value="@Model.RevNo" class="form-control" />
+                                @Html.ValidationMessageFor(model => model.RevNo)
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.DocDate)<text style="color:red;">*</text>
+
+                            </td>
+                            <td class="col">
+
+                                @if (Model.DocDate > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    <input type="date" id="DocDate" name="DocDate" value="@Model.DocDate.ToString("yyyy-MM-dd")" class="form-control w-75" />
+                                }
+                                else
+                                {
+                                    <input type="date" id="DocDate" name="DocDate" required class="form-control w-75" />
+                                }
+                                @Html.ValidationMessageFor(model => model.DocDate)
+                            </td>
+                        </tr>
+                        <tr class="row">
+
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.Changes)
+
+                            </td>
+                            <td class="col" colspan="3">
+                                @Html.TextAreaFor(model => model.Changes, new { @id = "editor-full", @rows = "4", @cols = "4" })
+
+
+                            </td>
+
+                        </tr>
+
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.ApprovedBy)<text style="color:red;">*</text>
+
+                            </td>
+                            <td class="col">
+
+                                <select class="form-control select-fixed-multiple2" multiple="multiple" data-fouc id="ApprovedBy" name="ApprovedBy" required>
+                                    @if (ViewBag.EmpLists != null)
+                                    {
+                                        foreach (var data in ViewBag.EmpLists)
+                                        {
+                                            if (Array.IndexOf(Model.ApprovedBy.ToString().Split(','), data.Value) >= 0)
+                                            {
+                                                <option value='@data.Value' selected>@data.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@data.Value'>@data.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                                @Html.ValidationMessageFor(model => model.ApprovedBy)
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+
+
+                                @Html.LabelFor(model => model.upload)<text style="color:red;">*</text>
+
+
+                            </td>
+                            <td class="col">
+
+                                <input type="file" name="upload" id="upload" onchange="FileFormatValidation(this)" accept=".pdf,.xlsx,.xls,.jpeg,.jpg,.png,.doc,.docx,image/*" class="bootstrap-uploader" data-fouc />
+                                @if (Model.upload.ToString() != "")
+                                {
+
+                                    <a href='@Url.Action("DisplayDocument", "Reports", new { Document = Model.upload.ToString() })' target="_blank" class="text-orange">Preview</a>
+                                }
+
+                            </td>
+                        </tr>
+                    </tbody>
+
+                </table>
+
+
+
+            </div>
+
+
+        </div>
+
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+            @Html.ActionLink("Back to List", "DocumentChangeRequestList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+            <button class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" type="submit" value="Update" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Update</button>
+
+        </div>
+    </div>
+}
+@section Scripts {
+    <script>
+                                     //----zzz
+    $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+    });
+    //zzz----
+
+
+        // Full featured editor
+        // ------------------------------
+
+        // Setup
+        CKEDITOR.replace('editor-full', {
+            height: 400,
+            extraPlugins: 'forms'
+        });
+
+
+        function FileFormatValidation(file) {
+            var ext = file.value.split(".").pop().toLowerCase();
+            if ($.inArray(ext, ["pdf", "xlsx", "xls", "doc", "docx", "jpeg", "jpg", "png"]) == -1) {
+                file.value = "";
+                bootbox.alert({
+                    title: 'File type',
+                    message: 'Invalid file format, please upload only xlsx,xls,pdf,jpeg,jpg,png format.'
+                });
+            }
+        }
+
+        function GetDocName() {
+                            var idMgmt = $('#DocRef').val();
+                            jQuery.ajax({
+                                url: '@Url.Action("FunCheckDocRefStatus", "DocumentChangeRequest")',
+                                type: 'POST',
+                                dataType: "json",
+                                data: { 'idMgmt': idMgmt },
+                                success: function (result) {
+                                    if (result == false) {
+
+                                        bootbox.alert({
+                                            title: 'Request',
+                                            message: 'Previous request still pending'
+                                        });
+                                        $('#DocName').val(0);
+                                        $("#DocName").trigger('change');
+                                        $('#DocRef').val(0);
+                                        $("#DocRef").trigger('change');
+                                    }
+                                    else {
+                                        $('#DocName').val(idMgmt);
+                                        $("#DocName").trigger('change');
+
+                                        getDetail();
+
+                                    }
+                                }
+                            });
+
+                        }
+                        function GetDocRef() {
+                            var idMgmt = $('#DocName').val();
+                            jQuery.ajax({
+                                url: '@Url.Action("FunCheckDocNameStatus", "DocumentChangeRequest")',
+                                type: 'POST',
+                                dataType: "json",
+                                data: { 'idMgmt': idMgmt },
+                                success: function (result) {
+                                    if (result == false) {
+                                        bootbox.alert({
+                                            title: 'Pending Request',
+                                            message: 'Previous request still pending'
+                                        });
+
+                                        $('#DocName').val(0);
+                                        $("#DocName").trigger('change');
+                                        $('#DocRef').val(0);
+                                        $("#DocRef").trigger('change');
+                                    }
+                                    else {
+                                        $('#DocRef').val(idMgmt);
+                                        $("#DocRef").trigger('change');
+
+                                        getDetail();
+                                    }
+                                }
+                            });
+                        }
+
+                        function getDetail() {
+                            var DocName = $('#DocName').val();
+                            jQuery.ajax({
+                                url: '@Url.Action("FungetDocDetail", "DocumentChangeRequest")',
+                                type: 'POST',
+                                dataType: "json",
+                                data: { 'DocName': DocName },
+                                success: function (result) {
+                                    document.getElementById("Old_RevNo").value = result.RevNo
+                                    document.getElementById("Old_IssueNo").value = result.IssueNo
+                                }
+                            });
+                        }
+
+
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}
+

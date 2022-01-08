@@ -1,0 +1,104 @@
+﻿@model ISOStd.Models.CustomerAuditModels
+@using System.Data
+@{
+    Layout = null;
+    DataSet dsFindingsDetails = ViewBag.FindingsDetails;
+    ISOStd.Models.clsGlobal objGlobaldata = new ISOStd.Models.clsGlobal();
+}
+
+<div class="card alpha-success border-success">
+<div class="card-header bg-info text-white">
+    <h4 class="text-center">Customer Audit Details Info</h4>
+</div>
+
+<div class="card-body">
+    <p>
+        Division:<code>
+            @Html.DisplayFor(model => model.branch)
+        </code>       
+    </p>
+    <p>
+        Department:<code>
+            @Html.DisplayFor(model => model.Department)
+        </code>
+        Location:<code>@Html.DisplayFor(model => model.Location)</code>
+    </p>
+    <p>
+        Audit Number:<code>
+            @Html.DisplayFor(model => model.AuditNum)
+        </code>
+        Customer Name:<code>@Html.DisplayFor(model => model.CustomerName)</code>
+    </p>
+    <p>
+        Customer Audit Team:<code>
+            @Html.DisplayFor(model => model.Customer_Audit_Team)
+        </code>
+        Audit Date:
+        @if (Model.AuditDate != null && Model.AuditDate > Convert.ToDateTime("01/01/0001"))
+        {
+            <code>
+                @Model.AuditDate.ToString("dd/MM/yyyy")
+            </code>
+        }
+    </p>
+    @if (dsFindingsDetails.Tables.Count > 0 && dsFindingsDetails.Tables[0].Rows.Count > 0)
+    {
+        <div class="w-100 bg-primary"><h5>Findings Detail</h5></div>
+
+        <table class="xs table-bordered">
+            <thead class="bg-blue">
+                <tr>
+
+                    <th>NCR No.</th>
+                    <th>Audit Finding</th>
+                    <th>Correction Taken</th>
+                    <th>Correction Date</th>
+                    <th>Proposed Corrective Action</th>
+                    <th>Corrective Action Date</th>
+                    <th>Action Taken By</th>
+                    <th>NCR Status</th>
+                    <th>Reviewed By</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < dsFindingsDetails.Tables[0].Rows.Count; i++)
+                {
+                    <tr>
+                        <td>
+                            @dsFindingsDetails.Tables[0].Rows[i]["NCNo"].ToString()
+                        </td>
+                        <td>
+                            @dsFindingsDetails.Tables[0].Rows[i]["AuditFindingDesc"].ToString()
+                        </td>
+                        <td>
+                            @dsFindingsDetails.Tables[0].Rows[i]["CorrectionTaken"].ToString()
+                        </td>
+                        <td>
+                            @Convert.ToDateTime(dsFindingsDetails.Tables[0].Rows[i]["CorrectionDate"].ToString()).ToString("dd/MM/yyyy")
+                        </td>
+                        <td>
+                            @dsFindingsDetails.Tables[0].Rows[i]["ProposedcorrectiveAction"].ToString()
+                        </td>
+                        <td>
+                            @Convert.ToDateTime(dsFindingsDetails.Tables[0].Rows[i]["CorrectiveActionDate"].ToString()).ToString("dd/MM/yyyy")
+                        </td>
+                        <td>
+                            @dsFindingsDetails.Tables[0].Rows[i]["Action_taken_by"].ToString()
+                        </td>
+                        <td>
+                            @objGlobaldata.GetAuditStatusNameById(dsFindingsDetails.Tables[0].Rows[i]["NC_status"].ToString())
+                        </td>
+                        <td>
+                            @dsFindingsDetails.Tables[0].Rows[i]["reviewed_by"].ToString()
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+
+    }
+
+</div>
+
+</div>

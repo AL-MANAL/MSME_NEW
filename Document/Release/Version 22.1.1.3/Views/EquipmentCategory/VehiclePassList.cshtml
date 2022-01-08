@@ -1,0 +1,194 @@
+﻿@using PagedList;
+@using PagedList.Mvc;
+
+@model IPagedList<ISOStd.Models.EquipmentDetailModels>
+
+@{
+    ViewBag.Title = "PassList";
+}
+
+<div class="groupedassets margin10">
+    <span class="groupedassetshead margin10 onestphdcolor">Vehicle Pass List</span>
+</div>
+ 
+ <br />
+<div id="divmsg">
+    @if (TempData["alertdata"] != null)
+    {
+        <span class="errMsg" style="color: red;font-weight: bold;">@TempData["alertdata"]</span>
+    }
+    @if (TempData["Successdata"] != null)
+    {
+        <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+    }
+</div>
+  
+      @Html.ActionLink("Back to List", "EquipmentDetailsList", null, new {@class = "ActionLink", onclick = "HyperLinkProgressIconFunction()" }) 
+<br />
+
+
+
+    @Html.PagedListPager(Model, page => Url.Action("VehiclePassList",
+    new
+    {
+        page,
+        Approvestatus = Request.QueryString["Approvestatus"],
+        SearchText = Request.QueryString["SearchText"],
+
+    }),
+    new PagedListRenderOptions() { Display = PagedListDisplayMode.IfNeeded, DisplayPageCountAndCurrentLocation = true })
+
+
+<div id="content">
+    <table id="table1">
+        <thead>
+            <tr>
+                <th style="width:250px;min-width:250px; max-width:250px;">
+                    @Html.DisplayNameFor(model => model.First().PassType)
+                </th>
+                <th style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayNameFor(model => model.First().Upload)
+                </th>
+                <th style="width:150px; min-width:150px; max-width:150px;">
+                    @Html.DisplayNameFor(model => model.First().ExpDate)
+                </th>
+                <th style="width:60px; min-width:60px; max-width:60px;">Action</th>
+                @if (ViewBag.DeleteFlg != null && ViewBag.DeleteFlg == true)
+                {
+                    <th style="width: 60px; min-width: 60px; max-width: 60px;">Delete</th>
+                }
+                
+                
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Count() > 0)
+            {
+                foreach (var item in Model)
+                {
+                    <tr>
+                        <td style="width:250px; min-width:250px; max-width:250px;word-wrap:break-word">
+                            @Html.DisplayFor(modelItem => item.PassType)
+                        </td>
+                        <td style="width:150px;min-width:150px; max-width:150px;word-wrap:break-word">
+                            @if (item.Upload != "")
+                            {
+                                <a href='@Url.Action("DisplayDocument", "Reports", new { Document = item.Upload })' target="_blank">Preview</a>
+                            }   
+                        </td>
+                          <td style="width:150px;min-width:150px; max-width:150px;word-wrap:break-word">
+                            @if (item.ExpDate != null && item.ExpDate > Convert.ToDateTime("01/01/0001"))
+                            {
+                              @Html.Label(item.ExpDate.ToString("dd/MM/yyyy"))
+                            }
+                        </td>
+                         <td style="width:60px; min-width:60px; max-width:60px;word-wrap:break-word">
+                           
+                            <a href='@Url.Action("VehiclePassEdit", "EquipmentCategory", new { id_pass = item.id_pass })' title="Edit Pass details" onclick="HyperLinkProgressIconFunction()">
+                                <span class="glyphicon glyphicon glyphicon-edit iocnstatus-edit" onclick="HyperLinkProgressIconFunction()"></span>
+                            </a>
+
+                        </td>
+                       
+                        @if (ViewBag.DeleteFlg != null && ViewBag.DeleteFlg == true)
+                        {
+                            <td style="width: 60px; min-width: 60px; max-width: 60px;word-wrap:break-word">
+                                <img src="@Url.Content("~/Images/delete.png")" title="Delete Document" onclick="DeleteItems(@item.id_pass,@item.id_equipment)" style="cursor:pointer;" />
+                            </td>
+                        }
+
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="10">
+                        <div style="text-align: center;">
+                            <h4 style="color: grey;">No data exists</h4>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+</table>
+</div>
+@section scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript">
+
+        function DeleteItems(id_pass, id_equipment) {
+            jConfirm('Do you want to delete?', 'Are you Sure?', function (r) {
+                if (r == true) {
+                    jQuery.ajax({
+                        url: '@Url.Action("VehiclePassDelete", "EquipmentCategory")',
+                        type: 'POST',
+                        dataType: "json",
+                        data: { 'id_pass': id_pass },
+                        success: function (result) {
+                            var params = {
+                                id_equipment: id_equipment
+                            };// = getQueryStrings();
+                            //// Add new params to the querystring dictionary
+                            queryString = $.param(params);
+
+                            window.location.href =
+							window.location.protocol + "//" +
+							window.location.host +
+							window.location.pathname +
+						   '?' + queryString;
+                        }
+                    });
+                    return true;
+                }
+                else if (r == false) {
+                    return false;
+                }
+            });
+        }
+
+        function downloadInnerHtml(filename, elId) {
+            var $table = $('#table1');
+            $rows = $table.find('tr');
+
+            var csvData = "";
+
+            for (var i = 0; i < $rows.length; i++) {
+                var $cells = $($rows[i]).children('th,td'); //header or content cells
+
+                for (var y = 0; y < $cells.length; y++) {
+                    if (y > 0) {
+                        csvData += ",";
+                    }
+
+                    var txt = ($($cells[y]).text()).toString().trim();
+
+                    if (txt.indexOf(',') >= 0 || txt.indexOf('\"') >= 0 || txt.indexOf('\n') >= 0) {
+                        txt = "\"" + txt.replace(/\"/g, "\"\"") + "\"";
+                    }
+                    csvData += txt;
+                }
+                csvData += '\n';
+            }
+
+
+            var elHtml = csvData;
+            var link = document.createElement('a');
+            mimeType = 'application/csv;charset=utf-8';
+
+            link.setAttribute('download', filename);
+            link.setAttribute('href', 'data:' + mimeType + ';charset=utf-8,' + encodeURIComponent(elHtml));
+            link.click();
+        }
+
+        var fileName = 'IssuesList.csv'; // You can use the .txt extension if you want
+
+        $('#downloadLink').click(function () {
+            downloadInnerHtml(fileName, 'content');
+        });
+
+
+
+    </script>
+
+}

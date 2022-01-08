@@ -230,7 +230,7 @@ namespace ISOStd.Controllers
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
 
-            return Json(true);
+            return RedirectToAction("RiskList");
         }
 
         // GET: /RiskMgmt/RiskList
@@ -1323,7 +1323,7 @@ namespace ISOStd.Controllers
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
 
-            return Json(true);
+            return RedirectToAction("RiskList");
         }
 
         // POST: /RiskMgmt/AddRiskMitigation

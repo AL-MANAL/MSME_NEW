@@ -262,7 +262,7 @@ namespace ISOStd.Controllers
 
                 if (objIncidentReport.FunAddIncidentReport(objIncidentReport, objIncidentLTIList, objActionList))
                 {
-                    TempData["Successdata"] = "Added Incident report successfully  with Reference Number '" + objIncidentReport.Incident_Num + "'";
+                    TempData["Successdata"] = "Added Incident report successfully";
                 }
                 else
                 {
@@ -319,7 +319,7 @@ namespace ISOStd.Controllers
                             IncidentReportModels objIncidentReport = new IncidentReportModels
                             {
                                 Incident_Id = dsIncident.Tables[0].Rows[i]["Incident_Id"].ToString(),
-                                Incident_Num = (dsIncident.Tables[0].Rows[i]["Incident_Num"].ToString()),
+                                Incident_Num = objGlobaldata.GetAccidentReportNoById(dsIncident.Tables[0].Rows[i]["Incident_Num"].ToString()),
                                 PreparedBy = objGlobaldata.GetEmpHrNameById(dsIncident.Tables[0].Rows[i]["PreparedBy"].ToString()),
                                 Incident_Type = objinc.GetIncidentTypeNameById(dsIncident.Tables[0].Rows[i]["Incident_Type"].ToString()),
                                 Location = objGlobaldata.GetCompanyBranchNameById(dsIncident.Tables[0].Rows[i]["Location"].ToString()),
@@ -542,7 +542,7 @@ namespace ISOStd.Controllers
                         objIncidentReport = new IncidentReportModels
                         {
                             Incident_Id = dsIncident.Tables[0].Rows[0]["Incident_Id"].ToString(),
-                            Incident_Num = (dsIncident.Tables[0].Rows[0]["Incident_Num"].ToString()),
+                            Incident_Num = objGlobaldata.GetAccidentReportNoById(dsIncident.Tables[0].Rows[0]["Incident_Num"].ToString()),
                             PreparedBy = objGlobaldata.GetEmpHrNameById(dsIncident.Tables[0].Rows[0]["PreparedBy"].ToString()),
                             Incident_Type = objIncidentReport.GetIncidentTypeNameById(dsIncident.Tables[0].Rows[0]["Incident_Type"].ToString()),
                             Location = objGlobaldata.GetCompanyBranchNameById(dsIncident.Tables[0].Rows[0]["Location"].ToString()),
@@ -602,12 +602,40 @@ namespace ISOStd.Controllers
                         {
                             objIncidentReport.Loggeddate = dateValue;
                         }
-
                         int iValue;
                         if (int.TryParse(dsIncident.Tables[0].Rows[0]["FatalitiesNo"].ToString(), out iValue))
                         {
                             objIncidentReport.FatalitiesNo = iValue;
                         }
+                        sSqlstmt = "select acc_date,reported_date,reported_by,details,Incident_Type,damage from t_accident_report"
+                + " where id_accident_rept = '" + objIncidentReport.accident_reportno + "'";
+                        dsIncident = objGlobaldata.Getdetails(sSqlstmt);
+
+                        if (dsIncident.Tables.Count > 0 && dsIncident.Tables[0].Rows.Count > 0)
+                        {
+                            for (int i = 0; i < dsIncident.Tables[0].Rows.Count; i++)
+                            {
+
+                                objIncidentReport.reported_by = objGlobaldata.GetMultiHrEmpNameById(dsIncident.Tables[0].Rows[i]["reported_by"].ToString());
+                                objIncidentReport.details = dsIncident.Tables[0].Rows[i]["details"].ToString();
+                                    objIncidentReport.Incident_Type = objinc.GetIncidentTypeNameById(dsIncident.Tables[0].Rows[i]["Incident_Type"].ToString());
+                                
+
+                                DateTime dtDocDate;
+                                if (dsIncident.Tables[0].Rows[i]["acc_date"].ToString() != ""
+                                   && DateTime.TryParse(dsIncident.Tables[0].Rows[i]["acc_date"].ToString(), out dtDocDate))
+                                {
+                                    objIncidentReport.acc_date = dtDocDate;
+                                }
+                                if (dsIncident.Tables[0].Rows[i]["reported_date"].ToString() != ""
+                                   && DateTime.TryParse(dsIncident.Tables[0].Rows[i]["reported_date"].ToString(), out dtDocDate))
+                                {
+                                    objIncidentReport.reported_date = dtDocDate;
+                                }
+                            }
+                        }
+
+                       
 
                         IncidentLTIModelsList objIncidentLTIList = new IncidentLTIModelsList();
                         objIncidentLTIList.lstIncidentLTIModels = new List<IncidentLTIModels>();
@@ -1399,7 +1427,7 @@ namespace ISOStd.Controllers
                         objIncidentReport = new IncidentReportModels
                         {
                             Incident_Id = dsIncident.Tables[0].Rows[0]["Incident_Id"].ToString(),
-                            Incident_Num = (dsIncident.Tables[0].Rows[0]["Incident_Num"].ToString()),
+                            Incident_Num = objGlobaldata.GetAccidentReportNoById(dsIncident.Tables[0].Rows[0]["Incident_Num"].ToString()),
                             PreparedBy = objGlobaldata.GetEmpHrNameById(dsIncident.Tables[0].Rows[0]["PreparedBy"].ToString()),
                             Incident_Type = objIncidentReport.GetIncidentTypeNameById(dsIncident.Tables[0].Rows[0]["Incident_Type"].ToString()),
                             Location = objGlobaldata.GetCompanyBranchNameById(dsIncident.Tables[0].Rows[0]["Location"].ToString()),
@@ -1465,6 +1493,8 @@ namespace ISOStd.Controllers
                         {
                             objIncidentReport.FatalitiesNo = iValue;
                         }
+                
+
 
                         string sql = "select reported_by from t_accident_report where id_accident_rept='" + objIncidentReport.accident_reportno + "'";
                         DataSet dsData = objGlobaldata.Getdetails(sql);
@@ -1474,6 +1504,34 @@ namespace ISOStd.Controllers
 
                         ViewBag.CompanyInfo = dsIncident;
 
+                        sSqlstmt = "select acc_date,reported_date,reported_by,details,Incident_Type,damage from t_accident_report"
+       + " where id_accident_rept = '" + objIncidentReport.accident_reportno + "'";
+                        dsIncident = objGlobaldata.Getdetails(sSqlstmt);
+
+                        if (dsIncident.Tables.Count > 0 && dsIncident.Tables[0].Rows.Count > 0)
+                        {
+                            for (int i = 0; i < dsIncident.Tables[0].Rows.Count; i++)
+                            {
+
+                                objIncidentReport.reported_by = objGlobaldata.GetMultiHrEmpNameById(dsIncident.Tables[0].Rows[i]["reported_by"].ToString());
+                                objIncidentReport.details = dsIncident.Tables[0].Rows[i]["details"].ToString();
+                                objIncidentReport.Incident_Type = objinc.GetIncidentTypeNameById(dsIncident.Tables[0].Rows[i]["Incident_Type"].ToString());
+                                objIncidentReport.damage = (dsIncident.Tables[0].Rows[i]["damage"].ToString());
+
+
+                                DateTime dtDocDate;
+                                if (dsIncident.Tables[0].Rows[i]["acc_date"].ToString() != ""
+                                   && DateTime.TryParse(dsIncident.Tables[0].Rows[i]["acc_date"].ToString(), out dtDocDate))
+                                {
+                                    objIncidentReport.acc_date = dtDocDate;
+                                }
+                                if (dsIncident.Tables[0].Rows[i]["reported_date"].ToString() != ""
+                                   && DateTime.TryParse(dsIncident.Tables[0].Rows[i]["reported_date"].ToString(), out dtDocDate))
+                                {
+                                    objIncidentReport.reported_date = dtDocDate;
+                                }
+                            }
+                        }
                         IncidentLTIModelsList objIncidentLTIList = new IncidentLTIModelsList();
                         objIncidentLTIList.lstIncidentLTIModels = new List<IncidentLTIModels>();
 

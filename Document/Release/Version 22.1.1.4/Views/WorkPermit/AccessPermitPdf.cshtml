@@ -1,0 +1,306 @@
+﻿@using System.Data;
+@{
+    /**/
+
+    ViewBag.Title = "LetterReport";
+
+    Layout = "~/Views/Shared/_PrintLayout.cshtml";
+    ISOStd.Models.WorkPermitModels objModel = new ISOStd.Models.WorkPermitModels();
+    ISOStd.Models.WorkPermitModelsList objInList = new ISOStd.Models.WorkPermitModelsList();
+    ISOStd.Models.WorkPermitModelsList objOutList = new ISOStd.Models.WorkPermitModelsList();
+    if (ViewBag.Permit != null)
+    {
+        objModel = ViewBag.Permit;
+    }
+    if (ViewBag.objInList != null)
+    {
+        objInList = ViewBag.objInList;
+
+    }
+    //if (ViewBag.objOutList != null)
+    //{
+    //    objOutList = ViewBag.objOutList;
+
+    //}
+    DataSet dsCompany = new DataSet();
+    if (ViewBag.CompanyInfo != null)
+    {
+        dsCompany = ViewBag.CompanyInfo;
+    }
+}
+@*<div style="font-size:x-large;">
+        <p align="left"> <img style="width:250px; height:70px;" src='@Url.Content("~/Images/companylogo.png")' />
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+    </div>*@
+@Html.Partial("_ReportHeader", dsCompany)
+<div style="background-color:white">
+
+    <div style="background-color: #4cc4dd;font-size:x-large;font-weight:bold;text-align:center">
+        <label for="Plan_Details" style="color: white; padding-left: 5px;">ACCESS PERMIT
+        </label>
+    </div>
+    <div style="font-size:large">
+        <table id="tabcontent" class="table table-lg table-bordered">
+
+            @*<tr class="row">
+                <td colspan="4">
+                    <h3>Report Details</h3>
+                </td>
+            </tr>*@
+            <tr>
+                <td>
+                    <div class="display-label">
+                        DIVISION
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @objModel.branch
+                    </div>
+                </td>
+                <td>
+                    <div class="display-label">
+                        DEPARTMENT
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @objModel.Department
+                    </div>
+                </td>
+
+            </tr>
+            <tr>
+                <td>
+                    <div class="display-label">
+                        PERMIT NO:
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @objModel.permitno
+                    </div>
+                </td>
+                <td>
+                    <div class="display-label">
+                        PERMIT REQUESTOR:
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @objModel.requestor
+                    </div>
+                </td>
+
+            </tr>
+            <tr>
+                <td>
+                    <div class="display-label">
+                        COMPANY
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @objModel.company
+                    </div>
+                </td>
+                <td>
+                    <div class="display-label">
+                        CONTACT NUMBER:
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @objModel.contactno
+                    </div>
+                </td>
+
+            </tr>
+            <tr>
+                <td>
+                    <div class="display-label">
+                        AREAS
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @objModel.area
+                    </div>
+                </td>
+                <td>
+                    <div class="display-label">
+                        LOCATION
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @objModel.location
+                    </div>
+                </td>
+
+            </tr>
+            <tr>
+                <td>
+                    <div class="display-label">
+                        DATE SUBMITTED
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @if (objModel.date_submitted > Convert.ToDateTime("01/01/0001"))
+                        {
+                            @objModel.date_submitted.ToString("dd/MM/yyyy")
+                        }
+                    </div>
+                </td>
+                <td>
+                    <div class="display-label">
+                        DATE ISSUED
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @if (objModel.date_issued > Convert.ToDateTime("01/01/0001"))
+                        {
+                            @objModel.date_issued.ToString("dd/MM/yyyy HH:mm:ss")
+                        }
+                    </div>
+                </td>
+
+            </tr>
+            <tr>
+                <td>
+                    <div class="display-label">
+                        DATE EXPIRED
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @if (objModel.date_expired > Convert.ToDateTime("01/01/0001"))
+                        {
+                            @objModel.date_expired.ToString("dd/MM/yyyy HH:mm:ss")
+                        }
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div style="background-color: #4cc4dd;font-size:large;font-weight:bold;text-align:center">
+        <label for="Plan_Details" style="color: white; padding-left: 5px;">REASON FOR ACCESS</label>
+    </div>
+    <div style="font-size:large">
+        <table>
+            <tr>
+                <td colspan="4">
+
+                    <div class="editor-field">
+                        <h6>@Html.Raw(HttpUtility.HtmlDecode(objModel.description))</h6>
+                    </div>
+                </td>
+            </tr>
+
+        </table>
+    </div>
+    <div style="background-color: #4cc4dd;font-size:large;font-weight:bold;text-align:center">
+        <label for="Plan_Details" style="color: white; padding-left: 5px;">APPROVAL</label>
+    </div>
+    <div style="font-size:large">
+        <p>I have reviewed this permit and explained  all special precautions that may need to be taken to the permit requestor. Tagging Authority:</p><br />
+        <p>
+            <span style="font-weight:bold">Tagging Authority:</span>@objModel.approved_by  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="font-weight:bold">Sign:</span>--------------------------------&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="font-weight:bold">Date:</span>
+            @if (objModel.approved_date > Convert.ToDateTime("01/01/0001"))
+            {
+                @objModel.approved_date.ToString("dd/MM/yyyy")
+            }
+        </p>
+    </div>
+    <div style="background-color: #4cc4dd;font-size:large;font-weight:bold;text-align:center">
+        <label for="Plan_Details" style="color: white; padding-left: 5px;">ACCEPTANCE</label>
+    </div>
+    <div style="font-size:large">
+        <p>
+            I accept control of this area and the responsibility for all men and material under my control. This area will be kept clean and doors will be locked when unattended. PERMIT & KEYS will be returned to the Concern Department
+        </p>
+        <br />
+        <p>
+            <span style="font-weight:bold">Permit Requestor:</span>@objModel.requestor  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="font-weight:bold">Sign:</span>--------------------------------&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="font-weight:bold">Date:</span>
+            @if (objModel.date_submitted > Convert.ToDateTime("01/01/0001"))
+            {
+                @objModel.date_submitted.ToString("dd/MM/yyyy")
+            }
+        </p>
+    </div>
+    <div id="dvInItems">
+
+        <div class="editor-label" style="background-color: #4cc4dd; width: 100%; height: 30px; cursor: pointer;">
+            <label for="Plan_Details" style="color: white; padding-left: 5px;">Athorized Personnel In and Out List</label>
+        </div>
+        <table id="team-list">
+            <tr>
+
+                <th style="width: 100px; min-width: 100px; max-width: 100px;">Name</th>
+                <th style="width: 100px; min-width: 100px; max-width: 100px;">Sign</th>
+                <th style="width: 100px; min-width: 100px; max-width: 100px;">ID No</th>
+                <th style="width: 100px; min-width: 100px; max-width: 100px;">In Date</th>
+                <th style="width: 100px; min-width: 100px; max-width: 100px;">Out Date</th>
+            </tr>
+            @if (objInList.PermitList != null && objInList.PermitList.Count > 0)
+            {
+                for (int index = 0; index < objInList.PermitList.Count; index++)
+                {
+                    <tr>
+
+                        <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                            @objInList.PermitList[index].pers_name
+                        </td>
+                        <td style="width: 100px; min-width: 100px; max-width: 100px;"></td>
+                        <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                            @objInList.PermitList[index].idno
+                        </td>
+                        <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                            @if (objInList.PermitList[index].date_in != null && objInList.PermitList[index].date_in > Convert.ToDateTime("01/01/0001"))
+                            {
+                                @objInList.PermitList[index].date_in.ToString("dd/MM/yyyy")
+                            }
+                        </td>
+                        <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                            @if (objInList.PermitList[index].date_out != null && objInList.PermitList[index].date_out > Convert.ToDateTime("01/01/0001"))
+                            {
+                                @objInList.PermitList[index].date_out.ToString("dd/MM/yyyy")
+                            }
+                        </td>
+                    </tr>
+                }
+            }
+        </table>
+    </div>
+
+
+    <br />
+    <div style="background-color: #4cc4dd;font-size:large;font-weight:bold;text-align:center">
+        <label for="Plan_Details" style="color: white; padding-left: 5px;">CLOSURE</label>
+    </div>
+    <div>
+        <p style="font-size:large">
+            I declare that all the men and material under my control and signed on to this pemit have been removed from this area. The area has been left clean and all the men have signed off this permit, the room is locked and closed.
+        </p>
+        <br />
+        <p style="font-size:large">
+            <span style="font-weight:bold">Requestor:</span>@objModel.requestor&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  Sign:--------------------------------&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Date:
+        </p>
+        <br />
+        <p style="font-size:large">
+            <span style="font-weight:bold">Tagging Authority:</span>@objModel.approved_by&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  Sign:--------------------------------&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Date:
+        </p>
+    </div>
+    <br />
+    <div>
+        <p>
+            NOTE:CLOSE PERMIT AFTER WORK IS FINISHED.NOT CLOSING OF PERMIT WILL RESULT TO NON ISSUANCE NEW PERMITS AND FINE.
+        </p>
+    </div>
+
+</div>

@@ -1,0 +1,612 @@
+﻿@model ISOStd.Models.SupplierPerpRatingModels
+
+@{
+    ViewBag.Title = "";
+    System.Data.DataSet dsrating = new System.Data.DataSet();
+
+
+    ISOStd.Models.SurveyModelsList Typelist = new ISOStd.Models.SurveyModelsList();
+    Typelist.lstSurvey = new List<ISOStd.Models.SurveyModelsDetails>();
+
+    System.Web.Mvc.MultiSelectList objList = new System.Web.Mvc.MultiSelectList(Typelist.lstSurvey, "Value", "Text");
+    int cnt = 0;
+    if (ViewBag.SurveyQuestions != null)
+    {
+        objList = ViewBag.SurveyQuestions;
+        cnt = objList.Count();
+    }
+    if (ViewBag.SurveyRating != null)
+    {
+        dsrating = ViewBag.SurveyRating;
+    }
+}
+
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Home</span>
+                    </a>
+                    <a href="@Url.Action("SuppPerformanceEvalList", "SupplierPerpRating", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Supplier Rating</span>
+                    </a>
+                    <span class="breadcrumb-item active">Add Supplier Rating</span>
+
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            <div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+
+                        <a href="#" data-toggle="popover" data-trigger="hover" class="dropdown-item">
+                            <i class="icon-newspaper"></i>
+                            Rating
+
+                        </a>
+
+
+                    </div>
+                    @*<div class="breadcrumb-elements-item dropdown p-0">
+                            <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                                <i class="icon-gear mr-2"></i>
+                                Settings
+                            </a>
+
+                            <div class="dropdown-menu dropdown-menu-right">
+
+                                <div class="dropdown-divider"></div>
+                                <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                            </div>
+                        </div>*@
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@using (Html.BeginForm("AddSuppPerformanceEval", "SupplierPerpRating", FormMethod.Post,
+                                             new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Add Supplier Rating</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+                <input type="hidden" id="totcnt" name="totcnt" value="@cnt" />
+                <table class="table table-lg">
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.branch)
+                        </td>
+                        <td class="col">
+                            <select class="form-control select-fixed-multiple" multiple="multiple" data-fouc id="branch" name="branch" onchange="GetDeptList()">
+                                @*<option value='' hidden>Select</option>*@
+                                @if (ViewBag.Branch != null)
+                                {
+                                    foreach (var data in ViewBag.Branch)
+                                    {
+                                        if (Array.IndexOf(Model.branch.ToString().Split(','), data.Value) >= 0)
+                                        {
+                                            <option value='@data.Value' selected>@data.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@data.Value'>@data.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.Department)<text style="color:red;">*</text>
+                        </td>
+                        <td class="col">
+                            <select class="form-control select-fixed-multiple" data-fouc id="Department" name="Department" multiple="multiple" @*onchange="GetAuditorList()"*@ required>
+                                @if (ViewBag.Department != null)
+                                {
+                                    foreach (var item in ViewBag.Department)
+                                    {
+                                        if (Array.IndexOf(Model.Department.ToString().Split(','), item.Value) >= 0)
+                                        {
+                                            <option value='@item.Value' selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                            <br />
+                            @Html.ValidationMessageFor(m => m.Department)
+                        </td>
+
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.Location)<text style="color:red;">*</text>
+                        </td>
+                        <td class="col">
+                            <select class="form-control select-fixed-multiple" data-fouc id="Location" name="Location" multiple="multiple" @*onchange="GetAuditorList()"*@ required>
+                                @if (ViewBag.Location != null)
+                                {
+                                    foreach (var item in ViewBag.Location)
+                                    {
+                                        if (Array.IndexOf(Model.Location.ToString().Split(','), item.Value) >= 0)
+                                        {
+                                            <option value='@item.Value' selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                            <br />
+                            @Html.ValidationMessageFor(m => m.Location)
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.supplier_name)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="supplier_name" name="supplier_name" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.Supplier != null)
+                                    {
+                                        foreach (var item in ViewBag.Supplier)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                                @Html.ValidationMessageFor(model => model.supplier_name)
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.evalu_date)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input class="form-control" type="date" id="evalu_date" name="evalu_date" required />
+                                @Html.ValidationMessageFor(model => model.evalu_date)
+                            </div>
+                        </td>
+                    </tr>
+                    @*<tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.auditor)<text style="color:red;">*</text>
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="auditor" name="auditor" required>
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.EmpList != null)
+                                        {
+                                            foreach (var item in ViewBag.EmpList)
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    </select>
+                                    @Html.ValidationMessageFor(model => model.auditor)
+                                </div>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.auditee)
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.auditee, new { htmlAttributes = new { @required = "required", @class = "form-control" } })
+                                </div>
+                            </td>
+                        </tr>*@
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.evaluated_by)
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="evaluated_by" name="evaluated_by">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.EmpList != null)
+                                    {
+                                        foreach (var item in ViewBag.EmpList)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+
+                            </div>
+                        </td>
+                    </tr>
+
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+
+    <div class="card">
+        <div class="card-body">
+            <div style="overflow-x:auto;">
+                <table class="table table-lg">
+                    <thead>
+
+                        <tr>
+                            <th>
+                                Sl.No
+                            </th>
+                            <th>
+                                Questions
+                            </th>
+                            @if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                            {
+                                for (int item = 0; item < dsrating.Tables[0].Rows.Count; item++)
+                                {
+                                    <th>
+                                        @dsrating.Tables[0].Rows[item]["RatingOptions"].ToString()
+                                    </th>
+                                }
+                            }
+                    </thead>
+                    <tbody>
+                        @if (ViewBag.SurveyQuestions != null)
+                        {
+                            int iSrno = 0;
+                            foreach (var item in ViewBag.SurveyQuestions)
+                            {
+                                iSrno = iSrno + 1;
+                                <tr>
+                                    <td>
+                                        @iSrno
+                                    </td>
+                                    <td>
+                                        @item.Text
+                                        <input type="hidden" id="Question @item.Value" name="Question @item.Value" value="@item.Value" />
+                                    </td>
+
+                                    @if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                                    {
+                                        for (int rating = 0; rating < dsrating.Tables[0].Rows.Count; rating++)
+                                        {
+                                            <td>
+                                                <input type="radio" id="SQ_OptionsId @item.Value"
+                                                       name="SQ_OptionsId @item.Value" class="radioClass"
+                                                       value="@dsrating.Tables[0].Rows[rating]["RatingOptions"].ToString()" required />
+                                            </td>
+                                        }
+                                    }
+
+                                </tr>
+
+                            }
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+
+            <table class="table table-lg">
+
+
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        Excellent <input class="form-control" type="text" id="Excellent" value="0" name="Excellent" readonly style="background :#efefe6;" />
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        Good <input class="form-control" type="text" id="Good" name="Good" value="0" readonly style="background :#efefe6;" />
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        Average <input class="form-control" type="text" id="Average" name="Average" value="0" readonly style="background :#efefe6;" />
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        Poor<input class="form-control" type="text" id="Poor" name="Poor" value="0" readonly style="background :#efefe6;" />
+                    </td>
+                    
+                    @*<td class="col-xs-3 col-md-3">
+                        Insufficient info. to rate<input class="form-control" type="text" id="Insufficient" name="Insufficient" readonly style="background :#efefe6;" />
+                    </td>*@
+                </tr>
+            </table>
+
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <table class="table table-lg">
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.overall_perf)
+                        </div>
+                    </td>
+                    <td class="col">
+                        <div class="editor-field">
+                            <input class="form-control" type="text" id="overall_perf" name="overall_perf" required readonly style="background :#efefe6;" />
+                        </div>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.actions_init)
+                        </div>
+                    </td>
+                    <td class="col">
+                        <div class="editor-field">
+                            <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="actions_init" name="actions_init" disabled></textarea>
+                        
+                        </div>
+                    </td>
+                    </tr>
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.upload)
+                        </div>
+                    </td>
+                    <td class="col">
+                        <div class="editor-field">
+                            <input type="file" name="fileUploader" id="Upload" onchange="FileFormatValidation(this)" accept=".pdf,.xlsx,.xls,.jpeg,.jpg,.png,.doc,.docx,image/*"
+                                   class="bootstrap-uploader" data-fouc />
+                        </div>
+                    </td>
+                    @*<td class="col-xs-3 col-md-2">
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.overall_perf)
+                        </div>
+                    </td>
+                    <td class="col">
+                        <div class="editor-field">
+                            @if (ViewBag.Performance != null)
+                            {
+                                foreach (var item in ViewBag.Performance)
+                                {
+                                    <input type="radio" name="overall_perf" value='@item.Value' />@item.Text
+                                }
+                            }
+                        </div>
+                    </td>*@
+                </tr>
+
+            </table>
+        </div>
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+            @Html.ActionLink("Back to List", "SuppPerformanceEvalList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+
+            <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Add</button>
+        </div>
+    </div>
+}
+
+
+@section Scripts {
+    <script>
+
+        $(document).ready(function () {
+
+            @if (TempData["alertdata"] != null)
+        {
+
+           @: new Noty({
+                                                                                                                   @:     text: '@TempData["alertdata"]',
+                                                                                                                   @:     type: 'error'
+                                                                                                                   @:}).show();
+                                                                                                  }
+
+            @if (@TempData["Successdata"] != null)
+        {
+
+        @:    new Noty({
+                                                                                                                 @:       text: '@TempData["Successdata"]',
+                                                                                                                 @:       type: 'success'
+                                                                                                                 @:}).show();
+                                            }
+        });
+        function FileFormatValidation(file) {
+            var ext = file.value.split(".").pop().toLowerCase();
+            if ($.inArray(ext, ["pdf", "xlsx", "xls", "doc", "docx", "jpeg", "jpg", "png"]) == -1) {
+                file.value = "";
+                bootbox.alert({
+                    title: 'File type',
+                    message: 'Invalid file format, please upload only xlsx,xls,pdf,jpeg,jpg,png format.'
+                });
+            }
+        }
+
+        $(document).ready(function () {
+            var varExceptional = 0, varSatisfactory = 0, varUnsatisfactory = 0, varna = 0, varTot = 0;
+            setupDeselectEvent(true);
+            var tot_ques=document.getElementById("totcnt").value;
+
+            $('input[class="radioClass"]').on('deselect', function () {
+                //alert(+ this.value + ' deselected');
+                if (this.value.trim() == "Excellent") {
+                    varExceptional--;
+                    document.getElementById("Excellent").value = varExceptional;
+                }
+                if (this.value.trim() == "Good") {
+                    varSatisfactory--;
+                    document.getElementById("Good").value = varSatisfactory;
+                }
+                if (this.value.trim() == "Poor") {
+                    varUnsatisfactory--;
+                    document.getElementById("Poor").value = varUnsatisfactory;
+                }
+                if (this.value.trim() == "Average") {
+                    varna--;
+                    document.getElementById("Average").value = varna;
+                }
+                varTot--;
+                //if (this.value.trim() == "Insufficient info. to rate") {
+                //    varInsufficient--;
+                //    document.getElementById("Insufficient").value = varInsufficient;
+                //}
+
+            }).on('change', function () {
+                //alert( + this.value + ' selected');
+                if (this.value.trim() == "Excellent") {
+                    varExceptional++;
+                    document.getElementById("Excellent").value = varExceptional;
+                }
+                if (this.value.trim() == "Good") {
+                    varSatisfactory++;
+                    document.getElementById("Good").value = varSatisfactory;
+                }
+                if (this.value.trim() == "Poor") {
+                    varUnsatisfactory++;
+                    document.getElementById("Poor").value = varUnsatisfactory;
+                }
+                if (this.value.trim() == "Average") {
+                    varna++;
+                    document.getElementById("Average").value = varna;
+                }
+                varTot++;
+                //if (this.value.trim() == "Insufficient info. to rate") {
+                //    varInsufficient++;
+                //    document.getElementById("Insufficient").value = varInsufficient;
+                //}
+                if (varTot == tot_ques) {
+                    jQuery.ajax({
+                        url: '@Url.Action("SuppOverallPerfRating", "SupplierPerpRating")',
+                        type: 'POST',
+                        dataType: "json",
+                        data: { 'excellent': varExceptional, 'good': varSatisfactory, 'avg': varna, 'poor': varUnsatisfactory, 'tot_ques': tot_ques },
+                        success: function (result) {
+
+                            document.getElementById("overall_perf").value = result.overall_perf;
+                            document.getElementById("actions_init").value = result.actions_init;
+                        }
+                    });
+                }
+            });
+
+            
+
+            //$('[data-toggle="popover"]').popover({
+
+            //    title: setData,
+            //    html: true,
+            //    placement: 'right',
+            //    container: 'body'
+            //});
+            $('[data-toggle="popover"]').popover({
+
+                html: true,
+                content: setData,
+                container: 'body'
+                //data: setData,
+
+
+            });
+
+        });
+        function setData(id) {
+
+            var set_data = '';
+            var element = $(this);
+            var id = element.attr("id");
+            $.ajax({
+                url: '@Url.Action("GetRating", "SupplierPerpRating")',
+                methos: "post",
+                async: false,
+                data: { id: id },
+                success: function (data) {
+                    set_data = data;
+                }
+            });
+            return set_data;
+        }
+
+        function setupDeselectEvent() {
+            var selected = {};
+            $('input[type="radio"]').on('click', function () {
+                if (this.name in selected && this != selected[this.name])
+                    $(selected[this.name]).trigger("deselect");
+                selected[this.name] = this;
+            }).filter(':checked').each(function () {
+                selected[this.name] = this;
+            });
+        }
+
+
+        function GetDeptList() {
+            var selectedValues = [];
+            $("#branch :selected").each(function () {
+                selectedValues.push($(this).val());
+            });
+            var svalue = selectedValues.join(",");
+            /*     GetAuditorList();*/
+            updateDeptnlocation(svalue, "Location", "location");
+            updateDeptnlocation(svalue, "Department", "department");
+        }
+
+        function GetAuditorList() {
+            var sbranch = $.map($("#branch option:selected"), function (el, i) {
+                return $(el).val();
+            });
+            var sbvalue = (sbranch.join(","));
+
+            var sDepartment = $.map($("#Department option:selected"), function (el, i) {
+                return $(el).val();
+            });
+            var sdvalue = (sDepartment.join(","));
+
+            var sLocation = $.map($("#Location option:selected"), function (el, i) {
+                return $(el).val();
+            });
+            var slvalue = (sLocation.join(","));
+
+            updateRoleLikeList(sbvalue, sdvalue, slvalue, "auditor", "%Auditor%");
+        }
+
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

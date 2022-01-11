@@ -1,0 +1,442 @@
+﻿@model ISOStd.Models.DocumentChangeRequestModels
+@using System.Data
+
+@{
+    ViewBag.Title = "DocumentChangeRequestDetails";
+    DataSet dsCommentDetails = ViewBag.CommentDetails;
+    ISOStd.Models.clsGlobal obj = new ISOStd.Models.clsGlobal();
+
+    string login_user = obj.GetCurrentUserSession().empid;
+}
+<style>
+    #TextDiv {
+        font-size: 2em;
+        text-align: center;
+        margin: 0 auto;
+    }
+</style>
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("DocumentChangeRequestList", "DocumentChangeRequest", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Document Revise Request</span>
+                    </a>
+                    <span class="breadcrumb-item active"> Document Revise Request Details</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                    <div class="breadcrumb justify-content-center">
+
+
+                        <div class="breadcrumb-elements-item dropdown p-0">
+                            <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                                <i class="icon-gear mr-2"></i>
+                                Settings
+                            </a>
+
+                            <div class="dropdown-menu dropdown-menu-right">
+
+                                <div class="dropdown-divider"></div>
+                                <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>*@
+        </div>
+    </div>
+
+
+}
+
+
+
+
+
+<div class="card">
+    <div class="card-header header-elements-inline bg-primary">
+        <h5 class="card-title">Document Revise Request Details</h5>
+        <div class="header-elements">
+            <div class="list-icons">
+                <a class="list-icons-item" data-action="collapse"></a>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <div class="container-fluid">
+            <table class="table table-dark table-bordered table-striped table-hover bg-blue-800">
+                <thead></thead>
+                <tbody>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.DocRef)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <span class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.DocRef)
+                            </span>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.DocName)
+                            </p>
+                        </td>
+                        <td class="col">
+
+                            <span class="bg-dark py-1 px-2 rounded">
+
+                                @Html.DisplayFor(model => model.DocName)
+
+                            </span>
+                        </td>
+                    </tr>
+                    <tr class="row">
+
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.RequestedBy)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <span class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.RequestedBy)
+                            </span>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.ChangeRequestDate)
+                            </p>
+                        </td>
+                        <td class="col">
+
+                            <span class="bg-dark py-1 px-2 rounded">
+                                @if (Model.ChangeRequestDate != null && Model.ChangeRequestDate > Convert.ToDateTime("01/01/0001"))
+                                {
+
+                                    @Html.Label(Model.ChangeRequestDate.ToString("dd/MM/yyyy"))
+
+                                }
+                            </span>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.IssueNo)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <span class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.IssueNo)
+                            </span>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.RevNo)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <span class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.RevNo)
+                            </span>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.DocDate)
+                            </p>
+                        </td>
+                        <td class="col">
+
+                            <span class="bg-dark py-1 px-2 rounded">
+                                @if (Model.DocDate != null && Model.DocDate > Convert.ToDateTime("01/01/0001"))
+                                {
+
+                                    @Html.Label(Model.DocDate.ToString("dd/MM/yyyy"))
+
+                                }
+                            </span>
+                        </td>
+
+
+                        @*<td>
+                                <span class="bg-brown py-1 px-2 rounded text-nowrap">
+                                    @Html.DisplayNameFor(model => model.Changes)
+                                </span>
+                            </td>
+                            <td>
+
+                                @Html.Raw(HttpUtility.HtmlDecode(Model.Changes))
+
+                            </td>*@
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.ApprovedBy)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.ApprovedBy)
+                            </p>
+                        </td>
+
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.ApproveStatus)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <span class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.ApproveStatus)
+                            </span>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.ApprovedDate)
+                            </p>
+                        </td>
+                        <td class="col">
+
+                            @if (Model.ApprovedDate != null && Model.ApprovedDate > Convert.ToDateTime("01/01/0001"))
+                            {
+                                <span class="bg-dark py-1 px-2 rounded">
+                                    @Html.Label(Model.ApprovedDate.ToString())
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="bg-dark py-1 px-2 rounded">Document Not Approved</span>
+                            }
+
+                        </td>
+
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.ChangeStatus)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <span class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.ChangeStatus)
+                            </span>
+                        </td>
+                        @if (obj.GetCurrentUserSession().DocChangeReq.Contains("4"))
+                        {
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.upload)
+                                </p>
+                            </td>
+                            <td class="col">
+                                @if (Model.upload != null && Model.upload != "" && Model.upload.Length > 0)
+                                {
+                                    foreach (var docs in Model.upload.Trim(',').Split(','))
+                                    {
+                                        <p style="margin: 0px;">
+
+                                            <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" style="color: orange;">
+                                                @*@System.IO.Path.GetFileName(docs)*@
+                                                preview
+                                            </a>
+                                        </p>
+                                        <br />
+                                    }
+                                }
+                            </td>
+                        }
+                    </tr>
+
+
+            </table>
+
+
+
+            @if (dsCommentDetails != null && dsCommentDetails.Tables.Count > 0 && dsCommentDetails.Tables[0].Rows.Count > 0)
+            {
+
+
+                <h2 class="bg-dark pl-sm-2"> Approver Details</h2>
+                <div class="table-responsive">
+                    <table class="table table-dark table-bordered table-striped table-hover bg-orange-600">
+                        <tr>
+                            <th> <span class="bg-dark-alpha py-1 px-2 rounded text-nowrap">Approver Name</span></th>
+                            <th> <span class="bg-dark-alpha py-1 px-2 rounded text-nowrap">Approval Status</span></th>
+                            <th> <span class="bg-dark-alpha py-1 px-2 rounded text-nowrap">Comments</span></th>
+                            <th> <span class="bg-dark-alpha py-1 px-2 rounded text-nowrap">Approved/Rejected Date</span></th>
+
+                        </tr>
+                        @for (int i = 0; i < dsCommentDetails.Tables[0].Rows.Count; i++)
+                        {
+                            <tr>
+                                <td>
+                                    <span class="bg-dark py-1 px-2 rounded text-nowrap">
+                                        @obj.GetEmpHrNameById(dsCommentDetails.Tables[0].Rows[i]["Approver"].ToString())
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="bg-dark py-1 px-2 rounded text-nowrap">
+                                        @dsCommentDetails.Tables[0].Rows[i]["ApproveStatus"].ToString()
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="bg-dark py-1 px-2 rounded">
+                                        @if (dsCommentDetails.Tables[0].Rows[i]["Comments"].ToString() == "")
+                                        {
+                                            @:No comments
+                                        }
+                                        else
+                                        {
+                                            @dsCommentDetails.Tables[0].Rows[i]["Comments"].ToString()
+                                        }
+                                    </span>
+                                </td>
+
+                                @if (dsCommentDetails.Tables[0].Rows[i]["ApprvDate"].ToString() != null && Convert.ToDateTime(dsCommentDetails.Tables[0].Rows[i]["ApprvDate"].ToString()) > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    <td>
+                                        <span class="bg-dark py-1 px-2 rounded text-nowrap">
+                                            @dsCommentDetails.Tables[0].Rows[i]["ApprvDate"].ToString()
+                                        </span>
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td>
+                                        <span class="badge badge-danger">Waiting For Approval</span>
+                                    </td>
+                                }
+
+                            </tr>
+                        }
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+
+
+    <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+
+        @Html.ActionLink("Back to List", "DocumentChangeRequestList", null, new { @class = "btn btn-outline bg-orange text-orange border-orange", onclick = "HyperLinkProgressIconFunction()" })
+
+    </div>
+</div>
+
+<br />
+<br />
+<br />
+
+
+
+<div class="card">
+    <div class="card-header header-elements-inline bg-primary">
+        <h5 class="card-title">Changes to be done</h5>
+        <div class="header-elements">
+            <div class="list-icons">
+                <a class="list-icons-item" data-action="collapse"></a>
+
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        @Html.Raw(HttpUtility.HtmlDecode(Model.Changes))
+    </div>
+</div>
+
+
+<hr />
+@if (Model.ChangeStatusId == "0" && !Model.Approvers.Contains(login_user) && !Model.Rejector.Contains(login_user) && Model.ApprovedById.Contains(login_user))
+{
+    using (Html.BeginForm("DocumentChangesApproveRejectFromDetail", "DocumentChangeRequest", FormMethod.Post, new { enctype = "multipart/form-data", id = "formstatus", name = "formstatus" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true)
+        <input type="hidden" id="DocID" name="DocID" value="@Model.Id" />
+        <div class="card-body">
+            <div class="container-fluid">
+                <div id="TextDiv">
+                    <h1>NC Status</h1>
+                    <label><input type="radio" id="status" name="status" value="1">Accept</label> &nbsp;&nbsp;&nbsp;
+                    <label><input type="radio" id="status" name="status" value="2"/>Reject</label>
+                </div>
+                <div class="card card-table">
+                    <table class="table table-bordered">
+                        <thead></thead>
+                        <tbody>
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2"> Comments</td>
+                                <td class="col"> <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="Doccomments" name="Doccomments"></textarea></td>
+                            </tr>                          
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+            <button type="submit" id="btnCreate" value="Save" style="display: block; margin: 0 auto;text-align:center" class="btn bg-indigo-400" onclick="ProgressIconFunction('#formstatus')"><i class="icon-checkmark3 mr-2"></i> Save</button>
+        </div>
+    }
+}
+
+
+
+
+
+@section scripts {
+    <script>
+    //----zzz
+    $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+    });
+    //zzz----
+
+
+    </script>
+
+
+}

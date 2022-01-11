@@ -1,0 +1,227 @@
+﻿
+@{
+    ViewBag.Title = "Dashboard";
+}
+
+@section featured {
+    <script src='@Url.Content("~/Scripts/Chart.bundle.js")'></script>
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4><span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Home</span>
+                    </a>
+                    <a href="@Url.Action("Dashboard", "Dashboard", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Dashboard</span>
+                    </a>
+                    <span class="breadcrumb-item active">QC Dashboard</span>
+                </div>
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            <div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i>All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<div class="card">
+    <div class="card-header header-elements-inline">
+        <h5 class="card-title"> Material Tests </h5>
+        <div class="header-elements">
+            <div class="list-icons">
+                <a class="list-icons-item" data-action="collapse"></a>
+                <a class="list-icons-item" data-action="remove"></a>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <div class="row mb-20">
+            <div class="col-md-1">
+                From
+            </div>
+            <div class="col-md-2">
+                <input class="form-control" type="date" id="FromDate" name="FromDate" value="" required /><input type="hidden" id="FromDateval" name="FromDateval" value="" />
+            </div>
+            <div class="col-md-1">
+                To
+            </div>
+            <div class="col-md-2">
+                <input class="form-control" type="date" id="ToDate" name="ToDate" value="" required /><input type="hidden" id="toDateValue" name="toDateValue" value="" />
+            </div>
+            <div class="col-md-2">
+                <button type="button" id="Generate" name="command" value="Get Report" class="btn bg-indigo-400" onclick="GetReport()"><i class="icon-checkmark3 mr-2"></i>Get Report</button>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        
+        <div class="chart-container" style="width:700px;height:100%;">
+            <canvas id="myChart" width="700" height="300px"></canvas>
+            <div class="chart has-fixed-height" id="complchart"></div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+
+    <script>
+
+       var summary = {
+           summaryUrl: '@Url.Action("GetMaterialTestReport", "Dashboard")'
+        }
+
+        var _ComplaintReport = function (data) {
+            var month = _.uniqBy(data, 'MaterialType').map(i => i.MaterialType)
+            var planned = []
+            var performed = []
+            var passed = []
+
+            _.map(data, (item, index) => {
+                //console.log(item)
+                planned.push(item.Planned)
+                performed.push(item.Performed)
+                passed.push(item.Passed)
+            })
+
+            //For Bar Chart
+            var ctx = document.getElementById("myChart").getContext('2d');
+            ctx.height = 900;
+            var myChart = new Chart(ctx, {
+                type: 'bar',
+                height: "100px",
+                width: "300px",
+                autoSkip: true,
+                responsive: true,
+                animation: true,
+                showDatapoints: true,
+                legend: { position: 'bottom' },
+                data: {
+                    labels: month,
+                    datasets: [{
+                        label: 'Planned',
+                        data: planned,
+                        backgroundColor: _.map(planned, i=> "Yellow")
+                    }, {
+                        label: 'Performed',
+                        data: performed,
+                        backgroundColor: _.map(performed, i => "Blue")
+                    }, {
+                        label: 'Passed',
+                        data: passed,
+                        backgroundColor: _.map(passed, i => "Green")
+                    }]
+                }, options: {
+                    events: ['click'],
+                    scaleShowValues: true,
+                    scales: {
+                        yAxes: [{
+                            stacked: true,
+                            ticks: {
+                                beginAtZero: true
+                            }
+                        }],
+                        xAxes: [{
+                            stacked: true,
+                            ticks: {
+                                autoSkip: false
+                            }
+                        }]
+                    }
+                }
+            });
+
+            return complchart;
+        }
+
+        function GetReport() {
+            var fromDate = $('#FromDate').val();
+            var toDate = $('#ToDate').val();
+
+            $.ajax({
+                url: summary.summaryUrl + '?fromDate='+ fromDate + '&toDate=' + toDate,
+                type: 'Get',
+                dataType: "json",
+                success: function (result) {
+                    var data = JSON.parse(result);
+                    var complaintReport = _ComplaintReport(data.Table);
+
+                    // On sidebar width change
+                    $(document).on('click', '.sidebar-control', function () {
+                        setTimeout(function () {
+                            maintenance.resize();
+                            hseInspection.resize();
+                            hseLeading.resize();
+                            hseLagging.resize();
+                            complaintReport.resize();
+                        }, 0);
+                    });
+
+                    // On window resize
+                    var resizeCharts;
+                    window.onresize = function () {
+                        clearTimeout(resizeCharts);
+                        resizeCharts = setTimeout(function () {
+
+                            maintenance.resize();
+                            hseInspection.resize();
+                            hseLeading.resize();
+                            hseLagging.resize();
+                            complaintReport.resize();
+
+                        }, 200);
+                    };
+
+
+
+                    $('.nav-tabs a').click(function () {
+                        $(window).trigger('resize');
+                    })
+                },
+                error: function (data) {
+                    console.log(data);
+                }
+            });
+        }
+
+
+        var EchartsLoader = {
+            init: function () {
+                GetReport();   
+            }
+        };
+
+
+
+
+        document.addEventListener('DOMContentLoaded', function () {
+            EchartsLoader.init();
+        });
+
+    </script>
+
+    @Scripts.Render("~/bundles/jqueryval")
+}

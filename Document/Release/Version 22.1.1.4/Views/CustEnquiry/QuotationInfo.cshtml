@@ -1,0 +1,82 @@
+﻿@model ISOStd.Models.QuotationModels
+@using System.Data
+@{
+    Layout = null;
+    ViewBag.Title = "QuotationInfo";
+    ISOStd.Models.QuotationModels obj = new ISOStd.Models.QuotationModels();
+
+    DataSet objQuot = new DataSet();
+
+    if (ViewBag.CustQuot != null)
+    {
+        objQuot = ViewBag.CustQuot;
+    }
+}
+<h4 style="text-align:center;border-bottom:1px solid #808080">Quotation Info</h4>
+<p>
+    <label><b>Date of Quotation:</b></label>
+    @if (Model.date_quotation != null && Model.date_quotation > Convert.ToDateTime("01/01/0001"))
+    {
+        @Model.date_quotation.ToString("dd/MM/yyyy")
+    }
+    <label><b>Reference No:</b></label>@Html.DisplayFor(model => model.ref_no)
+</p>
+<p>
+    <label><b>Name:</b></label>@Html.DisplayFor(model => model.to_quotation)
+    <label><b>Project Reference:</b></label>@Html.DisplayFor(model => model.pro_ref)
+</p>
+<p>
+    <label><b>Telephone No:</b></label>@Html.DisplayFor(model => model.telephone)
+    <label><b>Email:</b></label>@Html.DisplayFor(model => model.email)
+</p>
+<p>
+    <label><b>Total:</b></label>@Html.DisplayFor(model => model.sum)
+    <label><b>Vat @('@')5%:</b></label>@Html.DisplayFor(model => model.vat)
+</p>
+<p>
+    <label><b>Approver:</b></label>@Html.DisplayFor(model => model.approved_by)
+    <label><b>Grand Total:</b></label>@obj.FunGrandTot(Model.sum, Model.vat)
+</p>
+
+
+
+<div style="max-width: 80%; padding-left: 120px;">
+    @if (objQuot != null && objQuot.Tables.Count > 0 && objQuot.Tables[0].Rows.Count > 0)
+    {
+        <div id="Items">
+            <div class="editor-label">
+                <label for="Details" style="background-color: #4cc4dd; width: 100%; color: white; ">Quotation Price Details</label>
+            </div>
+            <table id="team-list">
+                <tr>
+                    <th style="font-size: 14px; font-weight: bold;">Sl No.</th>
+                    <th style="font-size: 14px; font-weight: bold;">Description</th>
+                    <th style="font-size: 14px; font-weight: bold;">Quantity</th>
+                    <th style="font-size: 14px; font-weight: bold;">Price</th>
+                    <th style="font-size: 14px; font-weight: bold;">Total</th>
+                </tr>
+                @for (int i = 0, j = 0; i < objQuot.Tables[0].Rows.Count; i++)
+                {
+                    j = j + 1;
+                    <tr>
+                        <td style="width: 70px; min-width: 70px; max-width: 70px;">
+                            @j
+                        </td>
+                        <td style="width: 200px; min-width: 200px; max-width: 200px;">
+                            @(objQuot.Tables[0].Rows[i]["description"].ToString())
+                        </td>
+                        <td style="width: 150px; min-width: 150px; max-width: 150px;">
+                            @(objQuot.Tables[0].Rows[i]["qty"].ToString())
+                        </td>
+                        <td style="width: 150px; min-width: 150px; max-width: 150px;">
+                            @(objQuot.Tables[0].Rows[i]["price"].ToString())
+                        </td>
+                        <td style="width: 150px; min-width: 150px; max-width: 150px;">
+                            @objQuot.Tables[0].Rows[i]["total"].ToString()
+                        </td>
+                    </tr>
+                }
+            </table>
+        </div>
+    }
+</div>

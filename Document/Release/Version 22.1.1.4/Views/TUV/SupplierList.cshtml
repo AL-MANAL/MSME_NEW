@@ -1,0 +1,237 @@
+﻿@using PagedList;
+@using PagedList.Mvc;
+
+@model IPagedList<ISOStd.Models.TUVSupplierModels>
+
+@{
+    ViewBag.Title = "SupplierList";
+    string chked = Convert.ToString(ViewBag.chkAll);
+}
+<link href='@Url.Content("~/Content/popover/popover.css")' rel="stylesheet">
+
+<div class="groupedassets margin10">
+    <span class="groupedassetshead margin10 onestphdcolor">Supplier List </span>
+</div>
+<br />
+  @Html.ActionLink("Back to List", "ProjectList", null, new { @class = "ActionLink", onclick = "HyperLinkProgressIconFunction()" })
+ <div class = "ActionLink">@Html.ActionLink("Add New", "AddSupplier", null, new {id_project=ViewBag.id_project }, new { @class = "ActionLink", onclick = "HyperLinkProgressIconFunction()" })</div>
+<br />
+<div id="divmsg">
+    @if (TempData["alertdata"] != null)
+    {
+        <span class="errMsg" style="color: red; font-weight: bold;">@TempData["alertdata"]</span>
+    }
+    @if (TempData["Successdata"] != null)
+    {
+        <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+    }
+</div>
+<br />
+
+@Html.PagedListPager(Model, page => Url.Action("SupplierList",
+    new
+    {
+        page,
+		Approvestatus = Request.QueryString["Approvestatus"],
+       SearchText = Request.QueryString["SearchText"]
+    }),
+    new PagedListRenderOptions() { Display = PagedListDisplayMode.IfNeeded, DisplayPageCountAndCurrentLocation = true })
+@*<p style="float:right;">
+    <a href='@Url.Action("ExportSupplierList", "Supplier", new { SearchText = (string)ViewBag.SearchText })' 
+    title="Export Customer details to excel" target="_blank"> </a>
+    <img src="@Url.Content("~/Images/excel.png")" title="Export as Excel" style="cursor:pointer; " id="downloadLink"/>Download </p>*@
+<div id="content">
+    <table id="table1">
+        <tr>
+             <th style="width:50px;min-width:50px; max-width:50px;word-wrap:break-word">
+            Sl No
+            </th>
+            <th style="width: 100px; min-width: 100px; max-width: 250px; word-wrap: break-word">
+                @Html.DisplayNameFor(model => model.First().SupplierName)
+            </th>
+            <th style="width: 100px; min-width: 100px; max-width: 250px; word-wrap: break-word">
+                @Html.DisplayNameFor(model => model.First().SupplierCode)
+            </th>
+            <th style="width: 100px; min-width: 100px; max-width: 250px; word-wrap: break-word">
+                @Html.DisplayNameFor(model => model.First().Supplier_type)
+            </th>
+            <th style="width: 100px; min-width: 100px; max-width: 250px; word-wrap: break-word">
+                @Html.DisplayNameFor(model => model.First().RefNo)
+            </th>
+            <th style="width: 100px; min-width: 100px; max-width: 250px; word-wrap: break-word">
+                @Html.DisplayNameFor(model => model.First().VatNo)
+            </th>
+            <th style="width: 100px; min-width: 100px; max-width: 250px; word-wrap: break-word">
+                @Html.DisplayNameFor(model => model.First().Country)
+            </th>
+            <th style="width: 100px; min-width: 100px; max-width: 250px; word-wrap: break-word">
+                @Html.DisplayNameFor(model => model.First().City)
+            </th>
+            <th style="width: 100px; min-width: 100px; max-width: 250px; word-wrap: break-word">
+                @Html.DisplayNameFor(model => model.First().ContactPerson)
+            </th>
+
+            <th style="width: 100px; min-width: 100px; max-width: 250px; word-wrap: break-word">
+                @Html.DisplayNameFor(model => model.First().ContactNo)
+            </th>
+            <th style="width: 100px; min-width: 100px; max-width: 250px; word-wrap: break-word">
+                @Html.DisplayNameFor(model => model.First().Email)
+            </th>
+            <th style="width: 100px; min-width: 100px; max-width: 250px; word-wrap: break-word">
+                @Html.DisplayNameFor(model => model.First().Address)
+            </th>
+
+            <th style="width: 100px; min-width: 100px; max-width: 250px; word-wrap: break-word">
+                @Html.DisplayNameFor(model => model.First().SupplyScope)
+            </th>
+            <th style="width: 100px; min-width: 100px; max-width: 250px; word-wrap: break-word">
+                @Html.DisplayNameFor(model => model.First().ApprovalCriteria)
+            </th>
+          @*  <th style="width: 100px; min-width: 100px; max-width: 250px; word-wrap: break-word">
+                @Html.DisplayNameFor(model => model.First().ApprovedStatus)
+            </th>*@
+            <th style="width: 100px; min-width: 100px; max-width: 250px; word-wrap: break-word">
+                @Html.DisplayNameFor(model => model.First().UpdatedOn)
+            </th>
+  
+            <th>Edit</th>
+            @if (ViewBag.DeleteFlg != null && ViewBag.DeleteFlg == true)
+            {
+                <th style="width: 60px; min-width: 60px; max-width: 60px;">Delete</th>
+            }
+
+        </tr>
+        @if (Model != null && Model.Count() > 0)
+        {
+            var sl = 0;
+            foreach (var item in Model)
+            {
+                sl = sl + 1;
+            <tr>
+                  <td style="width:50px;min-width:50px; max-width:50px;word-wrap:break-word">
+                 @sl
+                </td>
+                <td style="width: 100px; min-width: 100px; max-width: 250px; word-wrap: break-word">
+
+                    @Html.ActionLink(item.SupplierName.ToString(), "SupplierDetails", new { SupplierId = item.SupplierId.ToString() }, new {data_toggle="popover",data_trigger="hover",id=item.SupplierId, onclick = "HyperLinkProgressIconFunction()" })
+                </td>
+                <td style="width: 100px; min-width: 100px; max-width: 250px; word-wrap: break-word">
+                    @item.SupplierCode.ToString()
+
+                </td>
+                 <td style="width: 100px; min-width: 100px; max-width: 250px; word-wrap: break-word">
+                    @Html.DisplayFor(modelItem => item.Supplier_type)
+                </td>
+                 <td style="width: 100px; min-width: 100px; max-width: 250px; word-wrap: break-word">
+                    @Html.DisplayFor(modelItem => item.RefNo)
+                </td>
+                <td style="width: 100px; min-width: 100px; max-width: 250px; word-wrap: break-word">
+                    @Html.DisplayFor(modelItem => item.VatNo)
+                </td>
+                <td style="width: 100px; min-width: 100px; max-width: 250px; word-wrap: break-word">
+                    @Html.DisplayFor(modelItem => item.Country)
+                </td>
+                <td style="width: 100px; min-width: 100px; max-width: 250px; word-wrap: break-word">
+                    @Html.DisplayFor(modelItem => item.City)
+                </td>
+                <td style="width: 100px; min-width: 100px; max-width: 250px; word-wrap: break-word">
+                    @Html.DisplayFor(modelItem => item.ContactPerson)
+                </td>
+
+                <td style="width: 100px; min-width: 100px; max-width: 250px; word-wrap: break-word">
+                    @Html.DisplayFor(modelItem => item.ContactNo)
+                </td>
+                <td style="width: 100px; min-width: 100px; max-width: 250px; word-wrap: break-word">
+                    @Html.DisplayFor(modelItem => item.Email)
+                </td>
+                <td style="width: 100px; min-width: 100px; max-width: 250px; word-wrap: break-word">
+                    @Html.DisplayFor(modelItem => item.Address)
+                </td>
+                <td style="width: 100px; min-width: 100px; max-width: 250px; word-wrap: break-word">
+                    @Html.DisplayFor(modelItem => item.SupplyScope)
+                </td>
+                <td style="width: 100px; min-width: 100px; max-width: 250px; word-wrap: break-word">
+                    @Html.DisplayFor(modelItem => item.ApprovalCriteria)
+                </td>
+             @*   <td style="width: 100px; min-width: 100px; max-width: 250px; word-wrap: break-word">
+                    @Html.DisplayFor(modelItem => item.ApprovedStatus)
+                </td>
+             *@
+
+                <td style="width: 100px; min-width: 100px; max-width: 250px; word-wrap: break-word">
+                    @if (item.UpdatedOn > Convert.ToDateTime("01/01/0001"))
+                    {
+                        @item.UpdatedOn.ToString("dd/MM/yyyy")
+                    }
+                </td>
+               
+                <td style="width: 100px; min-width: 100px; max-width: 250px; word-wrap: break-word">
+                    <a href='@Url.Action("SupplierEdit", "TUV", new { SupplierId = item.SupplierId })' title="Edit Supplier details" onclick="HyperLinkProgressIconFunction()">
+                        <span class="glyphicon glyphicon glyphicon-edit iocnstatus-edit" onclick="HyperLinkProgressIconFunction()"></span></a>
+
+                </td>
+
+                @if (ViewBag.DeleteFlg != null && ViewBag.DeleteFlg == true)
+                {
+                    <td style="width: 60px; min-width: 60px; max-width: 60px;">
+
+                        @*<a href='@Url.Action("CustomerEnquiryDelete", "CustomerEnquiry", new { enquiry_id = item.Enquiry_id.ToString() })' title="Delete Enquiry" >*@
+                        <img src="@Url.Content("~/Images/delete.png")" title="Delete Document" onclick="DeleteItems(@item.SupplierId,@item.id_project)" style="cursor:pointer;" />
+                    </td>
+                }
+            </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="11">
+                    <div style="text-align: center;">
+                        <h4 style="color: grey;">No data exists</h4>
+                    </div>
+                </td>
+            </tr>
+        }
+    </table>
+</div>
+
+@Styles.Render("~/Content/popover")
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+
+        function DeleteItems(SupplierId,id_project) {
+            jConfirm('Do you want to delete?', 'Are you Sure?', function (r) {
+                if (r == true) {
+                    jQuery.ajax({
+                        url: '@Url.Action("SupplierDelete", "TUV")',
+                        type: 'POST',
+                        dataType: "json",
+                        data: { 'SupplierId': SupplierId },
+                        success: function (result) {
+                            var params = {
+                                id_project: id_project
+                            };
+
+                            //// Add new params to the querystring dictionary
+                            queryString = $.param(params);
+
+                            window.location.href =
+                                window.location.protocol + "//" +
+                                window.location.host +
+                                window.location.pathname +
+                               '?' + queryString;
+                        }
+                    });
+                    return true;
+                }
+                else if (r == false) {
+                    return false;
+                }
+            });
+        }
+
+
+
+    </script>
+}

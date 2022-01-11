@@ -1,0 +1,302 @@
+﻿@model ISOStd.Models.KPIEvaluationModels
+
+@{
+    ViewBag.Title = "AddKPIPlanEvaluation";
+}
+
+@section featured {
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+
+                    <a class="breadcrumb-item" onclick="HyperLinkProgressIconFunction();" href='@Url.Action("KPIPlanEvaluationList", "KPIEvaluation", new { KPI_Trans_Id = ViewBag.KPI_Trans_Id } )'>
+                        <span class="breadcrumb-item"> KPI Details</span>
+                    </a>
+                    <span class="breadcrumb-item active"> Add KPI Plan Evaluation</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+}
+
+
+@using (Html.BeginForm("AddKPIPlanEvaluation", "KPIEvaluation", FormMethod.Post, new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.ValidationSummary(true)
+    @Html.AntiForgeryToken()
+
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Add KPI Plan Evaluation</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+
+
+
+                <input type="hidden" id="KPI_Trans_Id" name="KPI_Trans_Id" value="@ViewBag.KPI_Trans_Id" />
+                <input type="hidden" id="EstablishedOn" name="Obj_Estld_On" value="@ViewBag.EstablishedOn" />
+                <h2 class="bg-dark pl-sm-2"> KPI Evaluation Details</h2>
+                <br />
+                <table class="table table-lg">
+                    <thead></thead>
+                    <tbody>
+
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.EstablishedOn)
+
+                            </td>
+                            <td class="col">
+
+                                <input class="form-control" type="text" id="EstablishedOn" name="EstablishedOn" value="@ViewBag.EstablishedOn" style="background-color:#efefe6" disabled />
+
+
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.Process_Indicator)
+
+                            </td>
+                            <td class="col">
+
+                                <input class="form-control" type="text" id="Process_Indicator" name="Process_Indicator" value="@ViewBag.Process_Indicator" style="background-color:#efefe6" disabled />
+
+
+                            </td>
+
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.Measurable_Value)
+
+                            </td>
+                            <td class="col">
+
+                                <input class="form-control" type="text" id="Measurable_Value" name="Measurable_Value" value="@ViewBag.Measurable_Value" style="background-color:#efefe6" disabled />
+
+
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.Monitoring_Mechanism)
+
+                            </td>
+                            <td class="col">
+
+                                <input class="form-control" type="text" id="Monitoring_Mechanism" name="Monitoring_Mechanism" value="@ViewBag.Monitoring_Mechanism" style="background-color:#efefe6" disabled />
+
+
+                            </td>
+                        </tr>
+
+                </table>
+                <br />
+                <h2 class="bg-dark pl-sm-2"> Add Evaluation Details</h2>
+               
+                    <table class="table table-lg" id="tabcontent">
+                        <thead></thead>
+                        <tbody>
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+
+                                    @Html.LabelFor(model => model.Measured_Value)<text style="color:red;">*</text>
+
+                                </td>
+                                <td class="col">
+
+                                    <input class="form-control" type="text" id="Measured_Value" name="Measured_Value" required="required" />
+
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+
+                                    @Html.LabelFor(model => model.Eval_Status)<text style="color:red;">*</text>
+
+                                </td>
+                                <td class="col">
+
+                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="Eval_Status" name="Eval_Status" required="required" onchange="checkNCR()">
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.Eval_Status != null)
+                                        {
+                                            foreach (var item in ViewBag.Eval_Status)
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    </select>
+
+                                </td>
+                            </tr>
+
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+
+                                    @Html.LabelFor(model => model.Eval_On)<text style="color:red;">*</text>
+
+                                </td>
+                                <td class="col">
+
+                                    <input class="form-control" type="date" id="Eval_On" name="Eval_On" required onchange="checkDate();" />
+
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+
+                                    @Html.LabelFor(model => model.NCRRef)
+                                </td>
+                                <td class="col">
+
+                                    <input class="form-control" type="text" id="NCRRef" name="NCRRef" disabled />
+
+                                </td>
+                            </tr>
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+
+                                    @Html.LabelFor(model => model.upload)
+
+                                </td>
+                                <td class="col">
+
+                                    <input type="file" name="upload" id="upload" title="Documents" onchange="FileFormatValidation(this)"
+                                           multiple="multiple" accept=".pdf, .doc, .docx,image/*" class="bootstrap-uploader" data-fouc />
+
+                                    <span class="form-text text-muted"><code>(Hold Ctrl Key in case of multiple files or drag multiple files and drop here)</code></span>
+
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+            </div>
+
+        </div>
+
+
+
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+
+            @Html.ActionLink("Back to List", "KPIPlanEvaluationList", new { KPI_Trans_Id = ViewBag.KPI_Trans_Id }, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+
+            <button class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" type="submit" value="Save" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Save</button>
+
+        </div>
+
+    </div>
+    }
+
+    @section Scripts {
+
+        <script type="text/javascript">
+          
+             $(document).ready(function () {
+
+        @if (TempData["alertdata"] != null)
+        {
+
+            @: new Noty({
+            @:     text: '@TempData["alertdata"]',
+            @:     type: 'error'
+            @: }).show();
+        }
+
+        @if (@TempData["Successdata"] != null)
+        {
+
+            @:    new Noty({
+            @:       text: '@TempData["Successdata"]',
+            @:       type: 'success'
+            @:   }).show();
+        }
+        });
+
+                function checkDate() {
+
+
+                    var dt1 = document.getElementById("EstablishedOn").value;
+                    var dt2 = document.getElementById("Eval_On").value;
+
+                    if (new Date(dt2).getTime() < new Date(dt1).getTime()) {
+
+                        bootbox.alert({
+                            title: 'To Date',
+                            message: 'Evaluation date cannot be before Established date'
+                        });
+                        $('#Eval_On').val("");
+                    }
+                }
+               
+
+          
+
+            function FileFormatValidation(file) {
+                var ext = file.value.split(".").pop().toLowerCase();
+                if ($.inArray(ext, ["doc", "pdf", 'docx']) == -1) {
+                    file.value = "";
+                   
+                    bootbox.alert({
+                        title: 'File type',
+                        message: 'Invalid file format, please upload Pdf,docx,doc format.'
+                    });
+                }
+            }
+
+            function checkNCR() {
+                var Eval_Status = $('#Eval_Status :selected').text();
+                if (Eval_Status == "Upward") {
+                    document.getElementById("NCRRef").disabled = true;
+                    document.getElementById("NCRRef").value = "";
+                    document.getElementById("NCRRef").required = false;
+                   
+                }
+                else {
+                    document.getElementById("NCRRef").disabled = false;
+                    document.getElementById("NCRRef").value = "";
+                    document.getElementById("NCRRef").required = true;
+                 
+                }
+            }
+        </script>
+        @Scripts.Render("~/bundles/jqueryval")
+    }

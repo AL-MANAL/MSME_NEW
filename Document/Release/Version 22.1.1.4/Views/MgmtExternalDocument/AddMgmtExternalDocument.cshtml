@@ -1,0 +1,472 @@
+﻿    @model ISOStd.Models.MgmtExternalDocumentModels
+
+@{
+    ViewBag.Title = "AddMgmtExternalDocument";
+}
+
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("MgmtExternalDocumentList", "MgmtExternalDocument", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> External Documents</span>
+                    </a>
+                    <span class="breadcrumb-item active">Add External Documents</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+}
+
+@using (Html.BeginForm("AddMgmtExternalDocument", "MgmtExternalDocument", FormMethod.Post,
+                     new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title"> Add External Documents</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+                <table class="table table-lg">
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.branch)
+                        </td>
+                        <td class="col">
+                            <select class="form-control select-fixed-multiple" multiple="multiple" data-fouc id="branch" name="branch" onchange="GetDeptList()">
+                                @*<option value='' hidden>Select</option>*@
+                                @if (ViewBag.Branch != null)
+                                {
+                                    foreach (var data in ViewBag.Branch)
+                                    {
+                                        if (Array.IndexOf(Model.branch.ToString().Split(','), data.Value) >= 0)
+                                        {
+                                            <option value='@data.Value' selected>@data.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@data.Value'>@data.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.DeptId)<text style="color:red;">*</text>
+                        </td>
+                        <td class="col">
+                            <select class="form-control select-fixed-multiple" data-fouc id="DeptId" name="DeptId" multiple="multiple" @*onchange="GetEmployeeList()"*@ required>
+                                @if (ViewBag.Department != null)
+                                {
+                                    foreach (var item in ViewBag.Department)
+                                    {
+                                        if (Array.IndexOf(Model.DeptId.ToString().Split(','), item.Value) >= 0)
+                                        {
+                                            <option value='@item.Value' selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                            <br />
+                            @Html.ValidationMessageFor(m => m.DeptId)
+                        </td>
+
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.Location)<text style="color:red;">*</text>
+                        </td>
+                        <td class="col">
+                            <select class="form-control select-fixed-multiple" data-fouc id="Location" name="Location" multiple="multiple" @*onchange="GetEmployeeList()"*@ required>
+                                @if (ViewBag.Location != null)
+                                {
+                                    foreach (var item in ViewBag.Location)
+                                    {
+                                        if (Array.IndexOf(Model.Location.ToString().Split(','), item.Value) >= 0)
+                                        {
+                                            <option value='@item.Value' selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                            <br />
+                            @Html.ValidationMessageFor(m => m.Location)
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+
+                            @Html.LabelFor(model => model.DocName)<text style="color:red;">*</text>
+
+                        </td>
+                        <td class="col">
+
+                            @Html.EditorFor(model => model.DocName, new { htmlAttributes = new { @required = "required", @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.DocName)
+
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+
+
+                            @Html.LabelFor(model => model.DocRef)<text style="color:red;">*</text>
+
+                        </td>
+                        <td class="col">
+
+                            @Html.EditorFor(model => model.DocRef, new { htmlAttributes = new { @required = "required", @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.DocRef)
+
+                        </td>
+
+                    </tr>
+                    <tr class="row">
+
+                        <td class="col-xs-3 col-md-2">
+
+                            @Html.LabelFor(model => model.IssueNo)
+
+                        </td>
+                        <td class="col">
+
+                            <input type="text" id="IssueNo" name="IssueNo" class="form-control" />
+
+                        </td>
+
+                        <td class="col-xs-3 col-md-2">
+
+                            @Html.LabelFor(model => model.DocDate)
+                            @*<text style="color:red;">*</text>*@
+                        </td>
+                        <td class="col">
+
+                            <input type="date" id="DocDate" name="DocDate" class="form-control" @*required*@ />
+                            @Html.ValidationMessageFor(m => m.DocDate)
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        @*<td>
+            <div class="editor-label">
+                @Html.LabelFor(model => model.RevNo)
+            </div>
+        </td>
+        <td>
+            <div class="editor-field">
+                <input type="number" id="RevNo" name="RevNo" />
+            </div>
+        </td>*@
+                        <td class="col-xs-3 col-md-2">
+
+                            @Html.LabelFor(model => model.Doc_Origin)
+
+                        </td>
+                        <td class="col">
+
+                            <input type="text" id="Doc_Origin" name="Doc_Origin" class="form-control" />
+
+                        </td>
+                        
+
+                        <td class="col-xs-3 col-md-2">
+
+                            @Html.LabelFor(model => model.Eve_Date)
+                            <text style="color:red;">*</text>
+                        </td>
+                        <td class="col">
+
+                            <input type="date" id="Eve_Date" name="Eve_Date" class="form-control" required />
+                            @Html.ValidationMessageFor(m => m.Eve_Date)
+                        </td>
+
+                    </tr>
+                    <tr class="row">
+                        @*<td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.DeptId)
+                    </div>
+                     </td>
+                <td>
+                    <div class="editor-field">
+                        <select id="DeptId" name="DeptId" >
+                            <option value='' hidden>Select</option>
+                            @if (ViewBag.DeptId != null)
+                            {
+                                foreach (var item in ViewBag.DeptId)
+                                {
+                                <option value='@item.Value'>@item.Text</option>
+                                }
+                            }
+                        </select>
+
+                    </div>
+                </td>*@
+
+                        @*<td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.Updated_Thru)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <input type="text" id="Updated_Thru" name="Updated_Thru"/>
+                    </div>
+                </td>*@
+                        <td class="col-xs-3 col-md-2">
+
+                            @Html.LabelFor(model => model.Person_Responsible) <text style="color:red;">*</text>
+
+                        </td>
+                        <td class="col">
+
+                            <select class="form-control select-fixed-multiple" data-fouc multiple="multiple" id="Person_Responsible" name="Person_Responsible" required>
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.EmpList != null)
+                                {
+                                    foreach (var item in ViewBag.EmpList)
+                                    {
+                                        <option value='@item.Value'>@item.Text</option>
+                                    }
+                                }
+                            </select>
+                            @Html.ValidationMessageFor(m => m.Person_Responsible)
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+
+                            @Html.LabelFor(model => model.NotificationPeriod)
+
+                        </td>
+                        <td class="col">
+                            <div class="form-group form-group-float">
+                                <select class="form-control select-search select2-hidden-accessible" id="NotificationPeriod" name="NotificationPeriod" data-fouc>
+                                    @if (ViewBag.NotificationPeriod != null)
+                                    {
+                                        foreach (var item in ViewBag.NotificationPeriod)
+                                        {
+                                            <option value='@item.Key'>@item.Value</option>
+                                        }
+                                    }
+                                </select>
+
+                            </div>
+                            <div class="form-group form-group-float">
+                                <input class="form-control" type="number" id="NotificationValue" name="NotificationValue" value="0"/>
+
+                                <span class="form-text text-muted"><code>(Alert on or before Target date)</code></span>
+
+
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.Remarks)
+
+                        </td>
+                        <td class="col">
+                            <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="Remarks" name="Remarks"></textarea>
+
+                        </td>
+                                                           
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.SoftCopy_Path)
+                            <text style="color:red;">*</text>
+                        </td>
+                        <td class="col">
+                            <input type="file" name="SoftCopy_Path" id="SoftCopy_Path" onchange="FileFormatValidation(this)" accept=".pdf,.xlsx,.xls,.jpeg,.jpg,.png,.doc,.docx,image/*" class="bootstrap-uploader" data-fouc required />
+                            @Html.ValidationMessageFor(m => m.SoftCopy_Path)
+                        </td>
+                    </tr>
+
+                </table>
+            </div>
+
+        </div>
+
+
+
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+
+            @Html.ActionLink("Back to List", "MgmtExternalDocumentList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+
+            <button class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" type="submit" value="Save" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Save</button>
+
+        </div>
+    </div>
+        }
+
+
+        @section Scripts {
+            <script>
+
+                    //----zzz
+                    $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+                    });
+
+    //zzz----
+
+
+
+
+
+                function FileFormatValidation(file) {
+                    var ext = file.value.split(".").pop().toLowerCase();
+                    if ($.inArray(ext, ["pdf", "xlsx", "xls", "doc", "docx", "jpeg", "jpg", "png"]) == -1) {
+                        file.value = "";
+                        bootbox.alert({
+                            title: 'File type',
+                            message: 'Invalid file format, please upload only xlsx,xls,pdf,jpeg,jpg,png format.'
+                        });
+                    }
+                }
+
+      function GetDeptList() {
+            var selectedValues = [];
+            $("#branch :selected").each(function () {
+                selectedValues.push($(this).val());
+            });
+          var svalue = selectedValues.join(",");
+
+          /*GetEmployeeList();*/
+            jQuery.ajax({
+                url: '@Url.Action("FunGetGDeptListbymultiBranch", "Global")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'branch': svalue },
+                success: function (result) {
+                    GetLocList(svalue);
+                    $("#DeptId").children('option').remove();
+                    $("#DeptId").trigger('change');
+                    if (result != null && result.length > 0) {
+                        $.each(result, function (index, item) {
+                            $("#DeptId").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                        });
+                        $("#DeptId").trigger('change');
+                        return;
+                    }
+                }
+            });
+
+        }
+
+            function GetLocList(svalue) {
+            jQuery.ajax({
+                url: '@Url.Action("FunGetGLocListbymultiBranch", "Global")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'branch': svalue },
+                success: function (result) {
+                    $("#Location").children('option').remove();
+                    $("#Location").trigger('change');
+                    if (result != null && result.length > 0) {
+                        $.each(result, function (index, item) {
+                            $("#Location").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                        });
+                        $("#Location").trigger('change');
+                        return;
+                    }
+                }
+            });
+        }
+
+         function GetEmployeeList() {
+             var sbranch = $.map($("#branch option:selected"), function (el, i) {
+                 return $(el).val();
+             });
+             var sbvalue = (sbranch.join(","));
+
+             var sDepartment = $.map($("#DeptId option:selected"), function (el, i) {
+                 return $(el).val();
+             });
+             var sdvalue = (sDepartment.join(","));
+
+             var sLocation = $.map($("#Location option:selected"), function (el, i) {
+                 return $(el).val();
+             });
+             var slvalue = (sLocation.join(","));
+
+            jQuery.ajax({
+                url: '@Url.Action("FunGetGEmpListBymulitBDL", "Global")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'sDivision': sbvalue, 'sDept': sdvalue, 'sLoc': slvalue},
+                success: function (result) {
+                    $("#Person_Responsible").children('option').remove();
+                    $("#Person_Responsible").trigger('change');
+                    if (result != null && result.length > 0) {
+                        $.each(result, function (index, item) {
+                            $("#Person_Responsible").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                        });
+                        $("#Person_Responsible").trigger('change');
+                        return;
+                    }
+                }
+            });
+        }
+            </script>
+            @Scripts.Render("~/bundles/jqueryval")
+        }

@@ -1,0 +1,206 @@
+﻿@using System.Data;
+@{
+    //Layout = "~/Views/Shared/_PrintLayout.cshtml";
+    ViewBag.Title = "Stock Report";
+    
+    DataSet dsStock=new DataSet();
+
+    if (ViewBag.dsStock != null)
+    {
+        dsStock = ViewBag.dsStock;
+    }
+
+    string fromdateValue = DateTime.Now.AddMonths(-1).ToString("dd/MM/yyy"), toDateValue = DateTime.Now.ToString("dd/MM/yyy");
+    if (ViewBag.fromdateValue != null)
+    {
+        fromdateValue = ViewBag.fromdateValue;
+    }
+
+    if (ViewBag.toDateValue != null)
+    {
+        toDateValue = ViewBag.toDateValue;
+    }  
+}
+
+<div class="groupedassets margin10">
+    <span class="groupedassetshead margin10 onestphdcolor"> Daily/Monthly/YearEnd Stock Report</span>
+</div>
+
+@using (Html.BeginForm("YearEndStockReport", "Emmet", FormMethod.Post, new { id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+ <div style="float:right;padding:20px">
+      <span style="margin-left: 20px"> <img src="@Url.Content("~/Images/excel.png")" title="Export as Excel" style="cursor:pointer; " id="downloadLink" /></span>
+ </div>
+    <fieldset>
+        <legend>Quality Objectives</legend>
+        <table id="tabcontent">
+            <tr>
+                <td>
+                    <div class="editor-label">
+                        From
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                         <input type="text" id="FromDate" name="FromDate" value="@fromdateValue" required readonly/><input type="hidden" id="FromDateval" name="FromDateval" value="@fromdateValue" />
+                        <span class="field-validation-error"><span id="FromDate-message" style="display: none;">Please select From date</span></span>
+                    </div>
+                </td>
+                 <td>
+                    <div class="editor-label">
+                        To
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <input type="text" id="ToDate" name="ToDate" value="@toDateValue" required readonly/><input type="hidden" id="toDateValue" name="toDateValue" value="@toDateValue" />
+                        <span class="field-validation-error"><span id="ToDate-message" style="display: none;">Please select To date</span></span>
+                    </div>
+                </td>
+            </tr>
+            </table>     
+        
+    </fieldset> 
+    <div style="width: 100%; text-align: center;">
+        <input type="Submit" id="Generate" name="command" value="Generate" onclick="ProgressIconFunction('#form1')"/>
+    </div>
+}
+ @if (dsStock != null && dsStock.Tables.Count > 0 && dsStock.Tables[0].Rows.Count > 0)
+    {
+    <div id="divPrint">
+        
+
+        <table id="table1">
+            <tr style="font-weight: bold;">
+                <th rowspan="2" style="background-color: #4cc4dd; width:50px; color: white;  text-align: center;font-size:14px">Sl No</th>
+                <th rowspan="2" style="background-color: #4cc4dd; width: 150px; color: white;  text-align: center;font-size:14px">Material</th>
+                 <th rowspan="2" style="background-color: #4cc4dd; width: 200px; color: white;  text-align: center;font-size:14px">Product</th>
+                 <th colspan="3" style="background-color: #4cc4dd; width: 300px; color: white;  text-align: center;font-size:14px">Opening Stock</th>
+                 <th colspan="3" style="background-color: #4cc4dd; width: 300px; color: white;  text-align: center;font-size:14px">Purchase</th>
+                 <th colspan="3" style="background-color: #4cc4dd; width: 300px; color: white;  text-align: center;font-size:14px">Consumption</th>
+                <th colspan="3" style="background-color: #4cc4dd; width: 300px; color: white;  text-align: center;font-size:14px">Closing Stock</th>
+            </tr>
+            <tr style="font-weight: bold;">
+              @*  <th></th>
+                 <th></th>
+                 <th></th>*@
+
+                <th style="background-color: #4cc4dd; width: 100px; color: white;  text-align: center;font-size:14px">Unit</th>
+                 <th style="background-color: #4cc4dd; width: 100px; color: white;  text-align: center;font-size:14px">Unit Price</th>
+                 <th style="background-color: #4cc4dd; width: 100px; color: white;  text-align: center;font-size:14px">Total Amount</th>
+
+                <th style="background-color: #4cc4dd; width: 100px; color: white;  text-align: center;font-size:14px">Unit</th>
+                 <th style="background-color: #4cc4dd; width: 100px; color: white;  text-align: center;font-size:14px">Unit Price</th>
+                 <th style="background-color: #4cc4dd; width: 100px; color: white;  text-align: center;font-size:14px">Total Amount</th>
+
+                <th style="background-color: #4cc4dd; width: 100px; color: white;  text-align: center;font-size:14px">Unit</th>
+                 <th style="background-color: #4cc4dd; width: 100px; color: white;  text-align: center;font-size:14px">Unit Price</th>
+                 <th style="background-color: #4cc4dd; width: 100px; color: white;  text-align: center;font-size:14px">Total Amount</th>
+
+                <th style="background-color: #4cc4dd; width: 100px; color: white;  text-align: center;font-size:14px">Unit</th>
+                 <th style="background-color: #4cc4dd; width: 100px; color: white;  text-align: center;font-size:14px">Unit Price</th>
+                 <th style="background-color: #4cc4dd; width: 100px; color: white;  text-align: center;font-size:14px">Total Amount</th>
+            </tr>
+            @for (int i = 0; i < dsStock.Tables[0].Rows.Count; i++)
+            {           
+            <tr>
+                <td style="width:50px">@dsStock.Tables[0].Rows[i]["id"].ToString()</td>
+                <td style="width:100px">@dsStock.Tables[0].Rows[i]["mat_cat"].ToString()</td>
+                <td style="width:200px">@dsStock.Tables[0].Rows[i]["product"].ToString()</td>
+                <td style="width:100px">@dsStock.Tables[0].Rows[i]["open_unit"].ToString()</td>
+                <td style="width:100px">@dsStock.Tables[0].Rows[i]["open_price"].ToString()</td>
+                <td style="width:100px">@dsStock.Tables[0].Rows[i]["open_tamt"].ToString()</td>
+                <td style="width:100px">@dsStock.Tables[0].Rows[i]["pur_unit"].ToString()</td>
+                <td style="width:100px">@dsStock.Tables[0].Rows[i]["pur_price"].ToString()</td>
+                <td style="width:100px">@dsStock.Tables[0].Rows[i]["pur_tamt"].ToString()</td>
+                <td style="width:100px">@dsStock.Tables[0].Rows[i]["cons_unit"].ToString()</td>
+                <td style="width:100px">@dsStock.Tables[0].Rows[i]["cons_price"].ToString()</td>
+                <td style="width:100px">@dsStock.Tables[0].Rows[i]["cons_tamt"].ToString()</td>
+                <td style="width:100px">@dsStock.Tables[0].Rows[i]["close_unit"].ToString()</td>
+                <td style="width:100px">@dsStock.Tables[0].Rows[i]["close_price"].ToString()</td>
+                <td style="width:100px">@dsStock.Tables[0].Rows[i]["close_tamt"].ToString()</td>
+            </tr> 
+            }
+        </table>
+
+    </div>
+    
+    }
+
+    else if (ViewBag.dsObjectivesList != null)
+        {            
+                    <div>
+                        <h4 style="color: red;">No data exists</h4>
+                    </div>
+               
+        }
+@section Scripts {
+    <script>
+        $(function () {
+
+            $('#FromDate').datepicker({
+                dateFormat: "dd/mm/yy",
+                buttonImageOnly: true,
+                buttonImage: '../Images/Calender.png',
+                showOn: 'both',
+                changeMonth: true,
+                changeYear: true,
+                gotoCurrent: true
+            });
+
+            $('#ToDate').datepicker({
+                dateFormat: "dd/mm/yy",
+                buttonImageOnly: true,
+                buttonImage: '../Images/Calender.png',
+                showOn: 'both',
+                changeMonth: true,
+                changeYear: true,
+                gotoCurrent: true
+            });
+
+        });
+
+
+        function downloadInnerHtml(filename, elId) {
+            var $table = $('#table1');
+            $rows = $table.find('tr');
+
+            var csvData = "";
+
+            for (var i = 0; i < $rows.length; i++) {
+                var $cells = $($rows[i]).children('th,td'); //header or content cells
+
+                for (var y = 0; y < $cells.length; y++) {
+                    if (y > 0) {
+                        csvData += ",";
+                    }
+
+                    var txt = ($($cells[y]).text()).toString().trim();
+
+                    if (txt.indexOf(',') >= 0 || txt.indexOf('\"') >= 0 || txt.indexOf('\n') >= 0) {
+                        txt = "\"" + txt.replace(/\"/g, "\"\"") + "\"";
+                    }
+                    csvData += txt;
+                }
+                csvData += '\n';
+            }
+
+
+            var elHtml = csvData;
+            var link = document.createElement('a');
+            mimeType = 'application/csv;charset=utf-8';
+
+            link.setAttribute('download', filename);
+            link.setAttribute('href', 'data:' + mimeType + ';charset=utf-8,' + encodeURIComponent(elHtml));
+            link.click();
+        }
+
+        var fileName = 'StockReport.csv'; // You can use the .txt extension if you want
+
+        $('#downloadLink').click(function () {
+            downloadInnerHtml(fileName, 'content');
+        });
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

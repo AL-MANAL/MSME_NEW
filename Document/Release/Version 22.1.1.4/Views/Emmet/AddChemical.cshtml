@@ -1,0 +1,421 @@
+﻿@model ISOStd.Models.EmmetModels
+@{
+    ViewBag.Title = "";
+    int icnts = 0;
+}
+<div style="max-width: 80%;">
+    <div class="groupedassets margin10">
+        <span class="groupedassetshead margin10 onestphdcolor">Receive Chemicals/Paints</span>
+    </div>
+    <div id="divmsg">
+        @if (TempData["alertdata"] != null)
+        {
+            <span class="errMsg" style="color: red; font-weight: bold;">@TempData["alertdata"]</span>
+        }
+        @if (TempData["Successdata"] != null)
+        {
+            <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+        }
+    </div>
+
+    @using (Html.BeginForm("AddChemical", "Emmet", FormMethod.Post,
+            new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true)
+
+       
+         <div style="padding-left: 200px;">
+            <table id="tabcontent">
+                
+             <tr>
+                 <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.po)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <input type="text" id="po" name="po" required />
+                        </div>
+                    </td>
+                      <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.supplier)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <select class="chosen-select" id="supplier" name="supplier" required>
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.Suppplier != null)
+                                {
+                                    foreach (var item in ViewBag.Suppplier)
+                                    {
+                                    <option value='@item.Value'>@item.Text</option>
+                                    }
+                                }
+
+                            </select>
+                        </div>
+                    </td>
+              </tr>
+                <tr>
+                      <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.po_upload)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <input type="file" name="po_upload" id="po_upload" title="Documents" onchange="FileFormatValidation(this)"
+                                multiple="multiple" accept=".pdf, .doc, .docx,image/*" style="height: 38px;" />
+
+                            <p style="font-size: 11px; margin: 0px;">(Hold Ctrl Key in case of multiple files)</p>
+                        </div>
+                    </td>
+                         <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.added_date)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <input type="text" id="added_date" name="added_date" style="width: 150px;" required />
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                     <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.upload)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <input type="file" name="upload" id="upload" onchange="FileFormatValidation(this)" accept=".pdf,.doc,.docx,.jpg,.png,.jpeg,.gif,.tif,.bmp,.pptx" style="height: 38px;" />
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div style="padding-left: 200px">
+            <table style="padding-left: 200px;">
+
+                <tr style="background-color: #4cc4dd; color: #fff;">
+                    <th colspan="7" style="font-size: 14px; font-weight: bold;">Add Stock</th>
+                </tr>
+                <tr style="background-color: #4cc4dd; color: #fff;">
+                    <th style="font-size: 14px; font-weight: bold;">Category</th>
+                    <th style="font-size: 14px; font-weight: bold;">Material</th>
+                    <th style="font-size: 14px; font-weight: bold;">Qty</th>
+                    <th style="font-size: 14px; font-weight: bold;">Unit Price</th>
+                    <th style="font-size: 14px; font-weight: bold;">Total Price</th>
+                     <th style="font-size: 14px; font-weight: bold;width:300px">Expiry Date</th>
+                    <th colspan="2" style="font-weight: bold;">Action</th>
+                </tr>
+                <tr>
+                    <td style="width:300px">
+                      <select class="chosen-select" id="category" name="category"  onchange="GetMaterialList()">                         
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.CatList != null)
+                                {
+                                    foreach (var item in ViewBag.CatList)
+                                    {
+                                        <option value='@item.Value'>@item.Text</option>
+                                    }
+                                }
+                            </select>
+                        @Html.ValidationMessageFor(model => model.category)
+                        <span class="field-validation-error"><span id="category-message" style="display: none;">Please Enter</span></span>
+                    </td>
+                    <td style="width:300px">
+                              <select class="chosen-select" id="material" name="material" >                         
+                                <option value='' hidden>Select</option>
+                              
+                            </select>
+                        @Html.ValidationMessageFor(model => model.material)
+                        <span class="field-validation-error"><span id="material-message" style="display: none;">Please Enter</span></span>
+                    </td>
+                    <td style="width:300px">
+                       <input type="number" id="qty" name="qty" min="1" onchange="calTotalPrice()" />
+                        @Html.ValidationMessageFor(model => model.qty)
+                        <span class="field-validation-error"><span id="qty-message" style="display: none;">Please Enter</span></span>
+                    </td>
+                    <td style="width:300px">
+                      <input type="number" id="price" name="price" min="1" onchange="calTotalPrice()"/>
+                        @Html.ValidationMessageFor(model => model.price)
+                        <span class="field-validation-error"><span id="price-message" style="display: none;">Please Enter</span></span>
+                    </td>
+                     <td style="width:300px">
+                         <input type="number" id="tprice" name="tprice" readonly style="background-color:#efefe6"  />
+                          </td>
+                    <td style="width:300px">
+                        <input type="text" id="expiry_date" name="expiry_date" style="width:80px" />
+                           @Html.ValidationMessageFor(model => model.expiry_date)
+                        <span class="field-validation-error"><span id="expiry_date-message" style="display: none;">Please Enter</span></span>
+                    </td>
+                    <td colspan="2">
+                        <img src='@Url.Content("~/images/icon_add.png")' onclick='AddData()' style='cursor:pointer; padding-right: 5px;' />Add
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="7">
+                        <p style="font-size: 11px; margin: 0px; text-align: center;">Please click Plus button to Add N number of stock</p>
+                    </td>
+                </tr>
+            </table>
+
+        </div>
+
+
+        <div style="padding-left: 200px; width: 100%; text-align: center;">
+          @*  @Html.ActionLink("Back to List", "StockReceiveList", null, new { Class = "ActionLink", onclick = "HyperLinkProgressIconFunction()" })*@
+            <input type="submit" id="btnCreate" style="display: none;" value="submit" onclick="ProgressIconFunction('#form1')" />
+        </div>
+
+        <br />
+        <br />
+        
+        
+        <div id="Welfare" style="padding-left: 200px">
+            <input type="hidden" id="itemcnts" name="itemcnts" value="@icnts" />
+
+            <table id="team-list1">
+                <tr>
+                    <th colspan="7" style="background-color: #4cc4dd; color: white">Stock List
+                    </th>
+                </tr>
+                <tr>
+                    <th style="width: 50px; min-width: 50px; max-width: 50px;">Delete</th>
+                    <th style="width: 200px; min-width: 200px; max-width: 200px;">Category</th>
+                    <th style="width: 200px; min-width: 200px; max-width: 200px;">Material</th>
+                    <th style="width: 200px; min-width: 200px; max-width: 200px;">Qty</th>
+                    <th style="width: 200px; min-width: 200px; max-width: 200px;">Unit Price</th>
+                     <th style="width: 200px; min-width: 200px; max-width: 200px;">Total Price</th>
+                    <th style="width: 200px; min-width: 200px; max-width: 200px;">Expiry Date</th>
+                </tr>
+            </table>
+        </div>    
+    }
+</div>
+@section Scripts {
+    <script>  
+        $(function () {
+            $("#category").chosen();
+            $("#material").chosen();
+            $("#supplier").chosen();
+            $.validator.setDefaults({ ignore: ":hidden:not('.chosen-select')" });
+
+
+            $('#added_date').datepicker({
+                dateFormat: "dd/mm/yy",
+                buttonImageOnly: true,
+                buttonImage: '../Images/Calender.png',
+                showOn: 'both',
+                changeMonth: true,
+                changeYear: true,
+            });
+            $('#expiry_date').datepicker({
+                dateFormat: "dd/mm/yy",
+                buttonImageOnly: true,
+                buttonImage: '../Images/Calender.png',
+                showOn: 'both',
+                changeMonth: true,
+                changeYear: true,
+            });
+            $("#added_date").datepicker("setDate", new Date());
+
+
+            $('#qty').on('change keyup', function () {
+                var sanitized = $(this).val().replace(/[^0-9]/g, '');
+                $(this).val(sanitized);
+            });
+        });
+        function FileFormatValidation(file) {
+            var ext = file.value.split(".").pop().toLowerCase();
+            if ($.inArray(ext, ["doc", "pdf", 'docx', "jpg", "png", "jpeg", "gif", "tif", "bmp", "pptx"]) == -1) {
+                file.value = "";
+                jAlert("Invalid file format, please upload only Pdf,docx,doc format");
+            }
+        }
+        function calTotalPrice() {
+
+            var qty = document.getElementById("qty").value;
+            var price = document.getElementById("price").value;
+            if (qty != "" && price != "") {
+
+                var tprice = (qty * price);
+                document.getElementById("tprice").value = tprice.toFixed(2);
+            }
+
+        }
+
+        function GetMaterialList() {
+            var category = $('#category').chosen().val();
+            jQuery.ajax({
+                url: '@Url.Action("FunGetMaterialList", "Emmet")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'category': category },
+                success: function (result) {
+
+                    if (result != null && result.length > 0) {
+
+                 
+                        $('#material').children('option').remove();
+                        $("#material").trigger("chosen:updated");
+
+                        $.each(result, function (index, item) {
+
+                            $("#material").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                            $("#material").trigger("chosen:updated");
+
+                        });
+                        $('#material').trigger('change');
+                        return;
+                    }
+                    else {
+                        jAlert("No Material exists.");                
+                        $('#material').children('option').remove();
+                        $("#material").trigger("chosen:updated");
+                        return;
+                    }
+                }
+            });
+        }
+        function deleteCoseRow(btn) {
+            var row = btn.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+        }
+        function Validation() {
+            var validflg = true;
+            var ssnMessage = "";
+
+            if (document.getElementById("category").value == "") {
+                ssnMessage = $('#category-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#category-message');
+                ssnMessage.hide();
+            }
+
+            if (document.getElementById("material").value == "") {
+                ssnMessage = $('#material-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#material-message');
+                ssnMessage.hide();
+            }
+
+            if (document.getElementById("qty").value == "") {
+                ssnMessage = $('#qty-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#qty-message');
+                ssnMessage.hide();
+            }
+
+            if (document.getElementById("price").value == "") {
+                ssnMessage = $('#price-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#price-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("expiry_date").value == "") {
+                ssnMessage = $('#expiry_date-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#expiry_date-message');
+                ssnMessage.hide();
+            }
+            return validflg;
+        }
+
+        function AddData() {
+
+            if (Validation() == true) {
+
+                document.getElementById("Welfare").style.display = "";
+                var cnt = document.getElementById("itemcnts").value;
+
+                document.getElementById("itemcnts").value = cnt;
+                // Find a <table> element with id="myTable":
+                var table = document.getElementById("team-list1");
+
+                // Create an empty <tr> element and add it to the 1st position of the table:
+                var row = table.insertRow();
+
+                // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                var cell0 = row.insertCell(0);
+                var cell1 = row.insertCell(1);
+                var cell2 = row.insertCell(2);
+                var cell3 = row.insertCell(3);
+                var cell4 = row.insertCell(4);
+                var cell5 = row.insertCell(5);
+                var cell6 = row.insertCell(6);
+               
+                cell0.style = "width: 50px; min-width: 50px; max-width: 50px;";
+                cell1.style = "width: 200px; min-width: 200px; max-width: 200px;word-wrap:break-word";
+                cell2.style = "width: 200px; min-width: 200px; max-width: 200px;word-wrap:break-word";
+                cell3.style = "width: 200px; min-width: 200px; max-width: 200px;word-wrap:break-word";
+                cell4.style = "width: 200px; min-width: 200px; max-width: 200px;word-wrap:break-word";
+                cell5.style = "width: 200px; min-width: 200px; max-width: 200px;word-wrap:break-word";
+                cell6.style = "width: 200px; min-width: 200px; max-width: 200px;word-wrap:break-word";
+              
+                var qty = $('#qty').val();
+                var price = $('#price').val();
+                var tprice = $('#tprice').val();
+                var expiry_date = $('#expiry_date').val();
+
+                var category = [];
+                var categoryText = $.map($("#category option:selected"), function (el, i) {
+                    return $(el).text();
+                });
+                var categoryVal = $('#category').val();
+
+                var material = [];
+                var materialText = $.map($("#material option:selected"), function (el, i) {
+                    return $(el).text();
+                });
+                var materialVal = $('#material').val();
+
+                cell0.innerHTML = " <img src='@Url.Content("~/images/cancel.png")' onclick='deleteCoseRow(this)' style='cursor:pointer; padding-right: 5px;'/>";
+                cell1.innerHTML = "<input type='hidden' id='category" + cnt + "' name='category" + cnt + "' value='" + categoryVal + "'>" + categoryText;
+                cell2.innerHTML = "<input type='hidden' id='material" + cnt + "' name='material" + cnt + "' value='" + materialVal + "'>" + materialText;
+                cell3.innerHTML = "<input type='hidden' id='qty" + cnt + "' name='qty" + cnt + "' value='" + qty + "'>" + qty;
+                cell4.innerHTML = "<input type='hidden' id='price" + cnt + "' name='price" + cnt + "' value='" + price + "'>" + price;
+                cell5.innerHTML = "<input type='hidden' id='tprice" + cnt + "' name='tprice" + cnt + "' value='" + tprice + "'>" + tprice;
+                cell6.innerHTML = "<input type='hidden' id='expiry_date" + cnt + "' name='expiry_date" + cnt + "' value='" + expiry_date + "'>" + expiry_date;
+
+                cnt++;
+                document.getElementById("itemcnts").value = cnt;
+                document.getElementById("btnCreate").style.display = "";
+                ResetControl();
+            }
+
+        }
+        function ResetControl() {
+            document.getElementById("qty").value = "";
+            document.getElementById("price").value = "";
+            document.getElementById("tprice").value = "";
+            $("#category").val('').trigger("chosen:updated");
+            $("#material").val('').trigger("chosen:updated");
+            document.getElementById("expiry_date").value = "";
+            $('#material').children('option').remove();
+            $("#material").trigger("chosen:updated");
+        }
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

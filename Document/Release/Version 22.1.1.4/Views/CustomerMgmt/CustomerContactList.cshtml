@@ -1,0 +1,156 @@
+﻿@using PagedList;
+@using PagedList.Mvc;
+
+@model IPagedList<ISOStd.Models.CustomerContactsModels>
+
+@{
+    ViewBag.Title = "CustomerContactList";
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+    //Layout = "/views/shared/_PartialLayout.cshtml";
+}
+
+<div class="groupedassets margin10">   
+    <span class="groupedassetshead margin10 onestphdcolor">Customer Contact List</span>   
+</div>
+<div class = "ActionLink">@Html.ActionLink("Back to Customer List", "CustomerList", null, new { @class = "ActionLink" })</div>
+<div id="divmsg">
+    @if (TempData["alertdata"] != null)
+    {
+        <span class="errMsg" style="color: red; font-weight: bold;">@TempData["alertdata"]</span>
+        }
+    @if (TempData["Successdata"] != null)
+    {
+        <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+        }
+</div>
+@using (Html.BeginForm("CustomerContactList", "CustomerMgmt", FormMethod.Get))
+{
+    <div>
+        <input type="hidden" id="CustID" name="CustID" value="@ViewBag.CustID" />
+        @Html.TextBox("SearchText", (string)ViewBag.SearchText, new { placeholder = "Search by Name", style = "width: 30%; margin-left: 100px;" })
+        <button type="submit" class="btn btn-info" onclick="ProgressIconFunction()">
+            <span class="glyphicon glyphicon-search"></span>Search
+        </button>
+    </div>
+}
+
+@Html.PagedListPager(Model, page => Url.Action("CustomerContactList",
+    new
+    {
+        page,
+        SearchText = Request.QueryString["SearchText"],
+        CustID=Request.QueryString["CustID"]
+    }),
+    new PagedListRenderOptions() { Display = PagedListDisplayMode.IfNeeded, DisplayPageCountAndCurrentLocation = true })
+<div id="content">
+    <table id="table1">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.First().CustName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().ContactPerson)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().EmailId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().PhoneNumber)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().MobileNumber)
+            </th>
+            @if (Obj.GetCurrentUserSession().AddCust.ToLower().Contains("3"))
+            {
+                <th>Action</th>
+            }
+            </tr>
+        @if (Model != null && Model.Count() > 0)
+        {
+            foreach (var item in Model)
+            {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.CustName)
+            </td>
+            <td>
+                @System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(item.ContactPerson)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EmailId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PhoneNumber)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MobileNumber)
+            </td>
+            @if (Obj.GetCurrentUserSession().AddCust.ToLower().Contains("3"))
+            {
+            <td>
+                <a href='@Url.Action("CustomerContactEdit", "CustomerMgmt", new { ContactsId = item.ContactsId })' title="Edit details">
+                    <span class="glyphicon glyphicon glyphicon-edit iocnstatus-edit"></span>
+                </a>
+                @*<a href='@Url.Action("CustomerContactDelete", "CustomerMgmt", new { ContactsId = item.ContactsId.ToString() })' title="Delete details">
+        <img src="@Url.Content("~/Images/delete.png")" title="Delete User"/></a>*@
+                @if (Obj.GetCurrentUserSession().AddCust.ToLower().Contains("5"))
+                {
+                    <img src="@Url.Content("~/Images/delete.png")" title="Delete Document" onclick="DeleteItems(@item.ContactsId)" style="cursor:pointer;" />
+                }
+                </td>
+            }
+            </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="5">
+                    <div style="text-align: center;">
+                        <h4 style="color: grey;">No data exists</h4>
+                    </div>
+                </td>
+            </tr>
+        }
+
+
+    </table>
+</div>
+
+@section scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript">
+
+        function DeleteItems(ContactsId) {
+            jConfirm('Do you want to delete?', 'Are you Sure?', function (r) {
+                if (r == true) {
+                    jQuery.ajax({
+                        url: '@Url.Action("CustomerContactDelete", "CustomerMgmt")',
+                        type: 'POST',
+                        dataType: "json",
+                        data: { 'ContactsId': ContactsId },
+                        success: function (result) {
+                            var params = {
+                                View: 1
+                            };
+
+                            //// Add new params to the querystring dictionary
+                            queryString = $.param(params);
+
+                            window.location.href =
+                                window.location.protocol + "//" +
+                                window.location.host +
+                                window.location.pathname +
+                               '?' + queryString;
+                        }
+                    });
+                    return true;
+                }
+                else if (r == false) {
+                    return false;
+                }
+            });
+        }
+    </script>
+
+}

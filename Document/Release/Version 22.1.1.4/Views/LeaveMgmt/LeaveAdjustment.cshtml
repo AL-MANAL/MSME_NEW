@@ -1,0 +1,178 @@
+﻿@model ISOStd.Models.LeaveMgmtModels
+
+@{
+    ViewBag.Title = "AddIssues";
+}
+
+<div style="max-width: 80%; padding-left: 200px;">
+
+    <div class="groupedassets margin10">
+        <span class="groupedassetshead margin10 onestphdcolor">Leave Adjustment</span>
+    </div>
+
+    <div id="divmsg">
+        @if (TempData["alertdata"] != null)
+        {
+            <span class="errMsg" style="color: red; font-weight: bold;">@TempData["alertdata"]</span>
+        }
+        @if (TempData["Successdata"] != null)
+        {
+            <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+        }
+    </div>
+
+    @using (Html.BeginForm("LeaveAdjustment", "LeaveMgmt", FormMethod.Post,
+                         new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true)
+
+        <fieldset>
+            <legend>AddIssues</legend>
+           <input type="hidden" id="syear" name="syear" />
+            <table id="tabcontent">
+                <tr>
+                   <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.emp_firstname)<text style="color: red;">*</text>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="display-field">
+                            <select class="chosen-select" id="emp_no" name="emp_no" required onchange="balDetails()">
+                                <option value='' hidden>Select</option>
+                               @if (ViewBag.EmpList != null)
+                                {
+                                    foreach (var item in ViewBag.EmpList)
+                                    {
+                                        <option value='@item.Value'>@item.Text</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-label">
+                            Adjustment Type<text style="color: red;">*</text>
+                        </div>
+                    </td>
+                        <td>
+                        <div class="editor-field">
+                            <select class="chosen-select" id="adj_type" name="adj_type" required>
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.Adjust != null)
+                                {
+                                    foreach (var item in ViewBag.Adjust)
+                                    {
+                                        <option value='@item.Text'>@item.Text</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </td>
+                
+                </tr>
+                <tr>
+                    <td>
+                         <div class="editor-label">
+                           Emp No<input type="text" id="emp_id" name="emp_id" disabled style="background: #efefe6;"  />
+                        </div>
+                    </td>
+                    <td>
+                         <div class="editor-label">
+                           Balance Annual Leave<input type="text" id="bal_annual_leave" name="bal_annual_leave" disabled style="background: #efefe6;"  />
+                        </div>
+                    </td>
+                     <td>
+                         <div class="editor-label">
+                           Balance Sick Leave<input type="text" id="bal_sick_leave" name="bal_sick_leave" disabled style="background: #efefe6;" />
+                        </div>
+                    </td>
+                     <td>
+                         <div class="editor-label">
+                           Balance Other Leave<input type="text" id="bal_other_leave" name="bal_other_leave"disabled style="background: #efefe6;"  />
+                        </div>
+                    </td>
+                </tr>
+              
+                <tr>
+                     <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.days)<text style="color: red;">*</text>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                           <input type="number" id="days" name="days" required />
+                        </div>
+                    </td>
+                       <td>
+                        <div class="editor-label">
+                            Operation Type<text style="color: red;">*</text>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="display-field">
+                            <select class="chosen-select" id="op_type" name="op_type" required>
+                                <option value='' hidden>Select</option>
+                               @if (ViewBag.Operation != null)
+                                {
+                                    foreach (var item in ViewBag.Operation)
+                                    {
+                                        <option value='@item.Text'>@item.Text</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </td>
+                </tr>            
+
+            </table>
+        </fieldset>
+    
+        <div style="width: 100%; text-align: center;">
+          @Html.ActionLink("Back to List", "LeaveAdjustmentList", null, new { Class = "ActionLink", onclick = "HyperLinkProgressIconFunction()" })
+          <input type="submit" value="Save" onclick="ProgressIconFunction('#form1')" />
+        </div>
+    }
+
+</div>
+@section Scripts {
+    <script>
+        $(function () {
+            $("#emp_no").chosen();
+            $("#adj_type").chosen();
+            $("#op_type").chosen();
+            $.validator.setDefaults({ ignore: ":hidden:not('.chosen-select')" });
+
+            $('#days').on('change keyup', function () {
+                var sanitized = $(this).val().replace(/[^0-9]/g, '');
+                $(this).val(sanitized);
+            });
+        });
+
+        function balDetails() {
+            var emp_no = $('#emp_no').chosen().val();
+            jQuery.ajax({
+                 url: '@Url.Action("FungetEmpBalDetails", "LeaveMgmt")',
+                 type: 'POST',
+                 dataType: "json",
+                 data: { 'emp_no': emp_no},
+                 success: function (result) {
+                     if (result != "") {
+                         document.getElementById("bal_annual_leave").value = result.bal_annual_leave;
+                         document.getElementById("bal_sick_leave").value = result.bal_sick_leave;
+                         document.getElementById("bal_other_leave").value = result.bal_other_leave;
+                         document.getElementById("syear").value = result.syear;
+                         document.getElementById("emp_id").value = result.emp_no;
+                     }
+                     else {
+                         jAlert("Please generate leave master");
+                         $('#emp_no').val('').trigger("chosen:updated")
+                     }
+                 }
+             });
+        }
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

@@ -1,0 +1,434 @@
+﻿@model ISOStd.Models.EmmetModels
+@{
+    ViewBag.Title = "";
+    int icnts = 0;
+}
+
+<div style="max-width: 80%;padding-left: 200px;">
+    <div class="groupedassets margin10">
+        <span class="groupedassetshead margin10 onestphdcolor">Issue Stock</span>
+    </div>
+    <div id="divmsg">
+        @if (TempData["alertdata"] != null)
+        {
+            <span class="errMsg" style="color: red; font-weight: bold;">@TempData["alertdata"]</span>
+        }
+        @if (TempData["Successdata"] != null)
+        {
+            <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+        }
+    </div>
+
+    @using (Html.BeginForm("IssueStock", "Emmet", FormMethod.Post,
+    new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true)
+
+
+        <div>
+            <table id="tabcontent">
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.issue_date)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <input type="text" id="issue_date" name="issue_date" style="width: 150px;" required />
+                        </div>
+                    </td>
+
+                  <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.jobno)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <input type="text" id="jobno" name="jobno" />
+                        </div>
+                    </td>
+
+                </tr>
+              <tr>
+                     <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.po)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <input type="text" id="po" name="po" />
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div >
+            <table style="width: 100%;">
+
+                <tr style="background-color: #4cc4dd; color: #fff;">
+                    <th colspan="6" style="font-size: 14px; font-weight: bold;">Issue Stock</th>
+                </tr>
+                <tr style="background-color: #4cc4dd; color: #fff;">
+                    <th style="font-size: 14px; font-weight: bold;">Employee</th>
+                    <th style="font-size: 14px; font-weight: bold;">Category</th>
+                    <th style="font-size: 14px; font-weight: bold;">Material</th>
+                    <th style="font-size: 14px; font-weight: bold;">Stock Qty</th>
+                    <th style="font-size: 14px; font-weight: bold;">Issue Qty</th>
+                    <th colspan="2" style="font-weight: bold;">Action</th>
+                </tr>
+                <tr>
+                    <td>
+                       <select class="chosen-select" id="empid" name="empid">
+                            <option value='' hidden>Select</option>
+                            @if (ViewBag.Emplist != null)
+                            {
+                                foreach (var item in ViewBag.Emplist)
+                                {
+                                <option value='@item.Value'>@item.Text</option>
+                                }
+                            }
+
+                        </select>
+                        @Html.ValidationMessageFor(model => model.empid)
+                        <span class="field-validation-error"><span id="empid-message" style="display: none;">Please Enter</span></span>
+                    </td>
+                    <td>
+                           <select class="chosen-select" id="category" name="category" onchange="GetMaterialList()">
+                            <option value='' hidden>Select</option>
+                            @if (ViewBag.category != null)
+                            {
+                                foreach (var item in ViewBag.category)
+                                {
+                                <option value='@item.Value'>@item.Text</option>
+                                }
+                            }
+
+                        </select>
+                        @Html.ValidationMessageFor(model => model.category)
+                        <span class="field-validation-error"><span id="category-message" style="display: none;">Please Enter</span></span>
+                    </td>
+                    <td>
+                        <select class="chosen-select" id="material" name="material" onchange="getQty()">
+                            <option value='' hidden>Select</option>                         
+                        </select>
+                        @Html.ValidationMessageFor(model => model.material)
+                        <span class="field-validation-error"><span id="material-message" style="display: none;">Please Enter</span></span>
+                    </td>
+                    <td>
+                      <input type="number" id="qty" name="qty" style="width:100px;" readonly />
+                    </td>
+                    <td>
+                        <input type="number" id="issue_qty" name="issue_qty" min="1" max="100" style="width:100px;" onchange="CheckQty()" />
+                        @Html.ValidationMessageFor(model => model.issue_qty)
+                        <span class="field-validation-error"><span id="issue_qty-message" style="display: none;">Please Enter</span></span>
+                    </td>
+                    <td colspan="2">
+                        <img src='@Url.Content("~/images/icon_add.png")' onclick='AddData()' style='cursor:pointer; padding-right: 5px;' />Add
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="6">
+                        <p style="font-size: 11px; margin: 0px; text-align: center;">Please click Plus button to issue N number of stock</p>
+                    </td>
+                </tr>
+            </table>
+
+        </div>
+
+
+        <div style="width: 100%; text-align: center;">
+        @*    @Html.ActionLink("Back to List", "IssueStockList", null, new { Class = "ActionLink", onclick = "HyperLinkProgressIconFunction()" })*@
+            <input type="submit" id="btnCreate" style="display: none;" value="submit" onclick="ProgressIconFunction('#form1')" />
+        </div>
+
+        <br />
+        <br />
+        
+        
+        <div id="Welfare">
+            <input type="hidden" id="itemcnts" name="itemcnts" value="@icnts" />
+
+            <table id="team-list1">
+                <tr>
+                    <th colspan="6" style="background-color: #4cc4dd; color: white">Stock List
+                    </th>
+                </tr>
+                <tr>
+                    <th style="width: 50px; min-width: 50px; max-width: 50px;">Delete</th>
+                    <th style="width: 200px; min-width: 200px; max-width: 200px;">Employee</th>
+                    <th style="width: 200px; min-width: 200px; max-width: 200px;">Category</th>
+                    <th style="width: 200px; min-width: 200px; max-width: 200px;">Material</th>
+                    <th style="width: 200px; min-width: 200px; max-width: 200px;">Issue Qty</th>
+                </tr>
+            </table>
+        </div>
+      
+    }
+</div>
+@section Scripts {
+    <script>
+
+        $(function () {
+            $("#material").chosen();
+            $("#category").chosen();
+            $("#empid").chosen();
+
+            $.validator.setDefaults({ ignore: ":hidden:not('.chosen-select')" });
+
+            $('#issue_date').datepicker({
+                dateFormat: "dd/mm/yy",
+                buttonImageOnly: true,
+                buttonImage: '../Images/Calender.png',
+                showOn: 'both',
+                changeMonth: true,
+                changeYear: true,
+            });
+
+            $("#issue_date").datepicker("setDate", new Date());
+
+            $('#issue_qty').on('change keyup', function () {
+                var sanitized = $(this).val().replace(/[^0-9]/g, '');
+                $(this).val(sanitized);
+            });
+
+        });
+       
+        function deleteCoseRow(btn, categoryVal, materialVal, issue_qty) {
+            var row = btn.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+            updateQty(categoryVal, materialVal, issue_qty);
+            ResetControl();
+        }
+
+        function Validation() {
+            var validflg = true;
+            var ssnMessage = "";
+
+            if (document.getElementById("empid").value == "") {
+                ssnMessage = $('#empid-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#empid-message');
+                ssnMessage.hide();
+            }
+
+            if (document.getElementById("category").value == "") {
+                ssnMessage = $('#category-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#category-message');
+                ssnMessage.hide();
+            }
+
+            if (document.getElementById("material").value == "") {
+                ssnMessage = $('#material-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#material-message');
+                ssnMessage.hide();
+            }
+
+
+            if (document.getElementById("issue_qty").value == "") {
+                ssnMessage = $('#issue_qty-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#issue_qty-message');
+                ssnMessage.hide();
+            }
+ 
+            return validflg;
+        }
+
+
+        function AddData() {
+
+            if (Validation() == true) {
+
+                document.getElementById("Welfare").style.display = "";
+                var cnt = document.getElementById("itemcnts").value;
+
+                document.getElementById("itemcnts").value = cnt;
+                // Find a <table> element with id="myTable":
+                var table = document.getElementById("team-list1");
+
+                // Create an empty <tr> element and add it to the 1st position of the table:
+                var row = table.insertRow();
+
+                // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                var cell0 = row.insertCell(0);
+                var cell1 = row.insertCell(1);
+                var cell2 = row.insertCell(2);
+                var cell3 = row.insertCell(3);
+                var cell4 = row.insertCell(4);
+                
+                cell0.style = "width: 50px; min-width: 50px; max-width: 50px;";
+                cell1.style = "width: 200px; min-width: 200px; max-width: 200px;word-wrap:break-word";
+                cell2.style = "width: 200px; min-width: 200px; max-width: 200px;word-wrap:break-word";
+                cell3.style = "width: 200px; min-width: 200px; max-width: 200px;word-wrap:break-word";
+                cell4.style = "width: 200px; min-width: 200px; max-width: 200px;word-wrap:break-word";
+             
+                var issue_qty = $('#issue_qty').val();
+              
+
+                var empid = [];
+                var empidText = $.map($("#empid option:selected"), function (el, i) {
+                    return $(el).text();
+                });
+                var empidVal = $('#empid').val();
+
+                var category = [];
+                var categoryText = $.map($("#category option:selected"), function (el, i) {
+                    return $(el).text();
+                });
+                var categoryVal = $('#category').val();
+
+                var material = [];
+                var materialText = $.map($("#material option:selected"), function (el, i) {
+                    return $(el).text();
+                });
+                var materialVal = $('#material').val();
+
+                cell0.innerHTML = " <img src='@Url.Content("~/images/cancel.png")' onclick='deleteCoseRow(this," + categoryVal + "," + materialVal + "," + issue_qty + ")' style='cursor:pointer; padding-right: 5px;'/>";
+                cell1.innerHTML = "<input type='hidden' id='empid" + cnt + "' name='empid" + cnt + "' value='" + empidVal + "'>" + empidText;
+                cell2.innerHTML = "<input type='hidden' id='category" + cnt + "' name='category" + cnt + "' value='" + categoryVal + "'>" + categoryText;
+                cell3.innerHTML = "<input type='hidden' id='material" + cnt + "' name='material" + cnt + "' value='" + materialVal + "'>" + materialText;
+                cell4.innerHTML = "<input type='hidden' id='issue_qty" + cnt + "' name='issue_qty" + cnt + "' value='" + issue_qty + "'>" + issue_qty;
+
+                cnt++;
+                document.getElementById("itemcnts").value = cnt;
+                document.getElementById("btnCreate").style.display = "";
+                setQty(categoryVal, materialVal, issue_qty);
+                ResetControl();
+            }
+
+        }
+
+        function ResetControl() {
+            document.getElementById("issue_qty").value = "";
+            document.getElementById("qty").value = "";
+            $("#empid").val('').trigger("chosen:updated");
+            $("#material").val('').trigger("chosen:updated");
+        }
+        function GetMaterialList() {
+            var category = $('#category').chosen().val();
+            jQuery.ajax({
+                url: '@Url.Action("FunGetMaterialList", "Emmet")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'category': category },
+                success: function (result) {
+
+                    if (result != null && result.length > 0) {
+
+
+                        $('#material').children('option').remove();
+                        $("#material").trigger("chosen:updated");
+
+                        $.each(result, function (index, item) {
+
+                            $("#material").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                            $("#material").trigger("chosen:updated");
+
+                        });
+                        $('#material').trigger('change');
+                        return;
+                    }
+                    else {
+                        jAlert("No Material exists.");
+                        $('#material').children('option').remove();
+                        $("#material").trigger("chosen:updated");
+                        document.getElementById("qty").value = "";
+                        document.getElementById("issue_qty").value = "";
+                        return;
+                    }
+                }
+            });
+        }
+        function CheckQty() {
+            var material = $('#material').chosen().val();
+            var qty = document.getElementById("qty").value;
+            if (material != '' && qty != '') {
+                var qty = document.getElementById("qty").value;
+                var issue_qty = document.getElementById("issue_qty").value;
+                if (parseFloat(issue_qty) > parseFloat(qty)) {
+                    jAlert("Issued Qty is greater than stock");
+                    document.getElementById("issue_qty").value = "";
+                }
+                if (parseFloat(issue_qty) <= 0) {
+                    jAlert("Issued Qty should be greater than zero");
+                    document.getElementById("issue_qty").value = "";
+                }
+            }
+            else {
+                jAlert("Selecte Material");
+                document.getElementById("issue_qty").value = "";
+            }
+
+        }
+        function getQty() {
+            var category = $('#category').chosen().val();
+            var material = $('#material').chosen().val();
+            jQuery.ajax({
+                url: '@Url.Action("FunGetStockQty", "Emmet")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'category': category, 'material': material },
+                success: function (result) {
+                    if (result != "")
+                    {
+                        document.getElementById("qty").value = result;
+                        document.getElementById("issue_qty").value = "";
+                    }
+                    else
+                    {
+                        jAlert("No Stock");
+                        $("#material").val('').trigger("chosen:updated");
+                        document.getElementById("qty").value = result;
+                        document.getElementById("issue_qty").value = "";
+                    }
+                    
+                }
+            });
+        }
+        function setQty(category, material, issue_qty) {
+           
+            jQuery.ajax({
+                url: '@Url.Action("FunSetStockQty", "Emmet")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'category': category, 'material': material, 'issue_qty': issue_qty },
+                success: function (result) {
+                  
+
+                }
+            });
+        }
+        function updateQty(category, material, issue_qty) {
+
+            jQuery.ajax({
+                url: '@Url.Action("FunUpdateStockQty", "Emmet")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'category': category, 'material': material, 'issue_qty': issue_qty },
+                success: function (result) {
+
+
+                }
+            });
+        }
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

@@ -1,0 +1,446 @@
+﻿@model ISOStd.Models.ManHourModels
+
+@{
+    ViewBag.Title = "ManPowerEdit";
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+}
+
+
+@section featured {
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("ManPowerList", "ManHour", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Resource Consumption  List</span>
+                    </a>
+                    <span class="breadcrumb-item active">Edit Resource Consumption </span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            <div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+@using (Html.BeginForm("ManPowerEdit", "ManHour", FormMethod.Post,
+                         new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <input type="hidden" id="id_man_hour" name="id_man_hour" value="@Model.id_man_hour" />
+
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Resource Consumption Edit</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+
+                <table class="table table-lg">
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.t_year)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="select-fixed-single" data-fouc id="t_year" name="t_year" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.Year != null)
+                                    {
+                                        foreach (var item in ViewBag.Year)
+                                        {
+                                            if (item.Text == Model.t_year)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.t_month)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="select-fixed-single" data-fouc id="t_month" name="t_month" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.Month != null)
+                                    {
+                                        foreach (var item in ViewBag.Month)
+                                        {
+                                            if (item == Model.t_month)
+                                            {
+                                                <option value='@item' selected>@item</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item'>@item</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                       
+                    </tr>
+
+                    <tr class="row">
+
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.location)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="select-fixed-single" data-fouc id="location" name="location" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.Location != null)
+                                    {
+                                        foreach (var item in ViewBag.Location)
+                                        {
+                                            if (item.Value == Model.location)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.project)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="select-fixed-single" data-fouc id="project" name="project" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.Project != null)
+                                    {
+                                        foreach (var item in ViewBag.Project)
+                                        {
+                                            if (item.Value == Model.project)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                    </tr>
+                   
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.man_power)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input class="form-control" type="number" id="man_power" name="man_power" value="@Model.man_power" />
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.man_hour)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input class="form-control" type="number" id="man_hour" name="man_hour" readonly value="@Model.man_hour" />
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.man_hour_ot)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input class="form-control" type="number" id="man_hour_ot" name="man_hour_ot" value="@Model.man_hour_ot"/>
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.restrict_days)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input class="form-control" type="number" id="restrict_days" name="restrict_days" value="@Model.restrict_days" />
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.fuel_consump)<text style="color:red;">*</text>
+                        </td>
+                        <td class="col">
+                            <input class="form-control" type="number" id="fuel_consump" name="fuel_consump" value="@Model.fuel_consump" required />
+                            @Html.ValidationMessageFor(model => model.fuel_consump)
+                            <p>
+                                Unit of Measurement:
+                                <select class="select-fixed-single" data-fouc id="fuelunit" name="fuelunit" required>                                                                
+                                        @if (ViewBag.FuelUnit != null)
+                                        {
+                                            foreach (var data in ViewBag.FuelUnit)
+                                            {
+                                                if (Model.fuelunit == data.Value)
+                                                {
+                                                    <option value='@data.Value' selected>@data.Text</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@data.Value'>@data.Text</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.water_consump)<text style="color:red;">*</text>
+                        </td>
+                        <td class="col">
+                            <input class="form-control" type="number" id="water_consump" name="water_consump" value="@Model.water_consump" required />
+                            @Html.ValidationMessageFor(model => model.water_consump)
+                            <p>
+                                Unit of Measurement:
+                                <select class="select-fixed-single" data-fouc id="waterunit" name="waterunit" required>
+                                    @if (ViewBag.WaterUnit != null)
+                                    {
+                                        foreach (var data in ViewBag.WaterUnit)
+                                        {
+                                            if (Model.waterunit == data.Value)
+                                            {
+                                                <option value='@data.Value' selected>@data.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@data.Value'>@data.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                            </p>                          
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.paper_consump)<text style="color:red;">*</text>
+                        </td>
+                        <td class="col">
+                            <input class="form-control" type="number" id="paper_consump" name="paper_consump" value="@Model.paper_consump" required />
+                            @Html.ValidationMessageFor(model => model.paper_consump)                         
+                            <p>
+                                Unit of Measurement:
+                                <select class="select-fixed-single" data-fouc id="paperunit" name="paperunit" required>
+                                    @if (ViewBag.PaperUnit != null)
+                                    {
+                                        foreach (var data in ViewBag.PaperUnit)
+                                        {
+                                            if (Model.paperunit == data.Value)
+                                            {
+                                                <option value='@data.Value' selected>@data.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@data.Value'>@data.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.qty_solid)<text style="color:red;">*</text>
+                        </td>
+                        <td class="col">
+                            <input class="form-control" type="number" id="qty_solid" name="qty_solid" value="@Model.qty_solid" required />
+                            @Html.ValidationMessageFor(model => model.qty_solid)             
+                            <p>
+                                Unit of Measurement:
+                                <select class="select-fixed-single" data-fouc id="solidunit" name="solidunit" required>
+                                    @if (ViewBag.SolidUnit != null)
+                                    {
+                                        foreach (var data in ViewBag.SolidUnit)
+                                        {
+                                            if (Model.solidunit == data.Value)
+                                            {
+                                                <option value='@data.Value' selected>@data.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@data.Value'>@data.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.electricity_consump)<text style="color:red;">*</text>
+                        </td>
+                        <td class="col">
+                            <input class="form-control" type="number" id="electricity_consump" name="electricity_consump" value="@Model.electricity_consump" required />
+                            @Html.ValidationMessageFor(model => model.electricity_consump)
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.preparedby)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="select-fixed-single" data-fouc id="preparedby" name="preparedby" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.Preparer != null)
+                                    {
+                                        foreach (var item in ViewBag.Preparer)
+                                        {
+                                            if (item.Value == Model.preparedby)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+
+                                </select>
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.reviewedby)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="select-fixed-single" data-fouc id="reviewedby" name="reviewedby" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.Reviewer != null)
+                                    {
+                                        foreach (var item in ViewBag.Reviewer)
+                                        {
+                                            if (item.Value == Model.reviewedby)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+
+                                        }
+                                    }
+                                </select>
+                            </div>
+
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.comments)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                             <div class="editor-field">
+                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="comments" name="comments" required>@Model.comments</textarea>
+                            </div>
+                        </td>
+                    </tr>
+
+                </table>
+            </div>
+        </div>
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+            @Html.ActionLink("Back to List", "ManPowerList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+
+            <button type="submit" id="btnCreate" value="Update" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Update</button>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript">
+        //$(function () {
+        //    $("#location").chosen();
+        //    $("#project").chosen();
+        //    $("#t_month").chosen();
+        //    $("#t_year").chosen();
+
+        //    $.validator.setDefaults({ ignore: ":hidden:not('.chosen-select')" });
+        //});
+
+    </script>
+}
+
+
+
+
+
+

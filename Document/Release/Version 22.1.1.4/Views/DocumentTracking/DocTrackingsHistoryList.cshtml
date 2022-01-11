@@ -1,0 +1,445 @@
+﻿@using PagedList;
+@using PagedList.Mvc;
+
+@model IPagedList<ISOStd.Models.DocumentTrackingModels>
+
+@{
+    ViewBag.Title = "DocTrackingsHistoryList";
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+}
+
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item active"> Home</span>
+                    </a>
+                    <a href="@Url.Action("DocTrackingList", "DocumentTracking", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Internal Document Status Tracking</span>
+                    </a>
+                    <span class="breadcrumb-item active">Internal Document Status Tracking History </span>
+                </div>
+
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            <div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<style>
+    .hidden {
+        display: none !important;
+    }
+</style>
+
+
+<div class="card">
+    <div class="card-header header-elements-inline bg-primary">
+        <h5 class="card-title">Internal Document Status Tracking History</h5>
+        <div class="header-elements">
+            <div class="list-icons">
+                <a class="list-icons-item" data-action="collapse"></a>
+
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+
+        <table class="table table-bordered table-striped table-hover datatable-responsive" id="DocTrack">
+            <thead>
+
+                <tr>
+                    <th>
+                        Sl No
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().doctype)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().docname)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().issue_date)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().exp_date)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().issue_autority)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().NotificationPerson)
+                    </th>
+                    <th class="not-export-column">
+                        @Html.DisplayNameFor(model => model.First().upload)
+                    </th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Count() > 0)
+                {
+                    int i = 0;
+                    foreach (var item in Model)
+                    {
+                        i = i + 1;
+                        <tr>
+                            <td>
+                                @i
+                            </td>
+                            <td>
+                                @Html.DisplayFor(model => item.doctype)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(model => item.docname)
+                            </td>
+                            <td>
+                                @if (item.issue_date > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    @item.issue_date.ToString("dd/MM/yyyy")
+                                }
+                            </td>
+                            <td>
+                                @if (item.exp_date > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    @item.exp_date.ToString("dd/MM/yyyy")
+                                }
+                            </td>
+                            <td>
+                                @Html.DisplayFor(model => item.issue_autority)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(model => item.NotificationPerson)
+                            </td>
+                            <td>
+                                @if (item.upload != null && item.upload != "" && item.upload.Length > 0)
+                                {
+                                    foreach (var docs in item.upload.Trim(',').Split(','))
+                                    {
+                                        <p style="margin: 0px;">
+
+                                            <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" style="color: orange;">
+                                                Preview
+                                            </a>
+                                        </p>
+                                    }
+                                }
+                            </td>
+
+
+                        </tr>
+                    }
+                }
+
+            </tbody>
+        </table>
+
+    </div>
+    <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+
+        @Html.ActionLink("Back to List", "DocTrackingList", null, new { @class = "btn btn-outline bg-orange text-orange border-orange", onclick = "HyperLinkProgressIconFunction()" })
+
+        @*@Html.ActionLink("Back to List", "DocTrackingList", new { id_document_tracking = @ViewBag.id_document_tracking.ToString() }, new { Class = "ActionLink", onclick = "HyperLinkProgressIconFunction()" })<*@
+    </div>
+</div>
+
+
+@section scripts {
+
+    <script type="text/javascript">
+
+
+        $(document).ready(function () {
+
+        @if (TempData["alertdata"] != null)
+        {
+
+            @: new Noty({
+            @:     text: '@TempData["alertdata"]',
+            @:     type: 'error'
+            @: }).show();
+        }
+
+        @if (@TempData["Successdata"] != null)
+        {
+
+            @:    new Noty({
+            @:       text: '@TempData["Successdata"]',
+            @:       type: 'success'
+            @:   }).show();
+        }
+        });
+        //zzz----
+                          
+
+            var DocTrack = function () {
+
+ var ShowDownld = @(Obj.GetCurrentUserSession().DocTrack.Contains("4") ? "true" : "false");
+        //
+        // Setup module components
+        //
+
+        // Basic Datatable examples
+        var _componentDatatableBasic = function () {
+        if (!$().DataTable) {
+        console.warn('Warning - datatables.min.js is not loaded.');
+        return;
+        }
+
+        //Setting datatable defaults
+        $.extend($.fn.dataTable.defaults, {
+        autoWidth: false,
+        responsive:true,
+        columnDefs: [{
+        orderable: false,
+        width: 100,
+        targets: [7]
+            }, {
+                    'targets': [7],
+                'visible': ShowDownld
+                }],
+
+        colReorder: false,
+        dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+        //dom: 'lBfrtip',
+        language: {
+        search: '<span>Filter:</span> _INPUT_',
+        searchPlaceholder: 'Type to filter...',
+        lengthMenu: '<span>Show:</span> _MENU_',
+        paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+        }
+        });
+
+
+            var table = $('#DocTrack').DataTable({
+
+        lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+        colReorder: {
+        fixedColumnsLeft: 1
+        },
+        stateSave: true,
+                stateSaveParams: function (settings, data) {
+                    for (var i = 0, ien = data.columns.length; i < ien; i++) {
+                        delete data.columns[i].visible;
+                        delete data.columns[i].search;
+                    }
+                },
+        scrollY: '350px',
+        scrollCollapse: true,
+
+
+        keys: {
+        className: 'focus focus-success'
+        },
+
+        buttons: {
+        buttons: [
+        {
+        extend: 'copyHtml5',
+
+                className: myClass,
+                //className: 'btn btn-light',
+                title: 'Document Tracking History Data export',
+        exportOptions: {
+        columns: ':visible :not(.not-export-column)'
+        },
+        },
+        {
+        extend: 'excelHtml5',
+
+            className: myClass,
+            //className: 'btn btn-light',
+            title: 'Document Tracking History Data export',
+        exportOptions: {
+        columns: ':visible :not(.not-export-column)'
+        },
+
+        },
+        {
+        extend: 'pdfHtml5',
+
+            className: myClass,
+            //className: 'btn btn-light',
+            title: 'Document Tracking History Data export',
+        exportOptions: {
+        columns: ':visible :not(.not-export-column)'
+        },
+        },
+        {
+        extend: 'csvHtml5',
+
+            className: myClass,
+            //className: 'btn btn-light',
+            title: 'Document Tracking History Data export',
+        exportOptions: {
+        columns: ':visible :not(.not-export-column)'
+        },
+        },
+        {
+        extend: 'print',
+
+            className: myClass,
+            //className: 'btn btn-light',
+            title: 'Document Tracking History Data export',
+        exportOptions: {
+        columns: ':visible :not(.not-export-column)'
+        },
+        },
+
+        {
+        extend: 'colvis',
+        text: '<i class="icon-three-bars"></i>',
+            className: 'btn bg-blue btn-icon dropdown-toggle',
+            columns: ':visible:not(.not-export-column)'
+        }
+        ]
+        }
+
+
+
+
+        });
+        // Adjust columns on window resize
+        setTimeout(function () {
+        $(window).on('resize', function () {
+        table.columns.adjust();
+        });
+        }, 100);
+
+
+        //Redraw table on click toggle. -------table.columns.adjust doesn't work properly upon calling after toggle (width increase/decrease = redraw table.).
+        $('.sidebar-control').on('click', function () {
+
+        setTimeout(function () {
+
+        table.columns.adjust().draw();
+            $("#DocTrack").resize();
+        } , 100);
+
+        });
+        //}
+
+            $('#DocTrack').on('page.dt', function () {
+
+                $("#DocTrack").resize();
+
+        });
+
+            $('#DocTrack').on('column-visibility.dt', function () {
+
+                $("#DocTrack").resize();
+
+        });
+
+            $('#DocTrack').on('order.dt', function () {
+
+                $("#DocTrack").resize();
+
+        });
+
+
+            $('#DocTrack').on('responsive-display.dt', function () {
+
+                $("#DocTrack").resize();
+
+        });
+
+
+            $('#DocTrack').on('responsive-resize.dt', function () {
+
+                $("#DocTrack").resize();
+
+        });
+
+
+
+
+
+
+        };
+
+
+
+
+
+
+        // Select2 for length menu styling
+        var _componentSelect2 = function () {
+        if (!$().select2) {
+        console.warn('Warning - select2.min.js is not loaded.');
+        return;
+        }
+
+        // Initialize
+        $('.dataTables_length select').select2({
+        minimumResultsForSearch: Infinity,
+        dropdownAutoWidth: true,
+        width: 'auto'
+        });
+        };
+
+
+        //
+        // Return objects assigned to module
+        //
+
+        return {
+        init: function () {
+        _componentDatatableBasic();
+        _componentSelect2();
+        }
+        }
+    }();
+
+
+    // Initialize module
+    // ------------------------------
+
+    document.addEventListener('DOMContentLoaded', function () {
+        DocTrack.init();
+    });
+
+
+
+
+
+
+
+
+
+
+
+    </script>
+
+}

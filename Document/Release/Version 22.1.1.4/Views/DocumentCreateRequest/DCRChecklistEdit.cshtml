@@ -1,0 +1,557 @@
+﻿@model ISOStd.Models.DCRChecklistModels
+
+
+@{
+    ViewBag.Title = "DCRChecklistEdit";
+    ISOStd.Models.clsGlobal ObjGlobal = new ISOStd.Models.clsGlobal();
+
+    var z = ""; var QId = 0; var m = 0; var n = 0;
+    System.Data.DataSet dsChklist = new System.Data.DataSet();
+
+    if (ViewBag.dsChklist != null)
+    {
+        dsChklist = ViewBag.dsChklist;
+    }
+
+}
+
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("DCRChecklistList", "DocumentCreateRequest", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> DCR CheckList</span>
+                    </a>
+                    <span class="breadcrumb-item active"> Update Document Create Request CheckList</span>
+                </div>
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            <div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+                    @*  @using (Html.BeginForm("GenerateInspectionChecklistReport", "Inspection", FormMethod.Post, new { id = "form2", name = "form2" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            <div class="breadcrumb-elements-item dropdown p-0">
+                                <input type="hidden" id="Category" name="Category" value="@Model.Category" />
+                                <input type="hidden" id="branchs" name="branchs" value="@Model.branch" />
+                                <button type="submit" class="dropdown-item">
+                                    <i class="icon-printer2"></i> Report
+                                </button>
+                            </div>
+                        }*@
+                    @*<div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>*@
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@using (Html.BeginForm("DCRChecklistEdit", "DocumentCreateRequest", FormMethod.Post,
+                         new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Update Document Create Request CheckList</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+                <input type="hidden" id="id_chklist" name="id_chklist" value="@Model.id_chklist" />
+                <table class="table table-lg">
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.checklistRef)<text style="color:red;">*</text>
+                        </td>
+                        <td class="col">
+                            <input class="form-control" type="text" id="checklistRef" name="checklistRef" value="@Model.checklistRef" required disabled />
+                        </td>
+
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.revision)<text style="color:red;">*</text>
+                        </td>
+                        <td class="col">
+                            <select class="form-control select-fixed-multiple" data-fouc id="revision" name="revision" required>
+                                <option value="">Select</option>
+                                @if (ViewBag.Revision != null)
+                                {
+                                    foreach (var item in ViewBag.Revision)
+                                    {
+                                        if (item.Value == Model.revision)
+                                        {
+                                            <option value='@item.Value' selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.doc_title)<text style="color:red;">*</text>
+                        </td>
+                        <td class="col">
+                            <input class="form-control" type="text" id="doc_title" name="doc_title" value="@Model.doc_title" required />
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.dcrf_no)
+                        </td>
+                        <td class="col">
+                            <input class="form-control" type="text" id="dcrf_no" name="dcrf_no" value="@Model.dcrf_no" required disabled/>
+                        </td>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.memo_ref)
+                        </td>
+                        <td class="col">
+                            <input class="form-control" type="text" id="memo_ref" name="memo_ref" value="@Model.memo_ref" required />
+                        </td>
+                    </tr>
+                </table>
+                <div class="card">
+                    <div class="card-body table-responsive">
+                        <table class="table table-bordered table-striped table-hover datatable-responsive">
+                            <thead>
+                                <tr>
+                                    <th>Sr.No.</th>
+                                    <th>Item</th>
+                                    <th>Compliance</th>
+                                    <th>Comments</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                @if (ViewBag.DCRQuestions != null)
+                                {
+                                    int iSrno = 0, itmctn = 0;
+                                    foreach (var item in ViewBag.DCRQuestions)
+                                    {
+
+                                        iSrno = iSrno + 1;
+                                        itmctn = itmctn + 1;
+                                        n = 0;
+                                        foreach (var data in ViewBag.DCRSection)
+                                        {
+
+                                            if (n >= m || QId == 0)
+                                            {
+                                                if (z == "")
+                                                {
+                                                    <tr>
+                                                        <td colspan="2">@ObjGlobal.GetSectionNameById(data.Text)</td>
+                                                        @*<td class="d-none"></td>
+                                                            <td class="d-none"></td>
+                                                            <td class="d-none"></td>
+                                                            <td class="d-none"></td>*@
+                                                    </tr>
+
+                                                    z = data.Text;
+                                                    break;
+                                                }
+                                                else if (Convert.ToInt32(data.Value) != QId && z != data.Text)
+                                                {
+                                                    <tr>
+                                                        <td colspan="2">@ObjGlobal.GetSectionNameById(data.Text)</td>
+                                                    </tr>
+                                                    z = data.Text;
+                                                    break;
+                                                }
+                                                else if (Convert.ToInt32(data.Value) != QId && z == data.Text)
+                                                {
+                                                    break;
+                                                }
+                                            }
+                                            n++;
+                                        }
+
+                                        <tr>
+                                            <td>
+                                                @iSrno
+                                            </td>
+                                            <td>
+                                                @item.Text
+                                                <input type="hidden" id="id_questions @item.Value" name="id_questions @item.Value" value="@item.Value" />
+                                            </td>
+                                            <td>
+                                                @if (ViewBag.YesNo != null)
+                                                {
+                                                    foreach (var data1 in ViewBag.YesNo)
+                                                    {
+                                                        if (data1 == dsChklist.Tables[0].Rows[n]["ratings"].ToString())
+                                                        {
+                                                            <input type="radio" id="ratings @item.Value" name="ratings @item.Value"
+                                                                   class="ratings @item.Value" value="@data1" required checked />@data1
+                                                        }
+                                                        else
+                                                        {
+                                                             <input type="radio" id="ratings @item.Value" name="ratings @item.Value"
+                                                                    class="ratings @item.Value" value="@data1" required />@data1
+                                                        }
+                                                    }
+                                                }
+                                            </td>
+                                            @*@if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                                                {
+
+                                                    for (int rating = 0; rating < dsrating.Tables[0].Rows.Count; rating++)
+                                                    {
+                                                        if (dsrating.Tables[0].Rows[rating]["inspection_rating"].ToString().ToLower() == "yes" || @dsrating.Tables[0].Rows[rating]["inspection_rating"].ToString().ToLower() == "good")
+                                                        {
+                                                            <td>
+                                                                <input type="radio" id="id_inspection_rating @item.Value"
+                                                                       name="id_inspection_rating @item.Value"
+                                                                       class="id_inspection_rating @item.Value" value="@dsrating.Tables[0].Rows[rating]["id_inspection_rating"].ToString()" required checked />
+                                                            </td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td>
+                                                                <input type="radio" id="id_inspection_rating @item.Value"
+                                                                       name="id_inspection_rating @item.Value"
+                                                                       class="id_inspection_rating @item.Value" value="@dsrating.Tables[0].Rows[rating]["id_inspection_rating"].ToString()" required />
+                                                            </td>
+                                                        }
+                                                    }
+                                                }*@
+                                            <td>
+                                                <input class="form-control" type="text" id="comments @itmctn" name="comments @itmctn" value="@dsChklist.Tables[0].Rows[n]["comments"].ToString()" />
+                                            </td>
+                                             <td style="display:none">
+                                                    <input type="hidden" id="id_chklist_trans @itmctn" name="id_chklist_trans @itmctn" value="@dsChklist.Tables[0].Rows[n]["id_chklist_trans"].ToString()" />
+                                              </td>
+                                        </tr>
+
+                                        QId = Convert.ToInt32(item.Value);
+                                        m++;
+                                    }
+                                    <div>
+                                        <input type="hidden" id="itmctn" name="itmctn" value="@itmctn" />
+                                    </div>
+                                }
+                            </tbody>
+                        </table>
+                        @*</div>*@
+                    </div>
+                </div>
+                <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+                    @Html.ActionLink("Back to List", "DCRChecklistList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+                    <button class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" type="submit" value="Save"><i class="icon-checkmark3 mr-2"></i> Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        var table1 = function () {
+            //
+            // Setup module components
+            //
+
+            // Basic Datatable examples
+            var _componentDatatableBasic = function () {
+                if (!$().DataTable) {
+                    console.warn('Warning - datatables.min.js is not loaded.');
+                    return;
+                }
+
+                //Setting datatable defaults
+                $.extend($.fn.dataTable.defaults, {
+                    autoWidth: false,
+                    responsive: true,
+                    //columnDefs: [{
+                    //    orderable: false,
+                    //    width: 100,
+                    //    targets: [2, 3]
+                    //}],
+
+                    colReorder: false,
+                    dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                    //dom: 'lBfrtip',
+                    language: {
+                        search: '<span>Filter:</span> _INPUT_',
+                        searchPlaceholder: 'Type to filter...',
+                        lengthMenu: '<span>Show:</span> _MENU_',
+                        paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                    }
+                });
+
+
+                var table1 = $('#table1').DataTable({
+
+                    lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                    colReorder: {
+                        fixedColumnsLeft: 1
+                    },
+                   // stateSave: true,
+                    scrollX: true,
+                    scrollY: '350px',
+                    scrollCollapse: true,
+
+
+                    keys: {
+                        className: 'focus focus-success'
+                    },
+
+                    buttons: {
+                        buttons: [
+                            {
+                                extend: 'colvis',
+                                text: '<i class="icon-three-bars"></i>',
+                                className: 'btn bg-blue btn-icon dropdown-toggle'
+                            }
+                        ]
+                    }
+                });
+                // Adjust columns on window resize
+                setTimeout(function () {
+                    $(window).on('resize', function () {
+                        table1.columns.adjust();
+                    });
+                }, 100);
+
+
+                //Redraw table on click toggle. -------table.columns.adjust doesn't work properly upon calling after toggle (width increase/decrease = redraw table.).
+                $('.sidebar-control').on('click', function () {
+
+                    setTimeout(function () {
+                        //alert("gii");
+
+                        table.columns.adjust().draw();
+                        $("#table1").resize();
+                    }, 100);
+                });
+                //}
+
+                $('#table1').on('page.dt', function () {
+                    //table.draw();
+                    //alert("zzz1");
+                    $("#table1").resize();
+                });
+
+                $('#table1').on('column-visibility.dt', function () {
+                    //table.draw();
+                    //alert("zzz2");
+                    $("#table1").resize();
+                });
+
+                $('#table1').on('order.dt', function () {
+                    //table.draw();
+                    //alert("zzz3");
+                    $("#table1").resize();
+                });
+
+                $('#table1').on('responsive-display.dt', function () {
+                    //table.draw();
+                    //alert("zzz4");
+                    $("#table1").resize();
+                });
+
+                $('#table1').on('responsive-resize.dt', function () {
+                    //table.draw();
+                    //alert("zzz4");
+                    $("#table1").resize();
+                });
+
+                //.on('order.dt', function () {
+                //    table.columns.adjust().draw();
+                //    $("#qhse").resize(); })
+                //.on('search.dt', function () {
+                //    table.columns.adjust().draw();
+                //    $("#qhse").resize(); })
+
+                //.on('column-visibility.dt', function () {
+                //    table.columns.adjust().draw();
+                //    $("#qhse").resize();
+                //})
+            };
+
+            // Select2 for length menu styling
+            var _componentSelect2 = function () {
+                if (!$().select2) {
+                    console.warn('Warning - select2.min.js is not loaded.');
+                    return;
+                }
+                // Initialize
+                $('.dataTables_length select').select2({
+                    minimumResultsForSearch: Infinity,
+                    dropdownAutoWidth: true,
+                    width: 'auto'
+                });
+            };
+            //
+            // Return objects assigned to module
+            //
+
+            return {
+                init: function () {
+                    _componentDatatableBasic();
+                    _componentSelect2();
+                }
+            }
+        }();
+        // Initialize module
+        // ------------------------------
+
+        document.addEventListener('DOMContentLoaded', function () {
+            table1.init();
+        });
+        // when the submit is clicked
+        $("#form1 button[type='submit']").on("click", function (event) {
+
+            // traverse all the required elements looking for
+            var elements = document.getElementsByClassName("collapse");
+
+            for (var i = 0; i < elements.length; i++) {
+                elements[i].className += ' show';
+            }
+            ProgressIconFunction('#form1');
+        });
+
+         function FileFormatValidation(file,cnt) {
+
+             var ext = file.value.split(".").pop().toLowerCase();
+             if ($.inArray(ext, ["doc", "pdf", "docx", "jpg", "jpeg", "gif"]) == -1) {
+                 file.value = "";
+                 bootbox.alert({
+                     title: 'File type',
+                     message: 'Invalid file format, please upload only pdf format.'
+                 });
+             }
+             else {
+                 AddEvidence(cnt)
+             }
+        }
+
+             function AddEvidence(cnt) {
+                 var table = document.getElementById("team-list");
+                 var row = table.insertRow();
+                 var cell0 = row.insertCell(0);
+                 var n = "Upload" + " " + cnt;
+                 var Upload = document.getElementById(n).value;
+
+                 evidence_uploadServerPath = UploadDocument(cnt);
+                 cell0.innerHTML = "<input type='hidden' id='Upload" + cnt + "' name='Upload" + cnt + "' value='" + evidence_uploadServerPath + "'>" + Upload;
+
+             }
+
+             function UploadDocument(ind) {
+                 var Upload = ($("#Upload" + " " + ind)).files; //$('#testfile').file;
+
+                 var formData = new FormData();
+
+                 var totalFiles = document.getElementById("Upload" + " " + ind).files.length;
+
+                 for (var i = 0; i < totalFiles; i++) {
+                     var file = document.getElementById("Upload" + " " + ind).files[i];
+                     formData.append("Upload", file);
+                 }
+                 jQuery.ajax({
+                     url: '@Url.Action("UploadDocument", "Inspection")',
+                     type: 'POST',
+                     contentType: false,
+                     processData: false,
+                     data: formData,
+                     success: function (result) {
+
+                         //document.getElementById("evidence_upload" + " " + ind).value = result;
+                         document.getElementById("Upload" + ind).value = result;
+                         evidence_uploadServerPath = result;
+                         return result;
+                     }
+                 });
+        }
+
+        function GetDeptList() {
+            var selectedValues = [];
+            $("#branch :selected").each(function () {
+                selectedValues.push($(this).val());
+            });
+                jQuery.ajax({
+                    url: '@Url.Action("FunGetAllDeptList", "EmployeeDetails")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'branch': selectedValues },
+                    success: function (result) {
+                        GetLocList(selectedValues);
+                        $("#Department").children('option').remove();
+                        $("#Department").trigger('change');
+                        if (result != null && result.length > 0) {
+                            $.each(result, function (index, item) {
+                                $("#Department").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                                $("#Department").trigger('change');
+                            });
+                            return;
+                        }
+                        //else {
+                        //    bootbox.alert({
+                        //        title: 'Department List',
+                        //        message: 'No Department exists.'
+                        //    });
+                        //}
+                    }
+                });
+        }
+
+
+        function GetLocList(selectedValues) {
+            jQuery.ajax({
+                url: '@Url.Action("FunGetAllLocList", "EmployeeDetails")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'branch': selectedValues },
+                success: function (result) {
+                    $("#Location").children('option').remove();
+                    $("#Location").trigger('change');
+                    if (result != null && result.length > 0) {
+                        $.each(result, function (index, item) {
+                            $("#Location").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                            $("#Location").trigger('change');
+                        });
+                        return;
+                    }
+                    //else {
+                    //    bootbox.alert({
+                    //        title: 'Location List',
+                    //        message: 'No Location exists.'
+                    //    });
+                    //}
+                }
+            });
+        }
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

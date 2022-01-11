@@ -975,40 +975,40 @@ namespace ISOStd.Models
 
 
 
-        public MultiSelectList GetHrEmployeeListbyDesignation(string Designation)
-        {
-            EmployeeList emplist = new EmployeeList();
-            emplist.EmpList = new List<Employee>();
+        //public MultiSelectList GetHrEmployeeListbyDesignation(string Designation)
+        //{
+        //    EmployeeList emplist = new EmployeeList();
+        //    emplist.EmpList = new List<Employee>();
 
-            try
-            {
-                string sSqlstmt = "select concat(emp_firstname,' ',ifnull(emp_middlename,' '),' ',ifnull(emp_lastname,' ')) as Empname, emp_no as Empid from t_hr_employee" +
-                    " where emp_status=1 and Designation like '" + Designation + "' order by emp_firstname asc";
-                DataSet dsEmp = Getdetails(sSqlstmt);
+        //    try
+        //    {
+        //        string sSqlstmt = "select concat(emp_firstname,' ',ifnull(emp_middlename,' '),' ',ifnull(emp_lastname,' ')) as Empname, emp_no as Empid from t_hr_employee" +
+        //            " where emp_status=1 and Designation like '" + Designation + "' order by emp_firstname asc";
+        //        DataSet dsEmp = Getdetails(sSqlstmt);
 
-                if (dsEmp.Tables.Count > 0 && dsEmp.Tables[0].Rows.Count > 0)
-                {
-                    for (int i = 0; i < dsEmp.Tables[0].Rows.Count; i++)
-                    {
+        //        if (dsEmp.Tables.Count > 0 && dsEmp.Tables[0].Rows.Count > 0)
+        //        {
+        //            for (int i = 0; i < dsEmp.Tables[0].Rows.Count; i++)
+        //            {
 
-                        Employee emp = new Employee()
-                        {
-                            Empid = dsEmp.Tables[0].Rows[i]["Empid"].ToString(),
-                            Empname = Regex.Replace(dsEmp.Tables[0].Rows[i]["Empname"].ToString(), " +", " ")
+        //                Employee emp = new Employee()
+        //                {
+        //                    Empid = dsEmp.Tables[0].Rows[i]["Empid"].ToString(),
+        //                    Empname = Regex.Replace(dsEmp.Tables[0].Rows[i]["Empname"].ToString(), " +", " ")
 
-                        };
-                        emp.Empname = emp.Empname.Trim();
-                        emplist.EmpList.Add(emp);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                AddFunctionalLog("Exception in GetHrEmployeeListbyDesignation: " + ex.ToString());
-            }
+        //                };
+        //                emp.Empname = emp.Empname.Trim();
+        //                emplist.EmpList.Add(emp);
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        AddFunctionalLog("Exception in GetHrEmployeeListbyDesignation: " + ex.ToString());
+        //    }
 
-            return new MultiSelectList(emplist.EmpList, "Empid", "Empname");
-        }
+        //    return new MultiSelectList(emplist.EmpList, "Empid", "Empname");
+        //}
 
         public MultiSelectList GetComplaintRealtedToList()
         {
@@ -8149,7 +8149,7 @@ namespace ISOStd.Models
             {
                 if (Emp_no != "")
                 {
-                    DataSet dsDept = Getdetails("select Designation from t_hr_employee where emp_no='" + Emp_no + "'");
+                    DataSet dsDept = Getdetails("select item_desc as Designation from t_hr_employee t1,dropdownitems t2 where t1.Designation = t2.item_id and emp_no = '"+ Emp_no + "'");
                     if (dsDept.Tables.Count > 0 && dsDept.Tables[0].Rows.Count > 0)
                     {
                         return (dsDept.Tables[0].Rows[0]["Designation"].ToString());

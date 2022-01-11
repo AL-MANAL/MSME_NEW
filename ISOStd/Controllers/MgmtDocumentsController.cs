@@ -178,6 +178,7 @@ namespace ISOStd.Controllers
                 objMgmtDocuments.branch = form["branch"];
                 objMgmtDocuments.Location = form["Location"];
                 objMgmtDocuments.dcr_no = form["dcr_no"];
+
                 string supload = form["upload"];
 
                 if (objMgmtDocuments.branch == null || objMgmtDocuments.branch == "")

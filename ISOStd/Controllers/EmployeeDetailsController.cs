@@ -298,6 +298,7 @@ namespace ISOStd.Controllers
                 ViewBag.Roles = objGlobaldata.GetRoles();
                 ViewBag.EmploymentType = objGlobaldata.GetDropdownList("Employment Type");
                 ViewBag.Qualification = objGlobaldata.GetDropdownList("Employee Qualification");
+                ViewBag.Designation = objGlobaldata.GetDropdownList("Employee Designation");
             }
             catch (Exception ex)
             {
@@ -668,7 +669,7 @@ namespace ISOStd.Controllers
                                 emp_lastname = dsEmployeeList.Tables[0].Rows[i]["emp_lastname"].ToString(),
                                 EmailId = dsEmployeeList.Tables[0].Rows[i]["EmailId"].ToString(),
                                 dept_id = objGlobaldata.GetDeptNameById(dsEmployeeList.Tables[0].Rows[i]["dept_id"].ToString()),
-                                Designation = dsEmployeeList.Tables[0].Rows[i]["Designation"].ToString(),
+                                Designation =objGlobaldata.GetDropdownitemById(dsEmployeeList.Tables[0].Rows[i]["Designation"].ToString()),
                                 Emp_work_location = objGlobaldata.GetDivisionLocationById(dsEmployeeList.Tables[0].Rows[i]["Emp_work_location"].ToString()),
                                 Eid_no = dsEmployeeList.Tables[0].Rows[i]["Eid_no"].ToString(),
                                 Gender = dsEmployeeList.Tables[0].Rows[i]["Gender"].ToString(),
@@ -1107,7 +1108,7 @@ namespace ISOStd.Controllers
                             EmailId = dsEmployeeList.Tables[0].Rows[0]["EmailId"].ToString(),
                             Nationaliity = dsEmployeeList.Tables[0].Rows[0]["Nationaliity"].ToString(),
                             dept_id = objGlobaldata.GetDeptNameById(dsEmployeeList.Tables[0].Rows[0]["dept_id"].ToString()),
-                            Designation = dsEmployeeList.Tables[0].Rows[0]["Designation"].ToString(),
+                            Designation =objGlobaldata.GetDropdownitemById(dsEmployeeList.Tables[0].Rows[0]["Designation"].ToString()),
                             MobileNo = (dsEmployeeList.Tables[0].Rows[0]["MobileNo"].ToString()),
                             Eid_no = dsEmployeeList.Tables[0].Rows[0]["Eid_no"].ToString(),
                             Gender = dsEmployeeList.Tables[0].Rows[0]["Gender"].ToString(),
@@ -1408,7 +1409,7 @@ namespace ISOStd.Controllers
                         {
                             objEmployee.HealthCardExpDate = dateValue;
                         }
-
+                        ViewBag.Designation = objGlobaldata.GetDropdownList("Employee Designation");
                         ViewBag.Location = objGlobaldata.GetDivisionLocationList(dsEmployeeList.Tables[0].Rows[0]["division"].ToString());
                         ViewBag.DeptList = objGlobaldata.GetDepartmentListbox(dsEmployeeList.Tables[0].Rows[0]["division"].ToString());//GetDepartmentList();
                         ViewBag.Visa_Type = objGlobaldata.GetConstantValue("Visa_Type");

@@ -1,0 +1,102 @@
+﻿@model ISOStd.Models.LeaveManagementModels
+@using System.Data
+@{
+    Layout = null;
+    DataSet dsLeaveDetails = ViewBag.LeaveDetails;
+    ISOStd.Models.clsGlobal obj = new ISOStd.Models.clsGlobal();
+}
+
+<!DOCTYPE html>
+<h4 style="text-align:center;border-bottom:1px solid #808080">Leave Info</h4>
+<p><label><b>Employee No:</b></label>@Html.DisplayFor(model => model.emp_no)
+<label><b>Employee Name:</b></label>@Html.DisplayFor(model => model.emp_firstname)</p>
+<p><label><b>Date of Join:</b></label>
+   @if (Model.Date_of_join != null && Model.Date_of_join > Convert.ToDateTime("01/01/0001"))
+    {
+          @Model.Date_of_join.ToString("dd/MM/yyyy")
+    }
+
+<label><b>Accrued:</b></label>@Html.DisplayFor(model => model.accrued)</p>
+<p><label><b>Balance:</b></label>@Html.DisplayFor(model => model.balance)</p>
+
+@if (dsLeaveDetails != null && dsLeaveDetails.Tables.Count > 0 && dsLeaveDetails.Tables[0].Rows.Count > 0)
+{
+    <div id="Items">
+        <div class="editor-label">
+            <label for="Audit Details" style="background-color: #4cc4dd; width: 100%; color: white; padding-left: 5px;">Applied Leave details</label>
+        </div>
+        <table id="team-list">
+            <tr>
+                <th>Logged By</th>
+                <th>From date</th>
+                <th>To Date</th>
+                <th>Duration</th>
+                <th>Reason</th>
+                <th>Leave Type</th>
+                  <th>Type</th>
+                <th>Approver</th>
+                <th>Applied Date</th>
+                <th>Approval Status</th>
+                <th>Approved Date</th>
+                <th>Comments</th>
+            </tr>
+            @for (int i = 0; i < dsLeaveDetails.Tables[0].Rows.Count; i++)
+            {
+                <tr>
+                    <td>
+                        @obj.GetEmpHrNameById(dsLeaveDetails.Tables[0].Rows[i]["logged_by"].ToString())
+                    </td>
+                    <td>
+                        @if (dsLeaveDetails.Tables[0].Rows[i]["fr_date"].ToString() != "" && dsLeaveDetails.Tables[0].Rows[i]["fr_date"].ToString() != null)
+                        {
+                         @Convert.ToDateTime(dsLeaveDetails.Tables[0].Rows[i]["fr_date"].ToString()).ToString("dd/MM/yyyy")
+                        }
+                       
+                    </td>
+                      <td>
+                        @if (dsLeaveDetails.Tables[0].Rows[i]["to_date"].ToString() != "" && dsLeaveDetails.Tables[0].Rows[i]["to_date"].ToString() != null)
+                        {
+                         @Convert.ToDateTime(dsLeaveDetails.Tables[0].Rows[i]["to_date"].ToString()).ToString("dd/MM/yyyy")
+                        }
+                       
+                    </td>
+                    <td>
+                        @dsLeaveDetails.Tables[0].Rows[i]["duration"].ToString()
+                    </td>
+                     <td>
+                        @dsLeaveDetails.Tables[0].Rows[i]["reason_leave"].ToString()
+                    </td>
+                     <td>
+                        @obj.getLeaveTypeById(dsLeaveDetails.Tables[0].Rows[i]["leave_type"].ToString())
+                    </td>
+                     <td>
+                        @(dsLeaveDetails.Tables[0].Rows[i]["bal_type"].ToString())
+                    </td>
+                    <td>
+                         @obj.GetEmpHrNameById(dsLeaveDetails.Tables[0].Rows[i]["approver"].ToString())
+                    </td>
+                     <td>
+                        @if (dsLeaveDetails.Tables[0].Rows[i]["applied_date"].ToString() != "" && dsLeaveDetails.Tables[0].Rows[i]["applied_date"].ToString() != null)
+                        {
+                         @Convert.ToDateTime(dsLeaveDetails.Tables[0].Rows[i]["applied_date"].ToString()).ToString("dd/MM/yyyy")
+                        }
+                       
+                    </td>
+                    <td>
+                         @(dsLeaveDetails.Tables[0].Rows[i]["approved_status"].ToString())
+                    </td>
+                     <td>
+                        @if (dsLeaveDetails.Tables[0].Rows[i]["approved_Date"].ToString() != "" && dsLeaveDetails.Tables[0].Rows[i]["approved_Date"].ToString() != null)
+                        {
+                         @Convert.ToDateTime(dsLeaveDetails.Tables[0].Rows[i]["approved_Date"].ToString()).ToString("dd/MM/yyyy")
+                        }
+                       
+                    </td>
+                     <td>
+                        @(dsLeaveDetails.Tables[0].Rows[i]["comments"].ToString())
+                    </td>
+                </tr>
+            }
+        </table>
+    </div>
+}

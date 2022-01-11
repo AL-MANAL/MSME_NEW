@@ -1,0 +1,519 @@
+﻿@model ISOStd.Models.QuotationModels
+
+@{
+    ViewBag.Title = "QuotationEdit";
+    int icnts = 0;
+
+    ISOStd.Models.QuotationModelsList objList = new ISOStd.Models.QuotationModelsList();
+
+    if (ViewBag.objQuotList != null)
+    {
+        objList = ViewBag.objQuotList;
+        icnts = objList.QuotList.Count;
+    }
+}
+
+<div style="max-width: 80%; padding-left: 200px;">
+    <div class="groupedassets margin10">
+        <span class="groupedassetshead margin10 onestphdcolor">Update Quotation Details</span>
+    </div>
+    <div id="divmsg">
+        @if (TempData["alertdata"] != null)
+        {
+            <span class="errMsg" style="color: red; font-weight: bold;">@TempData["alertdata"]</span>
+        }
+        @if (TempData["Successdata"] != null)
+        {
+            <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+        }
+    </div>
+
+    @using (Html.BeginForm("QuotationEdit", "CustEnquiry", FormMethod.Post,
+                                                                new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true)
+
+    <fieldset>
+        <input type="hidden" id="id_quotation" name="id_quotation" value="@Model.id_quotation" />
+        <legend></legend>
+        <table id="tabcontent">
+            <tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.date_quotation) <text style="color:red;"> *</text>
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        @if (Model.date_quotation.ToString() != "" && Model.date_quotation > Convert.ToDateTime("01/01/0001"))
+                        {
+                            <input type="text" id="date_quotation" name="date_quotation" value="@Model.date_quotation.ToString("dd/MM/yyyy")" required style="width:150px;" />
+                        }
+                        else
+                        {
+                            <input type="text" id="date_quotation" name="date_quotation" required style="width:150px;" />
+                        }
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.ref_no) <text style="color:red;"> *</text>
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <input type="text" id="ref_no" name="ref_no" value="@Model.ref_no" required />
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.to_quotation)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <input type="text" id="to_quotation" name="to_quotation" value="@Model.to_quotation" />
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.pro_ref)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <input type="text" id="pro_ref" name="pro_ref" value="@Model.pro_ref" />
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.telephone)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <input type="text" id="telephone" name="telephone" value="@Model.telephone" />
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.email)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <input type="text" id="email" name="email" value="@Model.email" />
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.approved_by)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <select class="chosen-select" id="approved_by" name="approved_by" required>
+                            <option value='' hidden>Select</option>
+                            @if (ViewBag.Approver != null)
+                            {
+                                foreach (var item in ViewBag.Approver)
+                                {
+                                    if (item.Text == Model.approved_by)
+                                    {
+                                        <option value='@item.Value' selected>@item.Text</option>
+                                    }
+                                    else
+                                    {
+                                        <option value='@item.Value'>@item.Text</option>
+                                    }
+                                }
+                            }
+                        </select>
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.upload)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+
+                        <input type="file" name="upload" id="upload" title="Plan Report documents" onchange="FileFormatValidation(this)"
+                               multiple="multiple" accept=".pdf,.xls,.xlsx,.doc,.docx,image/*" style="height: 38px;" />
+
+                        <p style="font-size: 11px; margin: 0px;">(Hold Ctrl Key in case of multiple files)</p>
+
+                        @if (Model.upload != null && Model.upload != "" && Model.upload.Length > 0)
+                        {
+                            <div class="editor-label">
+                                <p style="font-weight: bold; margin: 0px;"> Docs. List:</p>
+                            </div>
+                            <p style="font-size: 11px; margin: 0px; color: red;">(Uncheck in case to remove a uploaded file)</p>
+                            foreach (var docs in Model.upload.Trim(',').Split(','))
+                            {
+                                <p style="margin: 0px;">
+                                    <input type="checkbox" id="QCDocsVal" name="QCDocsVal" class="QCDocsVal" value="@docs.Trim(',')" checked title="Uncheck in case to remove a uploaded file" />
+                                    <input type="hidden" id="QCDocsValselectall" name="QCDocsValselectall" />
+                                    <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" style="color: orange;">
+                                        @*@System.IO.Path.GetFileName(docs)*@preview
+                                    </a>
+                                </p>
+                            }
+                        }
+
+                    </div>
+                </td>
+
+            <tr>
+                <td>
+                    <div class="editor-label">
+                        Total
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <input type="text" id="Tot" name="Tot" value="@Model.sum" readonly style="background :#efefe6;" />
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-label">
+                        Vat @('@')5%
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <input type="text" id="Vat" name="Vat" value="@Model.vat" readonly style="background :#efefe6;" />
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="editor-label">
+                        Sum Total
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <input type="text" id="Sum" name="Sum" disabled style="background :#efefe6;" />
+                    </div>
+                </td>
+            </tr>
+            </tr>
+
+            <tr style="background-color: #4cc4dd; color: #fff;">
+                <th colspan="6" style="font-size: 14px; font-weight: bold;">Add Quotation</th>
+            </tr>
+            <tr style="background-color: #4cc4dd; color: #fff;">
+                <th style="font-size: 14px; font-weight: bold;">Description</th>
+                <th style="font-size: 14px; font-weight: bold;">Quantity</th>
+                <th style="font-size: 14px; font-weight: bold;">Price</th>
+                <th style="font-size: 14px; font-weight: bold;">Total</th>
+                <th colspan="2" style="font-weight: bold;">Action</th>
+            </tr>
+            <tr>
+                <td>
+                    <input type="text" id="description" name="description" />
+                </td>
+                <td>
+                    <input type="number" id="qty" name="qty" min="0" onchange="CalTotal()" style="width:100px;" />
+                    @Html.ValidationMessageFor(model => model.qty)
+                    <span class="field-validation-error"><span id="qty-message" style="display: none;">Please write Quantity</span></span>
+                </td>
+                <td>
+                    <input type="number" id="price" name="price" min="0" onchange="CalTotal()" style="width:100px;" />
+                    @Html.ValidationMessageFor(model => model.qty)
+                    <span class="field-validation-error"><span id="price-message" style="display: none;">Please write Price</span></span>
+                </td>
+                <td>
+                    <input type="text" id="total" name="total" readonly style="background :#efefe6;" />
+                </td>
+                <td colspan="2">
+                    <img src='@Url.Content("~/images/icon_add.png")' onclick='AddQuotation()' style='cursor:pointer; padding-right: 5px;' />Add
+                </td>
+            </tr>
+            <tr>
+                <td colspan="6"><p style="font-size:11px;margin: 0px;text-align:center;">Please click Plus button to add N number of Quotation</p></td>
+            </tr>
+        </table>
+    </fieldset>
+
+
+
+        <div style="width: 100%; text-align: center;">
+            @Html.ActionLink("Back to List", "QuotationList", null, new { Class = "ActionLink", onclick = "HyperLinkProgressIconFunction()" })
+            <input type="submit" value="submit" onclick="ProgressIconFunction('#form1')" />
+        </div>
+
+        <br />
+        <div id="dvQuotationItems" style="overflow: auto;">
+            <input type="hidden" id="itemcnts" name="itemcnts" value="@icnts" />
+            <div class="editor-label" style="background-color: #4cc4dd; width: 100%; height: 30px; cursor: pointer;">
+                <label for="Description_Details" style="color: white; padding-left: 5px;">Opening Quotation</label>
+            </div>
+
+            <table id="team-list1">
+                <tr>
+                    <th style="width: 70px; min-width: 70px; max-width: 70px;">Delete</th>
+                    <th style="width: 100px; min-width: 100px; max-width: 100px;">Description</th>
+                    <th style="width: 100px; min-width: 100px; max-width: 100px;">Quantity</th>
+                    <th style="width: 100px; min-width: 100px; max-width: 100px;">Price</th>
+                    <th style="width: 100px; min-width: 100px; max-width: 100px;">Total</th>
+                </tr>
+
+                @if (objList.QuotList != null && objList.QuotList.Count > 0)
+                {
+                    for (int index = 0; index < objList.QuotList.Count; index++)
+                    {
+
+                <tr>
+                    <td style="width: 70px; min-width: 70px; max-width: 70px;">
+                        <img src='@Url.Content("~/images/cancel.png")' onclick='deleteCoseRow(this,@objList.QuotList[index].total)' style='cursor:pointer; padding-right: 5px;' />
+                        <input type='hidden' id='id_quo_trans @index' name="id_quo_trans @index" value='@objList.QuotList[index].id_quo_trans' />
+                    </td>
+                    <td style="width: 150px; min-width: 150px; max-width: 150px;">
+                        <input type='hidden' id='description@(index)' name="description@(index)" value='@objList.QuotList[index].description' /> @objList.QuotList[index].description
+                    </td>
+                    <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                        <input type='hidden' id='qty@(index)' name="qty@(index)" value='@(objList.QuotList[index].qty)' style="width:100px;" @*onchange="CalTotalPrice(@index)"*@>@(objList.QuotList[index].qty)
+                    </td>
+                    <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                        <input type='hidden' id='price@(index)' name="price@(index)" value='@(objList.QuotList[index].price)' style=" width:100px;" @*onchange="CalTotalPrice(@index)"*@>@(objList.QuotList[index].price)
+                    </td>
+                    <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                        <input type='hidden' id='total@(index)' name="total@(index)" value='@objList.QuotList[index].total' readonly style="width:100px;">@objList.QuotList[index].total
+                    </td>
+                </tr>
+                    }
+                }
+            </table>
+        </div>
+    }
+</div>
+@section Scripts {
+    <script>
+
+        function FileFormatValidation(file) {
+                var ext = file.value.split(".").pop().toLowerCase();
+                if ($.inArray(ext, ["doc", "pdf", 'docx',"xls","xlsx"]) == -1) {
+                    file.value = "";
+                    jAlert("Invalid file format, please upload only Pdf,docx,doc,xls,xlsx format");
+                }
+        }
+
+        $("#QCDocsVal").click(function () {
+            if ($("#QCDocsVal").prop('checked')) {
+                {
+                    $(this).prop('checked', true);
+                }
+            }
+            else {
+
+                $(this).prop('checked', false);
+                document.getElementById("QCDocsValselectall").value = "DeleteQC";
+            }
+
+        });
+
+        $(function () {
+            $("#approved_by").chosen();
+            $.validator.setDefaults({ ignore: ":hidden:not('.chosen-select')" });
+
+            $('#date_quotation').datepicker({
+                dateFormat: "dd/mm/yy",
+                buttonImageOnly: true,
+                buttonImage: '../Images/Calender.png',
+                showOn: 'both',
+                changeMonth: true,
+                changeYear: true,
+            }); 
+
+
+            var GT =@Model.sum+@Model.vat;
+            document.getElementById("Sum").value = GT;  
+        });
+
+        function deleteCoseRow(btn, total) {
+            var row = btn.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+            SumTotal(total);
+        }
+
+        function Validation() {
+            var validflg = true;
+            var ssnMessage = "";
+
+            if (document.getElementById("price").value == "") {
+                ssnMessage = $('#price-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#price-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("qty").value == "") {
+                ssnMessage = $('#qty-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#qty-message');
+                ssnMessage.hide();
+            }
+            return validflg;
+        }
+
+
+        function AddQuotation() {
+            CalSumTotal();
+            if (Validation() == true) {
+
+                document.getElementById("dvQuotationItems").style.display = "";
+                var cnt = document.getElementById("itemcnts").value;
+
+                document.getElementById("itemcnts").value = cnt;
+                // Find a <table> element with id="myTable":
+                var table = document.getElementById("team-list1");
+
+                // Create an empty <tr> element and add it to the 1st position of the table:
+                var row = table.insertRow();
+
+                // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                var cell0 = row.insertCell(0);
+                var cell1 = row.insertCell(1);
+                var cell2 = row.insertCell(2);
+                var cell3 = row.insertCell(3);
+                var cell4 = row.insertCell(4);
+
+                cell0.style = "width: 70px; min-width: 70px; max-width: 70px;";
+                cell1.style = "width: 100px; min-width: 100px; max-width: 100px;word-wrap:break-word";
+                cell2.style = "width: 100px; min-width: 100px; max-width: 100px;word-wrap:break-word";
+                cell3.style = "width: 100px; min-width: 100px; max-width: 100px;word-wrap:break-word";
+                cell4.style = "width: 100px; min-width: 100px; max-width: 100px;word-wrap:break-word";
+
+                var description = $("#description").val();
+                var qty = $("#qty").val();
+                var price = $("#price").val();
+                var total = $("#total").val();
+
+                cell0.innerHTML = " <img src='@Url.Content("~/images/cancel.png")' onclick='deleteCoseRow(this," + total +")' style='cursor:pointer; padding-right: 5px;'/>";
+                cell1.innerHTML = "<input type='hidden' id='description" + cnt + "' name='description" + cnt + "' value='" + description + "'>" + description;
+                cell2.innerHTML = "<input type='hidden' id='qty" + cnt + "' name='qty" + cnt + "' value='" + qty + "'>" + qty;
+                cell3.innerHTML = "<input type='hidden' id='price" + cnt + "' name='price" + cnt + "' value='" + price + "'>" + price;
+                cell4.innerHTML = "<input type='hidden' id='total" + cnt + "' name='total" + cnt + "' value='" + total + "'>" + total;
+
+
+                cnt++;
+                document.getElementById("itemcnts").value = cnt;
+                //document.getElementById("btnCreate").style.display = "";
+                ResetControl();
+            }
+
+        }
+
+        function ResetControl() {
+            document.getElementById("description").value = "";
+            document.getElementById("qty").value = "";
+            document.getElementById("price").value = "";
+            document.getElementById("total").value = "";
+        }
+
+
+        function CalTotal() {
+            var qty = document.getElementById("qty").value;
+            var price = document.getElementById("price").value;
+            jQuery.ajax({
+                url: '@Url.Action("FungetTotal", "CustEnquiry")',
+                type: 'POST',
+                dataType: "json",
+                data: {'price': price, 'qty': qty },
+                    success: function (result) {
+                        document.getElementById("total").value = result;
+                    }
+            });
+        }
+
+
+         @*function CalTotalPrice(i) {
+            var qty = document.getElementById("qty"+i).value;
+            var price = document.getElementById("price"+i).value;
+            jQuery.ajax({
+                url: '@Url.Action("FungetTotal", "CustEnquiry")',
+                type: 'POST',
+                dataType: "json",
+                data: {'price': price, 'qty': qty },
+                    success: function (result) {
+                        document.getElementById("total"+i).value = result;
+                    }
+            });
+        }*@
+
+
+         function CalSumTotal() {           
+             var total = document.getElementById("total").value;
+             var Tot = document.getElementById("Tot").value;
+             if (Tot == "") {
+                 Tot = 0;
+                 jQuery.ajax({
+                     url: '@Url.Action("FungetSumTotal", "CustEnquiry")',
+                     type: 'POST',
+                     dataType: "json",
+                     data: { 'total': total, 'Tot': Tot },
+                     success: function (result) {
+                         document.getElementById("Tot").value = result;
+                         var Vat = result * 0.05
+                         document.getElementById("Vat").value = Vat;
+                         var GTot = Vat + result
+                         document.getElementById("Sum").value = GTot; 
+                     }
+                 });
+             }
+             else {
+                  jQuery.ajax({
+                     url: '@Url.Action("FungetSumTotal", "CustEnquiry")',
+                     type: 'POST',
+                     dataType: "json",
+                     data: { 'total': total, 'Tot': Tot },
+                     success: function (result) {
+                         document.getElementById("Tot").value = result;
+                         var Vat = result * 0.05
+                         document.getElementById("Vat").value = Vat;
+                         var GTot = Vat + result
+                         document.getElementById("Sum").value = GTot;                         
+                     }
+                 });
+
+             }
+        }
+
+        
+        function SumTotal(total) {
+
+            var Tot = document.getElementById("Tot").value;
+            jQuery.ajax({
+                url: '@Url.Action("FungetSum", "CustEnquiry")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'total': total, 'Tot': Tot },
+                success: function (result) {
+                    document.getElementById("Tot").value = result;
+                    var Vat = result * 0.05
+                    document.getElementById("Vat").value = Vat;
+                    var GTot = Vat + result
+                    document.getElementById("Sum").value = GTot;   
+
+                }
+            });
+        }
+
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

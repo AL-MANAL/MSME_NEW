@@ -1,0 +1,633 @@
+﻿@model ISOStd.Models.WorkPermitModels
+
+@{
+   ISOStd.Models.WorkPermitModelsList objInList = new ISOStd.Models.WorkPermitModelsList();
+    ISOStd.Models.WorkPermitModelsList objOutList = new ISOStd.Models.WorkPermitModelsList();
+    ISOStd.Models.clsGlobal obj = new ISOStd.Models.clsGlobal();
+    int icnt = 0, icnts = 0;
+    if (ViewBag.objInList != null)
+    {
+        objInList = ViewBag.objInList;
+        icnt = objInList.PermitList.Count;
+    }
+    if (ViewBag.objOutList != null)
+    {
+        objOutList = ViewBag.objOutList;
+        icnts = objOutList.PermitList.Count;
+    }
+
+    string sfromTimeHr = "", sfromTimeMin = "", stoTimeHr = "", stoTimeMin = "";
+  
+    sfromTimeHr = Model.date_issued.Hour.ToString();
+    sfromTimeMin = Model.date_issued.Minute.ToString();
+    stoTimeHr = Model.date_expired.Hour.ToString();
+    stoTimeMin = Model.date_expired.Minute.ToString();
+}
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                  <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Home</span>
+                    </a>
+                    <a href="@Url.Action("AccessPermitList", "WorkPermit", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Access Permit</span>
+                    </a>
+                    <span class="breadcrumb-item active">Update Access Permit</span>
+                </div>
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+}
+@using (Html.BeginForm("AccessPermitEdit", "WorkPermit", FormMethod.Post,
+                     new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+  <input type="hidden" id="id_access_permit" name="id_access_permit" value="@Model.id_access_permit" />
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Update Access Permit</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+                <table class="table table-lg">
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.branch)
+                        </td>
+                        <td class="col">
+                            <select class="form-control select-fixed-multiple" multiple="multiple" data-fouc id="branch" name="branch" onchange="GetDeptList()">
+                                @*<option value='' hidden>Select</option>*@
+                                @if (ViewBag.Branch != null)
+                                {
+                                    foreach (var data in ViewBag.Branch)
+                                    {
+                                        if (Array.IndexOf(Model.branch.ToString().Split(','), data.Value) >= 0)
+                                        {
+                                            <option value='@data.Value' selected>@data.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@data.Value'>@data.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.Department)<text style="color:red;">*</text>
+                        </td>
+                        <td class="col">
+                            <select class="form-control select-fixed-multiple" data-fouc id="Department" name="Department" multiple="multiple" required>
+                                @if (ViewBag.Department != null)
+                                {
+                                    foreach (var item in ViewBag.Department)
+                                    {
+                                        if (Array.IndexOf(Model.Department.ToString().Split(','), item.Value) >= 0)
+                                        {
+                                            <option value='@item.Value' selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                        </td>
+                    </tr>
+                    
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.requestor)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.requestor, new { htmlAttributes = new { @required = "required", @class = "form-control" } })
+                                @Html.ValidationMessageFor(m => m.requestor)
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.location)<text style="color:red;">*</text>
+                        </td>
+                        <td class="col">
+                            <select class="form-control select-fixed-multiple" data-fouc id="location" name="location" multiple="multiple" required>
+                                @if (ViewBag.Location != null)
+                                {
+                                    foreach (var item in ViewBag.Location)
+                                    {
+                                        if (Array.IndexOf(Model.location.ToString().Split(','), item.Value) >= 0)
+                                        {
+                                            <option value='@item.Value' selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.company)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.company, new { htmlAttributes = new { @required = "required", @class = "form-control" } })
+                                @Html.ValidationMessageFor(m => m.company)
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.contactno)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.contactno, new { htmlAttributes = new { @required = "required", @class = "form-control" } })
+                                @Html.ValidationMessageFor(m => m.contactno)
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.area)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.area, new { htmlAttributes = new { @required = "required", @class = "form-control" } })
+                                @Html.ValidationMessageFor(m => m.area)
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.approved_by)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="approved_by" name="approved_by" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.Approvers != null)
+                                    {
+                                        foreach (var item in ViewBag.Approvers)
+                                        {
+                                            if (item.Value == Model.approved_by)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.date_issued)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+
+                                @if (Model.date_issued != null && Model.date_issued > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    <input class="form-control" type="date" id="date_issued" name="date_issued" value="@Model.date_issued.ToString("yyyy-MM-dd")" required />
+                                    Hr: <select name="FromTimeInHour" id="FromTimeInHour" style="width: 40px;">
+                                        @if (ViewBag.TimeInHour != null)
+                                        {
+                                            foreach (var data in ViewBag.TimeInHour)
+                                            {
+                                                if (sfromTimeHr == data)
+                                                {
+                                                    <option value='@data' selected>@data</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@data'>@data</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+
+                                    Min:
+                                    <select name="FromTimeInMin" id="FromTimeInMin" style="width: 40px;">
+                                        @if (ViewBag.TimeInMin != null)
+                                        {
+                                            foreach (var data in ViewBag.TimeInMin)
+                                            {
+                                                if (sfromTimeMin == data)
+                                                {
+                                                    <option value='@data' selected>@data</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@data'>@data</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                }
+                                else
+                                {
+                                    <input class="form-control" type="date" id="date_issued" name="date_issued" required />
+                                }
+                                @Html.ValidationMessageFor(m => m.date_issued)
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.date_expired)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @if (Model.date_expired != null && Model.date_expired > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    <input class="form-control" type="date" id="date_expired" name="date_expired" value="@Model.date_expired.ToString("yyyy-MM-dd")" required />
+                                    Hr:
+                                    <select name="ToTimeInHour" id="ToTimeInHour" style="width: 40px; margin-top: 5px;">
+                                        @if (ViewBag.TimeInHour != null)
+                                        {
+                                            foreach (var data in ViewBag.TimeInHour)
+                                            {
+                                                if (stoTimeHr == data)
+                                                {
+                                                    <option value='@data' selected>@data</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@data'>@data</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+
+                                    Min:
+                                    <select name="ToTimeInMin" id="ToTimeInMin" style="width: 40px;">
+                                        @if (ViewBag.TimeInMin != null)
+                                        {
+                                            foreach (var data in ViewBag.TimeInMin)
+                                            {
+                                                if (stoTimeMin == data)
+                                                {
+                                                    <option value='@data' selected>@data</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@data'>@data</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                }
+                                else
+                                {
+                                    <input class="form-control" type="date" id="date_expired" name="date_expired" required />
+                                }
+                                @Html.ValidationMessageFor(m => m.date_expired)
+                            </div>
+                        </td>
+                    </tr>
+                   
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                Description
+                            </div>
+                        </td>
+                        <td class="col" colspan="3">
+                            <div class="editor-field">
+                                @Html.TextAreaFor(model => model.description, new { @id = "editor-full", @rows = "4", @cols = "4" })
+                            </div>
+                        </td>
+                    </tr>
+
+
+
+                </table>
+            </div>
+        </div>
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+            @Html.ActionLink("Back to List", "AccessPermitList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+
+            <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i>Save</button>
+        </div>
+    </div>
+    
+    <fieldset class="border p-2">
+                    <legend class="font-weight-semibold"><i class="icon-file-text mr-2"></i>Authorized Personnel In</legend>
+		      
+<table class="table table-lg">
+
+        <tr class="row">
+ 			
+                       <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                               Name
+                            </div>
+                            <div class="editor-field">
+                                <input class="form-control" type="text" id="pers_name" name="pers_name"/>
+                                 <span class="field-validation-error"><label id="pers_name-message" class="validation-invalid-label" style="display:none" for="basic">This field is required.</label> </span>
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                              ID No
+                            </div>
+                            <div class="editor-field">
+                                 <input class="form-control" type="text" id="idno" name="idno"/>
+                                 <span class="field-validation-error"><label id="idno-message" class="validation-invalid-label" style="display:none" for="basic">This field is required.</label> </span>
+                            </div>
+                        </td>
+ 			            <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                              Date
+                            </div>
+                            <div class="editor-field">
+                                <input class="form-control" type="date" id="date_in" name="date_in"/>
+                                 <span class="field-validation-error"><label id="date_in-message" class="validation-invalid-label" style="display:none" for="basic">This field is required.</label> </span>
+                            </div>
+                        </td>
+                 
+			           <td class="col-xs-3 col-md-2">
+                      <input type="button" value="Add" class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" onclick="AddIn()" />
+                        </td>
+ </tr>
+
+</table>
+</fieldset>
+    
+     <div class="card" id="hidden card">
+        <div class="card-header header-elements-inline">
+            <h5 class="card-title">Athorized Personnel In List</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+
+                    <a class="list-icons-item" data-action="remove"></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body">
+
+            <input type="hidden" id="itemcnt" name="itemcnt" value="@icnt" />
+
+            <div class="card card-table table-responsive shadow-0 mb-0">
+                <table class="table" id="team-list">
+                    <tr class="bg-blue">
+                    <th>Action</th>
+                    <th>Name</th>
+                    <th>ID No</th>
+                    <th>Date</th>
+                    </tr>
+ 		@if (objInList.PermitList != null && objInList.PermitList.Count > 0)
+                {
+                    for (int index = 0; index < objInList.PermitList.Count; index++)
+                    {
+                        <tr>
+                            <td>
+                                <img src='@Url.Content("~/images/cancel.png")' onclick='deleteRow(this)' style='cursor:pointer; padding-right: 5px;' />
+                                <input type='hidden' id='id_access_permit_in@(index)' name="id_access_permit_in@(index)" value='@objInList.PermitList[index].id_access_permit_in' />
+                            </td>
+                            <td>
+                                <input type='hidden' id='pers_name@(index)' name="pers_name@(index)" value='@objInList.PermitList[index].pers_name'>@objInList.PermitList[index].pers_name
+                            </td>
+                            <td>
+                                <input type='hidden' id='idno@(index)' name="idno@(index)" value='@objInList.PermitList[index].idno'>@objInList.PermitList[index].idno
+                            </td>
+                            <td>
+                                @if (objInList.PermitList[index].date_in != null && objInList.PermitList[index].date_in > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    <input type='hidden' id='date_in@(index)' name="date_in@(index)" value='@objInList.PermitList[index].date_in'>@objInList.PermitList[index].date_in.ToString("dd/MM/yyyy")
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+                </table>
+               
+            </div>
+        </div>
+    </div>
+}
+
+
+@section Scripts {
+    <script>
+
+
+        $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+                                @:     text: '@TempData["alertdata"]',
+                                @:     type: 'error'
+                        @:}).show();
+                                           }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+                                @:       text: '@TempData["Successdata"]',
+                                @:       type: 'success'
+        @:}).show();
+                   }
+        });
+
+        CKEDITOR.replace('editor-full', {
+            height: 400,
+            extraPlugins: 'forms'
+        });
+
+        var showClass = 'is-visible';
+        var hideClass = 'invisible';
+
+        function InValidation() {
+            var validflg = true;
+            var ssnMessage = "";
+
+            if (document.getElementById("pers_name").value == "") {
+                ssnMessage = $('#pers_name-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#pers_name-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("idno").value == "") {
+                ssnMessage = $('#idno-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#idno-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("date_in").value == "") {
+                ssnMessage = $('#date_in-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#date_in-message');
+                ssnMessage.hide();
+            }
+            return validflg;
+        }
+        function deleteRow(btn) {
+            var row = btn.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+        }
+        function AddIn() {
+
+            if (InValidation() == true) {
+
+                var cnt = document.getElementById("itemcnt").value;
+
+                document.getElementById("itemcnt").value = cnt;
+                // Find a <table> element with id="myTable":
+                var table = document.getElementById("team-list");
+
+
+                // Create an empty <tr> element and add it to the 1st position of the table:
+                var row = table.insertRow();
+
+
+                // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                var cell0 = row.insertCell(0);
+                var cell1 = row.insertCell(1);
+                var cell2 = row.insertCell(2);
+                var cell3 = row.insertCell(3);
+                //var cell4 = row.insertCell(4);
+                //var cell5 = row.insertCell(5);
+
+
+                var pers_name = $('#pers_name').val();
+                var idno = $('#idno').val();
+                var date_in = $('#date_in').val();
+
+                cell0.innerHTML = " <img src='@Url.Content("~/images/cancel.png")' onclick='deleteRow(this)' style='cursor:pointer; padding-right: 5px;'/>";
+                cell1.innerHTML = "<input type='hidden' id='pers_name" + cnt + "' name='pers_name" + cnt + "' value='" + pers_name + "' style='width: 100px;'>" + pers_name;
+                cell2.innerHTML = "<input type='hidden' id='idno" + cnt + "' name='idno" + cnt + "' value='" + idno + "' style='width: 10px;'>" + idno;
+                cell3.innerHTML = "<input type='hidden' id='date_in" + cnt + "' name='date_in" + cnt + "' value='" + date_in + "' style='width: 10px;'>" + date_in;
+
+                cnt++;
+                document.getElementById("itemcnt").value = cnt;
+
+                document.getElementById("hidden card").classList.remove(hideClass);
+                document.getElementById("hidden card").classList.add(showClass);
+
+                document.getElementById("pers_name").value = "";
+                document.getElementById("idno").value = "";
+                document.getElementById("date_in").value = "";
+            }
+        }
+
+          function GetDeptList() {
+            var selectedValues = [];
+            $("#branch :selected").each(function () {
+                selectedValues.push($(this).val());
+            });
+              var svalue = selectedValues.join(",");
+                jQuery.ajax({
+                   url: '@Url.Action("FunGetGDeptListbymultiBranch", "Global")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'branch': svalue },
+                    success: function (result) {
+                        GetLocList(selectedValues);
+                        $("#Department").children('option').remove();
+                        $("#Department").trigger('change');
+                        if (result != null && result.length > 0) {
+                            $.each(result, function (index, item) {
+                                $("#Department").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                                $("#Department").trigger('change');
+                            });
+                            return;
+                        }                       
+                    }
+                });
+        }
+
+
+        function GetLocList(selectedValues) {
+            jQuery.ajax({
+                url: '@Url.Action("FunGetAllLocList", "EmployeeDetails")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'branch': selectedValues },
+                success: function (result) {
+                    $("#location").children('option').remove();
+                    $("#location").trigger('change');
+                    if (result != null && result.length > 0) {
+                        $.each(result, function (index, item) {
+                            $("#location").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                            $("#location").trigger('change');
+                        });
+                        return;
+                    }
+                    //else {
+                    //    bootbox.alert({
+                    //        title: 'Location List',
+                    //        message: 'No Location exists.'
+                    //    });
+                    //}
+                }
+            });
+        }
+
+
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

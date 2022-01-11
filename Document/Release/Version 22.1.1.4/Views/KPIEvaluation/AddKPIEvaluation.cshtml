@@ -1,0 +1,541 @@
+﻿@model ISOStd.Models.KPIEvaluationModels
+
+@{
+    ViewBag.Title = "AddKPIEvaluation";
+}
+
+@section featured {
+    <div class="page-header page-header-light">
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("KPIEvaluationList", "KPIEvaluation", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> KPIs</span>
+                    </a>
+                    <span class="breadcrumb-item active"> Add KPI</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+
+
+}
+
+@using (Html.BeginForm("AddKPIEvaluation", "KPIEvaluation", FormMethod.Post, new { id = "form1", name = "form1" }))
+{
+
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Add KPIs</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <fieldset class="border p-2">
+                        <legend class="font-weight-semibold"><i class="icon-file-text mr-2"></i> Main details</legend>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.KPI_Ref)<text style="color:red;">*</text>
+                            <br />
+
+                            @Html.TextBoxFor(m => m.KPI_Ref, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.KPI_Ref)
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.branch)<text style="color:red;">*</text>
+                            <br />
+                            <select class="form-control select-search select2-hidden-accessible" data-fouc id="branch" name="branch" multiple="multiple" onchange="GetDeptList()" required>
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.Branch != null)
+                                {
+                                    foreach (var data in ViewBag.Branch)
+                                    {
+                                        if (Array.IndexOf(Model.branch.ToString().Split(','), data.Value) >= 0)
+                                        {
+                                            <option value='@data.Value' selected>@data.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@data.Value'>@data.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.DeptId)<text style="color:red;">*</text>
+                            <br />
+                            <select class="form-control select-fixed-multiple" data-fouc id="DeptId" name="DeptId" multiple="multiple" onchange="GetEmpList()" required>
+
+                                @if (ViewBag.Department != null)
+                                {
+                                    foreach (var data in ViewBag.Department)
+                                    {
+                                        if (Array.IndexOf(Model.DeptId.ToString().Split(','), data.Value) >= 0)
+                                        {
+                                            <option value='@data.Value' selected>@data.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@data.Value'>@data.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Location)<text style="color:red;">*</text>
+                            <br />
+                            <select class="form-control select-fixed-multiple" data-fouc id="Location" name="Location" multiple="multiple" onchange="GetEmpList()" required>
+
+                                @if (ViewBag.Location != null)
+                                {
+                                    foreach (var data in ViewBag.Location)
+                                    {
+                                        if (Array.IndexOf(Model.Location.ToString().Split(','), data.Value) >= 0)
+                                        {
+                                            <option value='@data.Value' selected>@data.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@data.Value'>@data.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Person_Responsible)<text style="color:red;">*</text>
+                            <br />
+                            <select class="form-control select-fixed-multiple" id="Person_Responsible" name="Person_Responsible" required multiple>
+                                @*  <option value='' hidden>Select</option>*@
+                                @if (ViewBag.EmpList != null)
+                                {
+                                    foreach (var item in ViewBag.EmpList)
+                                    {
+                                        <option value='@item.Value'>@item.Text</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+
+                    </fieldset>
+                </div>
+                <div class="col-md-6 border-dark bg-dark-alpha border p-2 text-dark">
+                    <fieldset class="border p-2">
+                        <legend class="font-weight-semibold"><i class="icon-newspaper2"></i>KPI Plan details</legend>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.EstablishedOn)<text style="color:red;">*</text>
+                            <br />
+                            <input type="date" id="EstablishedOn" name="EstablishedOn" class="form-control" />
+                            <span class="field-validation-error"><span id="EstablishedOn-message" style="display: none;">Established On field is required.</span></span>
+                            @Html.ValidationMessageFor(model => model.EstablishedOn)
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.target_date)<text style="color:red;">*</text>
+                            <br />
+                            <input type="date" id="target_date" name="target_date" class="form-control" />
+                            <span class="field-validation-error"><span id="target_date-message" style="display: none;">Target Date On field is required.</span></span>
+                            @Html.ValidationMessageFor(model => model.target_date)
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Process_Indicator)<text style="color:red;">*</text>
+                            <br />
+                            <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="Process_Indicator" name="Process_Indicator"></textarea>
+                            <span class="field-validation-error"><span id="Process_Indicator-message" style="display: none;">KPI Desc field is required.</span></span>
+                            @Html.ValidationMessageFor(model => model.Process_Indicator)
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Measurable_Value)<text style="color:red;">*</text>
+                            <br />
+                            <input class="form-control" type="text" id="Measurable_Value" name="Measurable_Value" />
+                            <span class="field-validation-error"><span id="Measurable_Value-message" style="display: none;">Measurable Value field is required.</span></span>
+                            @Html.ValidationMessageFor(model => model.Measurable_Value)
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Monitoring_Mechanism)<text style="color:red;">*</text>
+                            <br />
+                            <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="Monitoring_Mechanism" name="Monitoring_Mechanism"></textarea>
+                            <span class="field-validation-error"><span id="Monitoring_Mechanism-message" style="display: none;">Monitoring Mechanism field is required.</span></span>
+                            @Html.ValidationMessageFor(model => model.Monitoring_Mechanism)
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Freq_of_Eval)<text style="color:red;">*</text>
+                            <br />
+                            <select class="form-control select-search select2-hidden-accessible" data-fouc id="Freq_of_Eval" name="Freq_of_Eval">
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.Freq_of_Eval != null)
+                                {
+                                    foreach (var item in ViewBag.Freq_of_Eval)
+                                    {
+                                        <option value='@item.Value'>@item.Text</option>
+                                    }
+                                }
+                            </select>
+                            <span class="field-validation-error"><span id="Freq_of_Eval-message" style="display: none;">Monitoring Mechanism field is required.</span></span>
+                            @Html.ValidationMessageFor(model => model.Freq_of_Eval)
+                        </div>
+                    </fieldset>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+
+            @Html.ActionLink("Back to List", "KPIEvaluationList", "KPIEvaluation", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+            <div class="mt-2 mt-sm-0">
+                <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400 invisible" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Save</button>
+                <input type="button" value="Add" class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" onclick="AddAudit()" />
+            </div>
+        </div>
+    </div>
+
+    <div class="card invisible" id="hidden card">
+        <div class="card-header header-elements-inline">
+            <h5 class="card-title">KPI Detail</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+
+                    <a class="list-icons-item" data-action="remove"></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body">
+
+            <input type="hidden" id="itemcnt" name="itemcnt" value="0" />
+
+
+            <div class="card card-table table-responsive shadow-0 mb-0">
+                <table class="table" id="team-list">
+                    <tr class="bg-blue">
+
+                        <th>Action</th>
+                        <th>Established On</th>
+                        <th>Target Date</th>
+                        <th>KPI Desc</th>
+                        <th>Measurable Value</th>
+                        <th>Monitoring Mechanism</th>
+                        <th>Frequency</th>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    }
+
+
+
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+    });
+    //zzz----
+        var showClass = 'is-visible';
+        var hideClass = 'invisible';
+         function Validation() {
+             var validflg = true;
+             var ssnMessage = "";
+             if (document.getElementById("EstablishedOn").value == "") {
+                 ssnMessage = $('#EstablishedOn-message');
+                 ssnMessage.show();
+                 validflg = false;
+             }
+             else {
+                 ssnMessage = $('#EstablishedOn-message');
+                 ssnMessage.hide();
+             }
+             if (document.getElementById("target_date").value == "") {
+                 ssnMessage = $('#target_date-message');
+                 ssnMessage.show();
+                 validflg = false;
+             }
+             else {
+                 ssnMessage = $('#target_date-message');
+                 ssnMessage.hide();
+             }
+             if (document.getElementById("Process_Indicator").value == "") {
+                 ssnMessage = $('#Process_Indicator-message');
+                 ssnMessage.show();
+                 validflg = false;
+             }
+             else {
+                 ssnMessage = $('#Process_Indicator-message');
+                 ssnMessage.hide();
+             }
+             if (document.getElementById("Measurable_Value").value == "") {
+                 ssnMessage = $('#Measurable_Value-message');
+                 ssnMessage.show();
+                 validflg = false;
+             }
+             else {
+                 ssnMessage = $('#Measurable_Value-message');
+                 ssnMessage.hide();
+             }
+             if (document.getElementById("Monitoring_Mechanism").value == "") {
+                 ssnMessage = $('#Monitoring_Mechanism-message');
+                 ssnMessage.show();
+                 validflg = false;
+             }
+             else {
+                 ssnMessage = $('#Monitoring_Mechanism-message');
+                 ssnMessage.hide();
+             }
+             if (document.getElementById("Freq_of_Eval").value == "") {
+                 ssnMessage = $('#Freq_of_Eval-message');
+                 ssnMessage.show();
+                 validflg = false;
+             }
+             else {
+                 ssnMessage = $('#Freq_of_Eval-message');
+                 ssnMessage.hide();
+             }
+             return validflg;
+        }
+
+        function reformatDate(dateStr) {
+            dArr = dateStr.split("-");  // ex input 2010-01-18
+            return dArr[2] + "/" + dArr[1] + "/" + dArr[0]; //ex out: 2018/01/10
+        }
+
+         function AddAudit() {
+             if (Validation() == true) {
+
+                 var cnt = document.getElementById("itemcnt").value;
+
+                 document.getElementById("itemcnt").value = cnt;
+                 // Find a <table> element with id="myTable":
+                 var table = document.getElementById("team-list");
+
+
+                 // Create an empty <tr> element and add it to the 1st position of the table:
+                 var row = table.insertRow();
+
+                 // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                 var cell0 = row.insertCell(0);
+                 var cell1 = row.insertCell(1);
+                 var cell2 = row.insertCell(2);
+                 var cell3 = row.insertCell(3);
+                 var cell4 = row.insertCell(4);
+                 var cell5 = row.insertCell(5);
+                 var cell6 = row.insertCell(6);
+
+                 var EstablishedOn = reformatDate($('#EstablishedOn').val());
+                 var target_date = reformatDate($('#target_date').val());
+                 var Process_Indicator = $('#Process_Indicator').val();
+                 var Measurable_Value = $('#Measurable_Value').val();
+                 var Monitoring_Mechanism = $('#Monitoring_Mechanism').val();
+
+                 var Freq_of_Eval = [];
+                 var Freq_of_EvalText = $.map($("#Freq_of_Eval option:selected"), function (el, i) {
+                     return $(el).text();
+                 });
+                 var Freq_of_EvalVal = $("#Freq_of_Eval").val();
+
+                 cell0.innerHTML = " <img src='@Url.Content("~/images/cancel.png")' onclick='deleteRow(this)' style='cursor:pointer; padding-right: 5px;'/>";
+                 cell1.innerHTML = "<input type='hidden' id='EstablishedOn" + cnt + "' name='EstablishedOn" + cnt + "' value='" + EstablishedOn + "'>" + EstablishedOn;
+                 cell2.innerHTML = "<input type='hidden' id='target_date" + cnt + "' name='target_date" + cnt + "' value='" + target_date + "'>" + target_date;
+                 cell3.innerHTML = "<input type='hidden' id='Process_Indicator" + cnt + "' name='Process_Indicator" + cnt + "' value='" + Process_Indicator + "'>" + Process_Indicator;
+                 cell4.innerHTML = "<input type='hidden' id='Measurable_Value" + cnt + "' name='Measurable_Value" + cnt + "' value='" + Measurable_Value + "'>" + Measurable_Value;
+                 cell5.innerHTML = "<input type='hidden' id='Monitoring_Mechanism" + cnt + "' name='Monitoring_Mechanism" + cnt + "' value='" + Monitoring_Mechanism + "'>" + Monitoring_Mechanism;
+                 cell6.innerHTML = "<input type='hidden' id='Freq_of_Eval" + cnt + "' name='Freq_of_Eval" + cnt + "' value='" + Freq_of_EvalVal + "'>" + Freq_of_EvalText;
+
+                 cnt++;
+                 document.getElementById("itemcnt").value = cnt;
+
+                 document.getElementById("btnCreate").classList.remove(hideClass);
+                 document.getElementById("btnCreate").classList.add(showClass);
+                 document.getElementById("hidden card").classList.remove(hideClass);
+                 document.getElementById("hidden card").classList.add(showClass);
+                 ResetControl();
+            }
+         }
+
+         function ResetControl() {
+
+             document.getElementById("EstablishedOn").value = "";
+             document.getElementById("target_date").value = "";
+             document.getElementById("Process_Indicator").value = "";
+             document.getElementById("Measurable_Value").value = "";
+             document.getElementById("Monitoring_Mechanism").value = "";
+             $("#Freq_of_Eval").val('').trigger('change');
+
+             var ssnMessage = $('#EstablishedOn-message');
+             ssnMessage.hide();
+             ssnMessage = $('#target_date-message');
+             ssnMessage.hide();
+             ssnMessage = $('#Process_Indicator-message');
+             ssnMessage.hide();
+             ssnMessage = $('#Measurable_Value-message');
+             ssnMessage.hide();
+             ssnMessage = $('#Monitoring_Mechanism-message');
+             ssnMessage.hide();
+         }
+
+        function deleteRow(btn) {
+            var row = btn.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+            var cnt = document.getElementById("itemcnt").value;
+            cnt--;
+
+            document.getElementById("itemcnt").value = cnt;
+            if (cnt == "0") {
+                document.getElementById("btnCreate").classList.add(hideClass);
+                document.getElementById("btnCreate").classList.remove(showClass);
+                document.getElementById("hidden card").classList.remove(showClass);
+                document.getElementById("hidden card").classList.add(hideClass);
+            }
+        }
+                
+
+        function GetDeptList() {
+            var selectedValues = [];
+            $("#branch :selected").each(function () {
+                selectedValues.push($(this).val());
+            });
+            var svalue = selectedValues.join(",");
+
+            GetEmpList();
+            GetLocList(svalue);
+            if (svalue != "") {
+                jQuery.ajax({
+                    url: '@Url.Action("FunGetGDeptListbymultiBranch", "Global")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'branch': svalue },
+                    success: function (result) {
+                        $("#DeptId").children('option').remove();
+                        $("#DeptId").trigger('change');
+                        if (result != null && result.length > 0) {
+                            $.each(result, function (index, item) {
+                                $("#DeptId").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                            });
+                            $("#DeptId").trigger('change');
+                            return;
+                        }
+                    }
+                });
+            }
+            else {
+                $("#DeptId").val('').trigger('change');
+                $("#Location").val('').trigger('change');
+                }
+        }
+
+        function GetLocList(svalue) {
+            jQuery.ajax({
+               url: '@Url.Action("FunGetGLocListbymultiBranch", "Global")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'branch': svalue },
+                success: function (result) {
+                    $("#Location").children('option').remove();
+                    $("#Location").trigger('change');
+                    if (result != null && result.length > 0) {
+                        $.each(result, function (index, item) {
+                            $("#Location").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                        });
+                        $("#Location").trigger('change');
+                        return;
+                    }                    
+                }
+            });
+        }
+
+        function GetEmpList() {
+            var sbranch = $.map($("#branch option:selected"), function (el, i) {
+                return $(el).val();
+            });
+            var sbvalue = (sbranch.join(","));
+
+            var sDepartment = $.map($("#DeptId option:selected"), function (el, i) {
+                return $(el).val();
+            });
+            var sdvalue = (sDepartment.join(","));
+
+            var sLocation = $.map($("#Location option:selected"), function (el, i) {
+                return $(el).val();
+            });
+            var slvalue = (sLocation.join(","));
+
+            jQuery.ajax({
+                url: '@Url.Action("FunGetGEmpListBymulitBDL", "Global")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'sDivision': sbvalue, 'sDept': sdvalue, 'sLoc': slvalue},
+                success: function (result) {
+                    $("#Person_Responsible").children('option').remove();
+                    $("#Person_Responsible").trigger('change');
+                    if (result != null && result.length > 0) {
+                        $.each(result, function (index, item) {
+                            $("#Person_Responsible").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                        });
+                        $("#Person_Responsible").trigger('change');
+                        return;
+                    }
+                }
+            });
+        }
+
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

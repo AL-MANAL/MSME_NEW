@@ -1,0 +1,295 @@
+﻿@model ISOStd.Models.WasteManagementModels
+
+@{
+    ViewBag.Title = "AddWasteManagement";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+    @section featured {
+
+        <div class="page-header page-header-light">
+
+            <div class="page-header-content header-elements-md-inline">
+                <div class="page-title d-flex">
+                    <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+                </div>
+            </div>
+
+            <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+                <div class="d-flex">
+                    <div class="breadcrumb">
+
+                        <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                            <span class="breadcrumb-item"> Home</span>
+                        </a>
+                        <a href="@Url.Action("WasteManagementList", "WasteManagement", null)" class="breadcrumb-item">
+                            <span class="breadcrumb-item"> Waste ManagementList</span>
+                        </a>
+                        <span class="breadcrumb-item active"> Add Waste Management</span>
+                    </div>
+
+                    <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+                </div>
+
+                <div class="header-elements d-none">
+                    <div class="breadcrumb justify-content-center">
+
+
+                        <div class="breadcrumb-elements-item dropdown p-0">
+                            <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                                <i class="icon-gear mr-2"></i>
+                                Settings
+                            </a>
+
+                            <div class="dropdown-menu dropdown-menu-right">
+
+                                <div class="dropdown-divider"></div>
+                                <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    }
+
+    @using (Html.BeginForm("AddWasteManagement", "WasteManagement", FormMethod.Post,
+                         new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true)
+
+        <div class="card">
+            <div class="card-header header-elements-inline bg-primary">
+                <h5 class="card-title">Add Waste Management</h5>
+                <div class="header-elements">
+                    <div class="list-icons">
+                        <a class="list-icons-item" data-action="collapse"></a>
+
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="container-fluid">
+
+                    <table class="table table-lg">
+
+                        <tbody>
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+
+                                    @Html.LabelFor(model => model.Disposal_date)<text style="color:red;"> *</text>
+
+                                </td>
+                                <td class="col">
+
+                                    <input type="date" id="Disposal_date" name="Disposal_date" class="form-control" required />
+
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+                                    @Html.LabelFor(model => model.DisposalBy)<text style="color: red;">*</text>
+                                </td>
+                                <td class="col">
+                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="DisposalBy" name="DisposalBy">
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.Supplier != null)
+                                        {
+                                            foreach (var item in ViewBag.Supplier)
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+
+                                    @Html.LabelFor(model => model.Wate_type)<text style="color: red;">*</text>
+
+                                </td>
+                                <td class="col">
+
+                                    <input class="form-control" type="text" id="Wate_type" name="Wate_type" required />
+
+                                </td>
+
+                                <td class="col-xs-3 col-md-2">
+
+                                    @Html.LabelFor(model => model.Units)<text style="color: red;">*</text>
+
+                                </td>
+                                <td class="col">
+
+                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="Units" name="Units" required>
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.Units != null)
+                                        {
+                                            foreach (var item in ViewBag.Units)
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    </select>
+
+                                </td>
+                            </tr>
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+
+                                    @Html.LabelFor(model => model.Quantity)<text style="color: red;">*</text>
+
+                                </td>
+                                <td class="col">
+                                    <input class="form-control" type="number" id="Quantity" name="Quantity" required />
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+                                    @Html.LabelFor(model => model.Location)<text style="color: red;">*</text>
+                                </td>
+                                <td class="col">
+                                     <input class="form-control" type="text" id="Location" name="Location" required />
+                                    @*<select class="form-control select-search select2-hidden-accessible" data-fouc id="Location" name="Location" required>
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.Location != null)
+                                        {
+                                            foreach (var item in ViewBag.Location)
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    </select>*@
+                                </td>
+                            </tr>
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+
+                                    @Html.LabelFor(model => model.Collection_Method)<text style="color: red;">*</text>
+
+                                </td>
+                                <td class="col">
+
+                                    <input class="form-control" type="text" id="Collection_Method" name="Collection_Method" required />
+
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+
+                                    @Html.LabelFor(model => model.Destination)
+
+                                </td>
+                                <td class="col">
+
+                                    <input class="form-control" type="text" id="Destination" name="Destination" required />
+
+                                </td>
+
+                            </tr>
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+
+                                    @Html.LabelFor(model => model.Recv_facility)
+
+                                </td>
+                                <td class="col">
+
+                                    <input class="form-control" type="text" id="Recv_facility" name="Recv_facility" required />
+
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+                                    @Html.LabelFor(model => model.Upload_doc)
+                                </td>
+                                <td class="col">
+                                    <input type="file" name="Upload_doc" id="Upload_doc" title="Documents" onchange="FileFormatValidation(this)"
+                                           multiple="multiple" accept=".pdf, .doc, .docx,.xls,.xlsx,image/*" class="bootstrap-uploader" data-fouc />
+
+                                    <span class="form-text text-muted"><code>(Hold Ctrl Key in case of multiple files or drag multiple files and drop here)</code></span>
+                                </td>
+                            </tr>
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+                                    @Html.LabelFor(model => model.Remarks)
+                                </td>
+                                <td class="col">
+                                    @*<input type="text" id="Remarks" name="Remarks" />*@
+                                    <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="Remarks" name="Remarks"></textarea>
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+                                    @Html.LabelFor(model => model.Collected_by)
+                                </td>
+                                <td class="col">
+                                    <input class="form-control" type="text" id="Collected_by" name="Collected_by" />
+
+                                </td>
+                            </tr>
+
+
+                        </tbody>
+
+                    </table>
+                </div>
+
+            </div>
+
+
+        
+
+            <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+
+                @Html.ActionLink("Back to List", "WasteManagementList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+
+                <button class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" type="submit" value="Save" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Save</button>
+
+            </div>
+        </div>
+                }
+
+
+
+
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+        @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+                    });
+
+    //zzz----
+
+
+            function FileFormatValidation(file) {
+                var ext = file.value.split(".").pop().toLowerCase();
+                if ($.inArray(ext, ["pdf", "xlsx", "xls", "doc", "docx"]) == -1) {
+                    file.value = "";
+                    bootbox.alert({
+                        title: 'File type',
+                        message: 'Invalid file format, please upload only doc, pdf, docx, jpg, jpeg, gif, png format'
+                    });
+                }
+            }
+
+
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}
+

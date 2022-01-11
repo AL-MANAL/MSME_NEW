@@ -449,7 +449,8 @@ namespace ISOStd.Controllers
                     // ViewBag.CheckList = objGlobaldata.GetDCRChecklist();
                     ViewBag.Branch = objGlobaldata.GetCompanyBranchListbox();
                     // ViewBag.DocLevel = objGlobaldata.GetDocLevel();
-                    ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbyDesignation("%As%manager%HSE%");
+                    // ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbyDesignation("%As%manager%HSE%");
+                    ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
                     //ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbyDesignation("Assistant manager HSE");
 
                     string sSqlstmt = "select id_doc_request,dcr_no,date_request,division,`department`,location,reason,upload,checkedby,doc_status as doc_statusId," +

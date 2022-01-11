@@ -472,12 +472,22 @@ namespace ISOStd.Models
                 string sCCList = objGlobalData.GetMultiHrEmpEmailIdById(objGlobalData.GetTopMgmtEmployee());
                 string sToEmailId = objGlobalData.GetMultiHrEmpEmailIdById(objGlobalData.GetHSEEmployee());
                 string sUserName = objGlobalData.GetMultiHrEmpNameById(objGlobalData.GetHSEEmployee());
-             
-                sInformation = "Accident Reported"
-                + " <br />"
-               + "Accident No:'" + objGlobalData.GetAccidentReportNoById(accident_reportno) + "'"
+
+                string sql = "select acc_date from t_accident_report where id_accident_rept='"+ accident_reportno + "'";
+                DataSet dsData = objGlobalData.Getdetails(sql);
+                if (dsData.Tables.Count > 0 && dsData.Tables[0].Rows.Count > 0)
+                {
+                    string acc_date = "";
+                    if (dsData.Tables[0].Rows[0]["acc_date"].ToString() != null && Convert.ToDateTime(dsData.Tables[0].Rows[0]["acc_date"].ToString()) > Convert.ToDateTime("01/01/0001"))
+                    {
+                        acc_date = Convert.ToDateTime(dsData.Tables[0].Rows[0]["acc_date"].ToString()).ToString("yyyy-MM-dd hh:mm:ss");
+                    }
+                }
+
+
+                    sInformation =  "Accident No:'" + objGlobalData.GetAccidentReportNoById(accident_reportno) + "'"
                +" <br />"
-               + "Accident Date and Timing:'" + acc_date.ToString("dd-MM-yyyy hh:mm:ss") + "'"
+               + "Accident Date and Timing:'" + acc_date + "'"
                + " <br />"
                 + "Description:'" + objReport.details + "'";
                 sHeader = sHeader + sInformation;
@@ -492,7 +502,7 @@ namespace ISOStd.Models
                 sCCList = sCCList.TrimEnd(',');
                 sCCList = sCCList.TrimStart(',');
 
-                Dictionary<string, string> dicEmailContent = objGlobalData.FormEmailBody(sUserName, "incident", sHeader, "", "Initial Incident Reported");
+                Dictionary<string, string> dicEmailContent = objGlobalData.FormEmailBody(sUserName, "incident", sHeader, "", "Accident Investigation Report");
                 objGlobalData.Sendmail(sToEmailId, dicEmailContent["subject"], dicEmailContent["body"], "", sCCList, "");
                 return true;
             }

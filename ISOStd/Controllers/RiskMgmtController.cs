@@ -1618,7 +1618,7 @@ namespace ISOStd.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public JsonResult AddRiskEvaluation(FormCollection form, RiskMgmtModels objRiskMgmt)
+        public ActionResult AddRiskEvaluation(FormCollection form, RiskMgmtModels objRiskMgmt)
         {
             try
             {
@@ -1639,7 +1639,7 @@ namespace ISOStd.Controllers
                 objGlobaldata.AddFunctionalLog("Exception in AddRiskEvaluation: " + ex.ToString());
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
-            return Json(true);
+            return RedirectToAction("RiskList");
         }
 
         [HttpGet]
@@ -1747,7 +1747,7 @@ namespace ISOStd.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public JsonResult AddRiskMitigations(FormCollection form, RiskMgmtModels objRiskMgmt)
+        public ActionResult AddRiskMitigations(FormCollection form, RiskMgmtModels objRiskMgmt)
         {
             try
             {
@@ -1790,7 +1790,7 @@ namespace ISOStd.Controllers
                 objGlobaldata.AddFunctionalLog("Exception in AddRiskMitigation: " + ex.ToString());
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
-            return Json(true);
+            return RedirectToAction("RiskList");
         }
 
         [HttpGet]
@@ -1910,7 +1910,7 @@ namespace ISOStd.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public JsonResult AddRiskReEvaluation(FormCollection form, RiskMgmtModels objRiskMgmt)
+        public ActionResult AddRiskReEvaluation(FormCollection form, RiskMgmtModels objRiskMgmt)
         {
             try
             {
@@ -1931,7 +1931,7 @@ namespace ISOStd.Controllers
                 objGlobaldata.AddFunctionalLog("Exception in AddRiskReEvaluation: " + ex.ToString());
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
-            return Json(true);
+            return RedirectToAction("RiskList");
         }
 
         [HttpGet]
@@ -2064,7 +2064,7 @@ namespace ISOStd.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public JsonResult FurtherRiskMitigations(FormCollection form, RiskMgmtModels objRiskMgmt)
+        public ActionResult FurtherRiskMitigations(FormCollection form, RiskMgmtModels objRiskMgmt)
         {
             try
             {
@@ -2109,7 +2109,7 @@ namespace ISOStd.Controllers
                 objGlobaldata.AddFunctionalLog("Exception in AddRiskMitigation: " + ex.ToString());
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
-            return Json(true);
+            return RedirectToAction("RiskList");
         }
 
         [AllowAnonymous]

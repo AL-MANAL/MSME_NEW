@@ -1,0 +1,508 @@
+﻿@using PagedList;
+@using PagedList.Mvc;
+@model IPagedList<ISOStd.Models.AccessPrivilegesModels>
+@{
+    ViewBag.Title = "Access Orientation";
+   System.Data.DataSet dsPrivileges=new System.Data.DataSet();
+
+
+   
+}
+<div class="groupedassets margin10">
+    <span class="groupedassetshead margin10 onestphdcolor">Access Privileges</span>
+</div>
+ <div id="divmsg">
+        @if (TempData["alertdata"] != null)
+        {
+            <span class="errMsg" style="color: red;font-weight: bold;">@TempData["alertdata"]</span>
+        }
+        @if (TempData["Successdata"] != null)
+        {
+            <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+        }
+  </div>
+<br />
+@using (Html.BeginForm("AccessPrivilegesList", "AccessPrivileges", FormMethod.Post, new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    <div>
+      <button type="button" class="btn btn-info" onclick="Send()" style="width:110px; margin-left: 20px">Update</button>  
+    </div>
+    @Html.ValidationSummary(true)
+    @Html.AntiForgeryToken()
+
+}
+<br />
+   <div id="content">
+    <div id="checkboxes">
+        <table id="table1">
+            <thead>
+                
+                <tr>
+
+                    <th style="width: 100px; min-width: 100px; max-width: 100px;">Employee ID</th>
+                    <th style="width: 100px; min-width: 100px; max-width: 100px;">Name</th>
+                    <th style="width: 100px; min-width: 100px; max-width: 100px;">
+                        @Html.DisplayNameFor(model => model.First().DocMgmt)
+                    </th>
+                    <th style="width: 100px; min-width: 100px; max-width: 100px;">
+                        @Html.DisplayNameFor(model => model.First().ObjKPI)
+                    </th>
+                    <th style="width: 100px; min-width: 100px; max-width: 100px;">
+                        @Html.DisplayNameFor(model => model.First().Risk)
+                    </th>
+                    <th style="width: 100px; min-width: 100px; max-width: 100px;">
+                        @Html.DisplayNameFor(model => model.First().HR)
+                    </th>
+                    <th style="width: 100px; min-width: 100px; max-width: 100px;">
+                        @Html.DisplayNameFor(model => model.First().Meeting)
+                    </th>
+                    <th style="width: 100px; min-width: 100px; max-width: 100px;">
+                        @Html.DisplayNameFor(model => model.First().Supplier)
+                    </th>
+                    <th style="width: 100px; min-width: 100px; max-width: 100px;">
+                        @Html.DisplayNameFor(model => model.First().CustomerMgmt)
+                    </th>
+                    <th style="width: 100px; min-width: 100px; max-width: 100px;">
+                        @Html.DisplayNameFor(model => model.First().Audit)
+                    </th>
+
+                    <th style="width: 100px; min-width: 100px; max-width: 100px;">
+                        @Html.DisplayNameFor(model => model.First().Equipment)
+                    </th>
+                    <th style="width: 100px; min-width: 100px; max-width: 100px;">
+                        @Html.DisplayNameFor(model => model.First().Certificates)
+                    </th>
+                    <th style="width: 100px; min-width: 100px; max-width: 100px;">
+                        @Html.DisplayNameFor(model => model.First().HSE)
+                    </th>
+                    <th style="width: 100px; min-width: 100px; max-width: 100px;">
+                        @Html.DisplayNameFor(model => model.First().MgmtReports)
+                    </th>
+                    <th style="width: 100px; min-width: 100px; max-width: 100px;">
+                        @Html.DisplayNameFor(model => model.First().LegalRegister)
+                    </th>
+                    <th style="width: 100px; min-width: 100px; max-width: 100px;">
+                        @Html.DisplayNameFor(model => model.First().LeaveApply)
+                    </th>
+                    <th style="width: 100px; min-width: 100px; max-width: 100px;">
+                        @Html.DisplayNameFor(model => model.First().LeaveMgmt)
+                    </th>
+                    <th style="width: 100px; min-width: 100px; max-width: 100px;">
+                        @Html.DisplayNameFor(model => model.First().KnowledgBase)
+                    </th>
+
+                    <th style="width: 100px; min-width: 100px; max-width: 100px;">
+                        @Html.DisplayNameFor(model => model.First().TrainingOrientation)
+                    </th>
+
+
+
+                </tr>
+                </thead>
+                <tbody style="display:block">
+               @if (Model != null && Model.Count() > 0)
+            {
+                foreach (var item in Model)
+                {
+                    
+                     
+                    <tr>
+
+                        <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                            @Html.DisplayFor(model => item.EmpId)
+                        </td>
+                        <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                            @Html.DisplayFor(model => item.Emp_Name)
+
+                        </td>
+                        @if (@item.DocMgmt == "1")
+                        {
+                            <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                                <input type="checkbox" id="select" checked name="@item.id_AccessPrivileges" value="DocMgmt" />
+
+                            </td>
+
+                        }
+                        else
+                        {
+
+                            <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                                <input type="checkbox" id="select" name="@item.id_AccessPrivileges" value="DocMgmt" />
+                            </td>
+
+                        }
+
+
+                        @if (@item.ObjKPI == "1")
+                        {
+                            <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                                <input type="checkbox" id="select" checked name="@item.id_AccessPrivileges" value="ObjKPI" />
+
+                            </td>
+
+                        }
+                        else
+                        {
+
+                            <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                                <input type="checkbox" id="select" name="@item.id_AccessPrivileges" value="ObjKPI" />
+
+                            </td>
+                        }
+
+                        @if (@item.Risk == "1")
+                        {
+                            <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                                <input type="checkbox" id="select" checked name="@item.id_AccessPrivileges" value="Risk" />
+
+                            </td>
+
+                        }
+                        else
+                        {
+
+                            <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                                <input type="checkbox" id="select" name="@item.id_AccessPrivileges" value="Risk" />
+
+                            </td>
+                        }
+                        @if (@item.HR == "1")
+                        {
+                            <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                                <input type="checkbox" id="select" checked name="@item.id_AccessPrivileges" value="HR" />
+
+                            </td>
+
+                        }
+                        else
+                        {
+
+                            <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                                <input type="checkbox" id="select" name="@item.id_AccessPrivileges" value="HR" />
+
+                            </td>
+                        }
+
+                        @if (@item.Meeting == "1")
+                        {
+                            <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                                <input type="checkbox" id="select" checked name="@item.id_AccessPrivileges" value="Meeting" />
+
+                            </td>
+
+                        }
+                        else
+                        {
+
+                            <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                                <input type="checkbox" id="select" name="@item.id_AccessPrivileges" value="Meeting" />
+
+                            </td>
+                        }
+
+                        @if (@item.Supplier == "1")
+                        {
+                            <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                                <input type="checkbox" id="select" checked name="@item.id_AccessPrivileges" value="Supplier" />
+
+                            </td>
+
+                        }
+                        else
+                        {
+
+                            <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                                <input type="checkbox" id="select" name="@item.id_AccessPrivileges" value="Supplier" />
+
+                            </td>
+                        }
+                        @if (@item.CustomerMgmt == "1")
+                        {
+                            <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                                <input type="checkbox" id="select" checked name="@item.id_AccessPrivileges" value="CustomerMgmt" />
+
+                            </td>
+
+                        }
+                        else
+                        {
+
+                            <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                                <input type="checkbox" id="select" name="@item.id_AccessPrivileges" value="CustomerMgmt" />
+
+                            </td>
+                        }
+
+                        @if (@item.Audit == "1")
+                        {
+                            <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                                <input type="checkbox" id="select" checked name="@item.id_AccessPrivileges" value="Audit" />
+
+                            </td>
+
+                        }
+                        else
+                        {
+
+                            <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                                <input type="checkbox" id="select" name="@item.id_AccessPrivileges" value="Audit" />
+
+                            </td>
+                        }
+
+
+
+                        @if (@item.Equipment == "1")
+                        {
+                            <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                                <input type="checkbox" id="select" checked name="@item.id_AccessPrivileges" value="Equipment" />
+
+                            </td>
+
+                        }
+                        else
+                        {
+
+                            <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                                <input type="checkbox" id="select" name="@item.id_AccessPrivileges" value="Equipment" />
+
+                            </td>
+                        }
+
+                        @if (@item.Certificates == "1")
+                        {
+                            <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                                <input type="checkbox" id="select" checked name="@item.id_AccessPrivileges" value="Certificates" />
+
+                            </td>
+
+                        }
+                        else
+                        {
+
+                            <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                                <input type="checkbox" id="select" name="@item.id_AccessPrivileges" value="Certificates" />
+
+                            </td>
+                        }
+
+                        @if (@item.HSE == "1")
+                        {
+                            <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                                <input type="checkbox" id="select" checked name="@item.id_AccessPrivileges" value="HSE" />
+
+                            </td>
+
+                        }
+                        else
+                        {
+
+                            <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                                <input type="checkbox" id="select" name="@item.id_AccessPrivileges" value="HSE" />
+
+                            </td>
+                        }
+
+                        @if (@item.MgmtReports == "1")
+                        {
+                            <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                                <input type="checkbox" id="select" checked name="@item.id_AccessPrivileges" value="MgmtReports" />
+
+                            </td>
+
+                        }
+                        else
+                        {
+
+                            <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                                <input type="checkbox" id="select" name="@item.id_AccessPrivileges" value="MgmtReports" />
+
+                            </td>
+                        }
+
+                        @if (@item.LegalRegister == "1")
+                        {
+                            <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                                <input type="checkbox" id="select" checked name="@item.id_AccessPrivileges" value="LegalRegister" />
+
+                            </td>
+
+                        }
+                        else
+                        {
+
+                            <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                                <input type="checkbox" id="select" name="@item.id_AccessPrivileges" value="LegalRegister" />
+
+                            </td>
+                        }
+
+                        @if (@item.LeaveApply == "1")
+                        {
+                            <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                                <input type="checkbox" id="select" checked name="@item.id_AccessPrivileges" value="LeaveApply" />
+
+                            </td>
+
+                        }
+                        else
+                        {
+
+                            <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                                <input type="checkbox" id="select" name="@item.id_AccessPrivileges" value="LeaveApply" />
+
+                            </td>
+                        }
+
+
+                        @if (@item.LeaveMgmt == "1")
+                        {
+                            <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                                <input type="checkbox" id="select" checked name="@item.id_AccessPrivileges" value="LeaveMgmt" />
+
+                            </td>
+
+                        }
+                        else
+                        {
+
+                            <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                                <input type="checkbox" id="select" name="@item.id_AccessPrivileges" value="LeaveMgmt" />
+
+                            </td>
+                        }
+
+
+
+                        @if (@item.KnowledgBase == "1")
+                        {
+                            <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                                <input type="checkbox" id="select" checked name="@item.id_AccessPrivileges" value="KnowledgBase" />
+
+                            </td>
+
+                        }
+                        else
+                        {
+
+                            <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                                <input type="checkbox" id="select" name="@item.id_AccessPrivileges" value="KnowledgBase" />
+
+                            </td>
+                        }
+                        @if (@item.TrainingOrientation == "1")
+                        {
+                            <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                                <input type="checkbox" id="select" checked name="@item.id_AccessPrivileges" value="TrainingOrientation" />
+
+                            </td>
+
+                        }
+                        else
+                        {
+
+                            <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                                <input type="checkbox" id="select" name="@item.id_AccessPrivileges" value="TrainingOrientation" />
+
+                            </td>
+                        }
+
+
+                    </tr>
+                   
+                   
+                  }
+              
+                  }
+          </tbody>
+               </table>
+                  </div>
+       </div>
+   
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+
+        $(function () {
+           
+            $("#select").click(function () {
+                if ($("#select").prop('checked')) {
+                    {
+                        $(this).prop('checked', true);
+                        //var id = $(this).attr('name')
+                        //var value = $(this).attr('value')
+                        ////alert(value);
+                        //SetAccess(id,value,1);
+
+                    }
+                }
+                else {
+
+                    $(this).prop('checked', false);
+                    //var id = $(this).attr('name')
+                    //var value = $(this).attr('value')
+                    //alert(value);
+                    //SetAccess(id, value, 0);
+                }
+
+            });
+
+            
+        });
+
+        function Send() {
+            var selected = "";
+            var selected1 = "";
+            $('#checkboxes input:checked').each(function () {
+                // selected.push($(this).attr('name'));
+                selected = selected + $(this).attr('name') + ",";
+                selected = selected + $(this).attr('value') + ",";
+            });
+            //SendEmail(selected);
+            if (selected != "") {
+                if (selected.charAt(selected.length - 1) == ',') {
+                    selected = selected.substr(0, selected.length - 1);
+                }
+                SetAccess(selected,1);
+                //jAlert("Selected Items: " + selected);
+            }
+            $('#checkboxes input:unchecked').each(function () {
+                // selected.push($(this).attr('name'));
+                selected1 = selected1 + $(this).attr('name') + ",";
+                selected1 = selected1 + $(this).attr('value') + ",";
+            });
+            //SendEmail(selected);
+            if (selected1 != "") {
+                if (selected1.charAt(selected1.length - 1) == ',') {
+                    selected1 = selected1.substr(0, selected1.length - 1);
+                }
+                SetAccess(selected1,0);
+                jAlert("Selected Items: " + selected1);
+            }
+            //else {
+            //    jAlert("Please select atleast one customer and then click Send");
+            //}
+        }
+
+        function SetAccess(selected,status) {
+  
+            var data = { 'selected': selected, 'status': status };
+            jQuery.ajax({
+                url: '@Url.Action("UpdateAccessPrivileges", "AccessPrivileges")',
+                 type: 'POST',
+                 dataType: "json",
+                 data: data,
+                 success: function (result) {
+                     jAlert("Updated Successfully");
+                     //window.location.reload();
+                    
+                 }
+             });
+        }
+
+        
+       
+    </script>
+}

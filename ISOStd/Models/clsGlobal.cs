@@ -25,6 +25,45 @@ namespace ISOStd.Models
         private object fileUploader;
         private object mail;
 
+        //get designation for jd
+        public MultiSelectList GetDesignationforJD(string designation_id)
+        {
+            DropdownList objProductList = new DropdownList();
+            objProductList.lstDropdown = new List<DropdownItems>();
+
+            try
+            {
+                if (designation_id != "" && designation_id != null)
+                {
+                string sSsqlstmt = "select item_id as Id, item_desc as Name from dropdownitems t1,dropdownheader t2"
+                + " where t1.header_id = t2.header_id and header_desc = 'Employee Designation' and '" + designation_id + "' not in (item_id)order by Name asc";
+
+
+                DataSet dsBranch = Getdetails(sSsqlstmt);
+
+                if (dsBranch.Tables.Count > 0 && dsBranch.Tables[0].Rows.Count > 0)
+                {
+                    for (int i = 0; i < dsBranch.Tables[0].Rows.Count; i++)
+                    {
+                        DropdownItems objProduct = new DropdownItems()
+                        {
+                            Id = dsBranch.Tables[0].Rows[i]["Id"].ToString(),
+                            Name = dsBranch.Tables[0].Rows[i]["Name"].ToString()
+                        };
+
+                        objProductList.lstDropdown.Add(objProduct);
+                    }
+                }
+            }
+            }
+            catch (Exception ex)
+            {
+                AddFunctionalLog("Exception in GetDesignationforJD: " + ex.ToString());
+            }
+
+            return new MultiSelectList(objProductList.lstDropdown, "Id", "Name");
+        }
+
         //return accident report no 
         public string GetAccidentReportNoById(string id_accident_rept)
         {
@@ -6232,8 +6271,8 @@ namespace ISOStd.Models
         //Reviewer
         public DataSet getListPendingForReviewJD(string sempid)
         {
-            string sSqlstmt = "select id_role_jd,role_id,deptid,report_to,supervises,jd_date,logged_by,jd_report,approved_by"
-            + " from t_role_jd where approve_status = 0"
+            string sSqlstmt = "select id_jd,designation_id,deptid,report_to,supervises,jd_date,logged_by,jd_report,approved_by"
+            + " from t_jd where approve_status = 0"
             + " and (find_in_set('" + sempid + "', reviewed_by) and not find_in_set('" + sempid + "', Reviewers))"
             + " and(find_in_set('" + sempid + "', reviewed_by) and not find_in_set('" + sempid + "', ReviewRejector))";
 
@@ -6247,8 +6286,8 @@ namespace ISOStd.Models
         //Approver
         public DataSet getListPendingForApprovalJD(string sempid)
         {
-            string sSqlstmt = "select id_role_jd,role_id,deptid,report_to,supervises,jd_date,logged_by,jd_report,approved_by"
-            +" from t_role_jd where approve_status = 2"
+            string sSqlstmt = "select id_jd,designation_id,deptid,report_to,supervises,jd_date,logged_by,jd_report,approved_by"
+            + " from t_jd where approve_status = 2"
             +" and (find_in_set('"+ sempid + "', approved_by) and not find_in_set('"+ sempid + "', Approvers))"
             +" and(find_in_set('"+ sempid + "', approved_by) and not find_in_set('"+ sempid + "', ApprovalRejector))";
 

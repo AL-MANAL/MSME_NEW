@@ -1,0 +1,719 @@
+﻿@model ISOStd.Models.MeetingModels
+
+@using System.Data;
+
+@{
+    ViewBag.Title = "MeetingEdit";
+
+    DataSet dsItems = ViewBag.Itemlist;
+    string sitem_no = "", sitem_discussed = "", saction_agreed = "", saction_owner = "", sitem_status = "" ,sremarks="",
+         SubmitFinding = "SubmitFinding", Save = "Save";
+    DateTime dtdue_date = new DateTime();
+    ISOStd.Models.MeetingModels objmod = new ISOStd.Models.MeetingModels();
+    ISOStd.Models.clsGlobal obj = new ISOStd.Models.clsGlobal();
+    if (dsItems != null && dsItems.Tables.Count > 0 && dsItems.Tables[0].Rows.Count > 0)
+    {
+        sitem_no = dsItems.Tables[0].Rows[0]["item_no"].ToString();
+        sitem_discussed = dsItems.Tables[0].Rows[0]["item_discussed"].ToString();
+        saction_agreed = dsItems.Tables[0].Rows[0]["action_agreed"].ToString();
+        dtdue_date = Convert.ToDateTime(dsItems.Tables[0].Rows[0]["due_date"].ToString());
+        saction_owner = dsItems.Tables[0].Rows[0]["action_owner"].ToString();
+        sitem_status = dsItems.Tables[0].Rows[0]["item_status"].ToString();
+        sremarks = dsItems.Tables[0].Rows[0]["remarks"].ToString();      
+
+    }
+}
+
+@section featured {
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("MeetingList", "Meeting", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Meetings Schedule</span>
+                    </a>
+                    <span class="breadcrumb-item active">Update Meetings Schedule</span>
+                </div>
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+                    
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+}
+
+@using (Html.BeginForm("MeetingEdit", "Meeting", FormMethod.Post,
+                         new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+
+    <input type="hidden" id="meeting_id" name="meeting_id" value="@ViewBag.meeting_id" />
+    <input type="hidden" id="meeting_ref" name="meeting_ref" value="@ViewBag.meeting_ref" />
+ 
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Update Meetings Schedule</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">          
+
+                    <table class="table table-lg">
+                        <tbody>
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+                                    @Html.LabelFor(model => model.meeting_ref)
+
+                                </td>
+                                <td class="col">
+                                    <span class="font-size-lg bg-dark py-1 px-2 rounded">  @Html.DisplayFor(model => model.meeting_ref)</span>
+
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+
+                                    @Html.LabelFor(model => model.meeting_date)
+
+                                </td>
+                                <td class="col">
+
+                                    @if (Model.meeting_date > Convert.ToDateTime("01/01/0001"))
+                                    {
+                                    <span class="font-size-lg bg-dark py-1 px-2 rounded">
+                                        @Model.meeting_date.ToString("dd/MM/yyyy")
+                                    </span>
+                                        }
+
+                                 </td>
+                            </tr>
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+
+                                    @Html.LabelFor(model => model.Attendees)
+
+                                </td>
+                                <td class="col">
+                                    <input type="file" name="fileAttendees" id="fileAttendees" onchange="FileFormatValidation(this)" accept=".pdf" class="bootstrap-uploader" data-fouc />
+                                   
+                                    @if (Model.Attendees != "")
+                                    {
+                                        <a href='@Url.Action("DisplayDocument", "Reports", new { Document = Model.Attendees })' target="_blank">Preview</a>
+                                    }
+                                    else
+                                    {
+                                        <p>Not Available</p>
+                                    }
+
+
+                                </td>
+
+                                <td class="col-xs-3 col-md-2">
+
+                                    Meeting Type
+
+                                </td>
+                                <td class="col">
+
+                                    <span class="font-size-lg bg-dark py-1 px-2 rounded">   @Html.DisplayFor(model => model.meeting_type_desc)</span>
+
+                                </td>
+                            </tr>
+                          
+                    </table>
+
+                    <div id="dvAgendaItems">
+                        <input type="hidden" id="item_no" name="item_no" value="@sitem_no" />
+
+                        @if (ViewBag.AgendaList != null)
+                        {
+                            <fieldset class="border p-2">
+                                <legend id="divAgendasTitle" class="font-weight-semibold"><i class="icon-file-text ml-2 mr-2"></i> Agendas</legend>
+                                <table class="table table-lg" id="tbl_Agenda">
+                                    <tr class="row" style="background-color: #4cc4dd; color: #fff; font-weight: bold;">
+                                        <th class="col col-xs-10">Name</th>
+                                        <th class="col-xs-2">Action</th>
+
+                                    </tr>
+
+                                    @foreach (var item in ViewBag.AgendaList)
+                                    {
+                                        <tr class="row">
+                                            <td class="col col-xs-10">
+                                                @item.Text
+                                            </td>
+                                            <td class="col-xs-2">
+                                                <img src='@Url.Content("~/images/icon_add.png")' id='@item.Value' onclick='DisplayAgenda(@item.Value)'
+                                                     title='@item.Text' style='cursor:pointer;' />
+                                            </td>
+                                        </tr>
+
+                                    }
+                                </table>
+                            </fieldset>
+                        }
+
+                        <br />
+                        <br />
+                        <br />
+                        <div id="tbl_AgendaDetails">
+                            @*<table style="margin-bottom: 20px; display:none;" id="tbl_AgendaDetails">*@
+                            <fieldset class="border p-2">
+                                <legend class="font-weight-semibold"><i class="icon-file-text ml-2 mr-2"></i> Meeting Agenda detail</legend>
+                                <table class="table table-lg">
+
+                                    <tr class="row">
+                                        <td class="col" colspan="4" style="background-color: #4cc4dd; color: #fff; font-weight: bold;">Meeting Agenda detail</td>
+                                    </tr>
+                                    <tr class="row">
+                                        <td class="col-xs-3 col-md-2">
+
+                                            @Html.LabelFor(model => model.item_discussed)<text style="color:red">*</text>
+
+                                        </td>
+                                        <td class="col">
+
+                                            <input class="form-control" type="text" id="item_discussed" name="item_discussed" value="@sitem_discussed" />
+                                            <span class="field-validation-error"><span id="discussed-message" style="display: none;">Item discussed is required.</span></span>
+                                            @Html.ValidationMessageFor(model => model.item_discussed)
+
+                                        </td>
+                                        <td class="col-xs-3 col-md-2">
+
+                                            @Html.LabelFor(model => model.action_agreed)
+
+                                        </td>
+                                        <td class="col">
+
+                                            <input class="form-control" type="text" id="action_agreed" name="action_agreed" value="@saction_agreed" />
+                                            <span class="field-validation-error"><span id="agreed-message" style="display: none;">Action agreed is required.</span></span>
+                                            @Html.ValidationMessageFor(model => model.action_agreed)
+
+                                        </td>
+                                    </tr>
+                                    <tr class="row">
+                                        <td class="col-xs-3 col-md-2">
+
+                                            @Html.LabelFor(model => model.due_date)
+
+                                        </td>
+                                        <td class="col">
+
+                                            <input class="form-control" type="date" id="due_date" name="due_date" value="@dtdue_date.ToString("yyyy-MM-dd")" onchange="checkDate()" />
+                                            <span class="field-validation-error"><span id="due-message" style="display: none;">Due date is required.</span></span>
+                                            @Html.ValidationMessageFor(model => model.due_date)
+
+                                        </td>
+                                        <td class="col-xs-3 col-md-2">
+
+                                            @Html.LabelFor(model => model.item_status)
+
+                                        </td>
+                                        <td class="col">
+
+                                            <select class="form-control select-search select2-hidden-accessible" data-fouc id="item_status" name="item_status">
+                                                <option value="">Select</option>
+                                                @if (ViewBag.item_status != null)
+                                                {
+                                                    foreach (var item in ViewBag.item_status)
+                                                    {
+                                                        if (item.Value == sitem_status)
+                                                        {
+                                                            <option value='@item.Value' selected>@item.Text</option>
+                                                        }
+                                                        else
+                                                        {
+                                                            <option value='@item.Value'>@item.Text</option>
+                                                        }
+                                                    }
+                                                }
+                                            </select>
+                                            <span class="field-validation-error"><span id="item_status-message" style="display: none;">Please select the Item Status</span></span>
+                                            @Html.ValidationMessageFor(model => model.item_status)
+
+                                        </td>
+                                    </tr>
+                                    <tr class="row">
+                                        <td class="col-xs-3 col-md-2">
+                                            @Html.LabelFor(model => model.action_owner)<text style="color:red">*</text>
+                                        </td>
+                                        <td class="col">
+                                            <select class="form-control select-search select2-hidden-accessible" data-fouc id="action_owner" name="action_owner" multiple>
+                                                <option value="">Select</option>
+                                                @if (ViewBag.EmpLists != null)
+                                                {
+                                                    foreach (var item in ViewBag.EmpLists)
+                                                    {
+                                                        if (Array.IndexOf(saction_owner.ToString().Split(','), item.Value) >= 0)
+
+                                                        {
+                                                            <option value='@item.Value' selected>@item.Text</option>
+                                                        }
+                                                        else
+                                                        {
+                                                            <option value='@item.Value'>@item.Text</option>
+                                                        }
+                                                    }
+                                                }
+                                            </select>
+                                            <span class="field-validation-error"><span id="owner-message" style="display: none;">Please select the Action Owner.</span></span>
+                                            @Html.ValidationMessageFor(model => model.action_owner)
+                                        </td>
+                                        <td class="col-xs-3 col-md-2">
+                                            @Html.LabelFor(model => model.remarks)
+                                        </td>
+                                        <td class="col">
+                                            <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="remarks" name="remarks"> @sremarks</textarea>
+                                        </td>
+                                    </tr>
+                                    <tr class="row">
+                                        <td class="col-xs-3 col-md-2">
+                                            @Html.LabelFor(model => model.upload)
+                                        </td>
+                                        <td class="col">
+                                            <input type="file" name="upload" id="upload" title="Upload Document" onchange="FileFormatValidation(this)" accept=".pdf, .doc, .docx, .xls, .xlsx,image/*"
+                                                   class="bootstrap-uploader" data-fouc />
+                                        </td>
+                                    </tr>
+                                    <tr class="row">
+                                        <td class="col" colspan="4">
+                                            <div>
+
+
+                                                @if (dsItems.Tables.Count > 0 && dsItems.Tables[0].Rows.Count > 0)
+                                                {
+                                                    <input type="submit" id="@SubmitFinding" name="button" class="btn bg-indigo-400" value="UpdatePlan" onclick="return Validation()" />
+                                                    <input type="submit" id="@Save" name="button" value="Save" class="btn bg-indigo-400" onclick="return Validation()" style="display: none;" />
+                                                }
+                                                else
+                                                {
+                                                    <input type="submit" id="@SubmitFinding" name="button" class="btn bg-indigo-400" value="UpdatePlan" onclick="return Validation()" style="display: none;" />
+                                                    <input type="submit" id="@Save" name="button" value="Save" class="btn bg-indigo-400" onclick="return Validation()" />
+                                                }
+
+
+                                                @*<input type="button" value="Add New" onclick="AddNewItem()" />*@
+                                            </div>
+                                            @* <div>
+                            <input type="checkbox" id="select" class="selectall"> (Click checkbox to send mail)
+
+                               <input type="hidden" id="selectall" name="selectall" />
+                             </div>*@
+                                        </td>
+                                    </tr>
+                                </table>
+                            </fieldset>
+                        </div>
+
+
+                        <br />
+                        <br />
+                        <br />
+
+
+                        @if (dsItems != null && dsItems.Tables.Count > 0 && dsItems.Tables[0].Rows.Count > 0)
+                        {
+                          
+
+                                <input type="hidden" id="CurrentAgenda" name="CurrentAgenda" value=" @objmod.GetMeetingAgendaNameById(dsItems.Tables[0].Rows[0]["agenda_id"].ToString())" />
+                                <input type="hidden" id="agenda_id" name="agenda_id" value="@dsItems.Tables[0].Rows[0]["item_no"].ToString()" />
+
+
+                                <fieldset class="border p-2">
+
+                                    <legend class="font-weight-semibold"><i class="icon-file-text ml-2 mr-2"></i> Meeting Agenda detail</legend>
+                                    <div class="card card-table table-responsive shadow-0 mb-0">
+                                        <table id="team-list" class="table table-lg">
+                                            <thead>
+                                                <tr>
+                                                    <th>Action</th>
+                                                    <th>Agenda</th>
+                                                    <th>Item discussed</th>
+                                                    <th>Action(s) agreed</th>
+                                                    <th>Due date / period for action</th>
+                                                    <th>Personnel Responsible</th>
+                                                    <th>Item Status</th>
+                                                    <th>Remarks</th>
+                                                    <th>Upload</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @for (int i = 0; i < dsItems.Tables[0].Rows.Count; i++)
+                                                {
+
+                                                <tr>
+                                                    <td>
+                                                        <a class="icon-pencil" onclick="EditItem(@dsItems.Tables[0].Rows[i]["item_no"].ToString(), @i)" title="Edit Meeting details">
+                                                        </a>
+                                                    </td>
+                                                    <td>
+                                                        @objmod.GetMeetingAgendaNameById(dsItems.Tables[0].Rows[i]["agenda_id"].ToString())
+                                                    </td>
+                                                    <td>
+                                                        @dsItems.Tables[0].Rows[i]["item_discussed"].ToString()
+                                                    </td>
+                                                    <td>
+
+                                                        @dsItems.Tables[0].Rows[i]["action_agreed"].ToString()
+                                                    </td>
+                                                    <td>
+                                                        @Convert.ToDateTime(dsItems.Tables[0].Rows[i]["due_date"].ToString()).ToString("dd/MM/yyyy")
+                                                    </td>
+                                                    <td>
+                                                        @obj.GetEmpHrNameById(dsItems.Tables[0].Rows[i]["action_owner"].ToString())
+                                                    </td>
+                                                    <td>
+                                                        @obj.GetDropdownitemById(dsItems.Tables[0].Rows[i]["item_status"].ToString())
+                                                    </td>
+                                                    <td>
+                                                        @dsItems.Tables[0].Rows[i]["remarks"].ToString()
+                                                    </td>
+                                                    <td>
+                                                        @if (dsItems.Tables[0].Rows[i]["upload"].ToString() != "")
+                                                        {
+                                                            <a href='@Url.Action("DisplayDocument", "Reports", new { Document = dsItems.Tables[0].Rows[i]["upload"].ToString() })' target="_blank">Preview</a>
+                                                        }
+                                                        else
+                                                        {
+                                                            <p>Not Available</p>
+                                                        }
+                                                    </td>
+                                                </tr>
+                                                }
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </fieldset>
+                          
+                        }
+                    </div>
+
+
+                </div>
+            </div>
+
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+
+            @Html.ActionLink("Back to List", "MeetingList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+
+            <button type="submit" id="SubmitAudit" value="Save" name="button" disabled="disabled" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Save</button>
+
+          
+        </div>
+        </div>
+
+}
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript">
+
+        
+                
+                          //----zzz
+    $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+    });
+        //zzz----
+       
+          function checkDate() {
+
+
+                var dt2 = document.getElementById("meeting_date").value;
+                var dt1 = document.getElementById("due_date").value;
+
+                if (new Date(dt1).getTime() < new Date(dt2).getTime()) {
+
+                    bootbox.alert({
+                        title: 'Due Date',
+                        message: 'Due date cannot be before meeting date.'
+                    });
+                    $('#due_date').val("");
+                }
+            }
+
+          
+
+
+
+           function Validation() {
+               var validflg = true;
+               var ssnMessage = "";
+               if (document.getElementById("item_discussed").value == "") {
+                   ssnMessage = $('#discussed-message');
+                   ssnMessage.show();
+                   validflg = false;
+               }
+               else {
+                   var ssnMessage = $('#discussed-message');
+                   ssnMessage.hide();
+               }
+               //if (document.getElementById("action_agreed").value == "") {
+               //    ssnMessage = $('#agreed-message');
+               //    ssnMessage.show();
+               //    validflg = false;
+               //}
+               //else {
+               //    var ssnMessage = $('#agreed-message');
+               //    ssnMessage.hide();
+               //}
+            //   if (document.getElementById("due_date").value == "") {
+            //       var ssnMessage = $('#due-message');
+            //       ssnMessage.show();
+            //       validflg = false;
+            //   }
+            //   else if (document.getElementById("due_date").value != "") {
+            //           var dt2 = document.getElementById("meeting_date").value;
+            //    var dt1 = document.getElementById("due_date").value;
+              
+            //if (new Date(dt1).getTime() < new Date(dt2).getTime()) {
+
+            //    var ssnMessage = $('#due-message');
+            //    ssnMessage.show();
+            //    validflg = false;
+            //}
+            //   }
+            //   else {
+            //       var ssnMessage = $('#due-message');
+            //       ssnMessage.hide();
+            //   }
+               if (document.getElementById("action_owner").value == "") {
+                   var ssnMessage = $('#owner-message');
+                   ssnMessage.show();
+                   validflg = false;
+               }
+               else {
+                   var ssnMessage = $('#owner-message');
+                   ssnMessage.hide();
+               }
+               //if (document.getElementById("item_status").value == "") {
+               //    var ssnMessage = $('#item_status-message');
+               //    ssnMessage.show();
+               //    validflg = false;
+               //}
+               //else {
+               //    var ssnMessage = $('#item_status-message');
+               //    ssnMessage.hide();
+               //}
+               if (validflg) {
+                   ProgressIconFunction('#form1');
+               }
+               return validflg;
+
+           }
+
+           function AddNewItem() {
+               document.getElementById("SubmitFinding").style.display = "None";
+               document.getElementById("Save").style.display = "";
+               ResetControl();
+           }
+
+
+          function reformatDate(dateStr) {
+                dArr = dateStr.split("/");  // ex input " 2018/01/10"
+                return dArr[2] + "-" + dArr[1] + "-" + dArr[0]; //ex out: 2010-01-18
+            }
+
+
+           function EditItem(item_no, Id) {
+               ResetControl();
+               Id++;
+
+               var table = document.getElementById("team-list");
+               document.getElementById("item_no").value = item_no;
+
+               document.getElementById('item_discussed').value = table.rows[Id].cells[2].innerText;
+               document.getElementById("action_agreed").value = table.rows[Id].cells[3].innerText;
+               document.getElementById("due_date").value = reformatDate(table.rows[Id].cells[4].innerText);
+
+               var action_ownerval = table.rows[Id].cells[5].innerText
+               $('#action_owner option').each(function () {
+                   if (this.text == action_ownerval) {
+                       document.getElementById("action_owner").value = this.value;
+                   }
+               });
+
+               //document.getElementById("item_status").value = table.rows[Id].cells[6].innerText;
+
+               var item_statusval = table.rows[Id].cells[6].innerText;
+               $('#item_status option').each(function () {
+                   if (this.text == item_statusval) {
+                       document.getElementById("item_status").value = this.value;
+                   }
+               });
+
+               document.getElementById("remarks").value = table.rows[Id].cells[7].innerText;
+               //document.getElementById("upload").value = table.rows[Id].cells[8].innerText;
+               document.getElementById("SubmitFinding").style.display = "";
+               document.getElementById("Save").style.display = "none";
+               
+               $('#action_owner').trigger('change');
+               //$('#item_status').trigger('change');
+               $('#item_status').prop('disabled', true).trigger("change");
+           }
+
+           function AddItem() {
+
+               if (Validation()) {
+                   document.getElementById("dvItems").style.display = "";
+                   var cnt = document.getElementById("itemcnt").value;
+                   cnt++;
+                   document.getElementById("itemcnt").value = cnt;
+                   // Find a <table> element with id="myTable":
+                   var table = document.getElementById("team-list");
+
+                   // Create an empty <tr> element and add it to the 1st position of the table:
+                   var row = table.insertRow();
+
+                   // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                   var cell0 = row.insertCell(0);
+                   var cell1 = row.insertCell(1);
+                   var cell2 = row.insertCell(2);
+                   var cell3 = row.insertCell(3);
+                   var cell4 = row.insertCell(4);
+                   var cell5 = row.insertCell(5);
+
+                   var item_discussed = $('#item_discussed').val();
+                   var action_agreed = $('#action_agreed').val();
+                   var due_date = $('#due_date').val();
+                   var item_status = $('#item_status').val();
+
+                   // Add some text to the new cells:
+                   cell0.innerHTML = " <img src='@Url.Content("~/images/cancel.png")' onclick='deleteRow(this)' style='cursor:pointer; padding-right: 5px;'/>";
+                   cell1.innerHTML = "<input type='hidden' id='item_discussed" + cnt + "' name='item_discussed" + cnt + "' value='" + item_discussed + "'>" + item_discussed;
+                   cell2.innerHTML = "<input type='hidden' id='action_agreed" + cnt + "' name='action_agreed" + cnt + "' value='" + action_agreed + "'>" + action_agreed;
+                   cell3.innerHTML = "<input type='hidden' id='due_date" + cnt + "' name='due_date" + cnt + "' value='" + due_date + "'>" + due_date;
+
+                   // Action_taken_by = $('#Action_taken_by option:selected').text();
+                   var action_ownerText = $.map($("#action_owner option:selected"), function (el, i) {
+                       return $(el).text();
+                   });
+                   var action_ownerVal = $("#action_owner").val();
+
+                   cell4.innerHTML = "<input type='hidden' id='action_owner" + cnt + "' name='action_owner" + cnt + "' value='" + action_ownerVal + "'>" + action_ownerText;
+
+                   var item_statusText = $.map($("#item_status option:selected"), function (el, i) {
+                       return $(el).text();
+                   });
+                   var item_statusVal = $("#item_status").val();
+                   cell5.innerHTML = "<input type='hidden' id='item_status" + cnt + "' name='item_status" + cnt + "' value='" + item_statusVal + "'>" + item_statusText;
+                   //cell5.innerHTML = "<input type='hidden' id='item_status" + cnt + "' name='item_status" + cnt + "' value='" + item_status + "'>" + item_status;
+
+
+
+                   document.getElementById("ItemCnt").value = cnt;
+               }
+
+           }
+
+           function ResetControl() {
+               $('#item_status').get(0).selectedIndex = 0;
+               $('#action_owner').get(0).selectedIndex = 0;
+
+               $('#action_owner').trigger('change');
+                //$('#item_status').trigger('change');
+            
+               document.getElementById("due_date").value = "";
+               document.getElementById("item_discussed").value = "";
+               document.getElementById("action_agreed").value = "";
+               document.getElementById("remarks").value = "";
+              
+           }
+
+           function deleteRow(btn) {
+               var row = btn.parentNode.parentNode;
+               row.parentNode.removeChild(row);
+           }
+
+           function DisplayAgenda(sId) {
+               var sAgenda = document.getElementById(sId).title;
+               document.getElementById("CurrentAgenda").value = sAgenda;
+               document.getElementById("item_discussed").value = "";
+               document.getElementById("agenda_id").value = sId;
+
+               AddNewItem();
+
+
+               ResetControl();
+               $('#item_status').prop('disabled', false).trigger("change");
+           }
+
+           function FileFormatValidation(file) {
+                var ext = file.value.split(".").pop().toLowerCase();
+                if ($.inArray(ext, ["pdf", "doc", "docx"]) == -1) {
+                    file.value = "";
+                    bootbox.alert({
+                        title: 'File type',
+                        message: 'Invalid file format, please upload only pdf format.'
+                    });
+                }
+            }
+
+           $("#select").click(function () {
+               if ($("#select").prop('checked')) {
+                   {
+                       $(this).prop('checked', true);
+                       document.getElementById("selectall").value = "Send mail";
+                   }
+               }
+               else {
+
+                   $(this).prop('checked', false);
+               }
+
+           });
+    </script>
+}

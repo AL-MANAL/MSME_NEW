@@ -1,0 +1,171 @@
+﻿@{
+
+}
+
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Home</span>
+                    </a>
+                    <a href="@Url.Action("ReportList", "Reports", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Reports </span>
+                    </a>
+                    <span class="breadcrumb-item active">HSE Report</span>
+                </div>
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+}
+@using (Html.BeginForm("", "", FormMethod.Get, new { id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <div class="card">
+
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">HSE Report</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3">
+                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="Years" name="Years" onchange="setValue()">
+                        <option value='' hidden>Select</option>
+                        @if (ViewBag.Years != null && ViewBag.Year != null)
+                        {
+                            foreach (var item in ViewBag.Years)
+                            {
+                                if (item.Value == ViewBag.Year)
+                                {
+                                    <option value='@item.Value' selected>@item.Text</option>
+                                }
+                                else
+                                {
+                                    <option value='@item.Value'>@item.Text</option>
+                                }
+                            }
+                        }
+                        else
+                        {
+                            foreach (var item in ViewBag.Years)
+                            {
+
+                                <option value='@item.Value'>@item.Text</option>
+
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="months" name="months" onchange="setValue1()">
+                        <option value='' hidden>Select</option>
+                        @if (ViewBag.months != null && ViewBag.month != null)
+                        {
+                            foreach (var item in ViewBag.month)
+                            {
+                                if (item.Value == ViewBag.month)
+                                {
+                                    <option value='@item' selected>@item</option>
+                                }
+                                else
+                                {
+                                    <option value='@item'>@item</option>
+                                }
+                            }
+                        }
+                        else
+                        {
+                            foreach (var item in ViewBag.months)
+                            {
+                                <option value='@item'>@item</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="col-md-5">
+                    <span class="btn btn-outline  text-indigo-400 border-indigo-400">@Html.ActionLink("Download", "HSEReportExport", "Reports", new { Years = "2020", months = "jan" }, new { id = "generate" })</span>
+
+
+                </div>
+            </div>
+
+
+        </div>
+
+    </div>
+
+}
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+     @if (TempData["alertdata"] != null ) {
+
+                @: new Noty({
+                    @:     text: '@TempData["alertdata"]',
+                @:     type: 'error'
+                @: }).show();
+        }
+
+     @if (@TempData["Successdata"] != null ) {
+
+            @:    new Noty({
+                @:       text: '@TempData["Successdata"]',
+            @:       type: 'success'
+            @:   }).show();
+        }
+        });
+
+        function setValue() {
+            var year = document.getElementById("Years").value;
+
+            var fakedUri = document.getElementById("generate").href;
+            var uri = fakedUri.replace("2020", year);
+            document.getElementById("generate").href = uri;
+        }
+        function setValue1() {
+            var month = document.getElementById("months").value;
+
+            var fakedUri = document.getElementById("generate").href;
+            var uri = fakedUri.replace("jan", month);
+            document.getElementById("generate").href = uri;
+        }
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

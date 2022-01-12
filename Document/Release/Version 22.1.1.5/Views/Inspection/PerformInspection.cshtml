@@ -1,0 +1,418 @@
+﻿@model ISOStd.Models.InspctionQuestionModels
+
+@{
+    ViewBag.Title = "";
+    ISOStd.Models.InspctionQuestionList objList = new ISOStd.Models.InspctionQuestionList();
+    ISOStd.Models.clsGlobal obj = new ISOStd.Models.clsGlobal();
+    int icnt = 0;
+    if (ViewBag.objList != null)
+    {
+        objList = ViewBag.objList;
+        icnt = objList.InspectionQstList.Count;
+    }
+}
+@section featured {
+    <div class="page-header page-header-light">
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Home</span>
+                    </a>
+                    <a href="@Url.Action("PerformInspectionlist", "Inspection", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Perform Insepctions list</span>
+                    </a>
+                    <span class="breadcrumb-item active">Perform inspection</span>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@using (Html.BeginForm("PerformInspection", "Inspection", FormMethod.Post,
+new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Perform inspection</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+                <input type="hidden" id="id_inspection_plan" name="id_inspection_plan" value="@Model.id_inspection_plan" />
+                <input type="hidden" id="id_inspection_date" name="id_inspection_date" value="@Model.id_inspection_date" />
+                <input type="hidden" id="itemcnt" name="itemcnt" value="@icnt" />
+                <table class="table table-lg">
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.insp_perf_date)<text style="color: red;">*</text>
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            @if (Model.insp_perf_date > Convert.ToDateTime("01/01/0001"))
+                            {
+                                <input type="date" id="insp_perf_date" name="insp_perf_date" value="@Model.insp_perf_date.ToString("yyyy-MM-dd")" class="form-control" />
+                            }
+                            else
+                            {
+                                <input type="date" id="insp_perf_date" name="insp_perf_date" required class="form-control" value="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                            }
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.dept)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input type="text" class="form-control" id="" name="" value="@Model.dept" readonly />
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.Section)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input type="text" class="form-control" id="" name="" value="@Model.Section" readonly />
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.insp_area)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input type="text" class="form-control" id="" name="" value="@Model.insp_area" readonly />
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.location)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input type="text" class="form-control" id="" name="" value="@Model.location" readonly />
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.insp_type)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input type="text" class="form-control" id="" name="" value="@Model.insp_type" readonly />
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.insp_detail)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input type="text" class="form-control" id="" name="" value="@Model.insp_detail" readonly />
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.checklist_ref)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input type="text" class="form-control" id="" name="" value="@Model.checklist_ref" readonly />
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.insp_freq)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input type="text" class="form-control" id="" name="" value="@Model.insp_freq" readonly />
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.project)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input type="text" class="form-control" id="" name="" value="@Model.project" readonly />
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+               
+                <br />
+                <div class="card">
+
+                    <div class="card-body scrollbar-container">
+                        <div class="card card-table table-responsive shadow-0 mb-0 scrollbar">
+                            <table class="table" id="team-list">
+                                <tr class="bg-blue">
+                                    <th>Sr.No.</th>
+                                    <th>Question</th>
+                                    <th>Criticality</th>
+                                    <th>Criteria</th>
+                                    <th>Inspection result</th>
+                                    <th>Details of observation</th>
+                                    <th>Document(s)</th>
+                                    <th>Action required</th>
+                                    <th>Suggestion</th>
+                                </tr>
+                                @if (objList.InspectionQstList != null && objList.InspectionQstList.Count > 0)
+                                {
+                                    for (int index = 0; index < objList.InspectionQstList.Count; index++)
+                                    {
+                                        <tr>
+                                            <td>
+                                                @(index+1)
+                                                <input type='hidden' id='id_inspection_date@(index)' name="id_inspection_date@(index)" value='@objList.InspectionQstList[index].id_inspection_date' />
+                                                <input type='hidden' id='id_inspection_plan@(index)' name="id_inspection_plan@(index)" value='@objList.InspectionQstList[index].id_inspection_plan' />
+                                                <input type='hidden' id='id_inspection_perform_checklist@(index)' name="id_inspection_perform_checklist@(index)" value='@objList.InspectionQstList[index].id_inspection_perform_checklist' />
+                                            </td>
+                                           
+                                            <td>
+                                                <input type='hidden' id='InspectionQuestions@(index)' name="InspectionQuestions@(index)" value='@objList.InspectionQstList[index].InspectionQuestions' />
+                                               @objList.InspectionQstList[index].InspectionQuestions
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='criticality@(index)' name="criticality@(index)" value='@objList.InspectionQstList[index].criticality' />
+                                                @obj.GetDropdownitemById(objList.InspectionQstList[index].criticality)
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='criteria@(index)' name="criteria@(index)" value='@objList.InspectionQstList[index].criteria' />
+                                                @obj.GetIsoStdNameById(objList.InspectionQstList[index].criteria)
+                                            </td>
+                                            <td>
+                                                <select class="form-control select-search select2-hidden-accessible" id="insp_result@(index)" name="insp_result@(index)" required>
+                                                    <option value='' hidden>Select</option>
+                                                    @if (ViewBag.insp_result != null)
+                                                    {
+                                                        foreach (var item in ViewBag.insp_result)
+                                                        {
+                                                            if (item.Value == objList.InspectionQstList[index].insp_result)
+                                                            {
+                                                                <option value='@item.Value' selected>@item.Text</option>
+                                                            }
+                                                            else
+                                                            {
+                                                                <option value='@item.Value'>@item.Text</option>
+                                                            }
+                                                        }
+                                                    }
+                                                </select>
+
+                                            </td>
+                                            <td>
+                                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id='details@(index)' name="details@(index)" required>@objList.InspectionQstList[index].details</textarea>
+                                            </td>
+                                            <td>
+                                                <input type="file" name="supload@(index)" id="supload@(index)" onchange="FileFormatValidation(this)" multiple accept=".pdf,.xlsx,.xls,.doc,.docx,.image/*,.png,.jpeg,.jpg" @*class="bootstrap-uploader" data-fouc*@ />
+                                                @if (@objList.InspectionQstList[index].upload != null && @objList.InspectionQstList[index].upload != "" && @objList.InspectionQstList[index].criteria.Length > 0)
+                                                {
+
+                                                    <span class="form-text text-muted">
+                                                        <code>
+                                                            (Uncheck in case to remove a uploaded file)
+                                                        </code>
+                                                    </span>
+                                                    foreach (var docs in @objList.InspectionQstList[index].upload.Trim(',').Split(','))
+                                                    {
+                                                        <div class="form-check">
+                                                            <label class="form-check-label">
+                                                                <input type="checkbox" onclick="chkfunc(@index)" id="QCDocsVal@(index)" name="QCDocsVal@(index)" class="form-check-input-styled QCDocsVal" value="@docs.Trim(',')" checked title="Uncheck in case to remove a uploaded file" data-fouc />
+                                                                <input type="hidden" id="QCDocsValselectall@(index)" name="QCDocsValselectall@(index)" />
+                                                                <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" class="text-orange">
+                                                                    Preview
+                                                                </a>
+                                                            </label>
+                                                        </div>
+                                                    }
+                                                }
+                                            </td>
+                                            <td>
+                                                <select class="form-control select-search select2-hidden-accessible" id="action_required@(index)" name="action_required@(index)" required>
+                                                    <option value='' hidden>Select</option>
+                                                    @if (ViewBag.YesNo != null)
+                                                    {
+                                                        foreach (var item in ViewBag.YesNo)
+                                                        {
+                                                            if (item == objList.InspectionQstList[index].action_required)
+                                                            {
+                                                                <option value='@item' selected>@item</option>
+                                                            }
+                                                            else
+                                                            {
+                                                                <option value='@item'>@item</option>
+                                                            }
+                                                        }
+                                                    }
+                                                </select>
+
+                                            </td>
+                                            <td>
+                                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id='suggestion@(index)' name="suggestion@(index)" required>@objList.InspectionQstList[index].suggestion</textarea>
+                                            </td>
+                                          
+
+                                        </tr>
+                                    }
+                                }
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <table class="table table-lg">
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.insp_status)
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="insp_status" name="insp_status" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.Status != null)
+                                    {
+                                        foreach (var item in ViewBag.Status)
+                                        {
+                                            if (item.Text != "Planned" && item.Text != "Approved")
+                                            {
+                                                if (item.Value == Model.insp_status)
+                                                {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                                }
+                                                else
+                                                {
+                                                <option value='@item.Value'>@item.Text</option>
+                                                }
+                                            }
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.notification_to)
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="notification_to" name="notification_to" required multiple>
+                                  
+                                    @if (ViewBag.Notification != null)
+                                    {
+                                        foreach (var data in ViewBag.Notification)
+                                        {
+                                            if (Array.IndexOf(Model.notification_to.ToString().Split(','), data.Value) >= 0)
+                                            {
+                                                <option value='@data.Value' selected>@data.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@data.Value'>@data.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+                @Html.ActionLink("Back to List", "PerformInspectionlist", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+                <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Save</button>
+            </div>
+        </div>
+    </div>
+}
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            @if (TempData["alertdata"] != null)
+            {
+                     @: new Noty({
+                                                     @:     text: '@TempData["alertdata"]',
+                                                     @:     type: 'error'
+                                                     @:}).show();
+                                    }
+
+
+            @if (@TempData["Successdata"] != null)
+            {
+
+            @:new Noty({
+                                       @:text: '@TempData["Successdata"]',
+                                       @: type: 'success'
+                                       @:}).show();
+                        }
+
+        });
+
+        $('.form-check-input-styled').uniform();
+        $("#QCDocsVal").click(function () {
+            if ($("#QCDocsVal").prop('checked')) {
+                {
+                    $(this).prop('checked', true);
+                }
+            }
+            else {
+                $(this).prop('checked', false);
+                document.getElementById("QCDocsValselectall").value = "DeleteQC";
+            }
+        });
+        function chkfunc(i) {
+            if ($("#QCDocsVal" + i).prop('checked')) {
+                {
+                    $(this).prop('checked', true);
+                }
+            }
+            else {
+                $(this).prop('checked', false);
+                document.getElementById("QCDocsValselectall" + i).value = "DeleteQC";
+            }
+        }
+        function FileFormatValidation(file) {
+            var ext = file.value.split(".").pop().toLowerCase();
+            if ($.inArray(ext, ["doc", "pdf", "docx", "xls", "xlsx", , "png", "jpg", "jpeg"]) == -1) {
+                file.value = "";
+                jAlert("Invalid file format, please upload only doc, pdf, docx, xls, xlsx, png, jpeg, jpg format");
+            }
+        }
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

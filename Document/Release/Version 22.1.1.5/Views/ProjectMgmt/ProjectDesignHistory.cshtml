@@ -1,0 +1,243 @@
+﻿@using PagedList;
+@using PagedList.Mvc;
+
+@model IPagedList<ISOStd.Models.ProjectMgmtModels>
+
+@{
+    ViewBag.Title = "ProjectMgmtHistoryList";
+    
+}
+
+<div class="groupedassets margin10">
+    <span class="groupedassetshead margin10 onestphdcolor">Design History List</span>
+</div>
+    @*<div class = "ActionLink">@Html.ActionLink("Add New", "AddMgmtDocuments", null, new { @class = "ActionLink", onclick="HyperLinkProgressIconFunction()" })</div>*@
+
+<div id="divmsg">
+    @if (TempData["alertdata"] != null)
+    {
+        <span class="errMsg" style="color: red;font-weight: bold;">@TempData["alertdata"]</span>
+    }
+    @if (TempData["Successdata"] != null)
+    {
+        <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+    }
+</div>
+    <br />
+
+    <div class="editor-field">
+         
+ @Html.ActionLink("Back to List", "ProjectList", null,new { @class = "ActionLink", onclick = "HyperLinkProgressIconFunction()" })
+        
+   </div>   
+
+<br />
+
+<br />
+
+    @Html.PagedListPager(Model, page => Url.Action("ProjectList",
+    new
+    {
+        page,
+        SearchText = Request.QueryString["SearchText"],
+
+    }),
+    new PagedListRenderOptions() { Display = PagedListDisplayMode.IfNeeded, DisplayPageCountAndCurrentLocation = true })
+
+
+<div id="content">
+    <table id="table1">
+        <thead>
+            <tr>
+                <th style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayNameFor(model => model.First().Dicipline)
+                </th>
+                 <th style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayNameFor(model => model.First().IntRevno)
+                </th>
+                 <th style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayNameFor(model => model.First().DrawingNumber)
+                </th>
+                 <th style="width:400px;min-width:400px; max-width:400px;">
+                    @Html.DisplayNameFor(model => model.First().Upload)
+                </th>
+    
+                 <th style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayNameFor(model => model.First().ReviewedBy)
+                </th>
+                <th style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayNameFor(model => model.First().ReviewStatus)
+                </th>
+                 <th style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayNameFor(model => model.First().ReviewedDate)
+                </th>
+                 <th style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayNameFor(model => model.First().ReviewerComment)
+                </th>
+                 <th style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayNameFor(model => model.First().ApprovedBy)
+                </th>
+                 <th style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayNameFor(model => model.First().ApproveStatus)
+                </th>
+                 <th style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayNameFor(model => model.First().ApprovedDate)
+                </th>
+                <th style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayNameFor(model => model.First().ApproverComment)
+                </th>
+                 <th style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayNameFor(model => model.First().CustApprDate)
+                </th>
+                 <th style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayNameFor(model => model.First().DgnSntDate)
+                </th>
+                 <th style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayNameFor(model => model.First().CustFeedback)
+                </th>
+                 <th style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayNameFor(model => model.First().RevNo)
+                </th>
+                 <th style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayNameFor(model => model.First().CustApprStatus)
+                </th>
+                 
+                     
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Count() > 0)
+            {
+                foreach (var item in Model)
+                {
+                    <tr>
+                        <td style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayFor(model => item.Dicipline)
+                </td>
+                 <td style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayFor(model => item.IntRevno)
+                </td>
+                 <td style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayFor(model => item.DrawingNumber)
+                </td>
+                 <td style="width:400px;min-width:400px; max-width:400px;">
+                     @if (item.Upload != null && item.Upload != "" && item.Upload.Length > 0)
+                     {
+                         foreach (var docs in item.Upload.Trim(',').Split(','))
+                         {
+                            <p style="margin: 0px;">
+                               
+                                <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" style="color: orange;"><br />
+                                 @System.IO.Path.GetFileName(docs)</a>
+                            </p>
+                         }
+                     }
+                </td>
+    
+                 <td style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayFor(model => item.ReviewedBy)
+                </td>
+                <td style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayFor(model => item.ReviewStatus)
+                </td>
+                 <td style="width:150px;min-width:150px; max-width:150px;">
+                  
+                     @if (item.ReviewedDate > Convert.ToDateTime("01/01/0001"))
+                     {
+                        @item.ReviewedDate.ToString("dd/MM/yyyy")
+                     }
+                </td>
+                 <td style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayFor(model => item.ReviewerComment)
+                </td>
+                 <td style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayFor(model => item.ApprovedBy)
+                </td>
+                 <td style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayFor(model => item.ApproveStatus)
+                </td>
+                 <td style="width:150px;min-width:150px; max-width:150px;">
+                     @if (item.ApprovedDate > Convert.ToDateTime("01/01/0001"))
+                     {
+                        @item.ApprovedDate.ToString("dd/MM/yyyy")
+                     }
+                </td>
+                <td style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayFor(model => item.ApproverComment)
+                </td>
+                        <td style="width:150px;min-width:150px; max-width:150px;">
+                  
+                     @if (item.CustApprDate > Convert.ToDateTime("01/01/0001"))
+                     {
+                        @item.CustApprDate.ToString("dd/MM/yyyy")
+                     }
+                </td>
+                         <td style="width:150px;min-width:150px; max-width:150px;">
+                  
+                     @if (item.DgnSntDate > Convert.ToDateTime("01/01/0001"))
+                     {
+                        @item.DgnSntDate.ToString("dd/MM/yyyy")
+                     }
+                </td>
+                     <td style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayFor(model => item.CustFeedback)
+                </td>   
+                          <td style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayFor(model => item.RevNo)
+                </td>  
+                       <td style="width:150px;min-width:150px; max-width:150px;">
+                    @Html.DisplayFor(model => item.CustApprStatus)
+                </td>      
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="10">
+                        <div style="text-align: center;">
+                            <h4 style="color: grey;">No data exists</h4>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+</table>
+</div>
+@section scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript">
+
+        function DeleteItems(Category) {
+            jConfirm('Do you want to delete?', 'Are you Sure?', function (r) {
+                if (r == true) {
+                    jQuery.ajax({
+                        url: '@Url.Action("InspectionChecklistDocDelete", "Inspection")',
+                        type: 'POST',
+                        dataType: "json",
+                        data: { 'Category': Category },
+                        success: function (result) {
+                            var params = {
+                                View: 1
+                            };
+
+                            //// Add new params to the querystring dictionary
+                            queryString = $.param(params);
+
+                            window.location.href =
+                                window.location.protocol + "//" +
+                                window.location.host +
+                                window.location.pathname +
+                               '?' + queryString;
+                        }
+                    });
+                    return true;
+                }
+                else if (r == false) {
+                    return false;
+                }
+            });
+        }
+    </script>
+
+}

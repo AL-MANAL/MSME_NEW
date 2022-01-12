@@ -1,0 +1,1009 @@
+﻿@model ISOStd.Models.OFIModels
+
+@{
+    ViewBag.Title = "AddImprovementOFI";
+
+    ISOStd.Models.clsGlobal objGlobaldata = new ISOStd.Models.clsGlobal();
+    ISOStd.Models.OFIModels OBJOFIMODEL = new ISOStd.Models.OFIModels();
+
+    int itemcnt = 0;
+    int itemcnt1 = 0;
+
+    string[] ApprovedtoArray = new string[0];
+    string[] ProposedByArray = new string[0];
+    if (ViewBag.ProposedByArray != null)
+    {
+        ProposedByArray = ViewBag.ProposedByArray;
+        itemcnt = ProposedByArray.Length;
+    }
+
+    if (ViewBag.ApprovedtoArray != null)
+    {
+        ApprovedtoArray = ViewBag.ApprovedtoArray;
+        itemcnt1 = ApprovedtoArray.Length;
+    }
+
+    ISOStd.Models.OFIModelsList ObjOFIList = new ISOStd.Models.OFIModelsList();
+    ISOStd.Models.OFIModelsList ObjOFIDocList = new ISOStd.Models.OFIModelsList();
+    int itemcount = 0;
+    int itemcount1 = 0;
+
+    if (ViewBag.ObjOFIList != null)
+    {
+        ObjOFIList = ViewBag.ObjOFIList;
+        itemcount = ObjOFIList.OFIList.Count;
+    }
+    if (ViewBag.ObjOFIDocList != null)
+    {
+        ObjOFIDocList = ViewBag.ObjOFIDocList;
+        itemcount1 = ObjOFIDocList.OFIList.Count;
+    }
+}
+
+<script src='@Url.Content("~/global_assets/js/demo_pages/OFI_Improvement_form_wizard.js")'></script>
+
+@section featured {
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("OFIList", "OFI", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Improvement Opportunity</span>
+                    </a>
+                    <span class="breadcrumb-item active">Improvement Achieved</span>
+                </div>
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                    <div class="breadcrumb justify-content-center">
+                        <div class="breadcrumb-elements-item dropdown p-0">
+                            <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                                <i class="icon-gear mr-2"></i>
+                                Settings
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <div class="dropdown-divider"></div>
+                                <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>*@
+        </div>
+    </div>
+}
+<!-- Basic setup -->
+<div class="card">
+    <div class="card-header header-elements-inline bg-primary">
+        <h5 class="card-title">Improvement Achieved</h5>
+        <div class="header-elements">
+            <div class="list-icons">
+                <a class="list-icons-item" data-action="collapse"></a>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="container-fluid">
+            <form class="wizard-form steps-validation" enctype="multipart/form-data" data-fouc id="form1">
+                <h6>Improvement Achieved</h6>
+                <fieldset>
+                    <input type="hidden" id="id_ofi" name="id_ofi" value="@Model.id_ofi" />
+                    <table class="table table-lg">
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <b> @Html.DisplayNameFor(model => model.ofi_no)</b>
+                            </td>
+                            <td class="col">
+                                @Html.DisplayFor(model => model.ofi_no)
+                            </td>
+
+                            <td class="col-xs-3 col-md-2">
+                                <b> @Html.DisplayNameFor(model => model.reported_date)</b>
+                            </td>
+                            <td class="col">
+                                @if (Model.reported_date != null && Model.reported_date > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    @Html.Label(Model.reported_date.ToString("dd/MM/yyyy"))
+                                }
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <b>  @Html.DisplayNameFor(model => model.risk_no)</b>
+                            </td>
+                            <td class="col">
+                                @Html.DisplayFor(model => model.risk_no)
+                            </td>
+
+                            <td class="col-xs-3 col-md-2">
+                                <b>  Risk Description</b>
+                            </td>
+                            <td class="col">
+                                @Html.DisplayFor(model => model.risk_nodesc)
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <b>  @Html.DisplayNameFor(model => model.reportedby)</b>
+                            </td>
+                            <td class="col">
+                                @Html.DisplayFor(model => model.reportedby)
+                            </td>
+
+                            <td class="col-xs-3 col-md-2">
+                                <b>  @Html.DisplayNameFor(model => model.identified_in)</b>
+                            </td>
+                            <td class="col">
+                                @Html.DisplayFor(model => model.identified_in)
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <b>  @Html.DisplayNameFor(model => model.improvement)</b>
+                            </td>
+                            <td class="col">
+                                @Html.DisplayFor(model => model.improvement)
+                            </td>
+
+                            <td class="col-xs-3 col-md-2">
+                                <b>  @Html.DisplayNameFor(model => model.target_date)</b>
+                            </td>
+                            <td class="col">
+                                @if (Model.target_date != null && Model.target_date > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    @Html.Label(Model.target_date.ToString("dd/MM/yyyy"))
+                                }
+                            </td>
+                        </tr>
+                    </table>
+                    <br />
+                    <h1 class="title">Achieved Improvement Details</h1>
+                    <table class="table table-lg" id="table1">
+                        <tbody>
+                            <tr class="row">
+                                <th class="col-xs-3 col-md-2" style="font-weight: bold;">Improvement Details</th>
+                                <td class="col">
+                                    <textarea class="form-control" id="improve_details" name="improve_details"> </textarea>
+                                    @Html.ValidationMessageFor(model => model.improve_details)
+                                    <span class="field-validation-error"><span id="improve_details-message" style="display: none;">Please select Action Details.</span></span>
+                                </td>
+                                <th class="col-xs-3 col-md-2" style="font-weight: bold;">Improvement Achieved In</th>
+                                <td class="col">
+                                    <select class="form-control-select3" data-fouc id="improve_achievedin" name="improve_achievedin">
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.ImproveAchievedIn != null)
+                                        {
+                                            foreach (var item in ViewBag.ImproveAchievedIn)
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    </select>
+                                    @Html.ValidationMessageFor(model => model.improve_achievedin)
+                                    <span class="field-validation-error"><span id="improve_achievedin-message" style="display: none;">Please select Area to be improved.</span></span>
+                                </td>
+                            </tr>
+                            <tr class="row">
+                                <th class="col-xs-3 col-md-2" style="font-weight: bold;">Measurable Value</th>
+                                <td class="col">
+                                    <textarea class="form-control" id="improve_measurable" name="improve_measurable"> </textarea>
+                                    @Html.ValidationMessageFor(model => model.improve_measurable)
+                                    <span class="field-validation-error"><span id="improve_measurable-message" style="display: none;">Please add measurable value.</span></span>
+                                </td>
+                                <th class="col-xs-3 col-md-2" style="font-weight: bold;">Upload</th>
+                                <td class="col">
+                                    <input type="file" name="imporve_upload" id="imporve_upload" multiple="multiple" title="Upload Document" onchange="FileFormatValidation(this)" accept=".pdf, .doc, .docx, .xls, .xlsx, .png, .jpg, .jpeg,image/*" />
+                                    <span class="form-text text-muted"><code>(Hold Ctrl Key in case of multiple files or drag multiple files and drop here)</code></span>
+                                    <span class="field-validation-error"><label id="imporve_upload-message" class="validation-invalid-label" style="display:none" for="basic">Upload field is required.</label> </span>
+                                </td>
+                                <td class="col">
+                                    <input type="hidden" id="cntaction" name="cntaction" value="@itemcount" min="1" ErrorMessage="Enter value in specified range" />
+
+                                    <img src='@Url.Content("~/images/icon_add.png")' onclick='AddActionInfo()' style='cursor:pointer; padding-right: 5px;' />Add
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    @*<span class="form-text text-muted"><code>Please click Add or Plus button to add N number of Action details</code></span>*@
+                    <div id="improvementdiv" style="display:none">
+                        <div class="card-header header-elements-inline">
+                            <h5 class="card-title">Achieved Improvement Details</h5>
+                            <div class="header-elements">
+                                <div class="list-icons">
+                                    <a class="list-icons-item" data-action="collapse"></a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <input type="hidden" id="itemcount" name="itemcount" value="@itemcount" />
+                            <div class="card card-table table-responsive shadow-0 mb-0">
+                                <table class="table" id="team-list-count">
+                                    <tr class="bg-blue">
+                                        <th>Action</th>
+                                        <th>Improvement Details</th>
+                                        <th>Improvement Achieved in</th>
+                                        <th>Measurable Value</th>
+                                        <th>Upload</th>
+                                    </tr>
+                                    @if (ObjOFIList.OFIList != null && ObjOFIList.OFIList.Count > 0)
+                                    {
+                                        for (int index = 0; index < ObjOFIList.OFIList.Count; index++)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    <img src='@Url.Content("~/images/cancel.png")' onclick='deleteRow(this)' style='cursor:pointer; padding-right: 5px;' />Remove
+                                                    <input type='hidden' id='id_ofi @index' name="id_ofi @index" value='@ObjOFIList.OFIList[index].id_ofi' />
+                                                </td>
+                                                <td>
+                                                    <input type='hidden' id='improve_details @index' name="improve_details @index" value='@ObjOFIList.OFIList[index].improve_details'>@(ObjOFIList.OFIList[index].improve_details)
+                                                </td>
+                                                <td>
+                                                    <input type='hidden' id='improve_achievedin @index' name="improve_achievedin @index" value='@ObjOFIList.OFIList[index].improve_achievedin'>@OBJOFIMODEL.GetOFIAreaImprovedById(ObjOFIList.OFIList[index].improve_achievedin)
+                                                </td>
+                                                <td>
+                                                    <input type='hidden' id='improve_measurable @index' name="improve_measurable @index" value='@ObjOFIList.OFIList[index].improve_measurable'>@ObjOFIList.OFIList[index].improve_measurable
+                                                </td>
+                                                <td>
+                                                    <input type='hidden' id='imporve_upload1 @index' name="imporve_upload1 @index" value='@ObjOFIList.OFIList[index].imporve_upload'>
+                                                    @if (ObjOFIList.OFIList[index].imporve_upload != null && ObjOFIList.OFIList[index].imporve_upload != "" && ObjOFIList.OFIList[index].imporve_upload.Length > 0)
+                                                    {
+                                                        foreach (var docs in ObjOFIList.OFIList[index].imporve_upload.Trim(',').Split(','))
+                                                        {
+                                                            <div class="form-check">
+                                                                <label class="form-check-label">
+                                                                    <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" class="text-orange">
+                                                                        @System.IO.Path.GetFileName(docs)
+                                                                    </a>
+                                                                </label>
+                                                            </div>
+                                                        }
+                                                    }
+
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <br />
+                    <table class="table table-lg">
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.DisplayNameFor(model => model.updated)<text style="color: red;">*</text>
+                                </div>
+                            </td>
+                            <td class="col-xs-6 col-md-4">
+                                <div class="editor-field">
+                                    <select class="form-control-select3" data-fouc id="updated" name="updated" onchange="GetDoumentDetails()" required>
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.YESNO != null)
+                                        {
+                                            foreach (var item in ViewBag.YESNO)
+                                            {
+                                                if (Model.updated == item)
+                                                {
+                                                    <option value='@item' selected>@item</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@item'>@item</option>
+                                                }
+
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+
+
+                    <div id="DocYN" style="display:none">
+                        <h5 class="card-title">Documents Details</h5>
+                        <table class="table table-lg" id="table1">
+                            <tbody>
+                                <tr class="row">
+                                    <th class="col-xs-3 col-md-2" style="font-weight: bold;">Document Type</th>
+                                    <td class="col">
+                                        <select class="form-control-select3" data-fouc id="doc_type" name="doc_type">
+                                            <option value='' hidden>Select</option>
+                                            @if (ViewBag.DocTypeList != null)
+                                            {
+                                                foreach (var item in ViewBag.DocTypeList)
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+                                                }
+                                            }
+                                        </select>
+                                        @Html.ValidationMessageFor(model => model.doc_type)
+                                        <span class="field-validation-error"><span id="doc_type-message" style="display: none;">Please select Document Type.</span></span>
+                                    </td>
+                                    <th class="col-xs-3 col-md-2" style="font-weight: bold;">Document Ref.</th>
+                                    <td class="col">
+                                        <input type="text" class="form-control" id='doc_ref' name="doc_ref" />
+                                        @Html.ValidationMessageFor(model => model.doc_ref)
+                                        <span class="field-validation-error"><span id="doc_ref-message" style="display: none;" for="basic">Please write Document Ref.</span></span>
+                                    </td>
+                                </tr>
+                                <tr class="row">
+                                    <th class="col-xs-3 col-md-2" style="font-weight: bold;">Document Name</th>
+                                    <td class="col-xs-6 col-md-4">
+                                        <input class="form-control" type='text' id='doc_name' name="doc_name" />
+                                        @Html.ValidationMessageFor(model => model.doc_name)
+                                        <span class="field-validation-error"><span id="doc_name-message" style="display: none;" for="basic">Please add Document Name.</span></span>
+                                    </td>
+                                    <td class="col">
+                                        <input type="hidden" id="cntdoc" name="cntdoc" value="@itemcount1" min="1" ErrorMessage="Enter value in specified range" />
+
+                                        <img src='@Url.Content("~/images/icon_add.png")' onclick='AddDocumentInfo()' style='cursor:pointer; padding-right: 5px;' />Add
+                                    </td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                        <span class="form-text text-muted"><code>Please click Add or Plus button to add N number of Document details</code></span>
+                        <div id="actiondiv" style="display:none">
+                            <div class="card-header header-elements-inline">
+                                <h5 class="card-title">Document Details</h5>
+                                <div class="header-elements">
+                                    <div class="list-icons">
+                                        <a class="list-icons-item" data-action="collapse"></a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card-body">
+                                <input type="hidden" id="itemcount1" name="itemcount1" value="@itemcount1" />
+                                <div class="card card-table table-responsive shadow-0 mb-0">
+                                    <table class="table" id="team-list-count1">
+                                        <tr class="bg-blue">
+                                            <th>Action</th>
+                                            <th>Document Type</th>
+                                            <th>Document Ref.</th>
+                                            <th>Document Name</th>
+                                        </tr>
+                                        @if (ObjOFIDocList.OFIList != null && ObjOFIDocList.OFIList.Count > 0)
+                                        {
+                                            for (int index = 0; index < ObjOFIDocList.OFIList.Count; index++)
+                                            {
+                                                <tr>
+                                                    <td>
+                                                        <img src='@Url.Content("~/images/cancel.png")' onclick='deleteDocRow(this)' style='cursor:pointer; padding-right: 5px;' />Remove
+                                                        <input type='hidden' id='id_ofi @index' name="id_ofi @index" value='@ObjOFIDocList.OFIList[index].id_ofi' />
+                                                    </td>
+                                                    <td>
+                                                        <input type='hidden' id='doc_type @index' name="doc_type @index" value='@ObjOFIDocList.OFIList[index].doc_type' />@objGlobaldata.GetDropdownitemById(ObjOFIDocList.OFIList[index].doc_type)
+                                                    </td>
+                                                    <td>
+                                                        <input type='hidden' id='doc_ref @index' name="doc_ref @index" value='@ObjOFIDocList.OFIList[index].doc_ref' /> @ObjOFIDocList.OFIList[index].doc_ref
+                                                    </td>
+                                                    <td>
+                                                        <input type='hidden' id='doc_name @index' name="doc_name @index" value='@ObjOFIDocList.OFIList[index].doc_name' />@ObjOFIDocList.OFIList[index].doc_name
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div  id="DocUpd" style="display:none">
+                        <table class="table table-lg">
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+                                    <div class="editor-label">
+                                        @Html.DisplayNameFor(model => model.updatedby)<text style="color: red;">*</text>
+                                    </div>
+                                </td>
+                                <td class="col-xs-6 col-md-4">
+                                    <div class="editor-field">
+                                        <select class="form-control-select3" data-fouc id="updatedby" name="updatedby" onchange="GetProposedByDetails()">
+                                            <option value='' hidden>Select</option>
+                                            @if (ViewBag.EmpList != null)
+                                            {
+                                                foreach (var item in ViewBag.EmpList)
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+                                </td>
+
+                            </tr>
+                            </table>
+</div>
+                    <table class="table table-lg">
+                        <tr class="row">
+                           
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.DisplayNameFor(model => model.improvement_achieve)<text style="color: red;">*</text>
+                                </div>
+                            </td>
+                            <td class="col-xs-6 col-md-4">
+                                <div class="editor-field">
+                                    <select class="form-control-select3" data-fouc id="improvement_achieve" name="improvement_achieve" required>
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.ImprovementAchieved != null)
+                                        {
+                                            foreach (var item in ViewBag.ImprovementAchieved)
+                                            {
+                                                if (item.Value == Model.improvement_achieve)
+                                                {
+                                                    <option value='@item.Value' selected>@item.Text</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                    <div id="proposedbydiv" style="display:none">
+                        <div class="card-body">
+                            <input type="hidden" id="itemcnt" name="itemcnt" value="@itemcnt" />
+                            <h5 class="card-title">Updated By</h5>
+                            <div class="card card-table table-responsive shadow-0 mb-0">
+                                <table class="table" id="team-list">
+                                    <tr class="bg-blue">
+                                        <th>Action</th>
+                                        <th>Id</th>
+                                        <th>Name</th>
+                                        <th>Division</th>
+                                        <th>Location</th>
+                                        <th>Department</th>
+                                        <th>Email</th>
+                                    </tr>
+                                    @if (ViewBag.ProposedByArray != null && ProposedByArray != null && ProposedByArray.Length > 0)
+                                    {
+                                        for (int index = 0; index < ProposedByArray.Length; index++)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    <span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span>
+                                                    @*<img src='@Url.Content("~/images/cancel.png")' onclick='deleteRow1(this)' style='cursor:pointer; padding-right: 5px;' />Remove*@
+                                                    <input type='hidden' id='empno @index' name="empno @index" value='@ProposedByArray[index]' />
+                                                </td>
+                                                <td>
+                                                    <input type='hidden' id='empid @index' name="empid @index" readonly>@objGlobaldata.GetEmpIDByEmpNo(ProposedByArray[index])
+                                                </td>
+                                                <td>
+                                                    <input type='hidden' id='empname @index' name="empname @index" readonly>@objGlobaldata.GetEmpHrNameById(ProposedByArray[index])
+                                                </td>
+                                                <td>
+                                                    <input type='hidden' id='empdiv @index' name="empdiv @index" readonly>@objGlobaldata.GetCompanyBranchNameById(objGlobaldata.GetDivisionIdByHrEmpId(ProposedByArray[index]))
+                                                </td>
+                                                <td>
+                                                    <input type='hidden' id='emploc @index' name="emploc @index" readonly>@objGlobaldata.GetDivisionLocationById(objGlobaldata.GetWorkLocationIdByHrEmpId(ProposedByArray[index]))
+                                                </td>
+                                                <td>
+                                                    <input type='hidden' id='empdept @index' name="empdept @index" readonly>@objGlobaldata.GetDeptNameById(objGlobaldata.GetDeptIdByHrEmpId(ProposedByArray[index]))
+                                                </td>
+                                                <td>
+                                                    <input type='hidden' id='empemail @index' name="empemail @index" readonly>@objGlobaldata.GetHrEmpEmailIdById(ProposedByArray[index])
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <table class="table table-lg">
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.DisplayNameFor(model => model.checkedby)
+                            </td>
+                            <td class="col-xs-6 col-md-4">
+                                <div class="editor-field">
+                                    <select class="form-control-select3" data-fouc id="checkedby" name="checkedby" onchange="GetApprovedByDetails()">
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.EmpList != null)
+                                        {
+                                            foreach (var item in ViewBag.EmpList)
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                    <div id="notifiedtodiv" style="display:none">
+                        <div class="card-body">
+                            <input type="hidden" id="itemcnt1" name="itemcnt1" value="@itemcnt1" />
+
+                            <div class="card card-table table-responsive shadow-0 mb-0">
+                                <table class="table" id="team-list1">
+                                    <tr class="bg-blue">
+                                        <th>Action</th>
+                                        <th>Id</th>
+                                        <th>Name</th>
+                                        <th>Division</th>
+                                        <th>Location</th>
+                                        <th>Department</th>
+                                        <th>Email</th>
+                                    </tr>
+                                    @if (ViewBag.ApprovedtoArray != null && ApprovedtoArray != null && ApprovedtoArray.Length > 0)
+                                    {
+                                        for (int index = 0; index < ApprovedtoArray.Length; index++)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    <span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span>
+                                                    <input type='hidden' id='nempno @index' name="nempno @index" value='@ApprovedtoArray[index]' />
+                                                </td>
+                                                <td>
+                                                    <input type='hidden' id='nempid @index' name="nempid @index" readonly>@objGlobaldata.GetEmpIDByEmpNo(ApprovedtoArray[index])
+                                                </td>
+                                                <td>
+                                                    <input type='hidden' id='nempname @index' name="nempname @index" readonly>@objGlobaldata.GetEmpHrNameById(ApprovedtoArray[index])
+                                                </td>
+                                                <td>
+                                                    <input type='hidden' id='nempdiv @index' name="nempdiv @index" readonly>@objGlobaldata.GetCompanyBranchNameById(objGlobaldata.GetDivisionIdByHrEmpId(ApprovedtoArray[index]))
+                                                </td>
+                                                <td>
+                                                    <input type='hidden' id='nemploc @index' name="nemploc @index" readonly>@objGlobaldata.GetDivisionLocationById(objGlobaldata.GetWorkLocationIdByHrEmpId(ApprovedtoArray[index]))
+                                                </td>
+                                                <td>
+                                                    <input type='hidden' id='nempdept @index' name="nempdept @index" readonly>@objGlobaldata.GetDeptNameById(objGlobaldata.GetDeptIdByHrEmpId(ApprovedtoArray[index]))
+                                                </td>
+                                                <td>
+                                                    <input type='hidden' id='nempemail @index' name="nempemail @index" readonly>@objGlobaldata.GetHrEmpEmailIdById(ApprovedtoArray[index])
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </fieldset>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- /basic setup -->
+
+<script src='@Url.Content("~/global_assets/js/plugins/forms/wizards/steps2.min.js")'></script>
+<script>
+       var summary = {
+           summaryUrl: '@Url.Action("AddImprovementOFI", "OFI")'
+       };
+       var $ = jQuery.noConflict();
+</script>
+
+@section Scripts {
+    <script>
+     $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+         if (@itemcnt > 0)
+         {
+             document.getElementById("proposedbydiv").style.display = 'block';
+         }
+         if (@itemcnt1 > 0)
+         {
+             document.getElementById("notifiedtodiv").style.display = 'block';
+         }
+         if (@itemcount > 0)
+         {
+             document.getElementById("improvementdiv").style.display = 'block';
+         }
+
+         if (@itemcount1 > 0)
+         {
+             document.getElementById("actiondiv").style.display = 'block';
+         }
+         GetDoumentDetails();
+        });
+
+        var showClass = 'is-visible';
+        var hideClass = 'invisible';
+
+        //$('.form-check-input-styled').uniform();
+        function FileFormatValidation(file) {
+            var ext = file.value.split(".").pop().toLowerCase();
+            if ($.inArray(ext, ["pdf", "xlsx", "xls", "doc", "docx", "jpg","jpeg","gif","png"]) == -1) {
+                file.value = "";
+                bootbox.alert({
+                    title: 'File type',
+                    message: 'Invalid file format, please upload only doc, pdf, docx, xls, xls,jpg, jpeg, gif, png format'
+                });
+            }
+        }
+
+        function GetProposedByDetails() {
+            var updatedby = $('#updatedby').val();
+            if (updatedby != "" && updatedby != null) {
+                jQuery.ajax({
+                    url: '@Url.Action("FunGetEmpDetails", "EmployeeDetails")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'semp_no': updatedby },
+                    success: function (result) {
+                        if (result != null) {
+                            document.getElementById("proposedbydiv").style.display = 'block';
+
+                            var updatedby = $('#updatedby option:selected').val();
+                            var empid = result.emp_id;
+                            var empname = result.empname;
+                            var empdivision = result.division;
+                            var empdept = result.department;
+                            var emploc = result.location;
+                            var empemail = result.EmailId;
+
+                            if (empid != "") {
+                                var cnt = document.getElementById("itemcnt").value;
+
+                                document.getElementById("itemcnt").value = cnt;
+                                // Find a <table> element with id="myTable":
+                                var table = document.getElementById("team-list");
+
+                                // Create an empty <tr> element and add it to the 1st position of the table:
+                                var row = table.insertRow();
+
+
+                                // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                                var cell0 = row.insertCell(0);
+                                var cell1 = row.insertCell(1);
+                                var cell2 = row.insertCell(2);
+                                var cell3 = row.insertCell(3);
+                                var cell4 = row.insertCell(4);
+                                var cell5 = row.insertCell(5);
+                                var cell6 = row.insertCell(6);
+
+                                cell0.innerHTML = "<span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span> <input type='hidden' id='empno " + cnt + "' name='empno " + cnt + "' value='" + updatedby + "'>";
+                                cell1.innerHTML = "<input type='hidden' id='empid " + cnt + "' name='empid " + cnt + "' value='" + empid + "'>" + empid;
+                                cell2.innerHTML = "<input type='hidden' id='empname " + cnt + "' name='empname " + cnt + "' value='" + empname + "'>" + empname;
+                                cell3.innerHTML = "<input type='hidden' id='empdivision " + cnt + "' name='empdivision " + cnt + "' value='" + empdivision + "'>" + empdivision;
+                                cell4.innerHTML = "<input type='hidden' id='emploc " + cnt + "' name='emploc " + cnt + "' value='" + emploc + "'>" + emploc;
+                                cell5.innerHTML = "<input type='hidden' id='empdept " + cnt + "' name='empdept " + cnt + "' value='" + empdept + "'>" + empdept;
+                                cell6.innerHTML = "<input type='hidden' id='empemail " + cnt + "' name='empemail " + cnt + "' value='" + empemail + "'>" + empemail;
+
+                                cnt++;
+                                document.getElementById("itemcnt").value = cnt;
+
+                                $("#updatedby").val('').trigger('change');
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+
+        function GetApprovedByDetails() {
+            var checkedby = $('#checkedby').val();
+            if (checkedby != "" && checkedby != null) {
+                jQuery.ajax({
+                    url: '@Url.Action("FunGetEmpDetails", "EmployeeDetails")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'semp_no': checkedby },
+                    success: function (result) {
+                        if (result != null) {
+                            document.getElementById("notifiedtodiv").style.display = 'block';
+
+                            var nempno = $('#checkedby option:Selected').val();
+                            var nempid = result.emp_id;
+                            var nempname = result.empname;
+                            var nempdiv = result.division;
+                            var nempdept = result.department;
+                            var nemploc = result.location;
+                            var nempemail = result.EmailId;
+
+                            if (nempid != "") {
+                                var cnt = document.getElementById("itemcnt1").value;
+
+                                document.getElementById("itemcnt1").value = cnt;
+                                // Find a <table> element with id="myTable":
+                                var table = document.getElementById("team-list1");
+
+                                // Create an empty <tr> element and add it to the 1st position of the table:
+                                var row = table.insertRow();
+
+
+                                // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                                var cell0 = row.insertCell(0);
+                                var cell1 = row.insertCell(1);
+                                var cell2 = row.insertCell(2);
+                                var cell3 = row.insertCell(3);
+                                var cell4 = row.insertCell(4);
+                                var cell5 = row.insertCell(5);
+                                var cell6 = row.insertCell(6);
+
+                                cell0.innerHTML = "<span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span> <input type = 'hidden' id = 'nempno " + cnt + "' name = 'nempno " + cnt + "' value = '" + nempno + "'>";
+                                cell1.innerHTML = "<input type='hidden' id='nempid " + cnt + "' name='nempid " + cnt + "' value='" + nempid + "'>" + nempid;
+                                cell2.innerHTML = "<input type='hidden' id='nempname " + cnt + "' name='nempname " + cnt + "' value='" + nempname + "'>" + nempname;
+                                cell3.innerHTML = "<input type='hidden' id='nempdiv " + cnt + "' name='nempdiv " + cnt + "' value='" + nempdiv + "'>" + nempdiv;
+                                cell4.innerHTML = "<input type='hidden' id='nemploc " + cnt + "' name='nemploc " + cnt + "' value='" + nemploc + "'>" + nemploc;
+                                cell5.innerHTML = "<input type='hidden' id='nempdept " + cnt + "' name='nempdept " + cnt + "' value='" + nempdept + "'>" + nempdept;
+                                cell6.innerHTML = "<input type='hidden' id='nempemail " + cnt + "' name='nempemail " + cnt + "' value='" + nempemail + "'>" + nempemail;
+
+                                cnt++;
+                                document.getElementById("itemcnt1").value = cnt;
+
+                                $("#checkedby").val('').trigger('change');
+                               }
+                        }
+                    }
+                });
+            }
+            }
+
+        function deleteRow(btn) {
+            var row = btn.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+            var cnt = document.getElementById("itemcount").value;
+            document.getElementById("cntaction").value = cnt-1;
+        }
+        function deleteDocRow(btn) {
+            var row = btn.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+            var cnt = document.getElementById("itemcount1").value;
+            document.getElementById("cntdoc").value = cnt-1;
+        }
+        function ValidationAction() {
+            var validflg = true;
+            var ssnMessage = "";
+            if (document.getElementById("improve_details").value == " ") {
+                ssnMessage = $('#improve_details-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#improve_details-message');
+                ssnMessage.hide();
+            }
+
+            if (document.getElementById("improve_achievedin").value == "") {
+                ssnMessage = $('#improve_achievedin-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#improve_achievedin-message');
+                ssnMessage.hide();
+            }
+
+            if (document.getElementById("improve_measurable").value == " ") {
+                ssnMessage = $('#improve_measurable-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#improve_measurable-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("imporve_upload").value == "") {
+                ssnMessage = $('#imporve_upload-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#imporve_upload-message');
+                ssnMessage.hide();
+            }
+            return validflg;
+        }
+
+
+        function AddActionInfo() {
+
+            if (ValidationAction() == true) {
+
+                //document.getElementById("dvItems").style.display = "";
+                var cnt = document.getElementById("itemcount").value;
+
+                document.getElementById("itemcount").value = cnt;
+                // Find a <table> element with id="myTable":
+
+                uploadServerPath = UploadDocument(cnt);
+            }
+        }
+
+          function UploadDocument(ind) {
+              var imporve_upload = ($("#imporve_upload")).files;
+              var formData = new FormData();
+              var totalFiles = document.getElementById("imporve_upload").files.length;
+            for (var i = 0; i < totalFiles; i++) {
+                var file = document.getElementById("imporve_upload").files[i];
+                formData.append("imporve_upload", file);
+            }
+            jQuery.ajax({
+                url: '@Url.Action("UploadDocument", "OFI")',
+                type: 'POST',
+                contentType: false,
+                processData: false,
+                data: formData,
+                success: function (result) {
+                    DisplayDocument(result,ind);
+                    return result;
+                }
+            });
+        }
+
+        function DisplayDocument(Filepath, cnt) {
+            var sfile = Filepath.split(',');
+            var sfilecont = sfile.length;
+            var sfilename = "";
+            var filename = "";
+            for (var i = 0; i < sfilecont; i++) {
+                sfilename = sfile[i].substring(sfile[i].lastIndexOf('/') + 1);
+                filename = sfilename.substring(0, sfilename.indexOf(".")) + ',' + filename
+            }
+            filename=filename.slice(0, -1);
+
+             //alert(filename);
+
+                var table = document.getElementById("team-list-count");
+                // Create an empty <tr> element and add it to the 1st position of the table:
+                var row = table.insertRow();
+
+                // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                var cell0 = row.insertCell(0);
+                var cell1 = row.insertCell(1);
+                var cell2 = row.insertCell(2);
+                var cell3 = row.insertCell(3);
+                var cell4 = row.insertCell(4);
+
+            var improve_details = document.getElementById("improve_details").value;
+            var improve_achievedin = $('#improve_achievedin').val();
+            var improve_achievedinText = $('#improve_achievedin option:selected').text();
+            var improve_measurable = document.getElementById("improve_measurable").value;
+           /* var imporve_upload = $('#imporve_upload').val();*/
+
+            cell0.innerHTML = " <img src='@Url.Content("~/images/cancel.png")' onclick='deleteRow(this)' style='cursor:pointer; padding-right: 5px;'/>";
+            cell1.innerHTML = "<input type='hidden' id='improve_details " + cnt + "' name='improve_details " + cnt + "' value='" + improve_details + "'>" + improve_details;
+            cell2.innerHTML = "<input type='hidden' id='improve_achievedin " + cnt + "' name='improve_achievedin " + cnt + "' value='" + improve_achievedin + "'>" + improve_achievedinText;
+            cell3.innerHTML = "<input type='hidden' id='improve_measurable " + cnt + "' name='improve_measurable " + cnt + "' value='" + improve_measurable + "'>" + improve_measurable;
+            cell4.innerHTML = "<input type='hidden' id='imporve_upload1 " + cnt + "' name='imporve_upload1 " + cnt + "' value='" + Filepath + "'>" + filename;
+
+                cnt++;
+                document.getElementById("itemcount").value = cnt;
+                document.getElementById("cntaction").value = cnt;
+                document.getElementById("improvementdiv").style.display = "block";
+                ResetControl1();
+        }
+
+        function ResetControl1() {
+            $("#improve_achievedin").val('').trigger('change');
+            document.getElementById("improve_details").value = " ";
+            document.getElementById("improve_measurable").value = " ";
+            document.getElementById("imporve_upload").value = "";
+            //$('#imporve_upload').fileinput('reset');
+        }
+
+        function Validation() {
+            var validflg = true;
+            var ssnMessage = "";
+
+            if (document.getElementById("doc_type").value == "") {
+                ssnMessage = $('#doc_type-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#doc_type-message');
+                ssnMessage.hide();
+            }
+
+            if (document.getElementById("doc_ref").value == "") {
+                ssnMessage = $('#doc_ref-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#doc_ref-message');
+                ssnMessage.hide();
+            }
+
+            if (document.getElementById("doc_name").value == "") {
+                ssnMessage = $('#doc_name-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#doc_name-message');
+                ssnMessage.hide();
+            }
+            return validflg;
+        }
+
+        function AddDocumentInfo() {
+        if (Validation() == true) {
+
+            var cnt = document.getElementById("itemcount1").value;
+
+            document.getElementById("itemcount1").value = cnt;
+            // Find a <table> element with id="myTable":
+            var table = document.getElementById("team-list-count1");
+
+            // Create an empty <tr> element and add it to the 1st position of the table:
+            var row = table.insertRow();
+
+            // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+            var cell0 = row.insertCell(0);
+            var cell1 = row.insertCell(1);
+            var cell2 = row.insertCell(2);
+            var cell3 = row.insertCell(3);
+
+
+            var doc_type = $('#doc_type').val();
+            var doc_typeText = $("#doc_type option:selected").text();
+            var doc_ref = $('#doc_ref').val();
+            var doc_name = $('#doc_name').val();
+
+            cell0.innerHTML = " <img src='@Url.Content("~/images/cancel.png")' onclick='deleteDocRow(this)' style='cursor:pointer; padding-right: 5px;'/>Remove";
+            cell1.innerHTML = "<input type='hidden' id='doc_type " + cnt + "' name='doc_type " + cnt + "' value='" + doc_type + "'>" + doc_typeText;
+            cell2.innerHTML = "<input type='hidden' id='doc_ref " + cnt + "' name='doc_ref " + cnt + "' value='" + doc_ref + "'>" + doc_ref;
+            cell3.innerHTML = "<input type='hidden' id='doc_name " + cnt + "' name='doc_name " + cnt + "' value='" + doc_name + "'>" + doc_name;
+
+            cnt++;
+            document.getElementById("itemcount1").value = cnt;
+            document.getElementById("cntdoc").value = cnt;
+            document.getElementById("actiondiv").style.display = "block";
+            ResetControl();
+            }
+        }
+
+        function ResetControl() {
+            $("#doc_type").val('').trigger('change');
+            document.getElementById("doc_ref").value = "";
+            document.getElementById("doc_name").value = "";
+        }
+
+        function GetDoumentDetails() {
+            var updated = $("#updated option:selected").text();
+            if (updated == "Yes" || updated == "Select")
+            {
+                document.getElementById("DocYN").style.display = 'block';
+                document.getElementById("DocUpd").style.display = 'block';
+            }
+            else {
+                document.getElementById("DocYN").style.display = 'none';
+                document.getElementById("DocUpd").style.display = 'none';
+            }
+        }
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

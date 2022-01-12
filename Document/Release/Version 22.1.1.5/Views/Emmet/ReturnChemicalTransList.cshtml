@@ -1,0 +1,169 @@
+﻿@using PagedList;
+@using PagedList.Mvc;
+
+
+@model IPagedList<ISOStd.Models.EmmetModels>
+    @{
+        ViewBag.Title = "";
+        string chked = Convert.ToString(ViewBag.chkAll);
+    }
+
+    <div class="groupedassets margin10">
+        <span class="groupedassetshead margin10 onestphdcolor">Chemical/Paints Return List</span>
+    </div>
+
+    <br />
+    <div id="divmsg">
+        @if (TempData["alertdata"] != null)
+        {
+            <span class="errMsg" style="color: red;font-weight: bold;">@TempData["alertdata"]</span>
+        }
+        @if (TempData["Successdata"] != null)
+        {
+            <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+        }
+    </div>
+    <br />
+
+   
+<div>
+    
+    @Html.ActionLink("Back to List", "ReturnChemicalList",new {id_chemical_issue=ViewBag.id_chemical_issue}, new { @class = "ActionLink", onclick = "HyperLinkProgressIconFunction()" })
+</div>
+
+    <br />
+    @Html.PagedListPager(Model, page => Url.Action("ReturnChemicalTransList",
+            new
+            {
+                page,
+                Approvestatus = Request.QueryString["Approvestatus"],
+                SearchText = Request.QueryString["SearchText"],
+
+            }),
+            new PagedListRenderOptions() { Display = PagedListDisplayMode.IfNeeded, DisplayPageCountAndCurrentLocation = true })
+
+
+
+    <div id="content">
+        <table id="table1">
+            <thead>
+                @if (Model != null && Model.Count() > 0)
+                {
+                <tr>
+                    <th style="width:40px;min-width:40px; max-width:100px;">
+                        Sl No
+                    </th>
+                   <th style="width:150px;min-width:150px; max-width:150px;">
+                        @Html.DisplayNameFor(model => model.First().return_status)
+                    </th>
+                    <th style="width:150px;min-width:150px; max-width:150px;">
+                        @Html.DisplayNameFor(model => model.First().return_date)
+                    </th>
+                    <th style="width:150px;min-width:150px; max-width:150px;">
+                        @Html.DisplayNameFor(model => model.First().return_qty)
+                    </th>
+                   @* <th style="width:60px; min-width:60px; max-width:60px;">Edit</th>
+
+                   @if (ViewBag.DeleteFlg != null && ViewBag.DeleteFlg == true)
+                {
+                        <th style="width: 60px; min-width: 60px; max-width: 60px;">Delete</th>
+                    }*@
+                </tr>
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="11">
+                            <div style="text-align: center;">
+                                <h4 style="color: grey;">No data exists</h4>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Count() > 0)
+                {
+                    int i = 0;
+                    foreach (var item in Model)
+                    {
+                        i = i + 1;
+                <tr>
+                    <td style="width:40px;min-width:40px; max-width:100px;">
+                        @i
+                    </td>
+                    <td style="width:150px;min-width:150px; max-width:150px;word-wrap:break-word">
+                         @Html.DisplayFor(modelItem => item.return_status)
+                    </td>
+                 
+                     <td style="width:150px;min-width:150px; max-width:150px;word-wrap:break-word">
+                         @if (item.return_date != null && item.return_date > Convert.ToDateTime("01/01/0001"))
+                        {
+                            @Html.Label(item.return_date.ToString("dd/MM/yyyy"))
+                        }
+                    </td>
+                     <td style="width:150px;min-width:150px; max-width:150px;word-wrap:break-word">
+                         @Html.DisplayFor(modelItem => item.return_qty)
+                    </td>
+                  @*  <td style="width:60px; min-width:60px; max-width:60px;word-wrap:break-word">
+                        <a href='@Url.Action("ReturnStockEdit", "Emmet", new { id_stock_return = item.id_stock_return, id_chemical_issue = ViewBag.id_chemical_issue })' title="Edit" onclick="HyperLinkProgressIconFunction()">
+                            <span class="glyphicon glyphicon glyphicon-edit iocnstatus-edit" onclick="HyperLinkProgressIconFunction()"></span>
+                        </a>
+                    </td>
+                  *@
+                  @* @if (ViewBag.DeleteFlg != null && ViewBag.DeleteFlg == true)
+                    {
+                        <td style="width: 60px; min-width: 60px; max-width: 60px;word-wrap:break-word">
+                            <img src="@Url.Content("~/Images/delete.png")" title="Delete Document" onclick="DeleteItems(@item.id_stock_return,@item.id_stock_issue_trans,@ViewBag.id_chemical_issue)" style="cursor:pointer;" />
+                        </td>
+                    }*@
+                </tr>
+                    }
+                }
+
+            </tbody>
+        </table>
+    </div>
+    @Styles.Render("~/Content/popover")
+    @section scripts {
+
+        <script type="text/javascript">
+         
+            function DeleteItems(id_stock_return, id_stock_issue_trans, id_chemical_issue) {
+            jConfirm('Do you want to delete?', 'Are you Sure?', function (r) {
+                if (r == true) {
+                    jQuery.ajax({
+                    url: '@Url.Action("ReturnStockDocDelete", "Emmet")',
+                        type: 'POST',
+                        dataType: "json",
+                        /*change*/ data: { 'id_stock_return': id_stock_return },
+                        success: function (result) {
+                            var params = {
+                                id_stock_issue_trans: id_stock_issue_trans, id_chemical_issue: id_chemical_issue
+                            };
+                            //// Add new params to the querystring dictionary
+                            queryString = $.param(params);
+
+                            window.location.href =
+                                window.location.protocol + "//" +
+                                window.location.host +
+                                window.location.pathname +
+                               '?' + queryString;
+                        }
+                    });
+                    return true;
+                }
+                else if (r == false) {
+                    return false;
+                }
+            });
+        }
+
+      
+        </script>
+        @Scripts.Render("~/bundles/jqueryval")
+    }
+
+
+
+

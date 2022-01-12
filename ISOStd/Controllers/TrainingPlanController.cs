@@ -827,7 +827,173 @@ namespace ISOStd.Controllers
             return RedirectToAction("TrainingPlanList");
         }
 
+        [AllowAnonymous]
+        public ActionResult TrainingCriticalityList(int? page)
+        {
+            TrainingPlanModelsList objList = new TrainingPlanModelsList();
+            objList.ObjList = new List<TrainingPlanModels>();
+            TrainingPlanModels objModel = new TrainingPlanModels();
+            try
+            {
+                string sSqlstmt = "select id_training_criticality,training_type,no_days,criticality from t_training_criticality where active = 1 order by id_training_criticality desc; ";
+                DataSet dsList = objGlobaldata.Getdetails(sSqlstmt);
+                ViewBag.criticality = objGlobaldata.GetDropdownList("Training Criticality");
+                if (dsList.Tables.Count > 0 && dsList.Tables[0].Rows.Count > 0)
+                {
+                    for (int i = 0; i < dsList.Tables[0].Rows.Count; i++)
+                    {
+                        try
+                        {
+                            objModel = new TrainingPlanModels
+                            {
+                                id_training_criticality = (dsList.Tables[0].Rows[i]["id_training_criticality"].ToString()),
+                                training_type = (dsList.Tables[0].Rows[i]["training_type"].ToString()),
+                                no_days = (dsList.Tables[0].Rows[i]["no_days"].ToString()),
+                                criticality =objGlobaldata.GetDropdownitemById(dsList.Tables[0].Rows[i]["criticality"].ToString()),
+                            };
+                            objList.ObjList.Add(objModel);
+                        }
+                        catch (Exception ex)
+                        {
+                            objGlobaldata.AddFunctionalLog("Exception in TrainingCriticalityList: " + ex.ToString());
+                            TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in TrainingCriticalityList: " + ex.ToString());
+                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+            }
+            return View(objList.ObjList.ToList());
+        }
 
+        [AllowAnonymous]
+        [HttpPost]
+        public ActionResult AddTrainingCriticality(TrainingPlanModels objModel, FormCollection form)
+        {
+            try
+            {
+                if (objModel.FunAddTrainingCriticality(objModel))
+                {
+                    TempData["Successdata"] = "Added Successfully";
+                }
+                else
+                {
+                    TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in AddTrainingCriticality: " + ex.ToString());
+                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+            }
+            return RedirectToAction("TrainingCriticalityList");
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public ActionResult EditTrainingCriticality()
+        {
+            TrainingPlanModels objModel = new TrainingPlanModels();
+            try
+            {
+                if (Request.QueryString["id_training_criticality"] != null && Request.QueryString["id_training_criticality"] != "")
+                {
+                    string id_training_criticality = Request.QueryString["id_training_criticality"];
+                    ViewBag.criticality = objGlobaldata.GetDropdownList("Training Criticality");
+                    string sSqlstmt = "select id_training_criticality,training_type,no_days,criticality from t_training_criticality where id_training_criticality='" + id_training_criticality + "'";
+                    DataSet dsList = objGlobaldata.Getdetails(sSqlstmt);
+                    if (dsList.Tables.Count > 0 && dsList.Tables[0].Rows.Count > 0)
+                    {
+                        objModel = new TrainingPlanModels
+                        {
+                            id_training_criticality = (dsList.Tables[0].Rows[0]["id_training_criticality"].ToString()),
+                            training_type = (dsList.Tables[0].Rows[0]["training_type"].ToString()),
+                            no_days = (dsList.Tables[0].Rows[0]["no_days"].ToString()),
+                            criticality = (dsList.Tables[0].Rows[0]["criticality"].ToString()),
+                        };
+                    }
+                    else
+                    {
+                        TempData["alertdata"] = "Id cannot be Null or empty";
+                        return RedirectToAction("TrainingCriticalityList");
+                    }
+                }
+                else
+                {
+                    TempData["alertdata"] = "Id cannot be Null or empty";
+                    return RedirectToAction("TrainingCriticalityList");
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in EditTrainingCriticality: " + ex.ToString());
+                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                return RedirectToAction("TrainingCriticalityList");
+            }
+            return View(objModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult EditTrainingCriticality(TrainingPlanModels objModel, FormCollection form)
+        {
+            try
+            {
+                if (objModel.FunUpdateTrainingCriticality(objModel))
+                {
+                    TempData["Successdata"] = "Updated successfully";
+                }
+                else
+                {
+                    TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in EditTrainingCriticality: " + ex.ToString());
+                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+            }
+
+            return RedirectToAction("TrainingCriticalityList");
+        }
+
+        [AllowAnonymous]
+        public JsonResult TrainingCriticalityDelete(FormCollection form)
+        {
+            try
+            {
+                if (form["Id"] != null && form["Id"] != "")
+                {
+                    TrainingPlanModels objModel = new TrainingPlanModels();
+                    string sId = form["Id"];
+
+                    if (objModel.FunDeleteTrainingCriticality(sId))
+                    {
+                        TempData["Successdata"] = "Deleted successfully";
+                        return Json("Success");
+                    }
+                    else
+                    {
+                        TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+                        return Json("Failed");
+                    }
+                }
+                else
+                {
+                    TempData["alertdata"] = "Id cannot be Null or empty";
+                    return Json("Failed");
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobaldata.AddFunctionalLog("Exception in TrainingCriticalityDelete: " + ex.ToString());
+                TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
+            }
+            return Json("Failed");
+        }
 
     }
 }

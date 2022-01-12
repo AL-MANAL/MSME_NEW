@@ -475,7 +475,7 @@
 
         dsAnnexure = objGlobaldata.getListPendingForApprovalANNEXURE(objUser.empid);
 
-        //dsWorkPermit = objGlobaldata.getListPendingForApprovalAudiWorkPermit(objUser.empid);
+        dsWorkPermit = objGlobaldata.getListPendingForApprovalAudiWorkPermit(objUser.empid);
 
         //dsSafetyViolation = objGlobaldata.getListPendingForApprovalSafetyViolation(objUser.empid);
 
@@ -943,10 +943,10 @@
                                                 {
                                                     <li class="nav-item"><a href='@Url.Action("EmergencyPlanNRecordList", "EmergencyPlanNRecord", null)' class="nav-link @(ViewBag.SubMenutype == "EmergencyPlanNRecord" ? "active" : "")" onclick="HyperLinkProgressIconFunction()">Emergency Evaluation Plan</a></li>
                                                 }
-                                                @*@if (objGlobaldata.GetCurrentUserSession().AccessPermit.Contains("1"))
+                                                @if (objGlobaldata.GetCurrentUserSession().AccessPermit.Contains("1"))
                                                     {
                                                         <li class="nav-item"><a href='@Url.Action("AccessPermitList", "WorkPermit", null)' class="nav-link @(ViewBag.SubMenutype == "YearEndStockReport" ? "active" : "")" onclick="HyperLinkProgressIconFunction()"> Access Permit </a></li>
-                                                    }*@
+                                                    }
                                                 @if (objGlobaldata.GetCurrentUserSession().WorkPermit.Contains("1"))
                                                 {
                                                     <li class="nav-item"><a href='@Url.Action("WorkPermitList", "WorkPermit", null)' class="nav-link @(ViewBag.SubMenutype == "PurchasedStockReport" ? "active" : "")" onclick="HyperLinkProgressIconFunction()"> Work Permit </a></li>
@@ -1277,11 +1277,16 @@
                             {
                                 <a href='@Url.Action("RoleList", "Role")' class="dropdown-item" onclick="HyperLinkProgressIconFunction()" title="Roles"> Roles</a>
                             }
+@if ((Array.IndexOf(objGlobaldata.GetHRDeptEmployees().Split(','), CurrentUser) >= 0) || (Array.IndexOf(objGlobaldata.GetDeptHeadbyDept().Split(','), CurrentUser) >= 0))
+{
+    <a href='@Url.Action("JDList", "JD")' class="dropdown-item" onclick="HyperLinkProgressIconFunction()" title="Roles">JD</a>
+}
                             @*<a href='@Url.Action("SurveySetupWizard", "SurveySetup")' class="dropdown-item" onclick="HyperLinkProgressIconFunction()" title="Survey Setup"> Survey Setup</a>*@
                             <a href='@Url.Action("AddLocations", "Location")' class="dropdown-item" onclick="HyperLinkProgressIconFunction()" title="Location"> Location</a>
                             <a href='@Url.Action("AddDocumentLevel", "DocumentLevels")' class="dropdown-item" onclick="HyperLinkProgressIconFunction()" title="Doucument Level Details"> Document Level Details</a>
                             @*<a href='@Url.Action("AddProtalName", "PortalAccessUserLog")' class="dropdown-item" onclick="HyperLinkProgressIconFunction()" title="Portal Details"> Portal Details</a>*@
                             <a href='@Url.Action("AuditType", "AuditProcess")' class="dropdown-item" onclick="HyperLinkProgressIconFunction()">Audit Type</a>
+                            <a href='@Url.Action("TrainingCriticalityList", "TrainingPlan")' class="dropdown-item" onclick="HyperLinkProgressIconFunction()">Training Criticality</a>
                         </div>
                     </li>
                 }
@@ -1340,20 +1345,20 @@
                                     @for (int i = 0; i < dsJDReview.Tables[0].Rows.Count; i++)
                                     {
 
-                                        <li class="media" id="JD @dsJDReview.Tables[0].Rows[i]["id_role_jd"].ToString()">
+                                        <li class="media" id="JD @dsJDReview.Tables[0].Rows[i]["id_jd"].ToString()">
                                             <div class="mr-3 w-25">
 
-                                                <a href='@Url.Action("RoleJDDetail", "Role", new { RoleId= dsJDReview.Tables[0].Rows[i]["role_id"].ToString(), id_role_jd = dsJDReview.Tables[0].Rows[i]["id_role_jd"].ToString() })' title="Document Details" class="badge badge-flat badge-icon border-teal text-teal-600"><i class="icon-file-text2"></i></a>
+                                                <a href='@Url.Action("JDDetail", "JD", new { designation_id= dsJDReview.Tables[0].Rows[i]["designation_id"].ToString(), id_jd = dsJDReview.Tables[0].Rows[i]["id_jd"].ToString() })' title="Document Details" class="badge badge-flat badge-icon border-teal text-teal-600"><i class="icon-file-text2"></i></a>
                                                 <br /><span class="font-weight-semibold">Requestor <text class="text-blue">@objGlobaldata.GetEmpHrNameById(dsJDReview.Tables[0].Rows[i]["logged_by"].ToString())</text></span>
                                             </div>
                                             <div class="media-body">
 
                                                 <div class="media-title">
-                                                    <span class="font-weight-semibold">Role:<text class="text-blue">@objGlobaldata.GetRolesNameById(dsJDReview.Tables[0].Rows[i]["role_id"].ToString())</text></span>
+                                                    <span class="font-weight-semibold">Designation:<text class="text-blue">@objGlobaldata.GetDropdownitemById(dsJDReview.Tables[0].Rows[i]["designation_id"].ToString())</text></span>
                                                     <br />
                                                     <span class="font-weight-semibold">Department:<text class="text-blue">@objGlobaldata.GetDeptNameById(dsJDReview.Tables[0].Rows[i]["deptid"].ToString())</text></span>
                                                     <br />
-                                                    <span class="font-weight-semibold">Reports To:<text class="text-blue">@objGlobaldata.GetRolesNameById(dsJDReview.Tables[0].Rows[i]["report_to"].ToString())</text></span>
+                                                    <span class="font-weight-semibold">Reports To:<text class="text-blue">@objGlobaldata.GetDropdownitemById(dsJDReview.Tables[0].Rows[i]["report_to"].ToString())</text></span>
                                                     <br />
                                                     <span class="font-weight-semibold">Supervises:<text class="text-blue">@dsJDReview.Tables[0].Rows[i]["supervises"].ToString()</text></span>
                                                     <br />
@@ -2510,20 +2515,20 @@
                                     @for (int i = 0; i < dsJD.Tables[0].Rows.Count; i++)
                                     {
 
-                                        <li class="media" id="JD @dsJD.Tables[0].Rows[i]["id_role_jd"].ToString()">
+                                        <li class="media" id="JD @dsJD.Tables[0].Rows[i]["id_jd"].ToString()">
                                             <div class="mr-3 w-25">
 
-                                                <a href='@Url.Action("RoleJDDetail", "Role", new { RoleId= dsJD.Tables[0].Rows[i]["role_id"].ToString(), id_role_jd = dsJD.Tables[0].Rows[i]["id_role_jd"].ToString() })' title="Document Details" class="badge badge-flat badge-icon border-teal text-teal-600"><i class="icon-file-text2"></i></a>
+                                                <a href='@Url.Action("JDDetail", "JD", new { designation_id= dsJD.Tables[0].Rows[i]["designation_id"].ToString(), id_jd = dsJD.Tables[0].Rows[i]["id_jd"].ToString() })' title="Document Details" class="badge badge-flat badge-icon border-teal text-teal-600"><i class="icon-file-text2"></i></a>
                                                 <br /><span class="font-weight-semibold">Requestor <text class="text-blue">@objGlobaldata.GetEmpHrNameById(dsJD.Tables[0].Rows[i]["logged_by"].ToString())</text></span>
                                             </div>
                                             <div class="media-body">
 
                                                 <div class="media-title">
-                                                    <span class="font-weight-semibold">Role:<text class="text-blue">@objGlobaldata.GetRolesNameById(dsJD.Tables[0].Rows[i]["role_id"].ToString())</text></span>
+                                                    <span class="font-weight-semibold">Designation:<text class="text-blue">@objGlobaldata.GetDropdownitemById(dsJD.Tables[0].Rows[i]["designation_id"].ToString())</text></span>
                                                     <br />
                                                     <span class="font-weight-semibold">Department:<text class="text-blue">@objGlobaldata.GetDeptNameById(dsJD.Tables[0].Rows[i]["deptid"].ToString())</text></span>
                                                     <br />
-                                                    <span class="font-weight-semibold">Reports To:<text class="text-blue">@objGlobaldata.GetRolesNameById(dsJD.Tables[0].Rows[i]["report_to"].ToString())</text></span>
+                                                    <span class="font-weight-semibold">Reports To:<text class="text-blue">@objGlobaldata.GetDropdownitemById(dsJD.Tables[0].Rows[i]["report_to"].ToString())</text></span>
                                                     <br />
                                                     <span class="font-weight-semibold">Supervises:<text class="text-blue">@dsJD.Tables[0].Rows[i]["supervises"].ToString()</text></span>
                                                     <br />
@@ -3600,10 +3605,10 @@
                                     {
                                         <li class="nav-item"><a href='@Url.Action("EmergencyPlanNRecordList", "EmergencyPlanNRecord", null)' class="nav-link @(ViewBag.SubMenutype == "EmergencyPlanNRecord" ? "active" : "")" onclick="HyperLinkProgressIconFunction()">Emergency Evacuation Plan </a></li>
                                     }
-                                    @*@if (objGlobaldata.GetCurrentUserSession().AccessPermit.Contains("1"))
+                                    @if (objGlobaldata.GetCurrentUserSession().AccessPermit.Contains("1"))
                                         {
                                             <li class="nav-item"><a href='@Url.Action("AccessPermitList", "WorkPermit", null)' class="nav-link @(ViewBag.SubMenutype == "AccessPermit" ? "active" : "")" onclick="HyperLinkProgressIconFunction()"> Access Permit </a></li>
-                                        }*@
+                                        }
                                     @if (objGlobaldata.GetCurrentUserSession().WorkPermit.Contains("1"))
                                     {
                                         <li class="nav-item"><a href='@Url.Action("WorkPermitList", "WorkPermit", null)' class="nav-link @(ViewBag.SubMenutype == "WorkPermit" ? "active" : "")" onclick="HyperLinkProgressIconFunction()"> Work Permit </a></li>

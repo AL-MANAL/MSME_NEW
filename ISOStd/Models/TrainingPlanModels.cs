@@ -119,6 +119,65 @@ namespace ISOStd.Models
         [Display(Name = "Training No")]
         public string ref_no { get; set; }
 
+        //t_training_criticality
+
+        [Display(Name = "Id")]
+        public string id_training_criticality { get; set; }
+
+        [Display(Name = "Training Type")]
+        public string training_type { get; set; }
+
+        [Display(Name = "No of Days")]
+        public string no_days { get; set; }
+
+        [Display(Name = "Criticality")]
+        public string criticality { get; set; }
+
+        //-----------------------------training criticality------------------------
+        internal bool FunDeleteTrainingCriticality(string sId)
+        {
+            try
+            {
+                string sSqlstmt = "update t_training_criticality set Active=0 where id_training_criticality=" + sId;
+
+                return objGlobalData.ExecuteQuery(sSqlstmt);
+            }
+            catch (Exception ex)
+            {
+                objGlobalData.AddFunctionalLog("Exception in FunDeleteTrainingCriticality: " + ex.ToString());
+            }
+            return false;
+        }
+
+        internal bool FunUpdateTrainingCriticality(TrainingPlanModels objModel)
+        {
+            try
+            {
+                string sSqlstmt = "update t_training_criticality set training_type = '" + training_type + "',no_days = '" + no_days + "',criticality = '" + criticality + "'  where id_training_criticality=" + id_training_criticality;
+                return objGlobalData.ExecuteQuery(sSqlstmt);
+            }
+            catch (Exception ex)
+            {
+                objGlobalData.AddFunctionalLog("Exception in FunUpdateTrainingCriticality: " + ex.ToString());
+            }
+            return false;
+        }
+        //--------------------------training plan--------------------------
+
+        internal bool FunAddTrainingCriticality(TrainingPlanModels objModel)
+        {
+            try
+            {
+                string sSqlstmt = "insert into t_training_criticality (training_type,no_days,criticality) values('" + objModel.training_type + "','" + objModel.no_days + "','" + objModel.criticality + "')";
+                return objGlobalData.ExecuteQuery(sSqlstmt);
+            }
+            catch (Exception ex)
+            {
+                objGlobalData.AddFunctionalLog("Exception in FunAddTrainingCriticality: " + ex.ToString());
+            }
+            return false;
+        }
+
         internal bool FunAddTrainingPlan(TrainingPlanModels objModel)
         {
             try

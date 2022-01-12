@@ -1077,13 +1077,13 @@ namespace ISOStd.Models
         [Display(Name = "Id")]
         public int emp_no { get; set; }
 
-        [Display(Name = "Pass Type")]
+        [Display(Name = "Document Type")]
         public string PassType { get; set; }
 
         [Display(Name = "Upload")]
         public string Upload { get; set; }
 
-        [Display(Name = "Pass Expiry Date")]
+        [Display(Name = "Expiry Date")]
         public DateTime ExpDate { get; set; }
 
         internal bool FunDeletePass(string sid_pass)

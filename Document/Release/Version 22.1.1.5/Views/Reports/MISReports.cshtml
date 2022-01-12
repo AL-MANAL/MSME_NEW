@@ -1,0 +1,134 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string sReportType,sYear = "";
+
+    if (ViewBag.Report_Type != null && ViewBag.Report_Type != null)
+    {
+        sReportType = ViewBag.Report_Type;
+        HttpContext context = HttpContext.Current;
+        context.Session.Add("ReportType", sReportType);
+    }
+    
+    if (ViewBag.Year != null && ViewBag.Year != null)
+    {
+        sYear = ViewBag.Year;
+        HttpContext context = HttpContext.Current;
+        context.Session.Add("Years", sYear);
+    }
+}
+
+<div class="groupedassets margin10">
+    <span class="groupedassetshead margin10 onestphdcolor">Dashboard Reports</span>
+</div>
+
+<br />
+
+@using (Html.BeginForm("MISReports", "Reports", FormMethod.Post))
+{
+        <div  style="margin-left: 50px;">
+             
+           <b>Report Type</b>
+            <select id="ReportType" name="ReportType" required="required" style="width: 180px">
+                @if (ViewBag.ReportType != null)
+                {
+                    foreach (var item in ViewBag.ReportType)
+                    {
+                        if (item.Text == ViewBag.Report_Type)
+                        {
+                            <option value='@item.Value' selected>@item.Text</option>
+                        }
+                        else
+                        {
+                            <option value='@item.Value'>@item.Text</option>
+                        }
+                    }
+                }
+            </select>
+
+           
+            
+            <select id="Years" name="Years" required="required" style="width: 180px">
+            
+                @if (ViewBag.Years != null)
+                {
+                    foreach (var item in ViewBag.Years)
+                    {
+                        if (item.Text == ViewBag.Year)
+                        {
+                          <option value='@item.Value' selected>@item.Text</option>
+                        }
+                        else
+                        {
+                            <option value='@item.Value'>@item.Text</option>
+                        }
+                    }
+                }
+            </select>        
+            <button type="submit"id="btn" class="btn btn-info" onclick="Reset()">
+                <span class="glyphicon glyphicon-search"></span>Go
+            </button>
+        </div>
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title></title>
+</head>
+
+<body>
+    @if (ViewBag.IframeObjectiveDisplay == true)
+   {
+   
+    <iframe id="ifrmReportViewer4" src="~/Reports/MIS.aspx" style="height:800px;width:100%" frameborder="1" scrolling="no" ></iframe>
+   }
+     @if (ViewBag.IframeMISKPIDisplay == true)
+   {
+   
+    <iframe id="ifrmReportViewer" src="~/Reports/MISKPI.aspx" style="height:800px;width:100%" frameborder="1" scrolling="no"></iframe>
+   }
+
+      @if (ViewBag.IframeMISRISKDisplay == true)
+   {
+   
+    <iframe id="ifrmReportViewer1" src="~/Reports/MISRISK.aspx" style="height:800px;width:100%" frameborder="1" scrolling="no"></iframe>
+   }
+
+    @if (ViewBag.IframeMISAuditDisplay == true)
+   {
+    <iframe id="ifrmReportViewer2" src="~/Reports/MISAudit.aspx" style="height:800px;width:100%" frameborder="1" scrolling="no"></iframe>
+   }
+   @if (ViewBag.IframeMISTrainingDisplay == true)
+   {
+    <iframe id="ifrmReportViewer3" src="~/Reports/MISTraining.aspx" style="height:800px;width:100%" frameborder="1" scrolling="no"></iframe>
+   }
+     @if (ViewBag.IframeMISSupplierDisplay == true)
+   {
+    <iframe id="ifrmReportViewer5" src="~/Reports/MISSupplierPer.aspx" style="height:800px;width:100%" frameborder="1" scrolling="no"></iframe>
+   }
+     @if (ViewBag.IframeMISPerfEvalDisplay == true)
+   {
+    <iframe id="ifrmReportViewer6" src="~/Reports/MISPerfEval.aspx" style="height:800px;width:100%" frameborder="1" scrolling="no"></iframe>
+   }
+
+    @if (ViewBag.IframeMISComplaintDisplay == true)
+   {
+    <iframe id="ifrmReportViewer7" src="~/Reports/MISComplaint.aspx" style="height:800px;width:100%" frameborder="1" scrolling="no"></iframe>
+   }
+     @if (ViewBag.IframeMISCalibrationDisplay == true)
+   {
+    <iframe id="ifrmReportViewer8" src="~/Reports/MISCalibration.aspx" style="height:800px;width:100%" frameborder="1" scrolling="no"></iframe>
+   }
+</body>
+</html>
+@section Scripts {
+    <script>
+        $(function () {
+            $("#ReportType").chosen();
+            $("#Years").chosen();
+        });
+
+    </script>
+    }

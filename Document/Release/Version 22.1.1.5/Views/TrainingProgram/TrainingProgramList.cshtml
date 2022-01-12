@@ -1,0 +1,623 @@
+﻿@model IEnumerable<ISOStd.Models.TrainingProgram>
+
+    @{
+        ViewBag.Title = "TrainingProgramList";
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+
+
+    <div class="groupedassets margin10">
+        <span class="groupedassetshead margin10 onestphdcolor">Training Calender List </span>
+    </div>
+
+    <div id="divmsg">
+        @if (TempData["alertdata"] != null)
+        {
+            <span class="errMsg" style="color: red; font-weight: bold;">@TempData["alertdata"]</span>
+        }
+        @if (TempData["Successdata"] != null)
+        {
+            <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+        }
+    </div>
+
+    @using (Html.BeginForm("TrainingProgramList", "TrainingProgram", FormMethod.Post, new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+    {
+        <div>
+            @Html.ActionLink("Add New", "TrainingProgramAdd", null, new { @class = "ActionLink", onclick = "HyperLinkProgressIconFunction()" })
+            <button type="button" class="btn btn-info" onclick="Send()" style="width:110px; margin-left: 20px">Update</button>
+
+            @Html.TextBox("SearchText", (string)ViewBag.SearchText, new { placeholder = "Search by Year", style = "width: 15%;" })
+            <button type="submit" class="btn btn-info" onclick="ProgressIconFunction('#form1')">
+                <span class="glyphicon glyphicon-search"></span> Search
+            </button>
+        </div>
+        @Html.ValidationSummary(true)
+        @Html.AntiForgeryToken()
+
+    }
+    <br />
+    <div id="content">
+        <div id="checkboxes">
+            <table id="table1">
+
+
+                <tr>
+
+                    @*<th style="width: 100px; min-width: 100px; max-width: 100px;">Employee ID</th>
+                        <th style="width: 100px; min-width: 100px; max-width: 100px;">Name</th>*@
+                    <th style="width: 100px; min-width: 100px; max-width: 100px;">
+                        @*@Html.DisplayNameFor(model => model.First().Trainin)*@
+                        Training Name
+                    </th>
+                    <th style="width: 100px; min-width: 100px; max-width: 100px;">
+                        @Html.DisplayNameFor(model => model.First().Jan)
+                    </th>
+                    <th style="width: 100px; min-width: 100px; max-width: 100px;">
+                        @Html.DisplayNameFor(model => model.First().Feb)
+                    </th>
+                    <th style="width: 100px; min-width: 100px; max-width: 100px;">
+                        @Html.DisplayNameFor(model => model.First().Mar)
+                    </th>
+                    <th style="width: 100px; min-width: 100px; max-width: 100px;">
+                        @Html.DisplayNameFor(model => model.First().Apr)
+                    </th>
+                    <th style="width: 100px; min-width: 100px; max-width: 100px;">
+                        @Html.DisplayNameFor(model => model.First().May)
+                    </th>
+                    <th style="width: 100px; min-width: 100px; max-width: 100px;">
+                        @Html.DisplayNameFor(model => model.First().June)
+                    </th>
+                    <th style="width: 100px; min-width: 100px; max-width: 100px;">
+                        @Html.DisplayNameFor(model => model.First().Jul)
+                    </th>
+
+                    <th style="width: 100px; min-width: 100px; max-width: 100px;">
+                        @Html.DisplayNameFor(model => model.First().Aug)
+                    </th>
+                    <th style="width: 100px; min-width: 100px; max-width: 100px;">
+                        @Html.DisplayNameFor(model => model.First().Sept)
+                    </th>
+                    <th style="width: 100px; min-width: 100px; max-width: 100px;">
+                        @Html.DisplayNameFor(model => model.First().Oct)
+                    </th>
+                    <th style="width: 100px; min-width: 100px; max-width: 100px;">
+                        @Html.DisplayNameFor(model => model.First().Nov)
+                    </th>
+                    <th style="width: 100px; min-width: 100px; max-width: 100px;">
+                        @Html.DisplayNameFor(model => model.First().Dec)
+                    </th>
+                    <th style="width: 100px; min-width: 100px; max-width: 100px;">
+                        @Html.DisplayNameFor(model => model.First().Status)
+                    </th>
+                    <th style="width: 100px; min-width: 100px; max-width: 100px;">
+                        @Html.DisplayNameFor(model => model.First().remark)
+                    </th>
+                    <th style="width: 60px; min-width: 60px; max-width: 60px;">Edit</th>
+                    @*<th style="width:60px; min-width:60px; max-width:60px;">Edit</th>*@
+                    @if (ViewBag.DeleteFlg != null && ViewBag.DeleteFlg == true)
+                    {
+                        <th style="width: 60px; min-width: 60px; max-width: 60px;">Delete</th>
+                    }
+
+
+
+
+                </tr>
+
+
+                @if (Model != null && Model.Count() > 0)
+                {
+                    foreach (var item in Model)
+                    {
+
+
+                        <tr>
+
+                            @*<td style="width: 100px; min-width: 100px; max-width: 100px;">
+                                    Training name
+                                </td>*@
+
+                            <td>
+                                <div class="display-field">
+                                    @item.topic_id
+
+                                    @*if (item2.Text==item.topic_id)
+                                        {
+                                            <option value='@item2.Value' selected>@item2.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@item2.Value'>@item2.Text</option>
+                                        }*@
+                                    @*<select class="chosen-select" id="Training_Topic" required multiple name="Training_Topic">
+                                            @if (ViewBag.Topics != null)
+                                            {
+
+
+                                                foreach (var data in ViewBag.Topics)
+                                                {
+
+                                                    if (Array.IndexOf(item.topic_id.Split(','), data.Text) >= 0)
+                                                    {
+                                                        <option value='@data.Value' selected>@data.Text</option>
+                                                    }
+                                                    else if (Array.IndexOf(item.topic_id.Split(','), " " + data.Text) >= 0)
+                                                    {
+
+                                                        <option value='@data.Value' selected>@data.Text</option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value='@data.Value' >@data.Text</option>
+                                                    }
+                                                }
+                                            }
+                                        </select>*@
+                                </div>
+
+                            </td>
+
+
+
+                            @if (@item.Jan == "1")
+                            {
+
+                                <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                                    <input type="checkbox" id="select" checked name="@item.Id_Training_program" value="Jan" />
+
+                                </td>
+
+                            }
+                            else
+                            {
+
+                                <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                                    <input type="checkbox" id="select" name="@item.Id_Training_program" value="Jan" />
+                                </td>
+
+                            }
+
+
+                            @if (@item.Feb == "1")
+                            {
+                                <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                                    <input type="checkbox" id="select" checked name="@item.Id_Training_program" value="Feb" />
+
+                                </td>
+
+                            }
+                            else
+                            {
+
+                                <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                                    <input type="checkbox" id="select" name="@item.Id_Training_program" value="Feb" />
+
+                                </td>
+                            }
+
+                            @if (@item.Mar == "1")
+                            {
+                                <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                                    <input type="checkbox" id="select" checked name="@item.Id_Training_program" value="Mar" />
+
+                                </td>
+
+                            }
+                            else
+                            {
+
+                                <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                                    <input type="checkbox" id="select" name="@item.Id_Training_program" value="Mar" />
+
+                                </td>
+                            }
+                            @if (@item.Apr == "1")
+                            {
+                                <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                                    <input type="checkbox" id="select" checked name="@item.Id_Training_program" value="Apr" />
+
+                                </td>
+
+                            }
+                            else
+                            {
+
+                                <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                                    <input type="checkbox" id="select" name="@item.Id_Training_program" value="Apr" />
+
+                                </td>
+                            }
+
+                            @if (@item.May == "1")
+                            {
+                                <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                                    <input type="checkbox" id="select" checked name="@item.Id_Training_program" value="May" />
+
+                                </td>
+
+                            }
+                            else
+                            {
+
+                                <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                                    <input type="checkbox" id="select" name="@item.Id_Training_program" value="May" />
+
+                                </td>
+                            }
+
+                            @if (@item.June == "1")
+                            {
+                                <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                                    <input type="checkbox" id="select" checked name="@item.Id_Training_program" value="Jun" />
+
+                                </td>
+
+                            }
+                            else
+                            {
+
+                                <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                                    <input type="checkbox" id="select" name="@item.Id_Training_program" value="Jun" />
+
+                                </td>
+                            }
+                            @if (@item.Jul == "1")
+                            {
+                                <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                                    <input type="checkbox" id="select" checked name="@item.Id_Training_program" value="Jul" />
+
+                                </td>
+
+                            }
+                            else
+                            {
+
+                                <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                                    <input type="checkbox" id="select" name="@item.Id_Training_program" value="Jul" />
+
+                                </td>
+                            }
+
+                            @if (@item.Aug == "1")
+                            {
+                                <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                                    <input type="checkbox" id="select" checked name="@item.Id_Training_program" value="Aug" />
+
+                                </td>
+
+                            }
+                            else
+                            {
+
+                                <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                                    <input type="checkbox" id="select" name="@item.Id_Training_program" value="Aug" />
+
+                                </td>
+                            }
+
+
+
+                            @if (@item.Sept == "1")
+                            {
+                                <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                                    <input type="checkbox" id="select" checked name="@item.Id_Training_program" value="Sept" />
+
+                                </td>
+
+                            }
+                            else
+                            {
+
+                                <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                                    <input type="checkbox" id="select" name="@item.Id_Training_program" value="Sept" />
+
+                                </td>
+                            }
+
+                            @if (@item.Oct == "1")
+                            {
+                                <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                                    <input type="checkbox" id="select" checked name="@item.Id_Training_program" value="Oct" />
+
+                                </td>
+
+                            }
+                            else
+                            {
+
+                                <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                                    <input type="checkbox" id="select" name="@item.Id_Training_program" value="Oct" />
+
+                                </td>
+                            }
+
+                            @if (@item.Nov == "1")
+                            {
+                                <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                                    <input type="checkbox" id="select" checked name="@item.Id_Training_program" value="Nov" />
+
+                                </td>
+
+                            }
+                            else
+                            {
+
+                                <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                                    <input type="checkbox" id="select" name="@item.Id_Training_program" value="Nov" />
+
+                                </td>
+                            }
+
+                            @if (@item.Dec == "1")
+                            {
+                                <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                                    <input type="checkbox" id="select" checked name="@item.Id_Training_program" value="Dece" />
+
+                                </td>
+
+                            }
+                            else
+                            {
+
+                                <td style="width: 100px; min-width: 100px; max-width: 100px;">
+                                    <input type="checkbox" id="select" name="@item.Id_Training_program" value="Dece" />
+
+                                </td>
+                            }
+                            <td>OPEN</td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.remark)
+                            </td>
+                            @*<td style="width:60px; min-width:60px; max-width:60px;word-wrap:break-word">
+
+                                    <a href='@Url.Action("IssueEdit", "Issues", new { id_issue = item.id_issue })' title="Edit Issue details" onclick="HyperLinkProgressIconFunction()">
+                                        <span class="glyphicon glyphicon glyphicon-edit iocnstatus-edit" onclick="HyperLinkProgressIconFunction()"></span>
+                                    </a>
+
+                                </td>*@
+                            <td style="width: 100px; min-width: 30px; max-width: 100px;">
+                                <a href='@Url.Action("TrainingProgramEdit", "TrainingProgram", new { Id_Training_program = item.Id_Training_program })' title="Edit Training Programs details" onclick="HyperLinkProgressIconFunction()">
+                                    <span class="glyphicon glyphicon glyphicon-edit iocnstatus-edit" onclick="HyperLinkProgressIconFunction()"></span>
+                                </a>
+                            </td>
+
+                            @if (ViewBag.DeleteFlg != null && ViewBag.DeleteFlg == true)
+                            {
+                                <td style="width: 60px; min-width: 60px; max-width: 60px;word-wrap:break-word">
+                                    <img src="@Url.Content("~/Images/delete.png")" title="Delete Document" onclick="DeleteItems(@item.Id_Training_program)" style="cursor:pointer;" />
+                                </td>
+                            }
+
+
+
+                        </tr>
+
+
+                    }
+
+                }
+
+            </table>
+        </div>
+    </div>
+
+
+    @section Scripts {
+        <script>
+         $(function () {
+           //$("#Training_Topic").chosen();
+             $(".chosen-select").chosen();
+
+           $.validator.setDefaults({ ignore: ":hidden:not(.chosen-select)" });
+
+
+             //var test = $("#Training_Topic").length;
+
+
+             //var test = $(".chosen-select").length;
+             //alert(test);
+             //for (var i = 0; i < test.length; i++) {
+             //    var element = test.eq(i);
+             //    alert(element);
+             //    element.chosen();
+             //    element.validator.setDefaults({ ignore: ":hidden:not(.chosen-select)" });
+             //    //do something with element
+             //}
+
+         });
+
+
+        $(function () {
+
+            $("#select").click(function () {
+                if ($("#select").prop('checked')) {
+                    {
+                        $(this).prop('checked', true);
+                        //var id = $(this).attr('name')
+                        //var value = $(this).attr('value')
+                        ////alert(value);
+                        //SetAccess(id,value,1);
+
+                    }
+                }
+                else {
+
+                    $(this).prop('checked', false);
+                    //var id = $(this).attr('name')
+                    //var value = $(this).attr('value')
+                    //alert(value);
+                    //SetAccess(id, value, 0);
+                }
+
+            });
+
+
+        });
+
+        function Send() {
+            var selected = "";
+            var selected1 = "";
+            var selected3 = "";
+
+            $('#checkboxes input:checked').each(function () {
+                // selected.push($(this).attr('name'));
+                selected = selected + $(this).attr('name') + ",";
+                selected = selected + $(this).attr('value') + ",";
+            });
+            //SendEmail(selected);
+            if (selected != "") {
+                if (selected.charAt(selected.length - 1) == ',') {
+                    selected = selected.substr(0, selected.length - 1);
+                }
+                SetAccess(selected,1);
+                //jAlert("Selected Items: " + selected);
+            }
+            $('#checkboxes input:unchecked').each(function () {
+                // selected.push($(this).attr('name'));
+                selected1 = selected1 + $(this).attr('name') + ",";
+                selected1 = selected1 + $(this).attr('value') + ",";
+            });
+
+
+
+            if (selected1 != "") {
+                if (selected1.charAt(selected1.length - 1) == ',') {
+                    selected1 = selected1.substr(0, selected1.length - 1);
+                }
+               
+                SetAccess(selected1,0);
+                //jAlert("Selected Items: " + selected1);
+            }
+            //else {
+            //    jAlert("Please select atleast one customer and then click Send");
+            //}
+            }
+
+
+             //$('#checkboxes option:selected').each(function () {
+                //alert($(this).text() + " : " + $(this).val() + " : " + $(this).attr('name') );
+             // check = $(this).attr('name');
+              // if (check = name) {
+               //selected3 = selected3 + $(this).attr('name') + ","
+               //    selected3 = selected3 + $(this).val() + ",";
+              // }
+
+
+               //var selected3 = "";
+
+            //});
+            //SetAccess2(selected3);
+
+            //if (selected3 != "") {
+            //    if (selected3.charAt(selected3.length - 1) == ',') {
+
+            //        var res = selected3.split(",", selected3.length - 1);
+            //        var app = "";
+            //        var app2 = "";
+            //        var i;
+            //        var j = 1;
+            //        for (i = 0; i < selected3.length - 4; i = i + 2) {
+
+            //            while(res[i] == res[i + 2]) {
+            //                app = app+ res[j] + ",";
+            //                i = i + 2;
+            //                j = j + 2;
+
+            //            }
+            //            app = app + res[j];
+
+            //            j = j + 2;
+            //            app2 = res[i];
+            //            app3 = app + ":" + app2;
+            //            if (app != "undefined") {
+            //               // alert(app3);
+            //
+            //            }
+
+            //                app = "";
+
+            //        }
+
+            //    }
+            //}
+            //alert(selected3);
+            //$('#checkboxes select').each(function () {
+            //    alert($(this).attr('name'));
+            //});
+            //SendEmail(selected);
+
+        function SetAccess(selected,status) {
+
+            var data = { 'selected': selected, 'status': status };
+            jQuery.ajax({
+                url: '@Url.Action("UpdateTrainingProgram", "TrainingProgram")',
+                 type: 'POST',
+                 dataType: "json",
+                 data: data,
+                 success: function (result) {
+                     jAlert("Updated Successfully");
+                     //window.location.reload();
+
+                 }
+             });
+            }
+
+
+
+
+             @*function SetAccess2(selected) {
+
+            var data = { 'selected': selected };
+            jQuery.ajax({
+                url: '@Url.Action("Update2TrainingProgram", "TrainingProgram")',
+                 type: 'POST',
+                 dataType: "json",
+                 data: data,
+                 success: function (result) {
+                    // jAlert("Updated Successfully");
+                     window.location.reload();
+
+                 }
+             });
+            }*@
+
+
+            function DeleteItems(Id_Training_Program) {
+            jConfirm('Do you want to delete?', 'Are you Sure?', function (r) {
+                if (r == true) {
+                    jQuery.ajax({
+                        url: '@Url.Action("TrainingProgramDelete", "TrainingProgram")',
+                        type: 'POST',
+                        dataType: "json",
+                        data: { 'Id_Training_Program': Id_Training_Program },
+                        success: function (result) {
+                            var params = {
+                                View: 1
+                            };
+
+                            //// Add new params to the querystring dictionary
+                            queryString = $.param(params);
+
+                            window.location.href =
+                                window.location.protocol + "//" +
+                                window.location.host +
+                                window.location.pathname +
+                               '?' + queryString;
+                        }
+                    });
+                    return true;
+                }
+                else if (r == false) {
+                    return false;
+                }
+            });
+        }
+
+
+
+        </script>
+        @Scripts.Render("~/bundles/jqueryval")
+        @Scripts.Render("~/bundles/ckeditor")
+        @Scripts.Render("~/bundles/ckeditor/adapters")
+    }

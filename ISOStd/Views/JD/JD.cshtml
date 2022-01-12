@@ -1,0 +1,466 @@
+﻿@model ISOStd.Models.JDModels
+
+@{
+    ViewBag.Title = "";
+}
+
+
+@section featured {
+
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("JDList", "JD", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Job Description</span>
+                    </a>
+                    <span class="breadcrumb-item active">Add Job Description</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                    <div class="breadcrumb justify-content-center">
+
+
+                        <div class="breadcrumb-elements-item dropdown p-0">
+                            <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                                <i class="icon-gear mr-2"></i>
+                                Settings
+                            </a>
+
+                            <div class="dropdown-menu dropdown-menu-right">
+
+                                <div class="dropdown-divider"></div>
+                                <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>*@
+        </div>
+    </div>
+}
+
+@using (Html.BeginForm("JD", "JD", FormMethod.Post,
+                                             new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <input type="hidden" id="id_jd" name="id_jd" value="@Model.id_jd" />
+    <input type="hidden" id="designation_id" name="designation_id" value="@ViewBag.DesignationId" />
+  
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Add Job Description</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+                <table class="table table-lg">
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                Designation
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @ViewBag.DesignationName
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.jd_date)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+
+                                @if (Model.jd_date != null && Model.jd_date > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    <input class="form-control required" type="date" id="jd_date" name="jd_date" value="@Model.jd_date.ToString("yyyy-MM-dd")" required />
+                                }
+                                else
+                                {
+                                    <input class="form-control required" type="date" id="jd_date" name="jd_date" required />
+                                }
+
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.deptid)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="deptid" name="deptid">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.DeptList != null)
+                                    {
+                                        foreach (var item in ViewBag.DeptList)
+                                        {
+                                            if (item.Value == Model.deptid)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.report_to)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="report_to" name="report_to">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.DesignationList != null)
+                                    {
+                                        foreach (var item in ViewBag.DesignationList)
+                                        {
+                                            if (item.Value == Model.report_to)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.supervises)
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <div class="editor-field">
+                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="supervises" name="supervises">@Model.supervises</textarea>
+                            </div>
+                        </td>
+                     
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.approved_by)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="approved_by" name="approved_by" multiple>
+                                    @*<option value='' hidden>Select</option>*@
+                                    @if (ViewBag.ApprovedBy != null)
+                                    {
+
+                                        if (Model.approved_by != null)
+                                        {
+                                            foreach (var data in ViewBag.ApprovedBy)
+                                            {
+                                                if (Array.IndexOf(Model.approved_by.ToString().Split(','), data.Value) >= 0)
+                                                {
+                                                    <option value='@data.Value' selected>@data.Text</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@data.Value'>@data.Text</option>
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            foreach (var data in ViewBag.ApprovedBy)
+                                            {
+
+                                                <option value='@data.Value'>@data.Text</option>
+
+                                            }
+                                        }
+
+
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.reviewed_by)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="reviewed_by" name="reviewed_by" multiple>
+                                    @*<option value='' hidden>Select</option>*@
+                                    @if (ViewBag.ApprovedBy != null)
+                                    {
+
+                                        if (Model.reviewed_by != null)
+                                        {
+                                            foreach (var data in ViewBag.ApprovedBy)
+                                            {
+                                                if (Array.IndexOf(Model.reviewed_by.ToString().Split(','), data.Value) >= 0)
+                                                {
+                                                    <option value='@data.Value' selected>@data.Text</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@data.Value'>@data.Text</option>
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            foreach (var data in ViewBag.ApprovedBy)
+                                            {
+
+                                                <option value='@data.Value'>@data.Text</option>
+
+                                            }
+                                        }
+
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.responsibility)
+                            </div>
+                        </td>
+                        <td class="col" colspan="3">
+                            <div class="editor-field">
+                                @Html.TextAreaFor(model => model.responsibility, new { @id = "editor-full", @rows = "4", @cols = "4" })
+                            </div>
+                        </td>
+
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.authorities)
+                            </div>
+                        </td>
+                        <td class="col" colspan="3">
+                            <div class="editor-field">
+                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="authorities" name="authorities">@Model.authorities</textarea>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.interfaces_internal)
+                            </div>
+                        </td>
+                        <td class="col" colspan="3">
+                            <div class="editor-field">
+                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="interfaces_internal" name="interfaces_internal">@Model.interfaces_internal</textarea>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.interfaces_external)
+                            </div>
+                        </td>
+                        <td class="col" colspan="3">
+                            <div class="editor-field">
+                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="interfaces_external" name="interfaces_external">@Model.interfaces_external</textarea>
+                            </div>
+                        </td>
+
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.accountable)
+                            </div>
+                        </td>
+                        <td class="col" colspan="3">
+                            <div class="editor-field">
+                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="accountable" name="accountable">@Model.accountable</textarea>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.revised_date)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @if (Model.revised_date != null && Model.revised_date > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    <input class="form-control" type="date" id="revised_date" name="revised_date" value="@Model.revised_date.ToString("yyyy-MM-dd")" />
+                                }
+                                else
+                                {
+                                    <input class="form-control" type="date" id="revised_date" name="revised_date" />
+                                }
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.rev_no)
+                            </div>
+                        </td>
+                        <td class="col-xs-6 col-md-4">
+                            <div class="editor-field">
+                                <input class="form-control" type='text' id='rev_no' name="rev_no" value="@Model.rev_no" />
+
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col" colspan="4">
+                            Minimum Competency Required to hold the position
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-4">
+                            Competence Parameters
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            Mandatory
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            Optional
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-4">
+                            Academic qualification
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <div class="editor-field">
+                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="academic_mandatory" name="academic_mandatory">@Model.academic_mandatory</textarea>
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <div class="editor-field">
+                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="academic_optional" name="academic_optional">@Model.academic_optional</textarea>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-4">
+                            Trade Certificate
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <div class="editor-field">
+                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="trade_mandatory" name="trade_mandatory">@Model.trade_mandatory</textarea>
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <div class="editor-field">
+                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="trade_optional" name="trade_optional">@Model.trade_optional</textarea>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-4">
+                            Relevant experience
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <div class="editor-field">
+                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="experience_mandatory" name="experience_mandatory">@Model.experience_mandatory</textarea>
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <div class="editor-field">
+                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="experience_optional" name="experience_optional">@Model.experience_optional</textarea>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-4">
+                            Relevant trainings
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <div class="editor-field">
+                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="trainings_mandatory" name="trainings_mandatory">@Model.trainings_mandatory</textarea>
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <div class="editor-field">
+                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="trainings_optional" name="trainings_optional">@Model.trainings_optional</textarea>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-4">
+                            Skills (Wherever required)
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <div class="editor-field">
+                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="skills_mandatory" name="skills_mandatory">@Model.skills_mandatory</textarea>
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <div class="editor-field">
+                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="skills_optional" name="skills_optional">@Model.skills_optional</textarea>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+            @Html.ActionLink("Back to List", "JDList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+
+            <button type="submit" id="btnCreate" value="Add" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Add</button>
+        </div>
+    </div>
+
+
+}
+
+
+@section Scripts {
+    <script>
+        CKEDITOR.replace('editor-full', {
+            height: 400,
+            extraPlugins: 'forms'
+        });
+
+
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

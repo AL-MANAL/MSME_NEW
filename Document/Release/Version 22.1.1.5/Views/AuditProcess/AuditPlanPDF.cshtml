@@ -1,0 +1,119 @@
+﻿@using System.Data
+
+@{
+    Layout = "~/Views/Shared/_PrintLayout.cshtml";
+    ViewBag.Title = "";
+    DataSet dsData = new DataSet();
+    ISOStd.Models.AuditProcessModels objModel = new ISOStd.Models.AuditProcessModels();
+    ISOStd.Models.clsGlobal obj = new ISOStd.Models.clsGlobal();
+    if (ViewBag.objPlan != null)
+    {
+        dsData = ViewBag.objPlan;
+    }
+    if (ViewBag.Audit != null)
+    {
+        objModel = ViewBag.Audit;
+    }
+}
+<div>
+    <table class="table  table-bordered">
+        <tbody>
+            <tr>
+                <td class="bg-grey-300"><h4>Audit No</h4></td>
+                <td><h4>@objModel.Audit_no</h4></td>  
+            </tr>      
+        </tbody>
+    </table>
+    <br />
+    <br />
+    <table class="table table-bordered">
+        <tr class="bg-grey-300">
+            <th><h3>Audit Scheduled Date</h3></th>
+            <th><h3>Timing</h3></th>
+            <th><h3>Division</h3></th>
+            <th><h3>Department</h3></th>          
+            <th><h3>Auditor(s)</h3></th>
+            <th><h3>Auditee(s)</h3></th>
+            <th><h3>Audit Status</h3></th>
+        </tr>
+
+        <tbody>
+
+            @for (int i = 0; i < dsData.Tables[0].Rows.Count; i++)
+            {
+              
+                <tr>
+                   
+                    <td><h3>
+    @if (dsData.Tables[0].Rows[i]["AuditDate"].ToString() != "" && dsData.Tables[0].Rows[i]["AuditDate"].ToString() != null)
+    {
+        @Convert.ToDateTime(dsData.Tables[0].Rows[i]["AuditDate"].ToString()).ToString("dd/MM/yyyy")
+    }
+</h3>
+</td>
+                    <td><h3>
+    @dsData.Tables[0].Rows[i]["fromtime"].ToString() - @dsData.Tables[0].Rows[i]["totime"].ToString()
+</h3>
+</td>
+                    <td><h3>
+    @obj.GetMultiCompanyBranchNameById(dsData.Tables[0].Rows[i]["branch"].ToString())
+</h3>
+</td>
+                    <td><h3>
+    @obj.GetMultiDeptNameById(dsData.Tables[0].Rows[i]["group_name"].ToString())
+</h3>
+</td>                    
+                    <td><h3>
+    @obj.GetMultiHrEmpNameById(dsData.Tables[0].Rows[i]["auditors"].ToString())
+</h3>
+</td>
+                    <td><h3>
+    @obj.GetMultiHrEmpNameById(dsData.Tables[0].Rows[i]["auditee_team"].ToString())
+</h3>
+</td>
+                    <td><h3>
+   @obj.GetAuditStatusById(dsData.Tables[0].Rows[i]["Audit_Status"].ToString())
+</h3>
+</td>
+
+                </tr>
+            }
+        </tbody>
+    </table>
+    <br />
+    <br />
+    <table class="table  table-bordered">
+        <tbody>
+           
+            <tr>
+                <td class="bg-grey-300"><h4>Planned By</h4></td>
+                <td><h4>@objModel.PlannedBy</h4></td>
+                <td class="bg-grey-300"><h4>Approved By</h4></td>
+                <td><h4>@objModel.ApprovedBy</h4></td>
+            </tr>
+            <tr>
+                <td class="bg-grey-300"><h4>Audit Planned On</h4></td>
+                <td><h4>
+                        @if (objModel.AuditPlanDate != null && objModel.AuditPlanDate > Convert.ToDateTime("01/01/0001"))
+                        {
+
+                            @Html.Label(objModel.AuditPlanDate.ToString("dd/MM/yyyy"))
+
+                        }</h4></td>
+               
+            </tr>
+
+
+        </tbody>
+    </table>
+
+</div>
+
+
+
+
+
+
+
+
+

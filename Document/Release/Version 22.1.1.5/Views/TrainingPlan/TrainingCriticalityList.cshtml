@@ -1,0 +1,486 @@
+﻿@using PagedList;
+@using PagedList.Mvc;
+
+@model List<ISOStd.Models.TrainingPlanModels>
+    @{
+        ViewBag.Title = "";
+    }
+
+    @section featured {
+        <div class="page-header page-header-light">
+
+            <div class="page-header-content header-elements-md-inline">
+                <div class="page-title d-flex">
+                    <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+                </div>
+            </div>
+
+            <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+                <div class="d-flex">
+                    <div class="breadcrumb">
+                        <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                            <span class="breadcrumb-item"> Home</span>
+                        </a>
+                        <span class="breadcrumb-item active">Training Criticality</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+
+    @using (Html.BeginForm("AddTrainingCriticality", "TrainingPlan", FormMethod.Post,
+                          new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true)
+
+        <div class="card">
+            <div class="card-header header-elements-inline bg-primary">
+                <h5 class="card-title">Training Criticality</h5>
+                <div class="header-elements">
+                    <div class="list-icons">
+                        <a class="list-icons-item" data-action="collapse"></a>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="container-fluid">
+                    <table class="table table-lg">
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                               Type of training<text style="color:red;">*</text>
+                            </td>
+                            <td class="col">
+                               <input type="text" class="form-control" id="training_type" name="training_type" required />
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                No of days<text style="color:red;">*</text>
+                            </td>
+                            <td class="col">
+                                <input type="text" class="form-control" id="no_days" name="no_days" required />
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                Criticality<text style="color:red;">*</text>
+                            </td>
+                            <td class="col">
+                                <select class="form-control select-fixed-multiple" data-fouc id="criticality" name="criticality" required>
+                                    <option value=''>Select</option>
+                                    @if (ViewBag.criticality != null)
+                                    {
+                                        foreach (var item in ViewBag.criticality)
+                                        {
+                                             <option value='@item.Value'>@item.Text</option>                   
+                                        }
+                                    }
+                                </select>
+                            </td>
+                           
+                        </tr>
+                        
+
+                    </table>
+                </div>
+
+            </div>
+
+
+            <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+
+                <button class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" type="submit" value="Save" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Save</button>
+            </div>
+        </div>
+
+    }
+
+    <div class="card">
+        <div class="card-body">
+
+            <table class="table table-bordered table-striped table-hover datatable-responsive" id="cert">
+                <thead>
+                    <tr>
+                        <th>
+                            Sl.No
+                        </th>
+                        <th>
+                            Training Type
+                        </th>
+                        <th>
+                            No of Days
+                        </th>
+                        <th>
+                            Criticality
+                        </th>
+                        <th class="not-export-column">Edit</th>
+
+                        <th class="not-export-column">Delete</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Count() > 0)
+                    {
+                        int i = 0;
+                        foreach (var item in Model)
+                        {
+                            i = i + 1;
+                            <tr>
+                                <td>
+                                    @i
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.training_type)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.no_days)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.criticality)
+                                </td>
+                                <td>
+                                    <a href='@Url.Action("", "", new { id_training_criticality= item.id_training_criticality })' title="Edit" onclick="HyperLinkProgressIconFunction()">
+                                        <span class="badge badge-info">Edit</span>
+                                    </a>
+                                </td>
+
+                                <td>
+                                    <span class="badge badge-danger" title="Delete" onclick="DeleteItems(@item.id_training_criticality)" style="cursor:pointer;">Delete</span>
+                                </td>
+                            </tr>
+
+                        }
+                    }
+
+
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    @section Scripts {
+        <script type="text/javascript">
+
+
+            //----zzz
+            $(document).ready(function () {
+
+
+
+                @if (TempData["alertdata"] != null ) {
+
+           @: new Noty({
+                                                                       @:     text: '@TempData["alertdata"]',
+                                                                       @:     type: 'error'
+                                                                       @:}).show();
+
+                                                        }
+
+                @if (@TempData["Successdata"] != null ) {
+
+        @:    new Noty({
+                                                                     @:       text: '@TempData["Successdata"]',
+                                                                     @:       type: 'success'
+                                                                     @:}).show();
+
+                                                        }
+            });
+          
+
+            var cert = function () {
+
+
+                //
+                // Setup module components
+                //
+
+                // Basic Datatable examples
+                var _componentDatatableBasic = function () {
+                    if (!$().DataTable) {
+                        console.warn('Warning - datatables.min.js is not loaded.');
+                        return;
+                    }
+
+                    //Setting datatable defaults
+                    $.extend($.fn.dataTable.defaults, {
+                        autoWidth: false,
+                        responsive: true,
+                        columnDefs: [{
+                            orderable: false,
+                            width: 100,
+                            targets: []
+                        }],
+
+                        colReorder: false,
+                        dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                        //dom: 'lBfrtip',
+                        language: {
+                            search: '<span>Filter:</span> _INPUT_',
+                            searchPlaceholder: 'Type to filter...',
+                            lengthMenu: '<span>Show:</span> _MENU_',
+                            paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                        }
+                    });
+
+
+                    var table = $('#cert').DataTable({
+
+                        lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                        colReorder: {
+                            fixedColumnsLeft: 1
+                        },
+                        stateSave: true,
+                        //orderCellsTop: true,
+                        //fixedHeader: {
+                        //    header: true,
+
+                        //},
+                        //scrollX: true,
+                        scrollY: '350px',
+                        scrollCollapse: true,
+                        //fixedHeader:true,
+                        //fixedColumns: true,
+
+                        //responsive: {
+                        //    details: {
+                        //        type: 'column',
+                        //        target: -1
+                        //    }
+                        //},
+                        //columnDefs: [
+                        //    {
+                        //        className: 'control',
+                        //        orderable: false,
+                        //        targets: -1
+                        //    },
+                        //    {
+                        //        width: "100px",
+                        //        targets: [5]
+                        //    },
+                        //    {
+                        //        orderable: false,
+                        //        targets: [5]
+                        //    }
+                        //],
+
+                        keys: {
+                            className: 'focus focus-success'
+                        },
+
+                        buttons: {
+                            buttons: [
+                                {
+                                    extend: 'copyHtml5',
+                                    className: 'btn btn-light',
+                                    title: 'certificate Data export',
+                                    exportOptions: {
+                                        columns: ':visible :not(.not-export-column)'
+                                    },
+                                },
+                                {
+                                    extend: 'excelHtml5',
+                                    className: 'btn btn-light',
+                                    title: 'certificate Data export',
+                                    exportOptions: {
+                                        columns: ':visible :not(.not-export-column)'
+                                    },
+
+                                },
+                                {
+                                    extend: 'pdfHtml5',
+                                    className: 'btn btn-light',
+                                    title: 'certificate Data export',
+                                    exportOptions: {
+                                        columns: ':visible :not(.not-export-column)'
+                                    },
+                                },
+                                {
+                                    extend: 'csvHtml5',
+                                    className: 'btn btn-light',
+                                    title: 'certificate Data export',
+                                    exportOptions: {
+                                        columns: ':visible :not(.not-export-column)'
+                                    },
+                                },
+                                {
+                                    extend: 'print',
+                                    className: 'btn btn-light',
+                                    title: 'certificate Data export',
+                                    exportOptions: {
+                                        columns: ':visible :not(.not-export-column)'
+                                    },
+                                },
+
+                                {
+                                    extend: 'colvis',
+                                    text: '<i class="icon-three-bars"></i>',
+                                    className: 'btn bg-blue btn-icon dropdown-toggle'
+                                }
+                            ]
+                        }
+                    });
+                    // Adjust columns on window resize
+                    setTimeout(function () {
+                        $(window).on('resize', function () {
+                            table.columns.adjust();
+                        });
+                    }, 100);
+
+
+                    //Redraw table on click toggle. -------table.columns.adjust doesn't work properly upon calling after toggle (width increase/decrease = redraw table.).
+                    $('.sidebar-control').on('click', function () {
+
+                        setTimeout(function () {
+                            //alert("gii");
+
+                            table.columns.adjust().draw();
+                            $("#cert").resize();
+                        }, 100);
+
+                    });
+                    //}
+
+                    $('#cert').on('page.dt', function () {
+                        //table.draw();
+                        //alert("zzz1");
+                        $("#cert").resize();
+
+                    });
+
+                    $('#cert').on('column-visibility.dt', function () {
+                        //table.draw();
+                        //alert("zzz2");
+                        $("#cert").resize();
+
+                    });
+
+                    $('#cert').on('order.dt', function () {
+                        //table.draw();
+                        //alert("zzz3");
+                        $("#cert").resize();
+
+                    });
+
+
+                    $('#cert').on('responsive-display.dt', function () {
+                        //table.draw();
+                        //alert("zzz4");
+                        $("#cert").resize();
+
+                    });
+
+
+                    $('#cert').on('responsive-resize.dt', function () {
+                        //table.draw();
+                        //alert("zzz4");
+                        $("#cert").resize();
+
+                    });
+
+
+                    //.on('order.dt', function () {
+                    //    table.columns.adjust().draw();
+                    //    $("#qhse").resize(); })
+                    //.on('search.dt', function () {
+                    //    table.columns.adjust().draw();
+                    //    $("#qhse").resize(); })
+
+                    //.on('column-visibility.dt', function () {
+                    //    table.columns.adjust().draw();
+                    //    $("#qhse").resize();
+                    //})
+
+
+
+                };
+
+                // Select2 for length menu styling
+                var _componentSelect2 = function () {
+                    if (!$().select2) {
+                        console.warn('Warning - select2.min.js is not loaded.');
+                        return;
+                    }
+
+                    // Initialize
+                    $('.dataTables_length select').select2({
+                        minimumResultsForSearch: Infinity,
+                        dropdownAutoWidth: true,
+                        width: 'auto'
+                    });
+                };
+
+
+                //
+                // Return objects assigned to module
+                //
+
+                return {
+                    init: function () {
+                        _componentDatatableBasic();
+                        _componentSelect2();
+                    }
+                }
+            }();
+
+
+            // Initialize module
+            // ------------------------------
+
+            document.addEventListener('DOMContentLoaded', function () {
+                cert.init();
+            });
+
+            function DeleteItems(id_training_criticality) {
+                bootbox.confirm({
+                    title: 'Confirm dialog',
+                    message: 'Are you Sure you want to Delete the current Record?',
+                    buttons: {
+                        confirm: {
+                            label: 'Yes',
+                            className: 'btn-primary'
+                        },
+                        cancel: {
+                            label: 'Cancel',
+                            className: 'btn-link'
+                        }
+                    },
+                    callback: function (r) {
+                        if (r == true) {
+                            jQuery.ajax({
+
+                                url: '@Url.Action("AuditTypeDelete", "AuditProcess")',
+                                type: 'POST',
+                                dataType: "json",
+                                data: { 'Id': id_training_criticality },
+                                success: function (result) {
+
+
+                                    //// Add new params to the querystring dictionary
+
+
+                                    window.location.href =
+                                        window.location.protocol + "//" +
+                                        window.location.host +
+                                        window.location.pathname
+
+                                }
+                            });
+                            return true;
+                        }
+                        else if (r == false) {
+                            bootbox.hideAll();
+                            return false;
+                        }
+
+                    }
+                });
+            }
+
+
+        </script>
+        @Scripts.Render("~/bundles/jqueryval")
+    }
+
+

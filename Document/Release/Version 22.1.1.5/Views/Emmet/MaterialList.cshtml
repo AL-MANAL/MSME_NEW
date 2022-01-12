@@ -1,0 +1,285 @@
+﻿@using PagedList;
+@using PagedList.Mvc;
+
+
+@model IPagedList<ISOStd.Models.EmmetModels>
+    @{
+        ViewBag.Title = "";
+        string chked = Convert.ToString(ViewBag.chkAll);
+    }
+
+    <div class="groupedassets margin10">
+        <span class="groupedassetshead margin10 onestphdcolor">Material List</span>
+    </div>
+
+    <br />
+    <div id="divmsg">
+        @if (TempData["alertdata"] != null)
+        {
+            <span class="errMsg" style="color: red;font-weight: bold;">@TempData["alertdata"]</span>
+        }
+        @if (TempData["Successdata"] != null)
+        {
+            <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+        }
+    </div>
+    <br />
+
+   
+<div>
+     @Html.ActionLink("ADD MATERIAL", "AddMaterial", null, new { @class = "ActionLink", onclick = "HyperLinkProgressIconFunction()" })
+</div>
+
+    <br />
+    @Html.PagedListPager(Model, page => Url.Action("MaterialList",
+            new
+            {
+                page,
+                Approvestatus = Request.QueryString["Approvestatus"],
+                SearchText = Request.QueryString["SearchText"],
+
+            }),
+            new PagedListRenderOptions() { Display = PagedListDisplayMode.IfNeeded, DisplayPageCountAndCurrentLocation = true })
+
+@using (Html.BeginForm("MaterialList", "Emmet", FormMethod.Post, new { id = "form1", name = "form1" }))
+{
+    <div>
+        <input type="hidden" id="chkdAll" name="chkdAll" value="@chked" />
+        <span id="tab" style="color: #31b0d5; padding-right: 5px; padding-left: 50px; font-weight: bold;">
+            <input type="checkbox" value="All" id="chkAll" name="chkAll" title="Select in case to see all records" />All
+        </span>
+      
+        <span style="margin-left: 20px"><b style="color: #31b0d5;">Category</b></span>
+        <select id="category" name="category" style="width:130px">
+            <option value='' hidden>Select</option>
+            @if (ViewBag.CatList != null && ViewBag.CatListval != null)
+            {
+                foreach (var item in ViewBag.CatList)
+                {
+                    if (item.Value == ViewBag.CatListval)
+                    {
+                        <option value='@item.Value' selected>@item.Text</option>
+                    }
+                    else
+                    {
+                        <option value='@item.Value'>@item.Text</option>
+                    }
+                }
+            }
+            else
+            {
+                foreach (var item in ViewBag.CatList)
+                {
+                    <option value='@item.Value'>@item.Text</option>
+                }
+            }
+        </select>
+
+       
+        <button type="submit" class="btn btn-info" onclick="ProgressIconFunction('#form1')">
+            <span class="glyphicon glyphicon-search"></span>Search
+        </button>
+      
+       
+        <span style="margin-left: 20px"> <img src="@Url.Content("~/Images/excel.png")" title="Export as Excel" style="cursor:pointer;" id="downloadLink" />Download</span>
+       
+    </div>
+}
+
+    <div id="content">
+        <table id="table1">
+            <thead>
+                @if (Model != null && Model.Count() > 0)
+                {
+                <tr>
+                    <th style="width:40px;min-width:40px; max-width:100px;">
+                        Sl No
+                    </th>
+                   <th style="width:150px;min-width:150px; max-width:150px;">
+                        @Html.DisplayNameFor(model => model.First().category)
+                    </th>
+                    <th style="width:150px;min-width:150px; max-width:150px;">
+                        @Html.DisplayNameFor(model => model.First().subcategory)
+                    </th>
+                    <th style="width:150px;min-width:150px; max-width:150px;">
+                        @Html.DisplayNameFor(model => model.First().spec)
+                    </th>
+                    <th style="width:150px;min-width:150px; max-width:150px;">
+                        @Html.DisplayNameFor(model => model.First().material_id)
+                    </th>
+                    <th style="width:150px;min-width:150px; max-width:150px;">
+                        @Html.DisplayNameFor(model => model.First().diameter)
+                    </th>
+                      <th style="width:150px;min-width:150px; max-width:150px;">
+                       Length
+                    </th>
+                      <th style="width:150px;min-width:150px; max-width:150px;">
+                        @Html.DisplayNameFor(model => model.First().material_type)
+                    </th>
+                     <th style="width:100px;min-width:100px; max-width:100px;">
+                        @Html.DisplayNameFor(model => model.First().min_qty)
+                    </th>
+                     <th style="width:200px;min-width:200px; max-width:200px;">
+                        @Html.DisplayNameFor(model => model.First().material)
+                    </th>
+                    <th style="width:60px; min-width:60px; max-width:60px;">Edit</th>
+
+                   @if (ViewBag.DeleteFlg != null && ViewBag.DeleteFlg == true)
+                {
+                        <th style="width: 60px; min-width: 60px; max-width: 60px;">Delete</th>
+                    }
+                </tr>
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="11">
+                            <div style="text-align: center;">
+                                <h4 style="color: grey;">No data exists</h4>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Count() > 0)
+                {
+                    int i = 0;
+                    foreach (var item in Model)
+                    {
+                        i = i + 1;
+                <tr>
+                    <td style="width:40px;min-width:40px; max-width:100px;">
+                        @i
+                    </td>
+                    <td style="width:150px;min-width:150px; max-width:150px;word-wrap:break-word">
+                         @Html.DisplayFor(modelItem => item.category)
+                    </td>
+                    <td style="width:150px;min-width:150px; max-width:150px;word-wrap:break-word">
+                        @Html.DisplayFor(modelItem => item.subcategory)
+                    </td>
+                    <td style="width:150px;min-width:150px; max-width:150px;word-wrap:break-word">
+                        @Html.DisplayFor(modelItem => item.spec)
+                    </td>
+                    <td style="width:150px;min-width:150px; max-width:150px;word-wrap:break-word">
+                        @Html.DisplayFor(modelItem => item.material_id)
+                    </td>
+                    <td style="width:150px;min-width:150px; max-width:150px;word-wrap:break-word">
+                        @Html.DisplayFor(modelItem => item.diameter)
+                    </td>
+                 <td style="width:150px;min-width:150px; max-width:150px;word-wrap:break-word">
+                        @Html.DisplayFor(modelItem => item.mlength)
+                    </td>
+                     <td style="width:150px;min-width:150px; max-width:150px;word-wrap:break-word">
+                        @Html.DisplayFor(modelItem => item.material_type)
+                    </td>
+                     <td style="width:100px;min-width:100px; max-width:100px;word-wrap:break-word">
+                         @if(Convert.ToString(item.min_qty) != "0")
+                         {
+                              @Html.DisplayFor(modelItem => item.min_qty)
+                         }
+                       
+                    </td>
+                     <td style="width:200px;min-width:200px; max-width:200px;word-wrap:break-word">
+                        @Html.DisplayFor(modelItem => item.material)
+                    </td>
+                    <td style="width:60px; min-width:60px; max-width:60px;word-wrap:break-word">
+                        <a href='@Url.Action("MaterialEdit", "Emmet", new { id_material_master = item.id_material_master })' title="Edit" onclick="HyperLinkProgressIconFunction()">
+                            <span class="glyphicon glyphicon glyphicon-edit iocnstatus-edit" onclick="HyperLinkProgressIconFunction()"></span>
+                        </a>
+                    </td>
+                  
+                   @if (ViewBag.DeleteFlg != null && ViewBag.DeleteFlg == true)
+                    {
+                        <td style="width: 60px; min-width: 60px; max-width: 60px;word-wrap:break-word">
+                            <img src="@Url.Content("~/Images/delete.png")" title="Delete Document" onclick="DeleteItems(@item.id_material_master)" style="cursor:pointer;" />
+                        </td>
+                    }
+                </tr>
+                    }
+                }
+
+            </tbody>
+        </table>
+    </div>
+    @Styles.Render("~/Content/popover")
+    @section scripts {
+
+        <script type="text/javascript">
+            $(function () {
+                $("#category").chosen();
+              
+            });
+            function DeleteItems(id_material_master) {
+            jConfirm('Do you want to delete?', 'Are you Sure?', function (r) {
+                if (r == true) {
+                    jQuery.ajax({
+                    url: '@Url.Action("MaterialDelete", "Emmet")',
+                        type: 'POST',
+                        dataType: "json",
+                        /*change*/ data: { 'id_material_master': id_material_master },
+                        success: function (result) {
+                            var params = {
+                                View: 1
+                            };
+                            //// Add new params to the querystring dictionary
+                            queryString = $.param(params);
+
+                            window.location.href =
+                                window.location.protocol + "//" +
+                                window.location.host +
+                                window.location.pathname +
+                               '?' + queryString;
+                        }
+                    });
+                    return true;
+                }
+                else if (r == false) {
+                    return false;
+                }
+            });
+        }
+
+        function downloadInnerHtml(filename, elId) {
+            var $table = $('#table1');
+            $rows = $table.find('tr');
+
+            var csvData = "";
+
+            for (var i = 0; i < $rows.length; i++) {
+                var $cells = $($rows[i]).children('th,td'); //header or content cells
+
+                for (var y = 0; y < $cells.length; y++) {
+                    if (y > 0) {
+                        csvData += ",";
+                    }
+
+                    var txt = ($($cells[y]).text()).toString().trim();
+
+                    if (txt.indexOf(',') >= 0 || txt.indexOf('\"') >= 0 || txt.indexOf('\n') >= 0) {
+                        txt = "\"" + txt.replace(/\"/g, "\"\"") + "\"";
+                    }
+                    csvData += txt;
+                }
+                csvData += '\n';
+            }
+            var elHtml = csvData;
+            var link = document.createElement('a');
+            mimeType = 'application/csv;charset=utf-8';
+
+            link.setAttribute('download', filename);
+            link.setAttribute('href', 'data:' + mimeType + ';charset=utf-8,' + encodeURIComponent(elHtml));
+            link.click();
+        }
+            var fileName = 'InspectionList.csv'; // You can use the .txt extension if you want
+            $('#downloadLink').click(function () {
+            downloadInnerHtml(fileName, 'content');
+        });
+
+        </script>
+        @Scripts.Render("~/bundles/jqueryval")
+    }
+
+
+
+

@@ -1,0 +1,144 @@
+﻿@model ISOStd.Models.MeetingAgendaModels
+
+@{
+    ViewBag.Title = "AddMeetingAgenda";
+    MultiSelectList dsAgenda = ViewBag.dsAgenda;
+}
+
+<div class="groupedassets margin10">
+    <span class="groupedassetshead margin10 onestphdcolor">Meeting Agenda </span>
+</div>
+<div id="divmsg">
+    @if (TempData["alertdata"] != null)
+    {
+        <span class="errMsg" style="color: red;font-weight: bold;">@TempData["alertdata"]</span>
+        }
+    @if (TempData["Successdata"] != null)
+    {
+        <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+        }
+</div>
+
+@using (Html.BeginForm()) {
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <fieldset>
+        <legend>MeetingAgendaModels</legend>
+
+        <div>
+         
+            <table id="tabcontent" style="width: 30%; padding-left: 30px;">
+                <tr>
+                    <td colspan="4" style="background-color: #4cc4dd; color: #fff; font-weight: bold; font-size: 14px;">Add / Update</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.MeetingType)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <select id="MeetingType" name="MeetingType" required="" onchange="PopulateAgenda()">
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.MeetingType != null)
+                                {
+                                    foreach (var item in ViewBag.MeetingType)
+                                    {
+                                    <option value='@item.Value'>@item.Text</option>
+                                    }
+                                 }
+                            </select>
+                            @Html.ValidationMessageFor(model => model.MeetingType)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Agenda_Desc)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.Agenda_Desc)
+                            @Html.ValidationMessageFor(model => model.Agenda_Desc)
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <input type="submit" value="Save" />
+
+                    </td>
+                </tr>
+            </table>            
+            <table id="tbl_Agenda" style="float: left; margin-top: -2px; width: 30%; padding-right: 50px;">
+               
+            </table>
+            </div>
+       
+    </fieldset>
+}
+
+
+@section Scripts {
+    <script>
+    function PopulateAgenda() {
+
+            var MeetingTypeId = $('#MeetingType').val();
+                //alert(AuditDepartment);
+                jQuery.ajax({
+                    url: '@Url.Action("GetAgendaList", "Meeting")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'sMeetingTypeId': MeetingTypeId },
+                    success: function (result) {
+                        var table = document.getElementById("tbl_Agenda");
+                        //document.getElementById("dvAgendaItems").style.display = "";
+                        //document.getElementById("divAgendasTitle").style.display = "";
+                        
+
+                        while (table.rows.length > 0) {
+                            table.deleteRow(0);
+                        }
+
+                        if (result != "") {
+
+                            var theaderRow = table.insertRow();
+
+                            theaderRow.style = "background-color: #e5eafe; color: #0099ff; font-weight: bold; font-size: 14px;";
+                            var cellth0 = theaderRow.insertCell(0);
+                            var cellth1 = theaderRow.insertCell(1);
+
+                            cellth0.innerHTML = "<th>Name</th>";
+                            cellth1.innerHTML = "<th>Action</th>";
+
+                            var list = result;
+                            $.each(list, function (index, item) {
+
+                                // Create an empty <tr> element and add it to the 1st position of the table:
+                                var row = table.insertRow();
+
+                                // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                                var cell0 = row.insertCell(0);
+                                var cell1 = row.insertCell(1);
+
+                                var AgendaName = item.Text;
+                                var Id = item.Value;
+
+                                cell0.innerHTML = AgendaName;
+                                cell1.innerHTML = " <img src='@Url.Content("~/images/icon_add.png")' id='imgAgenda" + Id + "' onclick='DisplayAgenda(" + Id + ")' title='" + AgendaName + "' style='cursor:pointer; padding-right: 5px;'/>";
+
+
+                            });
+                        }
+                        else {
+                            jAlert("No Agenda exists, please add agenda and then try again");
+                        }
+                    }
+                });
+
+    }
+        </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

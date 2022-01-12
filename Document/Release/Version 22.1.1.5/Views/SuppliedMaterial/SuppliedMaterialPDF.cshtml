@@ -1,0 +1,164 @@
+﻿@using System.Data
+@using ISOStd.Models;
+@{
+    ViewBag.Title = "SuppliedMaterialPDF";
+    ISOStd.Models.SuppliedMaterialModels obj = new ISOStd.Models.SuppliedMaterialModels();
+
+    ISOStd.Models.clsGlobal ObjGlobal = new ISOStd.Models.clsGlobal();
+    ISOStd.Models.SuppliedMaterialModelsList objMatList = new ISOStd.Models.SuppliedMaterialModelsList();
+    if (ViewBag.SuppliedMat != null)
+    {
+        obj = ViewBag.SuppliedMat;
+    }
+    if (ViewBag.SuppliedMaterial != null)
+    {
+        objMatList = ViewBag.SuppliedMaterial;
+    }
+    DataSet dsCompany = new DataSet();
+    if (ViewBag.CompanyInfo != null)
+    {
+        dsCompany = ViewBag.CompanyInfo;
+    }
+    Layout = "~/Views/Shared/_PrintLayout.cshtml";
+}
+<STYLE TYPE="text/css">
+    .breakhere {
+        page-break-after: always
+    }
+</STYLE>
+
+@Html.Partial("_ReportHeader", dsCompany)
+<div style="background-color:white">
+    @*<div class="bp-header__main">
+            <img style="width:250px; height:70px;" src='@Url.Content("~/Images/companylogo.png")' />
+        </div>
+        <h1 class="mb-0 text-center">Supplied Materials Report</h1>*@
+    <div>
+        <table class="table table-lg table-bordered">
+            <tr class="row">
+                <td colspan="4">
+                    <h3>Report Details</h3>
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+                    Division
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.branch
+                    </div>
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+                    Department
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.Department
+                    </div>
+                </td>
+                <td class="font-size-lg font-weight-bold">
+                    Location
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.Location
+                    </div>
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+                    Order Number
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.orderno
+                    </div>
+                </td>
+                <td class="font-size-lg font-weight-bold">
+                    Order Date
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @if (obj.order_date.ToString() != "" && obj.order_date.ToString() != null)
+                        {
+                            @Convert.ToDateTime(obj.order_date.ToString("dd/MM/yyyy"));
+                        }
+                    </div>
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+                    Provider Type
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.provider_type
+                    </div>
+                </td>
+                <td class="font-size-lg font-weight-bold">
+                    Provider Name
+                </td>
+                <td class="font-size-lg">
+                    <div>
+                        @obj.supplier_name
+                        @obj.customer_name
+                    </div>
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+                    Remarks
+                </td>
+                <td colspan="3" class="font-size-lg">
+                    <div>
+                        @obj.remark
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td class="font-size-lg font-weight-bold">
+                    Details of the material received
+                </td>
+                <td colspan="3" class="font-size-lg">
+                    <div>
+                        @obj.details
+                    </div>
+                </td>
+            </tr>
+        </table>
+
+        @if (objMatList.MaterialList != null && objMatList.MaterialList.Count > 0)
+        {
+            <h5 for="Incident Details" style="background-color: #4cc4dd;  color: white; padding-left: 5px;">Supplied Material Details</h5>
+
+            <table class="table table-lg table-bordered">
+                <tr class="row" style="background-color: #4cc4dd;">
+                    <th>Date</th>
+                    <th>Operation Type</th>
+                    <th>Quantity</th>
+                    <th>Done By</th>
+                </tr>
+
+                @for (int index = 0; index < objMatList.MaterialList.Count; index++)
+                {
+                    <tr class="row">
+                        <td class="font-size-lg font-weight-bold">
+                            @if (objMatList.MaterialList[index].qty_date > Convert.ToDateTime("01/01/0001"))
+                            {
+                                @objMatList.MaterialList[index].qty_date.ToString("dd-MM-yyyy")
+                            }
+                        </td>
+                        <td class="font-size-lg font-weight-bold">@objMatList.MaterialList[index].operation_type</td>
+                        <td class="font-size-lg font-weight-bold">@objMatList.MaterialList[index].quantity</td>
+                        <td class="font-size-lg font-weight-bold">@ObjGlobal.GetEmpHrNameById(objMatList.MaterialList[index].done_by)</td>
+                    </tr>
+                }
+            </table>
+        }
+    </div>
+</div>
+
+

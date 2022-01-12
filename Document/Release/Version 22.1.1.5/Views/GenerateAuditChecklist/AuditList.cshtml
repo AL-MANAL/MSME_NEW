@@ -1,0 +1,466 @@
+﻿@model List<ISOStd.Models.GenerateAuditChecklistModels>
+
+@{
+    ViewBag.Title = "AuditChecklist";
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+}
+
+@section featured {
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+
+                    <a href="@Url.Action("AuditChecklistList","GenerateAuditChecklist", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Audit Checklists</span>
+                    </a>
+
+
+                    <span class="breadcrumb-item active"> Audit Lists</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            <div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<style>
+    .hidden {
+        display: none !important;
+    }
+</style>
+
+
+<div class="card">
+    <div class="card-header header-elements-inline bg-primary">
+        <h5 class="card-title">Audit Lists</h5>
+        <div class="header-elements">
+            <div class="list-icons">
+                <a class="list-icons-item" data-action="collapse"></a>
+
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <table class="table table-bordered table-striped table-hover datatable-responsive" id="table1">
+            <thead>
+                <tr>
+                    <th>
+                        Sl No
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().AuditNo)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().AuditDate)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().Auditors)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().Auditee)
+                    </th>
+                    <th>Action</th>
+                    <th>Delete</th>   
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Count() > 0)
+                {
+                    int i = 0;
+                    foreach (var item in Model)
+                    {
+                        i = i + 1;
+                        <tr>
+                            <td>
+                                @i
+                            </td>
+                            <td>
+                                @Html.ActionLink(item.AuditNo.ToString(), "AuditChecklistDetails", new { idt_checklist = item.idt_checklist }, new { data_toggle = "popover", data_trigger = "hover", id = item.idt_checklist, onclick = "HyperLinkProgressIconFunction()" })
+                            </td>
+                            <td>
+
+                                @if (item.AuditDate > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    @item.AuditDate.ToString("dd/MM/yyyy hh:mm")
+                                }
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Auditors)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Auditee)
+                            </td>
+
+                            <td>
+
+                                <a href='@Url.Action("AuditPerformanceEdit", "GenerateAuditChecklist", new { idt_checklist = item.idt_checklist })' title="Edit Audit Performance" onclick="HyperLinkProgressIconFunction()">
+                                    <span class="badge badge-info">Edit</span>
+                                </a>
+
+                            </td>
+                                <td>
+                                    @*<a href='@Url.Action("CustomerEnquiryDelete", "CustomerEnquiry", new { enquiry_id = item.Enquiry_id.ToString() })' title="Delete Enquiry" >*@
+
+
+                                    <span class="badge badge-danger" title="Delete Audit Checklist" onclick="DeleteItems(@item.idt_checklist,@item.id_AuditChecklist)" style="cursor:pointer;">Delete</span>
+                                </td>                    
+
+
+                        </tr>
+                    }
+                }
+
+            </tbody>
+        </table>
+
+
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+            @Html.ActionLink("Back to List", "AuditChecklistList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+        </div>
+
+
+
+
+    </div>
+</div>
+
+@section scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript">
+              $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+
+            });
+               
+              function setData(id) {
+
+                var set_data = '';
+                var element = $(this);
+                var id = element.attr("id");
+                  $.ajax({
+                    url: '@Url.Action("AuditChecklistInfo", "GenerateAuditChecklist")',
+                    methos: "post",
+                    async: false,
+                    data: { id: id },
+                    success: function (data) {
+                        set_data = data;
+                    }
+
+                });
+
+                return set_data;
+            }
+                              
+
+        var table1 = function () {
+
+                var ShowEdit = @(Obj.GetCurrentUserSession().AuditChecklist.Contains("3") ? "true" : "false");
+                 var ShowDel = @(Obj.GetCurrentUserSession().AuditChecklist.Contains("5") ? "true" : "false");
+
+
+                // Basic Datatable examples
+                var _componentDatatableBasic = function () {
+                    if (!$().DataTable) {
+                        console.warn('Warning - datatables.min.js is not loaded.');
+                        return;
+                    }
+
+                    //Setting datatable defaults
+                    $.extend($.fn.dataTable.defaults, {
+                        autoWidth: false,
+                        responsive: true,
+                        columnDefs: [{
+                            orderable: false,
+                            width: 100,
+                            targets: [5, 6]
+                        }, {
+                                'targets': [6],
+                                'visible': ShowDel
+                            }, {
+                                'targets': [5],
+                                'visible': ShowEdit
+                            }],
+
+                        colReorder: false,
+                        dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                        //dom: 'lBfrtip',
+                        language: {
+                            search: '<span>Filter:</span> _INPUT_',
+                            searchPlaceholder: 'Type to filter...',
+                            lengthMenu: '<span>Show:</span> _MENU_',
+                            paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                        }
+                    });
+
+                       var myClass = "";
+                var Delclass= @(Obj.GetCurrentUserSession().AuditChecklist.Contains("4") ? "true" : "false");
+                if (Delclass == false) { myClass = 'hidden'  };
+
+                    var table = $('#table1').DataTable({
+                        drawCallback: function () {
+                            $('[data-toggle="popover"]').popover({
+
+                                html: true,
+                                content: setData,
+                                container: 'body'
+                                //data: setData,
+
+
+                            });
+                        },
+                        lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                        colReorder: {
+                            fixedColumnsLeft: 1
+                        },
+                        stateSave: true,
+                        stateSaveParams: function (settings, data) {
+                            for (var i = 0, ien = data.columns.length; i < ien; i++) {
+                                delete data.columns[i].visible;
+                                delete data.columns[i].search;
+                            }
+                        },
+                        scrollY: '350px',
+                        scrollCollapse: true,                        
+
+                        keys: {
+                            className: 'focus focus-success'
+                        },
+
+                        buttons: {
+                            buttons: [
+
+
+                                {
+                                    extend: 'colvis',
+                                    text: '<i class="icon-three-bars"></i>',
+                                    className: 'btn bg-blue btn-icon dropdown-toggle',
+
+                                    columns: ':visible:not(.not-export-column)'
+                                }
+                            ]
+                        }
+
+
+
+
+                    });
+                    // Adjust columns on window resize
+                    setTimeout(function () {
+                        $(window).on('resize', function () {
+                            table.columns.adjust();
+                        });
+                    }, 100);
+
+
+                    //Redraw table on click toggle. -------table.columns.adjust doesn't work properly upon calling after toggle (width increase/decrease = redraw table.).
+                    $('.sidebar-control').on('click', function () {
+
+                        setTimeout(function () {
+                            //alert("gii");
+
+                            table.columns.adjust().draw();
+                            $("#table1").resize();
+                        }, 100);
+
+                    });
+                    //}
+
+                    $('#table1').on('page.dt', function () {
+                        //table.draw();
+                        //alert("zzz1");
+                        $("#table1").resize();
+
+                    });
+
+                    $('#table1').on('column-visibility.dt', function () {
+                        //table.draw();
+                        //alert("zzz2");
+                        $("#table1").resize();
+
+                    });
+
+                    $('#table1').on('order.dt', function () {
+                        //table.draw();
+                        //alert("zzz3");
+                        $("#table1").resize();
+
+                    });
+
+
+                    $('#table1').on('responsive-display.dt', function () {
+                        //table.draw();
+                        //alert("zzz4");
+                        $("#table1").resize();
+
+                    });
+
+
+                    $('#table1').on('responsive-resize.dt', function () {
+                        //table.draw();
+                        //alert("zzz4");
+                        $("#table1").resize();
+
+                    });
+
+
+
+
+
+
+                };
+
+
+
+
+
+
+                // Select2 for length menu styling
+                var _componentSelect2 = function () {
+                    if (!$().select2) {
+                        console.warn('Warning - select2.min.js is not loaded.');
+                        return;
+                    }
+
+                    // Initialize
+                    $('.dataTables_length select').select2({
+                        minimumResultsForSearch: Infinity,
+                        dropdownAutoWidth: true,
+                        width: 'auto'
+                    });
+                };
+
+
+                //
+                // Return objects assigned to module
+                //
+
+                return {
+                    init: function () {
+                        _componentDatatableBasic();
+                        _componentSelect2();
+                    }
+                }
+            }();
+
+
+            // Initialize module
+            // ------------------------------
+
+            document.addEventListener('DOMContentLoaded', function () {
+                table1.init();
+            });
+
+
+
+
+
+
+
+
+
+
+            function DeleteItems(idt_checklist, id_AuditChecklist) {
+
+            bootbox.confirm({
+                title: 'Confirm dialog',
+                message: 'Are you Sure you want to Delete the current Record?',
+                buttons: {
+                    confirm: {
+                        label: 'Yes',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'Cancel',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (r) {
+                   if (r == true) {
+                    jQuery.ajax({
+                        url: '@Url.Action("ChecklistDocDelete", "GenerateAuditChecklist")',
+                        type: 'POST',
+                        dataType: "json",
+                        data: { 'idt_checklist': idt_checklist },
+                        success: function (result) {
+
+                            //var params = {
+                            //    View: 1
+                            //};
+
+                            ////// Add new params to the querystring dictionary
+                            //queryString = $.param(params);
+
+                            window.location.href =
+                                window.location.protocol + "//" +
+                                window.location.host +
+                                window.location.pathname +
+                               '?id_AuditChecklist=' + id_AuditChecklist;
+                        }
+                    });
+                    return true;
+                }
+                   else if (r == false) {
+
+                       bootbox.hideAll();
+                       return false;
+
+                }
+
+                }
+            });
+
+
+        }
+    </script>
+
+}

@@ -1,0 +1,453 @@
+﻿@model ISOStd.Models.CustEnquiryModels
+
+@{
+    ViewBag.Title = "AddCustEnquiry";
+}
+<script type="text/javascript" src="~/Scripts/ckeditor/ckeditor.js"></script>
+<script type="text/javascript" src="~/Scripts/ckeditor/adapters/jquery.js"></script>
+
+<div style="max-width: 80%; padding-left: 200px;">
+
+    <div class="groupedassets margin10">
+        <span class="groupedassetshead margin10 onestphdcolor">Update Customer Enquiry </span>
+    </div>
+
+    <div id="divmsg">
+        @if (TempData["alertdata"] != null)
+        {
+            <span class="errMsg" style="color: red;font-weight: bold;">@TempData["alertdata"]</span>
+        }
+        @if (TempData["Successdata"] != null)
+        {
+            <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+        }
+    </div>
+
+    @using (Html.BeginForm("CustEnquiryEdit", "CustEnquiry", FormMethod.Post,
+                         new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true)
+
+        <fieldset>
+            <input type="hidden" id="id_enquiry" name="id_enquiry" value="@Model.id_enquiry" />
+            <legend>UpdateCustEnquiry</legend>
+            <table id="tabcontent">
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.mode_enquiry)<text style="color:red;">*</text>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <select class="chosen-select" id="mode_enquiry" name="mode_enquiry" required>
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.EnquiryMode != null)
+                                {
+                                    foreach (var item in ViewBag.EnquiryMode)
+                                    {
+                                        if (item.Text == Model.mode_enquiry)
+                                        {
+                                            <option value='@item.Value' selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.date_enquiry)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            @if (Model.date_enquiry != null && Model.date_enquiry > Convert.ToDateTime("01/01/0001"))
+                            {
+                                <input type="text" id="date_enquiry" name="date_enquiry"  value="@Model.date_enquiry.ToString("dd/MM/yyyy")" readonly style="width: 100px;" />
+                            }
+                            else
+                            {
+                                <input type="text" id="date_enquiry" name="date_enquiry" readonly style="width: 100px;" />
+                            }
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.companyname)<text style="color:red;">*</text>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <select class="chosen-select" id="companyname" name="companyname" style="width: 250px;" required onchange="GetCompDetails()">
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.CompanyName != null)
+                                {
+                                    foreach (var item in ViewBag.CompanyName)
+                                    {
+                                        if (item == Model.companyname)
+                                        {
+                                            <option value='@item' selected>@item</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@item'>@item</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.projectname)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.projectname)
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.location)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.location)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.contactperson)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <input type="text" id="contactperson" name="contactperson" readonly style="background:#efefef" />
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.telno)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <input type="text" id="telno" name="telno" value="@Model.telno" />
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.faxno)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <input type="text" id="faxno" name="faxno" readonly style="background:#efefef" />
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.sales_incharge)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.sales_incharge)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.incharge)<text style="color:red;">*</text>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <select class="chosen-select" id="incharge" name="incharge" required>
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.Incharge != null)
+                                {
+                                    foreach (var item in ViewBag.Incharge)
+                                    {
+                                        if (item.Text == Model.incharge)
+                                        {
+                                            <option value='@item.Value' selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.amt)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <input type="number" id="amt" name="amt" value="@Model.amt" />
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.date_fax)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            @if (Model.date_fax != null && Model.date_fax > Convert.ToDateTime("01/01/0001"))
+                            {
+                                <input type="text" id="date_fax" name="date_fax"  value="@Model.date_fax.ToString("dd/MM/yyyy")" selected readonly style="width: 100px;" />
+                            }
+                            else
+                            {
+                                <input type="text" id="date_fax" name="date_fax" readonly style="width: 100px;" />
+                            }
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.ref_no)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <input type="text" id="ref_no" name="ref_no" Value="@Model.ref_no"/>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.date_lpo)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            @if (Model.date_lpo != null  && Model.date_lpo > Convert.ToDateTime("01/01/0001"))
+                            {
+                                <input type="text" id="date_lpo" name="date_lpo" value="@Model.date_lpo.ToString("dd/MM/yyyy")" selected readonly style="width: 100px;" />
+                            }
+                            else
+                            {
+                                <input type="text" id="date_lpo" name="date_lpo" readonly style="width: 100px;" />
+                            }
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.lpo_no)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <input type="text" id="lpo_no" name="lpo_no" value="@Model.lpo_no" />
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.lpo_amt)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <input type="number" id="lpo_amt" name="lpo_amt" min="0" value="@Model.lpo_amt" />
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.status)<text style="color:red;">*</text>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <select class="chosen-select" id="status" name="status" required="">
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.Status != null)
+                                {
+                                    foreach (var item in ViewBag.Status)
+                                    {
+                                        if (item.Text == Model.status)
+                                        {
+                                            <option value='@item.Value' selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.upload)<text style="color:red;">*</text>
+                        </div>
+                    </td>
+                    <td>                    
+                        <div class="editor-field">
+
+                            <input type="file" name="file" id="file" title="Plan Report documents" onchange="FileFormatValidation(this)"
+                                   multiple="multiple" accept=".pdf,.xls,.xlsx, .doc, .docx,image/*" style="height: 38px;" />
+
+                            <p style="font-size: 11px; margin: 0px;">(Hold Ctrl Key in case of multiple files)</p>
+
+                            @if (Model.upload != null && Model.upload != "" && Model.upload.Length > 0)
+                            {
+                                <div class="editor-label">
+                                    <p style="font-weight: bold; margin: 0px;"> Docs. List:</p>
+                                </div>
+                                <p style="font-size: 11px; margin: 0px; color: red;">(Uncheck in case to remove a uploaded file)</p>
+                                foreach (var docs in Model.upload.Trim(',').Split(','))
+                                {
+                                    <p style="margin: 0px;">
+                                        <input type="checkbox" id="QCDocsVal" name="QCDocsVal" class="QCDocsVal" value="@docs.Trim(',')" checked title="Uncheck in case to remove a uploaded file" />
+                                        <input type="hidden" id="QCDocsValselectall" name="QCDocsValselectall" />
+                                        <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" style="color: orange;">
+                                            @*@System.IO.Path.GetFileName(docs)*@preview
+                                        </a>
+                                    </p>
+                                }
+                            }
+
+                        </div>
+                    </td>                    
+                </tr>
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.description)
+                        </div>
+                    </td>
+                    <td colspan="3">
+                        @Html.TextAreaFor(model => model.description, new { @class = "ckeditor" })
+                    </td>
+                </tr>
+            </table>
+        </fieldset>
+
+        <div style="width: 100%; text-align: center;">
+            @Html.ActionLink("Back to List", "CustEnquiryList", null, new { @class = "ActionLink", onclick = "HyperLinkProgressIconFunction()" })
+            <input type="submit" value="Update" onclick="ProgressIconFunction('#form1')" />
+        </div>
+    }
+
+</div>
+
+@section Scripts {
+    <script>
+         $(function () {
+             $("#companyname").chosen();
+             $("#mode_enquiry").chosen();
+             $("#incharge").chosen();
+             $("#status").chosen();
+             $.validator.setDefaults({ ignore: ":hidden:not(.chosen-select)" });
+
+             $('#date_enquiry').datepicker({
+                 dateFormat: "dd/mm/yy",
+                 buttonImageOnly: true,
+                 buttonImage: '../Images/Calender.png',
+                 showOn: 'both',
+                 changeMonth: true,
+                 changeYear: true,
+                 gotoCurrent: true
+             });
+          
+             $('#date_lpo').datepicker({
+                 dateFormat: "dd/mm/yy",
+                 buttonImageOnly: true,
+                 buttonImage: '../Images/Calender.png',
+                 showOn: 'both',
+                 changeMonth: true,
+                 changeYear: true,
+                 gotoCurrent: true
+             });
+         
+             $('#date_fax').datepicker({
+                 dateFormat: "dd/mm/yy",
+                 buttonImageOnly: true,
+                 buttonImage: '../Images/Calender.png',
+                 showOn: 'both',
+                 changeMonth: true,
+                 changeYear: true,
+                 gotoCurrent: true
+             });
+
+             GetCompDetails();
+         });
+
+        function GetCompDetails() {
+            var companyname = $('#companyname').val();
+             //alert(AuditDepartment);
+             jQuery.ajax({
+                 url: '@Url.Action("FunGetCompanyDetails", "CustEnquiry")',
+                 type: 'POST',
+                 dataType: "json",
+                 data: { 'companyname': companyname },
+                 success: function (result) {
+                     if (result != null) {
+                         document.getElementById("contactperson").value = result.contactperson;
+                         document.getElementById("faxno").value = result.faxno;
+                     }
+                     else {
+                         jAlert("No Contact Person or FaxNo available.");
+                     }
+                 }
+             });
+         }
+
+         function FileFormatValidation(file) {
+             var ext = file.value.split(".").pop().toLowerCase();
+             if ($.inArray(ext, ["pdf", "xlsx","xls","doc","docx"]) == -1) {
+                 file.value = "";
+                 jAlert("Invalid file format, please upload only pdf,xlsx,xls,doc,docx format");
+             }
+        }
+
+        $("#QCDocsVal").click(function () {
+            if ($("#QCDocsVal").prop('checked')) {
+                {
+                    $(this).prop('checked', true);
+                }
+            }
+            else {
+
+                $(this).prop('checked', false);
+                document.getElementById("QCDocsValselectall").value = "DeleteQC";
+            }
+
+        });
+
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/ckeditor")
+    @Scripts.Render("~/bundles/ckeditor/adapters")
+}
+

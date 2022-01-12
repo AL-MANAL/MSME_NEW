@@ -1,0 +1,364 @@
+﻿@model ISOStd.Models.EmployeeModels
+
+@{
+    ViewBag.Title = "AddEmployee";
+}
+
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                  <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Home</span>
+                    </a>
+                    <a href="@Url.Action("EmployeeList", "Employee", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">User Profile</span>
+                    </a>
+                    <span class="breadcrumb-item active">Add User</span>
+                </div>
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+}
+
+@using (Html.BeginForm("AddEmployee", "Employee", FormMethod.Post,
+                         new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+ <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Add User Profile</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+            <table class="table table-lg">
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <div class="editor-label">
+                            Employee Name<text style="color: red;">*</text>
+                        </div>
+                    </td>
+                    <td class="col-xs-3 col-md-3">
+                        <div class="editor-field">
+                            @*@Html.EditorFor(model => model.CompEmpId, new { htmlAttributes = new { @required = "required" } })
+                @Html.ValidationMessageFor(model => model.CompEmpId)*@
+                            <select class="form-control select-search select2-hidden-accessible" data-fouc id="CompEmpId" name="CompEmpId" required onchange="GetDetails()">
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.EmpList != null)
+                                {
+                                    foreach (var item in @ViewBag.EmpList)
+                                    {
+                                        <option value='@item.Value'>@item.Text</option>
+                                    }
+                                }
+                            </select>
+                            @Html.ValidationMessageFor(model => model.CompEmpId)
+                        </div>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        <div class="editor-label">
+                          Division
+                        </div>
+                    </td>
+                    <td class="col">
+                        <div class="editor-field">
+                            @*@Html.EditorFor(model => model.FirstName, new { htmlAttributes = new { @required = "required" } })*@
+                            <input type="text" class="form-control" id="Division" name="Division" readonly style="background: #efefe6;" />
+                        </div>
+                    </td>
+                </tr>
+
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.FirstName)
+                        </div>
+                    </td>
+                    <td class="col">
+                        <div class="editor-field">
+                            @*@Html.EditorFor(model => model.FirstName, new { htmlAttributes = new { @required = "required" } })*@
+                            <input type="text" class="form-control" id="FirstName" name="FirstName" readonly style="background: #efefe6;" />
+                        </div>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.MiddleName)
+                        </div>
+                    </td>
+                    <td class="col">
+                        <div class="editor-field">
+                            @*@Html.EditorFor(model => model.MiddleName)
+                        @Html.ValidationMessageFor(model => model.MiddleName)*@
+                            <input type="text" class="form-control" id="MiddleName" name="MiddleName" readonly style="background: #efefe6;" />
+                        </div>
+                    </td>
+                </tr>
+
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.LastName)
+                        </div>
+                    </td>
+                    <td class="col">
+                        <div class="editor-field">
+                            <input type="text" class="form-control" id="LastName" name="LastName" readonly style="background: #efefe6;" />
+                            @*@Html.EditorFor(model => model.LastName, new { htmlAttributes = new { @required = "required" } })*@
+                        </div>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.emailAddress)<text style="color: red;">*</text>
+                        </div>
+                    </td>
+                    <td class="col">
+                        <div class="editor-field">
+                            @*@Html.EditorFor(model => model.emailAddress, new { htmlAttributes = new { @required = "required" } })
+                        @Html.ValidationMessageFor(model => model.emailAddress)*@
+                            <input type="text" class="form-control" id="emailAddress" name="emailAddress" required readonly style="background: #efefe6;" />
+                        </div>
+                    </td>
+                </tr>
+
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Designation)
+                        </div>
+                    </td>
+                    <td class="col">
+                        <div class="editor-field">
+                            @*@Html.EditorFor(model => model.Designation, new { htmlAttributes = new { @required = "required" } })*@
+                            <input type="text" class="form-control" id="Designation" name="Designation" readonly style="background: #efefe6;" />
+                        </div>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.DeptID)
+                        </div>
+                    </td>
+                    <td class="col">
+                        <div class="editor-field">
+                            @*<select id="DeptID" name="DeptID" required="">
+                            <option value='' hidden>Select</option>
+                            @if (ViewBag.DeptList != null)
+                            {
+                                foreach (var item in ViewBag.DeptList)
+                                {
+                                    <option value='@item.Value'>@item.Text</option>
+                                }
+                            }
+                        </select>*@
+                            <input type="text" class="form-control" id="DeptID" name="DeptID" readonly style="background: #efefe6;" />
+                        </div>
+                    </td>
+                </tr>
+
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.DeptInCharge)
+                        </div>
+                    </td>
+                    <td class="col">
+                        <div class="editor-field">
+                            @*<select id="DeptInCharge" name="DeptInCharge" required="">
+                    @if (ViewBag.DeptInCharge != null)
+                    {
+                        foreach (var item in @ViewBag.DeptInCharge)
+                        {
+                            <option value='@item[0]'>@item</option>
+                        }
+                    }
+                </select>*@
+                            <input type="text" class="form-control" id="DeptInCharge" name="DeptInCharge" readonly style="background: #efefe6;" />
+                        </div>
+                    </td>
+
+                    @*<td class="col-xs-3 col-md-2">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.EmpType)
+            </div>
+        </td>
+        <td class="col">
+            <div class="editor-field">
+                <select class="select-fixed-single" data-fouc id="EmpType" name="EmpType" required="">
+                    <option value='' hidden>Select</option>
+                    @if (ViewBag.EmpType != null)
+                    {
+                        foreach (var item in @ViewBag.EmpType)
+                        {
+                            <option value='@item[0]'>@item</option>
+                        }
+                    }
+                </select>
+            </div>
+        </td>*@
+                    <td class="col-xs-3 col-md-2">
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Work_Location)
+                        </div>
+                    </td>
+                      <td class="col">
+                        <div class="editor-field">
+                            @*<select id="Work_Location" name="Work_Location" required="">
+                            <option value='' hidden>Select</option>
+                            @if (ViewBag.Work_Location != null)
+                            {
+                                foreach (var item in @ViewBag.Work_Location)
+                                {
+                                    <option value='@item.Value'>@item.Text</option>
+                                }
+                            }
+                        </select>*@
+                            <input type="text" class="form-control" id="Work_Location" name="Work_Location" readonly style="background: #efefe6;" />
+                        </div>
+                    </td>
+
+                </tr>
+
+                <tr class="row">
+                  
+                  
+                    @*<td class="col-xs-3 col-md-2">
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.ProfilePic)
+                        </div>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        <div class="editor-field">
+                            <input type="file" name="ProfilePic" id="ProfilePic" value="" accept="image/*" onchange="FileFormatValidation(this)" style="height: 36px;" />
+                        </div>
+                    </td>*@
+                </tr>
+                @*<tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Role)<text style="color: red;">*</text>
+                        </div>
+                    </td>
+                    <td class="col-xs-3 col-md-3">
+                        <div class="editor-field">
+                            <select class="form-control select-search select2-hidden-accessible" data-fouc id="Role" name="Role" multiple required="">
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.Roles != null)
+                                {
+                                    foreach (var item in @ViewBag.Roles)
+                                    {
+                                        <option value='@item.Value'>@item.Text</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </td>
+                </tr>*@
+
+            </table>
+ 	   </div>
+        </div>
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+            @Html.ActionLink("Back to List", "EmployeeList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+
+            <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Add</button>
+        </div>
+     </div>
+}
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript">
+
+
+
+        function GetEmpInfo(emp_no) {
+            //var emp_no = $('#CompEmpId').chosen().val();
+            jQuery.ajax({
+                url: '@Url.Action("FunGetDetails", "Employee")',
+                  type: 'POST',
+                  dataType: "json",
+                  data: { 'emp_no': emp_no },
+                  success: function (result) {
+                      document.getElementById("FirstName").value = result.FirstName;
+                      document.getElementById("LastName").value = result.LastName;
+                      document.getElementById("MiddleName").value = result.MiddleName;
+                      document.getElementById("DeptID").value = result.DeptID;
+                      document.getElementById("Designation").value = result.Designation;
+                      document.getElementById("emailAddress").value = result.emailAddress;
+                      document.getElementById("Work_Location").value = result.Work_Location;
+                      document.getElementById("DeptInCharge").value = result.DeptInCharge;
+                      document.getElementById("Division").value = result.division;
+                  }
+              });
+          }
+
+          function GetDetails() {
+            
+              var CompEmpId = document.getElementById("CompEmpId").value;
+              jQuery.ajax({
+                  url: '@Url.Action("doesCompEmpIDExist", "Employee")',
+                  type: 'POST',
+                  dataType: "json",
+                  data: { 'CompEmpId': CompEmpId },
+                  success: function (result) {
+                      if (result == "false") {
+                          //jAlert("Employee already exist");
+                          bootbox.alert({
+                              title: '',
+                              message: 'Employee already exist'
+                          });
+                          $('#CompEmpId').val('').trigger("change");
+                          document.getElementById("FirstName").value = "";
+                          document.getElementById("LastName").value = "";
+                          document.getElementById("MiddleName").value = "";
+                          document.getElementById("DeptID").value = "";
+                          document.getElementById("Designation").value = "";
+                          document.getElementById("emailAddress").value = "";
+                          document.getElementById("Work_Location").value = "";
+                          document.getElementById("DeptInCharge").value = "";
+                          document.getElementById("Division").value = "";
+                      }
+                      else {
+                          GetEmpInfo(result);
+                      }
+
+                  }
+              });
+          }
+    </script>
+}

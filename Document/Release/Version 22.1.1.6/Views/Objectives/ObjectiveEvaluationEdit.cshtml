@@ -1,0 +1,378 @@
+﻿@model ISOStd.Models.ObjectivesModels
+
+@{
+    ViewBag.Title = "ObjectiveEvaluationEdit";
+    DateTime dtTodate = Convert.ToDateTime(ViewBag.Obj_Estld_On);
+
+    dtTodate = dtTodate.AddDays(1);
+}
+
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+
+                    <a class="breadcrumb-item" onclick="HyperLinkProgressIconFunction();" href='@Url.Action("ObjectiveEvaluationList", "Objectives", new  {   ObjectivesTrans_Id = Model.ObjectivesTrans_Id , Objectives_Id= Model.Objectives_Id,View=ViewBag.View } )'>
+                        <span class="breadcrumb-item"> Objective Evaluation</span>
+                    </a>
+                    <span class="breadcrumb-item active"> Update Objective Evaluation</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+}
+
+@using (Html.BeginForm("ObjectiveEvaluationEdit", "Objectives", FormMethod.Post,
+                         new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <input type="hidden" id="ObjectivesTrans_Id" name="ObjectivesTrans_Id" value="@ViewBag.ObjectivesTrans_Id" />
+    <input type="hidden" id="ObjectivesEval_Id" name="ObjectivesEval_Id" value="@ViewBag.ObjectivesEval_Id" />
+    <input type="hidden" id="Obj_Estld_On" name="Obj_Estld_On" value="@Model.Obj_Estld_On" />
+    <input type="hidden" id="Target_Date" name="Target_Date" value="@Model.Target_Date" />
+    <input type="hidden" id="ToDate" name="ToDate" value="@dtTodate" />
+    <input type="hidden" id="view" name="view" value="@ViewBag.View" />
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Update Objective Evaluation</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+
+                <table class="table table-lg">
+
+                    <tbody>
+                        @*<tr class="row">
+
+                                <td class="col-xs-3 col-md-2">
+                                    @Html.LabelFor(model => model.Objectives_val)
+                                </td>
+                                <td class="col">
+                                    <textarea class="form-control" id="Objectives_val" name="Objectives_val" disabled>@ViewBag.Objectives_val </textarea>
+                                </td>
+                            </tr>*@
+
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.Obj_Target)<text style="color:red;">*</text>
+
+                            </td>
+                            <td class="col">
+                                <input class="form-control" type="text" id="Obj_Target" name="Obj_Target" value="@Model.Obj_Target" readonly />
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.Base_Line_Value)<text style="color:red;">*</text>
+                            </td>
+                            <td class="col">
+                                <input class="form-control" type="text" id="Base_Line_Value" name="Base_Line_Value" value="@Model.Base_Line_Value" readonly />
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.Monitoring_Mechanism)<text style="color:red;">*</text>
+                            </td>
+                            <td class="col">
+                                <input class="form-control" type="text" id="Monitoring_Mechanism" name="Monitoring_Mechanism" value="@Model.Monitoring_Mechanism" readonly />
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.Target_Date)<text style="color:red;">*</text>
+                            </td>
+                            <td class="col">
+                                <input class="form-control" type="text" id="Target_Date" name="Target_Date" value="@Model.Target_Date.ToString("dd/MM/yyyy")" readonly />
+                            </td>
+                        </tr>
+                </table>
+                <br />
+                <table class="table table-lg">
+                    <thead></thead>
+                    <tbody>
+
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.FromPeriod)<text style="color:red;">*</text>
+
+                            </td>
+                            <td class="col">
+
+                                <input class="form-control" type="date" id="FromPeriod" name="FromPeriod" value="@Model.FromPeriod.ToString("yyyy-MM-dd")" required />
+
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.ToPeriod)<text style="color:red;">*</text>
+
+                            </td>
+                            <td class="col">
+
+                                <input class="form-control" type="date" id="ToPeriod" name="ToPeriod" value="@Model.ToPeriod.ToString("yyyy-MM-dd")" required />
+
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.Obj_Eval_On)<text style="color:red;">*</text>
+
+                            </td>
+                            <td class="col">
+
+                                <input class="form-control" type="date" id="Obj_Eval_On" name="Obj_Eval_On" value="@Model.Obj_Eval_On.ToString("yyyy-MM-dd")" required readonly />
+
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.Obj_Achieved_Val)<text style="color:red;">*</text>
+
+                            </td>
+                            <td class="col">
+
+                                <input class="form-control" type="text" id="Obj_Achieved_Val" name="Obj_Achieved_Val" value="@Model.Obj_Achieved_Val" required />
+
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.Trend)<text style="color:red;">*</text>
+
+                            </td>
+                            <td class="col">
+                                @*<div class="editor-field">
+                                        <input type="text" id="Trend" name="Trend" value="@Model.Trend" required />
+                                    </div>*@
+
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="Trend" name="Trend" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.Evaluation != null)
+                                    {
+                                        foreach (var data in ViewBag.Evaluation)
+                                        {
+                                            if (data.Value == Model.Trend)
+                                            {
+                                                <option value='@data.Value' selected>@data.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@data.Value'>@data.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+
+                            </td>
+
+
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.Status_Obj_Eval)<text style="color:red;">*</text>
+
+                            </td>
+                            <td class="col">
+
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="Status_Obj_Eval" name="Status_Obj_Eval" required onchange="checkNCR()">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.Status_Obj_Eval != null)
+                                    {
+                                        foreach (var item in ViewBag.Status_Obj_Eval)
+                                        {
+                                            if (item.Value == Model.Status_Obj_Eval)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+
+
+                                        }
+                                    }
+                                </select>
+
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.Evidence)
+
+                            </td>
+                            <td class="col">
+                                <input type="file" name="Evidence" id="Evidence" title="Objective Evidence" onchange="FileFormatValidation(this)" accept=".pdf, .doc, .docx,image/*"
+                                       style="height: 38px;" class="bootstrap-uploader" data-fouc />
+                                @if (Model.Evidence != "")
+                                {
+                                    <a href='@Url.Action("DisplayDocument", "Reports", new { Document = Model.Evidence })' target="_blank">Preview</a>
+                                }
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.NCR_Ref)
+
+                            </td>
+                            <td class="col">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="NCR_Ref" name="NCR_Ref" readonly>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.NcrRef != null)
+                                    {
+                                        foreach (var item in ViewBag.NcrRef)
+                                        {
+                                            if (item.Value == Model.NCR_Ref)
+                                            {
+                                                <option value="@item.Value" selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@item.Value">@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                                <a href='@Url.Action("AddNCRCAPA", "NCRCAPA")' title="Raise NCR " target="_blank">
+                                    <span class="badge badge-info">Raise NCR</span>
+                                </a>
+                            </td>
+                        </tr>
+
+                </table>
+            </div>
+
+        </div>
+        <div style="width: 100%; text-align: center;">
+
+
+        </div>
+
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+            @Html.ActionLink("Back to List","ObjectiveEvaluationList", new {   ObjectivesTrans_Id = Model.ObjectivesTrans_Id , Objectives_Id= Model.Objectives_Id, View=ViewBag.View},
+        new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick="HyperLinkProgressIconFunction()"})
+
+
+
+
+            <input type="submit" value="Update" class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" onclick="ProgressIconFunction('#form1')" />
+
+        </div>
+    </div>
+
+}
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript">
+
+
+
+
+        function checkDate() {
+
+
+            var dt2 = document.getElementById("ToPeriod").value;
+            var dt1 = document.getElementById("FromPeriod").value;
+
+            if (new Date(dt1).getTime() > new Date(dt2).getTime()) {
+
+                bootbox.alert({
+                    title: 'To Date',
+                    message: 'To date cannot be before From date.'
+                });
+                $('#ToPeriod').val("");
+            }
+        }
+
+       function checkNCR() {
+                        var Eval_Status = $('#Status_Obj_Eval :selected').text();
+
+                    if (Eval_Status.toLowerCase() == "not achieved") {
+                         $('#NCR_Ref').prop('disabled', false).prop('required',true).trigger('change');
+                            jQuery.ajax({
+                                url: '@Url.Action("FunGetNCRNumberList", "Objectives")',
+                                type: 'POST',
+                                dataType: "json",
+                               // data: { 'branch': values },
+                                success: function (result) {
+                                 //   $('#Dept').children('option').remove();
+                                  //  $("#Dept").trigger('change');
+                                    if (result != null && result.length > 0) {
+                                        $.each(result, function (index, item) {
+                                            $("#NCR_Ref").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                                            $("#NCR_Ref").trigger('change');
+                                        });
+                                        return;
+                                    }
+                                    else {
+                                        bootbox.alert({
+                                            title: 'NCR_Ref List',
+                                            message: 'NCR_Ref does not exits'
+                                        });
+                                    }
+                                }
+                            });
+                        }
+                        else {
+                        $("#NCR_Ref").val('').trigger('change');
+                        $('#NCR_Ref').prop('disabled', true).trigger('change');
+                        $('#NCR_Ref').prop('required', false).trigger('change');
+                        }
+                    }
+
+        function FileFormatValidation(file) {
+            var ext = file.value.split(".").pop().toLowerCase();
+            if ($.inArray(ext, ["pdf", "jpg", "jpeg", "gif", "png"]) == -1) {
+                file.value = "";
+
+                bootbox.alert({
+                    title: 'File type',
+                    message: 'Invalid file format, please upload only pdf, jpg, jpeg, gif, png format.'
+                });
+            }
+        }
+
+
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

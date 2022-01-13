@@ -1,0 +1,319 @@
+﻿@using System.Data
+@{
+    Layout = "~/Views/Shared/_PrintLayout.cshtml";
+    ISOStd.Models.ExternalAuditModels objModel = new ISOStd.Models.ExternalAuditModels();
+    if (ViewBag.Audit != null)
+    {
+        objModel = ViewBag.Audit;
+    }
+
+    DataSet dsAuditor = ViewBag.Auditor;
+    DataSet dsAuditee = ViewBag.Auditee;
+
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+}
+
+
+<style type="text/css">
+    .page {
+        page-break-before: always !important;
+    }
+
+    * {
+        overflow: visible !important;
+    }
+
+    .page-breaker {
+        display: block;
+        clear: both;
+        page-break-after: always;
+    }
+
+    .page_break_inside_avoid {
+        page-break-inside: avoid !important;
+    }
+</style>
+
+<div class="container">
+    <div class="page_break_inside_avoid">
+        <table class="table table-bordered">
+
+
+            <tr>
+                <td class="bg-blue-800">
+
+                    <h4>Audit Category</h4>
+
+                </td>
+                <td>
+
+                    <h4>@objModel.audit_category</h4>
+
+                </td>
+                <td class="bg-blue-800">
+
+                    <h4>Audit No</h4>
+
+                </td>
+                <td>
+
+                    <h4>@objModel.audit_no</h4>
+
+                </td>
+            </tr>
+            <tr>
+                <td class="bg-blue-800">
+
+                    <h4> Audit Type</h4>
+
+                </td>
+                <td>
+
+                    <h4> @objModel.audit_type</h4>
+
+                </td>
+                <td class="bg-blue-800">
+
+                    <h4>Audit Criteria</h4>
+
+                </td>
+                <td>
+
+                    <h4>@objModel.audit_criteria</h4>
+
+                </td>
+            </tr>
+            <tr>
+                <td class="bg-blue-800">
+
+                    <h4>Planned Start Date</h4>
+
+                </td>
+                <td>
+                    <h4>
+                        @if (objModel.audit_start_date != null && objModel.audit_start_date > Convert.ToDateTime("01/01/0001"))
+                        {
+                        @Html.Label(objModel.audit_start_date.ToString("dd/MM/yyyy"))
+                        }
+                    </h4>
+                </td>
+                <td class="bg-blue-800">
+
+                    <h4>Planned Completed Date</h4>
+
+                </td>
+                <td>
+                    <h4>
+                        @if (objModel.audit_complete_date != null && objModel.audit_complete_date > Convert.ToDateTime("01/01/0001"))
+                        {
+                            @Html.Label(objModel.audit_complete_date.ToString("dd/MM/yyyy"))
+                        }
+                    </h4>
+                </td>
+            </tr>
+           
+            <tr>
+                <td class="bg-blue-800">
+
+                    <h4>External Entity Name</h4>
+
+                </td>
+                <td>
+
+                    <h4>@objModel.entity_name</h4>
+
+                </td>
+                <td class="bg-blue-800">
+
+                    <h4>Notification To</h4>
+
+                </td>
+                <td>
+
+                    <h4>@objModel.notification_to</h4>
+
+                </td>
+            </tr>
+
+         
+
+        </table>
+    </div>
+   
+    @if (dsAuditor != null && dsAuditor.Tables.Count > 0 && dsAuditor.Tables[0].Rows.Count > 0)
+    {
+        <div class="page_break_inside_avoid">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th colspan="4"><h4>Auditor Details</h4></th>
+                    </tr>
+                    <tr class="bg-blue-800">
+                        <th><h4>Name</h4></th>
+                        <th><h4>Auditor Level</h4></th>
+                        <th><h4>Contact No</h4></th>
+                        <th><h4>Email Id</h4></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < dsAuditor.Tables[0].Rows.Count; i++)
+                    {
+
+                    <tr>
+                        <td>
+                            <h4>@(dsAuditor.Tables[0].Rows[i]["auditor_name"].ToString())</h4>
+                        </td>
+                        <td>
+                            <h4>@Obj.GetAuditorLevelById(dsAuditor.Tables[0].Rows[i]["auditor_level"].ToString())</h4>
+                        </td>
+                        <td>
+                            <h4>@(dsAuditor.Tables[0].Rows[i]["contact_no"].ToString())</h4>
+                        </td>
+                        <td>
+                            <h4> @(dsAuditor.Tables[0].Rows[i]["email_address"].ToString())</h4>
+                        </td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+
+        </div>
+    }
+    @if (dsAuditee != null && dsAuditee.Tables.Count > 0 && dsAuditee.Tables[0].Rows.Count > 0)
+    {
+        <div class="page_break_inside_avoid">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th colspan="4"><h4>Auditee Details</h4></th>
+                    </tr>
+                    <tr class="bg-blue-800">
+                        <th><h4>Division</h4></th>
+                        <th><h4>Department</h4></th>
+                        @*<th><h4>Team</h4></th>*@
+                        <th><h4>Location</h4></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < dsAuditee.Tables[0].Rows.Count; i++)
+                    {
+
+                        <tr>
+                            <td>
+                                <h4>@Obj.GetCompanyBranchNameById(dsAuditee.Tables[0].Rows[i]["directorate"].ToString())</h4>
+                            </td>
+                            <td>
+                                <h4>@Obj.GetDeptNameById(dsAuditee.Tables[0].Rows[i]["group_name"].ToString())</h4>
+                            </td>
+                            @*<td>
+                                <h4>@Obj.GetTeamNameByID(dsAuditee.Tables[0].Rows[i]["team"].ToString())</h4>
+                            </td>*@
+                            <td>
+                                <h4>@Obj.GetDivisionLocationById(dsAuditee.Tables[0].Rows[i]["location"].ToString())</h4>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+        </div>
+    }
+    <div class="page_break_inside_avoid">
+        <table class="table table-bordered">
+            <tbody>
+                <tr>
+                    <th colspan="4"><h4>Audit Status</h4></th>
+                </tr>
+                <tr>
+                    <td class="bg-blue-800">
+
+                        <h4>Completed On</h4>
+
+                    </td>
+                    <td colspan="3">
+
+                        <h4>
+                            @if (objModel.audit_status_date != null && objModel.audit_status_date > Convert.ToDateTime("01/01/0001"))
+                            {
+                                @Html.Label(objModel.audit_status_date.ToString("dd/MM/yyyy"))
+                            }
+                        </h4>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="bg-blue-800">
+
+                        <h4>Audit Status</h4>
+
+                    </td>
+                    <td>
+
+                        <h4>@objModel.audit_status</h4>
+
+                    </td>
+                    <td class="bg-blue-800">
+
+                        <h4>Remarks</h4>
+
+                    </td>
+                    <td>
+
+                        <h4>@objModel.remarks</h4>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="bg-blue-800">
+
+                        <h4>No. of Major NCs</h4>
+
+                    </td>
+                    <td>
+
+                        <h4>@objModel.major_nc</h4>
+
+                    </td>
+                    <td class="bg-blue-800">
+
+                        <h4>No. of Minor NCs</h4>
+
+                    </td>
+                    <td>
+
+                        <h4>@objModel.minor_nc</h4>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="bg-blue-800">
+
+                        <h4>No. of Observations</h4>
+
+                    </td>
+                    <td>
+
+                        <h4>@objModel.no_observation</h4>
+
+                    </td>
+                    <td class="bg-blue-800">
+
+                        <h4>No. of Note-worthy findings</h4>
+
+                    </td>
+                    <td>
+
+                        <h4>@objModel.no_noteworthy</h4>
+
+                    </td>
+                </tr>
+
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+
+
+

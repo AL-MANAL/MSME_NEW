@@ -353,23 +353,35 @@ namespace ISOStd.Controllers
                         }
 
                        
-                string sSqlstmt1 = "select Date_of_join,years_exp,(group_concat(distinct skill)) skill,(group_concat(distinct t2.qualification)) qualification"
+                string sSqlstmt1 = "select Designation,Date_of_join,years_exp,(group_concat(distinct skill)) skill,(group_concat(distinct t2.qualification)) qualification"
                 + ",(group_concat(distinct training_type)) training_type from t_hr_employee t1, t_hr_employee_qualification t2,t_hr_employee_skills t3, t_hr_employee_training t4"
                 + " where t1.emp_no = t2.emp_no and t1.emp_no = t3.emp_no and t1.emp_no = t4.emp_no and t1.emp_no = '" + dsCompetenceList.Tables[0].Rows[0]["Name"].ToString() + "'";
                         DataSet dsList = objGlobaldata.Getdetails(sSqlstmt1);
                         if (dsList.Tables.Count > 0 && dsList.Tables[0].Rows.Count > 0)
                         {
-                            objEmployeeCompetence.years_exp = (dsList.Tables[0].Rows[0]["years_exp"].ToString());
-                            objEmployeeCompetence.skill = (dsList.Tables[0].Rows[0]["skill"].ToString());
+                            objEmployeeCompetence.Designation = (dsList.Tables[0].Rows[0]["Designation"].ToString());
+                            objEmployeeCompetence.YrExp_EmpComp_Details = (dsList.Tables[0].Rows[0]["years_exp"].ToString());
+                            objEmployeeCompetence.Skills_EmpComp_Details = (dsList.Tables[0].Rows[0]["skill"].ToString());
                             objEmployeeCompetence.qualification = objGlobaldata.GetDropdownitemById(dsList.Tables[0].Rows[0]["qualification"].ToString());
-                            objEmployeeCompetence.training_type = (dsList.Tables[0].Rows[0]["training_type"].ToString());
+                            objEmployeeCompetence.Relevant_EmpComp_Details = (dsList.Tables[0].Rows[0]["training_type"].ToString());
                             
                             DateTime dtValue;
                             if (DateTime.TryParse(dsList.Tables[0].Rows[0]["Date_of_join"].ToString(), out dtValue))
                             {
                                 objEmployeeCompetence.Date_of_join = dtValue;
                             }
+                            sSqlstmt = "select academic_mandatory as Academic_MinComp_Details,experience_mandatory as YrExp_MinComp_Details,trainings_mandatory as Relevant_MinComp_Details,skills_mandatory as Skills_MinComp_Details from t_jd where designation_id='" + objEmployeeCompetence.Designation + "'";
+                            dsList = objGlobaldata.Getdetails(sSqlstmt);
+                            if (dsList.Tables.Count > 0 && dsList.Tables[0].Rows.Count > 0)
+                            {
 
+
+                                objEmployeeCompetence.Academic_MinComp_Details = (dsList.Tables[0].Rows[0]["Academic_MinComp_Details"].ToString());
+                                objEmployeeCompetence.YrExp_MinComp_Details = (dsList.Tables[0].Rows[0]["YrExp_MinComp_Details"].ToString());
+                                objEmployeeCompetence.Relevant_MinComp_Details = (dsList.Tables[0].Rows[0]["Relevant_MinComp_Details"].ToString());
+                                objEmployeeCompetence.Skills_MinComp_Details = (dsList.Tables[0].Rows[0]["Skills_MinComp_Details"].ToString());
+
+                            }
                         }
 
                         string sql = "select id_training,CompetenceId,training_topic,source_training,criticality from t_emp_competence_eval_training where CompetenceId='" + sCompetenceId + "'";

@@ -486,7 +486,7 @@ namespace ISOStd.Controllers
                     string sEquipment_Id = Request.QueryString["Equipment_Id"];
 
                     string sSqlstmt = "select Equipment_Id, Equipment_serial_no, Equipment_Name, Equipment_Application, Source_of_calibration, Freq_of_calibration,equp_type, "
-                        + "Commissioning_Date, Manufacturer, Equipment_status, model_no,Department,Logged_date,DocUploadPath,RespPerson,location,branch,Equipment_location from t_equipment where Equipment_Id='" + sEquipment_Id + "'";
+                        + "Commissioning_Date, Manufacturer, Equipment_status, model_no,Department,Logged_date,DocUploadPath,RespPerson,location,branch,Equipment_location,eqp_range from t_equipment where Equipment_Id='" + sEquipment_Id + "'";
                     // string sSqlstmt = "select a.Equipment_Id, Equipment_serial_no, ifnull(max(Next_Maint_Date), '0001-01-01') as Next_Maint_Date,Equipment_Name," +
                     //"Equipment_Application,Source_of_calibration,Freq_of_calibration,Commissioning_Date, Manufacturer,Equipment_status, model_no,Department," +
                     //"RespPerson,equp_type,location,Logged_date,DocUploadPath from t_equipment a left outer join t_equpiment_preventive_maint b on a.Equipment_Id = b.Equipment_Id where a.Active = 1" +
@@ -516,6 +516,7 @@ namespace ISOStd.Controllers
                             Department = objGlobaldata.GetMultiDeptNameById(dsEquipmentList.Tables[0].Rows[0]["Department"].ToString()),
                             location = objGlobaldata.GetDivisionLocationById(dsEquipmentList.Tables[0].Rows[0]["location"].ToString()),
                             //Next_Maint_Date = Convert.ToDateTime(dsEquipmentList.Tables[0].Rows[0]["Next_Maint_Date"].ToString()),
+                            eqp_range = (dsEquipmentList.Tables[0].Rows[0]["eqp_range"].ToString()),
                         };
                         DateTime dateValue;
                         if (DateTime.TryParse(dsEquipmentList.Tables[0].Rows[0]["Logged_date"].ToString(), out dateValue))
@@ -637,7 +638,7 @@ namespace ISOStd.Controllers
 
                     //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS
                     string sSqlstmt = "select Equipment_Id, Equipment_serial_no, Equipment_Name, Equipment_Application, Source_of_calibration, Freq_of_calibration, "
-                        + "Commissioning_Date, Manufacturer, Equipment_status, model_no,Department,DocUploadPath,RespPerson,equp_type,location,branch,Equipment_location from t_equipment where Equipment_Id='" + sEquipment_Id + "'";
+                        + "Commissioning_Date, Manufacturer, Equipment_status, model_no,Department,DocUploadPath,RespPerson,equp_type,location,branch,Equipment_location,eqp_range from t_equipment where Equipment_Id='" + sEquipment_Id + "'";
 
                     DataSet dsEquipmentList = objGlobaldata.Getdetails(sSqlstmt);
                     if (dsEquipmentList.Tables.Count > 0 && dsEquipmentList.Tables[0].Rows.Count > 0)
@@ -661,6 +662,7 @@ namespace ISOStd.Controllers
                             branch = (dsEquipmentList.Tables[0].Rows[0]["branch"].ToString()),
                             Department = (dsEquipmentList.Tables[0].Rows[0]["Department"].ToString()),
                             location = (dsEquipmentList.Tables[0].Rows[0]["location"].ToString()),
+                            eqp_range = (dsEquipmentList.Tables[0].Rows[0]["eqp_range"].ToString()),
                         };
 
                         ViewBag.Branch = objGlobaldata.GetCompanyBranchListbox();

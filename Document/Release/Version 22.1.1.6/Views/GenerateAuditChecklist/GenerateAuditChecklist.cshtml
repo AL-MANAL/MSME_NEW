@@ -1,0 +1,725 @@
+﻿@model ISOStd.Models.GenerateAuditChecklistModels
+
+@{
+    ViewBag.Title = "GenerateAuditChecklist";
+    DateTime todaysdate = DateTime.Now;
+}
+
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+
+                    <a href="@Url.Action("AuditChecklistList", "GenerateAuditChecklist", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Audit Checklists</span>
+                    </a>
+
+                    <span class="breadcrumb-item active"> Generate Audit Checklist</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            <div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+}
+
+
+@using (Html.BeginForm("GenerateAuditChecklist", "GenerateAuditChecklist", FormMethod.Post,
+                     new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Generate Audit Checklist</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+                @*<input type="hidden" id="itemcnt" name="itemcnt" />*@
+                <table class="table table-lg">
+                    <tbody>
+                        @*<tr class="row">
+                                    <td class="col-xs-3 col-md-2">
+                                        Division
+                                    </td>
+                                    <td class="col-xs-6 col-md-4">
+                                        <select class="form-control select-search select2-hidden-accessible" data-fouc id="audit_division" name="audit_division" onchange="GetDeptList()" required>
+                                            <option value='' hidden>Select</option>
+                                            @if (ViewBag.division != null)
+                                            {
+                                                foreach (var item in ViewBag.division)
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+                                                }
+                                            }
+                                    </select>
+                                </td>
+
+                            </tr>
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+                                    Department
+                                </td>
+                                <td class="col">
+                                    <select class="form-control select-search" data-fouc id="Department" name="Department" onchange="GetEmptyCheckbox()">
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.Department != null)
+                                        {
+                                            foreach (var item in ViewBag.Department)
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    </select>
+                                </td>
+                                <td class="col">
+                                    <input type="checkbox" class="form-control" id="dept_common" name="dept_common" onchange="GetEmptyDept()" />(Please check this box if department is common)
+                                </td>
+                            </tr>*@
+
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                Division
+                            </td>
+                            <td class="col-xs-6 col-md-4">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="directorate" name="directorate" onchange="DoclevelGroupcode()" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.Directorate != null)
+                                    {
+                                        foreach (var item in ViewBag.Directorate)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                Department
+                            </td>
+                            <td class="col-xs-6 col-md-4">
+                                <select class="form-control select-search" data-fouc id="grp" name="grp" onchange="GetEmptyGrpCheckbox()">
+                                    <option value='' hidden>Select</option>
+
+                                </select>
+                            </td>
+                            <td class="col">
+                                <input type="checkbox" class="form-control" id="grp_common" name="grp_common" onchange="GetEmptyGrp()" />(Please check this box if Department is common)
+                            </td>
+                        </tr>
+                        @*<tr class="row">
+                                <td class="col-xs-3 col-md-2">
+                                    Team
+                                </td>
+                                <td class="col-xs-6 col-md-4">
+                                    <select class="form-control select-search" data-fouc id="team" name="team" onchange="GetEmptyTeamCheckbox()">
+                                        <option value='' hidden>Select</option>
+                                    </select>
+                                </td>
+                                <td class="col">
+                                    <input type="checkbox" class="form-control" id="team_common" name="team_common" onchange="GetEmptyTeam()" />(Please check this box if Team is common)
+                                </td>
+                            </tr>*@
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.DisplayNameFor(model => model.created_on)
+                            </td>
+                            <td class="col">
+                                <input type="date" class="form-control" id="created_on" name="created_on" />
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                @Html.DisplayNameFor(model => model.ammended_on)
+                            </td>
+                            <td class="col">
+                                <input type="date" class="form-control" id="ammended_on" name="ammended_on" value="@todaysdate.ToString("yyyy-MM-dd")" readonly />
+                            </td>
+                        </tr>
+                        @*<tr class="row">
+                                <td class="col-xs-3 col-md-2">
+                                    @Html.DisplayNameFor(model => model.Itemno)
+                                </td>
+                                <td class="col">
+                                    @ViewBag.ItemNo
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+                                    @Html.DisplayNameFor(model => model.Department)<text style="color:red;">*</text>
+                                </td>
+                                <td class="col">
+                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="Department" name="Department" onchange="GetQuestions()" required>
+                                        <option value='' hidden>Select</option>
+                                       @if (ViewBag.Department != null)
+                                        {
+                                            foreach (var item in ViewBag.Department)
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    </select>
+                                </td>
+                            </tr>*@
+
+                        @*<tr class="row">
+                                <td class="col-xs-3 col-md-2">
+                                    @Html.DisplayNameFor(model => model.AuditCriteria)<text style="color:red;">*</text>
+                                </td>
+                                <td class="col">
+
+                                    <select class="form-control select-fixed-multiple" multiple data-fouc id="AuditCriteria" name="AuditCriteria" onchange="GetQuestions()" required>
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.AuditCriteria != null)
+                                        {
+                                            foreach (var item in ViewBag.AuditCriteria)
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    </select>
+                                </td>
+                            </tr>*@
+
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.DisplayNameFor(model => model.prepared_by)
+                            </td>
+                            <td class="col-xs-6 col-md-4">
+                                <div class="editor-field">
+                                    <select class="form-control select-search" id="prepared_by" name="prepared_by" onchange="GetIssuedToDetails()">
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.EmpList != null)
+                                        {
+                                            foreach (var item in ViewBag.EmpList)
+                                            {
+                                                if (item.Value == Model.prepared_by)
+                                                {
+                                                    <option value='@item.Value' selected>@item.Text</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div id="reportedbydiv" style="display:none;">
+                    <div class="card-body">
+                        <input type="hidden" id="count" name="count" value="0" />
+
+                        <div class="card card-table table-responsive shadow-0 mb-0">
+                            <table class="table" id="table-team">
+                                <tr class="bg-blue">
+                                    <th>Action</th>
+                                    <th>Id</th>
+                                    <th>Name</th>
+                                    <th>Division</th>
+                                    <th>Location</th>
+                                    <th>Department</th>
+                                    <th>Email</th>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            @*Details*@
+
+            <fieldset class="border p-2">
+                <legend class="font-weight-semibold"><i class="icon-file-text mr-2"></i>Audit CheckList details</legend>
+                <table class="table table-lg" id="table1">
+
+                    <tbody>
+                        <tr class="row">
+                            <th class="col" style="font-weight: bold;">Standard / Procedure</th>
+                            <th class="col" style="font-weight: bold;">Clause / Section No</th>
+                            <th class="col" style="font-weight: bold;">Question</th>
+                            <th class="col-xs-3 col-md-2"></th>
+                        </tr>
+                        <tr class="row">
+                            <td class="col">
+                                <select class="form-control select-search select2-hidden-accessible" multiple data-fouc id="IsoStd" name="IsoStd" onchange="GetISOClauses()">
+                                    @*<option value='' hidden>Select</option>*@
+                                    @if (ViewBag.IsoStd != null)
+                                    {
+                                        foreach (var item in ViewBag.IsoStd)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                                @Html.ValidationMessageFor(model => model.IsoStd)
+                                <span class="field-validation-error"><span id="IsoStd-message" style="display: none;">Please select Standard / Procedure.</span></span>
+                            </td>
+                            <td class="col">
+                                <select class="form-control select-fixed-multiple" multiple="multiple" data-fouc id="Clause" name="Clause"></select>
+                                @*<input class="form-control" type='text' id='Clause' name="Clause" />*@
+                                @Html.ValidationMessageFor(model => model.Clause)
+                                <span class="field-validation-error"><span id="Clause-message" style="display: none;">Please write Clause / Section No.</span></span>
+                            </td>
+                            <td class="col">
+                                <textarea class="form-control" id='Questions' name="Questions"> </textarea>
+                                @Html.ValidationMessageFor(model => model.Questions)
+                                <span class="field-validation-error"><span id="Questions-message" style="display: none;">Please write Questions.</span></span>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <img src='@Url.Content("~/images/icon_add.png")' onclick='AddQuestions()' style='cursor:pointer; padding-right: 5px;' />Add
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </fieldset>
+
+            <span class="form-text text-muted"><code>Please click Add or Plus button to add N number of Questions</code></span>
+
+            <div id="hidden card" style="display:none">
+                <div class="card-header header-elements-inline">
+                    <h5 class="card-title">Question Details</h5>
+                    <div class="header-elements">
+                        <div class="list-icons">
+                            <a class="list-icons-item" data-action="collapse"></a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body">
+
+                    <input type="hidden" id="itemcnt" name="itemcnt" value="0" />
+
+                    <div class="card card-table table-responsive shadow-0 mb-0">
+                        <table class="table" id="team-list">
+                            <tr class="bg-blue">
+                                <th>Action</th>
+                                <th>Standard / Procedure</th>
+                                <th>Clause / Section No</th>
+                                <th>Question</th>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+
+            <table class="table table-lg">
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        @Html.DisplayNameFor(model => model.notified_to)
+                    </td>
+                    <td class="col-xs-6 col-md-4">
+                        <div class="editor-field">
+                            <select class="form-control select-search" @*class="form-control-select" data-fouc*@ id="notified_to" name="notified_to" onchange="GetNotifiedByDetails()">
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.EmpList != null)
+                                {
+                                    foreach (var item in ViewBag.EmpList)
+                                    {
+                                        <option value='@item.Value'>@item.Text</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+
+            <div id="notifiedtodiv" style="display:none">
+                <div class="card-body">
+                    <input type="hidden" id="itemcnt1" name="itemcnt1" value="0" />
+
+                    <div class="card card-table table-responsive shadow-0 mb-0">
+                        <table class="table" id="team-list1">
+                            <tr class="bg-blue">
+                                <th>Action</th>
+                                <th>Id</th>
+                                <th>Name</th>
+                                <th>Division</th>
+                                <th>Location</th>
+                                <th>Department</th>
+                                <th>Email</th>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+                @Html.ActionLink("Back to List", "AuditChecklistList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+                <button class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" type="submit" value="Save" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Save</button>
+            </div>
+
+        </div>
+    </div>
+}
+
+
+@section Scripts {
+    <script>
+
+
+        $(document).ready(function () {
+            GetIssuedToDetails();
+        });
+
+        function GetNotifiedByDetails() {
+            var notified_to = $('#notified_to').val();
+            if (notified_to != "" && notified_to != null) {
+                jQuery.ajax({
+                    url: '@Url.Action("FunGetEmpDetails", "NC")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'semp_no': notified_to },
+                    success: function (result) {
+                        if (result != null) {
+                            //document.getElementById("notifiedtodiv").classList.remove(hideClass);
+                            //document.getElementById("notifiedtodiv").classList.add(showClass);
+                            document.getElementById("notifiedtodiv").style.display = "block";
+
+                            var nempno = $('#notified_to option:selected').val();
+                            var nempid = result.emp_id;
+                            var nempname = result.empname;
+                            var nempdiv = result.division;
+                            var nempdept = result.department;
+                            var nemploc = result.location;
+                            var nempemail = result.EmailId;
+
+                            if (nempid != "") {
+                                var cnt = document.getElementById("itemcnt1").value;
+
+                                document.getElementById("itemcnt1").value = cnt;
+                                // Find a <table> element with id="myTable":
+                                var table = document.getElementById("team-list1");
+
+                                // Create an empty <tr> element and add it to the 1st position of the table:
+                                var row = table.insertRow();
+
+                                // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                                var cell0 = row.insertCell(0);
+                                var cell1 = row.insertCell(1);
+                                var cell2 = row.insertCell(2);
+                                var cell3 = row.insertCell(3);
+                                var cell4 = row.insertCell(4);
+                                var cell5 = row.insertCell(5);
+                                var cell6 = row.insertCell(6);
+
+                                cell0.innerHTML = "<span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span> <input type = 'hidden' id = 'nempno " + cnt + "' name = 'nempno " + cnt + "' value = '" + nempno + "'>";
+                                cell1.innerHTML = "<input type='hidden' id='nempid " + cnt + "' name='nempid " + cnt + "' value='" + nempid + "'>" + nempid;
+                                cell2.innerHTML = "<input type='hidden' id='nempname " + cnt + "' name='nempname " + cnt + "' value='" + nempname + "'>" + nempname;
+                                cell3.innerHTML = "<input type='hidden' id='nempdiv " + cnt + "' name='nempdiv " + cnt + "' value='" + nempdiv + "'>" + nempdiv;
+                                cell4.innerHTML = "<input type='hidden' id='nemploc " + cnt + "' name='nemploc " + cnt + "' value='" + nemploc + "'>" + nemploc;
+                                cell5.innerHTML = "<input type='hidden' id='nempdept " + cnt + "' name='nempdept " + cnt + "' value='" + nempdept + "'>" + nempdept;
+                                cell6.innerHTML = "<input type='hidden' id='nempemail " + cnt + "' name='nempemail " + cnt + "' value='" + nempemail + "'>" + nempemail;
+
+                                cnt++;
+                                document.getElementById("itemcnt1").value = cnt;
+
+                                //document.getElementById("hidden card1").classList.remove(hideClass);
+                                //document.getElementById("hidden card1").classList.add(showClass);
+
+                                $("#notified_to").val('').trigger('change');
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+
+         function GetIssuedToDetails () {
+            var prepared_by = $('#prepared_by').val();
+            if (prepared_by != "" && prepared_by != null) {
+                jQuery.ajax({
+                    url: '@Url.Action("FunGetEmpDetails", "NC")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'semp_no': prepared_by },
+                    success: function (result) {
+                        if (result != null) {
+                            //document.getElementById("issuedtodiv").classList.remove(hideClass);
+                            //document.getElementById("issuedtodiv").classList.add(showClass);
+
+                            document.getElementById("reportedbydiv").style.display = 'block';
+
+                            var prepared_by = $('#prepared_by option:selected').val();
+                            var empid = result.emp_id;
+                            var empname = result.empname;
+                            var empdivision = result.division;
+                            var empdept = result.department;
+                            var emploc = result.location;
+                            var empemail  = result.EmailId;
+
+                            if (empid != "") {
+                                var cnt = document.getElementById("count").value;
+
+                                document.getElementById("count").value = cnt;
+                                // Find a <table> element with id="myTable":
+                                var table = document.getElementById("table-team");
+
+                                // Create an empty <tr> element and add it to the 1st position of the table:
+                                var row = table.insertRow();
+
+
+                                // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                                var cell0 = row.insertCell(0);
+                                var cell1 = row.insertCell(1);
+                                var cell2 = row.insertCell(2);
+                                var cell3 = row.insertCell(3);
+                                var cell4 = row.insertCell(4);
+                                var cell5 = row.insertCell(5);
+                                var cell6 = row.insertCell(6);
+
+                                cell0.innerHTML = "<span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span> <input type='hidden' id='iempno " + cnt + "' name='iempno " + cnt + "' value='" + prepared_by + "'>";
+                                cell1.innerHTML = "<input type='hidden' id='iempid " + cnt + "' name='iempid " + cnt + "' value='" + empid + "'>" + empid;
+                                cell2.innerHTML = "<input type='hidden' id='iempname " + cnt + "' name='iempname " + cnt + "' value='" + empname + "'>" + empname;
+                                cell3.innerHTML = "<input type='hidden' id='iempdivision " + cnt + "' name='iempdivision " + cnt + "' value='" + empdivision + "'>" + empdivision;
+                                cell4.innerHTML = "<input type='hidden' id='iemploc " + cnt + "' name='iemploc " + cnt + "' value='" + emploc + "'>" + emploc;
+                                cell5.innerHTML = "<input type='hidden' id='iempdept " + cnt + "' name='iempdept " + cnt + "' value='" + empdept + "'>" + empdept;
+                                cell6.innerHTML = "<input type='hidden' id='iempemail " + cnt + "' name='iempemail " + cnt + "' value='" + empemail + "'>" + empemail;
+
+                                cnt++;
+                                document.getElementById("count").value = cnt;
+
+                               // document.getElementById("NCIssueDiv").classList.remove(hideClass);
+                              //  document.getElementById("NCIssueDiv").classList.add(showClass);
+
+                                $("#prepared_by").val('').trigger('change');
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+
+        function GetEmptyGrp() {
+            var grp_common = $('input[name="grp_common"]:checked');
+            if (grp_common.length > 0) {
+                $("#grp").val('');               
+                $('#grp').trigger('change');
+           }
+        }
+
+
+        function GetEmptyGrpCheckbox() {
+            var group = $('#grp').val();
+           // var dept = $('Department option:selected').val();
+            if (group != "" && group != null) {
+                $("#grp_common").prop("checked", false);
+            }
+        }
+
+
+        function deleteRow(btn) {
+            var row = btn.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+        }
+
+         function Validation() {
+            var validflg = true;
+            var ssnMessage = "";
+
+             if (document.getElementById("IsoStd").value == "") {
+                 ssnMessage = $('#IsoStd-message');
+                 ssnMessage.show();
+
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#IsoStd-message');
+                ssnMessage.hide();
+             }
+
+             if (document.getElementById("Clause").value == "") {
+                 ssnMessage = $('#Clause-message');
+                 ssnMessage.show();
+
+                 validflg = false;
+             }
+             else {
+                 ssnMessage = $('#Clause-message');
+                 ssnMessage.hide();
+             }
+
+             if (document.getElementById("Questions").value == "" ) {
+                 ssnMessage = $('#Questions-message');
+                 ssnMessage.show();
+                 validflg = false;
+            }
+            else {
+                 ssnMessage = $('#Questions-message');
+                 ssnMessage.hide();
+            }
+
+            return validflg;
+        }
+
+        function AddQuestions() {
+
+        if (Validation() == true) {
+
+
+            var cnt = document.getElementById("itemcnt").value;
+
+            document.getElementById("itemcnt").value = cnt;
+            // Find a <table> element with id="myTable":
+            var table = document.getElementById("team-list");
+
+
+            // Create an empty <tr> element and add it to the 1st position of the table:
+            var row = table.insertRow();
+
+
+            // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+            var cell0 = row.insertCell(0);
+            var cell1 = row.insertCell(1);
+            var cell2 = row.insertCell(2);
+            var cell3 = row.insertCell(3);
+
+            //var AccidentType = $('#AccidentTypeSelect').val();
+            //var sAccidentTypeSelect = document.getElementById("AccidentTypeSelect");
+            //var sAccidentTypeSelectText = sAccidentTypeSelect.options[sAccidentTypeSelect.selectedIndex].text;
+
+            var IsoStd = $('#IsoStd').val();
+          //  var IsoStdName = $("#IsoStd option:selected").text();
+            var IsoStdNames= $("#IsoStd option:selected").map(function () { return this.text }).get().join(', ');
+            var Clause = $('#Clause').val();
+           // var ClauseName = $("#Clause option:selected").text();
+            var ClauseNames = $("#Clause option:selected").map(function () { return this.text }).get().join(', ');
+
+            var Questions = $('#Questions').val();
+
+            cell0.innerHTML = " <img src='@Url.Content("~/images/cancel.png")' onclick='deleteRow(this)' style='cursor:pointer; padding-right: 5px;'/>Remove";
+            cell1.innerHTML = "<input type='hidden' id='IsoStd " + cnt + "' name='IsoStd " + cnt + "' value='" + IsoStd + "'>" + IsoStdNames;
+            cell2.innerHTML = "<input type='hidden' id='Clause" + cnt + "' name='Clause " + cnt + "' value='" + Clause + "'>" + ClauseNames;
+            cell3.innerHTML = "<input type='hidden' id='Questions" + cnt + "' name='Questions " + cnt + "' value='" + Questions + "'>" + Questions;
+
+            cnt++;
+            document.getElementById("itemcnt").value = cnt;
+
+            //document.getElementById("hidden card").classList.remove(hideClass);
+            document.getElementById("hidden card").style.display="block";
+            ResetControl();
+            }
+
+        }
+
+        function ResetControl () {
+            //$("#injury_type").val('').trigger("chosen:updated");
+            $("#IsoStd").val('').trigger('change');
+            $("#Clause").val('').trigger('change');
+            document.getElementById("Questions").value = "";
+        }
+
+         function DoclevelGroupcode() {
+             $("#grp").empty();         
+             var sStd = $('#directorate').val();
+                jQuery.ajax({
+                    url: '@Url.Action("FunGetDeptList", "EmployeeDetails")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'branch': sStd },
+                    success: function (result) {
+                        $("#grp").empty();
+                        if (result != null && result.length > 0) {
+                            $("#grp").append("<option value=''>" + "Select" + "</option>");
+                            $.each(result, function (index, item) {
+                                $("#grp").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                                $("#grp").trigger('change');
+                            });
+                            return;
+                        }
+                        else {
+                            bootbox.alert({
+                                title: 'Group Code',
+                                message: 'Please add group code to this directorate selected'
+                            });
+                            return;
+                        }
+                    }
+                });
+        }
+
+
+          function GetISOClauses() {
+              var selMulti = $.map($("#IsoStd option:selected"), function (el, i) {
+                    return $(el).val();
+                });
+                var sStd = (selMulti.join(","));
+            if (sStd != null && sStd != "") {
+
+                jQuery.ajax({
+                    url: '@Url.Action("FunISOClauseList", "MgmtDocuments")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'ISOStdId': sStd },
+                    success: function (result) {
+                        $("#Clause").empty();
+                        if (result != null && result.length > 0) {
+                            $.each(result, function (index, item) {
+                                $("#Clause").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                            });
+                            $("#Clause").trigger('change');
+                            return;
+                        }
+                        else {
+                            bootbox.alert({
+                                title: 'ISOClause List',
+                                message: 'No Clauses exists.'
+                            });
+                            return;
+                        }
+                    }
+                });
+            }
+        }
+
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

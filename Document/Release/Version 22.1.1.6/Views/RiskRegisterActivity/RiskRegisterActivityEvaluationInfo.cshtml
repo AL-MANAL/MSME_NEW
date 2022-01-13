@@ -1,0 +1,65 @@
+﻿@model IEnumerable<ISOStd.Models.RiskRegisterActivityEvaluationModels>
+    @{
+        Layout = null;
+    }
+    <div class="card alpha-success border-success">
+        <div class="card-header bg-info text-white">
+            <h4 class="text-center">Risk Register Activity Info</h4>
+        </div>
+
+        <div class="card-body">
+
+            @foreach (var item in Model)
+            {
+                string Riskrating = "";
+                if (item.Risk_Rating.Contains("&"))
+                {
+                    Riskrating = item.Risk_Rating.Split('&')[0];
+                }
+                <p>
+                    Aspects:<code> @item.hazard</code>
+                    Impacts:<code> @item.Consequence</code>
+                </p>
+                <p>
+                    Severity:<code> @item.Severity</code>
+                    Probability:<code> @item.Probability</code>
+                </p>
+                <p>
+                    Risk_Rating:<code> @Riskrating</code>
+                    Control Measures:<code> @item.Cur_Opt_Ctrl</code>
+                </p>
+                <p>
+                    Applicable law & other requirements:<code>@item.Appl_law</code>
+                </p>
+                <p>
+                    Evaluation Date:<code>
+                        @if (item.Eval_Date > Convert.ToDateTime("01/01/0001"))
+                        {
+                            @item.Eval_Date.ToString("dd/MM/yyyy")
+                        }
+                    </code>
+                    Re-Evaluation Date:<code>
+                        @if (item.ReEval_Date > Convert.ToDateTime("01/01/0001"))
+                        {
+                            @item.ReEval_Date.ToString("dd/MM/yyyy")
+                        }
+                    </code>
+                </p>
+                <p>
+                    Prepared by:<code>
+                        @item.Action_TakenBy
+                    </code>
+                    QHSE Reviewer:
+                    <code> @item.Reviewer_QHSE</code>
+                </p>
+                <p>
+                    Approved By:<code>
+                        @item.ApprovedBy
+                    </code>
+                    Approve Status:
+                    <code> @item.Approve_status</code>
+                </p>
+            }
+        </div>
+
+    </div>

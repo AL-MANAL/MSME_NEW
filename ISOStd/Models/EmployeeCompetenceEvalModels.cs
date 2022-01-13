@@ -179,6 +179,8 @@ namespace ISOStd.Models
         [Display(Name = "Date of Join")]
         public DateTime Date_of_join { get; set; }
 
+        public string Designation { get; set; }
+
         internal bool FunDeleteCompetenceDoc(string sCompetenceId)
         {
             try

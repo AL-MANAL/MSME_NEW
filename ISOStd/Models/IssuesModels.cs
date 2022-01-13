@@ -102,6 +102,8 @@ namespace ISOStd.Models
         [Display(Name = "Standards")]
         public string ISOStds { get; set; }
 
+        public string reporting_to_div { get; set; }
+
         internal bool CheckForIssueRefNoExists(string sIssue_refno)
         {
             try
@@ -155,20 +157,20 @@ namespace ISOStd.Models
         {
             try
             {
-                if (objissue.reporting_to != null && objissue.reporting_to != "")
-                {
+                //if (objissue.reporting_to != null && objissue.reporting_to != "")
+                //{
                     
-                    string otherdiv = "";
-                    DataSet dsEmpLocList = objGlobalData.Getdetails("select group_concat(division) as division from t_hr_employee where find_in_set(emp_no,'" + objissue.reporting_to + "')");
-                    if (dsEmpLocList != null && dsEmpLocList.Tables.Count > 0 && dsEmpLocList.Tables[0].Rows.Count > 0)
-                    {
-                        otherdiv = dsEmpLocList.Tables[0].Rows[0]["division"].ToString();
-                    }
-                    objissue.branch = objissue.branch + "," + otherdiv;
-                    List<string> uniques = objissue.branch.Split(',').Distinct().ToList();
-                    objissue.branch = string.Join(",", uniques);
-                    objissue.branch = objissue.branch.Trim();
-                }
+                //    string otherdiv = "";
+                //    DataSet dsEmpLocList = objGlobalData.Getdetails("select group_concat(division) as division from t_hr_employee where find_in_set(emp_no,'" + objissue.reporting_to + "')");
+                //    if (dsEmpLocList != null && dsEmpLocList.Tables.Count > 0 && dsEmpLocList.Tables[0].Rows.Count > 0)
+                //    {
+                //        otherdiv = dsEmpLocList.Tables[0].Rows[0]["division"].ToString();
+                //    }
+                //    objissue.branch = objissue.branch + "," + otherdiv;
+                //    List<string> uniques = objissue.branch.Split(',').Distinct().ToList();
+                //    objissue.branch = string.Join(",", uniques);
+                //    objissue.branch = objissue.branch.Trim();
+                //}
                 string sFiled = "";
                 string sFiledValue = "";
 
@@ -441,25 +443,25 @@ namespace ISOStd.Models
         {
             try
             {
-                if (objIssue.reporting_to != null && objIssue.reporting_to != "")
-                {
+                //if (objIssue.reporting_to != null && objIssue.reporting_to != "")
+                //{
 
-                    string otherdiv = "";
-                    DataSet dsEmpLocList = objGlobalData.Getdetails("select group_concat(division) as division from t_hr_employee where find_in_set(emp_no,'" + objIssue.reporting_to + "')");
-                    if (dsEmpLocList != null && dsEmpLocList.Tables.Count > 0 && dsEmpLocList.Tables[0].Rows.Count > 0)
-                    {
-                        otherdiv = dsEmpLocList.Tables[0].Rows[0]["division"].ToString();
-                    }
-                    objIssue.branch = objIssue.branch + "," + otherdiv;
-                    objIssue.branch = objIssue.branch.Trim();
-                    objIssue.branch = objIssue.branch.TrimEnd(',');
-                    objIssue.branch = objIssue.branch.TrimStart(',');
-                    List<string> uniques = objIssue.branch.Split(',').Distinct().ToList();
-                    objIssue.branch = string.Join(",", uniques);
-                    objIssue.branch = objIssue.branch.Trim();
-                    objIssue.branch = objIssue.branch.TrimEnd(',');
-                    objIssue.branch = objIssue.branch.TrimStart(',');
-                }
+                //    string otherdiv = "";
+                //    DataSet dsEmpLocList = objGlobalData.Getdetails("select group_concat(division) as division from t_hr_employee where find_in_set(emp_no,'" + objIssue.reporting_to + "')");
+                //    if (dsEmpLocList != null && dsEmpLocList.Tables.Count > 0 && dsEmpLocList.Tables[0].Rows.Count > 0)
+                //    {
+                //        otherdiv = dsEmpLocList.Tables[0].Rows[0]["division"].ToString();
+                //    }
+                //    objIssue.branch = objIssue.branch + "," + otherdiv;
+                //    objIssue.branch = objIssue.branch.Trim();
+                //    objIssue.branch = objIssue.branch.TrimEnd(',');
+                //    objIssue.branch = objIssue.branch.TrimStart(',');
+                //    List<string> uniques = objIssue.branch.Split(',').Distinct().ToList();
+                //    objIssue.branch = string.Join(",", uniques);
+                //    objIssue.branch = objIssue.branch.Trim();
+                //    objIssue.branch = objIssue.branch.TrimEnd(',');
+                //    objIssue.branch = objIssue.branch.TrimStart(',');
+                //}
 
                 string sSqlstmt = "update t_issues set Issue ='" + objIssue.Issue + "', IssueType='" + objIssue.IssueType + "', "
                     + "Impact='" + objIssue.Impact + "',Isostd='" + objIssue.Isostd + "',ImpactDesc='" + objIssue.ImpactDesc + "',Effect='" + objIssue.Effect

@@ -59,6 +59,10 @@ namespace ISOStd.Models
         [Display(Name = "Quantity")]
         public string ppe_qty { get; set; }
 
+        [Display(Name = "PPE Type")]
+        public string ppe_type { get; set; }
+
+
         public string checkEmployeePPEExists(string Receiver_Name)
         {
             try
@@ -98,7 +102,7 @@ namespace ISOStd.Models
             {
                 string sColumn = "", sValues = "";
                 string sSqlstmt = "insert into t_ppe_issuelog (Receiver_Name, Position, Cust_Project_Name, Work_Location, PPE_Issued, "
-                    + " Issued_By, LoggedBy,branch,Department,ppe_detail,ppe_qty";
+                    + " Issued_By, LoggedBy,branch,Department,ppe_detail,ppe_qty,ppe_type";
                 string user = "";               
                 user = objGlobalData.GetCurrentUserSession().empid;
                // string sBranch = objGlobalData.GetCurrentUserSession().division;
@@ -123,7 +127,7 @@ namespace ISOStd.Models
 
                 sSqlstmt = sSqlstmt + sColumn + ") values('" + objPPEIssueLog.Receiver_Name + "','" + objPPEIssueLog.Position
                     + "','" + objPPEIssueLog.Cust_Project_Name + "','" + objPPEIssueLog.Work_Location + "','" + objPPEIssueLog.PPE_Issued + "','" + objPPEIssueLog.Issued_By
-                 + "','" + user + "','" + objPPEIssueLog.branch + "','" + objPPEIssueLog.Department + "','" + objPPEIssueLog.ppe_detail + "','" + objPPEIssueLog.ppe_qty + "'";
+                 + "','" + user + "','" + objPPEIssueLog.branch + "','" + objPPEIssueLog.Department + "','" + objPPEIssueLog.ppe_detail + "','" + objPPEIssueLog.ppe_qty + "','" + ppe_type + "'";
 
                 sSqlstmt = sSqlstmt + sValues + ")";
 
@@ -143,7 +147,7 @@ namespace ISOStd.Models
             {
                 string sSqlstmt = "update t_ppe_issuelog set  Position='" + objPPEIssueLog.Position
                     + "', Cust_Project_Name='" + objPPEIssueLog.Cust_Project_Name + "', Work_Location='" + objPPEIssueLog.Work_Location
-                    + "', PPE_Issued='" + objPPEIssueLog.PPE_Issued + "', Issued_By='" + objPPEIssueLog.Issued_By + "', Department='" + objPPEIssueLog.Department + "', branch='" + objPPEIssueLog.branch + "', ppe_detail='" + objPPEIssueLog.ppe_detail + "', ppe_qty='" + objPPEIssueLog.ppe_qty + "'";
+                    + "', PPE_Issued='" + objPPEIssueLog.PPE_Issued + "', Issued_By='" + objPPEIssueLog.Issued_By + "', Department='" + objPPEIssueLog.Department + "', branch='" + objPPEIssueLog.branch + "', ppe_detail='" + objPPEIssueLog.ppe_detail + "', ppe_qty='" + objPPEIssueLog.ppe_qty + "', ppe_type='" + ppe_type + "'";
 
                 if (objPPEIssueLog.Issue_Date > Convert.ToDateTime("01/01/0001"))
                 {

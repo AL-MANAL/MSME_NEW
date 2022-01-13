@@ -1,0 +1,79 @@
+﻿@model IEnumerable<ISOStd.Models.ExternalAuditorModels>
+
+@{
+    ViewBag.Title = "ExternalAuditorList";
+}
+
+<div class="groupedassets margin10">
+    <span class="groupedassetshead margin10 onestphdcolor">External Auditor List </span>
+</div>
+<div class="ActionLink">@Html.ActionLink("Add New", "AddExternalAuditor", "ExternalAudit", null, new { @class = "ActionLink" })</div>
+<div id="divmsg">
+    @if (TempData["alertdata"] != null)
+    {
+        <span class="errMsg" style="color: red;font-weight: bold;">@TempData["alertdata"]</span>
+        }
+    @if (TempData["Successdata"] != null)
+    {
+        <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+        }
+</div>
+    <br />
+<div id="content">
+    <table id="table1">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Auditor_name)
+
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CertID)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.emailaddress)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PhoneNumber)
+            </th>
+            <th>Action</th>
+        </tr>
+         @if (Model !=null && Model.Count() > 0)
+         {
+        foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @*@Html.ActionLink(item.Auditor_name, "ExternalAuditorDetails", new { AuditNum = item.Auditor_name })*@
+                    @Html.DisplayFor(modelItem => item.Auditor_name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CertID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.emailaddress)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PhoneNumber)
+                </td>
+                <td>
+                    <a href='@Url.Action("ExternalAuditorEdit", "ExternalAudit", new { Auditor_name = item.Auditor_name })' title="Edit External Auditor details">
+                        <span class="glyphicon glyphicon glyphicon-edit iocnstatus-edit"></span></a>
+                   @* |
+             <a href='@Url.Action("ExternalAuditorDelete", "ExternalAudit", new { Auditor_name = item.Auditor_name })'>
+                 <img alt="Cancel" src='@Url.Content("~/Images/cancel.png")' /></a>*@
+                </td>
+            </tr>
+        }
+         }
+        else
+        {
+            <tr>
+                <td colspan="9">
+                    <div style="text-align: center;">
+                        <h4 style="color: grey;">No data exists</h4>
+                    </div>
+                </td>
+            </tr>
+        }
+    </table>
+</div>

@@ -1,0 +1,333 @@
+﻿
+@model ISOStd.Models.SafetyObservationModels
+
+    @{
+        ViewBag.Title = "AddSafetyObservation";
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>            
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("SafetyObservationList", "SafetyObservation", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Safety Observation Card</span>
+                    </a>
+                    <span class="breadcrumb-item active"> Add Safety Observation Card</span>
+                </div>
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+}
+
+
+@using (Html.BeginForm("AddSafetyObservation", "SafetyObservation", FormMethod.Post,
+                         new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Add Safety Observation Card</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+                <table class="table table-lg">
+                    <tbody>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.observation_date)
+                            </td>
+                            <td class="col">
+                                <input class="form-control" type="date" id="observation_date" name="observation_date" required />
+                                <p>
+                                    Hr: @Html.DropDownList("PlanTimeInHour", new SelectList(ViewBag.PlanTimeInHour, "PlanTimeInHour"), new { @class = "select-fixed-single" })
+                                    Min: @Html.DropDownList("PlanTimeInMin", new SelectList(ViewBag.PlanTimeInMin, "PlanTimeInMin"), new { @class = "select-fixed-single" })
+                                </p>
+                            </td>
+
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.type_observation)
+                            </td>
+                            <td class="col">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="type_observation" name="type_observation" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.ObservationType != null)
+                                    {
+                                        foreach (var item in ViewBag.ObservationType)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.desc_observation)<text style="color:red;">*</text>
+                            </td>
+                            <td class="col">
+                                @Html.TextAreaFor(model => model.desc_observation, new { @maxlength = "2000", @placeholder = "Textarea", @style = "overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;", @rows = "4", @cols = "4", @class = "form-control elastic maxlength-badge-position" })
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.action_taken)<text style="color:red;">*</text>
+                            </td>
+                            <td class="col">
+                                @Html.TextAreaFor(model => model.action_taken, new { @maxlength = "2000", @placeholder = "Textarea", @style = "overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;", @rows = "4", @cols = "4", @class = "form-control elastic maxlength-badge-position" })
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.observed_by)
+                                <text style="color:red;">*</text>
+                            </td>
+                            <td class="col">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="observed_by" name="observed_by" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.Observer != null)
+                                    {
+                                        foreach (var item in ViewBag.Observer)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                            </td>
+
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.reported_by)<text style="color:red;">*</text>
+                            </td>
+                            <td class="col">
+                                <input class="form-control" type="text" id="reported_by" name="reported_by" required />
+                            </td>
+                        </tr>
+
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.location)<text style="color:red;">*</text>
+                            </td>
+                            <td class="col">
+                                @*<select class="form-control select-search select2-hidden-accessible" data-fouc id="location" name="location" onchange="getReportNo()" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.Location != null)
+                                    {
+                                        foreach (var item in ViewBag.Location)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>*@
+                                   <input class="form-control" type="text" id="location" name="location" required />
+                            </td>
+
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.project)
+                            </td>
+                            <td class="col">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="project" name="project"  required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.Project != null)
+                                    {
+                                        foreach (var item in ViewBag.Project)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            @*<td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.report_no)
+
+                            </td>
+                            <td class="col">
+
+                                <input class="form-control" type="text" id="report_no" name="report_no" readonly style="background: #efefe6;" />
+
+                            </td>*@
+                            
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.status)
+                            </td>
+                            <td class="col">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="status" name="status" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.Status != null)
+                                    {
+                                        foreach (var item in ViewBag.Status)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                            </td>
+                             <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.target_date)
+                            </td>
+                            <td class="col">
+                                <input class="form-control" type="date" id="target_date" name="target_date" />                            
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.dept)
+                            </td>
+                            <td class="col">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="dept" name="dept">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.Dept != null)
+                                    {
+                                        foreach (var item in ViewBag.Dept)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.resp_person)
+                            </td>
+                            <td class="col">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="resp_person" name="resp_person">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.EmpList != null)
+                                    {
+                                        foreach (var item in ViewBag.EmpList)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.comments)<text style="color:red;">*</text>
+                            </td>
+                            <td class="col">
+                                @Html.TextAreaFor(model => model.comments, new { @maxlength = "2000", @placeholder = "Textarea", @style = "overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;", @rows = "4", @cols = "4", @class = "form-control elastic maxlength-badge-position" })
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.upload)
+                            </td>
+                            <td class="col">
+                                <input type="file" name="upload" id="upload" title="Documents" onchange="FileFormatValidation(this)"
+                                       multiple="multiple" accept=".pdf, .doc, .docx,.xls,.xlsx,image/*" class="bootstrap-uploader" data-fouc />
+                                <span class="form-text text-muted"><code>(Hold Ctrl Key in case of multiple files or drag multiple files and drop here)</code></span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+            @Html.ActionLink("Back to List", "SafetyObservationList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+            <button class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" type="submit" value="Save" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Save</button>
+        </div>
+    </div>
+
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript">
+
+                       //----zzz
+                    $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+                    });
+
+    //zzz----
+         function getReportNo()
+           {
+             var location = $('#location :selected').text();
+             //var project = $('#project :selected').text();
+             if (location != "Select") {
+             jQuery.ajax({
+                    url: '@Url.Action("FunGetReportNo","SafetyObservation")',
+                    type: 'POST',
+                    dataType: "json",
+
+                    data: { 'location': location },
+                    success: function (result) {
+                        document.getElementById("report_no").value = result;
+                    }
+                });
+              }
+           }
+
+
+
+
+            function FileFormatValidation(file) {
+                var ext = file.value.split(".").pop().toLowerCase();
+                if ($.inArray(ext, ["pdf", "xlsx", "xls", "doc", "docx"]) == -1) {
+                    file.value = "";
+                    bootbox.alert({
+                        title: 'File type',
+                        message: 'Invalid file format, please upload only doc, pdf, docx, jpg, jpeg, gif, png format'
+                    });
+                }
+            }
+
+    </script>
+}
+
+
+
+
+

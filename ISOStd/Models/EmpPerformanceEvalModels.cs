@@ -139,6 +139,8 @@ namespace ISOStd.Models
 
         public string Weightage { get; set; }
 
+        public DateTime Date_of_join { get; set; }
+
         internal bool FunDeletePerformanceDoc(string sPerformance_EvalId)
         {
             try

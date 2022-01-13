@@ -1,0 +1,114 @@
+﻿@model IEnumerable<ISOStd.Models.LegalRegisterModel>
+
+@{
+    ViewBag.Title = "LegalRegisterEvaluationList";
+}
+
+<div class="groupedassets margin10">
+    <span class="groupedassetshead margin10 onestphdcolor">Legal Register Evaluation List </span>
+</div>
+
+    <div class = "ActionLink">
+        @Html.ActionLink("Add New", "AddLegalRegisterEvaluation", null,new { id_requirements=ViewBag.id_requirements }, new { @class = "ActionLink", onclick="HyperLinkProgressIconFunction()" })
+        @Html.ActionLink("Back","LegalRegisterDetails", new {   LegalRequirement_Id = ViewBag.LegalRequirement_Id }, new { @class = "ActionLink", onclick="HyperLinkProgressIconFunction()" })
+    </div>
+<div id="divmsg">
+    @if (TempData["alertdata"] != null)
+    {
+        <span class="errMsg" style="color: red;font-weight: bold;">@TempData["alertdata"]</span>
+        }
+    @if (TempData["Successdata"] != null)
+    {
+        <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+        }
+</div>
+    <br /><br />
+<div id="content">
+    <table id="table1">
+        <tr>
+
+            <th>
+                @Html.DisplayNameFor(model => model.LegalRegister_Eval_On)
+            </th>
+             <th>
+                @Html.DisplayNameFor(model => model.Duedate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.comply)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.yes_comply_reason)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.no_comply_reason)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Comply_action)
+            </th>
+             <th>
+                @Html.DisplayNameFor(model => model.personel_responsible)
+            </th>
+                <th>
+                @Html.DisplayNameFor(model => model.Evidence)
+            </th>
+            <th>Action</th>
+        </tr>
+        @if (Model != null && Model.Count() > 0)
+        {
+            foreach (var item in Model)
+            {
+            <tr>
+
+
+                <td>
+                    @*@item.LegalRegister_Eval_On.ToString("dd/MM/yyyy")*@
+                    @Html.Label(item.LegalRegister_Eval_On.ToString("dd/MM/yyyy"))
+                </td>
+                <td>
+                    @Html.Label(item.Duedate.ToString("dd/MM/yyyy"))
+                    @*@Html.DisplayFor(modelItem => item.Duedate)*@
+                </td>
+               
+                <td>
+                    @Html.DisplayFor(modelItem => item.comply)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.yes_comply_reason)
+                </td>
+                  <td>
+                    @Html.DisplayFor(modelItem => item.no_comply_reason)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Comply_action)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.personel_responsible)
+                </td>
+                <td>
+                    @if (item.Evidence != "")
+                        {
+                            <a href='@Url.Action("DisplayDocument", "Reports", new { Document = item.Evidence })' target="_blank">Preview</a> 
+                        }
+                </td>
+                <td>
+                    <a href='@Url.Action("LegalRegisterEvaluationEdit", "LegalRegister", new { legalregister_evaluation_Id = item.legalregister_evaluation_Id })' title="Edit Legal Register Evaluation details"
+                        onclick="HyperLinkProgressIconFunction()">
+                        <span class="glyphicon glyphicon glyphicon-edit iocnstatus-edit" onclick="HyperLinkProgressIconFunction()"></span></a>
+                </td>
+            </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="9">
+                    <div style="text-align: center;">
+                        <h4 style="color: grey;">No data exists</h4>
+                    </div>
+                </td>
+            </tr>
+        }
+
+
+    </table>
+</div>

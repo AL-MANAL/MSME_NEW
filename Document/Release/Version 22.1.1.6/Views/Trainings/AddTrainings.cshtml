@@ -1,0 +1,325 @@
+﻿@model ISOStd.Models.TrainingsModels
+
+@{
+    ViewBag.Title = "";
+ ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+}
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                  <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Home</span>
+                    </a>
+                    <a href="@Url.Action("TrainingsList", "Trainings", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Trainings List</span>
+                    </a>
+                    <span class="breadcrumb-item active">Add Training Request</span>
+                </div>
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            <div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@using (Html.BeginForm("AddTrainings", "Trainings", FormMethod.Post,
+                     new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Add Training Request</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+
+                <table class="table table-lg">
+               <tr class="row">
+  			<td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Training_Topic)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="Training_Topic" name="Training_Topic" multiple required >
+                                    @if (ViewBag.Topics != null)
+                                    {
+                                        foreach (var item in ViewBag.Topics)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                                @Html.ValidationMessageFor(m => m.Training_Topic)
+                            </div>
+                        </td>
+		</tr>
+   		<tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.TopicContent)
+                            </div>
+                        </td>
+                        <td class="col" colspan="3">
+                            <div class="editor-field">
+                                   @Html.TextAreaFor(model => model.TopicContent, new { @id = "editor-full", @rows = "4", @cols = "4" })
+                            </div>
+                        </td>
+                       
+                    </tr>
+  		<tr class="row">
+                     <td class="col-xs-3 col-md-2">
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.DeptId)
+                        </div>
+                    </td>
+                    <td class="col">
+                        <div class="editor-field">
+                            <select class="form-control select-search select2-hidden-accessible" id="DeptId" name="DeptId"  onchange="GetDeptEmployeeList()" multiple>                              
+                                @if (ViewBag.DeptList != null)
+                                {
+                                    foreach (var item in ViewBag.DeptList)
+                                    {
+                                    <option value='@item.Value'>@item.Text</option>
+                                    }
+                                }
+                            </select>
+                            <br />
+                            <span>(Select department to get attendees on right)</span>
+                            <br />
+                            <span><input type="checkbox" value="All" id="chkAll"  name="chkAll" onclick="GetEmployeeList()" title="Select in case to see all records" />All</span>
+                            <span>(Click checkbox to get all the attendees on right)</span>
+                        </div>
+                    </td>
+                 <td class="col-xs-3 col-md-2">
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.Attendees)
+                    </div>
+                </td>
+                <td class="col">
+                    <div class="display-field">
+                        <select class="form-control select-search select2-hidden-accessible" id="Attendees" name="Attendees" required multiple>
+                        
+                        </select>
+                         
+
+                    </div>
+                </td>
+            </tr>
+ 	   <tr class="row">
+                 <td class="col-xs-3 col-md-2">
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.Traning_BeforeDate)<text style="color:red;">*</text>
+                    </div>
+                </td>
+                 <td class="col">
+                    <div class="display-field">
+			<input class="form-control" type="date" id="Traning_BeforeDate" name="Traning_BeforeDate" required />
+                    </div>
+                </td>
+                 <td class="col-xs-3 col-md-2">
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.Reasonfor_Training)
+                    </div>
+                </td>
+                 <td class="col">
+                    <div class="display-field">
+                      <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="Reasonfor_Training" name="Reasonfor_Training"></textarea>                    
+                    </div>
+                </td> 
+           </tr>
+     <tr class="row">
+
+
+                 <td class="col-xs-3 col-md-2">
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.ApprovedBy)<text style="color:red;">*</text>
+                    </div>
+                </td>
+              <td class="col">
+                    <div class="display-field">
+                        <select class="form-control select-search select2-hidden-accessible" id="ApprovedBy" name="ApprovedBy" required>
+                            <option value='' hidden>Select</option>
+                            @if (ViewBag.ApprovedBy != null)
+                            {
+                                foreach (var item in ViewBag.ApprovedBy)
+                                {
+                                    <option value='@item.Value'>@item.Text</option>
+                                }
+                            }
+                        </select>
+  			@Html.ValidationMessageFor(m => m.ApprovedBy)
+                    </div>
+                </td>
+             
+                <td class="col-xs-3 col-md-2">
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.Training_Attended_no)
+                    </div>
+                </td>
+               <td class="col">
+                    <div class="display-field">
+                        @Html.EditorFor(model => model.Training_Attended_no, new { htmlAttributes = new { @class = "form-control"  } })
+                    </div>
+                </td>
+            </tr>
+
+                </table>
+            </div>
+        </div>
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+            @Html.ActionLink("Back to List", "TrainingsList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+
+            <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Add</button>
+        </div>
+    </div>
+        }
+
+
+@section Scripts {
+    <script>       
+
+        CKEDITOR.replace('editor-full', {
+            height: 400,
+            extraPlugins: 'forms'
+        });
+
+        var zz = 1,yy=1;
+        function GetDeptEmployeeList() {
+            zz = 1;
+            yy = 1;
+
+            $("#DeptId").on('select2:select', function (e) {
+                sDept = e.params.data.id;
+              
+                jQuery.ajax({
+                    url: '@Url.Action("FunGetDeptEmpList", "Trainings")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'DeptId': sDept },
+                    success: function (result) {
+                        if (result != null && result.length > 0 && yy==1 ) {
+
+                            $.each(result, function (index, item) {
+                                $("#Attendees").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                                $("#Attendees").trigger('change');
+                                yy--;
+                            });                        
+                        }
+                        else if (yy == 1 && zz==1) {                                
+                                zz--;
+                            bootbox.alert({
+                                title: 'Employee List',
+                                message: 'No Employee exists.'
+                            });                           
+                        }
+                    }
+                });
+            });
+
+            var array = new Array();
+            $("#DeptId").on('select2:unselect', function (e) {
+                sDept = e.params.data.id;               
+                jQuery.ajax({
+                    url: '@Url.Action("FunGetDeptEmpList", "Trainings")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'DeptId': sDept },
+                    success: function (result) {
+                        if (result != null && result.length > 0) {
+                            $.each(result, function (index, item) {
+                                array[index] = item.Value;
+                                $("#Attendees option[value='" + array[index] + "']").remove();
+                                $("#Attendees").trigger('change');
+                            });                         
+                        }
+                    }
+                });
+            });
+        }
+
+         function GetEmployeeList() {
+             if ($("#chkAll").prop('checked')) {
+                 $('#Attendees').val(null).trigger('change');
+                 $('#Attendees').children('option').remove();
+                 $("#Attendees").trigger("change:updated");
+                 $('#DeptId').val('').trigger('change:updated');
+                 $('#DeptId').prop('disabled', true).trigger("change:updated");
+                 var array = new Array();
+                 var x = "";
+                 jQuery.ajax({
+                     url: '@Url.Action("FunAllEmpList", "Trainings")',
+                     type: 'POST',
+                     dataType: "json",
+                     //data: { 'DeptId': Dept },
+                     success: function (result) {
+                         if (result != null) {
+
+                             $.each(result, function (index, item) {
+                                 array[index] = item.Value;
+                                 $("#Attendees").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                                 $("#Attendees").trigger("change:updated");
+                             });
+                             $("#Attendees").val(array);
+                             $("#Attendees").trigger("change:updated");
+                         }
+                         else {
+                            
+                             bootbox.alert({
+                                 title: '',
+                                 message: 'No Employee exists.'
+                             });
+                             return;
+                         }
+                     }
+                 });
+             }
+             else {
+                 $('#Attendees').val(null).trigger('change');
+                 $('#Attendees').children('option').remove();
+                 $("#Attendees").trigger("change:updated");
+                 $('#DeptId').prop('disabled', false).trigger("change:updated");
+             }
+         }
+
+
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}
+

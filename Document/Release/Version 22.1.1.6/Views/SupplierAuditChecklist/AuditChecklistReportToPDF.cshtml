@@ -1,0 +1,303 @@
+﻿@using System.Data
+@using ISOStd.Models;
+@{
+    ViewBag.Title = "AuditChecklistReport";
+    clsGlobal objGlobaldata = new clsGlobal();
+    int iSrno = 0,majorCon=0,minorCon=0,observation=0;
+    ISOStd.Models.SupplierAuditChecklistModels objChecklist = new ISOStd.Models.SupplierAuditChecklistModels();
+    ISOStd.Models.SupplierAuditElementsModels obj = new ISOStd.Models.SupplierAuditElementsModels();
+    ISOStd.Models.clsGlobal objCls = new ISOStd.Models.clsGlobal();
+    
+    if (ViewBag.ChecklistDetails != null)
+    {
+        objChecklist = ViewBag.ChecklistDetails;
+    }
+    
+    DataSet dsItemList = new DataSet();
+    if (ViewBag.AuditElement != null)
+    {
+        dsItemList = ViewBag.AuditElement;
+    }
+
+    DataSet dsrating = new DataSet();
+    if (ViewBag.AuditRating != null)
+    {
+        dsrating = ViewBag.AuditRating;
+    }
+    Layout = "~/Views/Shared/_PrintLayout.cshtml";
+}
+
+<div class="groupedassets margin10">
+    <span class="groupedassetshead margin10 onestphdcolor">Internal Audit Checklist</span>
+</div>
+<br />
+<fieldset>
+    <legend>Intrnalauditchecklist</legend>
+
+    <div>
+        <table style="width: 100%">
+            <tr>
+                <td>
+                    <div class="display-label">
+                       Audit Criteria
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @objChecklist.AuditCriteria
+                    </div>
+                </td>
+                <td>
+                    <div class="display-label">
+                      Audit No
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                       
+                      @objChecklist.AuditNo
+                       
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="display-label">
+                       Business Nature
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @objChecklist.Business
+                    </div>
+                </td>
+                <td>
+                    <div class="display-label">
+                       Department
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @objChecklist.Department
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                 <td>
+                    <div class="display-label">
+                       Supplier
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @objChecklist.Supplier
+                    </div>
+                </td>
+            </tr>
+            <tr>
+
+                <td>
+                    <div class="display-label">
+                        Audit Date
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                           @if (objChecklist.AuditDate != null && objChecklist.AuditDate > Convert.ToDateTime("01/01/0001"))
+                        {
+                            @objChecklist.AuditDate.ToString("dd/MM/yyyy")
+                        }
+                    </div>
+                </td>
+                <td>
+                    <div class="display-label">
+                        Area/Function/Department Audited
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                         @objChecklist.Department
+                    </div>
+                </td>
+            </tr>
+            <tr>
+
+                <td>
+                    <div class="display-label">
+                      Auditor(s)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                          @objChecklist.Auditors
+                    </div>
+                </td>
+                <td>
+                    <div class="display-label">
+                        Auditee(s)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                           @objChecklist.Auditee
+                    </div>
+                </td>
+            </tr>
+             <tr>
+                 <td colspan="4"></td>
+             </tr>
+              
+        </table>
+    </div>
+</fieldset>
+
+@if (dsItemList != null && dsItemList.Tables.Count > 0 && dsItemList.Tables[0].Rows.Count > 0)
+{
+    <div id="Items">
+        <div class="editor-label">
+           
+        </div>
+        <table id="team-list">
+            <tr>
+                <th style="width:10px;min-width:10px; max-width:60px;">Sr.No</th>
+                <th style="width:100px;min-width:100px; max-width:100px;">Element Checked</th>
+                @if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                {
+                    for (int item = 0; item < dsrating.Tables[0].Rows.Count; item++)
+                    {
+                    <th style="background-color: #e5eafe; color: #0099ff;width:5px">
+                        @dsrating.Tables[0].Rows[item]["Options"].ToString()
+                    </th>
+                    }
+               }  
+               <th style="width:100px;min-width:100px; max-width:100px;">Finding Category</th> 
+            </tr>
+            @for (int i = 0; i < dsItemList.Tables[0].Rows.Count; i++)
+            {
+                iSrno = iSrno + 1;
+                <tr>
+                    <td style="width:10px;min-width:10px; max-width:60px;">
+                      @iSrno
+                    </td>
+                     <td style="width:100px;min-width:100px; max-width:100px;">
+                       @obj.GetAuditQuestionNameById(dsItemList.Tables[0].Rows[i]["id_element"].ToString())
+                    </td>
+                  
+                  @if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                {
+                    for (int item = 0; item < dsrating.Tables[0].Rows.Count; item++)
+                    {
+                        if (dsrating.Tables[0].Rows[item]["Options"].ToString() == obj.GetAuditRatingNameById(dsItemList.Tables[0].Rows[i]["id_auditratings"].ToString()))
+                        {
+                        
+                      
+                        <td style="text-align:center; font-size:150%; font-weight:bold; color:green;">&#10004;</td>
+                            if (obj.GetAuditRatingNameById(dsItemList.Tables[0].Rows[i]["id_auditratings"].ToString()) == "Conformance")
+                      {
+                        majorCon++;
+                      }
+                            else if (obj.GetAuditRatingNameById(dsItemList.Tables[0].Rows[i]["id_auditratings"].ToString()) == "Non Conformance")
+                      {
+                      minorCon++;
+                      }
+
+                            else if (obj.GetAuditRatingNameById(dsItemList.Tables[0].Rows[i]["id_auditratings"].ToString()) == "Observation")
+                      {
+                          observation++;
+                      }
+                        }
+                        else
+                        {
+                           <td style="width:100px;min-width:100px; max-width:100px;">
+                       
+                        </td>
+                        }
+                        
+                    
+                    }
+                }
+                     <td style="width:100px;min-width:100px; max-width:100px;">
+                       @objCls.GetAuditFindingCategoryNameById(dsItemList.Tables[0].Rows[i]["finding_cat"].ToString())
+                    </td>  
+                
+                </tr>
+            }
+        </table>
+    </div>
+}
+
+<fieldset>
+     <legend>Intrnalauditchecklist</legend>
+
+    <div>
+
+          <table style="width: 100%">
+            <tr>
+                <td>
+                    <div class="display-label">
+                      Number of Conformances
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @majorCon
+                    </div>
+                </td>
+                </tr>
+              <tr>
+                 <td>
+                    <div class="display-label">
+                      Number of Non Conformances
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @minorCon
+                    </div>
+                </td>
+            </tr>
+               <tr>
+                 <td>
+                    <div class="display-label">
+                      Number of Observations
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @observation
+                    </div>
+                </td>
+            </tr>
+              <tr>
+                   <td colspan="2">
+                    <div class="display-label">
+                     Remarks
+                    </div>
+                    </td>
+                  </tr>
+              <tr>
+                <td colspan="2">
+                    <div class="display-field">
+                         @objChecklist.Remarks
+                    </div>
+                </td>
+              </tr>
+               <tr>
+                   <td colspan="2">
+                    <div class="display-label">
+                     Other Notes
+                    </div>
+                </td>
+                   </tr>
+              <tr>
+                <td colspan="2">
+                    <div class="display-field">
+                         @objChecklist.Notes
+                    </div>
+                </td>
+              </tr>
+              </table>
+    </div>
+</fieldset>
+
+ 

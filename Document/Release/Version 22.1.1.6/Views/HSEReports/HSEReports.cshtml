@@ -1,0 +1,128 @@
+﻿@using System.Data;
+
+@{
+    Layout = "~/Views/Shared/_PrintLayout.cshtml";
+    string sReportType, sYear = "", sMonth="";    
+    if (ViewBag.Report_Type != null && ViewBag.Report_Type != null)
+    {
+        sReportType = ViewBag.Report_Type;
+        HttpContext context = HttpContext.Current;
+        context.Session.Add("ReportType", sReportType);
+    }
+    if (ViewBag.Year_type != null && ViewBag.Year_type != null)
+    {
+        sYear = ViewBag.Year_type;
+        HttpContext context = HttpContext.Current;
+        context.Session.Add("Years", sYear);
+    }
+    if (ViewBag.Months_type != null && ViewBag.Months_type != null)
+    {
+        sMonth = ViewBag.Months_type;
+        HttpContext context = HttpContext.Current;
+        context.Session.Add("Months", sMonth);
+    }
+    
+}
+<div class="groupedassets margin10">
+    <span class="groupedassetshead margin10 onestphdcolor">HSE Report</span>
+</div>
+ <div id="divmsg">
+        @if (TempData["alertdata"] != null)
+        {
+            <span class="errMsg" style="color: red;font-weight: bold;">@TempData["alertdata"]</span>
+        }
+        @if (TempData["Successdata"] != null)
+        {
+            <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+        }
+    </div>
+
+<br />
+
+@using (Html.BeginForm("HSEReports", "HSEReports", FormMethod.Post, new { id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+        <div class="editor-field" style="margin-left: 50px;">
+             
+           <b>Report Type</b>
+            <select id="ReportType" name="ReportType" required style="width: 180px">
+                <option value=''>Select</option>
+                @if (ViewBag.ReportType != null)
+                {
+                    foreach (var item in ViewBag.ReportType)
+                    {
+                        if (item.Text == ViewBag.Report_Type)
+                        {
+                            <option value='@item.Value' selected>@item.Text</option>
+                        }
+                        else
+                        {
+                            <option value='@item.Value'>@item.Text</option>
+                        }
+                    }
+                }
+            </select>  
+           <b>Month</b>
+            <select id="month" name="month" required="required" style="width: 180px">
+                <option value=''>Select</option>
+                @if (ViewBag.Months != null && ViewBag.Months_type != null)
+                {
+                    foreach (var item in ViewBag.Months)
+                    {
+                        if (item == ViewBag.Months_type)
+                        {
+                        <option value='@item' selected>@item</option>
+                        }
+                        else
+                        {
+                        <option value='@item'>@item</option>
+                        }
+                    }
+                }
+                else
+                {
+                foreach (var item in ViewBag.Months)
+                    {
+                       <option value='@item'>@item</option>
+                    }
+                }
+            </select>
+           
+            <b>Year</b>
+            <select id="year" name="year" required="required" style="width: 180px">
+                <option value=''>Select</option>
+                @if (ViewBag.Years != null && ViewBag.Year_type != null)
+                {
+                    foreach (var item in ViewBag.Years)
+                    {
+                        if (item.Text == ViewBag.Year_type)
+                        {
+                            <option value='@item.Value' selected>@item.Text</option>
+                        }
+                        else
+                        {
+                            <option value='@item.Value'>@item.Text</option>
+                        }
+                    }
+                }
+                 else
+                {
+                    foreach (var item in ViewBag.Years)
+                    {
+                       <option value='@item.Value'>@item.Text</option>
+                    }
+                }
+            </select>
+          @*  <button type="submit"id="btn" class="btn btn-info">
+                <span class="glyphicon glyphicon-search"></span>Go
+            </button>*@
+               <input type="submit" value="Generate" onclick="ProgressIconFunction('#form1')"/>
+        </div>
+}
+
+ @if (ViewBag.IframeHSEPerfDisplay == true)
+   {
+     <iframe id="ifrmReportViewer1"  src="~/HSEReport/HSEPerfReport.aspx" style="height:1000px;width:150%" frameborder="1" scrolling="no"></iframe>
+ }

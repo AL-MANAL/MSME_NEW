@@ -30,7 +30,7 @@ namespace ISOStd.Models
         [Display(Name = "Model Number")]
         public string Model_No { get; set; }
                 
-        [Display(Name = "Purpose of Machine")]
+        [Display(Name = "Purpose of Machine/Instrument")]
         public string Equipment_Application { get; set; }
 
         [Required]
@@ -78,6 +78,9 @@ namespace ISOStd.Models
         [Display(Name = "Division")]
         public string branch { get; set; }
 
+        [Display(Name = "Range")]
+        public string eqp_range { get; set; }
+
 
         public DateTime Next_Maint_Date { get; set; }
 
@@ -121,11 +124,11 @@ namespace ISOStd.Models
                 string sCommissioning_Date = objEquipmentModels.Commissioning_Date.ToString("yyyy-MM-dd HH':'mm':'ss");
 
                 string sSqlstmt = "insert into t_equipment (Equipment_serial_no, Equipment_Name, Equipment_Application, Source_of_calibration, Freq_of_calibration, "
-                    + "Commissioning_Date, Manufacturer, Equipment_status, Model_No,Department,DocUploadPath,RespPerson,equp_type,branch,location,Equipment_location)"
+                    + "Commissioning_Date, Manufacturer, Equipment_status, Model_No,Department,DocUploadPath,RespPerson,equp_type,branch,location,Equipment_location,eqp_range)"
                 + " values('" + objEquipmentModels.Equipment_serial_no + "','" + objEquipmentModels.Equipment_Name + "','" + objEquipmentModels.Equipment_Application
                 + "','" + objEquipmentModels.Source_of_calibration + "','" + objEquipmentModels.Freq_of_calibration + "','" + sCommissioning_Date + "','"
                 + objEquipmentModels.Manufacturer + "','" + objEquipmentModels.Equipment_status + "','" + objEquipmentModels.Model_No + "','" + objEquipmentModels.Department + "'"
-                + ",'" + objEquipmentModels.DocUploadPath + "','" + objEquipmentModels.RespPerson + "','" + objEquipmentModels.equp_type + "','" + objEquipmentModels.branch + "','" + objEquipmentModels.location + "','" + objEquipmentModels.Equipment_location + "')";
+                + ",'" + objEquipmentModels.DocUploadPath + "','" + objEquipmentModels.RespPerson + "','" + objEquipmentModels.equp_type + "','" + objEquipmentModels.branch + "','" + objEquipmentModels.location + "','" + objEquipmentModels.Equipment_location + "','" + eqp_range + "')";
 
 
                 int Equipment_Id = 0;
@@ -240,7 +243,7 @@ namespace ISOStd.Models
                     + "', Commissioning_Date='" + sCommissioning_Date + "', Manufacturer='" + objEquipmentModels.Manufacturer
                     + "', Equipment_status='" + objEquipmentModels.Equipment_status + "', Model_No='" + objEquipmentModels.Model_No
                     + "', Department='" + objEquipmentModels.Department + "', RespPerson='" + objEquipmentModels.RespPerson + "', equp_type='" + objEquipmentModels.equp_type
-                    + "', location='" + objEquipmentModels.location + "', branch='" + objEquipmentModels.branch + "', Equipment_location='" + objEquipmentModels.Equipment_location + "'";
+                    + "', location='" + objEquipmentModels.location + "', branch='" + objEquipmentModels.branch + "', Equipment_location='" + objEquipmentModels.Equipment_location + "', eqp_range='" + eqp_range + "'";
 
                 if (objEquipmentModels.DocUploadPath != null && objEquipmentModels.DocUploadPath != "")
                 {
@@ -363,7 +366,7 @@ namespace ISOStd.Models
         {
             try
             {
-                string sSqlstmt = "select Equipment_Id from t_equipment where Equipment_serial_no='" + serial_no + "'";
+                string sSqlstmt = "select Equipment_Id from t_equipment where Equipment_serial_no='" + serial_no + "' and active=1";
                 DataSet dsEmp = objGlobalData.Getdetails(sSqlstmt);
                 if (dsEmp.Tables.Count > 0 && dsEmp.Tables[0].Rows.Count > 0)
                 {

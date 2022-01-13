@@ -1,0 +1,359 @@
+﻿@model ISOStd.Models.TUVSupplierModels
+
+@{
+    ViewBag.Title = "SupplierEdit";
+}
+
+<div class="groupedassets margin10">
+    <span class="groupedassetshead margin10 onestphdcolor">Edit Supplier Details</span>
+</div>
+ <div id="divmsg">
+        @if (TempData["alertdata"] != null)
+        {
+            <span class="errMsg" style="color: red;font-weight: bold;">@TempData["alertdata"]</span>
+        }
+        @if (TempData["Successdata"] != null)
+        {
+            <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+        }
+    </div>
+
+@using (Html.BeginForm("SupplierEdit", "TUV", FormMethod.Post,
+                         new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+ {
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <fieldset>
+        <legend>SupplierModels</legend>
+
+         <div id="content">
+             <input type="hidden" name="SupplierId" id="SupplierId" value="@Model.SupplierId" />
+               <input type="hidden" name="id_project" id="id_project" value="@Model.id_project" />
+            <table id="tabcontent">
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.SupplierCode)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                             <input type="text" id="SupplierCode" name="SupplierCode" value="@Model.SupplierCode" />
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.SupplierName)<text style="color:red;"> *</text>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            @Html.DisplayFor(model => model.SupplierName)
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                      <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.RefNo)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <input type="text" id="RefNo" name="RefNo" value="@Model.RefNo" />
+                        </div>
+                    </td>
+                     <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Supplier_type)
+                        </div>
+                    </td>
+                       <td>
+                         <div class="editor-field">
+                            <select id="Supplier_type" name="Supplier_type" >
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.SupplierType != null)
+                                {
+                                    foreach (var item in ViewBag.SupplierType)
+                                    {
+                                        if(item.Text==Model.Supplier_type)
+                                        {
+                                         <option value='@item.Value' selected>@item.Text</option>
+                                        }
+                                        else{
+                                         <option value='@item.Value'>@item.Text</option>
+                                        }
+                                   
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Country)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.Country)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.City)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.City)
+                        </div>
+                    </td>
+                    
+                </tr>
+
+                 <tr>
+                     <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.ContactPerson)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                             @Html.EditorFor(model => model.ContactPerson)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.ContactNo)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.ContactNo)
+                        </div>
+                    </td>
+                   
+                </tr>
+
+                 <tr>
+                      <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Address)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                             @Html.TextAreaFor(model => model.Address)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.FaxNo)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.FaxNo)
+                        </div>
+                    </td>
+                    
+                </tr>
+
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.PO_No)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                             @Html.EditorFor(model => model.PO_No)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.SupplyScope)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                           <textarea id="SupplyScope" name="SupplyScope" required>@Model.SupplyScope</textarea>
+                        </div>
+                    </td>
+                   
+                </tr>
+                <tr>
+                     <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.ApprovalCriteria)<text style="color:red;">*</text>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                             <select class="chosen-select" id="ApprovalCriteria" name="ApprovalCriteria" required multiple style="height:100px;width:200px">
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.ApprovalCriteria != null)
+                                {
+                                    foreach (var item in ViewBag.ApprovalCriteria)
+                                    {
+                                        if (Model.ApprovalCriteria.Contains(item.Text))
+                                        {
+                                            <option value='@item.Value' selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                             <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.SupportingDoc)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                           
+                        <input type="file" name="SupportingDoc" id="SupportingDoc" title="Documents" onchange="FileFormatValidation(this)"
+                            multiple="multiple" accept=".pdf, .doc, .docx,image/*" style="height: 38px;"  />
+
+                        <p style="font-size: 11px; margin: 0px;">(Hold Ctrl Key in case of multiple files)</p>
+                             @if (Model.SupportingDoc != null && Model.SupportingDoc != "" && Model.SupportingDoc.Length > 0)
+                        {
+                            <div class="editor-label">
+                                <p style="font-weight: bold; margin: 0px;">Document List:</p>
+                            </div>
+                            <p style="font-size: 11px; margin: 0px; color: red;">(Uncheck in case to remove a uploaded file)</p>
+                            foreach (var docs in Model.SupportingDoc.Trim(',').Split(','))
+                            {
+                            <p style="margin: 0px;">
+                                <input type="checkbox" id="QCDocsVal" name="QCDocsVal" class="QCDocsVal" value="@docs.Trim(',')" checked title="Uncheck in case to remove a uploaded file"/>
+                                 <input type="hidden" id="QCDocsValselectall" name="QCDocsValselectall" />
+                                <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" style="color: orange;">
+                                 @System.IO.Path.GetFileName(docs)</a>
+                            </p>
+                            }
+                        }
+                        </div>
+                    </td>
+                   
+                </tr>
+
+                <tr>
+                    
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Remarks)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <textarea id="Remarks" name="Remarks">@Model.Remarks</textarea>
+                        </div>
+                    </td>
+                    
+                </tr>
+                <tr>
+                     <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Email)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <textarea id="Email" name="Email">@Model.Email</textarea>
+                        </div>
+                    </td>
+                       <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.VatNo)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                             @Html.EditorFor(model => model.VatNo)
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Payment_term)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <select id="Payment_term" name="Payment_term" >
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.paymentTerm != null)
+                                {
+                                    foreach (var item in ViewBag.paymentTerm)
+                                    {
+                                        if(item.Text==Model.Payment_term)
+                                        {
+                                        <option value='@item.Value' selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                        <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <br />
+        <div style="width: 100%; text-align: center;">
+            @Html.ActionLink("Back to List", "SupplierList", new { id_project=Model.id_project}, new { @class = "ActionLink", onclick = "HyperLinkProgressIconFunction()" })
+            <input type="submit" value="Update" onclick="ProgressIconFunction('#form1')"/>
+        </div>
+    </fieldset>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript">
+
+        $(function () {
+            $("#ApprovalCriteria").chosen();
+            $("#ApprovedBy").chosen();
+            $.validator.setDefaults({ ignore: ":hidden:not('.chosen-select')" });
+
+        });
+
+        function FileFormatValidation(file) {
+            var ext = file.value.split(".").pop().toLowerCase();
+            if ($.inArray(ext, ["doc", "pdf", "docx", "jpg", "jpeg", "gif", "png"]) == -1) {
+                file.value = "";
+                jAlert("Invalid file format, please upload only doc, pdf, docx, jpg, jpeg, gif, png format");
+            }
+        }
+        $(function () {
+
+            $("#QCDocsVal").click(function () {
+                if ($("#QCDocsVal").prop('checked')) {
+                    {
+                        $(this).prop('checked', true);
+                    }
+                }
+                else {
+
+                    $(this).prop('checked', false);
+                    document.getElementById("QCDocsValselectall").value = "DeleteQC";
+                }
+
+            });
+        });
+    </script>
+}

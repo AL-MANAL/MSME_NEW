@@ -1,0 +1,306 @@
+﻿@using PagedList;
+@using PagedList.Mvc;
+
+
+@model IPagedList<ISOStd.Models.EmmetModels>
+    @{
+        ViewBag.Title = "";
+        string chked = Convert.ToString(ViewBag.chkAll);
+    }
+
+    <div class="groupedassets margin10">
+        <span class="groupedassetshead margin10 onestphdcolor">Log</span>
+    </div>
+
+    <br />
+   
+    <div id="divmsg">
+        @if (TempData["alertdata"] != null)
+        {
+            <span class="errMsg" style="color: red;font-weight: bold;">@TempData["alertdata"]</span>
+        }
+        @if (TempData["Successdata"] != null)
+        {
+            <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+        }
+    </div>
+ 
+    @Html.PagedListPager(Model, page => Url.Action("LogList",
+            new
+            {
+                page,
+                Approvestatus = Request.QueryString["Approvestatus"],
+                SearchText = Request.QueryString["SearchText"],
+
+            }),
+            new PagedListRenderOptions() { Display = PagedListDisplayMode.IfNeeded, DisplayPageCountAndCurrentLocation = true })
+
+@using (Html.BeginForm("LogList", "Emmet", FormMethod.Post, new { id = "form1", name = "form1" }))
+{
+    <div>
+       <input type="hidden" id="chkdAll" name="chkdAll" value="@chked" />
+        <span id="tab" style="color: #31b0d5; padding-right: 5px; padding-left: 50px; font-weight: bold;">
+            <input type="checkbox" value="All" id="chkAll" name="chkAll" title="Select in case to see all records" />All
+        </span>
+       <span style="margin-left: 20px"><b style="color: #31b0d5;">Category</b></span>
+        <select id="category" name="category" style="width:150px" onchange="GetMaterialList()">
+            <option value='' hidden>Select</option>
+            @if (ViewBag.CategoryList != null && ViewBag.CategoryListval != null)
+            {
+                foreach (var item in ViewBag.CategoryList)
+                {
+                    if (item.Value == ViewBag.CategoryListval)
+                    {
+                        <option value='@item.Value' selected>@item.Text</option>
+                    }
+                    else
+                    {
+                        <option value='@item.Value'>@item.Text</option>
+                    }
+                }
+            }
+            else
+            {
+                foreach (var item in ViewBag.CategoryList)
+                {
+                    <option value='@item.Value'>@item.Text</option>
+                }
+            }
+        </select>
+        <span style="margin-left: 20px"><b style="color: #31b0d5;">Material</b></span>
+        <select id="material" name="material" style="width:150px">
+            <option value='' hidden>Select</option>
+           @if (ViewBag.MaterialList != null && ViewBag.MaterialListval != null)
+            {
+                foreach (var item in ViewBag.MaterialList)
+                {
+                    if (item.Value == ViewBag.MaterialListval)
+                    {
+                        <option value='@item.Value' selected>@item.Text</option>
+                    }
+                    else
+                    {
+                        <option value='@item.Value'>@item.Text</option>
+                    }
+                }
+            }
+         
+        </select>
+
+        <span style="margin-left: 20px"><b style="color: #31b0d5;">Operation Type</b></span>
+          <select id="op_type" name="op_type" style="width:150px">
+            <option value='' hidden>Select</option>
+            @if (ViewBag.Type != null && ViewBag.Typeval != null)
+            {
+                foreach (var item in ViewBag.Type)
+                {
+                    if (item == ViewBag.Typeval)
+                    {
+                        <option value='@item' selected>@item</option>
+                    }
+                    else
+                    {
+                        <option value='@item'>@item</option>
+                    }
+                }
+            }
+            else
+            {
+                foreach (var item in ViewBag.Type)
+                {
+                    <option value='@item'>@item</option>
+                }
+            }
+        </select>
+        <button type="submit" class="btn btn-info" onclick="ProgressIconFunction('#form1')">
+            <span class="glyphicon glyphicon-search"></span>Search
+        </button>
+       
+       
+    </div>
+}
+ <br />
+    <br />
+
+    <div id="content">
+        <table id="table1">
+            <thead>
+                @if (Model != null && Model.Count() > 0)
+                {
+                <tr>
+                    <th style="width:40px;min-width:40px; max-width:100px;">
+                        Sl No
+                    </th>
+                     <th style="width:150px;min-width:150px; max-width:150px;">
+                        @Html.DisplayNameFor(model => model.First().tran_date)
+                    </th>
+                 <th style="width:150px;min-width:150px; max-width:150px;">
+                        @Html.DisplayNameFor(model => model.First().jobno)
+                    </th>
+                    <th style="width:150px;min-width:150px; max-width:150px;">
+                        @Html.DisplayNameFor(model => model.First().po)
+                    </th>
+                    <th style="width:150px;min-width:150px; max-width:150px;">
+                        @Html.DisplayNameFor(model => model.First().po_upload)
+                    </th>
+                      <th style="width:150px;min-width:150px; max-width:150px;">
+                        @Html.DisplayNameFor(model => model.First().mtc_upload)
+                    </th>
+                      <th style="width:150px;min-width:150px; max-width:150px;">
+                        @Html.DisplayNameFor(model => model.First().empid)
+                    </th>   
+                     <th style="width:150px;min-width:150px; max-width:150px;">
+                        @Html.DisplayNameFor(model => model.First().category)
+                    </th>
+                     <th style="width:150px;min-width:150px; max-width:150px;">
+                        @Html.DisplayNameFor(model => model.First().material)
+                    </th>
+                     <th style="width:150px;min-width:150px; max-width:150px;">
+                        @Html.DisplayNameFor(model => model.First().qty)
+                    </th>
+                     <th style="width:150px;min-width:150px; max-width:150px;">
+                        @Html.DisplayNameFor(model => model.First().op_type)
+                    </th>
+                    
+               
+                </tr>
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="11">
+                            <div style="text-align: center;">
+                                <h4 style="color: grey;">No data exists</h4>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Count() > 0)
+                {
+                    int i = 0;
+                    foreach (var item in Model)
+                    {
+                        i = i + 1;
+                <tr>
+                    <td style="width:40px;min-width:40px; max-width:100px;">
+                         @i
+                    </td>
+                     <td style="width:150px;min-width:150px; max-width:150px;word-wrap:break-word">
+                         @if (item.tran_date != null && item.tran_date > Convert.ToDateTime("01/01/0001"))
+                        {
+                            @Html.Label(item.tran_date.ToString("dd/MM/yyyy"))
+                        }
+                    </td>
+                     <td style="width:150px;min-width:150px; max-width:150px;word-wrap:break-word">
+                         @Html.DisplayFor(modelItem => item.jobno)
+                    </td>
+                       <td style="width:150px;min-width:150px; max-width:150px;word-wrap:break-word">
+                         @Html.DisplayFor(modelItem => item.po)
+                    </td>
+                     <td style="width:150px;min-width:150px; max-width:150px;word-wrap:break-word">
+                         @if (item.po_upload != null && item.po_upload != "" && item.po_upload.Length > 0)
+                         {
+                                foreach (var docs in item.po_upload.Trim(',').Split(','))
+                                {
+                                    <p style="margin: 0px;">
+
+                                        <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" style="color: orange;">
+                                           Preview
+                                        </a>
+                                    </p>
+                                    <br />
+                                }
+                         }
+                    </td>
+                      <td style="width:150px;min-width:150px; max-width:150px;word-wrap:break-word">
+                         @if (item.mtc_upload != null && item.mtc_upload != "" && item.mtc_upload.Length > 0)
+                         {
+                                foreach (var docs in item.mtc_upload.Trim(',').Split(','))
+                                {
+                                    <p style="margin: 0px;">
+
+                                        <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" style="color: orange;">
+                                           Preview
+                                        </a>
+                                    </p>
+                                    <br />
+                                }
+                            }
+                    </td>
+                      <td style="width:150px;min-width:150px; max-width:150px;word-wrap:break-word">
+                         @Html.DisplayFor(modelItem => item.empid)
+                    </td>
+                      <td style="width:150px;min-width:150px; max-width:150px;word-wrap:break-word">
+                         @Html.DisplayFor(modelItem => item.category)
+                    </td>
+                      <td style="width:150px;min-width:150px; max-width:150px;word-wrap:break-word">
+                         @Html.DisplayFor(modelItem => item.material)
+                    </td>
+                      <td style="width:150px;min-width:150px; max-width:150px;word-wrap:break-word">
+                         @Html.DisplayFor(modelItem => item.qty)
+                    </td>
+                      <td style="width:150px;min-width:150px; max-width:150px;word-wrap:break-word">
+                         @Html.DisplayFor(modelItem => item.op_type)
+                    </td>
+                   
+                </tr>
+                    }
+                }
+
+            </tbody>
+        </table>
+    </div>
+    @Styles.Render("~/Content/popover")
+    @section scripts {
+
+        <script type="text/javascript">
+         
+            $(function () {
+                $("#material").chosen();
+                $("#category").chosen();
+                $("#op_type").chosen();
+            });
+      
+            function GetMaterialList() {
+                var category = $('#category').chosen().val();
+                jQuery.ajax({
+                    url: '@Url.Action("FunGetMaterialList", "Emmet")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'category': category },
+                    success: function (result) {
+
+                        if (result != null && result.length > 0) {
+
+
+                            $('#material').children('option').remove();
+                            $("#material").trigger("chosen:updated");
+                            $("#material").append("<option value=''>" + "Select" + "</option>");
+                            $.each(result, function (index, item) {
+
+                                $("#material").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                                $("#material").trigger("chosen:updated");
+
+                            });
+                            $('#material').trigger('change');
+                            return;
+                        }
+                        else {
+                            jAlert("No Material exists.");
+                            $('#material').children('option').remove();
+                            $("#material").trigger("chosen:updated");
+                            return;
+                        }
+                    }
+                });
+            }
+
+        </script>
+        @Scripts.Render("~/bundles/jqueryval")
+    }
+
+
+
+

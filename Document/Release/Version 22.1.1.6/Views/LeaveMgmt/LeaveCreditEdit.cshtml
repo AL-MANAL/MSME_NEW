@@ -1,0 +1,180 @@
+﻿@model ISOStd.Models.LeaveMgmtModels
+
+@{
+    ViewBag.Title = "";
+}
+
+<div style="max-width: 80%; padding-left: 200px;">
+
+    <div class="groupedassets margin10">
+        <span class="groupedassetshead margin10 onestphdcolor">Edit Annual Leave Credit</span>
+    </div>
+
+    <div id="divmsg">
+        @if (TempData["alertdata"] != null)
+        {
+            <span class="errMsg" style="color: red; font-weight: bold;">@TempData["alertdata"]</span>
+        }
+        @if (TempData["Successdata"] != null)
+        {
+            <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+        }
+    </div>
+
+    @using (Html.BeginForm("LeaveCreditEdit", "LeaveMgmt", FormMethod.Post,
+                         new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true)
+
+        <fieldset>
+            <legend></legend>      
+            <input type="hidden" id="id_leave_credit" name="id_leave_credit" value="@Model.id_leave_credit" />    
+            <input type="hidden" id="syear" name="syear" value="@Model.syear" />  
+            <table id="tabcontent">
+                <tr>
+                    <td colspan="2">
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.syear)<text style="color: red;">*</text>
+                        </div>
+                    </td>
+                    <td colspan="2">
+                        <div class="editor-field">
+                           @Html.DisplayFor(model => model.syear)
+                        </div>
+                    </td>         
+                </tr>
+                <tr>
+                     <td colspan="2">
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.annual_leave)<text style="color: red;">*</text>
+                        </div>
+                    </td>
+                    <td colspan="2">
+                        <div class="editor-field">
+                             @if (Model.annual_leave > 0)
+                             {
+                                  <input type="number" id="annual_leave" name="annual_leave" value="@Model.annual_leave" required />
+                             }
+                            else
+                             {
+                                  <input type="number" id="annual_leave" name="annual_leave"  required />
+                             }
+                            
+                        </div>
+                    </td>  
+                </tr>
+                <tr>
+                     <td colspan="2">
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.sick_leave)
+                        </div>
+                    </td>
+                    <td colspan="2">
+                        <div class="editor-field">
+                           @if (Model.sick_leave > 0)
+                             {
+                                  <input type="number" id="sick_leave" name="sick_leave" value="@Model.sick_leave" />
+                             }
+                            else
+                             {
+                                  <input type="number" id="sick_leave" name="sick_leave" />
+                             }
+                        </div>
+                    </td>  
+                </tr>
+                <tr>
+                     <td colspan="2">
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.other_leave)
+                        </div>
+                    </td>
+                    <td colspan="2">
+                        <div class="editor-field">
+                              @if (Model.other_leave > 0)
+                             {
+                                  <input type="number" id="other_leave" name="other_leave" value="@Model.other_leave"  />
+                             }
+                            else
+                             {
+                                  <input type="number" id="other_leave" name="other_leave"  />
+                             }
+                        </div>
+                    </td>  
+                </tr>
+                <tr>
+                     <td colspan="2">
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.carry_leave)
+                        </div>
+                    </td>
+                    <td colspan="2">
+                        <div class="editor-field">
+                              @if (Model.other_leave > 0)
+                             {
+                                  <input type="number" id="carry_leave" name="carry_leave"  value="@Model.carry_leave"  />
+                             }
+                            else
+                             {
+                                  <input type="number" id="carry_leave" name="carry_leave"   />
+                             }
+                        </div>
+                    </td>  
+                </tr>
+            </table>
+        </fieldset>
+    
+        <div style="width: 100%; text-align: center;">
+            @Html.ActionLink("Back to List", "LeaveCreditList", null, new { Class = "ActionLink", onclick = "HyperLinkProgressIconFunction()" })
+            <input type="submit" value="Update" onclick="ProgressIconFunction('#form1')" />
+        </div>
+    }
+
+</div>
+@section Scripts {
+    <script>
+    
+        $(function () {
+            //$("#syear").chosen();      
+            $.validator.setDefaults({ ignore: ":hidden:not('.chosen-select')" });
+
+            $('#annual_leave').on('change keyup', function () {
+                var sanitized = $(this).val().replace(/[^0-9]/g, '');
+                $(this).val(sanitized);
+            });
+
+            $('#sick_leave').on('change keyup', function () {
+                var sanitized = $(this).val().replace(/[^0-9]/g, '');
+                $(this).val(sanitized);
+            });
+
+            $('#other_leave').on('change keyup', function () {
+                var sanitized = $(this).val().replace(/[^0-9]/g, '');
+                $(this).val(sanitized);
+            });
+
+            $('#carry_leave').on('change keyup', function () {
+                var sanitized = $(this).val().replace(/[^0-9]/g, '');
+                $(this).val(sanitized);
+            });
+        });
+
+        function checkYear() {
+            var syear = $('#syear').chosen().val();
+            jQuery.ajax({
+                url: '@Url.Action("doesYearExists", "LeaveMgmt")',
+                  type: 'POST',
+                  dataType: "json",
+                  data: { 'syear': syear },
+                  success: function (result) {
+                      if(result == false)
+                      {
+                          jAlert("Leave credit already exists for this year");
+                          $("#syear").val('').trigger("chosen:updated");
+                      }
+                  }
+              });
+        }
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

@@ -502,6 +502,7 @@ namespace ISOStd.Controllers
                                 action_taken = dsIssueList.Tables[0].Rows[0]["action_taken"].ToString(),
                                 status_notifiedto = objGlobaldata.GetMultiHrEmpNameById(dsIssueList.Tables[0].Rows[0]["status_notifiedto"].ToString()),
                                 status_upload = dsIssueList.Tables[0].Rows[0]["status_upload"].ToString(),
+                                reporting_to_div =objGlobaldata.GetDeptNameById(objGlobaldata.GetDeptIdByHrEmpId(dsIssueList.Tables[0].Rows[0]["reporting_to"].ToString())),
                             };
                             DateTime dtValue;
                             if (DateTime.TryParse(dsIssueList.Tables[0].Rows[0]["issue_date"].ToString(), out dtValue))

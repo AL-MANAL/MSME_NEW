@@ -3129,7 +3129,19 @@ namespace ISOStd.Controllers
                         objModels.Date_of_join = dtValue;
                     }
 
-                }
+                    sSqlstmt = "select academic_mandatory,experience_mandatory,trainings_mandatory,skills_mandatory from t_jd where designation_id='"+ objModels .Designation+ "'";
+                    dsList = objGlobaldata.Getdetails(sSqlstmt);
+                    if (dsList.Tables.Count > 0 && dsList.Tables[0].Rows.Count > 0)
+                    {
+
+
+                        objModels.academic_mandatory = (dsList.Tables[0].Rows[0]["academic_mandatory"].ToString());
+                        objModels.experience_mandatory = (dsList.Tables[0].Rows[0]["experience_mandatory"].ToString());
+                        objModels.trainings_mandatory = (dsList.Tables[0].Rows[0]["trainings_mandatory"].ToString());
+                        objModels.skills_mandatory = (dsList.Tables[0].Rows[0]["skills_mandatory"].ToString());
+
+                    }
+                    }
                 return Json(objModels);
             }
             catch (Exception ex)

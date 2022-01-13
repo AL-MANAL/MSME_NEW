@@ -1,0 +1,564 @@
+﻿@model ISOStd.Models.AuditProcessModels
+@using System.Data
+
+@{
+    ViewBag.Title = "";
+
+    DataSet dsAudit = ViewBag.dsAudit;
+    DataSet dsCert = ViewBag.dsCert;
+
+    ISOStd.Models.clsGlobal obj = new ISOStd.Models.clsGlobal();
+}
+
+@section featured {
+    <div class="page-header page-header-light">
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("AuditorDetailList", "AuditProcess", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Auditor List</span>
+                    </a>
+                    <span class="breadcrumb-item active">Auditor Detail</span>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+}
+
+<style>
+    .hidden {
+        display: none !important;
+    }
+</style>
+<div class="card">
+    <div class="card-header header-elements-inline bg-primary">
+        <h5 class="card-title">Auditor Detail</h5>
+        <div class="header-elements">
+            <div class="list-icons">
+                <a class="list-icons-item" data-action="collapse"></a>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <div class="container-fluid">
+            <table class="table table-dark table-bordered table-striped table-hover bg-blue-800">
+                <thead></thead>
+                <tbody>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.auditor_no)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.auditor_no)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.updated_on)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @if (Model.updated_on != null && Model.updated_on > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    @Html.Label(Model.updated_on.ToString("dd/MM/yyyy"))
+                                }
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.auditor_name)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.auditor_name)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                Directorate
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.branch)
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                Group
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.group_name)
+                            </p>
+                        </td>
+                        @*<td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                Team
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.team)
+                            </p>
+                        </td>*@
+                    </tr>
+                  
+                </tbody>
+            </table>
+            <br />
+            <h2 class="bg-dark pl-sm-2">Competence Details</h2>
+            <table class="table table-dark table-bordered table-striped table-hover bg-blue-800">
+                <thead></thead>
+                <tbody>
+              
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.qualification)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.qualification)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.years_exp)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.years_exp)
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.trainings_completed)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.trainings_completed)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                Certificate(s)
+                            </p>
+                        </td>
+                        <td class="col">
+                           
+                                @if (Model.upload_cetificate != null && Model.upload_cetificate != "" && Model.upload_cetificate.Length > 0)
+                                {
+                                    foreach (var docs in Model.upload_cetificate.Trim(',').Split(','))
+                                    {
+                                    <p style="margin: 0px;">
+
+                                        <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" style="color: orange;">
+                                            Preview
+                                        </a>
+                                    </p>
+                                    <br />
+                                    }
+                                }
+                           
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <br />
+            @if (dsCert != null && dsCert.Tables.Count > 0 && dsCert.Tables[0].Rows.Count > 0)
+            {
+                <h2 class="bg-dark pl-sm-2">LA Certificates</h2>
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr class="bg-brown">
+                                <th>Sl No</th>
+                                <th>ISO Standards</th>
+                                <th>Type of Course Completed</th>
+                                <th>Course Completed On</th>
+                                <th>Years of Auditing Experience</th>
+                                <th>Certificate(s)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0, j = 1; i < dsCert.Tables[0].Rows.Count; i++, j++)
+                            {
+
+                                <tr>
+                                    <td>
+                                        @j
+                                    </td>
+                                    <td>
+                                        @obj.GetIsoStdNameById(dsCert.Tables[0].Rows[i]["standards"].ToString())
+                                    </td>
+                                    <td>
+                                        @obj.GetAuditorTypeOfCourseById(dsCert.Tables[0].Rows[i]["type_course"].ToString())
+                                    </td>
+                                    <td>
+                                        @if (dsCert.Tables[0].Rows[i]["completed_on"].ToString() != "" && dsCert.Tables[0].Rows[i]["completed_on"].ToString() != null)
+                                        {
+                                            @Convert.ToDateTime(dsCert.Tables[0].Rows[i]["completed_on"].ToString()).ToString("dd/MM/yyyy")
+                                        }
+                                    </td>
+                                    <td>
+                                        @dsCert.Tables[0].Rows[i]["yearsexp"].ToString()
+                                    </td>
+                                    <td>
+                                        @if (dsCert.Tables[0].Rows[i]["upload"].ToString() != null && dsCert.Tables[0].Rows[i]["upload"].ToString() != "" && dsCert.Tables[0].Rows[i]["upload"].ToString().Length > 0)
+                                        {
+                                            foreach (var docs in dsCert.Tables[0].Rows[i]["upload"].ToString().Trim(',').Split(','))
+                                            {
+                                                <p style="margin: 0px;">
+
+                                                    <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" style="color: orange;">
+                                                        Preview
+                                                    </a>
+                                                </p>
+                                                <br />
+                                            }
+                                        }
+                                    </td>
+                                 
+                                </tr>
+                            }
+
+                        </tbody>
+                    </table>
+                </div>
+            }
+                <br />
+            @if (dsAudit != null && dsAudit.Tables.Count > 0 && dsAudit.Tables[0].Rows.Count > 0)
+            {
+                <h2 class="bg-dark pl-sm-2">Auditor Non Availability Dates</h2>
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr class="bg-brown">
+                                <th>Sl No</th>
+                                <th>From Date</th>
+                                <th>To Date</th>
+                                <th>Comments</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0, j = 1; i < dsAudit.Tables[0].Rows.Count; i++, j++)
+                            {
+
+                                <tr>
+                                    <td>
+                                        @j
+                                    </td>
+                                    <td>
+                                        @if (dsAudit.Tables[0].Rows[i]["from_date"].ToString() != "" && dsAudit.Tables[0].Rows[i]["from_date"].ToString() != null)
+                                        {
+                                            @Convert.ToDateTime(dsAudit.Tables[0].Rows[i]["from_date"].ToString()).ToString("dd/MM/yyyy")
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (dsAudit.Tables[0].Rows[i]["to_date"].ToString() != "" && dsAudit.Tables[0].Rows[i]["to_date"].ToString() != null)
+                                        {
+                                            @Convert.ToDateTime(dsAudit.Tables[0].Rows[i]["to_date"].ToString()).ToString("dd/MM/yyyy")
+                                        }
+                                    </td>
+                                    <td>
+                                        @dsAudit.Tables[0].Rows[i]["comments"].ToString()
+                                    </td>
+                                </tr>
+                            }
+
+                        </tbody>
+                    </table>
+                </div>
+
+
+            }
+</div>
+       
+    </div>
+</div>
+@section Scripts {
+    <script type="text/javascript">
+        //----zzz
+
+
+        $(document).ready(function () {
+
+            @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+                                        @:     text: '@TempData["alertdata"]',
+                                        @:     type: 'error'
+                                        @:}).show();
+        }
+
+            @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+                                @:       text: '@TempData["Successdata"]',
+                                @:       type: 'success'
+                                @: }).show();
+        }
+        });
+
+        //zzz----
+
+
+
+        var table1 = function () {
+
+
+            //
+            // Setup module components
+            //
+
+            // Basic Datatable examples
+            var _componentDatatableBasic = function () {
+                if (!$().DataTable) {
+                    console.warn('Warning - datatables.min.js is not loaded.');
+                    return;
+                }
+
+                //Setting datatable defaults
+                $.extend($.fn.dataTable.defaults, {
+                    autoWidth: false,
+                    responsive: true,
+
+
+                    colReorder: false,
+                    dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                    //dom: 'lBfrtip',
+                    language: {
+                        search: '<span>Filter:</span> _INPUT_',
+                        searchPlaceholder: 'Type to filter...',
+                        lengthMenu: '<span>Show:</span> _MENU_',
+                        paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                    }
+                });
+
+                var myClass = "";
+                @*var Delclass= @(obj.GetCurrentUserSession().ChangeMgmt.Contains("4") ? "true" : "false");
+                if (Delclass == false) { myClass = 'hidden'  };*@
+                var table = $('#table1').DataTable({
+
+                    lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                    colReorder: {
+                        fixedColumnsLeft: 1
+                    },
+                    stateSave: true,
+                    stateSaveParams: function (settings, data) {
+                        for (var i = 0, ien = data.columns.length; i < ien; i++) {
+                            delete data.columns[i].visible;
+                            delete data.columns[i].search;
+                        }
+                    },
+
+                    scrollY: '350px',
+                    scrollCollapse: true,
+
+
+                    keys: {
+                        className: 'focus focus-success'
+                    },
+
+                    buttons: {
+                        buttons: [
+                            {
+                                extend: 'copyHtml5',
+                                className: myClass,
+                                //className: 'btn btn-light',
+                                title: 'Change Management Details',
+                                exportOptions: {
+                                    columns: ':visible :not(.not-export-column)'
+                                },
+                            },
+                            {
+                                extend: 'excelHtml5',
+                                className: myClass,
+                                //className: 'btn btn-light',
+                                title: 'Change Management Details',
+                                exportOptions: {
+                                    columns: ':visible :not(.not-export-column)'
+                                },
+
+                            },
+                            {
+                                extend: 'pdfHtml5',
+                                className: myClass,
+                                //className: 'btn btn-light',
+                                title: 'Change Management Details',
+                                exportOptions: {
+                                    columns: ':visible :not(.not-export-column)'
+                                },
+                            },
+                            {
+                                extend: 'csvHtml5',
+                                className: myClass,
+                                //className: 'btn btn-light',
+                                title: 'Change Management Details',
+                                exportOptions: {
+                                    columns: ':visible :not(.not-export-column)'
+                                },
+                            },
+                            {
+                                extend: 'print',
+                                className: myClass,
+                                //className: 'btn btn-light',
+                                title: 'Change Management Details',
+                                exportOptions: {
+                                    columns: ':visible :not(.not-export-column)'
+                                },
+                            },
+
+                            {
+                                extend: 'colvis',
+                                text: '<i class="icon-three-bars"></i>',
+                                className: 'btn bg-blue btn-icon dropdown-toggle',
+                                columns: ':visible:not(.not-export-column)'
+                            }
+                        ]
+                    }
+
+
+
+
+                });
+                // Adjust columns on window resize
+                setTimeout(function () {
+                    $(window).on('resize', function () {
+                        table.columns.adjust();
+                    });
+                }, 100);
+
+
+                //Redraw table on click toggle. -------table.columns.adjust doesn't work properly upon calling after toggle (width increase/decrease = redraw table.).
+                $('.sidebar-control').on('click', function () {
+
+                    setTimeout(function () {
+                        //alert("gii");
+
+                        table.columns.adjust().draw();
+                        $("#table1").resize();
+                    }, 100);
+
+                });
+                //}
+
+                $('#table1').on('page.dt', function () {
+                    //table.draw();
+                    //alert("zzz1");
+                    $("#table1").resize();
+
+                });
+
+                $('#table1').on('column-visibility.dt', function () {
+                    //table.draw();
+                    //alert("zzz2");
+                    $("#table1").resize();
+
+                });
+
+                $('#table1').on('order.dt', function () {
+                    //table.draw();
+                    //alert("zzz3");
+                    $("#table1").resize();
+
+                });
+
+
+                $('#table1').on('responsive-display.dt', function () {
+                    //table.draw();
+                    //alert("zzz4");
+                    $("#table1").resize();
+
+                });
+
+
+                $('#table1').on('responsive-resize.dt', function () {
+                    //table.draw();
+                    //alert("zzz4");
+                    $("#table1").resize();
+
+                });
+
+
+
+
+
+
+            };
+
+
+
+
+
+
+            // Select2 for length menu styling
+            var _componentSelect2 = function () {
+                if (!$().select2) {
+                    console.warn('Warning - select2.min.js is not loaded.');
+                    return;
+                }
+
+                // Initialize
+                $('.dataTables_length select').select2({
+                    minimumResultsForSearch: Infinity,
+                    dropdownAutoWidth: true,
+                    width: 'auto'
+                });
+            };
+
+
+            //
+            // Return objects assigned to module
+            //
+
+            return {
+                init: function () {
+                    _componentDatatableBasic();
+                    _componentSelect2();
+                }
+            }
+        }();
+
+
+        // Initialize module
+        // ------------------------------
+
+        document.addEventListener('DOMContentLoaded', function () {
+            table1.init();
+        });
+
+
+    </script>
+
+}

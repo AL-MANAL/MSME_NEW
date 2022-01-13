@@ -33,12 +33,14 @@ namespace ISOStd.Controllers
         // GET: /EmployeePerformanceEval/AddEmployeePerformanceEval
 
         [AllowAnonymous]
-        public ActionResult AddEmployeePerformanceEval(string eval_period, string eval_category)
+        public ActionResult AddEmployeePerformanceEval(string eval_period, string eval_category,string emp_id,string Evaluation_DoneOn, string Evaluated_From, string Evaluated_To,string Eval_DoneBy, string Date_of_join)
         {
+            EmpPerformanceElementsModels objModel = new EmpPerformanceElementsModels();
+            EmpPerformanceEvalModels obj = new EmpPerformanceEvalModels();
+
             try
             {
-                EmpPerformanceElementsModels objModel = new EmpPerformanceElementsModels();
-
+             
                 string sbranch = objGlobaldata.GetCurrentUserSession().division;
                 ViewBag.PeformanceQuestions = objModel.GetQuestionListBox(eval_period, eval_category);
                 ViewBag.PeformanceRating = objModel.PerformanceRating();
@@ -56,13 +58,33 @@ namespace ISOStd.Controllers
                 ViewBag.eval_category = objGlobaldata.GetDropdownList("Emp Performance Category");
                 ViewBag.eval_period_Id = eval_period;
                 ViewBag.eval_category_Id = eval_category;
+                ViewBag.Topic = objGlobaldata.GetTrainingTopicList();
+                obj.emp_id = emp_id;
+                obj.Eval_DoneBy = Eval_DoneBy;
+                DateTime dtValue;
+                if (DateTime.TryParse(Evaluation_DoneOn, out dtValue))
+                {
+                    obj.Evaluation_DoneOn = dtValue;
+                }
+                if (DateTime.TryParse(Evaluated_From, out dtValue))
+                {
+                    obj.Evaluated_From = dtValue;
+                }
+                if (DateTime.TryParse(Evaluated_To, out dtValue))
+                {
+                    obj.Evaluated_To = dtValue;
+                }
+                if (DateTime.TryParse(Date_of_join, out dtValue))
+                {
+                    obj.Date_of_join = dtValue;
+                }
             }
             catch (Exception ex)
             {
                 objGlobaldata.AddFunctionalLog("Exception in AddEmployeePerformanceEval: " + ex.ToString());
                 TempData["alertdata"] = objGlobaldata.GetConstantValue("ExceptionError")[0];
             }
-            return View();
+            return View(obj);
         }
 
 
@@ -793,7 +815,7 @@ namespace ISOStd.Controllers
         // GET: /EmployeePerformanceEval/EmployeePerformanceEvalEdit
 
         [AllowAnonymous]
-        public ActionResult EmployeePerformanceEvalEdit(string eval_period, string eval_category,string Performance_EvalId)
+        public ActionResult EmployeePerformanceEvalEdit(string eval_period, string eval_category,string Performance_EvalId, string emp_id, string Evaluation_DoneOn, string Evaluated_From, string Evaluated_To, string Eval_DoneBy, string Date_of_join)
         {
             try
             {
@@ -857,7 +879,7 @@ namespace ISOStd.Controllers
                         ViewBag.eval_period = objGlobaldata.GetDropdownList("Emp Performance Evaluation");
                         ViewBag.eval_category = objGlobaldata.GetDropdownList("Emp Performance Category");
                         ViewBag.Recommendation = objGlobaldata.GetDropdownList("Employee Performance Recommendation");
-
+                        ViewBag.Topic = objGlobaldata.GetTrainingTopicList();
                         //training topic
                         EmpPerformanceEvalModelsList objModelList = new EmpPerformanceEvalModelsList();
                         objModelList.lstEmpPerformanceEvalModels = new List<EmpPerformanceEvalModels>();
@@ -943,6 +965,28 @@ namespace ISOStd.Controllers
                             ViewBag.PerformanceQuestions = objElement.GetQuestionListBox(eval_period, eval_category);
                             ViewBag.PerformanceRating = objElement.PerformanceRating();
                             ViewBag.PeformanceSection = objElement.GetSectionsList();
+
+
+                            objPerformance.emp_id = emp_id;
+                            objPerformance.Eval_DoneBy = Eval_DoneBy;
+
+                           
+                            if (DateTime.TryParse(Evaluation_DoneOn, out dtValue))
+                            {
+                                objPerformance.Evaluation_DoneOn = dtValue;
+                            }
+                            if (DateTime.TryParse(Evaluated_From, out dtValue))
+                            {
+                                objPerformance.Evaluated_From = dtValue;
+                            }
+                            if (DateTime.TryParse(Evaluated_To, out dtValue))
+                            {
+                                objPerformance.Evaluated_To = dtValue;
+                            }
+                            if (DateTime.TryParse(Date_of_join, out dtValue))
+                            {
+                                objPerformance.Date_of_join = dtValue;
+                            }
                         }
 
 

@@ -1,0 +1,333 @@
+﻿@model ISOStd.Models.EmmetModels
+@using System.Data;
+@{
+    //Layout = "~/Views/Shared/_PrintLayout.cshtml";
+    ViewBag.Title = "Stock Report";
+    
+   
+
+    string fromdateValue = DateTime.Now.AddMonths(-1).ToString("dd/MM/yyy"), toDateValue = DateTime.Now.ToString("dd/MM/yyy");
+    if (ViewBag.fromdateValue != null)
+    {
+        fromdateValue = ViewBag.fromdateValue;
+    }
+
+    if (ViewBag.toDateValue != null)
+    {
+        toDateValue = ViewBag.toDateValue;
+    }  
+}
+
+<div class="groupedassets margin10">
+    <span class="groupedassetshead margin10 onestphdcolor">Supplier Analysis Report</span>
+</div>
+
+<fieldset>
+        <legend></legend>
+        <table id="tabcontent">
+            <tr>
+                <td>
+                    <div class="editor-label">
+                        From
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                         <input type="text" id="FromDate" name="FromDate" value="@fromdateValue" required readonly/><input type="hidden" id="FromDateval" name="FromDateval" value="@fromdateValue" />
+                        <span class="field-validation-error"><span id="FromDate-message" style="display: none;">Please select From date</span></span>
+                    </div>
+                </td>
+                 <td>
+                    <div class="editor-label">
+                        To
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <input type="text" id="ToDate" name="ToDate" value="@toDateValue" required readonly/><input type="hidden" id="toDateValue" name="toDateValue" value="@toDateValue" />
+                        <span class="field-validation-error"><span id="ToDate-message" style="display: none;">Please select To date</span></span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="editor-label">
+                        Supplier
+                    </div>
+                </td>
+                <td colspan="3">
+                    <div class="editor-field">
+                        <select class="chosen-select" id="supplier" name="supplier" multiple style="width:1000px" required>
+                        
+                            @if (ViewBag.Supplier != null && ViewBag.Supplier_id !=null)
+                            {
+                                foreach (var item in ViewBag.Supplier)
+                                {
+                                    if (Array.IndexOf(ViewBag.Supplier_id.ToString().Split(','), item.Value) >= 0)
+                                    {
+                                        <option value='@item.Value' selected>@item.Text</option>
+                                    }
+                                    else
+                                    {
+                                        <option value='@item.Value'>@item.Text</option>
+                                    }            
+                                }
+                            }
+                            else
+                            {
+                                foreach (var item in ViewBag.Supplier)
+                                {
+                                    <option value='@item.Value'>@item.Text</option>
+                                }
+                            }
+                        </select>
+                         <span class="field-validation-error"><span id="supplier-message" style="display: none;">Please select</span></span>
+                            @Html.ValidationMessageFor(model => model.supplier)
+
+                    </div>
+                </td>
+            </tr>
+            </table>     
+        
+    </fieldset> 
+    <div style="width: 100%; text-align: center;">
+        <button type="button" onclick="getData()">Generate</button>
+    </div>
+
+
+
+
+    <div id="divPrint" style="float:left;width:50%">
+        
+
+        <table id="table1">
+            <thead>
+            <tr style="font-weight: bold;">
+               @* <th style="background-color: #4cc4dd; width:50px; color: white;  text-align: center;font-size:14px">Sl No</th>*@
+                <th style="background-color: #4cc4dd; width: 200px; color: white;  text-align: center;font-size:14px">Supplier</th>
+                 <th style="background-color: #4cc4dd; width: 200px; color: white;  text-align: center;font-size:14px">Total Purchase cost with Category</th>
+               
+            </tr>
+            </thead>
+            <tbody class="tbody"></tbody>
+         
+        </table>
+
+    </div>
+    
+    <div class="card" style="float:right;width:50%">
+							<div class="card-header header-elements-inline">
+								<div class="header-elements">
+									<div class="list-icons">
+				                		<a class="list-icons-item" data-action="collapse"></a>
+				                		<a class="list-icons-item" data-action="reload"></a>
+				                		<a class="list-icons-item" data-action="remove"></a>
+				                	</div>
+			                	</div>
+							</div>
+
+							<div class="card-body">
+								<div class="chart-container">
+									<div class="chart has-fixed-height" id="pie_rose"></div>
+								</div>
+							</div>
+						</div>
+						<!-- /nightingale roses (hidden labels) -->
+
+				
+@section Scripts {
+    <script>
+        $(function () {
+
+            $('#FromDate').datepicker({
+                dateFormat: "dd/mm/yy",
+                buttonImageOnly: true,
+                buttonImage: '../Images/Calender.png',
+                showOn: 'both',
+                changeMonth: true,
+                changeYear: true,
+                gotoCurrent: true
+            });
+
+            $('#ToDate').datepicker({
+                dateFormat: "dd/mm/yy",
+                buttonImageOnly: true,
+                buttonImage: '../Images/Calender.png',
+                showOn: 'both',
+                changeMonth: true,
+                changeYear: true,
+                gotoCurrent: true
+            });
+
+            $('#supplier').chosen();
+            $.validator.setDefaults({ ignore: ":hidden:not('.chosen-select')" });
+        });
+        function loadData(data) {
+            var html = '';
+            $.each(data, function (key, item) {
+                $.each(item, function (key, item) {
+                        html += '<tr>';
+                        html += '<td style="width:200px">' + item.suppname + '</td>';
+                        html += '<td style="width:200px">' + item.amt + '</td>';
+                     
+                       
+                        html += '</tr>';
+                });
+                    });
+                    $('.tbody').html(html);
+            
+        }
+
+        function Validation() {
+            var validflg = true;
+            var ssnMessage = "";
+            if (document.getElementById("supplier").value == "") {
+                ssnMessage = $('#supplier-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#supplier-message');
+                ssnMessage.hide();
+            }
+            return validflg;
+        }
+        function getData() {
+            if (Validation() == true) {
+
+
+
+                var FromDate = $('#FromDate').datepicker().val();
+                var ToDate = $('#ToDate').datepicker().val();
+                var supplier = $('#supplier').val();
+                var pie_rose_element = document.getElementById('pie_rose');
+
+                jQuery.ajax({
+                    url: '@Url.Action("getSupplierReport", "Emmet")',
+                    type: 'POST',
+                    dataType: "json",
+                    ////data: JSON.stringify(objModel),
+                    data: { 'FromDate': FromDate, 'ToDate': ToDate, 'supplier': supplier },
+                    success: function (result) {
+
+                        var data = JSON.parse(result);
+                        loadData(data);
+                        var sup = [];
+                        var amt = [];
+
+                        $.each(data, function (key, item) {
+                            $.each(item, function (key, item) {
+
+                                sup.push(item.suppname);
+                                amt.push(item.amt);
+                            });
+
+                        });
+                        var dataobj = [];
+                        var dataseries = [];
+
+                        $.each(data, function (key, item) {
+                            $.each(item, function (key, item) {
+                                dataobj.push(
+                                {
+                                    value: item.amt,
+                                    name: item.suppname
+                                }
+                                )
+                            });
+                        });
+                        $.each(dataobj, function (key, item) {
+
+                            dataseries.push({ value: item.value, name: item.name })
+
+
+                        })
+
+                        var pie_rose = echarts.init(pie_rose_element);
+
+
+                        pie_rose.setOption({
+                            color: [
+                                '#2ec7c9', '#b6a2de', '#5ab1ef', '#ffb980', '#d87a80',
+                                '#8d98b3', '#e5cf0d', '#97b552', '#95706d', '#dc69aa',
+                                '#07a2a4', '#9a7fd1', '#588dd5', '#f5994e', '#c05050',
+                                '#59678c', '#c9ab00', '#7eb00a', '#6f5553', '#c14089'
+                            ],
+                            textStyle: {
+                                fontFamily: 'Roboto, Arial, Verdana, sans-serif',
+                                fontSize: 13
+                            },
+                            title: {
+                                //text: 'Supplier Analysis',
+                                //subtext: 'Chart',
+                                left: 'center',
+                                textStyle: {
+                                    fontSize: 17,
+                                    fontWeight: 500
+                                },
+                                subtextStyle: {
+                                    fontSize: 12
+                                }
+                            },
+
+                            // Add tooltip
+                            tooltip: {
+                                trigger: 'item',
+                                backgroundColor: 'rgba(0,0,0,0.75)',
+                                padding: [10, 15],
+                                textStyle: {
+                                    fontSize: 13,
+                                    fontFamily: 'Roboto, sans-serif'
+                                },
+                                formatter: '{a} <br/>{b}: {c} AED '
+                            },
+
+                            // Add legend
+                            legend: {
+                            
+                                //orient: 'vertical',
+                                //x: 'right', // 'center' | 'left' | {number},
+                                //y: 'top', // 'center' | 'bottom' | {number}
+
+                                type: 'scroll',
+                                orient: 'horizontal',
+                                data: sup,
+                                itemHeight: 20,
+                                itemWidth: 20,
+                                selected: {
+                                    sup: false
+                                },
+                             
+                            },
+
+                            // Add series
+                            // Add series
+                            series: [{
+                                name: 'Supplier Cost',
+                                type: 'pie',
+                                radius: '70%',
+                                center: ['50%', '57.5%'],
+                                itemStyle: {
+                                    normal: {
+                                        borderWidth: 1,
+                                        borderColor: '#fff'
+                                    }
+                                },
+                                data: dataseries
+                            }]
+                        });
+
+                    }
+                });
+
+
+
+            }
+        }
+      
+
+
+
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

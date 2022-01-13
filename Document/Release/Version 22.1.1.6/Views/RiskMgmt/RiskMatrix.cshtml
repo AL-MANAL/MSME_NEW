@@ -1,0 +1,158 @@
+﻿@model IEnumerable<ISOStd.Models.RiskRegisterActivityModels>
+@using System.Data;
+@{
+    Layout = null;
+    int[,] matrix = new int[10, 10];
+    matrix = ViewBag.Matrix;
+
+
+    DataSet dsRating = new DataSet();
+
+    if (ViewBag.dsRating != null)
+    {
+        dsRating = ViewBag.dsRating;
+    }
+
+    Dictionary<string, string> dsMatcolors = new Dictionary<string, string>();
+    if (ViewBag.dsMatcolors != null)
+    {
+        dsMatcolors = ViewBag.dsMatcolors;
+    }    
+
+}
+<div>
+    <h4 style="text-align:center;border-bottom:1px solid #808080">Risk Matrix</h4>
+</div>
+
+<div>
+    
+    <table>
+        <tr>
+            <td>
+                <h5 style="text-align:center">Severity</h5>
+            </td>
+            <td style="width:80px">
+                <table id="tabcontent">
+                    @{
+                        int i = 0, k = 0, j = 0,zz = 0;
+                        string zz1 = "";
+                    }
+
+                      @foreach (var item in ViewBag.MatrixSev_id)
+                        {
+                    <tr>
+                        <td style="width: 60px; min-width: 60px; max-width: 60px; background-color: #d0f1ef; text-align: center">
+                            @item.Value<br />
+                            @item.Text
+                        </td> 
+
+                        @for (i = k; i <= matrix.GetLength(0);)
+                        {
+                            j = 0;
+
+                            if (matrix[i, j] == 0 && j == 0)
+                            {
+                                goto breakloop;
+                            }
+                            for (j = 0; j < matrix.GetLength(1); j++)
+                            {
+                                zz++;
+                                if (matrix[i, j] != 0)
+                                {
+                                    //zz1 = Convert.ToString(matrix[i, j]);
+                                    zz1 = Convert.ToString(zz);
+                                    if (dsMatcolors.ContainsKey(zz1))
+                                    {
+                                        var userIDFromDictionaryByKey = dsMatcolors[zz1];                                       
+
+                                        <td style="text-align:center;background-color:@userIDFromDictionaryByKey">
+                                            @matrix[i, j]
+                                        </td>
+
+                                    }
+                                }
+                                if (matrix[i, j] == 0 && j == 0)
+                                {
+                                    goto breakloop;
+                                }
+                            }
+                            break;
+                        }
+
+                        @{
+                            k++;
+                        }
+                    </tr>
+                                        }
+                                   
+
+                        @{
+                            breakloop:
+                        }
+                        <tr>
+
+                            <td></td>
+                            @foreach (var item in ViewBag.Matrixlike_id)
+                            {
+                                <td style="width: 60px; min-width: 60px; max-width: 60px; background-color: #d0f1ef; text-align: center">
+                                    @item.Value<br />
+                                    @item.Text
+                                </td>
+                            }
+                        </tr>
+
+                    </table>
+                <h5 style="text-align:center">Likelihood</h5>
+            </td>
+        </tr>
+    </table>
+
+</div>
+
+<div>
+    <h4 style="text-align: center; border-bottom: 1px solid #808080">Criteria for Risk Rating</h4>
+
+</div>
+<div class="d-flex justify-content-center">
+    @if (dsRating != null && dsRating.Tables.Count > 0 && dsRating.Tables[0].Rows.Count > 0)
+    {
+
+        <table>
+            <tr>
+                <th>From Value</th>
+                <th>To Value</th>
+                <th>Rating</th>
+            </tr>
+            @for (int m = 0; m < dsRating.Tables[0].Rows.Count; m++)
+            {
+                <tr>
+                    <td>
+                        @dsRating.Tables[0].Rows[m]["from_value"].ToString()
+                    </td>
+                    <td>
+                        @dsRating.Tables[0].Rows[m]["to_value"].ToString()
+                    </td>
+                    <td>
+                        @dsRating.Tables[0].Rows[m]["rate_desc"].ToString()
+                    </td>
+                </tr>
+            }
+        </table>
+
+    }
+</div>
+
+
+@section Scripts {
+    <script>
+
+
+
+     @*$(document).ready(function () {
+
+         document.getElementById("Low").style.backgroundColor= @LowColor;
+    
+        }*@
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

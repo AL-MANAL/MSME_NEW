@@ -1,0 +1,423 @@
+﻿@model ISOStd.Models.EmmetModels
+@{
+    ViewBag.Title = "";
+     ISOStd.Models.EmmetModelsList objTranList = new ISOStd.Models.EmmetModelsList();
+    ISOStd.Models.EmmetModels objModel = new ISOStd.Models.EmmetModels();
+    ISOStd.Models.clsGlobal obj = new ISOStd.Models.clsGlobal();
+
+    int icnts = 0;
+
+    if (ViewBag.objList != null)
+    {
+        objTranList = ViewBag.objList;
+        icnts = objTranList.EmmetList.Count;
+    }
+}
+
+<div style="max-width: 80%;">
+    <div class="groupedassets margin10">
+        <span class="groupedassetshead margin10 onestphdcolor">Stock Edit</span>
+    </div>
+    <div id="divmsg">
+        @if (TempData["alertdata"] != null)
+        {
+            <span class="errMsg" style="color: red; font-weight: bold;">@TempData["alertdata"]</span>
+        }
+        @if (TempData["Successdata"] != null)
+        {
+            <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+        }
+    </div>
+
+    @using (Html.BeginForm("AddStockEdit", "Emmet", FormMethod.Post,
+            new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true)
+
+       
+         <div style="padding-left: 200px;">
+             <input type="hidden" id="id_stock_receive" name="id_stock_receive" value="@Model.id_stock_receive" />
+            <table id="tabcontent">
+                
+             <tr>
+                 <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.po)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <input type="text" id="po" name="po" required value="@Model.po" />
+                        </div>
+                    </td>
+                      <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.supplier)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <select class="chosen-select" id="supplier" name="supplier" required>
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.Suppplier != null)
+                                {
+                                    foreach (var item in ViewBag.Suppplier)
+                                    {
+                                   if (item.Value == Model.supplier)
+                                        {
+                                             <option value='@item.Value' selected>@item.Text</option>
+                                        }
+                                        else{
+                                             <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                }
+
+                            </select>
+                        </div>
+                    </td>
+              </tr>
+                <tr>
+                      <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.po_upload)
+                        </div>
+                    </td>
+                  <td>
+                        <div class="editor-field">
+                            <input type="file" name="po_upload" id="po_upload" title="Documents" onchange="FileFormatValidation(this)"
+                                   multiple="multiple" accept=".pdf, .doc, .docx,image/*" style="height: 38px;" />
+
+                            <p style="font-size: 11px; margin: 0px;">(Hold Ctrl Key in case of multiple files)</p>
+                         @if (Model.po_upload != null && Model.po_upload != "" && Model.po_upload.Length > 0)
+                            {
+                                <div class="editor-label">
+                                    <p style="font-weight: bold; margin: 0px;">Document List:</p>
+                                </div>
+                                <p style="font-size: 11px; margin: 0px; color: red;">(Uncheck in case to remove a uploaded file)</p>
+                                foreach (var docs in Model.po_upload.Trim(',').Split(','))
+                                {
+                                    <p style="margin: 0px;">
+                                        <input type="checkbox" id="QCDocsVal" name="QCDocsVal" class="QCDocsVal" value="@docs.Trim(',')" checked title="Uncheck in case to remove a uploaded file" />
+                                        <input type="hidden" id="QCDocsValselectall" name="QCDocsValselectall" />
+                                        <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" style="color: orange;">
+                                            @System.IO.Path.GetFileName(docs)
+                                        </a>
+                                    </p>
+                                }
+                            }
+                             </div>
+                    </td>
+                         <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.added_date)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                                   @if (Model.added_date != null && Model.added_date > Convert.ToDateTime("01/01/0001"))
+                        {
+                            <input type="text" id="added_date" name="added_date" value="@Model.added_date.ToString("dd/MM/yyyy")" readonly />
+                        }
+                        else
+                        {
+                            <input type="text" id="added_date" name="added_date" readonly required />
+                        }
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div style="padding-left: 200px">
+            <table style="padding-left: 200px; width: 100%;">
+
+                <tr style="background-color: #4cc4dd; color: #fff;">
+                    <th colspan="6" style="font-size: 14px; font-weight: bold;">Add Stock</th>
+                </tr>
+                <tr style="background-color: #4cc4dd; color: #fff;">
+                    <th style="font-size: 14px; font-weight: bold;">Category</th>
+                    <th style="font-size: 14px; font-weight: bold;">Material</th>
+                    <th style="font-size: 14px; font-weight: bold;">Qty</th>
+                    <th style="font-size: 14px; font-weight: bold;">Price</th>
+                    <th style="font-size: 14px; font-weight: bold;">Expiry Date</th>
+                </tr>
+                <tr>
+                    <td>
+                      <select class="chosen-select" id="category" name="category"  onchange="GetMaterialList()">                         
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.CatList != null)
+                                {
+                                    foreach (var item in ViewBag.CatList)
+                                    {
+                                        <option value='@item.Value'>@item.Text</option>
+                                    }
+                                }
+                            </select>
+                     
+                    </td>
+                    <td>
+                              <select class="chosen-select" id="material" name="material" >                         
+                                <option value='' hidden>Select</option>
+                              
+                            </select>
+                     
+                    </td>
+                    <td>
+                       <input type="number" id="qty" name="qty" min="1" />
+                     
+                    </td>
+                    <td>
+                      <input type="number" id="price" name="price" min="1" />
+                 
+                    </td>
+                    <td>
+                        <input type="text" id="expiry_date" name="expiry_date" style="width: 80px;" />
+                    </td>
+                </tr>
+              
+            </table>
+
+        </div>
+
+
+        <div style="padding-left: 200px; width: 100%; text-align: center;">
+            @Html.ActionLink("Back to List", "StockReceiveList", null, new { Class = "ActionLink", onclick = "HyperLinkProgressIconFunction()" })
+            <input type="submit" id="btnCreate"  value="submit" onclick="ProgressIconFunction('#form1')" />
+        </div>
+
+        <br />
+        <br />
+        
+        
+        <div id="Welfare" style="padding-left: 200px">
+            <input type="hidden" id="itemcnts" name="itemcnts" value="@icnts" />
+
+            <table id="team-list1">
+                <tr>
+                    <th colspan="6" style="background-color: #4cc4dd; color: white">Stock List
+                    </th>
+                </tr>
+                <tr>
+                    <th style="width: 50px; min-width: 50px; max-width: 50px;">Delete</th>
+                    <th style="width: 200px; min-width: 200px; max-width: 200px;">Category</th>
+                    <th style="width: 200px; min-width: 200px; max-width: 200px;">Material</th>
+                    <th style="width: 200px; min-width: 200px; max-width: 200px;">Qty</th>
+                    <th style="width: 200px; min-width: 200px; max-width: 200px;">Price</th>
+                    <th style="width: 200px; min-width: 200px; max-width: 200px;">Expiry Date</th>
+                </tr>
+                                  @if (objTranList.EmmetList != null && objTranList.EmmetList.Count > 0)
+                {
+                    for (int index = 0; index < objTranList.EmmetList.Count; index++)
+                    {
+
+                <tr>
+                    <td style="width: 50px; min-width: 50px; max-width: 50px;">
+                        <img src='@Url.Content("~/images/cancel.png")' onclick='deleteCoseRow(this)' style='cursor:pointer; padding-right: 5px;' />
+                        <input type='hidden' id='id_stock_receive_trans @index' name="id_stock_receive_trans @index" value='@objTranList.EmmetList[index].id_stock_receive_trans' />
+                    </td>
+                  
+                    <td style="width: 200px; min-width: 200px; max-width: 200px;">
+                        <input type='hidden' id='category@(index)' name="category@(index)" value='@objTranList.EmmetList[index].category'>@obj.GetDropdownitemById(objTranList.EmmetList[index].category)
+                    </td>
+                    <td style="width: 200px; min-width: 200px; max-width: 200px;">
+                        <input type='hidden' id='material@(index)' name="material@(index)" value='@objTranList.EmmetList[index].material'>@obj.getMaterialById(objTranList.EmmetList[index].material)
+                    </td>
+                    <td style="width: 200px; min-width: 200px; max-width: 200px;">
+                        <input type='hidden' id='qty@(index)' name="qty@(index)" value='@objTranList.EmmetList[index].qty'>@objTranList.EmmetList[index].qty
+                    </td>
+                    <td style="width: 200px; min-width: 200px; max-width: 200px;">
+                        <input type='hidden' id='price@(index)' name="price@(index)" value='@objTranList.EmmetList[index].price'>@objTranList.EmmetList[index].price
+                    </td>
+                   <td style="width: 200px; min-width: 200px; max-width: 200px;">
+                       @if (objTranList.EmmetList[index].expiry_date != null && objTranList.EmmetList[index].expiry_date > Convert.ToDateTime("01/01/0001"))
+                       {
+                              <input type='hidden' id='expiry_date@(index)' name="expiry_date@(index)" value='@objTranList.EmmetList[index].expiry_date'>@objTranList.EmmetList[index].expiry_date.ToString("dd/MM/yyyy")
+                       }
+                     
+                    </td>
+                    
+                </tr>
+                    }
+                }
+            </table>
+        </div>    
+    }
+</div>
+@section Scripts {
+    <script>  
+        $(function () {
+            $("#category").chosen();
+            $("#material").chosen();
+            $("#supplier").chosen();
+            $.validator.setDefaults({ ignore: ":hidden:not('.chosen-select')" });
+
+
+            $('#added_date').datepicker({
+                dateFormat: "dd/mm/yy",
+                buttonImageOnly: true,
+                buttonImage: '../Images/Calender.png',
+                showOn: 'both',
+                changeMonth: true,
+                changeYear: true,
+            });
+            $('#expiry_date').datepicker({
+                dateFormat: "dd/mm/yy",
+                buttonImageOnly: true,
+                buttonImage: '../Images/Calender.png',
+                showOn: 'both',
+                changeMonth: true,
+                changeYear: true,
+            });
+
+            $("#added_date").datepicker("setDate", new Date());
+        });
+        function GetMaterialList() {
+            var category = $('#category').chosen().val();
+            jQuery.ajax({
+                url: '@Url.Action("FunGetMaterialList", "Emmet")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'category': category },
+                success: function (result) {
+
+                    if (result != null && result.length > 0) {
+
+                 
+                        $('#material').children('option').remove();
+                        $("#material").trigger("chosen:updated");
+
+                        $.each(result, function (index, item) {
+
+                            $("#material").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                            $("#material").trigger("chosen:updated");
+
+                        });
+                        $('#material').trigger('change');
+                        return;
+                    }
+                    else {
+                        jAlert("No Material exists.");                
+                        $('#material').children('option').remove();
+                        $("#material").trigger("chosen:updated");
+                        return;
+                    }
+                }
+            });
+        }
+        function deleteCoseRow(btn) {
+            var row = btn.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+        }
+        function Validation() {
+            var validflg = true;
+            var ssnMessage = "";
+
+            if (document.getElementById("category").value == "") {
+                ssnMessage = $('#category-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#category-message');
+                ssnMessage.hide();
+            }
+
+            if (document.getElementById("material").value == "") {
+                ssnMessage = $('#material-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#material-message');
+                ssnMessage.hide();
+            }
+
+            if (document.getElementById("qty").value == "") {
+                ssnMessage = $('#qty-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#qty-message');
+                ssnMessage.hide();
+            }
+
+            if (document.getElementById("price").value == "") {
+                ssnMessage = $('#price-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#price-message');
+                ssnMessage.hide();
+            }
+
+            return validflg;
+        }
+
+        function AddData() {
+
+            if (Validation() == true) {
+
+                document.getElementById("Welfare").style.display = "";
+                var cnt = document.getElementById("itemcnts").value;
+
+                document.getElementById("itemcnts").value = cnt;
+                // Find a <table> element with id="myTable":
+                var table = document.getElementById("team-list1");
+
+                // Create an empty <tr> element and add it to the 1st position of the table:
+                var row = table.insertRow();
+
+                // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                var cell0 = row.insertCell(0);
+                var cell1 = row.insertCell(1);
+                var cell2 = row.insertCell(2);
+                var cell3 = row.insertCell(3);
+                var cell4 = row.insertCell(4);
+
+                cell0.style = "width: 50px; min-width: 50px; max-width: 50px;";
+                cell1.style = "width: 200px; min-width: 200px; max-width: 200px;word-wrap:break-word";
+                cell2.style = "width: 200px; min-width: 200px; max-width: 200px;word-wrap:break-word";
+                cell3.style = "width: 200px; min-width: 200px; max-width: 200px;word-wrap:break-word";
+                cell4.style = "width: 200px; min-width: 200px; max-width: 200px;word-wrap:break-word";
+
+                var qty = $('#qty').val();
+                var price = $('#price').val();
+
+                var category = [];
+                var categoryText = $.map($("#category option:selected"), function (el, i) {
+                    return $(el).text();
+                });
+                var categoryVal = $('#category').val();
+
+                var material = [];
+                var materialText = $.map($("#material option:selected"), function (el, i) {
+                    return $(el).text();
+                });
+                var materialVal = $('#material').val();
+
+                cell0.innerHTML = " <img src='@Url.Content("~/images/cancel.png")' onclick='deleteCoseRow(this)' style='cursor:pointer; padding-right: 5px;'/>";
+                cell1.innerHTML = "<input type='hidden' id='category" + cnt + "' name='category" + cnt + "' value='" + categoryVal + "'>" + categoryText;
+                cell2.innerHTML = "<input type='hidden' id='material" + cnt + "' name='material" + cnt + "' value='" + materialVal + "'>" + materialText;
+                cell3.innerHTML = "<input type='hidden' id='qty" + cnt + "' name='qty" + cnt + "' value='" + qty + "'>" + qty;
+                cell4.innerHTML = "<input type='hidden' id='price" + cnt + "' name='price" + cnt + "' value='" + price + "'>" + price;
+
+                cnt++;
+                document.getElementById("itemcnts").value = cnt;
+                document.getElementById("btnCreate").style.display = "";
+                ResetControl();
+            }
+
+        }
+        function ResetControl() {
+            document.getElementById("qty").value = "";
+            document.getElementById("price").value = "";
+            $("#category").val('').trigger("chosen:updated");
+            $("#material").val('').trigger("chosen:updated");
+            document.getElementById("expiry_date").value = "";
+        }
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

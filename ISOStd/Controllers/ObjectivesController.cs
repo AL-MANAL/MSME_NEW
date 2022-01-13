@@ -1065,13 +1065,14 @@ namespace ISOStd.Controllers
             {
                 cookieCollection.Add(key, Request.Cookies.Get(key).Value);
             }
-            string footer = "--footer-right \"Date: [date] [time]\" " + "--footer-center \"Page: [page] of [toPage]\" --footer-line --footer-font-size \"9\" --footer-spacing 5 --footer-font-name \"calibri light\"";
+            string footer1 = "--footer-right \"Date: [date] [time]\" " + "--footer-center \"Page: [page] of [toPage]\" --footer-line --footer-font-size \"9\" --footer-spacing 5 --footer-font-name \"calibri light\" <br/> --footer-right \"Date: [date] [time]\" " + "--footer-center \"Page: [page] of [toPage]\" --footer-line --footer-font-size \"9\" --footer-spacing 5 --footer-font-name \"calibri light\"";
 
             return new ViewAsPdf("ObjectivesPDF")
             {
                 //FileName = "Objectives.pdf",
                 Cookies = cookieCollection,
-                CustomSwitches = footer
+                CustomSwitches = footer1 ,
+              
             };
         }
 

@@ -47,6 +47,7 @@ namespace ISOStd.Controllers
             //ViewBag.Location = objGlobaldata.GetCompanyBranchListbox();
             ViewBag.Project = objGlobaldata.GetDropdownList("Projects");
             ViewBag.IssueBy = objGlobaldata.GetHrEmployeeList();
+            ViewBag.Type = objGlobaldata.GetDropdownList("PPE Type");
             return View(objPPEIssueLog);
         }
 
@@ -401,7 +402,7 @@ namespace ISOStd.Controllers
                 {
                     string sIssueLog_Id = Request.QueryString["IssueLog_Id"];
                     string sSqlstmt = "select IssueLog_Id, Issue_Date, Receiver_Name, Position, Cust_Project_Name, Work_Location, PPE_Issued, PPE_Issued_Last_Date, Issued_By,"
-                        + " PPE_Issue_Voucher, LoggedBy,branch,Department,ppe_detail,ppe_qty from t_ppe_issuelog where IssueLog_Id='" + sIssueLog_Id + "'";
+                        + " PPE_Issue_Voucher, LoggedBy,branch,Department,ppe_detail,ppe_qty,ppe_type from t_ppe_issuelog where IssueLog_Id='" + sIssueLog_Id + "'";
 
                     DataSet dsPPELog = objGlobaldata.Getdetails(sSqlstmt);
                     if (dsPPELog.Tables.Count > 0)
@@ -421,6 +422,7 @@ namespace ISOStd.Controllers
                             Department = objGlobaldata.GetMultiDeptNameById(dsPPELog.Tables[0].Rows[0]["Department"].ToString()),
                             ppe_detail = dsPPELog.Tables[0].Rows[0]["ppe_detail"].ToString(),
                             ppe_qty = dsPPELog.Tables[0].Rows[0]["ppe_qty"].ToString(),
+                            ppe_type =objGlobaldata.GetDropdownitemById(dsPPELog.Tables[0].Rows[0]["ppe_type"].ToString()),
                         };
 
                         DateTime dateValue;
@@ -519,12 +521,12 @@ namespace ISOStd.Controllers
                 ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
                 ViewBag.Branch = objGlobaldata.GetCompanyBranchListbox();
                 ViewBag.Project = objGlobaldata.GetDropdownList("Projects");
-
+                ViewBag.Type = objGlobaldata.GetDropdownList("PPE Type");
                 if (Request.QueryString["IssueLog_Id"] != null && Request.QueryString["IssueLog_Id"] != "")
                 {
                     string sIssueLog_Id = Request.QueryString["IssueLog_Id"];
                     string sSqlstmt = "select IssueLog_Id, Issue_Date, Receiver_Name, Position, Cust_Project_Name, Work_Location, PPE_Issued, PPE_Issued_Last_Date, Issued_By,"
-                        + " PPE_Issue_Voucher, LoggedBy,branch,Department,ppe_detail,ppe_qty from t_ppe_issuelog where IssueLog_Id='" + sIssueLog_Id + "'";
+                        + " PPE_Issue_Voucher, LoggedBy,branch,Department,ppe_detail,ppe_qty,ppe_type from t_ppe_issuelog where IssueLog_Id='" + sIssueLog_Id + "'";
 
                     DataSet dsPPELog = objGlobaldata.Getdetails(sSqlstmt);
                     if (dsPPELog.Tables.Count > 0)
@@ -544,6 +546,7 @@ namespace ISOStd.Controllers
                             Department = /*objGlobaldata.GetMultiDeptNameById*/(dsPPELog.Tables[0].Rows[0]["Department"].ToString()),
                             ppe_detail = (dsPPELog.Tables[0].Rows[0]["ppe_detail"].ToString()),
                             ppe_qty = (dsPPELog.Tables[0].Rows[0]["ppe_qty"].ToString()),
+                            ppe_type = (dsPPELog.Tables[0].Rows[0]["ppe_type"].ToString()),
                         };
                         if (dsPPELog.Tables[0].Rows[0]["Receiver_Name"].ToString() != "")
                         {

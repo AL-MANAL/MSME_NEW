@@ -1,0 +1,556 @@
+﻿@model ISOStd.Models.GenerateInspectionChecklistModels
+
+@{
+    ViewBag.Title = "InspectionChecklistDetails";
+    System.Data.DataSet dsrating = new System.Data.DataSet();
+
+    if (ViewBag.InspectionRating != null)
+    {
+        dsrating = ViewBag.InspectionRating;
+    }
+
+    ISOStd.Models.InspectionChecklistList objChecklist = new ISOStd.Models.InspectionChecklistList();
+
+    if (ViewBag.InspectionElement != null)
+    {
+        objChecklist = ViewBag.InspectionElement;
+    }
+
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+    var z = ""; var QId = 0; var m = 0; var n = 0;
+}
+
+
+@section featured {
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("InspectionChecklistList", "Inspection", new { Category = Model.Category,branch = Model.branch })" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Inspection Checklist List</span>
+                    </a>
+                    <span class="breadcrumb-item active"> Inspection Checklist Details</span>
+                </div>
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            <div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+                    @using (Html.BeginForm("InspectionChecklistReport", "Inspection", FormMethod.Post, new { id = "form1", name = "form1" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <div class="breadcrumb-elements-item dropdown p-0">
+                            <input type="hidden" id="id_inspection_checklist" name="id_inspection_checklist" value="@Model.id_inspection_checklist" />
+                            
+                            <button type="submit" class="dropdown-item">
+                                <i class="icon-printer2"></i> Report
+                            </button>
+                        </div>
+                    }
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<div class="card">
+    <div class="card-header header-elements-inline bg-primary">
+        <h5 class="card-title">Inspection Checklist Details</h5>
+        <div class="header-elements">
+            <div class="list-icons">
+                <a class="list-icons-item" data-action="collapse"></a>
+
+            </div>
+        </div>
+    </div>
+    <div>
+        <div class="card-header bg-white header-elements-sm-inline">
+            <div class="header-elements">
+                @if (Obj.GetCurrentUserSession().HseInsp.Contains("3"))
+                {
+                    <a class="btn bg-orange btn-labeled btn-labeled-left" data-style="radius" href='@Url.Action("InspectionChecklistEdit", "Inspection", new { id_inspection_checklist = Model.id_inspection_checklist.ToString()  })' title="Edit" onclick="HyperLinkProgressIconFunction()">
+                        <b>  <i class="icon-add-to-list"></i></b> Edit
+                    </a>
+                }
+                @Html.ActionLink("Back to List", "InspectionChecklistList", new { Category = Model.Category, branch = Model.branch }, new { @class = "btn btn-outline bg-orange text-orange border-orange ml-3", onclick = "HyperLinkProgressIconFunction()" })
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="container-fluid">
+            <table class="table table-dark table-bordered table-striped table-hover bg-blue-800">
+                <thead></thead>
+                <tbody>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded ">
+                                @Html.LabelFor(model => model.Category)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.Category)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded ">
+                                @Html.LabelFor(model => model.Inspection_date)
+                            </p>
+                        </td>
+                        <td class="col">
+                            @if (Model.Inspection_date != null && Model.Inspection_date > Convert.ToDateTime("01/01/0001"))
+                            {
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @Model.Inspection_date.ToString("dd/MM/yyyy")
+                                </p>
+                            }
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded ">
+                                @Html.LabelFor(model => model.branch)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.branch)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded ">
+                                @Html.LabelFor(model => model.Department)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.Department)
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded ">
+                                @Html.LabelFor(model => model.team)
+                             </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.team)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded ">
+                                @Html.LabelFor(model => model.Location)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.Location)
+
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded ">
+                                @Html.LabelFor(model => model.Project)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.Project)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded ">
+                                @Html.LabelFor(model => model.TagNo)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.TagNo)
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded ">
+                                @Html.LabelFor(model => model.Inspection_by)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.Inspection_by)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded ">
+                                @Html.LabelFor(model => model.Comment)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.Comment)
+                            </p>
+                        </td>
+                    </tr>
+
+</table>
+
+            <br />
+            <br />
+            <br />
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped table-hover datatable-responsive">
+                    @*<table class="table table-bordered table-striped table-hover datatable-responsive" id="table1">*@
+                    <thead>
+                        <tr>
+                            <th style="background-color: #e5eafe; color: #0099ff;">
+                                Sr. No.
+                            </th>
+                            <th style="background-color: #e5eafe; color: #0099ff;">
+                                Items
+                            </th>
+                            <th style="background-color: #e5eafe; color: #0099ff;">
+                                Rating
+                            </th>
+                            <th style="background-color: #e5eafe; color: #0099ff;">
+                                Action
+                            </th>
+                            <th style="background-color: #e5eafe; color: #0099ff;">
+                                Action By
+                            </th>
+                            @if (Obj.GetCurrentUserSession().HseInsp.Contains("4"))
+                            {
+                                <th style="background-color: #e5eafe; color: #0099ff;">
+                                    Upload
+                                </th>
+                            }
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (ViewBag.InspectionElement != null)
+                        {
+                            int iSrno = 0;
+                            foreach (var item in objChecklist.lst)
+                            {
+                                iSrno = iSrno + 1;
+                                n = 0;
+                                foreach (var data in ViewBag.SectionQuestions)
+                                {
+
+                                    if (n >= m || QId == 0)
+                                    {
+                                        if (z == "")
+                                        {
+                                            <tr>
+                                                <td colspan="2">@data.Text</td>
+                                                @*<td class="d-none"></td>*@
+                                                <td class="d-none"></td>
+                                                <td class="d-none"></td>
+                                                <td class="d-none"></td>
+                                                <td class="d-none"></td>
+                                                <td class="d-none"></td>
+                                                <td class="d-none"></td>
+
+
+                                            </tr>
+
+                                            z = data.Text;
+                                            break;
+                                        }
+                                        else if (Convert.ToInt32(data.Value) != QId && z != data.Text)
+                                        {
+                                            <tr>
+                                                <td colspan="2">@data.Text</td>
+                                                @*<td class="d-none"></td>*@
+                                                <td class="d-none"></td>
+                                                <td class="d-none"></td>
+                                                <td class="d-none"></td>
+                                                <td class="d-none"></td>
+                                                <td class="d-none"></td>
+                                                <td class="d-none"></td>
+
+                                            </tr>
+                                            z = data.Text;
+                                            break;
+                                        }
+                                        else if (Convert.ToInt32(data.Value) != QId && z == data.Text)
+                                        {
+                                            break;
+                                        }
+                                    }
+                                    n++;
+                                }
+                                            <tr>
+                                                <td>
+                                                    @iSrno
+                                                </td>
+                                                <td>
+                                                    @item.id_inspection_question
+                                                </td>
+                                                <td>
+                                                    @item.id_inspection_rating
+                                                </td>
+                                                <td>
+                                                    @item.Action
+                                                </td>
+                                                <td>
+                                                    @item.ActionBy
+                                                </td>
+                                                @if (Obj.GetCurrentUserSession().HseInsp.Contains("4"))
+                                                {
+                                                    <td>
+                                                        @if (item.Upload != "")
+                                                        {
+                                                            <a href='@Url.Action("DisplayDocument", "Reports", new { Document = item.Upload })' target="_blank">Preview</a>
+                                                        }
+                                                    </td>
+                                                }
+                                            </tr>
+                                QId = Convert.ToInt32(item.id_ques);
+                                m++;
+                            }
+                        }
+                    </tbody>
+                </table>
+
+            </div>
+            </div>
+        </div>
+
+
+</div>
+
+@section Scripts {
+    <script>
+             //----zzz
+    $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+    });
+    //zzz----
+         var table1 = function () {
+
+             var ShowDownload = @(Obj.GetCurrentUserSession().HseInsp.Contains("4") ? "true" : "false");
+
+                var _componentDatatableBasic = function () {
+                    if (!$().DataTable) {
+                        console.warn('Warning - datatables.min.js is not loaded.');
+                        return;
+                    }
+
+                    //Setting datatable defaults
+                    $.extend($.fn.dataTable.defaults, {
+                        autoWidth: false,
+                        responsive: true,
+                        columnDefs: [{
+                            orderable: false,
+                            width: 100,
+                            targets: [5]
+                        },  {
+                                'targets': [5],
+                                'visible': ShowDownload
+                            }],
+
+                        colReorder: false,
+                        dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                        //dom: 'lBfrtip',
+                        language: {
+                            search: '<span>Filter:</span> _INPUT_',
+                            searchPlaceholder: 'Type to filter...',
+                            lengthMenu: '<span>Show:</span> _MENU_',
+                            paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                        }
+                    });
+
+                       var myClass = "";
+                var Delclass= @(Obj.GetCurrentUserSession().HseInsp.Contains("4") ? "true" : "false");
+                    if (Delclass == false) { myClass = 'hidden' };
+
+                    var table = $('#table1').DataTable({
+                       
+                        lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                        colReorder: {
+                            fixedColumnsLeft: 1
+                        },
+                        stateSave: true,
+                        stateSaveParams: function (settings, data) {
+                            for (var i = 0, ien = data.columns.length; i < ien; i++) {
+                                delete data.columns[i].visible;
+                                delete data.columns[i].search;
+                            }
+                        },
+                        scrollY: '350px',
+                        scrollCollapse: true,
+                       
+                        keys: {
+                            className: 'focus focus-success'
+                        },
+
+                        buttons: {
+                            buttons: [
+                                {
+                                    extend: 'colvis',
+                                    text: '<i class="icon-three-bars"></i>',
+                                    className: 'btn bg-blue btn-icon dropdown-toggle',
+                                    columns: ':visible:not(.not-export-column)'
+                                }
+                            ]
+                        }
+                    });
+                    // Adjust columns on window resize
+                    setTimeout(function () {
+                        $(window).on('resize', function () {
+                            table.columns.adjust();
+                        });
+                    }, 100);
+
+
+                    //Redraw table on click toggle. -------table.columns.adjust doesn't work properly upon calling after toggle (width increase/decrease = redraw table.).
+                    $('.sidebar-control').on('click', function () {
+
+                        setTimeout(function () {
+                            //alert("gii");
+
+                            table.columns.adjust().draw();
+                            $("#table1").resize();
+                        }, 100);
+
+                    });
+                    //}
+
+                    $('#table1').on('page.dt', function () {
+                        //table.draw();
+                        //alert("zzz1");
+                        $("#table1").resize();
+
+                    });
+
+                    $('#table1').on('column-visibility.dt', function () {
+                        //table.draw();
+                        //alert("zzz2");
+                        $("#table1").resize();
+
+                    });
+
+                    $('#table1').on('order.dt', function () {
+                        //table.draw();
+                        //alert("zzz3");
+                        $("#table1").resize();
+
+                    });
+
+
+                    $('#table1').on('responsive-display.dt', function () {
+                        //table.draw();
+                        //alert("zzz4");
+                        $("#table1").resize();
+
+                    });
+
+                    $('#table1').on('responsive-resize.dt', function () {
+                        //table.draw();
+                        //alert("zzz4");
+                        $("#table1").resize();
+
+                    });
+                };
+
+                // Select2 for length menu styling
+                var _componentSelect2 = function () {
+                    if (!$().select2) {
+                        console.warn('Warning - select2.min.js is not loaded.');
+                        return;
+                    }
+
+                    // Initialize
+                    $('.dataTables_length select').select2({
+                        minimumResultsForSearch: Infinity,
+                        dropdownAutoWidth: true,
+                        width: 'auto'
+                    });
+                };
+
+
+                //
+                // Return objects assigned to module
+                //
+
+                return {
+                    init: function () {
+                        _componentDatatableBasic();
+                        _componentSelect2();
+                    }
+                }
+            }();
+
+        // Initialize module
+        // ------------------------------
+
+        document.addEventListener('DOMContentLoaded', function () {
+            table1.init();
+        });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

@@ -368,6 +368,11 @@ namespace ISOStd.Models
         [Display(Name = "Impact in detail")]
         public string Impact_detail { get; set; }
 
+        //JD
+        public string academic_mandatory { get; set; }
+        public string experience_mandatory { get; set; }
+        public string trainings_mandatory { get; set; }
+        public string skills_mandatory { get; set; }
 
         //NC
         internal bool FunAddNC(NCModels objModels, NCModelsList objRelatedList)

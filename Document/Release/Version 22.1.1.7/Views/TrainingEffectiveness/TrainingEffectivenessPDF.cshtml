@@ -1,0 +1,167 @@
+﻿@using System.Data
+@using ISOStd.Models;
+
+@{
+    ViewBag.Title = "TrainingEffectivenessPDF";
+
+    ISOStd.Models.TrainingEffectivenessModels obj = new ISOStd.Models.TrainingEffectivenessModels();
+    if (ViewBag.Evaluation != null)
+    {
+        obj = ViewBag.Evaluation;
+    }
+
+    DataSet dsEvalDetails = new DataSet();
+    if (ViewBag.PerformanceElement != null)
+    {
+        dsEvalDetails = ViewBag.PerformanceElement;
+    }
+    int iSrno = 0;
+    ISOStd.Models.SurveyModels objSurvey = new ISOStd.Models.SurveyModels();
+    Layout = "~/Views/Shared/_PrintLayout.cshtml";
+}
+
+<STYLE TYPE="text/css">
+    .breakhere {
+        page-break-after: always
+    }
+</STYLE>
+
+<div class="bp-header__main">
+    <img style="width:250px; height:70px;" src='@Url.Content("~/Images/companylogo.png")' />
+</div>
+
+
+<div>
+
+    <h1 class="mb-0 text-center">Training Effective Evaluation Report</h1>
+    <table class="table table-lg">
+        <tr>
+            <td>
+                <b>
+                    Report Number
+                </b>
+            </td>
+            <td>
+                <div>
+                    @obj.report_no
+                </div>
+            </td>
+            <td>
+                <b>
+                    Performance monitoring period
+                </b>
+            </td>
+            <td>
+                <div>
+                    @obj.perf_monitor_period
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <b>
+                    Training Topic
+                </b>
+            </td>
+            <td>
+                <div>
+                    @obj.Training_Topic
+                </div>
+            </td>
+            <td>
+                <b>
+                    Source Of Training
+                </b>
+            </td>
+            <td>
+                <div>
+                    @obj.Sourceof_Training
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <b>
+                    Employee Name
+                </b>
+            </td>
+            <td>
+                <div>
+                    @obj.emp_name
+                </div>
+            </td>
+            <td>
+                <b>
+                    Is employee performance improved?
+                </b>
+            </td>
+            <td>
+                <div>
+                    @obj.emp_perf_improved
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <b>
+                    Actions to be taken to improve the employee competency
+                </b>
+            </td>
+            <td>
+                <div>
+                    @obj.action_taken
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <b>
+                    comments
+                </b>
+            </td>
+            <td>
+                <div>
+                    @obj.comments
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
+<br />
+<br />
+
+
+@if (dsEvalDetails != null && dsEvalDetails.Tables.Count > 0 && dsEvalDetails.Tables[0].Rows.Count > 0)
+{
+
+    <h5 for="Evaluation Details" style="background-color: #4cc4dd;  color: white; padding-left: 5px;">TrainingEffective Evaluation Details</h5>
+
+
+    <table class="table table-lg">
+        <tr>
+            <th> Sr. No.</th>
+            <th> Element</th>
+            <th> Rating</th>
+           
+        </tr>
+        @for (int i = 0; i < dsEvalDetails.Tables[0].Rows.Count; i++)
+        {
+            iSrno = iSrno + 1;
+           
+            <tr>
+                <td>
+                    @iSrno
+                </td>
+                <td>
+                    @objSurvey.GetSurveyQuestionNameById(dsEvalDetails.Tables[0].Rows[i]["SQId"].ToString()))
+                </td>
+                <td>
+                    @objSurvey.GetSurveyRatingNameById(dsEvalDetails.Tables[0].Rows[i]["SQ_OptionsId"].ToString())
+                </td>             
+            </tr>
+        }       
+
+    </table>
+
+}
+

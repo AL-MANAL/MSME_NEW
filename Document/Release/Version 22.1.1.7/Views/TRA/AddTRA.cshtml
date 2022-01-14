@@ -1,0 +1,825 @@
+﻿@model ISOStd.Models.TRAModels
+
+@{
+    ViewBag.Title = "";
+}
+
+<script src='@Url.Content("~/global_assets/js/demo_pages/form_wizard.js")'></script>
+
+@section featured {
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("TRAList", "TRA", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Job Safety Analysis</span>
+                    </a>
+                    <span class="breadcrumb-item active">Add Job Safety Analysis</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+}    
+				<!-- Basic setup -->
+	            <div class="card">
+					   <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Add Job Safety Analysis</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+                       <div class="card-body">
+            <div class="container-fluid">
+              
+                  <form class="wizard-form steps-validation" action="@Url.Action("AddTRA", "TRA")" data-fouc id="form1">
+						<h6>Task Registration</h6>
+						<fieldset>					
+                             <table class="table table-lg">
+                                 <tr class="row">
+                                     <td class="col-xs-3 col-md-2">
+                                         @Html.LabelFor(model => model.branch)
+                                     </td>
+                                     <td class="col">
+                                         <select class="form-control-select3" multiple="multiple" data-fouc id="branch" name="branch" onchange="GetDeptList()">
+                                             @*<option value='' hidden>Select</option>*@
+                                             @if (ViewBag.Branch != null)
+                                             {
+                                                 foreach (var data in ViewBag.Branch)
+                                                 {
+                                                     if (Array.IndexOf(Model.branch.ToString().Split(','), data.Value) >= 0)
+                                                     {
+                                                         <option value='@data.Value' selected>@data.Text</option>
+                                                     }
+                                                     else
+                                                     {
+                                                         <option value='@data.Value'>@data.Text</option>
+                                                     }
+                                                 }
+                                             }
+                                         </select>
+                                     </td>
+                                     <td class="col-xs-3 col-md-2">
+                                         @Html.LabelFor(model => model.department)<text style="color:red;">*</text>
+                                     </td>
+                                     <td class="col">
+                                         <select class="form-control-select3" data-fouc id="department" name="department" multiple="multiple" required>
+                                             @if (ViewBag.Department != null)
+                                             {
+                                                 foreach (var item in ViewBag.Department)
+                                                 {
+                                                     if (Array.IndexOf(Model.department.ToString().Split(','), item.Value) >= 0)
+                                                     {
+                                                         <option value='@item.Value' selected>@item.Text</option>
+                                                     }
+                                                     else
+                                                     {
+                                                         <option value='@item.Value'>@item.Text</option>
+                                                     }
+                                                 }
+                                             }
+                                         </select>
+                                         <br />
+                                         @Html.ValidationMessageFor(m => m.department)
+                                     </td>
+
+                                 </tr>
+                                 <tr class="row">
+                                     <td class="col-xs-3 col-md-2">
+                                         <div class="editor-label">
+                                             @Html.LabelFor(model => model.tra_date)<text style="color:red;">*</text>
+                                         </div>
+                                     </td>
+                                     <td class="col">
+                                         <div class="editor-field">
+                                             <input class="form-control required" type="date" id="tra_date" name="tra_date" />
+                                         </div>
+                                     </td>
+                                     <td class="col-xs-3 col-md-2">
+                                         @Html.LabelFor(model => model.location)<text style="color:red;">*</text>
+                                     </td>
+                                     <td class="col">
+                                         <select class="form-control-select3" data-fouc id="location" name="location" multiple="multiple" required>
+                                             @if (ViewBag.Location != null)
+                                             {
+                                                 foreach (var item in ViewBag.Location)
+                                                 {
+                                                     if (Array.IndexOf(Model.location.ToString().Split(','), item.Value) >= 0)
+                                                     {
+                                                         <option value='@item.Value' selected>@item.Text</option>
+                                                     }
+                                                     else
+                                                     {
+                                                         <option value='@item.Value'>@item.Text</option>
+                                                     }
+                                                 }
+                                             }
+                                         </select>
+                                         <br />
+                                         @Html.ValidationMessageFor(m => m.location)
+                                     </td>
+                                 </tr>
+                                   <tr class="row">
+                                       <td class="col-xs-3 col-md-2">
+                                            <div class="editor-label">
+                                                    @Html.LabelFor(model => model.tra_ref)<text style="color:red;">*</text>
+                                            </div>
+                                        </td>
+                                        <td class="col">
+                                             <div class="editor-field">
+                                                    @Html.EditorFor(model => model.tra_ref, new { htmlAttributes = new {  @class = "form-control required"  } }) 
+                                             </div>
+                                        </td>
+                                        <td class="col-xs-3 col-md-2">
+                                            <div class="editor-label">
+                                                    @Html.LabelFor(model => model.revno)<text style="color:red;">*</text>
+                                            </div>
+                                        </td>
+                                        <td class="col">
+                                             <div class="editor-field">
+                                                     @Html.EditorFor(model => model.revno, new { htmlAttributes = new {  @class = "form-control required"  } }) 
+                                             </div>
+                                        </td>
+                                  </tr>
+                                   <tr class="row">
+                                       <td class="col-xs-3 col-md-2">
+                                            <div class="editor-label">
+                                                @Html.LabelFor(model => model.desc_work)
+                                            </div>
+                                        </td>
+                                        <td class="col">
+                                             <div class="editor-field">
+                                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="desc_work" name="desc_work"></textarea>                         
+                                             </div>
+                                        </td>
+                                        <td class="col-xs-3 col-md-2">
+                                            <div class="editor-label">
+                                                    @Html.LabelFor(model => model.document_title)<text style="color:red;">*</text>
+                                            </div>
+                                        </td>
+                                        <td class="col">
+                                             <div class="editor-field">
+                                                     @Html.EditorFor(model => model.document_title, new { htmlAttributes = new {  @class = "form-control required"  } }) 
+                                             </div>
+                                        </td>
+                                  </tr>
+                                  <tr class="row">
+                                       <td class="col-xs-3 col-md-2">
+                                            <div class="editor-label">
+                                                @Html.LabelFor(model => model.duration)<text style="color:red;">*</text>
+                                            </div>
+                                        </td>
+                                        <td class="col">
+                                             <div class="editor-field">
+                                                  @Html.EditorFor(model => model.duration, new { htmlAttributes = new {  @class = "form-control required"  } }) 
+                                             </div>
+                                        </td>
+                                         @*<td class="col-xs-3 col-md-2">
+                                            <div class="editor-label">
+                                                @Html.LabelFor(model => model.location)<text style="color:red;">*</text>
+                                            </div>
+                                        </td>
+                                        <td class="col">
+                                             <div class="editor-field">
+                                                  @Html.EditorFor(model => model.location, new { htmlAttributes = new {  @class = "form-control required"  } }) 
+                                             </div>
+                                        </td>*@
+                                  </tr>
+                                 
+                            </table>
+						</fieldset>
+
+						<h6>Task Performer</h6>
+						<fieldset>
+							  <table class="table table-lg">
+                                  <tr class="row">
+                                       <td class="col-xs-3 col-md-2">
+                                            <div class="editor-label">
+                                                @Html.LabelFor(model => model.task_performer)<text style="color:red;">*</text>
+                                            </div>
+                                       </td>
+                                       <td class="col-xs-3 col-md-3">
+                                             <div class="editor-field">
+                                                 @if (ViewBag.Task != null)
+                                                {
+                                                    foreach (var item in ViewBag.Task)
+                                                    {
+                                                        <input type="radio" name="task_performer" id="task_performer" data-name='@item' value='@item' onclick="setType()" required /> @item
+                                                    }
+                                                }
+                                             </div>
+                                        </td>                                   
+                                  </tr>
+                                  </table>
+                                  <fieldset class="border p-2">
+        <legend class="font-weight-semibold text-success">Person Details</legend>
+
+        <table class="table table-lg">
+
+            <tr class="row">
+
+                <td class="col-xs-3 col-md-3">
+                    <div class="editor-label">
+                        Person Name
+                        
+                    </div>     
+                </td>
+               <td class="col-xs-3 col-md-3">
+                    <div class="editor-field">
+                        <input class="form-control" type="text" id="pers_name" name="pers_name" />
+                        <span class="field-validation-error">
+                            <label id="pers_name-message" class="validation-invalid-label" style="display: none" for="basic">This field is required.</label>
+                        </span>
+                    </div>
+                </td>
+                 <td class="col-xs-3 col-md-3">
+                    <div class="editor-label">
+                        Designation
+                    </div>              
+                </td>
+              <td class="col-xs-3 col-md-3">
+                    <div class="editor-field">
+                        <input class="form-control" type="text" id="designation" name="designation" />
+                        <span class="field-validation-error">
+                            <label id="designation-message" class="validation-invalid-label" style="display: none" for="basic">This field is required.</label>
+                        </span>
+                    </div>
+                </td>
+                <td class="col-xs-3 col-md-5">
+                    <input type="button" value="Add" class="btn btn-success" onclick="AddPers()" /> <span class="text-primary font-italic">(Please click ADD button to add multiple entries)</span>
+                </td>
+            </tr>
+
+        </table>
+    </fieldset>
+
+<div class="card invisible" id="hidden card"> 
+        <div class="card-body">
+            <input type="hidden" id="itemcnt" name="itemcnt" value="0" />
+
+            <div class="card card-table table-responsive shadow-0 mb-0">
+                <table class="table" id="team-list">
+                    <tr class="bg-blue">
+                        <th>Action</th>
+                        <th>Person Name</th>
+                        <th>Designation</th>
+                    </tr>
+                </table>
+
+            </div>
+        </div>
+    </div>
+
+						</fieldset>
+
+						<h6>Risk Assessment</h6>
+						<fieldset>
+                            <fieldset class="border p-2">
+        <legend class="font-weight-semibold text-success">Risk Activity</legend>
+
+							  <table class="table table-lg">
+                                  <tr class="row">
+                                       <td class="col-xs-3 col-md-2">
+                                            <div class="editor-label">
+                                                    @Html.LabelFor(model => model.activity)
+                                            </div>
+                                        </td>
+                                        <td class="col">
+                                             <div class="editor-field">
+                                                    <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="activity" name="activity"></textarea>                                 
+                                              <span class="field-validation-error">
+                            <label id="activity-message" class="validation-invalid-label" style="display: none" for="basic">This field is required.</label>
+                        </span>
+                                                  </div>
+                                        </td>
+                                        <td class="col-xs-3 col-md-2">
+                                            <div class="editor-label">
+                                                    @Html.LabelFor(model => model.hazards)
+                                            </div>
+                                        </td>
+                                        <td class="col">
+                                             <div class="editor-field">
+                                                  <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="hazards" name="hazards"></textarea>        
+                                              <span class="field-validation-error">
+                            <label id="hazards-message" class="validation-invalid-label" style="display: none" for="basic">This field is required.</label>
+                        </span>
+                                             </div>
+                                        </td>
+                                  </tr>
+                               <tr class="row">
+                                       <td class="col-xs-3 col-md-2">
+                                            <div class="editor-label">
+                                                    @Html.LabelFor(model => model.causes)
+                                            </div>
+                                        </td>
+                                        <td class="col">
+                                             <div class="editor-field">
+                                                    <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="causes" name="causes"></textarea>        
+                                              <span class="field-validation-error">
+                            <label id="causes-message" class="validation-invalid-label" style="display: none" for="basic">This field is required.</label>
+                        </span>
+                                             </div>
+                                        </td>
+                                        <td class="col-xs-3 col-md-2">
+                                            <div class="editor-label">
+                                                    @Html.LabelFor(model => model.consequences)
+                                            </div>
+                                        </td>
+                                        <td class="col">
+                                             <div class="editor-field">
+                                                  <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="consequences" name="consequences"></textarea>        
+                                              <span class="field-validation-error">
+                            <label id="consequences-message" class="validation-invalid-label" style="display: none" for="basic">This field is required.</label>
+                        </span>
+                                             </div>
+                                        </td>
+                                  </tr>
+                                    <tr class="row">
+                                       <td class="col-xs-3 col-md-2">
+                                            <div class="editor-label">
+                                                    @Html.LabelFor(model => model.existing_measure)
+                                            </div>
+                                        </td>
+                                        <td class="col">
+                                             <div class="editor-field">
+                                                    <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="existing_measure" name="existing_measure"></textarea>        
+                                              <span class="field-validation-error">
+                            <label id="existing_measure-message" class="validation-invalid-label" style="display: none" for="basic">This field is required.</label>
+                        </span>
+                                             </div>
+                                        </td>
+                                        <td class="col-xs-3 col-md-2">
+                                            <div class="editor-label">
+                                                    @Html.LabelFor(model => model.severity)
+                                            </div>
+                                        </td>
+                                        <td class="col">
+                                             <div class="editor-field">
+                                                <select class="form-control form-control-select3" data-fouc id="severity" name="severity"  onchange="GetRiskRating()">
+                                                <option value='' hidden>Select</option>
+                                                @if (ViewBag.severity != null)
+                                                {
+                                                foreach (var item in ViewBag.severity)
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+                                                }
+                                                }
+                                                </select>
+                                                  <span class="field-validation-error">
+                            <label id="severity-message" class="validation-invalid-label" style="display: none" for="basic">This field is required.</label>
+                        </span>
+                                             </div>
+                                        </td>
+                                  </tr>
+                                        <tr class="row">
+                                       <td class="col-xs-3 col-md-2">
+                                            <div class="editor-label">
+                                                    @Html.LabelFor(model => model.probability)
+                                            </div>
+                                        </td>
+                                        <td class="col">
+                                             <div class="editor-field">
+                                                <select class="form-control form-control-select3" data-fouc id="probability" name="probability"  onchange="GetRiskRating()">
+                                                <option value='' hidden>Select</option>
+                                                @if (ViewBag.probability != null)
+                                                {
+                                                    foreach (var item in ViewBag.probability)
+                                                {
+                                                    <option value='@item.Value'>@item.Text</option>
+                                                }
+                                                }
+                                                </select>
+                                                     <span class="field-validation-error">
+                            <label id="probability-message" class="validation-invalid-label" style="display: none" for="basic">This field is required.</label>
+                        </span>
+                                             </div>
+                                        </td>
+                                        <td class="col-xs-3 col-md-2">
+                                            <div class="editor-label">
+                                                    @Html.LabelFor(model => model.risk_rating)
+                                            </div>
+                                        </td>
+                                        <td class="col">
+                                             <div class="editor-field">
+                                                    <input class="form-control" type="text" id="risk_rating" name="risk_rating" style="display:none;" readonly />
+                                              
+                                                  </div>
+                                        </td>
+                                  </tr>
+                                  <tr class="row">
+                                        <td class="col">
+                                            <input type="button" value="Add" class="btn btn-success" onclick="AddRisk()" /><span class="text-primary font-italic">(Please click ADD button to add multiple entries)</span>
+                                        </td>
+                                  </tr>
+                            </table>
+                                </fieldset>
+						    <div class="card invisible" id="hidden card1">
+      
+        <div class="card-body">
+            <input type="hidden" id="itemcnts" name="itemcnts" value="0" />
+            <div class="card card-table table-responsive shadow-0 mb-0">
+                <table class="table" id="team-list1">
+                    <tr class="bg-blue">
+                        <th style="width: 70px; min-width: 70px; max-width: 70px;">Action</th>
+                        <th style="width: 100px; min-width: 100px; max-width: 100px;">Activities</th>
+                        <th style="width: 100px; min-width: 100px; max-width: 100px;">Hazards</th>
+                        <th style="width: 100px; min-width: 100px; max-width: 100px;">Causes & Threats</th>
+                        <th style="width: 100px; min-width: 100px; max-width: 100px;">Consequences</th>
+                        <th style="width: 100px; min-width: 100px; max-width: 100px;">Existing control Measures</th>
+                        <th style="width: 70px; min-width: 70px; max-width: 70px;">Severity</th>
+                        <th style="width: 70px; min-width: 70px; max-width: 70px;">Probability</th>
+                        <th style="width: 70px; min-width: 70px; max-width: 70px;">Risk Rating</th>
+                    </tr>
+                </table>
+               
+            </div>
+        </div>
+    </div>
+                        </fieldset>
+                  
+					
+					</form>
+                </div>
+                           </div>
+	            </div>
+	            <!-- /basic setup -->
+
+  <script src='@Url.Content("~/global_assets/js/plugins/forms/wizards/steps2.min.js")'></script>
+   <script>
+       var summary = {
+           summaryUrl: '@Url.Action("AddTRA", "TRA")'
+
+       };
+
+       var $ = jQuery.noConflict();
+
+  </script>
+        
+
+
+
+@section Scripts {
+    <script>
+
+
+        var showClass = 'is-visible';
+        var hideClass = 'invisible';
+
+        function Validation() {
+            var validflg = true;
+            var ssnMessage = "";
+
+            if (document.getElementById("pers_name").value == "") {
+                ssnMessage = $('#pers_name-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#pers_name-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("designation").value == "") {
+                ssnMessage = $('#designation-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#designation-message');
+                ssnMessage.hide();
+            }
+            return validflg;
+        }
+        function Validation1() {
+            var validflg = true;
+            var ssnMessage = "";
+
+            if (document.getElementById("activity").value == "") {
+                ssnMessage = $('#activity-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#activity-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("hazards").value == "") {
+                ssnMessage = $('#hazards-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#hazards-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("causes").value == "") {
+                ssnMessage = $('#causes-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#causes-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("consequences").value == "") {
+                ssnMessage = $('#consequences-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#consequences-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("existing_measure").value == "") {
+                ssnMessage = $('#existing_measure-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#existing_measure-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("severity").value == "") {
+                ssnMessage = $('#severity-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#severity-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("probability").value == "") {
+                ssnMessage = $('#probability-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#probability-message');
+                ssnMessage.hide();
+            }
+            return validflg;
+        }
+        function deleteRow(btn) {
+            var row = btn.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+        }
+        function AddPers() {
+
+            if (Validation() == true) {
+
+                var cnt = document.getElementById("itemcnt").value;
+
+                document.getElementById("itemcnt").value = cnt;
+                // Find a <table> element with id="myTable":
+                var table = document.getElementById("team-list");
+
+
+
+                // Create an empty <tr> element and add it to the 1st position of the table:
+                var row = table.insertRow();
+
+
+                // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                var cell0 = row.insertCell(0);
+                var cell1 = row.insertCell(1);
+                var cell2 = row.insertCell(2);
+
+
+                var pers_name = $('#pers_name').val();
+                var designation = $('#designation').val();
+
+                cell0.innerHTML = " <img src='@Url.Content("~/images/cancel.png")' onclick='deleteRow(this)' style='cursor:pointer; padding-right: 5px;'/>";
+                cell1.innerHTML = "<input class='form-control' type='text' id='pers_name " + cnt + "' name='pers_name " + cnt + "' value='" + pers_name + "'/>";
+                cell2.innerHTML = "<input class='form-control' type='text' id='designation " + cnt + "' name='designation " + cnt + "' value='" + designation + "' />";
+
+                cnt++;
+                document.getElementById("itemcnt").value = cnt;
+
+                document.getElementById("hidden card").classList.remove(hideClass);
+                document.getElementById("hidden card").classList.add(showClass);
+
+                document.getElementById("pers_name").value = "";
+                document.getElementById("designation").value = "";
+
+                ssnMessage = $('#pers_name-message');
+                ssnMessage.hide();
+                ssnMessage = $('#designation-message');
+                ssnMessage.hide();
+
+            }
+
+        }
+        function AddRisk() {
+
+            if (Validation1() == true) {
+
+                var cnt = document.getElementById("itemcnts").value;
+
+                document.getElementById("itemcnts").value = cnt;
+                // Find a <table> element with id="myTable":
+                var table = document.getElementById("team-list1");
+
+                // Create an empty <tr> element and add it to the 1st position of the table:
+                var row = table.insertRow();
+
+
+                // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                var cell0 = row.insertCell(0);
+                var cell1 = row.insertCell(1);
+                var cell2 = row.insertCell(2);
+                var cell3 = row.insertCell(3);
+                var cell4 = row.insertCell(4);
+
+                var cell5 = row.insertCell(5);
+                var cell6 = row.insertCell(6);
+                var cell7 = row.insertCell(7);
+                var cell8 = row.insertCell(8);
+
+                cell0.style = "width: 70px; min-width: 70px; max-width: 70px;word-wrap:break-word";
+                cell1.style = "width: 100px; min-width: 100px; max-width: 100px;word-wrap:break-word";
+                cell2.style = "width: 100px; min-width: 100px; max-width: 100px;word-wrap:break-word";
+                cell3.style = "width: 100px; min-width: 100px; max-width: 100px;word-wrap:break-word";
+                cell4.style = "width: 100px; min-width: 100px; max-width: 100px;word-wrap:break-word";
+                cell5.style = "width: 100px; min-width: 100px; max-width: 100px;word-wrap:break-word";
+                cell6.style = "width: 70px; min-width: 70px; max-width: 70px;word-wrap:break-word";
+                cell7.style = "width: 70px; min-width: 70px; max-width: 70px;word-wrap:break-word";
+                cell8.style = "width: 70px; min-width: 70px; max-width: 70px;word-wrap:break-word";
+
+                var activity = $('#activity').val();
+                var hazards = $('#hazards').val();
+                var causes = $('#causes').val();
+                var consequences = $('#consequences').val();
+                var existing_measure = $('#existing_measure').val();
+
+                var risk_rating = $('#risk_rating').val();
+
+                var severity = $('#severity').val();
+                var severity_val = document.getElementById("severity");
+                var severity_text = severity_val.options[severity_val.selectedIndex].text;
+
+                var probability = $('#probability').val();
+                var probability_val = document.getElementById("probability");
+                var probability_text = probability_val.options[probability_val.selectedIndex].text;
+
+                cell0.innerHTML = " <img src='@Url.Content("~/images/cancel.png")' onclick='deleteRow(this)' style='cursor:pointer; padding-right: 5px;'/>";
+                cell1.innerHTML = "<textarea maxlength='2000' placeholder='Textarea' style='overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;' rows='4' cols='4' class='form-control elastic maxlength-badge-position' id='activity " + cnt + "' name='activity " + cnt + "' value='" + activity + "'/>" + activity + "</textarea>";
+                cell2.innerHTML = "<textarea maxlength='2000' placeholder='Textarea' style='overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;' rows='4' cols='4' class='form-control elastic maxlength-badge-position' id='hazards " + cnt + "' name='hazards " + cnt + "' value='" + hazards + "' />" + hazards + "</textarea>";
+                cell3.innerHTML = "<textarea maxlength='2000' placeholder='Textarea' style='overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;' rows='4' cols='4' class='form-control elastic maxlength-badge-position' id='causes " + cnt + "' name='causes " + cnt + "' value='" + causes + "' />" + causes + "</textarea>";
+                cell4.innerHTML = "<textarea maxlength='2000' placeholder='Textarea' style='overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;' rows='4' cols='4' class='form-control elastic maxlength-badge-position' id='consequences " + cnt + "' name='consequences " + cnt + "' value='" + consequences + "' />" + consequences + "</textarea>";
+
+                cell5.innerHTML = "<textarea maxlength='2000' placeholder='Textarea' style='overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;' rows='4' cols='4' class='form-control elastic maxlength-badge-position' id='existing_measure " + cnt + "' name='existing_measure " + cnt + "' value='" + existing_measure + "' />" + existing_measure + "</textarea>";
+                cell6.innerHTML = "<input type='hidden' id='severity " + cnt + "' name='severity " + cnt + "' value='" + severity + "' />" + severity_text;
+                cell7.innerHTML = "<input type='hidden' id='probability " + cnt + "' name='probability " + cnt + "' value='" + probability + "' />" + probability_text;
+                cell8.innerHTML = "<input type='hidden' id='risk_rating " + cnt + "' name='risk_rating " + cnt + "' value='" + risk_rating + "' />" + risk_rating;
+
+
+                cnt++;
+                document.getElementById("itemcnts").value = cnt;
+
+                document.getElementById("hidden card1").classList.remove(hideClass);
+                document.getElementById("hidden card1").classList.add(showClass);
+
+                document.getElementById("activity").value = "";
+                document.getElementById("hazards").value = "";
+                document.getElementById("causes").value = "";
+                document.getElementById("consequences").value = "";
+                document.getElementById("existing_measure").value = "";
+                $("#severity").val('').trigger('change');
+                $("#probability").val('').trigger('change');
+                document.getElementById("risk_rating").value = "";
+                               
+                ssnMessage = $('#activity-message');
+                ssnMessage.hide();
+                ssnMessage = $('#hazards-message');
+                ssnMessage.hide();
+                ssnMessage = $('#causes-message');
+                ssnMessage.hide();
+                ssnMessage = $('#consequences-message');
+                ssnMessage.hide();
+                ssnMessage = $('#existing_measure-message');
+                ssnMessage.hide();
+                ssnMessage = $('#severity-message');
+                ssnMessage.hide();
+                ssnMessage = $('#probability-message');
+                ssnMessage.hide();
+            }
+        }
+        function GetRiskRating() {
+            var severity = $('#severity').val();
+
+            var probability = $('#probability').val();
+               
+            if (severity != "" && probability != "") {
+
+                jQuery.ajax({
+                    url: '@Url.Action("FunGetRiskRating", "TRA")',
+                    type: 'POST',
+                    dataType: "json",
+                    //data: { impact: impact, like: like },
+                    data: { severity: severity, probability: probability },
+                    success: function (result) {
+                        if (result != null) {
+                            document.getElementById("risk_rating").style.display = 'block';
+                            document.getElementById("risk_rating").value = result;
+                        }
+                    }
+                });
+            }
+        }
+
+          function GetDeptList() {
+            var selectedValues = [];
+            $("#branch :selected").each(function () {
+                selectedValues.push($(this).val());
+            });  
+                jQuery.ajax({
+                    url: '@Url.Action("FunGetAllDeptList", "EmployeeDetails")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'branch': selectedValues },
+                    success: function (result) {
+                        GetLocList(selectedValues);
+                        $("#department").children('option').remove();
+                        $("#department").trigger('change');
+                        if (result != null && result.length > 0) {
+                            $.each(result, function (index, item) {
+                                $("#department").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                                $("#department").trigger('change');
+                            });
+                            return;
+                        }
+                        //else {
+                        //    bootbox.alert({
+                        //        title: 'Department List',
+                        //        message: 'No Department exists.'
+                        //    });
+                        //}
+                    }
+                });          
+        }
+
+
+        function GetLocList(selectedValues) {                   
+            jQuery.ajax({
+                url: '@Url.Action("FunGetAllLocList", "EmployeeDetails")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'branch': selectedValues },
+                success: function (result) {
+                    $("#location").children('option').remove();
+                    $("#location").trigger('change');
+                    if (result != null && result.length > 0) {
+                        $.each(result, function (index, item) {
+                            $("#location").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                            $("#location").trigger('change');
+                        });
+                        return;
+                    }
+                    //else {
+                    //    bootbox.alert({
+                    //        title: 'Location List',
+                    //        message: 'No Location exists.'
+                    //    });
+                    //}
+                }
+            });       
+        }
+
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
+

@@ -1,0 +1,326 @@
+﻿@model ISOStd.Models.ExternalAuditModels
+@{
+    ViewBag.Title = "";
+
+
+}
+@section featured {
+    <div class="page-header page-header-light">
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("ExternalAuditList", "ExternalAudit", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">External Audit Details List</span>
+                    </a>
+                    <span class="breadcrumb-item active">Audit Status</span>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+@using (Html.BeginForm("AuditStatusUpdate", "ExternalAudit", FormMethod.Post,
+ new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Audit Status</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+                <input type="hidden" id="id_external_audit" name="id_external_audit" value="@Model.id_external_audit" />
+                <table class="table table-lg">
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.audit_no)
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <p class="bg-grey-300 py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.audit_no)
+                            </p>
+                        </td>                    
+                    </tr>
+                    @*<tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.directorate)
+                        </td>
+                        <td class="col">
+                            <p class="bg-grey-300 py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.directorate)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.group_name)
+                        </td>
+                        <td class="col">
+                            <p class="bg-grey-300 py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.group_name)
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.team)
+                        </td>
+                        <td class="col">
+                            <p class="bg-grey-300 py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.team)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.location)
+                        </td>
+                        <td class="col">
+                            <p class="bg-grey-300 py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.location)
+                            </p>
+                        </td>
+                    </tr>*@
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.audit_start_date)
+                        </td>
+                        <td class="col">
+                            <p class="bg-grey-300 py-1 px-2 rounded">
+                                @if (Model.audit_start_date != null && Model.audit_start_date > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    @Html.Label(Model.audit_start_date.ToString("dd/MM/yyyy"))
+                                }
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.audit_complete_date)
+                        </td>
+                        <td class="col">
+                            <p class="bg-grey-300 py-1 px-2 rounded">
+                                @if (Model.audit_complete_date != null && Model.audit_complete_date > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    @Html.Label(Model.audit_complete_date.ToString("dd/MM/yyyy"))
+                                }
+                            </p>
+                        </td>
+                        </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.audit_type)
+                        </td>
+                        <td class="col">
+                            <p class="bg-grey-300 py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.audit_type)
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.audit_criteria)
+                        </td>
+                        <td class="col">
+                            <p class="bg-grey-300 py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.audit_criteria)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.entity_name)
+                        </td>
+                        <td class="col">
+                            <p class="bg-grey-300 py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.entity_name)
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+
+                <table class="table table-lg">
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.audit_status)<text style="color: red;">*</text>
+                        </td>
+                        <td class="col">
+                            <select class="form-control select-search select2-hidden-accessible" data-fouc id="audit_status" name="audit_status" required onchange="setType()">
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.AuditStatus != null)
+                                {
+                                    foreach (var item in ViewBag.AuditStatus)
+                                    {
+                                        if (item.Value == Model.audit_status)
+                                        {
+                                            <option value='@item.Value' selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.audit_status_date)<text style="color: red;">*</text>
+                        </td>
+                        <td class="col">
+
+                            @if (Model.audit_status_date > Convert.ToDateTime("01/01/0001"))
+                            {
+                                <input type="date" id="audit_status_date" name="audit_status_date" value="@Model.audit_status_date.ToString("yyyy-MM-dd")" class="form-control" />
+                            }
+                            else
+                            {
+                                <input type="date" id="audit_status_date" name="audit_status_date" required class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                            }
+
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.remarks)
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="remarks" name="remarks">@Model.remarks</textarea>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.status_upload)
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <div class="editor-field">
+                                <input type="file" name="status_upload" id="status_upload" onchange="FileFormatValidation(this)" multiple accept=".pdf,.xlsx,.xls,.doc,.docx,.image/*,.png,.jpeg,.jpg" @*class="bootstrap-uploader" data-fouc*@ />
+                                <span class="form-text text-muted"><code>(Hold Ctrl Key in case of multiple files)</code></span>
+                                @if (Model.status_upload != null && Model.status_upload != "" && Model.status_upload.Length > 0)
+                                {
+
+                                    <span class="form-text text-muted">
+                                        <code>
+                                            (Uncheck in case to remove a uploaded file)
+                                        </code>
+                                    </span>
+                                    foreach (var docs in Model.status_upload.Trim(',').Split(','))
+                                    {
+                                        <div class="form-check">
+                                            <label class="form-check-label">
+                                                <input type="checkbox" id="QCDocsVal" name="QCDocsVal" class="form-check-input-styled QCDocsVal" value="@docs.Trim(',')" checked title="Uncheck in case to remove a uploaded file" data-fouc />
+                                                <input type="hidden" id="QCDocsValselectall" name="QCDocsValselectall" />
+                                                <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" class="text-orange">
+                                                    Preview
+                                                </a>
+                                            </label>
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-md-12 bg-blue">Finding details</td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.major_nc)<text style="color: red;">*</text>
+                        </td>
+                        <td class="col">
+                            <input type="number" class="form-control" id="major_nc" name="major_nc" value="@Model.major_nc" required />
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.minor_nc)<text style="color: red;">*</text>
+                        </td>
+                        <td class="col">
+                            <input type="number" class="form-control" id="minor_nc" name="minor_nc" value="@Model.minor_nc" required />
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.no_observation)<text style="color: red;">*</text>
+                        </td>
+                        <td class="col">
+                            <input type="number" class="form-control" id="no_observation" name="no_observation" value="@Model.no_observation" required />
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.no_noteworthy)<text style="color: red;">*</text>
+                        </td>
+                        <td class="col">
+                            <input type="number" class="form-control" id="no_noteworthy" name="no_noteworthy" value="@Model.no_noteworthy" required />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+                @Html.ActionLink("Back to List", "ExternalAuditList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+                <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Save</button>
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script type="text/javascript">
+        //----zzz
+
+
+        $(document).ready(function () {
+
+            @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+                                        @:     text: '@TempData["alertdata"]',
+                                        @:     type: 'error'
+                                        @:     }).show();
+
+                            }
+
+            @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+                                        @:       text: '@TempData["Successdata"]',
+                                        @:       type: 'success'
+                                        @:        }).show();
+
+                            }
+        });
+        $('.form-check-input-styled').uniform();
+        $("#QCDocsVal").click(function () {
+            if ($("#QCDocsVal").prop('checked')) {
+                {
+                    $(this).prop('checked', true);
+                }
+            }
+            else {
+                $(this).prop('checked', false);
+                document.getElementById("QCDocsValselectall").value = "DeleteQC";
+            }
+        });
+        function FileFormatValidation(file) {
+            var ext = file.value.split(".").pop().toLowerCase();
+            if ($.inArray(ext, ["doc", "pdf", "docx", "xls", "xlsx", , "png", "jpg", "jpeg"]) == -1) {
+                file.value = "";
+                jAlert("Invalid file format, please upload only doc, pdf, docx, xls, xlsx, png, jpeg, jpg format");
+            }
+        }
+
+        function setType() {
+            var audit_status = $("#audit_status option:selected").text();
+            if (audit_status == "Cancelled" || audit_status == "Postponed") {
+                document.getElementById("remarks").required = true;
+            }
+            else {
+                document.getElementById("remarks").required = false;
+            }
+        }
+    </script>
+
+}

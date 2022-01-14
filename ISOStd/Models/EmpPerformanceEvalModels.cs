@@ -141,6 +141,12 @@ namespace ISOStd.Models
 
         public DateTime Date_of_join { get; set; }
 
+        [Display(Name = "Evaluation Status")]
+        public string eval_status { get; set; }
+
+        [Display(Name = "Top Mgmt")]
+        public string top_mgmt { get; set; }
+
         internal bool FunDeletePerformanceDoc(string sPerformance_EvalId)
         {
             try
@@ -174,7 +180,7 @@ namespace ISOStd.Models
                 
 
                 string sSqlstmt = "insert into t_emp_performance_eval (emp_id, Designation, Dept_id, Eval_DoneBy, Eval_DoneBy_Desig,"
-                    + "Eval_DoneBy_DeptId, Weakness, Strengths, Training_Reqd, Actions_Taken, Eval_ReviewedBy, Eval_ReviewedBy_Desig, Eval_ReviewedBy_DeptId, LoggedBy,DocUploadPath,branch,JrMgr,SrMgr,training_need,remarks,recommendation,notified_to,eval_period,eval_category";
+                    + " Eval_DoneBy_DeptId, Weakness, Strengths, Training_Reqd, Actions_Taken, Eval_ReviewedBy, Eval_ReviewedBy_Desig, Eval_ReviewedBy_DeptId, LoggedBy,DocUploadPath,branch,JrMgr,SrMgr,training_need,remarks,recommendation,notified_to,eval_period,eval_category";
 
                 if (objEmpPerformanceEval.Evaluation_DoneOn > Convert.ToDateTime("01/01/0001"))
                 {
@@ -224,6 +230,7 @@ namespace ISOStd.Models
                             FunAddTrainingList(objModelList);
                         }
                     }
+                    SendJrMgrPerpEmail(iPerformance_EvalId, "Employee Performace Evaluation");
                     return true;
                 }
             }
@@ -235,19 +242,19 @@ namespace ISOStd.Models
             return false;
         }
 
-        internal bool SendJrMgrPerpEmail(string sMessage = "")
+        internal bool SendJrMgrPerpEmail(int sPerformance_EvalId, string sMessage = "")
         {
             try
             {
-                string sPerformance_EvalId = "";
-                string PerfIdSql = "select max(Performance_EvalId) as Performance_EvalId from t_emp_performance_eval where Active=1";
-                DataSet dsPerfIdList = objGlobalData.Getdetails(PerfIdSql);
-                if (dsPerfIdList.Tables.Count > 0 && dsPerfIdList.Tables[0].Rows.Count > 0)
-                {
-                    sPerformance_EvalId = dsPerfIdList.Tables[0].Rows[0]["Performance_EvalId"].ToString();
-                }
+                //string sPerformance_EvalId = "";
+                //string PerfIdSql = "select max(Performance_EvalId) as Performance_EvalId from t_emp_performance_eval where Active=1";
+                //DataSet dsPerfIdList = objGlobalData.Getdetails(PerfIdSql);
+                //if (dsPerfIdList.Tables.Count > 0 && dsPerfIdList.Tables[0].Rows.Count > 0)
+                //{
+                //    sPerformance_EvalId = dsPerfIdList.Tables[0].Rows[0]["Performance_EvalId"].ToString();
+                //}
                 string sType = "EmpPerformace";                
-                string sSqlstmt = "SELECT emp_id, Designation, Dept_id, Evaluation_DoneOn, Evaluated_From, Evaluated_To,  Eval_DoneBy, Weakness,Strengths,DocUploadPath,JrMgr"
+                string sSqlstmt = "SELECT emp_id, Designation, Dept_id, Evaluation_DoneOn, Evaluated_From, Evaluated_To,  Eval_DoneBy, Weakness,Strengths,DocUploadPath,JrMgr,LoggedBy"
                     + " from t_emp_performance_eval where  Performance_EvalId='" + sPerformance_EvalId + "'";
 
                 DataSet dsEmpList = objGlobalData.Getdetails(sSqlstmt);
@@ -271,17 +278,16 @@ namespace ISOStd.Models
                     {
                         sContent = reader.ReadToEnd();
                     }
-                    string sName = objGlobalData.GetMultiHrEmpNameById(dsEmpList.Tables[0].Rows[0]["JrMgr"].ToString());
+                    //string sName = objGlobalData.GetMultiHrEmpNameById(dsEmpList.Tables[0].Rows[0]["JrMgr"].ToString());
                     string sToEmailIds = "";
-                    if (objGlobalData.GetMultiHrEmpEmailIdById(dsEmpList.Tables[0].Rows[0]["JrMgr"].ToString()) != "")
-                    {
-                        sToEmailIds = objGlobalData.GetMultiHrEmpEmailIdById(dsEmpList.Tables[0].Rows[0]["JrMgr"].ToString()) + ",";
-                    }
+
+                    sToEmailIds = objGlobalData.GetMultiHrEmpEmailIdById(dsEmpList.Tables[0].Rows[0]["Eval_DoneBy"].ToString());
+                   
                     sToEmailIds = Regex.Replace(sToEmailIds, ",+", ",");
                     sToEmailIds = sToEmailIds.Trim();
                     sToEmailIds = sToEmailIds.TrimEnd(',');
                     sToEmailIds = sToEmailIds.TrimStart(',');
-                    string sCCEmailIds = objGlobalData.GetHrEmpEmailIdById(dsEmpList.Tables[0].Rows[0]["Eval_DoneBy"].ToString())+","+objGlobalData.GetMultiHrEmpEmailIdById(objGlobalData.GetHRManagerEmployee());
+                    string sCCEmailIds = objGlobalData.GetMultiHrEmpEmailIdById(dsEmpList.Tables[0].Rows[0]["LoggedBy"].ToString());
                     aAttachment = HttpContext.Current.Server.MapPath(dsEmpList.Tables[0].Rows[0]["DocUploadPath"].ToString());
 
 
@@ -295,9 +301,9 @@ namespace ISOStd.Models
                         + "</td></tr>"
                         + "<tr><td colspan=3><b>Evaluation To Date:<b></td> <td colspan=3>" + Convert.ToDateTime(dsEmpList.Tables[0].Rows[0]["Evaluated_To"].ToString()).ToString("dd/MM/yyyy")
                         + "</td></tr>"
-                        + "<tr><td colspan=3><b>Evlaution Done By:<b></td> <td colspan=3>" + objGlobalData.GetMultiHrEmpNameById(dsEmpList.Tables[0].Rows[0]["Eval_DoneBy"].ToString()) + "</td></tr>"
-                        + "<tr><td colspan=3><b>Weakness:<b></td> <td colspan=3>" + (dsEmpList.Tables[0].Rows[0]["Weakness"].ToString()) + "</td></tr>"
-                        + "<tr><td colspan=3><b>Strengths:<b></td> <td colspan=3>" + (dsEmpList.Tables[0].Rows[0]["Strengths"].ToString()) + "</td></tr>";
+                        + "<tr><td colspan=3><b>Evlaution Done By:<b></td> <td colspan=3>" + objGlobalData.GetMultiHrEmpNameById(dsEmpList.Tables[0].Rows[0]["Eval_DoneBy"].ToString()) + "</td></tr>";
+                        //+ "<tr><td colspan=3><b>Weakness:<b></td> <td colspan=3>" + (dsEmpList.Tables[0].Rows[0]["Weakness"].ToString()) + "</td></tr>"
+                        //+ "<tr><td colspan=3><b>Strengths:<b></td> <td colspan=3>" + (dsEmpList.Tables[0].Rows[0]["Strengths"].ToString()) + "</td></tr>";
 
                     if (File.Exists(aAttachment))
                     {
@@ -305,7 +311,7 @@ namespace ISOStd.Models
                     }
 
                     sContent = sContent.Replace("{FromMsg}", "");
-                    sContent = sContent.Replace("{UserName}", sName);
+                    //sContent = sContent.Replace("{UserName}", sName);
                     sContent = sContent.Replace("{Title}", "Employee Performance Details");
                     sContent = sContent.Replace("{content}", sHeader );
                     sContent = sContent.Replace("{message}", "");
@@ -376,44 +382,48 @@ namespace ISOStd.Models
             return false;
         }
 
-        internal bool FunUpdateEmpPerformanceComments(EmpPerformanceEvalModels objEmpPerformanceEval)
+        internal bool FunUpdateEmpPerfManagerEvaluation(EmpPerformanceEvalModels objEmpPerformanceEval, EmpPerformanceElementsModelsList objEmpPerformanceEeleList, EmpPerformanceEvalModelsList objModelList)
         {
             try
             {
-                string sJrMgr_Comment_Date = DateTime.Now.ToString("yyyy-MM-dd");
-                string sSrMgr_Comment_Date = DateTime.Now.ToString("yyyy-MM-dd");
+                string sSqlstmt = "update t_emp_performance_eval set  Weakness='" + objEmpPerformanceEval.Weakness
+                 + "', Strengths='" + objEmpPerformanceEval.Strengths + "', Training_Reqd='" + objEmpPerformanceEval.Training_Reqd + "', Actions_Taken='" + objEmpPerformanceEval.Actions_Taken
+                 + "', Eval_ReviewedBy='" + objEmpPerformanceEval.Eval_ReviewedBy + "', Eval_ReviewedBy_Desig='" + objEmpPerformanceEval.Eval_ReviewedBy_Desig
+                 + "', Eval_ReviewedBy_DeptId='" + objEmpPerformanceEval.Eval_ReviewedBy_DeptId + "',training_need='" + training_need + "',remarks='" + remarks + "',recommendation='" + recommendation + "',notified_to='" + notified_to + "',eval_status='1'";
 
-                string sSqlstmt = "update t_emp_performance_eval set ";
-
-                if (objEmpPerformanceEval.Comment_JrMgr != null)
+                if (objEmpPerformanceEval.DocUploadPath != null)
                 {
-                    sSqlstmt = sSqlstmt + " Comment_JrMgr='" + objEmpPerformanceEval.Comment_JrMgr + "', JrMgr_Comment_Date='" + sJrMgr_Comment_Date + "' ";
-                }
-
-                if (objEmpPerformanceEval.Comment_SrMgr != null)
-                {
-                    sSqlstmt = sSqlstmt + " Comment_SrMgr='" + objEmpPerformanceEval.Comment_SrMgr + "', SrMgr_Comment_Date='" + sSrMgr_Comment_Date + "' ";
+                    sSqlstmt = sSqlstmt + ", DocUploadPath='" + objEmpPerformanceEval.DocUploadPath + "' ";
                 }
 
                 sSqlstmt = sSqlstmt + " where Performance_EvalId='" + objEmpPerformanceEval.Performance_EvalId + "'";
 
-                return (objGlobalData.ExecuteQuery(sSqlstmt));
-               
+                if (objGlobalData.ExecuteQuery(sSqlstmt))
+                {
+                    EmpPerformanceElementsModels objElement = new EmpPerformanceElementsModels();
+                    objElement.FunAddEmpPerformanceEvaluation(objEmpPerformanceEeleList);
+
+
+                    FunAddTrainingList(objModelList);
+
+                    return SendMangerPerpEmail(Performance_EvalId, "Employee Performace Evaluation");
+                }
             }
             catch (Exception ex)
             {
-                objGlobalData.AddFunctionalLog("Exception in FunUpdateEmpPerformanceEvaluation: " + ex.ToString());
+                objGlobalData.AddFunctionalLog("Exception in FunUpdateEmpPerfManagerEvaluation: " + ex.ToString());
 
             }
             return false;
         }
 
-        internal bool SendSrMgrPerpEmail(string sPerformance_EvalId,string sMessage = "")
+
+        internal bool SendMangerPerpEmail(string sPerformance_EvalId, string sMessage = "")
         {
             try
-            {               
+            {
                 string sType = "EmpPerformace";
-                string sSqlstmt = "SELECT emp_id, Designation, Dept_id, Evaluation_DoneOn, Evaluated_From, Evaluated_To,  Eval_DoneBy, Weakness,Strengths,DocUploadPath,JrMgr,Comment_JrMgr,JrMgr_Comment_Date,SrMgr"
+                string sSqlstmt = "SELECT emp_id, Designation, Dept_id, Evaluation_DoneOn, Evaluated_From, Evaluated_To,  Eval_DoneBy, Weakness,Strengths,DocUploadPath,JrMgr,Comment_JrMgr,JrMgr_Comment_Date,SrMgr,notified_to,LoggedBy"
                     + " from t_emp_performance_eval where  Performance_EvalId='" + sPerformance_EvalId + "'";
 
                 DataSet dsEmpList = objGlobalData.Getdetails(sSqlstmt);
@@ -437,17 +447,16 @@ namespace ISOStd.Models
                     {
                         sContent = reader.ReadToEnd();
                     }
-                    string sName = objGlobalData.GetMultiHrEmpNameById(dsEmpList.Tables[0].Rows[0]["SrMgr"].ToString());
+                    //string sName = objGlobalData.GetMultiHrEmpNameById(dsEmpList.Tables[0].Rows[0]["SrMgr"].ToString());
                     string sToEmailIds = "";
-                    if (objGlobalData.GetMultiHrEmpEmailIdById(dsEmpList.Tables[0].Rows[0]["SrMgr"].ToString()) != "")
-                    {
-                        sToEmailIds = objGlobalData.GetMultiHrEmpEmailIdById(dsEmpList.Tables[0].Rows[0]["SrMgr"].ToString()) + ",";
-                    }
+                   
+                    sToEmailIds = objGlobalData.GetMultiHrEmpEmailIdById(dsEmpList.Tables[0].Rows[0]["notified_to"].ToString()) + ",";
+                    
                     sToEmailIds = Regex.Replace(sToEmailIds, ",+", ",");
                     sToEmailIds = sToEmailIds.Trim();
                     sToEmailIds = sToEmailIds.TrimEnd(',');
                     sToEmailIds = sToEmailIds.TrimStart(',');
-                    string sCCEmailIds = objGlobalData.GetHrEmpEmailIdById(dsEmpList.Tables[0].Rows[0]["JrMgr"].ToString()) + "," + objGlobalData.GetHrEmpEmailIdById(dsEmpList.Tables[0].Rows[0]["Eval_DoneBy"].ToString());
+                    string sCCEmailIds = objGlobalData.GetHrEmpEmailIdById(dsEmpList.Tables[0].Rows[0]["LoggedBy"].ToString()) + "," + objGlobalData.GetHrEmpEmailIdById(dsEmpList.Tables[0].Rows[0]["Eval_DoneBy"].ToString());
                     aAttachment = HttpContext.Current.Server.MapPath(dsEmpList.Tables[0].Rows[0]["DocUploadPath"].ToString());
 
 
@@ -465,9 +474,9 @@ namespace ISOStd.Models
                         + "<tr><td colspan=3><b>Weakness:<b></td> <td colspan=3>" + (dsEmpList.Tables[0].Rows[0]["Weakness"].ToString()) + "</td></tr>"
                         + "<tr><td colspan=3><b>Strengths:<b></td> <td colspan=3>" + (dsEmpList.Tables[0].Rows[0]["Strengths"].ToString()) + "</td></tr>"
                         + "<tr><br /></tr>"
-                        + "<tr><td colspan=3><b>Evaluation Reviewed By:<b></td> <td colspan=3>" + objGlobalData.GetMultiHrEmpNameById(dsEmpList.Tables[0].Rows[0]["JrMgr"].ToString()) + "</td></tr>"
-                        + "<tr><td colspan=3><b>Evaluation Reviewed Comments:<b></td> <td colspan=3>" + (dsEmpList.Tables[0].Rows[0]["Comment_JrMgr"].ToString()) + "</td></tr>"
-                        + "<tr><td colspan=3><b>Evaluation Reviewed Date:<b></td> <td colspan=3>" + Convert.ToDateTime(dsEmpList.Tables[0].Rows[0]["JrMgr_Comment_Date"].ToString()).ToString("dd/MM/yyyy")
+                        //+ "<tr><td colspan=3><b>Evaluation Reviewed By:<b></td> <td colspan=3>" + objGlobalData.GetMultiHrEmpNameById(dsEmpList.Tables[0].Rows[0]["JrMgr"].ToString()) + "</td></tr>"
+                        //+ "<tr><td colspan=3><b>Evaluation Reviewed Comments:<b></td> <td colspan=3>" + (dsEmpList.Tables[0].Rows[0]["Comment_JrMgr"].ToString()) + "</td></tr>"
+                        //+ "<tr><td colspan=3><b>Evaluation Reviewed Date:<b></td> <td colspan=3>" + Convert.ToDateTime(dsEmpList.Tables[0].Rows[0]["JrMgr_Comment_Date"].ToString()).ToString("dd/MM/yyyy")
                         + "</td></tr>";
                     if (File.Exists(aAttachment))
                     {
@@ -475,7 +484,137 @@ namespace ISOStd.Models
                     }
 
                     sContent = sContent.Replace("{FromMsg}", "");
-                    sContent = sContent.Replace("{UserName}", sName);
+                   // sContent = sContent.Replace("{UserName}", sName);
+                    sContent = sContent.Replace("{Title}", "Employee Performance Details");
+                    sContent = sContent.Replace("{content}", sHeader);
+                    sContent = sContent.Replace("{message}", "");
+                    sContent = sContent.Replace("{extramessage}", "");
+
+                    sToEmailIds = sToEmailIds.Trim(',');
+
+
+                    objGlobalData.Sendmail(sToEmailIds, sSubject, sContent, aAttachment, sCCEmailIds, "");
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                objGlobalData.AddFunctionalLog("Exception in SendSrMgrPerpEmail: " + ex.ToString());
+            }
+            return false;
+        }
+
+
+        internal bool FunUpdateEmpPerformanceComments(EmpPerformanceEvalModels objEmpPerformanceEval)
+        {
+            try
+            {
+                string sJrMgr_Comment_Date = DateTime.Now.ToString("yyyy-MM-dd HH':'mm':'ss");
+                string sSrMgr_Comment_Date = DateTime.Now.ToString("yyyy-MM-dd HH':'mm':'ss");
+
+                string sSqlstmt = "update t_emp_performance_eval set ";
+
+                if (objEmpPerformanceEval.Comment_JrMgr != null)
+                {
+                    sSqlstmt = sSqlstmt + " Comment_JrMgr='" + objEmpPerformanceEval.Comment_JrMgr + "', JrMgr_Comment_Date='" + sJrMgr_Comment_Date + "',top_mgmt='" + top_mgmt + "',eval_status='2' ";
+                }
+
+                if (objEmpPerformanceEval.Comment_SrMgr != null)
+                {
+                    sSqlstmt = sSqlstmt + " Comment_SrMgr='" + objEmpPerformanceEval.Comment_SrMgr + "', SrMgr_Comment_Date='" + sSrMgr_Comment_Date + "',eval_status='3' ";
+                }
+
+                sSqlstmt = sSqlstmt + " where Performance_EvalId='" + objEmpPerformanceEval.Performance_EvalId + "'";
+
+                return (objGlobalData.ExecuteQuery(sSqlstmt));
+               
+            }
+            catch (Exception ex)
+            {
+                objGlobalData.AddFunctionalLog("Exception in FunUpdateEmpPerformanceEvaluation: " + ex.ToString());
+
+            }
+            return false;
+        }
+
+        internal bool SendSrMgrPerpEmail(string sPerformance_EvalId,string sMessage = "")
+        {
+            try
+            {               
+                string sType = "EmpPerformace";
+                string sSqlstmt = "SELECT emp_id, Designation, Dept_id, Evaluation_DoneOn, Evaluated_From, Evaluated_To,  Eval_DoneBy, Weakness,Strengths,DocUploadPath,JrMgr,Comment_JrMgr,JrMgr_Comment_Date,SrMgr,top_mgmt,LoggedBy,Comment_SrMgr,SrMgr_Comment_Date,eval_status"
+                    + " from t_emp_performance_eval where  Performance_EvalId='" + sPerformance_EvalId + "'";
+
+                DataSet dsEmpList = objGlobalData.Getdetails(sSqlstmt);
+                EmpPerformanceElementsModels objModels = new EmpPerformanceElementsModels();
+
+                if (dsEmpList.Tables.Count > 0 && dsEmpList.Tables[0].Rows.Count > 0)
+                {
+                    string sHeader, sSubject = "", sContent = "", aAttachment = "";
+
+                    //using streamreader for reading my htmltemplate 
+                    //Form the Email Subject and Body content
+                    DataSet dsEmailXML = new DataSet();
+                    dsEmailXML.ReadXml(HttpContext.Current.Server.MapPath("~/EmailTemplates.xml"));
+
+                    if (sType != "" && dsEmailXML.Tables.Count > 0 && dsEmailXML.Tables[sType] != null && dsEmailXML.Tables[sType].Rows.Count > 0)
+                    {
+                        sSubject = dsEmailXML.Tables[sType].Rows[0]["subject"].ToString();
+                    }
+
+                    using (StreamReader reader = new StreamReader(HttpContext.Current.Server.MapPath("~/Views/EmailTemplate/EmailTemplate.html")))
+                    {
+                        sContent = reader.ReadToEnd();
+                    }
+                    //string sName = objGlobalData.GetMultiHrEmpNameById(dsEmpList.Tables[0].Rows[0]["SrMgr"].ToString());
+                    string sToEmailIds = "";
+                   
+                    sToEmailIds = objGlobalData.GetMultiHrEmpEmailIdById(dsEmpList.Tables[0].Rows[0]["top_mgmt"].ToString()) + ",";
+                    
+                    sToEmailIds = Regex.Replace(sToEmailIds, ",+", ",");
+                    sToEmailIds = sToEmailIds.Trim();
+                    sToEmailIds = sToEmailIds.TrimEnd(',');
+                    sToEmailIds = sToEmailIds.TrimStart(',');
+                    string sCCEmailIds = objGlobalData.GetMultiHrEmpEmailIdById(dsEmpList.Tables[0].Rows[0]["Eval_DoneBy"].ToString()) + "," + objGlobalData.GetHrEmpEmailIdById(dsEmpList.Tables[0].Rows[0]["LoggedBy"].ToString());
+                    aAttachment = HttpContext.Current.Server.MapPath(dsEmpList.Tables[0].Rows[0]["DocUploadPath"].ToString());
+
+
+                    sHeader = "<tr><td colspan=3><b>Employee Name:<b></td> <td colspan=3>"
+                        + objGlobalData.GetMultiHrEmpNameById(dsEmpList.Tables[0].Rows[0]["emp_id"].ToString()) + "</td></tr>"
+                        + "<tr><td colspan=3><b>Designation:<b></td> <td colspan=3>" + (dsEmpList.Tables[0].Rows[0]["Designation"].ToString()) + "</td></tr>"
+                        + "<tr><td colspan=3><b>Department:<b></td> <td colspan=3>" + objGlobalData.GetDeptNameById(dsEmpList.Tables[0].Rows[0]["Dept_id"].ToString()) + "</td></tr>"
+                        + "<tr><td colspan=3><b>Evaluation Done Date:<b></td> <td colspan=3>" + Convert.ToDateTime(dsEmpList.Tables[0].Rows[0]["Evaluation_DoneOn"].ToString()).ToString("dd/MM/yyyy")
+                        + "</td></tr>"
+                        + "<tr><td colspan=3><b>Evaluated From Date:<b></td> <td colspan=3>" + Convert.ToDateTime(dsEmpList.Tables[0].Rows[0]["Evaluated_From"].ToString()).ToString("dd/MM/yyyy")
+                        + "</td></tr>"
+                        + "<tr><td colspan=3><b>Evaluation To Date:<b></td> <td colspan=3>" + Convert.ToDateTime(dsEmpList.Tables[0].Rows[0]["Evaluated_To"].ToString()).ToString("dd/MM/yyyy")
+                        + "</td></tr>"
+                        + "<tr><td colspan=3><b>Evlaution Done By:<b></td> <td colspan=3>" + objGlobalData.GetMultiHrEmpNameById(dsEmpList.Tables[0].Rows[0]["Eval_DoneBy"].ToString()) + "</td></tr>"
+                        + "<tr><td colspan=3><b>Weakness:<b></td> <td colspan=3>" + (dsEmpList.Tables[0].Rows[0]["Weakness"].ToString()) + "</td></tr>"
+                        + "<tr><td colspan=3><b>Strengths:<b></td> <td colspan=3>" + (dsEmpList.Tables[0].Rows[0]["Strengths"].ToString()) + "</td></tr>"
+                        + "<tr><br /></tr>";
+                    if(dsEmpList.Tables[0].Rows[0]["eval_status"].ToString() == "2")
+                    {
+                        sHeader= sHeader + "<tr><td colspan=3><b>Evaluation Reviewed By:<b></td> <td colspan=3>" + objGlobalData.GetMultiHrEmpNameById(dsEmpList.Tables[0].Rows[0]["LoggedBy"].ToString()) + "</td></tr>"
+                       + "<tr><td colspan=3><b>Evaluation Reviewed Comments:<b></td> <td colspan=3>" + (dsEmpList.Tables[0].Rows[0]["Comment_JrMgr"].ToString()) + "</td></tr>"
+                       + "<tr><td colspan=3><b>Evaluation Reviewed Date:<b></td> <td colspan=3>" + Convert.ToDateTime(dsEmpList.Tables[0].Rows[0]["JrMgr_Comment_Date"].ToString()).ToString("dd/MM/yyyy")
+                       + "</td></tr>";
+                    }
+                    else
+                    {
+                        sHeader= sHeader + "<tr><td colspan=3><b>Evaluation Reviewed By:<b></td> <td colspan=3>" + objGlobalData.GetMultiHrEmpNameById(dsEmpList.Tables[0].Rows[0]["top_mgmt"].ToString()) + "</td></tr>"
+                       + "<tr><td colspan=3><b>Evaluation Reviewed Comments:<b></td> <td colspan=3>" + (dsEmpList.Tables[0].Rows[0]["Comment_SrMgr"].ToString()) + "</td></tr>"
+                       + "<tr><td colspan=3><b>Evaluation Reviewed Date:<b></td> <td colspan=3>" + Convert.ToDateTime(dsEmpList.Tables[0].Rows[0]["SrMgr_Comment_Date"].ToString()).ToString("dd/MM/yyyy")
+                       + "</td></tr>";
+                    }
+                       
+                    if (File.Exists(aAttachment))
+                    {
+                        sHeader = sHeader + "<tr><td colspan=3><b>Document Upload:<b></td> <td colspan=3>Please find the attachment</td></tr>";
+                    }
+
+                    sContent = sContent.Replace("{FromMsg}", "");
+                    //sContent = sContent.Replace("{UserName}", sName);
                     sContent = sContent.Replace("{Title}", "Employee Performance Details");
                     sContent = sContent.Replace("{content}", sHeader);
                     sContent = sContent.Replace("{message}", "");

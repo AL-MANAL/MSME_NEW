@@ -1,0 +1,314 @@
+﻿@model ISOStd.Models.BiddingModels
+
+@{
+    ViewBag.Title = "EditBidding";
+}
+
+<div class="groupedassets margin10">
+    <span class="groupedassetshead margin10 onestphdcolor">Edit Document</span>
+</div>
+ <div id="divmsg">
+        @if (TempData["alertdata"] != null)
+        {
+            <span class="errMsg" style="color: red;font-weight: bold;">@TempData["alertdata"]</span>
+        }
+        @if (TempData["Successdata"] != null)
+        {
+            <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+        }
+    </div>
+
+@using (Html.BeginForm("BiddingEdit", "Bidding", FormMethod.Post,
+                         new { enctype = "multipart/form-data" })) {
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <fieldset>
+        <legend>BiddingModels</legend>
+        <input type="hidden" id="id_bidding" name="id_bidding" value="@Model.id_bidding" />
+        <table id="tabcontent">
+            <tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.client)<text style="color:red;"> *</text>
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <input type="text" id="client" name="client" value="@Model.client" style="width:250px;" required/>          
+                    </div>
+                </td>
+                 <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.folderref)<text style="color:red;"> *</text>
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <input type="text" id="folderref" name="folderref" value="@Model.folderref" style="width:250px;" required/>          
+                    </div>
+                </td>
+            </tr>
+             <tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.projectname)<text style="color:red;"> *</text>
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <input type="text" id="projectname" name="projectname" value="@Model.projectname" style="width:250px;" required/>          
+                    </div>
+                </td>
+                 <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.submission_date)<text style="color:red;"> *</text>
+                    </div>
+                </td>
+                  <td>
+                   <div class="editor-field">
+                        <input type="date" id="submission_date" name="submission_date" value="@Model.sub_date" required/>
+                      @*  @Html.EditorFor(model => model.submission_date)<text style="color:black">(Format:MM-dd-yyyy)</text>
+                        @Html.ValidationMessageFor(model => model.submission_date)    *@
+                    </div>
+                  </td>
+                
+            </tr>
+             <tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.preparedby)<text style="color:red;"> *</text>
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <select id="preparedby" name="preparedby" required>
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.GetPreparer != null)
+                                {
+                                    foreach (var item in ViewBag.GetPreparer)
+                                    {
+                                        if(item.Text==Model.preparedby)
+                                        {
+                                        <option value='@item.Value' selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                        <option value='@item.Value'>@item.Text</option>
+                                        }
+                                        
+                                    }
+                                }
+                            </select>        
+                    </div>
+                </td>
+                 <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.checkedby)<text style="color:red;"> *</text>
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                      <select id="checkedby" name="checkedby" required multiple style="height: 200px; width: 200px;">
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.Reviewer != null)
+                                {
+                                    foreach (var item in ViewBag.Reviewer)
+                                    {
+                                        if (Model.checkedby.Contains(item.Text))
+                                        {
+                                        <option value='@item.Value' selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                        <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>       
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.proposalref)<text style="color:red;"> *</text>
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <input type="text" id="proposalref" name="proposalref" value="@Model.proposalref" required/>          
+                    </div>
+                </td>
+                 <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.proposal_date)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                       <input type="date" id="proposal_date" name="proposal_date" value="@Model.prop_date" required/>
+                       @* @Html.EditorFor(model => model.proposal_date)<text style="color:black">(Format:MM-dd-yyyy)</text>
+                        @Html.ValidationMessageFor(model => model.proposal_date)    *@
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                   <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.upload)
+                        </div>
+                    </td>
+                   <td>
+                       <div class="editor-field">
+
+                        <input type="file" name="upload" id="upload" title="Documents" onchange="FileFormatValidation(this)"
+                            multiple="multiple" accept=".pdf, .doc, .docx,image/*" style="height: 38px;"  />
+
+                        <p style="font-size: 11px; margin: 0px;">(Hold Ctrl Key in case of multiple files)</p>
+                     
+
+                        @if (Model.upload != null && Model.upload != "" && Model.upload.Length > 0)
+                        {
+                            <div class="editor-label">
+                                <p style="font-weight: bold; margin: 0px;">Document List:</p>
+                            </div>
+                            <p style="font-size: 11px; margin: 0px; color: red;">(Uncheck in case to remove a uploaded file)</p>
+                            foreach (var docs in Model.upload.Trim(',').Split(','))
+                            {
+                            <p style="margin: 0px;">
+                                <input type="checkbox" id="QCDocsVal" name="QCDocsVal" class="QCDocsVal" value="@docs.Trim(',')" checked title="Uncheck in case to remove a uploaded file"/>
+                                 <input type="hidden" id="QCDocsValselectall" name="QCDocsValselectall" />
+                                <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" style="color: orange;">
+                             preview</a>
+                            </p>
+                            }
+                        }
+
+                    </div>
+
+                    </td>
+            </tr>
+          
+          
+        </table>
+    </fieldset>
+     <div style="width: 100%; text-align: center;">
+       @Html.ActionLink("Back to List", "BiddingList", null, new {@class="ActionLink", onclick="HyperLinkProgressIconFunction()"})
+        <input type="submit" value="Update" />
+    </div>
+}
+
+
+@section Scripts {
+
+     <script>
+
+         $(function () {
+
+             $("#preparedby").chosen();
+             $("#checkedby").chosen();
+             $.validator.setDefaults({ ignore: ":hidden:not(.chosen-select)" });
+         });
+         function setCountry(Country) {
+
+             if (Country != "") {
+
+             }
+             else {
+                 document.getElementById("Country").value = "";
+             }
+         }
+         function SetCust(custid) {
+             if (custid != "") {
+                 document.getElementById("abc").style.display = "none";
+             }
+             else {
+                 document.getElementById("abc").style.display = "";
+             }
+
+         }
+         $(function () {
+
+             $("#QCDocsVal").click(function () {
+                 if ($("#QCDocsVal").prop('checked')) {
+                     {
+                         $(this).prop('checked', true);
+                     }
+                 }
+                 else {
+
+                     $(this).prop('checked', false);
+                     document.getElementById("QCDocsValselectall").value = "DeleteQC";
+                 }
+
+             });
+
+             $("#custid").autocomplete({
+                 source: function (request, response) {
+                     $.ajax({
+                         url: '@Url.Action("GetCustomerList", "CRM")',
+                        type: "POST",
+                        dataType: "json",
+                        scroll: true,
+                        scrollHeight: 100,
+                        maxHeight: 100,
+                        data: { custid: request.term },
+                        success: function (data) {
+
+                            if (data.length == 0) {
+                                document.getElementById("abc").style.display = "";
+                            }
+                            response($.map(data, function (item) {
+                                return { label: item, value: item };
+                            }))
+                        }
+                    })
+                },
+                  select: function (e, ui) {
+                      e.preventDefault();
+                      $(this).val(ui.item.label);
+                      SetCust(ui.item.value);
+                  },
+                  messages: {
+                      noResults: "", results: ""
+                  }
+              });
+             $("#Country").autocomplete({
+                 source: function (request, response) {
+                     $.ajax({
+                         url: '@Url.Action("GetCountryList", "CRM")',
+                        type: "POST",
+                        dataType: "json",
+                        scroll: true,
+                        scrollHeight: 100,
+                        maxHeight: 100,
+                        data: { Country: request.term },
+                        success: function (data) {
+
+                            if (data.length == 0) {
+                                setCountry("");
+                            }
+                            response($.map(data, function (item) {
+                                return { label: item, value: item };
+                            }))
+                        }
+                    })
+                },
+                select: function (e, ui) {
+                    e.preventDefault();
+                    $(this).val(ui.item.label);
+                },
+                messages: {
+                    noResults: "", results: ""
+                }
+            });
+
+         });
+
+       
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+ @Scripts.Render("~/bundles/ckeditor")
+    @Scripts.Render("~/bundles/ckeditor/adapters")
+}

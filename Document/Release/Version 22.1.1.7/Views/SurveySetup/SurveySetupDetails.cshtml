@@ -1,0 +1,261 @@
+﻿@model ISOStd.Models.SurveySetupModel
+
+@{
+    ViewBag.Title = "SurveySetupDetails";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+
+                    <span class="breadcrumb-item active"> Survey Setup Details</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            <div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+                    <div class="breadcrumb-elements-item dropdown p-0" id="Reset_Survey">
+
+
+
+                        <button type="button" class="dropdown-item">
+                            <i class="icon-cross2"></i> Reset Survey Settings
+                        </button>
+
+                    </div>
+                    @*<div class="breadcrumb-elements-item dropdown p-0">
+                       
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>*@
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+}
+
+
+<!-- Basic setup -->
+
+<div class="card">
+    <div class="card-header">
+        <div class="row">
+            <div class="col-md-10 offset-md-1">
+                <div class="header-elements-inline">
+                    <h5 class="card-title">Login Form Check</h5>
+                    <div class="header-elements">
+                        <div class="list-icons">
+                            <a class="list-icons-item" data-action="collapse"></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <div class="col-md-10 offset-md-1">
+            @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "Survey_Login", @class = "form-horizontal", role = "form", action = Model.Cloud + "/Survey/Account/LoginManal", target = "_blank" }))
+            {
+                <div class="col-md-6">
+
+                    <div class="form-group">
+                        <label>Cloud:</label>
+                        <div class="form-group-feedback form-group-feedback-right">
+                            <input required type="text" readonly id="cloud" name="cloud"  class="form-control border-success" value="@Model.Cloud">
+
+                            <div class="form-control-feedback text-success">
+                                <i class="icon-checkmark-circle"></i>
+                            </div>
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="form-group">
+                        <label>Email:</label>
+
+                        <div class="form-group-feedback form-group-feedback-right">
+                            <input required type="email" readonly id="Email" name="Email"  class="form-control border-success" value="@Model.Email">
+
+                            <div class="form-control-feedback text-success">
+                                <i class="icon-checkmark-circle"></i>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="form-group">
+                        <label>Password:</label>
+
+                        <div class="form-group-feedback form-group-feedback-right">
+                            <input required type="password" readonly id="Password" name="Password" class="form-control border-success" value="@Model.Password">
+
+                            <div class="form-control-feedback text-success">
+                                <i class="icon-checkmark-circle"></i>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+
+                <div class="text-right">
+                    <button type="submit" class="btn btn-primary">Login Survey <i class="icon-paperplane ml-2"></i></button>
+                </div>
+            }
+
+
+
+        </div>
+    </div>
+</div>
+
+
+
+@section scripts {
+    <script>
+    //----zzz
+    $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+    });
+    //zzz----
+        var swalInit = swal.mixin({
+            buttonsStyling: false,
+            confirmButtonClass: 'btn btn-primary',
+            cancelButtonClass: 'btn btn-light'
+        });
+
+        $("#Reset_Survey").click(function () {
+
+
+            bootbox.confirm({
+                title: 'Confirm dialog',
+                message: 'Are you Sure you want to reset Survey Settings',
+                buttons: {
+                    confirm: {
+                        label: 'Yes',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'Cancel',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (r) {
+                    if (r == true) {
+
+
+                        jQuery.ajax({
+                            url: '@Url.Action("DeleteSurvey", "SurveySetup")',
+                    type: 'POST',
+                    dataType: "json",
+                            success: function (result) {
+
+
+                                if (result == "Success") {
+
+
+                                    swalInit.fire({
+                                        title: 'Reset!',
+                                        text: 'Reset Completed Successfully!',
+                                        type: 'success',
+
+
+                                    }).then(function () {
+
+
+                                        window.location.href =
+                                            window.location.protocol + "//" +
+                                            window.location.host +
+                                            window.location.pathname;
+
+                                    });
+                                }
+
+
+
+                                else {
+                                    new Noty({
+                                        text: 'Something Went Wrong ,Couldnt Delete Settings',
+                                        type: 'error'
+                                    }).show();
+                                    return false;
+                                }
+                            },
+                                error: function () {
+                                    new Noty({
+                                        text: 'Something Went Wrong',
+                                        type: 'error'
+                                    }).show();
+
+                                    return false;
+
+                                }
+                            
+                            
+
+                });
+                return true;
+            }
+            else if (r == false) {
+                bootbox.hideAll();
+                return false;
+            }
+
+                 }
+    });
+
+
+        });
+    </script>
+
+
+}

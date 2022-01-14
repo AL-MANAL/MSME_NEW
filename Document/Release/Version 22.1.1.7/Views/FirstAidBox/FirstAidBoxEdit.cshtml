@@ -1,0 +1,242 @@
+﻿@model ISOStd.Models.FirstAidBoxModels
+
+@{
+    ViewBag.Title = "FirstAidBox";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+@section featured {
+
+
+
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+
+
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("FirstAidBoxList", "FirstAidBox", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> First Aid Box List</span>
+                    </a>
+                    <span class="breadcrumb-item active"> Update First Aid Box</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            <div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+}
+
+@using (Html.BeginForm("FirstAidBoxEdit", "FirstAidBox", FormMethod.Post,
+                         new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+
+    <input type="hidden" id="id_FirstAidBox" name="id_FirstAidBox" value="@Model.id_FirstAidBox" />
+
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title"> Update First Aid Box</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+
+                <table class="table table-lg">
+
+                    <tbody>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+
+
+
+                                @Html.LabelFor(model => model.FirstAid_DateTime)
+
+                            </td>
+                            <td class="col">
+
+                                <input class="form-control" type="date" id="FirstAid_DateTime" name="FirstAid_DateTime" required value="@Model.FirstAid_DateTime.ToString("yyyy-MM-dd")" />
+
+                            </td>
+
+
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.Location)<text style="color:red;">*</text>
+
+                            </td>
+                            <td class="col">
+
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="Location" name="Location" required>
+                                    <option value='' hidden>Select</option>
+
+                                    @if (ViewBag.Location != null)
+                                    {
+                                        foreach (var item in ViewBag.Location)
+                                        {
+                                            if (item.Text == Model.Location)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.FirstAidBox_1)
+
+                            </td>
+                            <td class="col">
+
+                                <select class="form-control select-fixed-multiple" data-fouc id="FirstAidBox_1" name="FirstAidBox_1" multiple>
+
+                                    @if (ViewBag.FirstAid != null)
+                                    {
+                                        foreach (var data in ViewBag.FirstAid)
+                                        {
+                                            if (Array.IndexOf(Model.FirstAidBox_1.ToString().Split(','), data.Text) >= 0)
+                                            {
+                                                <option value='@data.Value' selected>@data.Text</option>
+                                            }
+                                            else if (Array.IndexOf(Model.FirstAidBox_1.ToString().Split(','), " " + data.Text) >= 0)
+                                            {
+
+                                                <option value="@data.Value" selected>@data.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@data.Value'>@data.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                                <span class="field-validation-error"><span id="FirstAidBox_1-message" style="display: none;">Please select 5 or Less options.</span></span>
+                                @Html.ValidationMessageFor(model => model.FirstAidBox_1)
+
+                            </td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+            </div>
+
+        </div>
+
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+
+            @Html.ActionLink("Back to List", "FirstAidBoxList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+
+            <button class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" type="submit" value="Save" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Save</button>
+
+        </div>
+    </div>
+
+}
+
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript">
+                             //----zzz
+                    $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+                    });
+
+    //zzz----
+
+            function Validation() {
+                var validflg = true;
+                var ssnMessage = "";
+
+                var first = $('#FirstAidBox_1').find('option:selected').length;
+
+                if (first > 5) {
+                    ssnMessage = $('#FirstAidBox_1-message');
+                    ssnMessage.show();
+                    validflg = false;
+                }
+                else {
+                    var ssnMessage = $('#FirstAidBox_1-message');
+                    ssnMessage.hide();
+                }
+
+                if (validflg) {
+                    ProgressIconFunction('#form1');
+                }
+                return validflg;
+
+            }
+    </script>
+}
+
+
+

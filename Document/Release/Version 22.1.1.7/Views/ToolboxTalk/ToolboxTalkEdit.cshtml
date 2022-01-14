@@ -1,0 +1,671 @@
+﻿@model ISOStd.Models.ToolboxTalkModels
+
+@{
+    ViewBag.Title = "AddToolboxTalk";
+}
+
+@section featured {
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("ToolBoxTalkList", "ToolBoxTalk", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Toolbox Talk</span>
+                    </a>
+                    <span class="breadcrumb-item active">Update Toolbox Talk</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+}
+
+
+@using (Html.BeginForm("ToolboxTalkEdit", "ToolboxTalk", FormMethod.Post,
+    new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <input type="hidden" id="ToolBox_TalkId" name="ToolBox_TalkId" value="@Model.ToolBox_TalkId" />
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Update Toolbox Talk</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+
+                <table class="table table-lg">
+                    <tbody>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.branch)
+                            </td>
+                            <td class="col">
+                                <select class="form-control select-fixed-multiple" multiple="multiple" data-fouc id="branch" name="branch" onchange="GetDeptList()">
+                                    @*<option value='' hidden>Select</option>*@
+                                    @if (ViewBag.Branch != null)
+                                    {
+                                        foreach (var data in ViewBag.Branch)
+                                        {
+                                            if (Array.IndexOf(Model.branch.ToString().Split(','), data.Value) >= 0)
+                                            {
+                                                <option value='@data.Value' selected>@data.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@data.Value'>@data.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.Department)<text style="color:red;">*</text>
+                            </td>
+                            <td class="col">
+                                <select class="form-control select-fixed-multiple" data-fouc id="Department" name="Department" multiple="multiple" required>
+                                    @if (ViewBag.Department != null)
+                                    {
+                                        foreach (var item in ViewBag.Department)
+                                        {
+                                            if (Array.IndexOf(Model.Department.ToString().Split(','), item.Value) >= 0)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                            </td>
+
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.Location)<text style="color:red;">*</text>
+                            </td>
+                            <td class="col">
+                                <select class="form-control select-fixed-multiple" data-fouc id="Location" name="Location" multiple="multiple" required>
+                                    @if (ViewBag.Location != null)
+                                    {
+                                        foreach (var item in ViewBag.Location)
+                                        {
+                                            if (Array.IndexOf(Model.Location.ToString().Split(','), item.Value) >= 0)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.Talk_DateTime)<text style="color:red;"> *</text>
+
+                            </td>
+                            <td class="col">
+
+                                @if (Model.Talk_DateTime > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    <input class="form-control" type="date" id="Talk_DateTime" name="Talk_DateTime" value="@Model.Talk_DateTime.ToString("yyyy-MM-dd")" required="required" />
+                                }
+                                else
+                                {
+                                    <input class="form-control" type="date" id="Talk_DateTime" name="Talk_DateTime" required="required" />
+                                }
+                                Hr: <select class="select-fixed-single" data-fouc name="PlanTimeInHour" id="PlanTimeInHour">
+                                    @if (ViewBag.PlanTimeInHour != null)
+                                    {
+                                        foreach (var data in ViewBag.PlanTimeInHour)
+                                        {
+                                            if (Convert.ToInt16(Model.Talk_DateTime.ToString("HH")) == Convert.ToInt16(data))
+                                            {
+                                                <option value='@data' selected>@data</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@data'>@data</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                                Min:
+                                <select class="select-fixed-single" data-fouc name="PlanTimeInMin" id="PlanTimeInMin">
+                                    @if (ViewBag.PlanTimeInMin != null)
+                                    {
+                                        foreach (var data in ViewBag.PlanTimeInMin)
+                                        {
+                                            if (Convert.ToInt16(Model.Talk_DateTime.ToString("mm")) == Convert.ToInt16(data))
+                                            {
+                                                <option value='@data' selected>@data</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@data'>@data</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.Conducted_By)
+
+                            </td>
+                            <td class="col">
+
+                                @*   <input type="text" id="Conducted_By" name="Conducted_By" style="width:250px;" required value="@Model.Conducted_By"/>*@
+                                <select class="form-control select-fixed-multiple" data-fouc id="Conducted_By" name="Conducted_By" multiple="multiple">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.EmpList != null)
+                                    {
+                                        foreach (var item in ViewBag.EmpList)
+                                        {
+                                            //if (item.Text == Model.Conducted_By)
+                                            if (Array.IndexOf(Model.Conducted_By.ToString().Split(','), item.Value) >= 0)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.Topic)<text style="color:red;"> *</text>
+                            </td>
+                            <td class="col-xs-3 col-md-4">
+                                <select class="form-control select-fixed-multiple" data-fouc id="Topic" name="Topic" multiple="multiple">
+                                    @if (ViewBag.Topics != null)
+                                    {
+                                        foreach (var item in ViewBag.Topics)
+                                        {
+                                            if (Array.IndexOf(Model.Topic.ToString().Split(','), item.Value) >= 0)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+
+                            </td>
+                            @*<td>
+                <div class="editor-label">
+                    @Html.LabelFor(model => model.Attendee_No)
+                </div>
+            </td>
+            <td>
+                <div class="editor-field">
+                   <input type="number" id="Attendee_No" name="Attendee_No" value="@Model.Attendee_No" />
+                </div>
+            </td>*@
+
+                            @*<td class="col-xs-3 col-md-2">
+                                @Html.LabelFor(model => model.Activity_type)
+                            </td>
+                            <td class="col">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="Activity_type" name="Activity_type">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.ActivityType != null)
+                                    {
+                                        foreach (var item in ViewBag.ActivityType)
+                                        {
+                                            if (item.Text == Model.Activity_type)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+
+                            </td>*@
+                        </tr>
+                       @*<tr class="row">
+                           <td class="col-xs-3 col-md-2">
+        @Html.LabelFor(model => model.Identified_method)
+    </td>
+    <td class="col">
+        @Html.EditorFor(model => model.Identified_method, new { htmlAttributes = new { @class = "form-control" } })
+    </td>*@
+                           
+
+                            @*<td class="col-xs-3 col-md-2">
+
+                @Html.LabelFor(model => model.ptw)
+
+            </td>
+            <td class="col">
+
+                <select class="form-control select-search select2-hidden-accessible" data-fouc id="ptw" name="ptw">
+                    <option value='' hidden>Select</option>
+                    @if (ViewBag.PTW != null)
+                    {
+                        foreach (var item in ViewBag.PTW)
+                        {
+                            if (item.Text == Model.ptw)
+                            {
+                                <option value='@item.Value' selected>@item.Text</option>
+                            }
+                            else
+                            {
+                                <option value='@item.Value'>@item.Text</option>
+                            }
+                        }
+                    }
+                </select>
+
+            </td>*@
+                        
+                        @*<tr class="row">
+            <td class="col-xs-3 col-md-2">
+
+                @Html.LabelFor(model => model.Comply_ppe)
+
+            </td>
+            <td class="col">
+
+                <select class="form-control select-search select2-hidden-accessible" data-fouc id="Comply_ppe" name="Comply_ppe">
+                    <option value='' hidden>Select</option>
+                    @if (ViewBag.ComplyPPEType != null)
+                    {
+                        foreach (var item in ViewBag.ComplyPPEType)
+                        {
+                            if (item == Model.Comply_ppe)
+                            {
+                                <option value='@item' selected>@item</option>
+                            }
+                            else
+                            {
+                                <option value='@item'>@item</option>
+                            }
+                        }
+                    }
+                </select>
+
+            </td>
+            <td class="col-xs-3 col-md-2">
+
+                @Html.LabelFor(model => model.Identified_hazard)
+
+            </td>
+            <td class="col">
+
+                <select class="form-control select-search select2-hidden-accessible" data-fouc id="Identified_hazard" name="Identified_hazard">
+                    <option value='' hidden>Select</option>
+                    @if (ViewBag.Identifiedhazard != null)
+                    {
+                        foreach (var item in ViewBag.Identifiedhazard)
+                        {
+                            if (item.Text == Model.Identified_hazard)
+                            {
+                                <option value='@item.Value' selected>@item.Text</option>
+                            }
+                            else
+                            {
+                                <option value='@item.Value'>@item.Text</option>
+                            }
+                        }
+                    }
+                </select>
+
+            </td>
+        </tr>*@
+
+                       
+                           @* <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.Project)
+
+                            </td>
+                            <td class="col">
+                               <div class="editor-field">
+        @Html.EditorFor(model => model.Project, new { htmlAttributes = new { @readonly = "readonly", style = "background: #efefe6;" } })
+    </div>
+                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="Project" name="Project">
+                        <option value='' hidden>Select</option>
+                        @if (ViewBag.Project != null)
+                        {
+                            foreach (var item in ViewBag.Project)
+                            {
+                                if (item.Text == Model.Project)
+                                {
+                                    <option value='@item.Value' selected>@item.Text</option>
+                                }
+                                else
+                                {
+                                    <option value='@item.Value'>@item.Text</option>
+                                }
+                            }
+                        }
+                    </select>
+                </td>
+            </tr>*@
+
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.Report_No)
+
+                            </td>
+                            <td class="col">
+                                @*<div class="editor-field">
+                @Html.EditorFor(model => model.Report_No)              </div>*@
+
+                                @Html.EditorFor(model => model.Report_No, new { htmlAttributes = new { @readonly = "readonly", style = "background: #efefe6;width:250px;", @class = "form-control" } })
+
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.Upload_Report)
+                                </div>
+                            </td>
+                            <td class="col">
+
+
+                                <input type="file" name="Upload_Report" id="Upload_Report" title="Plan Report documents" onchange="FileFormatValidation(this)"
+                                       multiple="multiple"  accept=".pdf, .doc, .docx, .xls, .xlsx, .jpg, .jpeg, .png, .image/*" class="bootstrap-uploader" data-fouc />
+
+                                <span class="form-text text-muted"><code>(Hold Ctrl Key in case of multiple files or drag multiple files and drop here)</code></span>
+                                <br />
+                                @if (Model.Upload_Report != null && Model.Upload_Report != "" && Model.Upload_Report.Length > 0)
+                                {
+                                    <h6> <span class="bg-dark py-1 px-2 rounded">Document List</span></h6>
+
+                                    <span class="form-text text-muted">
+                                        <code>
+                                            (Uncheck in case to remove a uploaded file)
+                                        </code>
+                                    </span>
+                                    foreach (var docs in Model.Upload_Report.Trim(',').Split(','))
+                                    {
+                                        <div class="form-check">
+                                            <label class="form-check-label">
+                                                <input type="checkbox" id="QCDocsVal" name="QCDocsVal" class="form-check-input-styled QCDocsVal" value="@docs.Trim(',')" checked title="Uncheck in case to remove a uploaded file" data-fouc />
+                                                <input type="hidden" id="QCDocsValselectall" name="QCDocsValselectall" />
+                                                <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" class="text-orange">
+                                                    @System.IO.Path.GetFileName(docs)
+                                                </a>
+                                            </label>
+                                        </div>
+                                    }
+                                }
+
+
+                            </td>
+                        </tr>
+
+                        @*<td class="col-xs-3 col-md-2">
+
+            @Html.LabelFor(model => model.Attended_by)
+
+        </td>
+        <td class="col">
+
+            <select id="Attended_by" name="Attended_by" class="form-control select-fixed-multiple" data-fouc multiple="multiple">
+                <option value='' hidden>Select</option>
+                @if (ViewBag.EmpList != null)
+                {
+                    foreach (var item in ViewBag.EmpList)
+                    {
+                        if (Array.IndexOf(Model.Attended_by.ToString().Split(','), item.Value) >= 0)
+
+                        {
+                            <option value='@item.Value' selected>@item.Text</option>
+                        }
+                        else
+                        {
+                            <option value='@item.Value'>@item.Text</option>
+                        }
+
+                    }
+                }
+            </select>
+
+        </td>*@
+
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.feedback_tbt)
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="feedback_tbt" name="feedback_tbt">@Model.feedback_tbt</textarea>
+                                </div>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.outcome_tbt)
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="outcome_tbt" name="outcome_tbt">@Model.outcome_tbt</textarea>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+            </div>
+
+
+        </div>
+
+
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+
+            @Html.ActionLink("Back to List", "ToolboxTalkList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+
+            <button type="submit" id="btnCreate" value="Update" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Save</button>
+
+            @*<input type="submit" id="btnCreate" value="Save" class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" onclick="ProgressIconFunction('#form1')" />*@
+            @*<input type="button" value="Add" class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" onclick="AddPlanner()" />*@
+        </div>
+
+
+    </div>
+    
+   
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+                 //----zzz
+
+ $(document).ready(function () {
+
+        @if (TempData["alertdata"] != null)
+        {
+
+            @: new Noty({
+            @:     text: '@TempData["alertdata"]',
+            @:     type: 'error'
+            @: }).show();
+        }
+
+        @if (@TempData["Successdata"] != null)
+        {
+
+            @:    new Noty({
+            @:       text: '@TempData["Successdata"]',
+            @:       type: 'success'
+            @:   }).show();
+        }
+        });
+
+    //zzz----
+        // Default initialization
+        $('.form-check-input-styled').uniform();
+
+
+        function FileFormatValidation(file) {
+            var ext = file.value.split(".").pop().toLowerCase();
+            if ($.inArray(ext, ["pdf", "doc", "docx", "jpg", "jpeg", "png", "xls", "xlsx"]) == -1) {
+                file.value = "";
+                bootbox.alert({
+                    title: 'File type',
+                    message: 'Invalid file format, please upload only pdf,doc,docx,ls,xlsx,jpg,jpeg,png format.'
+                });
+            }
+        }
+
+            $("#QCDocsVal").click(function () {
+                if ($("#QCDocsVal").prop('checked')) {
+                    {
+                        $(this).prop('checked', true);
+                    }
+                }
+                else {
+
+                    $(this).prop('checked', false);
+                    document.getElementById("QCDocsValselectall").value = "DeleteQC";
+                }
+
+            });
+
+ 
+
+    
+
+     function getReportNo()
+           {
+             var location = $('#Location :selected').text();
+            // var project = $('#Project :selected').text();
+             if (location != "Select" /*&& project != "Select"*/) {
+             jQuery.ajax({
+                    url: '@Url.Action("FunGetReportNo", "ToolboxTalk")',
+                    type: 'POST',
+                    dataType: "json",
+
+                    data: { 'location': location/*, 'project': project*/ },
+                    success: function (result) {
+                        document.getElementById("Report_No").value = result;
+                    }
+                });
+              }
+        }
+
+          function GetDeptList() {
+            var selectedValues = [];
+            $("#branch :selected").each(function () {
+                selectedValues.push($(this).val());
+            });  
+                jQuery.ajax({
+                    url: '@Url.Action("FunGetAllDeptList", "EmployeeDetails")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'branch': selectedValues },
+                    success: function (result) {
+                        GetLocList(selectedValues);
+                        $("#Department").children('option').remove();
+                        $("#Department").trigger('change');
+                        if (result != null && result.length > 0) {
+                            $.each(result, function (index, item) {
+                                $("#Department").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                                $("#Department").trigger('change');
+                            });
+                            return;
+                        }
+                        //else {
+                        //    bootbox.alert({
+                        //        title: 'Department List',
+                        //        message: 'No Department exists.'
+                        //    });
+                        //}
+                    }
+                });          
+        }
+
+
+        function GetLocList(selectedValues) {                   
+            jQuery.ajax({
+                url: '@Url.Action("FunGetAllLocList", "EmployeeDetails")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'branch': selectedValues },
+                success: function (result) {
+                    $("#Location").children('option').remove();
+                    $("#Location").trigger('change');
+                    if (result != null && result.length > 0) {
+                        $.each(result, function (index, item) {
+                            $("#Location").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                            $("#Location").trigger('change');
+                        });
+                        return;
+                    }
+                    //else {
+                    //    bootbox.alert({
+                    //        title: 'Location List',
+                    //        message: 'No Location exists.'
+                    //    });
+                    //}
+                }
+            });       
+        }
+
+    </script>
+}

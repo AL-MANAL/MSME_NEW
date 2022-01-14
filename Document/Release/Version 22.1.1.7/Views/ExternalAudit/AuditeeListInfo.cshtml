@@ -1,0 +1,54 @@
+﻿@using System.Data
+@{
+    Layout = null;
+    DataSet dsAuditee = ViewBag.objAuditee;
+    ISOStd.Models.clsGlobal obj = new ISOStd.Models.clsGlobal();
+}
+
+<div class="card alpha-success border-success">
+    <div class="card-header bg-info text-white">
+        <h4 class="text-center">Auditee List</h4>
+
+    </div>
+
+    <div class="card-body">
+
+        <table class="table table-bordered table-striped table-hover datatable-responsive">
+            <thead>
+                <tr class="bg-brown">
+                    <th>Division</th>
+                    <th>Department</th>
+                    @*<th>Team</th>*@
+                    <th>Location</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < dsAuditee.Tables[0].Rows.Count; i++)
+                {
+
+                    <tr>
+                        <td>
+                            @obj.GetCompanyBranchNameById(dsAuditee.Tables[0].Rows[i]["directorate"].ToString())
+                        </td>
+                        <td>
+                            @obj.GetDeptNameById(dsAuditee.Tables[0].Rows[i]["group_name"].ToString())
+                        </td>
+                        @*<td>
+                            @obj.GetTeamNameByID(dsAuditee.Tables[0].Rows[i]["team"].ToString())
+                        </td>*@
+                        <td>
+                            @obj.GetDivisionLocationById(dsAuditee.Tables[0].Rows[i]["location"].ToString())
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+
+
+    </div>
+
+</div>
+
+
+

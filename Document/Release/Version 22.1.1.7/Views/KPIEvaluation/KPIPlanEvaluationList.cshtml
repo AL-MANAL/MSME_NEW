@@ -1,0 +1,498 @@
+﻿@model IEnumerable<ISOStd.Models.KPIEvaluationModels>
+
+    @{
+        ViewBag.Title = "KPIPlanEvaluationList";
+        ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+    }
+                    
+    @section featured {
+
+        <div class="page-header page-header-light">
+
+            <div class="page-header-content header-elements-md-inline">
+                <div class="page-title d-flex">
+                    <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+                </div>
+            </div>
+
+            <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+                <div class="d-flex">
+                    <div class="breadcrumb">
+
+                        <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                            <span class="breadcrumb-item"> Home</span>
+                        </a>
+                        <a class="breadcrumb-item" onclick="HyperLinkProgressIconFunction();" href='@Url.Action("KPIEvaluationDetails", "KPIEvaluation", new { KPI_Id = ViewBag.KPI_Id } )'>
+                            <span class="breadcrumb-item"> KPI Details</span>
+                        </a>
+                        <span class="breadcrumb-item active"> KPI Plan Evaluation List</span>
+
+                    </div>
+
+                    <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+                </div>
+
+                @*<div class="header-elements d-none">
+                    <div class="breadcrumb justify-content-center">
+
+
+                        <div class="breadcrumb-elements-item dropdown p-0">
+                            <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                                <i class="icon-gear mr-2"></i>
+                                Settings
+                            </a>
+
+                            <div class="dropdown-menu dropdown-menu-right">
+
+                                <div class="dropdown-divider"></div>
+                                <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>*@
+            </div>
+        </div>
+    }
+        <style>
+            .hidden {
+                display: none !important;
+            }
+        </style>
+
+        <div class="card">
+            <div class="card-header header-elements-inline bg-primary">
+                <h5 class="card-title">KPI Plan Evaluation List</h5>
+                <div class="header-elements">
+                    <div class="list-icons">
+                        <a class="list-icons-item" data-action="collapse"></a>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body">
+                @if (Obj.GetCurrentUserSession().Kpi.Contains("3"))
+                {
+                    <a onclick="HyperLinkProgressIconFunction();" class="btn btn-outline bg-orange text-orange border-orange btn-ladda btn-ladda-progress ladda-button" data-style="radius" href='@Url.Action("AddKPIPlanEvaluation", "KPIEvaluation",new { KPI_Trans_Id = ViewBag.KPI_Trans_Id } )' title="Add New">
+                        <span class="ladda-label">Add New</span>
+                        <span class="ladda-spinner"></span>
+                    </a>
+                }
+                @Html.ActionLink("Back to List", "KPIEvaluationDetails", new { KPI_Id = ViewBag.KPI_Id }, new { @class = "btn btn-outline bg-orange text-orange border-orange", onclick = "HyperLinkProgressIconFunction()" })
+          </div>
+
+            <div class="container-fluid">
+
+                <table class="table table-lg">
+
+                    <tbody>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                Established On
+                            </td>
+                            <td class="col">
+
+                                <input class="form-control" type="text" id="EstablishedOn" name="EstablishedOn" value="@ViewBag.EstablishedOn" style="background-color:#efefe6" disabled />
+
+
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+
+                                KPI Desc
+
+                            </td>
+                            <td class="col">
+
+                                <input class="form-control" type="text" id="Process_Indicator" name="Process_Indicator" value="@ViewBag.Process_Indicator" style="background-color:#efefe6" disabled />
+
+
+                            </td>
+
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+
+                                Target Value
+
+                            </td>
+                            <td class="col">
+
+                                <input class="form-control" type="text" id="Measurable_Value" name="Measurable_Value" value="@ViewBag.Measurable_Value" style="background-color:#efefe6" disabled />
+
+
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+
+                                Monitoring Mechanism
+
+                            </td>
+                            <td class="col">
+
+                                <input class="form-control" type="text" id="Monitoring_Mechanism" name="Monitoring_Mechanism" value="@ViewBag.Monitoring_Mechanism" style="background-color:#efefe6" disabled />
+
+
+                            </td>
+                        </tr>
+
+
+
+                    </tbody>
+                </table>
+                <br />
+                <br />
+
+            </div>
+            <br />
+
+            <h2 class="bg-dark pl-sm-2"> KPI Plan Evaluation Details</h2>
+            <div class="table-responsive">
+
+                <table class="table table-bordered table-striped table-hover datatable-responsive" id="table1">
+                    <thead>
+                        <tr class="bg-blue">
+                            <th>
+                                Sl No
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Measured_Value)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Eval_Status)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Eval_On)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.NCRRef)
+                            </th>
+                            <th class="not-export-column">
+                                @Html.DisplayNameFor(model => model.upload)
+                            </th>
+                            <th class="not-export-column">Edit</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Count() > 0)
+                        {
+                            int i = 0;
+                            foreach (var item in Model)
+                            {
+                                i = i + 1;
+                                <tr>
+                                    <td>
+                                        @i
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Measured_Value)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Eval_Status)
+                                    </td>
+                                    <td>
+                                        @item.Eval_On.ToString("dd/MM/yyyy")
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.NCRRef)
+                                    </td>
+                                    <td>
+                                        @if (item.upload != null && item.upload != "" && item.upload.Length > 0)
+                                        {
+                                            foreach (var docs in item.upload.Trim(',').Split(','))
+                                            {
+                                                <p style="margin: 0px;">
+
+                                                    <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" style="color: orange;">
+                                                        Preview
+                                                    </a>
+                                                </p>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <span class="badge badge-danger">No File was Uploaded</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <a href='@Url.Action("KPIPlanEvaluationEdit", "KPIEvaluation", new { KPI_Trans_Eval_Id = item.KPI_Trans_Eval_Id })' title="Edit KPI Evaluation details"
+                                           onclick="HyperLinkProgressIconFunction()">
+                                            <span class="badge badge-info">Edit</span>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+            @section scripts {
+                @Scripts.Render("~/bundles/jqueryval")
+                <script type="text/javascript">
+                            //----zzz
+    $(document).ready(function () {
+
+        @if (TempData["alertdata"] != null ) {
+
+           @: new Noty({
+           @:     text: '@TempData["alertdata"]',
+           @:     type: 'error'
+           @: }).show();
+        }
+
+        @if (@TempData["Successdata"] != null ) {
+
+        @:    new Noty({
+         @:       text: '@TempData["Successdata"]',
+         @:       type: 'success'
+         @:   }).show();
+        }
+    });
+    //zzz----
+                    var table1 = function () {
+
+                var ShowEdit = @(Obj.GetCurrentUserSession().Kpi.Contains("3") ? "true" : "false");
+                var ShowDownld = @(Obj.GetCurrentUserSession().Kpi.Contains("4") ? "true" : "false");
+                        //
+                        // Setup module components
+                        //
+
+                        // Basic Datatable examples
+                        var _componentDatatableBasic = function () {
+                            if (!$().DataTable) {
+                                console.warn('Warning - datatables.min.js is not loaded.');
+                                return;
+                            }
+
+                            //Setting datatable defaults
+                            $.extend($.fn.dataTable.defaults, {
+                                autoWidth: false,
+                                responsive: true,
+                                columnDefs: [{
+                                    orderable: false,
+                                    width: 100,
+                                    targets: [5,6]
+                                }, {
+                                        'targets': [5],
+                                        'visible': ShowDownld
+                                    }, {
+                                        'targets': [6],
+                                        'visible': ShowEdit
+                                    }],
+
+                                colReorder: false,
+                                dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                                //dom: 'lBfrtip',
+                                language: {
+                                    search: '<span>Filter:</span> _INPUT_',
+                                    searchPlaceholder: 'Type to filter...',
+                                    lengthMenu: '<span>Show:</span> _MENU_',
+                                    paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                                }
+                            });
+
+                              var myClass = "";
+                var Delclass= @(Obj.GetCurrentUserSession().Kpi.Contains("4") ? "true" : "false");
+                if (Delclass == false) { myClass = 'hidden'  };
+
+                            var table = $('#table1').DataTable({
+
+                                lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                                colReorder: {
+                                    fixedColumnsLeft: 1
+                                },
+                                stateSave: true,
+                                stateSaveParams: function (settings, data) {
+                                    for (var i = 0, ien = data.columns.length; i < ien; i++) {
+                                        delete data.columns[i].visible;
+                                        delete data.columns[i].search;
+                                    }
+                                },
+                                scrollY: '350px',
+                                scrollCollapse: true,
+
+
+                                keys: {
+                                    className: 'focus focus-success'
+                                },
+
+                                buttons: {
+                                    buttons: [
+                                        {
+                                            extend: 'copyHtml5',
+                                            className: myClass, //className: 'btn btn-light',
+                                            title: 'KPI Evaluation Plan Data export',
+                                            exportOptions: {
+                                                columns: ':visible :not(.not-export-column)'
+                                            },
+                                        },
+                                        {
+                                            extend: 'excelHtml5',
+                                            className: myClass, // className: 'btn btn-light',
+                                            title: 'KPI Evaluation Plan Data export',
+                                            exportOptions: {
+                                                columns: ':visible :not(.not-export-column)'
+                                            },
+
+                                        },
+                                        {
+                                            extend: 'pdfHtml5',
+                                            className: myClass, //className: 'btn btn-light',
+                                            title: 'KPI Evaluation Plan Data export',
+                                            exportOptions: {
+                                                columns: ':visible :not(.not-export-column)'
+                                            },
+                                        },
+                                        {
+                                            extend: 'csvHtml5',
+                                            className: myClass, //className: 'btn btn-light',
+                                            title: 'KPI Evaluation Plan Data export',
+                                            exportOptions: {
+                                                columns: ':visible :not(.not-export-column)'
+                                            },
+                                        },
+                                        {
+                                            extend: 'print',
+                                            className: myClass, // className: 'btn btn-light',
+                                            title: 'KPI Evaluation Plan Data export',
+                                            exportOptions: {
+                                                columns: ':visible :not(.not-export-column)'
+                                            },
+                                        },
+
+                                        {
+                                            extend: 'colvis',
+                                            text: '<i class="icon-three-bars"></i>',
+                                            className: 'btn bg-blue btn-icon dropdown-toggle',
+                                            columns: ':visible:not(.not-export-column)'
+                                        }
+                                    ]
+                                }
+
+
+
+
+                            });
+                            // Adjust columns on window resize
+                            setTimeout(function () {
+                                $(window).on('resize', function () {
+                                    table.columns.adjust();
+                                });
+                            }, 100);
+
+
+                            //Redraw table on click toggle. -------table.columns.adjust doesn't work properly upon calling after toggle (width increase/decrease = redraw table.).
+                            $('.sidebar-control').on('click', function () {
+
+                                setTimeout(function () {
+                                    //alert("gii");
+
+                                    table.columns.adjust().draw();
+                                    $("#table1").resize();
+                                }, 100);
+
+                            });
+                            //}
+
+                            $('#table1').on('page.dt', function () {
+                                //table.draw();
+                                //alert("zzz1");
+                                $("#table1").resize();
+
+                            });
+
+                            $('#table1').on('column-visibility.dt', function () {
+                                //table.draw();
+                                //alert("zzz2");
+                                $("#table1").resize();
+
+                            });
+
+                            $('#table1').on('order.dt', function () {
+                                //table.draw();
+                                //alert("zzz3");
+                                $("#table1").resize();
+
+                            });
+
+
+                            $('#table1').on('responsive-display.dt', function () {
+                                //table.draw();
+                                //alert("zzz4");
+                                $("#table1").resize();
+
+                            });
+
+
+                            $('#table1').on('responsive-resize.dt', function () {
+                                //table.draw();
+                                //alert("zzz4");
+                                $("#table1").resize();
+
+                            });
+
+
+                            //.on('order.dt', function () {
+                            //    table.columns.adjust().draw();
+                            //    $("#qhse").resize(); })
+                            //.on('search.dt', function () {
+                            //    table.columns.adjust().draw();
+                            //    $("#qhse").resize(); })
+
+                            //.on('column-visibility.dt', function () {
+                            //    table.columns.adjust().draw();
+                            //    $("#qhse").resize();
+                            //})
+
+
+
+                        };
+
+
+
+
+
+
+                        // Select2 for length menu styling
+                        var _componentSelect2 = function () {
+                            if (!$().select2) {
+                                console.warn('Warning - select2.min.js is not loaded.');
+                                return;
+                            }
+
+                            // Initialize
+                            $('.dataTables_length select').select2({
+                                minimumResultsForSearch: Infinity,
+                                dropdownAutoWidth: true,
+                                width: 'auto'
+                            });
+                        };
+
+
+                        //
+                        // Return objects assigned to module
+                        //
+
+                        return {
+                            init: function () {
+                                _componentDatatableBasic();
+                                _componentSelect2();
+                            }
+                        }
+                    }();
+
+
+                    // Initialize module
+                    // ------------------------------
+
+                    document.addEventListener('DOMContentLoaded', function () {
+                        table1.init();
+                    });
+
+
+
+                </script>
+
+            }

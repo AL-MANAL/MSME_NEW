@@ -1,0 +1,361 @@
+﻿@using System.Data;
+@{
+    //Layout = "~/Views/Shared/_PrintLayout.cshtml";
+    ViewBag.Title = "AuditSummaryReport";
+    DataSet dsNCReport = new DataSet();
+    string AuditDate = "", AuditLocation = "", AuditorNames = "", AuditeeNames = "", AuditCriteria = "";
+    ISOStd.Models.clsGlobal obj = new ISOStd.Models.clsGlobal();
+    if (ViewBag.dsAusditReport != null)
+    {
+        dsNCReport = ViewBag.dsAusditReport;
+        if (dsNCReport.Tables.Count > 0 && dsNCReport.Tables[0].Rows.Count > 0)
+        {
+
+            for (int i = 0; i < dsNCReport.Tables[0].Rows.Count; i++)
+            {
+                AuditDate = AuditDate + Convert.ToDateTime(dsNCReport.Tables[0].Rows[i]["AuditDate"].ToString()).ToString("dd/MM/yyyy HH:mm") + ", ";
+            }
+            AuditDate = AuditDate.Trim().TrimEnd(',');
+            for (int i = 0; i < dsNCReport.Tables[0].Rows.Count; i++)
+            {
+                AuditLocation = AuditLocation + dsNCReport.Tables[0].Rows[i]["AuditLocation"].ToString() + ", ";
+            }
+            AuditLocation = AuditLocation.Trim().TrimEnd(',');
+
+            for (int i = 0; i < dsNCReport.Tables[0].Rows.Count; i++)
+            {
+                AuditorNames = AuditorNames + dsNCReport.Tables[0].Rows[i]["DeptAudited"].ToString()
+                    + ": " + dsNCReport.Tables[0].Rows[i]["AuditorNames"].ToString() + ", ";
+            }
+            AuditorNames = AuditorNames.Trim().TrimEnd(',');
+            for (int i = 0; i < dsNCReport.Tables[0].Rows.Count; i++)
+            {
+                AuditeeNames = AuditeeNames + dsNCReport.Tables[0].Rows[i]["DeptAudited"].ToString()
+                   + ": " + dsNCReport.Tables[0].Rows[i]["AuditeeNames"].ToString() + ", ";
+            }
+            AuditeeNames = AuditeeNames.Trim().TrimEnd(',');
+
+            for (int i = 0; i < dsNCReport.Tables[0].Rows.Count; i++)
+            {
+                AuditCriteria = AuditCriteria + dsNCReport.Tables[0].Rows[i]["AuditCriteria"].ToString() + ", ";
+            }
+            AuditCriteria = AuditCriteria.Trim().TrimEnd(',');
+        }
+    }
+}
+
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Home</span>
+                    </a>
+                    <a href="@Url.Action("ReportList", "Reports", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Report Types</span>
+                    </a>
+                    <span class="breadcrumb-item active">Audit Summary Report</span>
+                </div>
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            <div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+                  @if(ViewBag.AuditNum != null)
+                  {
+                      if (obj.GetCurrentUserSession().Rept.Contains("4"))
+                      {
+                          using (Html.BeginForm("AuditSummaryReport", "Reports", FormMethod.Post, new { id = "form1", name = "form1" }))
+                          {
+                            @Html.AntiForgeryToken()
+                            @Html.ValidationSummary(true)
+
+                            <div class="breadcrumb-elements-item dropdown p-0">
+                                <input type="hidden" id="AuditNum" name="AuditNum" value="@ViewBag.AuditNum" />
+                                <button type="submit" class="dropdown-item" name="command" id="command">
+                                    <i class="icon-printer2"></i> Report
+                                </button>
+
+                            </div>
+                        }
+                    }
+                    }
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@using (Html.BeginForm("AuditSummaryReport", "Reports", FormMethod.Post, new { id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+<div class="card">
+
+ 	   <div class="card-header header-elements-inline bg-primary">
+                <h5 class="card-title">Audit Summary Report</h5>
+                <div class="header-elements">
+                    <div class="list-icons">
+                        <a class="list-icons-item" data-action="collapse"></a>
+                    </div>
+                </div>
+            </div>
+ 	   <div class="card-body">
+            <div class="row">
+                <div class="col-md-3">
+                     <div class="options d-flex flex-fill">
+
+                <select class="select-fixed-single" data-fouc id="AuditNum" name="AuditNum" required="">
+                       <option value='' hidden>Select Audit No</option>
+                              @if (ViewBag.AuditNum != null)
+                            {
+                                foreach (var item in ViewBag.AuditNumList)
+                                {
+                                    if (item.Value == ViewBag.AuditNum)
+                                    {
+                                        <option value='@item.Value' selected>@item.Text</option>
+                                    }
+                                    else
+                                    {
+                                        <option value='@item.Value'>@item.Text</option>
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                foreach (var item in ViewBag.AuditNumList)
+                                {
+                                    <option value='@item.Value'>@item.Text</option>
+
+                                }
+                            }
+                </select>
+                     </div>
+                    </div>
+                <div class="col-md-9">
+                       <button type="submit" id="Generate" name="command" value="Generate"  class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i>Generate</button>
+                    </div>
+            </div>          
+            </div>
+    <div class="card-body">
+           @if (dsNCReport.Tables.Count > 0 && dsNCReport.Tables[0].Rows.Count > 0)
+           {     
+              <div class="card">
+                <table class="table table-lg">               
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-4">
+                            <div id="logo" style="padding-left: 30px;">
+                                <img src="@Url.Content(dsNCReport.Tables[0].Rows[0]["logo"].ToString())" style="width: 150px;height: 100px;" />
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-4 text-center font-weight-bold font-size-lg">
+                            <span>@dsNCReport.Tables[0].Rows[0]["CompanyName"].ToString()</span>
+                            <br />
+                            <span>INTERNAL AUDIT SUMMARY REPORT</span>
+                        </td>
+                    </tr>      
+                </table>
+            </div>
+  <div>
+                <table class="table table-lg">
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2 font-size-lg">
+                           Audit Number
+                        </td>
+                        <td class="col font-size-lg">
+                           @dsNCReport.Tables[0].Rows[0]["AuditNum"].ToString()
+                        </td>
+                        <td class="col-xs-3 col-md-2 font-size-lg">
+                          Audit Criteria
+                        </td>
+                        <td class="col font-size-lg">
+                         @AuditCriteria
+                        </td>
+                    </tr>
+ 		            <tr class="row">
+                        <td class="col font-size-lg">
+                           Scope of Management System     
+                              <br /><br /><br />                   
+                        </td>                     
+                    </tr>
+                     <tr class="row">
+                        <td class="col-xs-3 col-md-2 font-size-lg">
+                          Date of audits
+                        </td>
+                        <td class="col font-size-lg">
+                           @AuditDate
+                        </td>
+                        <td class="col-xs-3 col-md-2 font-size-lg">
+                         Location of audit
+                        </td>
+                        <td class="col font-size-lg">
+                         @obj.GetMultiWorkLocationById(AuditLocation)
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2 font-size-lg">
+                          Auditors
+                        </td>
+                        <td class="col font-size-lg">
+                          @AuditorNames
+                        </td>
+                        <td class="col-xs-3 col-md-2 font-size-lg">
+                         Auditee audited / interviewed
+                        </td>
+                        <td class="col font-size-lg">
+                          @AuditeeNames
+                        </td>
+                    </tr>
+		            <tr class="row">
+                        <td class="col-xs-3 col-md-2 font-size-lg">
+                          Audit evidence collected through
+                        </td>
+                        <td class="col font-size-lg">
+                         <ul>
+                         	<li>By reviewing documents</li>
+                         	<li>By reviewing records</li>
+                         	<li>Interviewing auditee and staff</li>
+                         	<li>By observing activities performed during the audit</li>
+                     	</ul>
+                        </td>
+                        <td class="col-xs-3 col-md-2 font-size-lg">
+                         Audit methodology
+                        </td>
+                        <td class="col font-size-lg">
+                          <ul>
+                         	<li>Sampling (few samples from each
+                    		process verified to conform to the
+                    		management system requirements)
+				            </li>
+                     	  </ul>
+                        </td>
+                    </tr>
+ 		            <tr class="row">
+                        <td class="col-xs-3 col-md-2 font-size-lg">
+                          Auditors
+                        </td>
+                        <td class="col font-size-lg">
+                          @AuditorNames
+                        </td>
+                        <td class="col-xs-3 col-md-2 font-size-lg">
+                         Auditee audited / interviewed
+                        </td>
+                        <td class="col font-size-lg">
+                          @AuditeeNames
+                        </td>
+                    </tr>
+                </table>
+
+            </div>
+               
+                <div class="table-responsive">
+                <table class="table table-lg table-bordered">
+                    <thead>
+                        <tr class="bg-blue font-weight-bold">
+                            <td colspan="5">
+                                Audit Details
+                            </td>
+                        </tr>
+                    <tr class="bg-blue font-weight-bold">
+                        <td>Sl No</td>
+                        <td>Dept Audited</td>
+                        <td>No. of major findings</td>
+                        <td>No. of minor findings</td>
+                        <td>No. of observations</td>
+                    </tr>
+                    </thead>
+                      @if (dsNCReport.Tables.Count > 0 && dsNCReport.Tables[0].Rows.Count > 0)
+                    {
+                    for (int i = 0, j = 1; i < dsNCReport.Tables[0].Rows.Count; i++, j++)
+                    {
+                      <tbody>
+                        <tr>
+                            <td>@j</td>
+                            <td>@dsNCReport.Tables[0].Rows[i]["DeptAudited"].ToString()</td>
+                            <td>@dsNCReport.Tables[0].Rows[i]["No_Major"].ToString()</td>
+                            <td>@dsNCReport.Tables[0].Rows[i]["No_Minor"].ToString()</td>
+                            <td>@dsNCReport.Tables[0].Rows[i]["No_obsern"].ToString()</td>
+                        </tr>
+                          </tbody>
+                    }
+                      }
+                     <tr>
+                    <td colspan="3">
+                        Positive observations
+                        <br /><br /><br />
+                    </td>
+                    <td colspan="3">
+                        Areas of concerns / improvements required
+                        <br /><br /><br />
+                    </td>
+                </tr>
+                </table>
+              </div>
+                <br />
+               <div class="table-responsive">
+                <table class="table table-lg table-bordered">
+                    <thead>
+                    <tr class="bg-blue font-weight-bold">
+                        <td colspan="3">Prepared By</td>
+                        <td colspan="3">Reviewed By</td>
+                    </tr>
+                    <tr class="bg-blue font-weight-bold">
+                        <th>Name</th>
+                        <th>Position‎‎</th>
+                        <th>Department‎‎</th>
+                        <th>Name</th>
+                        <th>Position‎‎</th>
+                        <th>Department‎‎</th>
+                    </tr>
+                        </thead>
+                     @if (dsNCReport.Tables.Count > 0 && dsNCReport.Tables[1].Rows.Count > 0)
+                {
+                    for (int i = 0; i < dsNCReport.Tables[1].Rows.Count; i++)
+                    {
+                        <tr>
+                            <td>@dsNCReport.Tables[1].Rows[i]["AuditPrepared_name"].ToString()</td>
+                            <td>@dsNCReport.Tables[1].Rows[i]["AuditPrepared_position"].ToString()</td>
+                            <td>@dsNCReport.Tables[1].Rows[i]["AuditPrepared_department"].ToString()</td>
+                            <td>@dsNCReport.Tables[1].Rows[i]["AuditReviewed_name"].ToString()</td>
+                            <td>@dsNCReport.Tables[1].Rows[i]["AuditReviewed_position"].ToString()</td>
+                            <td>@dsNCReport.Tables[1].Rows[i]["Auditreviewed_department"].ToString()</td>
+
+                        </tr>
+                    }
+                }
+                </table>
+            </div>
+           }
+     </div>
+    </div>
+  
+}
+
+@section Scripts {
+    <script>
+      
+    </script>
+}

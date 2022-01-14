@@ -1,0 +1,755 @@
+﻿@model ISOStd.Models.ExternalAuditModels
+
+@{
+    ViewBag.Title = "";
+
+}
+
+@section featured {
+    <div class="page-header page-header-light">
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("ExternalAuditList", "ExternalAudit", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">External Audit Details List</span>
+                    </a>
+                    <span class="breadcrumb-item active">Add External Audit Details</span>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+}
+@using (Html.BeginForm("AddExternalAudit", "ExternalAudit", FormMethod.Post,
+            new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Add External Audit Details</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+                <table class="table table-lg">
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.audit_category)
+
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <input class="form-control" readonly type="text" id="audit_category" name="audit_category" value="External" />
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                           Company Name
+
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <input class="form-control" readonly type="text" id="company_name" name="company_name" value="@ViewBag.CompanyName" />
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.audit_type) <text style="color: red;">*</text>
+                        </td>
+                        <td class="col-xs-6 col-md-4">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="audit_type" name="audit_type" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.Type != null)
+                                    {
+                                        foreach (var item in ViewBag.Type)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.audit_criteria) <text style="color: red;">*</text>
+                        </td>
+                        <td class="col-xs-6 col-md-4">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="audit_criteria" name="audit_criteria" multiple required>
+                                    @*<option value='' hidden>Select</option>*@
+                                    @if (ViewBag.AuditCriteria != null)
+                                    {
+                                        foreach (var item in ViewBag.AuditCriteria)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.audit_start_date)<text style="color: red;">*</text>
+                        </td>
+                        <td class="col">
+                            <input type="date" class="form-control" id="audit_start_date" name="audit_start_date" value="@DateTime.Now.ToString("yyyy-MM-dd")" required />
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.audit_complete_date)<text style="color: red;">*</text>
+                        </td>
+                        <td class="col">
+                            <input type="date" class="form-control" id="audit_complete_date" name="audit_complete_date" value="@DateTime.Now.ToString("yyyy-MM-dd")" required />
+                        </td>
+                      
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.entity_name)<text style="color: red;">*</text>
+                        </td>
+                        <td class="col">
+                            <input type="text" class="form-control" id="entity_name" name="entity_name" required />
+                        </td>
+                    </tr>
+                  
+                </table>
+
+                <fieldset class="border p-2">
+                    <legend class="font-weight-semibold text-success">Auditee Details</legend>
+                    <table class="table table-lg">
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.DisplayNameFor(model => model.directorate)<text style="color: red;">*</text>
+                            </td>
+                            <td class="col">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="directorate" name="directorate"  onchange="GetDeptList()">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.Branch != null)
+                                    {
+                                        foreach (var data in ViewBag.Branch)
+                                        {
+                                            if (Array.IndexOf(Model.directorate.ToString().Split(','), data.Value) >= 0)
+                                            {
+                                                <option value='@data.Value' selected>@data.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@data.Value'>@data.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                                <span class="field-validation-error"><span id="directorate-message" style="display: none;">Please select</span></span>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                @Html.DisplayNameFor(model => model.group_name)<text style="color: red;">*</text>
+                            </td>
+                            <td class="col">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="group_name" name="group_name" >
+                                    @if (ViewBag.Department != null)
+                                    {
+                                        foreach (var item in ViewBag.Department)
+                                        {
+                                            if (Array.IndexOf(Model.group_name.ToString().Split(','), item.Value) >= 0)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                                <span class="field-validation-error"><span id="group_name-message" style="display: none;">Please select</span></span>
+                            </td>
+
+                        </tr>
+                        <tr class="row">
+                            @*<td class="col-xs-3 col-md-2">
+                                @Html.DisplayNameFor(model => model.team)<text style="color: red;">*</text>
+                            </td>
+                            <td class="col">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="team" name="team">
+                                    @if (ViewBag.Team != null)
+                                    {
+                                        foreach (var item in ViewBag.Team)
+                                        {
+                                            if (Array.IndexOf(Model.team.ToString().Split(','), item.Value) >= 0)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                                <span class="field-validation-error"><span id="team-message" style="display: none;">Please select</span></span>
+                            </td>*@
+                            <td class="col-xs-3 col-md-2">
+                                @Html.DisplayNameFor(model => model.location)<text style="color: red;">*</text>
+                            </td>
+                            <td class="col">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="location" name="location">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.Location != null)
+                                    {
+                                        foreach (var item in ViewBag.Location)
+                                        {
+                                            if (Model.location == item.Value)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                                <span class="field-validation-error"><span id="location-message" style="display: none;">Please select</span></span>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col">
+                                <input type="button" value="Add" class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" onclick="AddAuditee()" />
+                            </td>
+                        </tr>
+
+                    </table>
+                </fieldset>
+                <span class="form-text text-muted"><code>Please click Add or Plus button to add N number of Auditee details</code></span>
+                <div class="card invisible" id="hidden card1" style="display:none">
+                    <div class="card-header header-elements-inline">
+                        <h6 class="card-title">Auditee Details</h6>
+                        <div class="header-elements">
+                            <div class="list-icons">
+                                <a class="list-icons-item" data-action="collapse"></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+                        <input type="hidden" id="itemcnts" name="itemcnts" value="0" />
+                        <div class="card card-table table-responsive shadow-0 mb-0">
+                            <table class="table" id="team-list1">
+                                <tr class="bg-blue">
+                                    <th>Action</th>
+                                    <th>Division</th>
+                                    <th>Department</th>                                  
+                                    <th>Location</th>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <fieldset class="border p-2">
+                    <legend class="font-weight-semibold text-success">Auditor Details</legend>
+                    <table class="table table-lg">
+                        <tr class="row">
+                            <td class="col-3">
+                                <b>Name</b>
+                            </td>
+                            <td class="col-3"><b>Auditor Level</b></td>
+                            <td class="col-3"><b>Contact No</b></td>
+                            <td class="col-2"><b>Email Id</b></td>
+                            <td class="col-1"></td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-3">
+                                <input type="text" class="form-control" id="auditor_name" name="auditor_name" />
+                                <span class="field-validation-error"><span id="auditor_name-message" style="display: none;">This field is required.</span></span>
+                                @Html.ValidationMessageFor(model => model.auditor_name)
+                            </td>
+                            <td class="col-3">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="auditor_level" name="auditor_level">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.Level != null)
+                                    {
+                                        foreach (var item in ViewBag.Level)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                                <span class="field-validation-error"><span id="auditor_level-message" style="display: none;">This field is required.</span></span>
+                                @Html.ValidationMessageFor(model => model.auditor_level)
+                            </td>
+                            <td class="col-3">
+                                <input type="text" class="form-control" id="contact_no" name="contact_no" />
+                                <span class="field-validation-error"><span id="contact_no-message" style="display: none;">This field is required.</span></span>
+                                @Html.ValidationMessageFor(model => model.contact_no)
+                            </td>
+                            <td class="col-2">
+                                <input type="text" class="form-control" id="email_address" name="email_address" />
+                                <span class="field-validation-error"><span id="email_address-message" style="display: none;">This field is required.</span></span>
+                                @Html.ValidationMessageFor(model => model.email_address)
+                            </td>
+                            <td class="col-1">
+                                <input type="button" value="Add" class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" onclick="AddData()" />
+                            </td>
+                        </tr>
+                        </table>
+</fieldset>
+                <span class="form-text text-muted"><code>Please click Add or Plus button to add N number of Auditor details</code></span>
+                <div class="card invisible" id="hidden card" style="display:none">
+                    <div class="card-header header-elements-inline">
+                        <h6 class="card-title">Auditor Details</h6>
+                        <div class="header-elements">
+                            <div class="list-icons">
+                                <a class="list-icons-item" data-action="collapse"></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body scrollbar-container">
+
+                        <div class="card card-table table-responsive shadow-0 mb-0 scrollbar">
+                            <input type="hidden" id="itemcnt" name="itemcnt" value="0"/>
+                            <table class="table" id="team-list">
+                                <tr class="bg-blue">
+                                    <th>Delete</th>
+                                    <th>Name</th>
+                                    <th>Auditor Level</th>
+                                    <th>Contact No</th>
+                                    <th>Email Id</th>                                
+                                </tr>                          
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <table class="table table-lg">
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.upload)
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <div class="editor-field">
+                                <input type="file" name="upload" id="upload" onchange="FileFormatValidation(this)" multiple accept=".pdf,.xlsx,.xls,.doc,.docx,.image/*,.png,.jpeg,.jpg" @*class="bootstrap-uploader" data-fouc*@ />
+                                <span class="form-text text-muted"><code>(Hold Ctrl Key in case of multiple files)</code></span>
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.notification_to)<text style="color: red;">*</text>
+                        </td>
+                        <td class="col">
+                            <select class="form-control select-search select2-hidden-accessible" data-fouc id="notification_to" name="notification_to" required multiple>
+                                
+                            </select>
+                          
+                        </td>
+
+                    </tr>
+                </table>
+          
+</div>
+            <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+                @Html.ActionLink("Back to List", "ExternalAuditList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+                <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Save</button>
+            </div>
+        </div>
+    </div>
+}
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+           @if (TempData["alertdata"] != null)
+           {
+               @: new Noty({
+                   @:     text: '@TempData["alertdata"]',
+               @:     type: 'error'
+               @: }).show();
+           }
+           @if (@TempData["Successdata"] != null)
+           {
+
+            @:new Noty({
+                @:text: '@TempData["Successdata"]',
+            @: type: 'success'
+            @:}).show();
+           }
+        });
+        var showClass = 'is-visible';
+        var hideClass = 'invisible';
+        function deleteRow(btn) {
+            var row = btn.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+        }
+        function Validation() {
+            var validflg = true;
+            var ssnMessage = "";
+            if (document.getElementById("auditor_name").value == "") {
+                ssnMessage = $('#auditor_name-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#auditor_name-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("auditor_level").value == "") {
+                ssnMessage = $('#auditor_level-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#auditor_level-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("contact_no").value == "") {
+                ssnMessage = $('#contact_no-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#contact_no-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("email_address").value == "") {
+                ssnMessage = $('#email_address-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#email_address-message');
+                ssnMessage.hide();
+            }
+          
+            return validflg;
+        }
+        function AddData() {
+
+            if (Validation() == true) {
+                document.getElementById("hidden card").style.display = "block";
+                var cnt = document.getElementById("itemcnt").value;
+
+                document.getElementById("itemcnt").value = cnt;
+                // Find a <table> element with id="myTable":
+                var table = document.getElementById("team-list");
+
+
+                // Create an empty <tr> element and add it to the 1st position of the table:
+                var row = table.insertRow();
+
+                // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                var cell0 = row.insertCell(0);
+                var cell1 = row.insertCell(1);
+                var cell2 = row.insertCell(2);
+                var cell3 = row.insertCell(3);
+                var cell4 = row.insertCell(4);
+                
+                var auditor_name = $('#auditor_name').val();
+                var contact_no = $('#contact_no').val();
+                var email_address = $('#email_address').val();
+               
+                var auditor_level = $.map($("#auditor_level option:selected"), function (el, i) {
+                    return $(el).text();
+                });
+                var auditor_levelVal = $("#auditor_level").val();
+
+           
+
+                cell0.innerHTML = "<span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span>";
+                cell1.innerHTML = "<input class='form-control' type='text' id='auditor_name" + cnt + "' name='auditor_name" + cnt + "' value='" + auditor_name + "' />";
+                cell2.innerHTML = "<select class='select-fixed-single' id='auditor_level" + cnt + "' name='auditor_level" + cnt + "'><option value='" + auditor_levelVal + "' selected>" + auditor_level + "</option>@if (ViewBag.Level != null)
+                {
+                    foreach (var item in ViewBag.Level)
+                    { <option value='@item.Value'>@item.Text</option> }
+                    }</select>";
+                cell3.innerHTML = "<input class='form-control' type='text' id='contact_no" + cnt + "' name='contact_no" + cnt + "' value='" + contact_no + "' />";
+                cell4.innerHTML = "<input class='form-control' type='text' id='email_address" + cnt + "' name='email_address" + cnt + "' value='" + email_address + "' />";
+
+                        cnt++;
+                        document.getElementById("itemcnt").value = cnt;
+
+                        //reintialisation
+
+                        // Badge position
+                        $('.maxlength-badge-position').maxlength({
+                            alwaysShow: true,
+                            placement: 'top'
+                        });
+                      
+                        //auto resize
+                        autosize($('.elastic'));
+                        $('.select-fixed-single').select2({
+                            minimumResultsForSearch: Infinity,
+                            width: 150
+                        });
+                        document.getElementById("hidden card").classList.remove(hideClass);
+                        document.getElementById("hidden card").classList.add(showClass);
+                        document.getElementById("auditor_name").value = "";
+                        document.getElementById("contact_no").value = "";
+                        document.getElementById("email_address").value = "";                     
+                        $("#auditor_level").val('').trigger('change');            
+                    }
+
+        }
+
+        function Validation1() {
+            var validflg = true;
+            var ssnMessage = "";
+
+            if (document.getElementById("directorate").value == "") {
+                ssnMessage = $('#directorate-message');
+                ssnMessage.show();
+
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#directorate-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("group_name").value == "") {
+                ssnMessage = $('#group_name-message');
+                ssnMessage.show();
+
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#group_name-message');
+                ssnMessage.hide();
+            }
+            //if (document.getElementById("team").value == "") {
+            //    ssnMessage = $('#team-message');
+            //    ssnMessage.show();
+
+            //    validflg = false;
+            //}
+            //else {
+            //    ssnMessage = $('#team-message');
+            //    ssnMessage.hide();
+            //}
+            if (document.getElementById("location").value == "") {
+                ssnMessage = $('#location-message');
+                ssnMessage.show();
+
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#location-message');
+                ssnMessage.hide();
+            }
+            return validflg;
+        }
+
+        function AddAuditee() {
+
+            if (Validation1() == true) {
+                document.getElementById("hidden card1").style.display = "block";
+                var cnt = document.getElementById("itemcnts").value;
+
+                document.getElementById("itemcnts").value = cnt;
+                // Find a <table> element with id="myTable":
+                var table = document.getElementById("team-list1");
+
+
+                // Create an empty <tr> element and add it to the 1st position of the table:
+                var row = table.insertRow();
+
+
+                // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                var cell0 = row.insertCell(0);
+                var cell1 = row.insertCell(1);
+                var cell2 = row.insertCell(2);
+                var cell3 = row.insertCell(3);
+                //var cell4 = row.insertCell(4);
+               
+
+              
+
+                var directorate = $.map($("#directorate option:selected"), function (el, i) {
+                    return $(el).text();
+                });
+                var directorateVal = $("#directorate").val();
+
+
+                var group_name = $.map($("#group_name option:selected"), function (el, i) {
+                    return $(el).text();
+                });
+                var group_nameVal = $("#group_name").val();
+
+                //var team = $.map($("#team option:selected"), function (el, i) {
+                //    return $(el).text();
+                //});
+                //var teamVal = $("#team").val();
+
+                var location = $.map($("#location option:selected"), function (el, i) {
+                    return $(el).text();
+                });
+                var locationVal = $("#location").val();
+
+           
+                cell0.innerHTML = "<span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span>";
+
+                cell1.innerHTML = "<select class='select-fixed-single' id='directorate" + cnt + "' name='directorate" + cnt + "' onchange='sGetDeptList(" + cnt + ")'><option value='" + directorateVal + "' selected>" + directorate + "</option>@if (ViewBag.Branch != null)
+                {
+                    foreach (var item in ViewBag.Branch)
+                    { <option value='@item.Value'>@item.Text</option> }
+                    }</select>";
+                    cell2.innerHTML = "<select class='select-fixed-single' id='group_name" + cnt + "' name='group_name" + cnt + "' /*onchange='sGetTeamDetails(" + cnt + ")*/'><option value='" + group_nameVal + "' selected>" + group_name + "</option></select>";
+
+                    //cell3.innerHTML = "<select class='select-fixed-single' id='team" + cnt + "' name='team" + cnt + "'><option value='" + teamVal + "' selected>" + team + "</option></select>";
+                    
+                    cell3.innerHTML = "<select class='select-fixed-single' id='location" + cnt + "' name='location" + cnt + "'><option value='" + locationVal + "' selected>" + location + "</option>@if (ViewBag.Location != null)
+                    {
+                        foreach (var item in ViewBag.Location)
+                        { <option value='@item.Value'>@item.Text</option> }
+                        }</select>";
+ 
+                        cnt++;
+                        document.getElementById("itemcnts").value = cnt;
+                        $('.maxlength-badge-position').maxlength({
+                            alwaysShow: true,
+                            placement: 'top'
+                        });
+                        //auto resize
+                        autosize($('.elastic'));
+                        $('.select-fixed-single').select2({
+                            minimumResultsForSearch: Infinity,
+                            width: 150
+                        });
+                        GetAuditee(directorateVal);
+                        document.getElementById("hidden card1").classList.remove(hideClass);
+                        document.getElementById("hidden card1").classList.add(showClass);
+                        ResetControl();
+                    }
+
+                }
+
+                function ResetControl () {
+                    $("#directorate").val('').trigger('change');
+                    $("#group_name").val('').trigger('change');
+                    //$("#team").val('').trigger('change');
+                    $("#location").val('').trigger('change');     
+                }
+                function GetAuditee(directorateVal) {
+                    
+                    jQuery.ajax({
+                        url: '@Url.Action("FunGetAuditeesList", "AuditProcess")',
+                        type: 'POST',
+                        dataType: "json",
+                        data: { 'branch': directorateVal, 'group_name': '' },
+                        success: function (result) {
+                            
+                            if (result != null && result.length > 0) {
+                                $.each(result, function (index, item) {
+                                    $("#notification_to").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+
+                                });
+                                $("#notification_to").trigger('change');
+                                return;
+                            }
+                        }
+                    });
+                }
+                function sGetDeptList(i) {
+                    //var selectedValues = [];
+                    $("#group_name" + i).children('option').remove();
+                    //$("#team" + i).children('option').remove();
+                    //$("#branch :selected").each(function () {
+                    // selectedValues.push($(this).val());
+                    //});
+                    var selectedValues = $('#directorate' + i).val();
+                    if (selectedValues != '') {
+                        jQuery.ajax({
+                            url: '@Url.Action("FunGetAllDeptList", "EmployeeDetails")',
+                            type: 'POST',
+                            dataType: "json",
+                            data: { 'branch': selectedValues },
+                            success: function (result) {
+                               
+                                if (result != null && result.length > 0) {
+                                    $("#group_name" + i).append("<option value=''>" + "Select" + "</option>");
+                                    $.each(result, function (index, item) {
+                                        $("#group_name" + i).append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                                    });
+                                    // $("#group_name"+i).trigger('change');
+
+                                    return;
+                                }
+
+                            }
+                        });
+                    }
+                }
+                @*function sGetTeamDetails(i) {
+                    $("#team" + i).empty();
+                    var sDept = $('#group_name' + i).val();
+                    if (sDept != '') {
+                        jQuery.ajax({
+                            url: '@Url.Action("FunGetTeamList", "EmployeeDetails")',
+                            type: 'POST',
+                            dataType: "json",
+                            data: { 'group': sDept },
+                            success: function (result) {
+                                $("#team" + i).empty();
+
+                              
+                                if (result != null && result.length > 0) {
+                                    $("#team" + i).append("<option value=''>" + "Select" + "</option>");
+                                    $.each(result, function (index, item) {
+                                        $("#team" + i).append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                                        // $("#team"+i).trigger('change');
+                                    });
+                                    return;
+                                }
+                            }
+                        });
+                    }
+                }*@
+        function FileFormatValidation(file) {
+            var ext = file.value.split(".").pop().toLowerCase();
+            if ($.inArray(ext, ["doc", "pdf", "docx", "xls", "xlsx", , "png", "jpg", "jpeg"]) == -1) {
+                file.value = "";
+                jAlert("Invalid file format, please upload only doc, pdf, docx, xls, xlsx, png, jpeg, jpg format");
+            }
+        }
+        function GetDeptList() {
+            //var selectedValues = [];
+            $("#group_name").children('option').remove();
+           
+            //$("#branch :selected").each(function () {
+            // selectedValues.push($(this).val());
+            //});
+            var selectedValues = $('#directorate').val();
+            if (selectedValues != '') {
+                jQuery.ajax({
+                    url: '@Url.Action("FunGetAllDeptList", "EmployeeDetails")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'branch': selectedValues },
+                    success: function (result) {                       
+                      
+                        if (result != null && result.length > 0) {
+                            $("#group_name").append("<option value=''>" + "Select" + "</option>");
+                            $.each(result, function (index, item) {
+                                $("#group_name").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                            });
+                            $("#group_name").trigger('change');
+
+                            return;
+                        }
+
+                    }
+                });
+            }
+        }      
+    </script>
+}

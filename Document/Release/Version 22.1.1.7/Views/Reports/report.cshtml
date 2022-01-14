@@ -1,0 +1,145 @@
+﻿@{
+    ViewBag.Title = "report";
+}
+
+<div class="groupedassets margin10">
+    <span class="groupedassetshead margin10 onestphdcolor"> Report </span>
+</div>
+    <fieldset>
+        <legend>TrainingsModels</legend>
+        <table id="tabcontent">
+            <tr>
+                <td>
+                    <div class="editor-label">
+                        Audit Type
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                         <select id="AuditType" name="AuditType" required="" onchange="DisplayDept()">
+                            @*@foreach (ISOStd.Models.Employee item in ViewBag.EmpLists)*@
+                            <option value='' hidden>Select</option>
+                            @foreach (var item in ViewBag.AuditType)
+                            {
+                                <option value='@item.Value'>@item.Text</option>
+                            }
+                        </select>
+                        <span class="field-validation-error"><span id="AuditType-message" style="display: none;">Please select Audit type</span></span>
+                    </div>
+                </td>
+                 <td>
+                    <div class="editor-label">
+                        Audit Num
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <input type="text" id="AuditNum" name="AuditNum" required />
+                        <span class="field-validation-error"><span id="AuditNum-message" style="display: none;">Please Enter Audit Number</span></span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="editor-label">
+                        <label id="lblDept">Department</label> 
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <select id="DeptId" name="DeptId" required="" >
+                            @*@foreach (ISOStd.Models.Employee item in ViewBag.EmpLists)*@
+                            <option value='' hidden>Select</option>
+                            @foreach (var item in ViewBag.DeptList)
+                            {
+                                <option value='@item.Value'>@item.Text</option>
+                            }
+                        </select>
+                        <span class="field-validation-error"><span id="Dept-message" style="display: none;">Please select Department</span></span>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </fieldset>
+    <div style="width: 100%; text-align: center;">
+        <input type="button" value="Create" onclick="GenerateReport()"/>
+    </div>
+    <div id="divReport">    
+     </div>
+
+
+@section Scripts {
+    <script>
+        function GenerateReport()
+        {
+            var validflg = 1;
+            if (document.getElementById("AuditType").value == "") {
+                var ssnMessage1 = $('#AuditType-message');
+                ssnMessage1.show();
+                validflg = 0;
+            }
+            else {
+                var ssnMessage1 = $('#AuditType-message');
+                ssnMessage1.hide();
+            }
+
+            if (document.getElementById("AuditNum").value == "") {
+                var ssnMessage2 = $('#AuditNum-message');
+                ssnMessage2.show();
+                validflg = 0;
+            }
+            else {
+                var ssnMessage2 = $('#AuditNum-message');
+                ssnMessage2.hide();
+            }
+
+            if (document.getElementById("AuditType").value != 3 && document.getElementById("DeptId").value == "") {
+                var ssnMessage3 = $('#Dept-message');
+                ssnMessage3.show();
+                validflg = 0;
+            }
+            else {
+                var ssnMessage3 = $('#Dept-message');
+                ssnMessage3.hide();
+            }
+
+
+            if (validflg == 1)
+            {
+                var AuditNum= document.getElementById("AuditNum").value;
+               
+                if (document.getElementById("AuditType").value == 1) {
+                    //jAlert("NC");
+                    $("#divReport").html("<iframe src='~/frmReport.aspx?type=1&AuditNum="+document.getElementById("AuditNum").value
+                        + "&DeptId=" + document.getElementById("DeptId").value + "' style='width: 100%;height:600px;'></iframe>");
+                }
+                else if (document.getElementById("AuditType").value == 2) {
+                   // jAlert("Log");
+                    $("#divReport").html("<iframe src='frmReport.aspx?type=2&AuditNum=" + document.getElementById("AuditNum").value
+                        + "&DeptId=" + document.getElementById("DeptId").value + "' style='width: 100%;height:600px;'></iframe>");
+                }
+                else if (document.getElementById("AuditType").value == 3) {
+                    //jAlert("Summary");
+                    $("#divReport").html("<iframe src='~/frmReport.aspx?type=3&AuditNum="+ AuditNum+"' style='width: 100%; height:600px;'></iframe>");
+                }
+            }
+        }
+
+        function DisplayDept()
+        {
+            if (document.getElementById("AuditType").value == 3)
+            {
+                var ssnMessage3 = $('#Dept-message');
+                ssnMessage3.hide();
+                document.getElementById("lblDept").style.display = 'none';
+                document.getElementById("DeptId").style.display = 'none';
+            }
+            else
+            {
+                document.getElementById("lblDept").style.display = 'block';
+                document.getElementById("DeptId").style.display = 'block';
+            }
+        }
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

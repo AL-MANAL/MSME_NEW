@@ -1,0 +1,395 @@
+﻿@model ISOStd.Models.EquipmentMaintanance
+
+@{
+    ViewBag.Title = "";
+}
+
+@section featured {
+
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("EquipmentList", "Equipment", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Equipment List</span>
+                    </a>
+                    <span class="breadcrumb-item active">Add Equipment Maintenance details</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            <div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+@using (Html.BeginForm("AddMaintanance", "Equipment", FormMethod.Post,
+                     new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+   <input type="hidden" id="Equipment_Id" name="Equipment_Id" value="@ViewBag.Equipment_Id" />
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Add Equipment Maintenance details</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+                <input type="hidden" id="itemcnt1" name="itemcnt1" value="0" />
+                <table class="table table-lg">
+
+                   
+                   <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Equipment_Id)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @ViewBag.Equipment_Name
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Maintenance_Date)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                  
+                                <input class="form-control" type="date" id="Maintenance_Date" name="Maintenance_Date" required />
+                                @Html.ValidationMessageFor(m => m.Maintenance_Date)
+                            </div>
+                        </td>
+                    </tr>
+
+		    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Maintenance_Details)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input type="file" name="Maintenance_Details" id="Maintenance_Details" onchange="FileFormatValidation(this)" accept=".pdf,.xlsx,.xls,.jpeg,.jpg,.png,.doc,.docx,image/*" required  class="bootstrap-uploader" data-fouc />
+                                <br />
+                               
+                                @Html.ValidationMessage("Maintenance_Details", "This  is required")
+
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Maintenance_RectificationWork)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="Maintenance_RectificationWork" name="Maintenance_RectificationWork" required></textarea>
+                               @Html.ValidationMessageFor(m => m.Maintenance_RectificationWork)
+			</div>
+                        </td>
+                    </tr>
+		<tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Down_Time_From)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                          <label style="padding-right: 4px;">
+                            From: </label><input class="form-control" type="date" id="FromTimeDate" name="FromTimeDate"  />
+                             Hr: @Html.DropDownList("FromTimeInHour", new SelectList(ViewBag.TimeInHour, "FromTimeInHour"), new { @style = "width: 40px;" })
+                            Min: @Html.DropDownList("FromTimeInMin", new SelectList(ViewBag.TimeInMin, "FromTimeInMin"), new { @style = "width: 40px;" })
+                            </div>
+		            <div class="editor-field">
+  			<label style="padding-right: 18px;">
+                         To: </label><input class="form-control" type="date" id="ToTimeDate" name="ToTimeDate"   />
+                        Hr: @Html.DropDownList("ToTimeInHour", new SelectList(ViewBag.TimeInHour, "ToTimeInHour"), new { @style = "width: 40px;" })
+                        Min: @Html.DropDownList("ToTimeInMin", new SelectList(ViewBag.TimeInMin, "ToTimeInMin"), new { @style = "width: 40px;margin-top: 4px;" })
+			    </div>
+ 		
+                        </td>
+                         @*<td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Spare_Used)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="Spare_Used" name="Spare_Used" required></textarea>
+                                 @Html.ValidationMessageFor(m => m.Spare_Used)
+			                </div>
+                        </td>*@
+                    </tr>
+
+
+			<tr class="row">
+                        
+                        @*<td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Amt_Spent)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                
+                                @Html.EditorFor(model => model.Amt_Spent, new { htmlAttributes = new { @type = "number", @min = "0", @step = "0.01", @value = "0" }})	
+                            </div>
+                        </td>*@
+ 			   <td class="col-xs-3 col-md-2">
+
+                            @Html.LabelFor(model => model.Remarks)
+
+                        </td>
+                        <td class="col">
+
+                            <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="Remarks" name="Remarks"></textarea>
+
+                        </td>
+                    </tr>
+                    
+                
+                    
+                    
+                </table>
+
+                <fieldset class="border p-2">
+                    <legend class="font-weight-semibold text-success">Spare wise amount</legend>
+                    <table class="table table-lg">
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.DisplayNameFor(model => model.Spare_Used)<text style="color: red;">*</text>
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <input type="text" class="form-control" id="Spare_Used" name="Spare_Used" />
+                                    <span class="field-validation-error"><span id="Spare_Used-message" style="display: none;">This field is required.</span></span>
+                                    @Html.ValidationMessageFor(model => model.Spare_Used)
+                                </div>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.DisplayNameFor(model => model.Amt_Spent)<text style="color: red;">*</text>
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <input type="number" class="form-control" id="Amt_Spent" name="Amt_Spent" />
+                                    <span class="field-validation-error"><span id="Amt_Spent-message" style="display: none;">This field is required.</span></span>
+                                    @Html.ValidationMessageFor(model => model.Amt_Spent)
+                                </div>
+                            </td>
+                           
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <div class="editor-label">
+                                    @Html.DisplayNameFor(model => model.voucher)<text style="color: red;">*</text>
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <input type="text" class="form-control" id="voucher" name="voucher" />
+                                    <span class="field-validation-error"><span id="voucher-message" style="display: none;">This field is required.</span></span>
+                                    @Html.ValidationMessageFor(model => model.voucher)
+                                </div>
+                            </td>
+                            <td class="col-xs-3 col-md-1">
+                                <input type="button" value="Add" class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" onclick="AddData()" />
+                            </td>
+                        </tr>
+
+                    </table>
+                </fieldset>
+
+                <div class="card" id="hidden card1">
+
+                    <div class="card-body scrollbar-container">
+
+                        <div class="card card-table table-responsive shadow-0 mb-0 scrollbar">
+
+                            <table class="table" id="team-list1">
+                                <tr class="bg-blue">
+                                    <th>Delete</th>
+                                    <th>Spare used </th>
+                                    <th>Amount </th>
+                                    <th>Voucher </th>
+                                </tr>
+                               
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+            @Html.ActionLink("Back to List", "MaintenanceList", new { Equipment_Id = ViewBag.Equipment_Id }, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+
+            <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Add</button>
+        </div>
+    </div>
+
+
+       
+        }
+
+@section Scripts {
+    <script>
+
+        var showClass = 'is-visible';
+        var hideClass = 'invisible';
+
+
+        function deleteRow(btn) {
+            var row = btn.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+        }
+
+        function Validation() {
+            var validflg = true;
+            var ssnMessage = "";
+            if (document.getElementById("Spare_Used").value == "") {
+                ssnMessage = $('#Spare_Used-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#Spare_Used-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("Amt_Spent").value == "") {
+                ssnMessage = $('#Amt_Spent-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#Amt_Spent-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("voucher").value == "") {
+                ssnMessage = $('#voucher-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#voucher-message');
+                ssnMessage.hide();
+            }
+            return validflg;
+        }
+        function AddData() {
+
+            if (Validation() == true) {
+
+                document.getElementById("hidden card1").style.display = "block";
+                var cnt = document.getElementById("itemcnt1").value;
+
+                document.getElementById("itemcnt1").value = cnt;
+                // Find a <table> element with id="myTable":
+                var table = document.getElementById("team-list1");
+
+                // Create an empty <tr> element and add it to the 1st position of the table:
+                var row = table.insertRow();
+
+                // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                var cell0 = row.insertCell(0);
+                var cell1 = row.insertCell(1);
+                var cell2 = row.insertCell(2);
+                var cell3 = row.insertCell(3);
+
+                var Spare_Used = $('#Spare_Used').val();
+                var Amt_Spent = $('#Amt_Spent').val();
+                var voucher = $('#voucher').val();
+
+                cell0.innerHTML = "<span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span>";
+                cell1.innerHTML = "<input class='form-control' type='text' id='Spare_Used " + cnt + "' name='Spare_Used " + cnt + "' value='" + Spare_Used + "' />";
+                cell2.innerHTML = "<input class='form-control' type='number' id='Amt_Spent " + cnt + "' name='Amt_Spent " + cnt + "' value='" + Amt_Spent + "' />";
+
+                cell3.innerHTML = "<input class='form-control' type='text' id='voucher " + cnt + "' name='voucher " + cnt + "' value='" + voucher + "' />";
+
+
+
+                cnt++;
+                document.getElementById("itemcnt1").value = cnt;
+
+                //reintialisation
+
+                // Badge position
+                $('.maxlength-badge-position').maxlength({
+                    alwaysShow: true,
+                    placement: 'top'
+                });
+
+                //auto resize
+                autosize($('.elastic'));
+                $('.select-fixed-single').select2({
+                    minimumResultsForSearch: Infinity,
+                    width: 150
+                });
+                document.getElementById("hidden card1").classList.remove(hideClass);
+                document.getElementById("hidden card1").classList.add(showClass);
+
+                document.getElementById("Spare_Used").value = "";
+                document.getElementById("Amt_Spent").value = "";
+                document.getElementById("voucher").value = "";
+
+            }
+
+        }
+        function FileFormatValidation(file) {
+            var ext = file.value.split(".").pop().toLowerCase();
+            if ($.inArray(ext, ["pdf", "xlsx", "xls", "doc", "docx", "jpeg", "jpg", "png"]) == -1) {
+                file.value = "";
+                bootbox.alert({
+                    title: 'File type',
+                    message: 'Invalid file format, please upload only xlsx,xls,pdf,jpeg,jpg,png format.'
+                });
+            }
+        }
+
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

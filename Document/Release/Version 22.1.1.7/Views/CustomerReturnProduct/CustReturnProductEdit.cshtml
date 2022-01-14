@@ -1,0 +1,398 @@
+﻿@model ISOStd.Models.CustomerReturnProductModels
+@{
+    ViewBag.Title = "";
+}
+
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                  <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Home</span>
+                    </a>
+                    <a href="@Url.Action("CustReturnProductList", "CustomerReturnProduct", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Customer Property Log</span>
+                    </a>
+                    <span class="breadcrumb-item active">Update Customer Property Log</span>
+                </div>
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+}
+
+
+@using (Html.BeginForm("CustReturnProductEdit", "CustomerReturnProduct", FormMethod.Post,
+                     new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+  <input type="hidden" id="id_return_product" name="id_return_product" value="@Model.id_return_product" />
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Update Customer Property Log</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+
+                <table class="table table-lg">
+
+                    <tr class="row">
+
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.return_date)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @if (Model.return_date != null && Model.return_date > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    <input class="form-control" type="date" id="return_date" name="return_date" value="@Model.return_date.ToString("yyyy-MM-dd")" required />
+                                }
+                                else
+                                {
+                                    <input class="form-control" type="date" id="return_date" name="return_date" required />
+                                }
+                                @Html.ValidationMessageFor(m => m.return_date)
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.CustID)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="CustID" name="CustID" onchange="GetDetails()" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.Customer != null)
+                                    {
+                                        foreach (var item in ViewBag.Customer)
+                                        {
+                                            if (item.Value == Model.CustID)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                                <br />
+                                @Html.ValidationMessageFor(m => m.CustID)
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.branch)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input type="text" class="form-control" name="branch" id="branch" readonly style="background-color:lightgray" />
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Department)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input type="text" class="form-control" name="Department" id="Department" readonly style="background-color:lightgray" />
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Location)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input type="text" class="form-control" name="Location" id="Location" readonly style="background-color:lightgray" />
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.retun_deliverynote)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="retun_deliverynote" name="retun_deliverynote">@Model.retun_deliverynote</textarea>
+
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.retun_deliverydate)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @if (Model.retun_deliverydate != null && Model.retun_deliverydate > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    <input class="form-control" type="date" id="retun_deliverydate" name="retun_deliverydate" value="@Model.retun_deliverydate.ToString("yyyy-MM-dd")" required />
+                                }
+                                else
+                                {
+                                    <input class="form-control" type="date" id="retun_deliverydate" name="retun_deliverydate" required />
+                                }
+                                @Html.ValidationMessageFor(m => m.retun_deliverydate)
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.product_details)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="product_details" name="product_details">@Model.product_details</textarea>
+
+                            </div>
+                        </td>
+                        <td>
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.reason)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="reason" name="reason">@Model.reason</textarea>
+
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.action_taken)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="action_taken" name="action_taken">@Model.action_taken</textarea>
+
+                            </div>
+                        </td>
+                        <td>
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.remarks)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="remarks" name="remarks">@Model.remarks</textarea>
+
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Ncn_ref)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.Ncn_ref, new { htmlAttributes = new { @class = "form-control" } })
+
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.product_status)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="product_status" name="product_status" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.ProductStatus != null)
+                                    {
+                                        foreach (var item in ViewBag.ProductStatus)
+                                        {
+                                            if (item.Value == Model.product_status)
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                                <br />
+                                @Html.ValidationMessageFor(m => m.product_status)
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.resp_person)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="resp_person" name="resp_person" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.EmpList != null)
+                                    {
+                                        foreach (var item in ViewBag.EmpList)
+                                        {
+                                            if (item.Value == Model.resp_person)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+
+                                        }
+                                    }
+                                </select>
+                                <br />
+                                @Html.ValidationMessageFor(m => m.resp_person)
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.upload)
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <div class="editor-field">
+                                <input type="file" name="upload" id="upload" onchange="FileFormatValidation(this)" multiple accept=".pdf,.xlsx,.xls,.jpeg,.jpg,.png,.doc,.docx,image/*" class="bootstrap-uploader" data-fouc />
+                                @if (Model.upload != null && Model.upload != "" && Model.upload.Length > 0)
+                                {
+                                    <div class="editor-label">
+                                        <p style="font-weight: bold; margin: 0px;"> Docs. List:</p>
+                                    </div>
+                                    <p style="font-size: 11px; margin: 0px; color: red;">(Uncheck in case to remove a uploaded file)</p>
+                                    foreach (var docs in Model.upload.Trim(',').Split(','))
+                                    {
+                                        <p style="margin: 0px;">
+                                            <input type="checkbox" id="QCDocsVal" name="QCDocsVal" class="QCDocsVal" value="@docs.Trim(',')" checked title="Uncheck in case to remove a uploaded file" />
+                                            <input type="hidden" id="QCDocsValselectall" name="QCDocsValselectall" />
+                                            <span class="bg-dark py-1 px-2 rounded">
+                                                <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs})' target="_blank">Preview</a>
+                                            </span>
+                                        </p>
+                                    }
+                                }
+                            </div>
+                        </td>
+                    </tr>
+
+                </table>
+            </div>
+        </div>
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+            @Html.ActionLink("Back to List", "CustReturnProductList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+
+            <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Update</button>
+        </div>
+    </div>
+        }
+
+@section Scripts {
+    <script>
+
+        $(function () {
+            GetDetails();
+
+            $("#QCDocsVal").click(function () {
+                if ($("#QCDocsVal").prop('checked')) {
+                    {
+                        $(this).prop('checked', true);
+                    }
+                }
+                else {
+
+                    $(this).prop('checked', false);
+                    document.getElementById("QCDocsValselectall").value = "DeleteQC";
+                }
+            });
+
+        });
+
+        function FileFormatValidation(file) {
+            var ext = file.value.split(".").pop().toLowerCase();
+            if ($.inArray(ext, ["pdf", "xlsx", "xls", "doc", "docx", "jpeg", "jpg", "png"]) == -1) {
+                file.value = "";
+                bootbox.alert({
+                    title: 'File type',
+                    message: 'Invalid file format, please upload only xlsx,xls,pdf,jpeg,jpg,png format.'
+                });
+            }
+        }
+        function GetDetails() {
+               var CustId = $("#CustID").val();
+            $.ajax({
+                url: '@Url.Action("GetCustomerDetails", "CustomerReturnProduct")',
+                type: 'POST',
+                dataType: 'json',
+                data: { 'CustId': CustId},
+                success: function (result) {
+                    if (result != null && result != "") {
+                        document.getElementById('branch').value = result.branch;
+                        document.getElementById('Location').value = result.Location;
+                        document.getElementById('Department').value = result.Department;
+                    }
+                    else {
+                        document.getElementById('branch').value = "";
+                        document.getElementById('Location').value = "";
+                        document.getElementById('Department').value = "";
+                    }
+
+                }
+            })
+        }
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

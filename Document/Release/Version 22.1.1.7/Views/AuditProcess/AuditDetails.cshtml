@@ -1,0 +1,576 @@
+﻿@model ISOStd.Models.AuditProcessModels
+@using System.Data
+
+@{
+    ViewBag.Title = "";
+
+    DataSet dsApprv = ViewBag.objApprv;
+    DataSet dsPlan = ViewBag.objPlan;
+    var frm_time="";
+    var to_time="";
+    var auditdate="";
+
+
+    ISOStd.Models.clsGlobal obj = new ISOStd.Models.clsGlobal();
+}
+
+@section featured {
+    <div class="page-header page-header-light">
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("AuditProcessList", "AuditProcess", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Internal Audit Planning</span>
+                    </a>
+                    <span class="breadcrumb-item active">Internal Audit Planning Details</span>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+}
+
+<style>
+    .hidden {
+        display: none !important;
+    }
+</style>
+<div class="card">
+    <div class="card-header header-elements-inline bg-primary">
+        <h5 class="card-title">Internal Audit Planning</h5>
+        <div class="header-elements">
+            <div class="list-icons">
+                <a class="list-icons-item" data-action="collapse"></a>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <div class="container-fluid">
+            <input type="hidden" id="audit_type" name="audit_type" value="@Model.audit_type" />
+            <table class="table table-dark table-bordered table-striped table-hover bg-blue-800">
+                <thead></thead>
+                <tbody>
+
+
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.Audit_no)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.Audit_no)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.audit_type)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.audit_type)
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row" id="id1" style="display:none">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.Audit_criteria)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.Audit_criteria)
+                            </p>
+                        </td>
+                       
+                    </tr>
+                    <tr class="row" id="id2" style="display:none">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.audit_code)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.audit_code)
+                            </p>
+                        </td>
+
+                    </tr>
+                    <tr class="row">
+
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.PlannedBy)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.PlannedBy)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.AuditPlanDate)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @if (Model.AuditPlanDate != null && Model.AuditPlanDate > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    @Html.Label(Model.AuditPlanDate.ToString("dd/MM/yyyy"))
+                                }
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.Approved_Status)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.Approved_Status)
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.logged_by)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.logged_by)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.logged_date)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @if (Model.logged_date != null && Model.logged_date > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    @Html.Label(Model.logged_date.ToString("dd/MM/yyyy"))
+                                }
+                            </p>
+                        </td>
+                    </tr>
+
+
+                </tbody>
+            </table>
+            @if (dsApprv != null && dsApprv.Tables.Count > 0 && dsApprv.Tables[0].Rows.Count > 0)
+            {
+                <h2 class="bg-dark pl-sm-2">Internal Audit Approval Details</h2>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped table-hover datatable-responsive" id="table1">
+                        <thead>
+                            <tr class="bg-brown">
+                                <th>Approver Name</th>
+                                <th>Status</th>
+                                <th>Approve/Reject Date</th>
+                                <th>Comments</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i < dsApprv.Tables[0].Rows.Count; i++)
+                            {
+
+                                <tr>
+                                    <td>
+                                        @obj.GetEmpHrNameById(dsApprv.Tables[0].Rows[i]["approver"].ToString())
+                                    </td>
+                                    <td>
+                                        @(dsApprv.Tables[0].Rows[i]["apprv_status"].ToString())
+                                    </td>
+
+                                    <td>
+                                        @if (dsApprv.Tables[0].Rows[i]["apprv_date"].ToString() != "" && dsApprv.Tables[0].Rows[i]["apprv_date"].ToString() != null)
+                                        {
+                                            @Convert.ToDateTime(dsApprv.Tables[0].Rows[i]["apprv_date"].ToString()).ToString("dd/MM/yyyy hh:mm:ss")
+                                        }
+                                    </td>
+                                    <td>
+                                        @dsApprv.Tables[0].Rows[i]["comments"].ToString()
+                                    </td>
+
+                                </tr>
+                            }
+
+                        </tbody>
+                    </table>
+                </div>
+
+
+            }
+
+            @if (dsPlan != null && dsPlan.Tables.Count > 0 && dsPlan.Tables[0].Rows.Count > 0)
+            {
+            <h2 class="bg-dark pl-sm-2">Internal Audit Planning Details</h2>
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped table-hover datatable-responsive" id="table1">
+                    <thead>
+                        <tr class="bg-brown">
+                            <th>Division</th>
+                            <th>Department</th>
+                            @*<th>Team</th>*@
+                            <th>Location</th>
+                            <th>Audit Scheduled Date</th>
+                            <th>Auditor(s)</th>
+                            <th>Auditee(s)</th>
+                            <th>CheckList</th>
+                            <th>Audit Status</th>
+                            <th>Date of status update</th>
+                            <th>Comments</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < dsPlan.Tables[0].Rows.Count; i++)
+                        {
+
+                            <tr>
+                                <td>
+                                    @obj.GetMultiCompanyBranchNameById(dsPlan.Tables[0].Rows[i]["branch"].ToString())
+                                </td>
+                                <td>
+                                    @obj.GetMultiDeptNameById(dsPlan.Tables[0].Rows[i]["group_name"].ToString())
+                                </td>
+                                @*<td>
+                                    @obj.GetTeamNameByID(dsPlan.Tables[0].Rows[i]["team"].ToString())
+                                </td>*@
+                                <td>
+                                    @obj.GetDivisionLocationById(dsPlan.Tables[0].Rows[i]["location"].ToString())
+                                </td>
+                                <td>
+                                    @if (dsPlan.Tables[0].Rows[i]["AuditDate"].ToString() != "" && dsPlan.Tables[0].Rows[i]["AuditDate"].ToString() != null)
+                                    {
+                                         frm_time = dsPlan.Tables[0].Rows[i]["fromtime"].ToString();
+                                         to_time = dsPlan.Tables[0].Rows[i]["totime"].ToString();
+                                         auditdate = @Convert.ToDateTime(dsPlan.Tables[0].Rows[i]["AuditDate"].ToString()).ToString("dd/MM/yyyy")   + "  " + frm_time + " - " + to_time;
+                                       
+                                    }
+                                   @auditdate
+                                </td>
+                                <td>
+                                    @obj.GetMultiHrEmpNameById(dsPlan.Tables[0].Rows[i]["auditors"].ToString())
+                                </td>
+                                <td>
+                                    @obj.GetMultiHrEmpNameById(dsPlan.Tables[0].Rows[i]["auditee_team"].ToString())
+                                </td>
+                                <td>
+                                    @obj.GetChecklistBychecklistId(dsPlan.Tables[0].Rows[i]["checklist"].ToString())
+                                </td>
+                                <td>
+                                    @obj.GetAuditStatusById(dsPlan.Tables[0].Rows[i]["Audit_Status"].ToString())
+                                </td>
+                                <td>
+                                    @if (dsPlan.Tables[0].Rows[i]["audit_status_date"].ToString() != "" && dsPlan.Tables[0].Rows[i]["audit_status_date"].ToString() != null)
+                                    {
+                                        @Convert.ToDateTime(dsPlan.Tables[0].Rows[i]["audit_status_date"].ToString()).ToString("dd/MM/yyyy hh:mm:ss")
+                                    }
+                                </td>
+                                <td>
+                                    @(dsPlan.Tables[0].Rows[i]["remarks"].ToString())
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+
+
+            }
+           
+           
+
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script type="text/javascript">
+        //----zzz
+
+
+$(document).ready(function () {
+
+          @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+        });
+
+        var audit_type = document.getElementById("audit_type").value;
+        if (audit_type == "Management System Audit") {
+        
+            document.getElementById("id1").style.display = "block";
+   
+        }
+        else {
+           
+            document.getElementById("id2").style.display = "block";
+      
+        }
+
+    
+
+        var table1 = function () {
+
+
+            //
+            // Setup module components
+            //
+
+            // Basic Datatable examples
+            var _componentDatatableBasic = function () {
+                if (!$().DataTable) {
+                    console.warn('Warning - datatables.min.js is not loaded.');
+                    return;
+                }
+
+                //Setting datatable defaults
+                $.extend($.fn.dataTable.defaults, {
+                    autoWidth: false,
+                    responsive: true,
+
+
+                    colReorder: false,
+                    dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                    //dom: 'lBfrtip',
+                    language: {
+                        search: '<span>Filter:</span> _INPUT_',
+                        searchPlaceholder: 'Type to filter...',
+                        lengthMenu: '<span>Show:</span> _MENU_',
+                        paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                    }
+                });
+
+                var myClass = "";
+                @*var Delclass= @(obj.GetCurrentUserSession().ChangeMgmt.Contains("4") ? "true" : "false");
+                if (Delclass == false) { myClass = 'hidden'  };*@
+                var table = $('#table1').DataTable({
+
+                    lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                    colReorder: {
+                        fixedColumnsLeft: 1
+                    },
+                    stateSave: true,
+                    stateSaveParams: function (settings, data) {
+                        for (var i = 0, ien = data.columns.length; i < ien; i++) {
+                            delete data.columns[i].visible;
+                            delete data.columns[i].search;
+                        }
+                    },
+
+                    scrollY: '350px',
+                    scrollCollapse: true,
+
+
+                    keys: {
+                        className: 'focus focus-success'
+                    },
+
+                    buttons: {
+                        buttons: [
+                            {
+                                extend: 'copyHtml5',
+                                className: myClass,
+                                //className: 'btn btn-light',
+                                title: 'Change Management Details',
+                                exportOptions: {
+                                    columns: ':visible :not(.not-export-column)'
+                                },
+                            },
+                            {
+                                extend: 'excelHtml5',
+                                className: myClass,
+                                //className: 'btn btn-light',
+                                title: 'Change Management Details',
+                                exportOptions: {
+                                    columns: ':visible :not(.not-export-column)'
+                                },
+
+                            },
+                            {
+                                extend: 'pdfHtml5',
+                                className: myClass,
+                                //className: 'btn btn-light',
+                                title: 'Change Management Details',
+                                exportOptions: {
+                                    columns: ':visible :not(.not-export-column)'
+                                },
+                            },
+                            {
+                                extend: 'csvHtml5',
+                                className: myClass,
+                                //className: 'btn btn-light',
+                                title: 'Change Management Details',
+                                exportOptions: {
+                                    columns: ':visible :not(.not-export-column)'
+                                },
+                            },
+                            {
+                                extend: 'print',
+                                className: myClass,
+                                //className: 'btn btn-light',
+                                title: 'Change Management Details',
+                                exportOptions: {
+                                    columns: ':visible :not(.not-export-column)'
+                                },
+                            },
+
+                            {
+                                extend: 'colvis',
+                                text: '<i class="icon-three-bars"></i>',
+                                className: 'btn bg-blue btn-icon dropdown-toggle',
+                                columns: ':visible:not(.not-export-column)'
+                            }
+                        ]
+                    }
+
+
+
+
+                });
+                // Adjust columns on window resize
+                setTimeout(function () {
+                    $(window).on('resize', function () {
+                        table.columns.adjust();
+                    });
+                }, 100);
+
+
+                //Redraw table on click toggle. -------table.columns.adjust doesn't work properly upon calling after toggle (width increase/decrease = redraw table.).
+                $('.sidebar-control').on('click', function () {
+
+                    setTimeout(function () {
+                        //alert("gii");
+
+                        table.columns.adjust().draw();
+                        $("#table1").resize();
+                    }, 100);
+
+                });
+                //}
+
+                $('#table1').on('page.dt', function () {
+                    //table.draw();
+                    //alert("zzz1");
+                    $("#table1").resize();
+
+                });
+
+                $('#table1').on('column-visibility.dt', function () {
+                    //table.draw();
+                    //alert("zzz2");
+                    $("#table1").resize();
+
+                });
+
+                $('#table1').on('order.dt', function () {
+                    //table.draw();
+                    //alert("zzz3");
+                    $("#table1").resize();
+
+                });
+
+
+                $('#table1').on('responsive-display.dt', function () {
+                    //table.draw();
+                    //alert("zzz4");
+                    $("#table1").resize();
+
+                });
+
+
+                $('#table1').on('responsive-resize.dt', function () {
+                    //table.draw();
+                    //alert("zzz4");
+                    $("#table1").resize();
+
+                });
+
+
+
+
+
+
+            };
+
+
+
+
+
+
+            // Select2 for length menu styling
+            var _componentSelect2 = function () {
+                if (!$().select2) {
+                    console.warn('Warning - select2.min.js is not loaded.');
+                    return;
+                }
+
+                // Initialize
+                $('.dataTables_length select').select2({
+                    minimumResultsForSearch: Infinity,
+                    dropdownAutoWidth: true,
+                    width: 'auto'
+                });
+            };
+
+
+            //
+            // Return objects assigned to module
+            //
+
+            return {
+                init: function () {
+                    _componentDatatableBasic();
+                    _componentSelect2();
+                }
+            }
+        }();
+
+
+        // Initialize module
+        // ------------------------------
+
+        document.addEventListener('DOMContentLoaded', function () {
+            table1.init();
+        });
+
+
+    </script>
+
+}

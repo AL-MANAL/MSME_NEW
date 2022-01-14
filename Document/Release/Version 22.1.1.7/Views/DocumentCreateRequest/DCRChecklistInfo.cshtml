@@ -1,0 +1,128 @@
+﻿@model ISOStd.Models.DCRChecklistModels
+@{
+    Layout = null;
+
+    ViewBag.Title = "DCRChecklistInfo";
+    ISOStd.Models.clsGlobal ObjGlobal = new ISOStd.Models.clsGlobal();
+    var z = ""; var QId = 0; var m = 0; var n = 0;
+
+    ISOStd.Models.DCRChecklistModelsList ChkList = new ISOStd.Models.DCRChecklistModelsList();
+    if (ViewBag.ChkList != null)
+    {
+        ChkList = ViewBag.ChkList;
+    }
+}
+<div class="card alpha-success border-success">
+    <div class="card-header bg-info text-white">
+        <h4 class="text-center">Document Create Request CheckList Info</h4>
+    </div>
+    @if(ViewBag.ChkList != null)
+    {
+    <div class="card-body">
+        <p>
+            CheckList Ref:<code>
+                @Html.DisplayFor(model => model.checklistRef)
+            </code>
+
+            Revision:<code>@Html.DisplayFor(model => model.revision)</code>
+        </p>
+        <p>
+            Document Title:<code>
+                @Html.DisplayFor(model => model.doc_title)
+            </code>
+
+            DCRF No.:<code>@Html.DisplayFor(model => model.dcrf_no)</code>
+        </p>
+        <p>
+            Memo Ref:<code>
+                @Html.DisplayFor(model => model.memo_ref)
+            </code>
+            @*Audit Date:
+                @if (Model.AuditDate != null && Model.AuditDate > Convert.ToDateTime("01/01/0001"))
+                {
+                    <code>
+                        @Model.AuditDate.ToString("dd/MM/yyyy")
+                    </code>
+                }*@
+        </p>
+    </div>
+    <div>
+        <table style="width: 90%;">
+            @*<table class="table table-bordered table-striped table-hover datatable-responsive" id="table1">*@
+
+            <tr>
+                <th style="background-color: #e5eafe; color: #0099ff;">
+                    Sr. No.
+                </th>
+                <th style="background-color: #e5eafe; color: #0099ff;">
+                    Items
+                </th>
+                <th style="background-color: #e5eafe; color: #0099ff;">
+                    Rating
+                </th>
+                <th style="background-color: #e5eafe; color: #0099ff;">
+                    Comments
+                </th>
+            </tr>
+
+            @if (ViewBag.DCRQuestions != null)
+            {
+                int iSrno = 0;
+                foreach (var item in ChkList.DCRChkList)
+                {
+                    iSrno = iSrno + 1;
+                    n = 0;
+                    foreach (var data in ViewBag.DCRSection)
+                    {
+                        if (n >= m || QId == 0)
+                        {
+                            if (z == "")
+                            {
+                                <tr>
+                                    <td colspan="2">@ObjGlobal.GetSectionNameById(data.Text)</td>
+                                </tr>
+
+                                z = data.Text;
+                                break;
+                            }
+                            else if (Convert.ToInt32(data.Value) != QId && z != data.Text)
+                            {
+                                <tr>
+                                    <td colspan="2">@ObjGlobal.GetSectionNameById(data.Text)</td>
+                                </tr>
+                                z = data.Text;
+                                break;
+                            }
+                            else if (Convert.ToInt32(data.Value) != QId && z == data.Text)
+                            {
+                                break;
+                            }
+                        }
+                        n++;
+                    }
+                    <tr>
+                        <td>
+                            @iSrno
+                        </td>
+                        <td>
+                            @item.id_questions
+                        </td>
+                        <td>
+                            @item.ratings
+                        </td>
+                        <td>
+                            @item.comments
+                        </td>
+                    </tr>
+                    QId = Convert.ToInt32(item.id_chklist);
+                    m++;
+                }
+            }
+        </table>
+    </div>
+    }
+    else
+    {
+        <div><h3 style="text-align:center">Please create the CheckList</h3></div>
+    }
+</div>

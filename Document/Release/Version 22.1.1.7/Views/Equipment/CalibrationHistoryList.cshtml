@@ -1,0 +1,521 @@
+﻿@using PagedList;
+@using PagedList.Mvc;
+
+@model List<ISOStd.Models.CalibrationModels>
+
+    @{
+        ViewBag.Title = "";
+        ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+    }
+
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Home</span>
+                    </a>
+                    <a href="@Url.Action("CalibrationList", "Equipment", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Tools & Gauges</span>
+                    </a>
+                    <span class="breadcrumb-item active">Tools & Gauges History</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+}
+
+    <style>
+        .hidden {
+            display: none !important;
+        }
+    </style>
+
+ <div class="card">
+
+ 	   <div class="card-header header-elements-inline bg-primary">
+           <h5 class="card-title">Tools & Gauges History</h5>
+                <div class="header-elements">
+                    <div class="list-icons">
+                        <a class="list-icons-item" data-action="collapse"></a>
+
+                    </div>
+                </div>
+            </div>
+ 	 @*   <div>
+                <div class="card-header bg-white header-elements-sm-inline">
+                    <div class="header-elements">
+                        <a class="btn btn-outline bg-orange text-orange border-orange btn-ladda btn-ladda-progress ladda-button" data-style="radius" href='@Url.Action("AddCalibration", "Equipment")' title="Add New">
+                            <span class="ladda-label">Add Calibration</span>
+                            <span class="ladda-spinner"></span>
+                        </a>
+                    </div>
+                </div>
+            </div>*@
+
+<div class="card-body">
+                <table class="table table-bordered table-striped table-hover datatable-responsive" id="equipment">
+                    <thead>
+                        <tr>
+                    <th>
+                    Sl No
+                </th>
+            <th>
+                Equipment Name
+            </th>            
+            <th>
+                @Html.DisplayNameFor(model => model.First().calibration_by)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().method_of_calibration)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().accuracy)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().calibration_status)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().calibration_report_ref)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().calibration_certificate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().due_date)
+            </th>
+               <th>
+                @Html.DisplayNameFor(model => model.First().Ref_no)
+            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Count() > 0)
+                        {
+                            int i = 0;
+                            foreach (var item in Model)
+                            {
+                                i = i + 1;
+                                <tr>
+                                   <td>
+                                        @i
+                                   </td>
+                            <td>   
+                                @Html.ActionLink(item.Equipment_Id.ToString(), "CalibrationDetails", new { calibration_id= item.calibration_id.ToString() }, new { data_toggle = "popover", data_trigger = "hover", id = item.calibration_id, onclick = "HyperLinkProgressIconFunction()" })
+                            </td>
+                           <td>
+                    @Html.DisplayFor(modelItem => item.calibration_by)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.method_of_calibration)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.accuracy)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.calibration_status)
+                </td>
+                <td>
+                    @if (item.calibration_report_ref != "")
+                    {
+                        <a href='@Url.Action("DisplayDocument", "Reports", new { Document = item.calibration_report_ref })' target="_blank">Preview</a>
+                    }
+                     else
+                      {
+
+                                <span class="bg-dark py-1 px-2 rounded text-danger">No File</span>
+                     }
+                </td>
+                <td>
+                    @if (item.calibration_certificate != "")
+                    {
+                        <a href='@Url.Action("DisplayDocument", "Reports", new { Document = item.calibration_certificate })' target="_blank">Preview</a>
+                   }
+		          else
+                      {
+
+                                <span class="bg-dark py-1 px-2 rounded text-danger">No File</span>
+                     }
+                </td>
+                <td>
+                    @if (item.due_date > Convert.ToDateTime("01/01/0001"))
+                        {
+                        @item.due_date.ToString("dd/MM/yyyy hh:mm")
+                        }
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Ref_no)
+                </td>
+
+
+                                </tr>
+                            }
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+
+</div>
+ @section scripts {
+                <script type="text/javascript">
+
+
+
+                    //----zzz
+                    $(document).ready(function () {
+
+        @if (TempData["alertdata"] != null ) {
+
+           @: new Noty({
+                       @:     text: '@TempData["alertdata"]',
+                       @:     type: 'error'
+                       @: }).show();
+                }
+
+        @if (@TempData["Successdata"] != null ) {
+
+        @:    new Noty({
+                     @:       text: '@TempData["Successdata"]',
+                     @:       type: 'success'
+         @:}).show();
+        }
+    });
+                    //zzz----
+
+                    function setData(id) {
+
+                        var set_data = '';
+                        var element = $(this);
+                        var id = element.attr("id");
+                        $.ajax({
+                            url: '@Url.Action("CalibrationInfo", "Equipment")',
+                    methos: "post",
+                    async: false,
+                    data: { id: id },
+                    success: function (data) {
+                        set_data = data;
+
+                    }
+
+                });
+
+                return set_data;
+            }
+
+            var equipment = function () {
+
+ var ShowDownld = @(Obj.GetCurrentUserSession().Calibration.Contains("4") ? "true" : "false");
+                //
+                // Setup module components
+                //
+
+                // Basic Datatable examples
+                var _componentDatatableBasic = function () {
+                    if (!$().DataTable) {
+                        console.warn('Warning - datatables.min.js is not loaded.');
+                        return;
+                    }
+
+                    //Setting datatable defaults
+                    $.extend($.fn.dataTable.defaults, {
+                        autoWidth: false,
+                        responsive: true,
+                        columnDefs: [{
+                            orderable: false,
+                            width: 100,
+                            targets: [6, 7]
+                        }, {
+                                'targets': [6,7],
+                                'visible': ShowDownld
+                            }],
+
+                        colReorder: false,
+                        dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                        //dom: 'lBfrtip',
+                        language: {
+                            search: '<span>Filter:</span> _INPUT_',
+                            searchPlaceholder: 'Type to filter...',
+                            lengthMenu: '<span>Show:</span> _MENU_',
+                            paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                        }
+                    });
+
+                var myClass = "";
+                var Delclass= @(Obj.GetCurrentUserSession().Calibration.Contains("4") ? "true" : "false");
+                if (Delclass == false) { myClass = 'hidden'  };
+
+                    var table = $('#equipment').DataTable({
+                        drawCallback: function () {
+                            $('[data-toggle="popover"]').popover({
+
+                                html: true,
+                                content: setData,
+                                container: 'body'
+                                //data: setData,
+
+
+                            });
+                        },
+                        lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                        colReorder: {
+                            fixedColumnsLeft: 1
+                        },
+                        stateSave: true,
+                        scrollY: '350px',
+                        scrollCollapse: true,
+                        stateSaveParams: function (settings, data) {
+                            for (var i = 0, ien = data.columns.length; i < ien; i++) {
+                                delete data.columns[i].visible;
+                                delete data.columns[i].search;
+                            }
+                        },
+                        keys: {
+                            className: 'focus focus-success'
+                        },
+
+                        buttons: {
+                            buttons: [
+                                {
+                                    extend: 'copyHtml5',
+                                    className: myClass,   
+                                    //className: 'btn btn-light',
+                                    title: 'equipment Data export',
+                                    exportOptions: {
+                                        columns: ':visible :not(.not-export-column)'
+                                    },
+                                },
+                                {
+                                    extend: 'excelHtml5',
+                                    className: myClass,   
+                                    //className: 'btn btn-light',
+                                    title: 'equipment Data export',
+                                    exportOptions: {
+                                        columns: ':visible :not(.not-export-column)'
+                                    },
+
+                                },
+                                {
+                                    extend: 'pdfHtml5',
+                                    className: myClass,   
+                                    //className: 'btn btn-light',
+                                    title: 'equipment Data export',
+                                    exportOptions: {
+                                        columns: ':visible :not(.not-export-column)'
+                                    },
+                                },
+                                {
+                                    extend: 'csvHtml5',
+                                    className: myClass,   
+                                    //className: 'btn btn-light',
+                                    title: 'equipment Data export',
+                                    exportOptions: {
+                                        columns: ':visible :not(.not-export-column)'
+                                    },
+                                },
+                                {
+                                    extend: 'print',
+                                    className: myClass,   
+                                    //className: 'btn btn-light',
+                                    title: 'equipment Data export',
+                                    exportOptions: {
+                                        columns: ':visible :not(.not-export-column)'
+                                    },
+                                },
+
+                                {
+                                    extend: 'colvis',
+                                    text: '<i class="icon-three-bars"></i>',
+                                    className: 'btn bg-blue btn-icon dropdown-toggle',
+                                    columns: ':visible:not(.not-export-column)'
+                                }
+                            ]
+                        }
+                    });
+                    // Adjust columns on window resize
+                    setTimeout(function () {
+                        $(window).on('resize', function () {
+                            table.columns.adjust();
+                        });
+                    }, 100);
+
+
+                    //Redraw table on click toggle. -------table.columns.adjust doesn't work properly upon calling after toggle (width increase/decrease = redraw table.).
+                    $('.sidebar-control').on('click', function () {
+
+                        setTimeout(function () {
+                            //alert("gii");
+
+                            table.columns.adjust().draw();
+                            $("#equipment").resize();
+                        }, 100);
+
+                    });
+                    //}
+
+                    $('#equipment').on('page.dt', function () {
+                        //table.draw();
+                        //alert("zzz1");
+                        $("#equipment").resize();
+
+                    });
+
+                    $('#equipment').on('column-visibility.dt', function () {
+                        //table.draw();
+                        //alert("zzz2");
+                        $("#equipment").resize();
+
+                    });
+
+                    $('#equipment').on('order.dt', function () {
+                        //table.draw();
+                        //alert("zzz3");
+                        $("#equipment").resize();
+
+                    });
+
+
+                    $('#equipment').on('responsive-display.dt', function () {
+                        //table.draw();
+                        //alert("zzz4");
+                        $("#equipment").resize();
+
+                    });
+
+
+                    $('#equipment').on('responsive-resize.dt', function () {
+                        //table.draw();
+                        //alert("zzz4");
+                        $("#equipment").resize();
+
+                    });
+
+
+                    //.on('order.dt', function () {
+                    //    table.columns.adjust().draw();
+                    //    $("#qhse").resize(); })
+                    //.on('search.dt', function () {
+                    //    table.columns.adjust().draw();
+                    //    $("#qhse").resize(); })
+
+                    //.on('column-visibility.dt', function () {
+                    //    table.columns.adjust().draw();
+                    //    $("#qhse").resize();
+                    //})                                       
+                };
+                                                                      
+                // Select2 for length menu styling
+                var _componentSelect2 = function () {
+                    if (!$().select2) {
+                        console.warn('Warning - select2.min.js is not loaded.');
+                        return;
+                    }
+
+                    // Initialize
+                    $('.dataTables_length select').select2({
+                        minimumResultsForSearch: Infinity,
+                        dropdownAutoWidth: true,
+                        width: 'auto'
+                    });
+                };
+
+                //
+                // Return objects assigned to module
+                //
+
+                return {
+                    init: function () {
+                        _componentDatatableBasic();
+                        _componentSelect2();
+                    }
+                }
+            }();
+
+
+            // Initialize module
+            // ------------------------------
+
+            document.addEventListener('DOMContentLoaded', function () {
+                equipment.init();
+            });
+
+            function DeleteItems(Equipment_Id) {
+                bootbox.confirm({
+                    title: 'Confirm dialog',
+                    message: 'Are you Sure you want to Delete the current Record?',
+                    buttons: {
+                        confirm: {
+                            label: 'Yes',
+                            className: 'btn-primary'
+                        },
+                        cancel: {
+                            label: 'Cancel',
+                            className: 'btn-link'
+                        }
+                    },
+                    callback: function (r) {
+                        if (r == true) {
+                            jQuery.ajax({
+
+                                url: '@Url.Action("EquimentDocDelete", "equipment")',
+                          type: 'POST',
+                          dataType: "json",
+                          data: { 'Equipment_Id': Equipment_Id },
+                          success: function (result) {
+
+
+                              //// Add new params to the querystring dictionary
+
+
+                              window.location.href =
+                                  window.location.protocol + "//" +
+                                  window.location.host +
+                                  window.location.pathname
+
+                          }
+                      });
+                      return true;
+                  }
+                  else if (r == false) {
+                      bootbox.hideAll();
+                      return false;
+                  }
+
+                }
+            });
+      }
+                </script>
+
+            }

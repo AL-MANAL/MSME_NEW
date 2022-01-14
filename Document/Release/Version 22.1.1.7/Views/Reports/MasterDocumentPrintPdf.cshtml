@@ -1,0 +1,95 @@
+﻿@using System.Data
+@{
+    DataSet dsMasterDoc = new DataSet();
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+
+    if (ViewBag.dsMasterDocList != null)
+    {
+        dsMasterDoc = ViewBag.dsMasterDocList;
+    }
+    // DataRow[] drRow;
+    object drRow = new object();
+    Layout = "~/Views/Shared/_PrintLayout.cshtml";
+}
+
+
+<div class="card">
+
+ 	   <div class="card-header header-elements-inline bg-primary text-center">
+                <h5 class="card-title">Master Document List</h5>                
+        </div>
+  <div class="card-body">
+ 
+    @if (ViewBag.count > 0)
+
+    {
+        foreach (var item in ViewBag.DocType)
+        {
+
+            foreach (var doclevel in ViewBag.lstDocLevels)
+            {
+      
+         if (doclevel == item.Value)
+        {
+        
+        <table class="table table-lg table-bordered">
+            <thead>
+            <tr class="bg-blue font-weight-bold font-size-lg">
+             <td colspan="8">Audit Details
+             </td>
+             </tr>
+            <tr class="bg-blue font-weight-bold font-size-lg">
+                <th>Department‎</th>
+                <th>Doc‎. ‎Ref‎.‎</th>
+                <th>Document Name‎‎</th>
+                <th>Issue ‎No‎.‎‎</th>
+                <th>Rev‎. No‎.‎‎</th>
+                <th>Document‎ Date‎</th>
+                @*<th>Reviewed Date‎</th>*@
+                <th>Resp Person‎‎</th>
+                <th>Document</th>
+            </tr>
+	  </thead>
+            @foreach (DataRow data in @dsMasterDoc.Tables[0].Select("Doctype='" + doclevel + "'"))
+            {
+                <tr class="font-size-lg">
+                    <td>@data["Department"].ToString()</td>
+                    <td>@data["docref"].ToString()</td>
+                    <td>@data["docname"].ToString()</td>
+                    <td>@data["issueno"].ToString()</td>
+                    <td>@data["revno"].ToString()</td>
+
+
+                    <td>@Convert.ToDateTime(data["docdate"].ToString()).ToString("dd/MM/yyyy")</td>
+                    @*<td>
+
+                                        @if (@data["ReviewedDate"] != null)
+                                        {
+                                            @Convert.ToDateTime(data["ReviewedDate"].ToString()).ToString("dd/MM/yyyy")
+                                        }
+
+                                    </td>*@
+                    <td>@data["Resp_person"].ToString()</td>
+                    <td>
+                        @if (data["DocUploadPath"].ToString() != "")
+                        {
+                            <a href='@Url.Action("DisplayDocument", "Reports", new { Document = data["DocUploadPath"] })' target="_blank">Preview</a>
+                        }
+                    </td>
+                </tr>
+            }
+        </table>
+            }
+        }
+        }
+    }
+
+  </div>
+</div>
+@section Scripts {
+    <script>
+      
+    </script>
+}
+
+

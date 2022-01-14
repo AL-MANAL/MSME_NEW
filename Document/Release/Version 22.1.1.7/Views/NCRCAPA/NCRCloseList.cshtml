@@ -1,0 +1,528 @@
+﻿@using PagedList;
+@using PagedList.Mvc;
+
+@model IPagedList<ISOStd.Models.NCRCAPAModels>
+
+@{
+    ViewBag.Title = "NCRCAPAList";
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+}
+
+@section featured {
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+
+
+                    <a class="breadcrumb-item" onclick="HyperLinkProgressIconFunction();" href='@Url.Action("NCRActionList", "NCRCAPA", new { CAR_ID = ViewBag.CAR_ID } )'>
+                        <span class="breadcrumb-item"> NCR Action List</span>
+                    </a>
+                    <span class="breadcrumb-item active">NCR Close List </span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            <div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+<style>
+    .hidden {
+        display: none !important;
+    }
+</style>
+
+
+<div class="card">
+    <div class="card-header header-elements-inline bg-primary">
+        <h5 class="card-title">NCR-CAPA List</h5>
+        <div class="header-elements">
+            <div class="list-icons">
+                <a class="list-icons-item" data-action="collapse"></a>
+
+            </div>
+        </div>
+    </div>
+
+
+    <div class="card-body">
+
+    </div>
+    <table class="table table-bordered table-striped table-hover datatable-responsive" id="NCRCAPA">
+        <thead>
+            <tr>
+                <th>
+                    Sl No
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.First().NC_Num)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.First().NCR_Status)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.First().CAPA_EFF_VERIFICATION)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.First().Report_Closed_On)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.First().verified_on)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.First().VerifiedBy)
+                </th>
+                @*  <th style="min-width:200px;width:200px;max-width:200px">
+                        @Html.DisplayNameFor(model => model.First().VerifiedByPosition)
+                    </th>
+                     <th style="min-width:200px;width:200px;max-width:200px">
+                        @Html.DisplayNameFor(model => model.First().VerifiedDeptName)
+                    </th>    *@
+                <th class="not-export-column">
+                    Edit
+                </th>
+                <th class="not-export-column">Delete</th>
+               
+
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Count() > 0)
+            {
+                int i = 0;
+                foreach (var item in Model)
+                {
+                    i = i + 1;
+                    <tr>
+                        <td>
+                            @i
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.NC_Num)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.NCR_Status)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.CAPA_EFF_VERIFICATION)
+                        </td>
+                        <td>
+                            @if (item.Report_Closed_On > Convert.ToDateTime("01/01/0001"))
+                            {
+                                @item.Report_Closed_On.ToString("dd/MM/yyyy")
+                            }
+                        </td>
+                        <td>
+                            @if (item.verified_on > Convert.ToDateTime("01/01/0001"))
+                            {
+                                @item.verified_on.ToString("dd/MM/yyyy")
+                            }
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.VerifiedBy)
+                        </td>
+                        @*  <td style="min-width:200px;width:200px;max-width:200px">
+                                @Html.DisplayFor(modelItem => item.VerifiedByPosition)
+                            </td>
+                             <td style="min-width:200px;width:200px;max-width:200px">
+                                @Html.DisplayFor(modelItem => item.VerifiedDeptName)
+                            </td>*@
+
+                        <td>
+
+                            <a href='@Url.Action("NCRCloseEdit", "NCRCAPA", new { id_ncr_close = item.id_ncr_close })' title="Edit NCR Close details" onclick="HyperLinkProgressIconFunction()">
+                                <span class="badge badge-info">Edit</span>
+                            </a>
+
+
+                        </td>
+                           <td>
+
+                                @*<a href='@Url.Action("CustomerEnquiryDelete", "CustomerEnquiry", new { enquiry_id = item.Enquiry_id.ToString() })' title="Delete Enquiry" >*@
+
+                                <span class="badge badge-danger" title="Delete Document" onclick="DeleteItems(@item.id_ncr_close,@item.id_ncr_action)" style="cursor:pointer;">Delete</span>
+                            </td>
+                        
+
+
+                    </tr>
+                }
+            }
+
+
+        </tbody>
+    </table>
+
+
+
+    <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+
+
+
+
+
+        @Html.ActionLink("Back to List", "NCRActionList", "NCRCAPA", new { CAR_ID = ViewBag.CAR_ID }, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+
+
+    </div>
+</div>
+@section scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript">
+
+                  //----zzz
+    $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+    });
+
+
+
+
+
+            function DeleteItems(id_ncr_close, id_ncr_action) {
+
+            bootbox.confirm({
+                title: 'Confirm dialog',
+                message: 'Are you Sure you want to Delete the current Record?',
+                buttons: {
+                    confirm: {
+                        label: 'Yes',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'Cancel',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (r) {
+                   if (r == true) {
+                    jQuery.ajax({
+                     url: '@Url.Action("NCRCloseDocDelete", "NCRCAPA")',
+                        type: 'POST',
+                        dataType: "json",
+                        data: { 'id_ncr_close': id_ncr_close },
+                        success: function (result) {
+                            var params = {
+                                id_ncr_action: id_ncr_action
+                            };
+
+                            window.location.href =
+                                window.location.protocol + "//" +
+                                window.location.host +
+                                window.location.pathname
+
+                        }
+                    });
+                    return true;
+                }
+                   else if (r == false) {
+
+                       bootbox.hideAll();
+                       return false;
+                }
+
+                }
+            });
+
+
+        }
+
+
+
+            var NCRCAPA = function () {
+
+
+                 var ShowEdit = @(Obj.GetCurrentUserSession().RaiseNc.Contains("3") ? "true" : "false");
+                var ShowDel = @(Obj.GetCurrentUserSession().RaiseNc.Contains("5") ? "true" : "false");
+
+                // Basic Datatable examples
+                var _componentDatatableBasic = function () {
+                    if (!$().DataTable) {
+                        console.warn('Warning - datatables.min.js is not loaded.');
+                        return;
+                    }
+
+                    //Setting datatable defaults
+                    $.extend($.fn.dataTable.defaults, {
+                        autoWidth: false,
+                        responsive: true,
+                        columnDefs: [{
+                            orderable: false,
+                            width: 100,
+                            targets: [7,8]
+                        }, {
+                                'targets': [8],
+                                'visible': ShowDel
+                            }, {
+                                'targets': [7],
+                                'visible': ShowEdit
+                            }],
+
+                        colReorder: false,
+                        dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                        //dom: 'lBfrtip',
+                        language: {
+                            search: '<span>Filter:</span> _INPUT_',
+                            searchPlaceholder: 'Type to filter...',
+                            lengthMenu: '<span>Show:</span> _MENU_',
+                            paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                        }
+                    });
+
+                     var myClass = "";
+                var Delclass= @(Obj.GetCurrentUserSession().RaiseNc.Contains("4") ? "true" : "false");
+                    if (Delclass == false) { myClass = 'hidden' };
+
+                    var table = $('#NCRCAPA').DataTable({
+
+                        lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                        colReorder: {
+                            fixedColumnsLeft: 1
+                        },
+                        stateSave: true,
+                        stateSaveParams: function (settings, data) {
+                            for (var i = 0, ien = data.columns.length; i < ien; i++) {
+                                delete data.columns[i].visible;
+                                delete data.columns[i].search;
+                            }
+                        },
+                        scrollY: '350px',
+                        scrollCollapse: true,
+                       
+                        keys: {
+                            className: 'focus focus-success'
+                        },
+
+                        buttons: {
+                            buttons: [
+                                {
+                                    extend: 'copyHtml5',
+                                    className: myClass,
+                                    //className: 'btn btn-light',
+                                    title: 'NCRCAPA Data export',
+                                    exportOptions: {
+                                        columns: ':visible :not(.not-export-column)'
+                                    },
+                                },
+                                {
+                                    extend: 'excelHtml5',
+                                    className: myClass,
+                                    //className: 'btn btn-light',
+                                    title: 'NCRCAPA Data export',
+                                    exportOptions: {
+                                        columns: ':visible :not(.not-export-column)'
+                                    },
+
+                                },
+                                {
+                                    extend: 'pdfHtml5',
+                                    className: myClass,
+                                    //className: 'btn btn-light',
+                                    title: 'NCRCAPA Data export',
+                                    exportOptions: {
+                                        columns: ':visible :not(.not-export-column)'
+                                    },
+                                },
+                                {
+                                    extend: 'csvHtml5',
+                                    className: myClass,
+                                    //className: 'btn btn-light',
+                                    title: 'NCRCAPA Data export',
+                                    exportOptions: {
+                                        columns: ':visible :not(.not-export-column)'
+                                    },
+                                },
+                                {
+                                    extend: 'print',
+                                    className: myClass,
+                                    //className: 'btn btn-light',
+                                    title: 'NCRCAPA Data export',
+                                    exportOptions: {
+                                        columns: ':visible :not(.not-export-column)'
+                                    },
+                                },
+
+                                {
+                                    extend: 'colvis',
+                                    text: '<i class="icon-three-bars"></i>',
+                                    className: 'btn bg-blue btn-icon dropdown-toggle',
+                                    columns: ':visible:not(.not-export-column)'
+                                }
+                            ]
+                        }
+
+
+
+
+                    });
+                    // Adjust columns on window resize
+                    setTimeout(function () {
+                        $(window).on('resize', function () {
+                            table.columns.adjust();
+                        });
+                    }, 100);
+
+
+                    //Redraw table on click toggle. -------table.columns.adjust doesn't work properly upon calling after toggle (width increase/decrease = redraw table.).
+                    $('.sidebar-control').on('click', function () {
+
+                        setTimeout(function () {
+                            //alert("gii");
+
+                            table.columns.adjust().draw();
+                            $("#NCRCAPA").resize();
+                        }, 100);
+
+                    });
+                    //}
+
+                    $('#NCRCAPA').on('page.dt', function () {
+                        //table.draw();
+                        //alert("zzz1");
+                        $("#NCRCAPA").resize();
+
+                    });
+
+                    $('#NCRCAPA').on('column-visibility.dt', function () {
+                        //table.draw();
+                        //alert("zzz2");
+                        $("#NCRCAPA").resize();
+
+                    });
+
+                    $('#NCRCAPA').on('order.dt', function () {
+                        //table.draw();
+                        //alert("zzz3");
+                        $("#NCRCAPA").resize();
+
+                    });
+
+
+                    $('#NCRCAPA').on('responsive-display.dt', function () {
+                        //table.draw();
+                        //alert("zzz4");
+                        $("#NCRCAPA").resize();
+
+                    });
+
+
+                    $('#NCRCAPA').on('responsive-resize.dt', function () {
+                        //table.draw();
+                        //alert("zzz4");
+                        $("#NCRCAPA").resize();
+
+                    });
+
+
+                    //.on('order.dt', function () {
+                    //    table.columns.adjust().draw();
+                    //    $("#qhse").resize(); })
+                    //.on('search.dt', function () {
+                    //    table.columns.adjust().draw();
+                    //    $("#qhse").resize(); })
+
+                    //.on('column-visibility.dt', function () {
+                    //    table.columns.adjust().draw();
+                    //    $("#qhse").resize();
+                    //})
+
+
+
+                };
+
+
+
+
+
+
+                // Select2 for length menu styling
+                var _componentSelect2 = function () {
+                    if (!$().select2) {
+                        console.warn('Warning - select2.min.js is not loaded.');
+                        return;
+                    }
+
+                    // Initialize
+                    $('.dataTables_length select').select2({
+                        minimumResultsForSearch: Infinity,
+                        dropdownAutoWidth: true,
+                        width: 'auto'
+                    });
+                };
+
+
+                //
+                // Return objects assigned to module
+                //
+
+                return {
+                    init: function () {
+                        _componentDatatableBasic();
+                        _componentSelect2();
+                    }
+                }
+            }();
+
+
+            // Initialize module
+            // ------------------------------
+
+            document.addEventListener('DOMContentLoaded', function () {
+                NCRCAPA.init();
+            });
+
+
+    </script>
+
+}

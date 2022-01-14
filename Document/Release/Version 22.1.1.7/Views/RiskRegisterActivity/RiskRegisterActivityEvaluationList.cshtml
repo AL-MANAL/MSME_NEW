@@ -1,0 +1,568 @@
+﻿@using PagedList;
+@using PagedList.Mvc;
+
+@model List<ISOStd.Models.RiskRegisterActivityEvaluationModels>
+
+@{
+    ViewBag.Title = "RiskRegisterActivityEvaluationList";
+}
+
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+
+
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+
+                    <a href="@Url.Action("RiskRegisterActivityList", "RiskRegisterActivity", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Risk Activity List</span>
+                    </a>
+                    <span class="breadcrumb-item active"> Risk Register Activity Evaluation List</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            <div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<div class="card">
+    <div class="card-header header-elements-inline bg-primary">
+        <h5 class="card-title">Risk Register Activity History List</h5>
+        <div class="header-elements">
+            <div class="list-icons">
+                <a class="list-icons-item" data-action="collapse"></a>
+
+            </div>
+        </div>
+    </div>
+    <div>
+        <div class="card-header bg-white header-elements-sm-inline">
+
+            <div class="header-elements">
+
+                <div class="mt-2 mt-sm-0">
+                    <a class="btn bg-orange btn-labeled btn-labeled-left" data-style="radius" href='@Url.Action("AddRiskRegisterActivityEvaluation", "RiskRegisterActivity", new { Risk_Reg_Activity_Id = ViewBag.Risk_Reg_Activity_Id })' title="Add" onclick="HyperLinkProgressIconFunction()">
+                        <b>  <i class="icon-add-to-list"></i></b> Add
+                    </a>
+                    @Html.ActionLink("Back to List", "RiskRegisterActivityList", null, new { @class = "btn btn-outline bg-orange text-orange border-orange ml-3", onclick = "HyperLinkProgressIconFunction()" })
+
+                </div>
+                <div class="clear-fix"></div>
+                <a class="ml-3" href="#" data-toggle="Matrixpopover" data-trigger="hover">Environmental Matrix</a>
+            </div>
+        </div>
+
+    </div>
+    <div class="card-body">
+
+
+
+        <table class="table table-bordered table-striped table-hover datatable-responsive" id="table1">
+            <thead>
+                <tr>
+                    <th>
+                        Sl No
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().Risk_Reg_Activity_Id)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().Severity)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().Probability)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().Risk_Rating)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().Appl_law)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().Eval_Date)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().ReEval_Date)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().Action_TakenBy)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().Reviewer_QHSE)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().ApprovedBy)
+                    </th>
+                    <th class="not-export-column">Edit</th>
+                    @if (ViewBag.DeleteFlg != null && ViewBag.DeleteFlg == true)
+                    {
+                        <th class="not-export-column">Delete</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Count() > 0)
+                {
+                    int i = 0;
+                    foreach (var item in Model)
+                    {
+                        i = i + 1;
+                        string sColorCode = "#fff", Riskrating = "";
+                        if (item.Risk_Rating.Contains("&"))
+                        {
+                            Riskrating = item.Risk_Rating.Split('&')[0];
+                            sColorCode = item.Risk_Rating.Split('&')[1];
+                        }
+
+                        <tr>
+                            <td>
+                                @i
+                            </td>
+                            <td>
+                                @Html.ActionLink(item.Risk_Reg_Activity_Id.ToString(), "RiskRegisterActivityEvaluationDetails", new { Reg_Activity_eval_Id = item.Reg_Activity_eval_Id },
+                                new { data_toggle = "popover", data_trigger = "hover", id = item.Reg_Activity_eval_Id, onclick = "HyperLinkProgressIconFunction()" })
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Severity)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Probability)
+                            </td>
+                            <td style="color:white;font-weight:bold; background-color:@sColorCode">
+                                @Riskrating
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Appl_law)
+                            </td>
+                            <td>
+                                @if (item.Eval_Date > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    @item.Eval_Date.ToString("dd/MM/yyyy")
+                                }
+                            </td>
+                            <td>
+                                @if (item.ReEval_Date > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    @item.ReEval_Date.ToString("dd/MM/yyyy")
+                                }
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Action_TakenBy)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Reviewer_QHSE)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.ApprovedBy)
+                            </td>
+                            <td>
+                                <a href='@Url.Action("RiskRegisterActivityEvaluationEdit", "RiskRegisterActivity", new { Reg_Activity_eval_Id = item.Reg_Activity_eval_Id })'
+                                   onclick="HyperLinkProgressIconFunction()" title="Edit Evaluation details">
+                                    <span class="badge badge-info">Edit</span>
+                                </a>
+                            </td>
+                            @if (ViewBag.DeleteFlg != null && ViewBag.DeleteFlg == true)
+                            {
+                                <td>
+
+                                    @*<a href='@Url.Action("CustomerEnquiryDelete", "CustomerEnquiry", new { enquiry_id = item.Enquiry_id.ToString() })' title="Delete Enquiry" >*@
+
+                                    <span class="badge badge-danger" title="Delete Document " onclick="DeleteItems(@item.Reg_Activity_eval_Id,@item.Risk_Id)" style="cursor:pointer;">Delete</span>
+                                </td>
+                            }
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+
+
+    </div>
+
+</div>
+@section scripts {
+
+    <script type="text/javascript">
+            $(document).ready(function () {
+
+
+                  @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+
+    //zzz----
+            $('[data-toggle="Matrixpopover"]').popover({
+
+                title: setMatrixData,
+                html: true,
+                placement: 'right',
+                container: 'body'
+            });
+
+            function setMatrixData() {
+                var set_data = '';
+                var element = $(this);
+
+                $.ajax({
+                    url: '@Url.Action("EnvironmentalMatrix", "RiskRegisterActivity")',
+                    methos: "post",
+                    async: false,
+                    success: function (data) {
+                        set_data = data;
+                    }
+
+                });
+                return set_data;
+            }
+
+
+
+            });
+
+
+
+            function setData(id) {
+                var set_data = '';
+                var element = $(this);
+                var id = element.attr("id");
+                $.ajax({
+                    url: '@Url.Action("RiskRegisterActivityEvaluationInfo", "RiskRegisterActivity")',
+                    methos: "post",
+                    async: false,
+                    data: { id: id },
+                    success: function (data) {
+                        set_data = data;
+                    }
+
+                });
+                return set_data;
+            }
+
+
+
+            var table1 = function () {
+
+
+                //
+                // Setup module components
+                //
+
+                // Basic Datatable examples
+                var _componentDatatableBasic = function () {
+                    if (!$().DataTable) {
+                        console.warn('Warning - datatables.min.js is not loaded.');
+                        return;
+                    }
+
+                    //Setting datatable defaults
+                    $.extend($.fn.dataTable.defaults, {
+                        autoWidth: false,
+                        responsive: true,
+                        columnDefs: [{
+                            orderable: false,
+                            width: 100,
+                            targets: [7, 8, 9, 10]
+                        }],
+
+                        colReorder: false,
+                        dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                        //dom: 'lBfrtip',
+                        language: {
+                            search: '<span>Filter:</span> _INPUT_',
+                            searchPlaceholder: 'Type to filter...',
+                            lengthMenu: '<span>Show:</span> _MENU_',
+                            paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                        }
+                    });
+
+
+                    var table = $('#table1').DataTable({
+                        drawCallback: function () {
+                            $('[data-toggle="popover"]').popover({
+
+                                html: true,
+                                content: setData,
+                                container: 'body'
+                                //data: setData,
+
+
+                            });
+                        },
+                        lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                        colReorder: {
+                            fixedColumnsLeft: 1
+                        },
+                        stateSave: true,
+
+                        scrollY: '350px',
+                        scrollCollapse: true,
+
+
+                        keys: {
+                            className: 'focus focus-success'
+                        },
+
+                        buttons: {
+                            buttons: [
+                                {
+                                    extend: 'copyHtml5',
+                                    className: 'btn btn-light',
+                                    title: 'Risk Register Evalaution Data export',
+                                    exportOptions: {
+                                        columns: ':visible :not(.not-export-column)'
+                                    },
+                                },
+                                {
+                                    extend: 'excelHtml5',
+                                    className: 'btn btn-light',
+                                    title: 'Risk Register Evalaution Data export',
+                                    exportOptions: {
+                                        columns: ':visible :not(.not-export-column)'
+                                    },
+
+                                },
+                                {
+                                    extend: 'pdfHtml5',
+                                    className: 'btn btn-light',
+                                    title: 'Risk Register Evalaution Data export',
+                                    exportOptions: {
+                                        columns: ':visible :not(.not-export-column)'
+                                    },
+                                },
+                                {
+                                    extend: 'csvHtml5',
+                                    className: 'btn btn-light',
+                                    title: 'Risk Register Evalaution Data export',
+                                    exportOptions: {
+                                        columns: ':visible :not(.not-export-column)'
+                                    },
+                                },
+                                {
+                                    extend: 'print',
+                                    className: 'btn btn-light',
+                                    title: 'Risk Register Evalaution Data export',
+                                    exportOptions: {
+                                        columns: ':visible :not(.not-export-column)'
+                                    },
+                                },
+
+                                {
+                                    extend: 'colvis',
+                                    text: '<i class="icon-three-bars"></i>',
+                                    className: 'btn bg-blue btn-icon dropdown-toggle'
+                                }
+                            ]
+                        }
+
+
+
+
+                    });
+                    // Adjust columns on window resize
+                    setTimeout(function () {
+                        $(window).on('resize', function () {
+                            table.columns.adjust();
+                        });
+                    }, 100);
+
+
+                    //Redraw table on click toggle. -------table.columns.adjust doesn't work properly upon calling after toggle (width increase/decrease = redraw table.).
+                    $('.sidebar-control').on('click', function () {
+
+                        setTimeout(function () {
+                            //alert("gii");
+
+                            table.columns.adjust().draw();
+                            $("#table1").resize();
+                        }, 100);
+
+                    });
+                    //}
+
+                    $('#table1').on('page.dt', function () {
+                        //table.draw();
+                        //alert("zzz1");
+                        $("#table1").resize();
+
+                    });
+
+                    $('#table1').on('column-visibility.dt', function () {
+                        //table.draw();
+                        //alert("zzz2");
+                        $("#table1").resize();
+
+                    });
+
+                    $('#table1').on('order.dt', function () {
+                        //table.draw();
+                        //alert("zzz3");
+                        $("#table1").resize();
+
+                    });
+
+
+                    $('#table1').on('responsive-display.dt', function () {
+                        //table.draw();
+                        //alert("zzz4");
+                        $("#table1").resize();
+
+                    });
+
+
+                    $('#table1').on('responsive-resize.dt', function () {
+                        //table.draw();
+                        //alert("zzz4");
+                        $("#table1").resize();
+
+                    });
+
+
+
+
+
+                };
+
+
+
+
+
+
+                // Select2 for length menu styling
+                var _componentSelect2 = function () {
+                    if (!$().select2) {
+                        console.warn('Warning - select2.min.js is not loaded.');
+                        return;
+                    }
+
+                    // Initialize
+                    $('.dataTables_length select').select2({
+                        minimumResultsForSearch: Infinity,
+                        dropdownAutoWidth: true,
+                        width: 'auto'
+                    });
+                };
+
+
+                //
+                // Return objects assigned to module
+                //
+
+                return {
+                    init: function () {
+                        _componentDatatableBasic();
+                        _componentSelect2();
+                    }
+                }
+            }();
+
+
+            // Initialize module
+            // ------------------------------
+
+            document.addEventListener('DOMContentLoaded', function () {
+                table1.init();
+            });
+
+
+
+
+        function DeleteItems(Reg_Activity_eval_Id, Risk_Id) {
+            Risk_Reg_Activity_Id = Risk_Id;
+            bootbox.confirm({
+                title: 'Confirm dialog',
+                message: 'Are you Sure you want to Delete the current Record?',
+                buttons: {
+                    confirm: {
+                        label: 'Yes',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'Cancel',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (r) {
+                if (r == true) {
+                    jQuery.ajax({
+                        url: '@*@Url.Action("RiskRegisterEvlDelete", "RiskRegisterActivity")*@',
+                        type: 'POST',
+                        dataType: "json",
+                        data: { 'Reg_Activity_eval_Id': Reg_Activity_eval_Id },
+                        success: function (result) {
+                            var params = {
+                                Risk_Reg_Activity_Id: Risk_Reg_Activity_Id
+                            };
+
+                            //// Add new params to the querystring dictionary
+                            queryString = $.param(params);
+
+                            window.location.href =
+                                window.location.protocol + "//" +
+                                window.location.host +
+                                window.location.pathname
+                        }
+                    });
+                        return true;
+                    }
+                    else if (r == false) {
+
+                        bootbox.hideAll();
+                        return false;
+
+                    }
+
+                }
+            });
+        }
+
+    </script>
+
+}

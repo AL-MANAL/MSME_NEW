@@ -1,0 +1,877 @@
+﻿@model ISOStd.Models.ExternalAuditModels
+
+@{
+    ViewBag.Title = "";
+    ISOStd.Models.ExternalAuditModelsList objList = new ISOStd.Models.ExternalAuditModelsList();
+    ISOStd.Models.ExternalAuditModelsList objAuditeeList = new ISOStd.Models.ExternalAuditModelsList();
+    int icnt = 0;
+    int icnt1 = 0;
+    if (ViewBag.Auditor != null)
+    {
+        objList = ViewBag.Auditor;
+        icnt = objList.ExternalAuditList.Count;
+    }
+    if (ViewBag.Auditee != null)
+    {
+        objAuditeeList = ViewBag.Auditee;
+        icnt1 = objAuditeeList.ExternalAuditList.Count;
+    }
+}
+
+@section featured {
+    <div class="page-header page-header-light">
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("ExternalAuditList", "ExternalAudit", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">External Audit Details List</span>
+                    </a>
+                    <span class="breadcrumb-item active">Edit External Audit Details</span>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+}
+@using (Html.BeginForm("ExternalAuditEdit", "ExternalAudit", FormMethod.Post,
+                        new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Edit External Audit Details</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+                <input type="hidden" id="id_external_audit" name="id_external_audit" value="@Model.id_external_audit" />
+                <table class="table table-lg">
+
+
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.audit_no)
+
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <input class="form-control" readonly type="text" id="audit_no" name="audit_no" value="@Model.audit_no" />
+                        </td>
+                   
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.audit_type) <text style="color: red;">*</text>
+                        </td>
+                        <td class="col-xs-6 col-md-4">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="audit_type" name="audit_type" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.Type != null)
+                                    {
+                                        foreach (var item in ViewBag.Type)
+                                        {
+                                            if (item.Value == Model.audit_type)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.audit_criteria) <text style="color: red;">*</text>
+                        </td>
+                        <td class="col-xs-6 col-md-4">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="audit_criteria" name="audit_criteria" multiple required>
+                                    @*<option value='' hidden>Select</option>*@
+                                    @if (ViewBag.AuditCriteria != null)
+                                    {
+                                        foreach (var data in ViewBag.AuditCriteria)
+                                        {
+                                            if (Array.IndexOf(Model.audit_criteria.ToString().Split(','), data.Value) >= 0)
+                                            {
+                                                <option value='@data.Value' selected>@data.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@data.Value'>@data.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.audit_start_date)<text style="color: red;">*</text>
+                        </td>
+                        <td class="col">
+                            @if (Model.audit_start_date > Convert.ToDateTime("01/01/0001"))
+                            {
+                                <input type="date" id="audit_start_date" name="audit_start_date" value="@Model.audit_start_date.ToString("yyyy-MM-dd")" class="form-control" />
+                            }
+                            else
+                            {
+                                <input type="date" id="audit_start_date" name="audit_start_date" required class="form-control" />
+                            }
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.audit_complete_date)<text style="color: red;">*</text>
+                        </td>
+                        <td class="col">
+                            @if (Model.audit_complete_date > Convert.ToDateTime("01/01/0001"))
+                            {
+                                <input type="date" id="audit_complete_date" name="audit_complete_date" value="@Model.audit_complete_date.ToString("yyyy-MM-dd")" class="form-control" />
+                            }
+                            else
+                            {
+                                <input type="date" id="audit_complete_date" name="audit_complete_date" required class="form-control" />
+                            }
+                        </td>
+                       
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.entity_name)<text style="color: red;">*</text>
+                        </td>
+                        <td class="col">
+                            <input type="text" class="form-control" id="entity_name" name="entity_name" value="@Model.entity_name" required />
+                        </td>
+                    </tr>
+                 
+                   
+                </table>
+                <fieldset class="border p-2">
+                    <legend class="font-weight-semibold text-success">Auditee Details</legend>
+                    <table class="table table-lg">
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.DisplayNameFor(model => model.directorate)<text style="color: red;">*</text>
+                            </td>
+                            <td class="col">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="directorate" name="directorate" onchange="GetDeptList()">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.Branch != null)
+                                    {
+                                        foreach (var data in ViewBag.Branch)
+                                        {
+                                            if (Array.IndexOf(Model.directorate.ToString().Split(','), data.Value) >= 0)
+                                            {
+                                                <option value='@data.Value' selected>@data.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@data.Value'>@data.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                                <span class="field-validation-error"><span id="directorate-message" style="display: none;">Please select</span></span>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                @Html.DisplayNameFor(model => model.group_name)<text style="color: red;">*</text>
+                            </td>
+                            <td class="col">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="group_name" name="group_name">
+                                    @if (ViewBag.Department != null)
+                                    {
+                                        foreach (var item in ViewBag.Department)
+                                        {
+                                            if (Array.IndexOf(Model.group_name.ToString().Split(','), item.Value) >= 0)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                                <span class="field-validation-error"><span id="group_name-message" style="display: none;">Please select</span></span>
+                            </td>
+
+                        </tr>
+                        <tr class="row">                        
+                            <td class="col-xs-3 col-md-2">
+                                @Html.DisplayNameFor(model => model.location)<text style="color: red;">*</text>
+                            </td>
+                            <td class="col">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="location" name="location">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.Location != null)
+                                    {
+                                        foreach (var item in ViewBag.Location)
+                                        {
+                                            if (Model.location == item.Value)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                                <span class="field-validation-error"><span id="location-message" style="display: none;">Please select</span></span>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col">
+                                <input type="button" value="Add" class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" onclick="AddAuditee()" />
+                            </td>
+                        </tr>
+
+                    </table>
+                </fieldset>
+             
+                <div class="card" id="hidden card1">
+                    <div class="card-header header-elements-inline">
+                        <h6 class="card-title">Auditee Details</h6>
+                        <div class="header-elements">
+                            <div class="list-icons">
+                                <a class="list-icons-item" data-action="collapse"></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+                        <input type="hidden" id="itemcnts" name="itemcnts" value="@icnt1" />
+                        <div class="card card-table table-responsive shadow-0 mb-0">
+                            <table class="table" id="team-list1">
+                                <tr class="bg-blue">
+                                    <th>Action</th>
+                                    <th>Division</th>
+                                    <th>Department</th>                                   
+                                    <th>Location</th>
+                                </tr>
+                                @if (objAuditeeList.ExternalAuditList != null && objAuditeeList.ExternalAuditList.Count > 0)
+                                {
+                                    for (int index = 0; index < objAuditeeList.ExternalAuditList.Count; index++)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <span class="badge badge-info" onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span>
+
+                                                <input type='hidden' id='id_external_auditee@(index)' name="id_external_auditee@(index)" value='@objAuditeeList.ExternalAuditList[index].id_external_auditee' />
+                                            </td>
+                                            <td>
+                                                <select class="form-control select-search select2-hidden-accessible" id="directorate@(index)" name="directorate@(index)">
+                                                    <option value='' hidden>Select</option>
+                                                    @if (ViewBag.Branch != null)
+                                                    {
+                                                        foreach (var item in ViewBag.Branch)
+                                                        {
+                                                            if (item.Value == objAuditeeList.ExternalAuditList[index].directorate)
+                                                            {
+                                                                <option value='@item.Value' selected>@item.Text</option>
+                                                            }
+                                                            else
+                                                            {
+                                                                <option value='@item.Value'>@item.Text</option>
+                                                            }
+                                                        }
+                                                    }
+                                                </select>
+
+                                            </td>
+                                            <td>
+                                                <select class="form-control select-search select2-hidden-accessible" id="group_name@(index)" name="group_name@(index)">
+                                                    @if (ViewBag.Department != null)
+                                                    {
+                                                        foreach (var item in ViewBag.Department)
+                                                        {
+                                                            if (item.Value == objAuditeeList.ExternalAuditList[index].group_name)
+                                                            {
+                                                                <option value='@item.Value' selected>@item.Text</option>
+                                                            }
+
+                                                        }
+                                                    }
+                                                </select>
+                                            </td>
+                                   
+                                            <td>
+                                                <select class="form-control select-search select2-hidden-accessible" id="location@(index)" name="location@(index)">
+                                                    <option value='' hidden>Select</option>
+                                                    @if (ViewBag.Location != null)
+                                                    {
+                                                        foreach (var item in ViewBag.Location)
+                                                        {
+                                                            if (item.Value == objAuditeeList.ExternalAuditList[index].location)
+                                                            {
+                                                                <option value='@item.Value' selected>@item.Text</option>
+                                                            }
+                                                            else
+                                                            {
+                                                                <option value='@item.Value'>@item.Text</option>
+                                                            }
+                                                        }
+                                                    }
+                                                </select>
+
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <fieldset class="border p-2">
+                    <legend class="font-weight-semibold text-success">Auditor Details</legend>
+                    <table class="table table-lg">
+                        <tr class="row">
+                            <td class="col-3">
+                                <b>Name</b>
+                            </td>
+                            <td class="col-3"><b>Auditor Level</b></td>
+                            <td class="col-3"><b>Contact No</b></td>
+                            <td class="col-2"><b>Email Id</b></td>
+                            <td class="col-1"></td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-3">
+                                <input type="text" class="form-control" id="auditor_name" name="auditor_name" />
+                                <span class="field-validation-error"><span id="auditor_name-message" style="display: none;">This field is required.</span></span>
+                                @Html.ValidationMessageFor(model => model.auditor_name)
+                            </td>
+                            <td class="col-3">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="auditor_level" name="auditor_level">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.Level != null)
+                                    {
+                                        foreach (var item in ViewBag.Level)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                                <span class="field-validation-error"><span id="auditor_level-message" style="display: none;">This field is required.</span></span>
+                                @Html.ValidationMessageFor(model => model.auditor_level)
+                            </td>
+                            <td class="col-3">
+                                <input type="text" class="form-control" id="contact_no" name="contact_no" />
+                                <span class="field-validation-error"><span id="contact_no-message" style="display: none;">This field is required.</span></span>
+                                @Html.ValidationMessageFor(model => model.contact_no)
+                            </td>
+                            <td class="col-2">
+                                <input type="text" class="form-control" id="email_address" name="email_address" />
+                                <span class="field-validation-error"><span id="email_address-message" style="display: none;">This field is required.</span></span>
+                                @Html.ValidationMessageFor(model => model.email_address)
+                            </td>
+                            <td class="col-1">
+                                <input type="button" value="Add" class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" onclick="AddData()" />
+                            </td>
+                        </tr>
+                    </table>
+                </fieldset>
+                <div class="card" id="hidden card">
+                    <div class="card-header header-elements-inline">
+                        <h6 class="card-title">Auditor Details</h6>
+                        <div class="header-elements">
+                            <div class="list-icons">
+                                <a class="list-icons-item" data-action="collapse"></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body scrollbar-container">
+
+                        <div class="card card-table table-responsive shadow-0 mb-0 scrollbar">
+                            <input type="hidden" id="itemcnt" name="itemcnt" value="@icnt" />
+                            <table class="table" id="team-list">
+                                <tr class="bg-blue">
+                                    <th>Delete</th>
+                                    <th>Name</th>
+                                    <th>Auditor Level</th>
+                                    <th>Contact No</th>
+                                    <th>Email Id</th>
+                                </tr>
+                                @if (objList.ExternalAuditList != null && objList.ExternalAuditList.Count > 0)
+                                {
+                                    for (int index = 0; index < objList.ExternalAuditList.Count; index++)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <span class="badge badge-info" onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span>
+
+                                                <input type='hidden' id='id_external_auditor@(index)' name="id_external_auditor@(index)" value='@objList.ExternalAuditList[index].id_external_auditor' />
+                                            </td>
+                                            <td>
+                                                <input class="form-control" type="text" id='auditor_name@(index)' name='auditor_name@(index)' value="@objList.ExternalAuditList[index].auditor_name" />
+                                            </td>
+                                             <td>
+                                                <select class="form-control select-search select2-hidden-accessible" id="auditor_level@(index)" name="auditor_level@(index)">
+                                                    <option value='' hidden>Select</option>
+                                                    @if (ViewBag.Level != null)
+                                                    {
+                                                        foreach (var item in ViewBag.Level)
+                                                        {
+                                                            if (item.Value == objList.ExternalAuditList[index].auditor_level)
+                                                            {
+                                                                <option value='@item.Value' selected>@item.Text</option>
+                                                            }
+                                                            else
+                                                            {
+                                                                <option value='@item.Value'>@item.Text</option>
+                                                            }
+                                                        }
+                                                    }
+                                                </select>
+
+                                            </td>
+                                            <td>
+                                                <input class="form-control" type="text" id='contact_no@(index)' name='contact_no@(index)' value="@objList.ExternalAuditList[index].contact_no" />
+                                            </td>
+                                            <td>
+                                                <input class="form-control" type="text" id='email_address@(index)' name='email_address@(index)' value="@objList.ExternalAuditList[index].email_address" />
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <table class="table table-lg">
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.upload)
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <div class="editor-field">
+                                <input type="file" name="upload" id="upload" onchange="FileFormatValidation(this)" multiple accept=".pdf,.xlsx,.xls,.doc,.docx,.image/*,.png,.jpeg,.jpg" @*class="bootstrap-uploader" data-fouc*@ />
+                                <span class="form-text text-muted"><code>(Hold Ctrl Key in case of multiple files)</code></span>
+                                @if (Model.upload != null && Model.upload != "" && Model.upload.Length > 0)
+                                {
+
+                                    <span class="form-text text-muted">
+                                        <code>
+                                            (Uncheck in case to remove a uploaded file)
+                                        </code>
+                                    </span>
+                                    foreach (var docs in Model.upload.Trim(',').Split(','))
+                                    {
+                                        <div class="form-check">
+                                            <label class="form-check-label">
+                                                <input type="checkbox" id="QCDocsVal" name="QCDocsVal" class="form-check-input-styled QCDocsVal" value="@docs.Trim(',')" checked title="Uncheck in case to remove a uploaded file" data-fouc />
+                                                <input type="hidden" id="QCDocsValselectall" name="QCDocsValselectall" />
+                                                <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" class="text-orange">
+                                                    Preview
+                                                </a>
+                                            </label>
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.notification_to) <text style="color: red;">*</text>
+                        </td>
+                        <td class="col-xs-6 col-md-4">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="notification_to" name="notification_to" multiple required>
+                                    @*<option value='' hidden>Select</option>*@
+                                    @if (ViewBag.EmpList != null)
+                                    {
+                                        foreach (var data in ViewBag.EmpList)
+                                        {
+                                            if (Array.IndexOf(Model.notification_to.ToString().Split(','), data.Value) >= 0)
+                                            {
+                                                <option value='@data.Value' selected>@data.Text</option>
+                                            }
+                                           
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+                @Html.ActionLink("Back to List", "ExternalAuditList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+                <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Save</button>
+            </div>
+        </div>
+    </div>
+}
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+           @if (TempData["alertdata"] != null)
+           {
+               @: new Noty({
+                   @:     text: '@TempData["alertdata"]',
+               @:     type: 'error'
+               @: }).show();
+           }
+           @if (@TempData["Successdata"] != null)
+           {
+
+            @:new Noty({
+                @:text: '@TempData["Successdata"]',
+            @: type: 'success'
+            @:}).show();
+           }
+        });
+        $('.form-check-input-styled').uniform();
+        $("#QCDocsVal").click(function () {
+            if ($("#QCDocsVal").prop('checked')) {
+                {
+                    $(this).prop('checked', true);
+                }
+            }
+            else {
+                $(this).prop('checked', false);
+                document.getElementById("QCDocsValselectall").value = "DeleteQC";
+            }
+        });
+      
+        function deleteRow(btn) {
+            var row = btn.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+        }
+        function Validation() {
+            var validflg = true;
+            var ssnMessage = "";
+            if (document.getElementById("auditor_name").value == "") {
+                ssnMessage = $('#auditor_name-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#auditor_name-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("auditor_level").value == "") {
+                ssnMessage = $('#auditor_level-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#auditor_level-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("contact_no").value == "") {
+                ssnMessage = $('#contact_no-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#contact_no-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("email_address").value == "") {
+                ssnMessage = $('#email_address-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#email_address-message');
+                ssnMessage.hide();
+            }
+
+            return validflg;
+        }
+
+        function AddData() {
+
+            if (Validation() == true) {
+                var cnt = document.getElementById("itemcnt").value;
+
+                document.getElementById("itemcnt").value = cnt;
+                // Find a <table> element with id="myTable":
+                var table = document.getElementById("team-list");
+
+
+                // Create an empty <tr> element and add it to the 1st position of the table:
+                var row = table.insertRow();
+
+                // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                var cell0 = row.insertCell(0);
+                var cell1 = row.insertCell(1);
+                var cell2 = row.insertCell(2);
+                var cell3 = row.insertCell(3);
+                var cell4 = row.insertCell(4);
+
+                var auditor_name = $('#auditor_name').val();
+                var contact_no = $('#contact_no').val();
+                var email_address = $('#email_address').val();
+
+                var auditor_level = $.map($("#auditor_level option:selected"), function (el, i) {
+                    return $(el).text();
+                });
+                var auditor_levelVal = $("#auditor_level").val();
+
+
+
+                cell0.innerHTML = "<span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span>";
+                cell1.innerHTML = "<input class='form-control' type='text' id='auditor_name" + cnt + "' name='auditor_name" + cnt + "' value='" + auditor_name + "' />";
+                cell2.innerHTML = "<select class='select-fixed-single' id='auditor_level" + cnt + "' name='auditor_level" + cnt + "'><option value='" + auditor_levelVal + "' selected>" + auditor_level + "</option>@if (ViewBag.Level != null)
+                {
+                    foreach (var item in ViewBag.Level)
+                    { <option value='@item.Value'>@item.Text</option> }
+                    }</select>";
+                cell3.innerHTML = "<input class='form-control' type='text' id='contact_no" + cnt + "' name='contact_no" + cnt + "' value='" + contact_no + "' />";
+                cell4.innerHTML = "<input class='form-control' type='text' id='email_address" + cnt + "' name='email_address" + cnt + "' value='" + email_address + "' />";
+
+                        cnt++;
+                        document.getElementById("itemcnt").value = cnt;
+
+                        //reintialisation
+
+                        // Badge position
+                        $('.maxlength-badge-position').maxlength({
+                            alwaysShow: true,
+                            placement: 'top'
+                        });
+
+                        //auto resize
+                        autosize($('.elastic'));
+                        $('.select-fixed-single').select2({
+                            minimumResultsForSearch: Infinity,
+                            width: 150
+                        });
+                       
+                        document.getElementById("auditor_name").value = "";
+                        document.getElementById("contact_no").value = "";
+                        document.getElementById("email_address").value = "";
+                        $("#auditor_level").val('').trigger('change');
+                    }
+
+        }
+        function Validation1() {
+            var validflg = true;
+            var ssnMessage = "";
+
+            if (document.getElementById("directorate").value == "") {
+                ssnMessage = $('#directorate-message');
+                ssnMessage.show();
+
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#directorate-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("group_name").value == "") {
+                ssnMessage = $('#group_name-message');
+                ssnMessage.show();
+
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#group_name-message');
+                ssnMessage.hide();
+            }
+           
+            if (document.getElementById("location").value == "") {
+                ssnMessage = $('#location-message');
+                ssnMessage.show();
+
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#location-message');
+                ssnMessage.hide();
+            }
+            return validflg;
+        }
+
+        function AddAuditee() {
+
+            if (Validation1() == true) {
+               
+                var cnt = document.getElementById("itemcnts").value;
+
+                document.getElementById("itemcnts").value = cnt;
+                // Find a <table> element with id="myTable":
+                var table = document.getElementById("team-list1");
+
+
+                // Create an empty <tr> element and add it to the 1st position of the table:
+                var row = table.insertRow();
+
+
+                // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                var cell0 = row.insertCell(0);
+                var cell1 = row.insertCell(1);
+                var cell2 = row.insertCell(2);
+                var cell3 = row.insertCell(3);
+                                       
+
+                var directorate = $.map($("#directorate option:selected"), function (el, i) {
+                    return $(el).text();
+                });
+                var directorateVal = $("#directorate").val();
+
+
+                var group_name = $.map($("#group_name option:selected"), function (el, i) {
+                    return $(el).text();
+                });
+                var group_nameVal = $("#group_name").val();
+                              
+
+                var location = $.map($("#location option:selected"), function (el, i) {
+                    return $(el).text();
+                });
+                var locationVal = $("#location").val();
+
+           
+                cell0.innerHTML = "<span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span>";
+
+                cell1.innerHTML = "<select class='select-fixed-single' id='directorate" + cnt + "' name='directorate" + cnt + "' onchange='sGetDeptList(" + cnt + ")'><option value='" + directorateVal + "' selected>" + directorate + "</option>@if (ViewBag.Branch != null)
+                {
+                    foreach (var item in ViewBag.Branch)
+                    { <option value='@item.Value'>@item.Text</option> }
+                    }</select>";
+                    cell2.innerHTML = "<select class='select-fixed-single' id='group_name" + cnt + "' name='group_name" + cnt + "'><option value='" + group_nameVal + "' selected>" + group_name + "</option></select>";
+
+                   
+                    cell3.innerHTML = "<select class='select-fixed-single' id='location" + cnt + "' name='location" + cnt + "'><option value='" + locationVal + "' selected>" + location + "</option>@if (ViewBag.Location != null)
+                    {
+                        foreach (var item in ViewBag.Location)
+                        { <option value='@item.Value'>@item.Text</option> }
+                        }</select>";
+ 
+                        cnt++;
+                        document.getElementById("itemcnts").value = cnt;
+                        $('.maxlength-badge-position').maxlength({
+                            alwaysShow: true,
+                            placement: 'top'
+                        });
+                        //auto resize
+                        autosize($('.elastic'));
+                        $('.select-fixed-single').select2({
+                            minimumResultsForSearch: Infinity,
+                            width: 150
+                        });
+                        GetAuditee(directorateVal);
+                       
+                        ResetControl();
+                    }
+
+                }
+
+                function ResetControl () {
+                    $("#directorate").val('').trigger('change');
+                    $("#group_name").val('').trigger('change');                  
+                    $("#location").val('').trigger('change');     
+                }
+                function GetAuditee(directorateVal) {
+                    jQuery.ajax({
+                        url: '@Url.Action("FunGetAuditeesList", "AuditProcess")',
+                        type: 'POST',
+                        dataType: "json",
+                        data: { 'branch': directorateVal, 'group_name': '' },
+                        success: function (result) {
+
+                            if (result != null && result.length > 0) {
+                                $.each(result, function (index, item) {
+                                    $("#notification_to").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+
+                                });
+                                $("#notification_to").trigger('change');
+                                return;
+                            }
+                        }
+                    });
+                }
+                function sGetDeptList(i) {
+                    //var selectedValues = [];
+                    $("#group_name" + i).children('option').remove();
+                   
+                    //$("#branch :selected").each(function () {
+                    // selectedValues.push($(this).val());
+                    //});
+                    var selectedValues = $('#directorate' + i).val();
+                    if (selectedValues != '') {
+                        jQuery.ajax({
+                            url: '@Url.Action("FunGetAllDeptList", "EmployeeDetails")',
+                            type: 'POST',
+                            dataType: "json",
+                            data: { 'branch': selectedValues },
+                            success: function (result) {
+
+                                if (result != null && result.length > 0) {
+                                    $("#group_name" + i).append("<option value=''>" + "Select" + "</option>");
+                                    $.each(result, function (index, item) {
+                                        $("#group_name" + i).append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                                    });
+                                    // $("#group_name"+i).trigger('change');
+
+                                    return;
+                                }
+
+                            }
+                        });
+                    }
+                }
+               
+        function FileFormatValidation(file) {
+            var ext = file.value.split(".").pop().toLowerCase();
+            if ($.inArray(ext, ["doc", "pdf", "docx", "xls", "xlsx", , "png", "jpg", "jpeg"]) == -1) {
+                file.value = "";
+                jAlert("Invalid file format, please upload only doc, pdf, docx, xls, xlsx, png, jpeg, jpg format");
+            }
+        }
+        function GetDeptList() {
+            //var selectedValues = [];
+            $("#group_name").children('option').remove();         
+            //$("#branch :selected").each(function () {
+            // selectedValues.push($(this).val());
+            //});
+            var selectedValues = $('#directorate').val();
+            if (selectedValues != '') {
+                jQuery.ajax({
+                    url: '@Url.Action("FunGetAllDeptList", "EmployeeDetails")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'branch': selectedValues },
+                    success: function (result) {
+
+
+                        if (result != null && result.length > 0) {
+                            $("#group_name").append("<option value=''>" + "Select" + "</option>");
+                            $.each(result, function (index, item) {
+                                $("#group_name").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                            });
+                            $("#group_name").trigger('change');
+
+                            return;
+                        }
+
+                    }
+                });
+            }
+        }
+       
+    </script>
+}

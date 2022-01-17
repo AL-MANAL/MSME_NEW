@@ -1,0 +1,161 @@
+﻿@model ISOStd.Models.KnowledgeBaseModels
+@using System.Data;
+
+@{
+
+    ViewBag.Title = "KnowledgeBase";
+}
+<script type="text/javascript" src="~/Scripts/ckeditor/ckeditor.js"></script>
+<script type="text/javascript" src="~/Scripts/ckeditor/adapters/jquery.js"></script>
+
+<div class="groupedassets margin10">
+    <span class="groupedassetshead margin10 onestphdcolor">Apply Leave </span>
+</div>
+
+<div id="divmsg">
+    @if (TempData["alertdata"] != null)
+    {
+        <span class="errMsg" style="color: red;font-weight: bold;">@TempData["alertdata"]</span>
+    }
+    @if (TempData["Successdata"] != null)
+    {
+        <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+    }
+</div>
+
+@using (Html.BeginForm("AddKnowledgeBase", "KnowledgeBase", FormMethod.Post,
+                                     new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <fieldset>
+
+        <legend>KnowledgeBaseModels</legend>
+        <div style="max-width: 100%;">
+   
+            <table id="tabcontent" style="float: left;">
+
+                <tr>
+                    <td colspan="10" style="background-color: #2B649A; color: #fff; font-weight: bold; font-size: 14px;">Enter Details</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.topic)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+
+                            @Html.TextAreaFor(model => model.topic)
+                        </div>
+                    </td>
+                    <td>
+
+                        <div class="editor-label">
+
+                            @Html.LabelFor(model => model.Evidence)
+
+                        </div>
+
+                    </td>
+
+                    <td>
+
+                        <input type="file" name="Evidence" id="Evidence" title="Objective Evidence" onchange="FileFormatValidation(this)" accept=".pdf, .doc, .docx,image/*"
+                               style="height: 38px;" />
+
+                    </td>
+
+                  
+                </tr>
+
+                <tr>
+
+         
+
+
+                    <td >
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.details)
+                        </div>
+                    </td>
+                    <td colspan ="10">
+                        <div class="editor-field">
+                            @Html.TextAreaFor(model => model.details, new { @class = "ckeditor" })
+                        </div>
+                    </td>
+                    </tr>
+             
+            </table>
+        </div>
+
+        
+        <div style="width: 100%; text-align: center;">
+            
+         
+            <input type="submit" value="Create"  />
+        </div>
+
+    </fieldset>
+
+}
+
+
+
+@section Scripts {
+    <script>
+
+
+            function FileFormatValidation(file) {
+
+                var ext = file.value.split(".").pop().toLowerCase();
+
+                if ($.inArray(ext, ["pdf", "jpg", "jpeg", "gif", "png"]) == -1) {
+
+                    file.value = "";
+
+                    jAlert("Invalid file format, please upload only pdf, jpg, jpeg, gif, png format");
+
+                }
+            }
+
+
+        (function () {
+            var cancelEvent = function (evt) {
+                evt.cancel();
+            };
+
+            CKEDITOR.editor.prototype.readOnly = function (isReadOnly) {
+                // Turn off contentEditable.
+                this.document.$.body.disabled = isReadOnly;
+                CKEDITOR.env.ie ? this.document.$.body.contentEditable = !isReadOnly
+                : this.document.$.designMode = isReadOnly ? "off" : "on";
+
+                // Prevent key handling.
+                this[isReadOnly ? 'on' : 'removeListener']('key', cancelEvent, null, null, 0);
+                this[isReadOnly ? 'on' : 'removeListener']('selectionChange', cancelEvent, null, null, 0);
+
+                // Disable all commands in wysiwyg mode.
+                var command,
+                   commands = this._.commands,
+                   mode = this.mode;
+
+                for (var name in commands) {
+                    command = commands[name];
+                    isReadOnly ? command.disable() : command[command.modes[mode] ? 'enable' : 'disable']();
+                    this[isReadOnly ? 'on' : 'removeListener']('state', cancelEvent, null, null, 0);
+                }
+            }
+        })();
+
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/ckeditor")
+    @Scripts.Render("~/bundles/ckeditor/adapters")
+}
+
+
+

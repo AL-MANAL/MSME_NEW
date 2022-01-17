@@ -1,0 +1,578 @@
+﻿@model ISOStd.Models.QHSEPlannerModels
+
+@{
+    ViewBag.Title = "ADDQHSEPlanner";
+}
+
+
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("QHSEPlannerList", "QHSEPlanner", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Event Planner List</span>
+                    </a>
+                    <span class="breadcrumb-item active"> Add Event Planner</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            <div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+}
+
+
+
+@using (Html.BeginForm("AddQHSEPlanner", "QHSEPlanner", FormMethod.Post,
+                            new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Event Planner Details</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+
+                <table class="table table-lg">
+
+                    <tbody>
+
+
+
+
+
+
+
+
+
+
+
+
+                        <tr class="row">
+                            @*<td>
+                                    <div class="editor-label">
+                                        @Html.LabelFor(model => model.QHSE_name)<text style="color: red;">*</text>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="editor-field">
+                                        <select  id="QHSE_name" name="QHSE_name"  multiple style="height:200px;width:200px">
+
+                                            @if (ViewBag.Standards != null)
+                                            {
+                                                foreach (var item in ViewBag.Standards)
+                                                {
+                                                <option value='@item.Value'>@item.Text</option>
+                                                }
+                                            }
+                                        </select>
+                                          <span class="field-validation-error"><span id="QHSE_name-message" style="display: none;">Standard field is required.</span></span>
+                                      @Html.ValidationMessageFor(model => model.QHSE_name)
+                                    </div>
+                                </td>
+                            *@
+
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.Activity_name)<text style="color: red;">*</text>
+
+                            </td>
+                            <td class="col">
+
+
+                                <textarea maxlength="225" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="Activity_name" name="Activity_name"></textarea>
+
+                                <span class="field-validation-error"><label id="Activity_name-message" class="validation-invalid-label" style="display:none" for="basic">This field is required.</label> </span>
+
+
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.NotificationPeriod)
+
+                            </td>
+                            <td class="col">
+
+
+                                <div class="form-group form-group-float">
+                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="NotificationPeriod" name="NotificationPeriod">
+                                        @if (ViewBag.NotificationPeriod != null)
+                                        {
+                                            foreach (var item in ViewBag.NotificationPeriod)
+                                            {
+                                                <option value='@item.Key'>@item.Value</option>
+                                            }
+                                        }
+                                    </select>
+
+                                </div>
+                                <div class="form-group form-group-float">
+                                    <input class="form-control" type="number" id="NotificationValue" name="NotificationValue" value="0" max="3" />
+
+                                    <span class="form-text text-muted"><code>(Alert on or before Target date)</code></span>
+
+
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="row">
+
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.Target_date)<text style="color: red;">*</text>
+
+                            </td>
+                            <td class="col">
+                                <input type="date" class="form-control" id="Target_date" name="Target_date" onchange="checkDate();">
+
+
+                                <span class="field-validation-error"><label id="Target_date-message" class="validation-invalid-label" style="display:none" for="basic">Target date field is required.</label> </span>
+
+
+
+                            </td>
+
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.Person_responsible)<text style="color: red;">*</text>
+
+                            </td>
+                            <td class="col">
+
+
+                                <select class="form-control select-fixed-multiple" multiple="multiple" data-fouc id="Person_responsible" name="Person_responsible">
+                                    @if (ViewBag.EmpList != null)
+                                    {
+                                        foreach (var item in ViewBag.EmpList)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                                <span class="field-validation-error"><label id="Person_responsible-message" class="validation-invalid-label" style="display:none" for="basic">Person Responsible field is required.</label> </span>
+
+
+
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.Planned_date)<text style="color: red;">*</text>
+
+                            </td>
+                            <td class="col">
+                                <input type="date" class="form-control" id="Planned_date" name="Planned_date">
+
+
+
+                                <span class="field-validation-error"><label id="Planned_date-message" class="validation-invalid-label" style="display:none" for="basic">Planned date field is required.</label> </span>
+
+
+                            </td>
+
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+
+                                @Html.LabelFor(model => model.Remarks)
+
+                            </td>
+                            <td class="col">
+
+                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="Remarks" name="Remarks"></textarea>
+
+
+
+                            </td>
+
+                        </tr>
+
+
+
+                    </tbody>
+
+                </table>
+            </div>
+
+        </div>
+
+
+
+
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+
+            @Html.ActionLink("Back to List", "QHSEPlannerList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+            <div class="mt-2 mt-sm-0">
+                <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400 invisible" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Save</button>
+                <input type="button" value="Add" class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" onclick="AddPlanner()" />
+            </div>
+            @*<input type="submit" id="btnCreate" value="Save" class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" onclick="ProgressIconFunction('#form1')" />*@
+            @*<input type="button" value="Add" class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" onclick="AddPlanner()" />*@
+        </div>
+
+
+    </div>
+
+    <div class="card invisible" id="hidden card">
+        <div class="card-header header-elements-inline">
+            <h5 class="card-title">QHSE Planner</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+
+                    <a class="list-icons-item" data-action="remove"></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body">
+
+            <input type="hidden" id="itemcnt" name="itemcnt" value="0" />
+
+            <div class="card card-table table-responsive shadow-0 mb-0">
+                <table class="table" id="team-list">
+                    <tr class="bg-blue">
+                        <th>Action</th>
+                        @*<th>Standard</th>*@
+                        <th>Activity</th>
+                        <th>Planned on</th>
+                        <th>Target date</th>
+                        <th>Person responsible</th>
+                        <th>Remarks</th>
+                        <th>Notification Period</th>
+                        <th>Notification Value</th>
+                    </tr>
+                </table>
+
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+}
+
+
+
+@section Scripts {
+    <script>
+ //----zzz
+    $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+    });
+    //zzz----
+
+
+            var showClass = 'is-visible';
+            var hideClass = 'invisible';
+            function Validation() {
+                var validflg = true;
+                var ssnMessage = "";
+                //if (document.getElementById("QHSE_name").value == "") {
+                //    ssnMessage = $('#QHSE_name-message');
+                //    ssnMessage.show();
+                //    //validflg = false;
+                //}
+                //else {
+                //    ssnMessage = $('#QHSE_name-message');
+                //    ssnMessage.hide();
+                //}
+                if (document.getElementById("Activity_name").value == "") {
+                    ssnMessage = $('#Activity_name-message');
+                    ssnMessage.show();
+                    validflg = false;
+                }
+                else {
+                    ssnMessage = $('#Activity_name-message');
+                    ssnMessage.hide();
+                }
+                if (document.getElementById("Planned_date").value == "") {
+                    ssnMessage = $('#Planned_date-message');
+                    ssnMessage.show();
+                    validflg = false;
+                }
+                else {
+                    ssnMessage = $('#Planned_date-message');
+                    ssnMessage.hide();
+                }
+                if (document.getElementById("Target_date").value == "") {
+                    ssnMessage = $('#Target_date-message');
+                    ssnMessage.show();
+                    validflg = false;
+                }
+                else {
+                    ssnMessage = $('#Target_date-message');
+                    ssnMessage.hide();
+                }
+                //if (document.getElementById("DeptId").value == "") {
+                //    ssnMessage = $('#DeptId-message');
+                //    ssnMessage.show();
+                //    validflg = false;
+                //}
+                //else {
+                //    ssnMessage = $('#DeptId-message');
+                //    ssnMessage.hide();
+                //}
+                if (document.getElementById("Person_responsible").value == "") {
+                    ssnMessage = $('#Person_responsible-message');
+                    ssnMessage.show();
+                    validflg = false;
+                }
+                else {
+                    ssnMessage = $('#Person_responsible-message');
+                    ssnMessage.hide();
+                }
+                return validflg;
+            }
+
+            function AddPlanner() {
+
+                if (Validation() == true) {
+
+
+                    var cnt = document.getElementById("itemcnt").value;
+
+                    document.getElementById("itemcnt").value = cnt;
+                    // Find a <table> element with id="myTable":
+                    var table = document.getElementById("team-list");
+
+
+                    // Create an empty <tr> element and add it to the 1st position of the table:
+                    var row = table.insertRow();
+
+                    // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                    var cell0 = row.insertCell(0);
+                    var cell1 = row.insertCell(1);
+                    var cell2 = row.insertCell(2);
+                    var cell3 = row.insertCell(3);
+                    var cell4 = row.insertCell(4);
+                    var cell5 = row.insertCell(5);
+                    var cell6 = row.insertCell(6);
+                    var cell7 = row.insertCell(7);
+                    //var cell8 = row.insertCell(8);
+
+                    //var QHSE_name = $('#QHSE_name').val();
+                    //var sQHSE_name = document.getElementById("QHSE_name");
+                    //var QHSE_nameText = [];
+                    //for (var i = 0; i < sQHSE_name.length; i++) {
+                    //    if (sQHSE_name.options[i].selected) QHSE_nameText.push(sQHSE_name.options[i].text);
+                    //}
+
+                    var Activity_name = $('#Activity_name').val();
+                    var Planned_date = $('#Planned_date').val();
+                    var Target_date = $('#Target_date').val();
+                    var Remarks = $('#Remarks').val();
+
+
+                    var Person_responsible = $('#Person_responsible').val();
+                    var sPerson_responsible = document.getElementById("Person_responsible");
+                    var Person_responsibleText = [];
+                    for (var i = 0; i < sPerson_responsible.length; i++) {
+                        if (sPerson_responsible.options[i].selected) Person_responsibleText.push(sPerson_responsible.options[i].text);
+                    }
+
+                    var NotificationPeriod = $('#NotificationPeriod').val();
+                    var sNotificationPeriod = document.getElementById("NotificationPeriod");
+                    var sNotificationPeriodText = sNotificationPeriod.options[sNotificationPeriod.selectedIndex].text;
+
+                    var NotificationValue = $('#NotificationValue').val();
+
+                    cell0.innerHTML = " <img src='@Url.Content("~/images/cancel.png")' onclick='deleteRow(this)' style='cursor:pointer; padding-right: 5px;'/>";
+                    //cell1.innerHTML = "<input type='hidden' id='QHSE_name" + cnt + "' name='QHSE_name" + cnt + "' value='" + QHSE_name + "'>" + QHSE_nameText;
+                    cell1.innerHTML = "<input type='hidden' id='Activity_name" + cnt + "' name='Activity_name" + cnt + "' value='" + Activity_name + "'>" + Activity_name;
+                    cell2.innerHTML = "<input type='hidden' id='Planned_date" + cnt + "' name='Planned_date" + cnt + "' value='" + Planned_date + "'>" + Planned_date;
+                    cell3.innerHTML = "<input type='hidden' id='Target_date" + cnt + "' name='Target_date" + cnt + "' value='" + Target_date + "'>" + Target_date;
+                    cell4.innerHTML = "<input type='hidden' id='Person_responsible" + cnt + "' name='Person_responsible" + cnt + "' value='" + Person_responsible + "'>" + Person_responsibleText;
+                    cell5.innerHTML = "<input type='hidden' id='Remarks" + cnt + "' name='Remarks" + cnt + "' value='" + Remarks + "'>" + Remarks;
+                    cell6.innerHTML = "<input type='hidden' id='NotificationPeriod" + cnt + "' name='NotificationPeriod" + cnt + "' value='" + NotificationPeriod + "'>" + sNotificationPeriodText;
+                    cell7.innerHTML = "<input type='hidden' id='NotificationValue" + cnt + "' name='NotificationValue" + cnt + "' value='" + NotificationValue + "'>" + NotificationValue;
+
+                    cnt++;
+                    document.getElementById("itemcnt").value = cnt;
+
+                    document.getElementById("btnCreate").classList.remove(hideClass);
+                    document.getElementById("btnCreate").classList.add(showClass);
+                    document.getElementById("hidden card").classList.remove(hideClass);
+                    document.getElementById("hidden card").classList.add(showClass);
+                    ResetControl();
+                }
+            }
+            function deleteRow(btn) {
+                var row = btn.parentNode.parentNode;
+                row.parentNode.removeChild(row);
+                var cnt = document.getElementById("itemcnt").value;
+                cnt--;
+
+                document.getElementById("itemcnt").value = cnt;
+                if (cnt == "0") {
+
+                    document.getElementById("btnCreate").classList.add(hideClass);
+                    document.getElementById("btnCreate").classList.remove(showClass);
+                    document.getElementById("hidden card").classList.remove(showClass);
+                    document.getElementById("hidden card").classList.add(hideClass);
+                }
+
+            }
+            function ResetControl() {
+                //document.getElementById("QHSE_name").selectedIndex = "0";
+                document.getElementById("Activity_name").value = "";
+                document.getElementById("Planned_date").value = "";
+                document.getElementById("Target_date").value = "";
+                $('#Person_responsible').val(null).trigger('change');
+                $('#Remarks').val(''); //clear input value
+
+                document.getElementById("NotificationPeriod").selectedIndex = "0";
+                $('#NotificationPeriod').trigger('change');
+                document.getElementById("NotificationValue").value = "0";
+
+                //var ssnMessage = $('#QHSE_name-message');
+                //ssnMessage.hide();
+                ssnMessage = $('#Activity_name-message');
+                ssnMessage.hide();
+                ssnMessage = $('#Planned_date-message');
+                ssnMessage.hide();
+                ssnMessage = $('#Target_date-message');
+                ssnMessage.hide();
+                ssnMessage = $('#DeptId-message');
+                ssnMessage.hide();
+                ssnMessage = $('#Person_responsible-message');
+                ssnMessage.hide();
+
+            }
+
+
+            //$(function () {
+            //    //$("#QHSE_name").chosen();
+            //    $("#Person_responsible").chosen();
+            //    $('#Planned_date').datepicker({
+            //        dateFormat: "dd/mm/yy",
+            //        buttonImageOnly: true,
+            //        buttonImage: '../Images/Calender.png',
+            //        showOn: 'both',
+            //        changeMonth: true,
+            //        changeYear: true,
+            //        gotoCurrent: false,
+            //       // setDate : "0"
+            //    });
+            //    $('#Planned_date').datepicker('setDate', 'today');
+
+            //    $('#Target_date').datepicker({
+            //        dateFormat: "dd/mm/yy",
+            //        buttonImageOnly: true,
+            //        buttonImage: '../Images/Calender.png',
+            //        showOn: 'both',
+            //        changeMonth: true,
+            //        changeYear: true,
+            //        gotoCurrent: true,
+            //        onClose: function () {
+            //            var dt1 = $('#Planned_date').datepicker('getDate');
+            //            var dt2 = $('#Target_date').datepicker('getDate');
+            //            if (dt1 > dt2) {
+            //                jAlert("Target date should not be lesser than planned date");
+            //                $('#Target_date').val("");
+            //            }
+            //        }
+            //    });
+
+
+            //});
+
+
+            function checkDate() {
+
+
+                var dt2 = document.getElementById("Target_date").value;
+                var dt1 = document.getElementById("Planned_date").value;
+
+                if (new Date(dt1).getTime() > new Date(dt2).getTime()) {
+
+                    bootbox.alert({
+                        title: 'Target Date',
+                        message: 'Target date should not be lesser than the planned date.'
+                    });
+                    $('#Target_date').val("");
+                }
+            }
+
+
+            function FileFormatValidation(file) {
+                var ext = file.value.split(".").pop().toLowerCase();
+                if ($.inArray(ext, ["pdf", "doc", "docx"]) == -1) {
+                    file.value = "";
+                    bootbox.alert({
+                        title: 'File type',
+                        message: 'Invalid file format, please upload only pdf format.'
+                    });
+                }
+            }
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

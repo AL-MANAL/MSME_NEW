@@ -407,10 +407,10 @@ namespace ISOStd.Models
                
                 string sBranch = objGlobalData.GetCurrentUserSession().division;                
 
-                if (objCustomerCompliantModels.divisionId != "" && objCustomerCompliantModels.divisionId != sBranch)
-                {
-                    sBranch = sBranch + "," + objCustomerCompliantModels.divisionId;
-                }                
+                //if (objCustomerCompliantModels.divisionId != "" && objCustomerCompliantModels.divisionId != sBranch)
+                //{
+                //    sBranch = sBranch + "," + objCustomerCompliantModels.divisionId;
+                //}                
 
                 string sReceivedDate = objCustomerCompliantModels.ReceivedDate.ToString("yyyy-MM-dd HH':'mm':'ss");
                 string sregistered_on = objCustomerCompliantModels.registered_on.ToString("yyyy-MM-dd HH':'mm':'ss");

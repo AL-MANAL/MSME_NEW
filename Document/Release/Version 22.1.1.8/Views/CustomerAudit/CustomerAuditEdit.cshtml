@@ -1,0 +1,725 @@
+﻿@model ISOStd.Models.CustomerAuditModels
+@using System.Data;
+
+@{
+    ViewBag.Title = "CustomerAuditEdit";
+    DataSet dsFindingsDetails = ViewBag.FindingsDetails;
+    string sCustAudtTransId = "", sNCNO = "", sAuditFindingDesc = "", sCorrectionTaken = "", sProposedcorrectiveAction = "", sAction_taken_by = "",
+        sNC_status = "", sreviewed_by = "", SubmitFinding = "SubmitFinding", Save = "Save";
+    DateTime dtCorrectionDate = new DateTime();
+    DateTime dtCorrectiveActionDate = new DateTime();
+    ISOStd.Models.clsGlobal objGlobaldata = new ISOStd.Models.clsGlobal();
+
+    if (dsFindingsDetails != null && dsFindingsDetails.Tables.Count > 0 && dsFindingsDetails.Tables[0].Rows.Count > 0)
+    {
+        sCustAudtTransId = dsFindingsDetails.Tables[0].Rows[0]["CustAudtTransId"].ToString();
+        sNCNO = dsFindingsDetails.Tables[0].Rows[0]["NCNO"].ToString();
+        sAuditFindingDesc = dsFindingsDetails.Tables[0].Rows[0]["AuditFindingDesc"].ToString();
+        sCorrectionTaken = dsFindingsDetails.Tables[0].Rows[0]["CorrectionTaken"].ToString();
+        dtCorrectionDate = Convert.ToDateTime(dsFindingsDetails.Tables[0].Rows[0]["CorrectionDate"].ToString());
+        sProposedcorrectiveAction = dsFindingsDetails.Tables[0].Rows[0]["ProposedcorrectiveAction"].ToString();
+        dtCorrectiveActionDate = Convert.ToDateTime(dsFindingsDetails.Tables[0].Rows[0]["CorrectiveActionDate"].ToString());
+        sAction_taken_by = dsFindingsDetails.Tables[0].Rows[0]["Action_taken_by"].ToString();
+        sreviewed_by = dsFindingsDetails.Tables[0].Rows[0]["reviewed_by"].ToString();
+        sNC_status = objGlobaldata.GetAuditStatusNameById(dsFindingsDetails.Tables[0].Rows[0]["NC_status"].ToString());
+    }
+}
+
+@section featured {
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+
+
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("CustomerAuditList", "CustomerAudit", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Customer Audit Details</span>
+                    </a>
+                    <span class="breadcrumb-item active">Update Customer Audit Details </span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+}
+
+@using (Html.BeginForm("CustomerAuditEdit", "CustomerAudit", FormMethod.Post, new { id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Update Customer Audit Details</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <fieldset class="border p-2">
+                        <legend class="font-weight-semibold"><i class="icon-file-text mr-2"></i> Audit details</legend>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.branch)<text style="color:red;">*</text>
+
+                            <select class="form-control select-fixed-multiple" multiple="multiple" data-fouc id="branch" name="branch" onchange="GetDeptList()">
+                                @*<option value='' hidden>Select</option>*@
+                                @if (ViewBag.Branch != null)
+                                {
+                                    foreach (var data in ViewBag.Branch)
+                                    {
+                                        if (Array.IndexOf(Model.branch.ToString().Split(','), data.Value) >= 0)
+                                        {
+                                            <option value='@data.Value' selected>@data.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@data.Value'>@data.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Department)<text style="color:red;">*</text>
+
+                            <select class="form-control select-fixed-multiple" data-fouc id="Department" name="Department" multiple="multiple" required>
+                                @if (ViewBag.Department != null)
+                                {
+                                    foreach (var item in ViewBag.Department)
+                                    {
+                                        if (Array.IndexOf(Model.Department.ToString().Split(','), item.Value) >= 0)
+                                        {
+                                            <option value='@item.Value' selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Location)<text style="color:red;">*</text>
+                            <select class="form-control select-fixed-multiple" data-fouc id="Location" name="Location" multiple="multiple" required>
+                                @if (ViewBag.Location != null)
+                                {
+                                    foreach (var item in ViewBag.Location)
+                                    {
+                                        if (Array.IndexOf(Model.Location.ToString().Split(','), item.Value) >= 0)
+                                        {
+                                            <option value='@item.Value' selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.AuditNum)<text style="color:red;">*</text>
+
+                            @Html.EditorFor(model => model.AuditNum, new { htmlAttributes = new { @required = "required", @class = "form-control" } })
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.CustomerName)<text style="color:red;">*</text>
+
+                            <select class="form-control select-search select2-hidden-accessible" id="CustomerName" name="CustomerName" required>
+                                @if (ViewBag.CustList != null)
+                                {
+                                    foreach (var data in ViewBag.CustList)
+                                    {
+                                        if (data.Text == @Model.CustomerName)
+                                        {
+                                            <option value='@data.Value' selected>@data.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@data.Value'>@data.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                            @Html.ValidationMessageFor(model => model.CustomerName)
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Customer_Audit_Team)<text style="color:red;">*</text>
+
+                            @Html.EditorFor(model => model.Customer_Audit_Team, new { htmlAttributes = new { @required = "required", @class = "form-control" } })
+                        </div>
+                        <div class="form-group">
+                            Audit Date<text style="color:red;">*</text>
+
+                            <input class="form-control" type="date" id="AuditDate" name="AuditDate" value="@Model.AuditDate.ToString("yyyy-MM-dd")" required />
+                        </div>
+                        <span class="form-text text-muted"><code>(Add atleast a Finding details to Create Customer Audit Details)</code></span>
+
+                    </fieldset>
+
+
+                    <div class="p-5">
+
+                    </div>
+                    <div class="card-footer bg-transparent d-flex justify-content-between align-items-center">
+                        @Html.ActionLink("Back to List", "CustomerAuditList", "CustomerAudit", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+                        <input class="btn bg-indigo-400" type="submit" id="SubmitAudit" name="button" value="Update" onclick="ProgressIconFunction('#form1')" />
+                    </div>
+
+
+                </div>
+                <div class="col-md-6 border-dark bg-dark-alpha border p-2 text-dark">
+                    <fieldset class="border p-2">
+                        <legend class="font-weight-semibold"><i class="icon-newspaper2"></i> Finding details</legend>
+                        <div class="form-group">
+
+                            <input type="hidden" id="CustAudtTransId" name="CustAudtTransId" value="@sCustAudtTransId" />
+
+
+                            @Html.LabelFor(model => model.NCNo)<text style="color:red;">*</text>
+
+                            <input class="form-control" type="text" id="NCNo" name="NCNo" value="@sNCNO" />
+                            <span class="field-validation-error"><span id="NCNo-message" style="display: none;">NCR No. field is required.</span></span>
+                            @Html.ValidationMessageFor(model => model.NCNo)
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.AuditFindingDesc)<text style="color:red;">*</text>
+
+                            <input class="form-control" type="text" id="AuditFindingDesc" name="AuditFindingDesc" value="@sAuditFindingDesc" />
+                            <span class="field-validation-error"><span id="AuditFindingDesc-message" style="display: none;">Audit Finding field is required.</span></span>
+                            @Html.ValidationMessageFor(model => model.AuditFindingDesc)
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.CorrectionTaken)<text style="color:red;">*</text>
+
+                            <input class="form-control" type="text" id="CorrectionTaken" name="CorrectionTaken" value="@sCorrectionTaken" />
+                            <span class="field-validation-error"><span id="CorrectionTaken-message" style="display: none;">Correction Taken field is required.</span></span>
+                            @Html.ValidationMessageFor(model => model.CorrectionTaken)
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.CorrectionDate)<text style="color:red;">*</text>
+
+                            <input class="form-control" type="date" id="CorrectionDate" name="CorrectionDate" onchange="checkDate()" value='@dtCorrectionDate.ToString("yyyy-MM-dd")'  />
+                            <span class="field-validation-error"><span id="CorrectionDate-message" style="display: none;">Correction Date field is required.</span></span>
+                            @Html.ValidationMessageFor(model => model.CorrectionDate)
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.ProposedcorrectiveAction)<text style="color:red;">*</text>
+
+                            <input class="form-control" type="text" id="ProposedcorrectiveAction" name="ProposedcorrectiveAction" value="@sProposedcorrectiveAction" />
+                            <span class="field-validation-error"><span id="ProposedcorrectiveAction-message" style="display: none;">Proposed Corrective Action field is required.</span></span>
+                            @Html.ValidationMessageFor(model => model.ProposedcorrectiveAction)
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.CorrectiveActionDate)<text style="color:red;">*</text>
+
+                            <input class="form-control" type="date" id="CorrectiveActionDate" name="CorrectiveActionDate" onchange="checkDate2()" value='@dtCorrectiveActionDate.ToString("yyyy-MM-dd")'  />
+                            <span class="field-validation-error"><span id="CorrectiveActionDate-message" style="display: none;">Corrective Action Date field is required.</span></span>
+                            @Html.ValidationMessageFor(model => model.CorrectiveActionDate)
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Action_taken_by)<text style="color:red;">*</text>
+
+                            <input class="form-control" type="text" id="Action_taken_by" name="Action_taken_by" value="@sAction_taken_by" />
+                            <span class="field-validation-error"><span id="Action_taken_by-message" style="display: none;">Action Taken By field is required.</span></span>
+                            @Html.ValidationMessageFor(model => model.Action_taken_by)
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.NC_status)
+
+                            <select class="form-control select-search select2-hidden-accessible" id="NC_status" name="NC_status" required>
+                                <option value=''>Select</option>
+                                @if (ViewBag.NC_status != null)
+                                {
+                                    foreach (var data in ViewBag.NC_status)
+                                    {
+                                        if (data.Text == sNC_status)
+                                        {
+                                            <option value='@data.Value' selected>@data.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@data.Value'>@data.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                            @Html.ValidationMessageFor(model => model.NC_status)
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.reviewed_by)<text style="color:red;">*</text>
+
+                            <input class="form-control" type="text" id="reviewed_by" name="reviewed_by" value="@sreviewed_by" />
+                            <span class="field-validation-error"><span id="reviewed_by-message" style="display: none;">Reviewed By field is required.</span></span>
+                            @Html.ValidationMessageFor(model => model.reviewed_by)
+                        </div>
+
+
+                    </fieldset>
+
+                    <div class="card-footer bg-transparent d-flex justify-content-between align-items-center">
+
+                        @if (dsFindingsDetails != null && dsFindingsDetails.Tables.Count > 0 && dsFindingsDetails.Tables[0].Rows.Count > 0)
+                        {
+                            <input type="submit" id="@SubmitFinding" name="button" class="btn bg-indigo-400" value="UpdatePlan" onclick="return Validation()" />
+                            <input type="submit" id="@Save" name="button" value="Save" class="btn bg-indigo-400" onclick="return Validation()" style="display: none;" />
+                        }
+                        else
+                        {
+                            <input type="submit" id="@SubmitFinding" name="button" class="btn bg-indigo-400" value="UpdatePlan" onclick="return Validation()" style="display: none;" />
+                            <input type="submit" id="@Save" name="button" value="Save" class="btn bg-indigo-400" onclick="return Validation()" />
+                        }
+
+                        <input type="button" class="btn bg-indigo-400" value="Add New" onclick="AddNewItem()" />
+                    </div>
+
+
+
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+
+
+    if (dsFindingsDetails != null && dsFindingsDetails.Tables.Count > 0 && dsFindingsDetails.Tables[0].Rows.Count > 0)
+    {
+    <div class="card is-visible">
+        <div class="card-header header-elements-inline">
+            <h5 class="card-title">Findings Details</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+
+
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body">
+            <input type="hidden" id="itemcnt" name="itemcnt" value="0" />
+            <div class="card card-table table-responsive shadow-0 mb-0">
+                <table class="table" id="team-list">
+                    <tr class="bg-blue">
+                    
+                        <th>Action</th>
+                        <th>NCR No.</th>
+                        <th>Audit Finding</th>
+                        <th>Correction Taken</th>
+                        <th>Correction Date</th>
+                        <th>Proposed Corrective Action</th>
+                        <th>Corrective Action Date</th>
+                        <th>Action Taken By</th>
+                        <th>NCR Status</th>
+                        <th>Reviewed By</th>
+                    </tr>
+                    @for (int i = 0; i < dsFindingsDetails.Tables[0].Rows.Count; i++)
+                    {
+                        <tr id="@i">
+                            <td>
+                               
+
+                                <a class="icon-pencil" onclick="EditItem(@dsFindingsDetails.Tables[0].Rows[i]["CustAudtTransId"].ToString(), @i)" title="Edit Finding details">
+                                </a>
+                            </td>
+                            <td>
+                                @dsFindingsDetails.Tables[0].Rows[i]["NCNo"].ToString()
+                            </td>
+                            <td>
+                                @dsFindingsDetails.Tables[0].Rows[i]["AuditFindingDesc"].ToString()
+                            </td>
+                            <td>
+                                @dsFindingsDetails.Tables[0].Rows[i]["CorrectionTaken"].ToString()
+                            </td>
+                            <td>
+                                @Convert.ToDateTime(dsFindingsDetails.Tables[0].Rows[i]["CorrectionDate"].ToString()).ToString("dd/MM/yyyy")
+                            </td>
+                            <td>
+                                @dsFindingsDetails.Tables[0].Rows[i]["ProposedcorrectiveAction"].ToString()
+                            </td>
+                            <td>
+                                @Convert.ToDateTime(dsFindingsDetails.Tables[0].Rows[i]["CorrectiveActionDate"].ToString()).ToString("dd/MM/yyyy")
+                            </td>
+                            <td>
+                                @dsFindingsDetails.Tables[0].Rows[i]["Action_taken_by"].ToString()
+                            </td>
+                            <td>
+                                @objGlobaldata.GetAuditStatusNameById(dsFindingsDetails.Tables[0].Rows[i]["NC_status"].ToString())
+                            </td>
+                            <td>
+                                @dsFindingsDetails.Tables[0].Rows[i]["reviewed_by"].ToString()
+                            </td>
+
+                        </tr>
+                    }
+                </table>
+            </div>
+        </div>
+    </div>
+    }
+
+}
+
+
+
+
+                @section Scripts {
+                    @Scripts.Render("~/bundles/jqueryval")
+                    <script type="text/javascript">
+              $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+    });
+    //zzz----
+        function AddNewItem() {
+            document.getElementById("SubmitFinding").style.display = "None";
+            document.getElementById("Save").style.display = "";
+            ResetControl();
+        }
+
+        function Validation() {
+            var validflg = true;
+            var ssnMessage = "";
+            if (document.getElementById("NCNo").value == "") {
+                ssnMessage = $('#NCNo-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#NCNo-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("AuditFindingDesc").value == "") {
+                ssnMessage = $('#AuditFindingDesc-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#AuditFindingDesc-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("CorrectionTaken").value == "") {
+                ssnMessage = $('#CorrectionTaken-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#CorrectionTaken-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("CorrectionDate").value == "") {
+                ssnMessage = $('#CorrectionDate-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#CorrectionDate-message');
+                ssnMessage.hide();
+            }
+
+            if (document.getElementById("ProposedcorrectiveAction").value == "") {
+                ssnMessage = $('#ProposedcorrectiveAction-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#ProposedcorrectiveAction-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("CorrectiveActionDate").value == "") {
+                ssnMessage = $('#CorrectiveActionDate-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#CorrectiveActionDate-message');
+                ssnMessage.hide();
+            }
+
+
+            if (document.getElementById("Action_taken_by").value == "") {
+                ssnMessage = $('#Action_taken_by-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#Action_taken_by-message');
+                ssnMessage.hide();
+            }
+
+            if (document.getElementById("reviewed_by").value == "") {
+                ssnMessage = $('#reviewed_by-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#reviewed_by-message');
+                ssnMessage.hide();
+            }
+            return validflg;
+        }
+        function AddAudit() {
+
+            if (Validation() == 1) {
+
+              
+                var cnt = document.getElementById("itemcnt").value;
+
+                document.getElementById("itemcnt").value = cnt;
+                // Find a <table> element with id="myTable":
+                var table = document.getElementById("team-list");
+
+
+                // Create an empty <tr> element and add it to the 1st position of the table:
+                var row = table.insertRow();
+
+                // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                var cell0 = row.insertCell(0);
+                var cell1 = row.insertCell(1);
+                var cell2 = row.insertCell(2);
+                var cell3 = row.insertCell(3);
+                var cell4 = row.insertCell(4);
+                var cell5 = row.insertCell(5);
+                var cell6 = row.insertCell(6);
+                var cell7 = row.insertCell(7);
+                var cell8 = row.insertCell(8);
+                var cell9 = row.insertCell(9);
+
+                var NCNo = $('#NCNo').val();
+                var AuditFindingDesc = $('#AuditFindingDesc').val();
+                var CorrectionTaken = $('#CorrectionTaken').val();
+                var CorrectionDate = $('#CorrectionDate').val();
+                var ProposedcorrectiveAction = $('#ProposedcorrectiveAction').val();
+                var CorrectiveActionDate = $('#CorrectiveActionDate').val();
+                var Action_taken_by = $('#Action_taken_by').val();
+                var NC_status = $('#NC_status').val();
+                var status = document.getElementById("NC_status");
+                var Aud_status = status.options[status.selectedIndex].text;
+
+                var reviewed_by = $('#reviewed_by').val();
+
+                cell0.innerHTML = "<img src='@Url.Content("~/images/save_icon.png")' onclick='SaveItem(" + sCustomerId + "," + cnt + ")' /> <img src='@Url.Content("~/images/cancel.png")' onclick='deleteRow(this)' style='cursor:pointer; padding-right: 5px;'/>";
+                cell1.innerHTML = "<input type='hidden' id='NCNo" + cnt + "' name='NCNo" + cnt + "' value='" + NCNo + "'>" + NCNo;
+                cell2.innerHTML = "<input type='hidden' id='FindingCategory" + cnt + "' name='FindingCategory" + cnt + "' value='" + FindingCategory + "'>" + FindingCategory;
+                cell3.innerHTML = "<input type='hidden' id='CorrectionTaken" + cnt + "' name='CorrectionTaken" + cnt + "' value='" + CorrectionTaken + "'>" + CorrectionTaken;
+                cell4.innerHTML = "<input type='hidden' id='CorrectionDate" + cnt + "' name='CorrectionDate" + cnt + "' value='" + CorrectionDate + "'>" + CorrectionDate;
+                cell5.innerHTML = "<input type='hidden' id='ProposedcorrectiveAction" + cnt + "' name='ProposedcorrectiveAction" + cnt + "' value='" + ProposedcorrectiveAction + "'>" + ProposedcorrectiveAction;
+                cell6.innerHTML = "<input type='hidden' id='CorrectiveActionDate" + cnt + "' name='CorrectiveActionDate" + cnt + "' value='" + CorrectiveActionDate + "'>" + CorrectiveActionDate;
+                cell7.innerHTML = "<input type='hidden' id='Action_taken_by" + cnt + "' name='Action_taken_by" + cnt + "' value='" + Action_taken_by + "'>" + Action_taken_by;
+                cell8.innerHTML = "<input type='hidden' id='NC_status" + cnt + "' name='NC_status" + cnt + "' value='" + NC_status + "'>" + Aud_status;
+                cell9.innerHTML = "<input type='hidden' id='reviewed_by" + cnt + "' name='reviewed_by" + cnt + "' value='" + reviewed_by + "'>" + reviewed_by;
+                cnt++;
+                document.getElementById("itemcnt").value = cnt;
+                ResetControl();
+            }
+        }
+
+        function ResetControl() {
+            document.getElementById("NCNo").value = "";
+            document.getElementById("AuditFindingDesc").value = "";
+            document.getElementById("CorrectionTaken").value = "";
+            document.getElementById("CorrectionDate").value = "";
+            document.getElementById("ProposedcorrectiveAction").value = "";
+            document.getElementById("CorrectiveActionDate").value = "";
+            document.getElementById("Action_taken_by").value = "";
+            $('#NC_status').get(0).selectedIndex = 0;
+            $('#NC_status').trigger('change');
+            document.getElementById("reviewed_by").value = "";
+
+            var ssnMessage = $('#NCNo-message');
+            ssnMessage.hide();
+            ssnMessage = $('#AuditFindingDesc-message');
+            ssnMessage.hide();
+            ssnMessage = $('#CorrectionTaken-message');
+            ssnMessage.hide();
+            ssnMessage = $('#CorrectionDate-message');
+            ssnMessage.hide();
+            ssnMessage = $('#ProposedcorrectiveAction-message');
+            ssnMessage.hide();
+            ssnMessage = $('#CorrectiveActionDate-message');
+            ssnMessage.hide();
+            ssnMessage = $('#Action_taken_by-message');
+            ssnMessage.hide();
+            ssnMessage = $('#reviewed_by-message');
+            ssnMessage.hide();
+        }
+
+                        function reformatDate(dateStr) {
+                           
+                            dArr = dateStr.split("/");  // ex input " 2018/01/10"
+                            return dArr[2] + "-" + dArr[1] + "-" + dArr[0]; //ex out: 2010-01-18
+                        }
+
+
+        function EditItem(CustAuditId, Id) {
+            ResetControl();
+            Id++;
+            var table = document.getElementById("team-list");
+            document.getElementById("CustAudtTransId").value = CustAuditId;
+            document.getElementById("NCNo").value = table.rows[Id].cells[1].innerText;
+            document.getElementById("AuditFindingDesc").value = table.rows[Id].cells[2].innerText;
+            document.getElementById("CorrectionTaken").value = table.rows[Id].cells[3].innerText;
+            document.getElementById("CorrectionDate").value = reformatDate(table.rows[Id].cells[4].innerText);
+            document.getElementById("ProposedcorrectiveAction").value = table.rows[Id].cells[5].innerText;
+            document.getElementById("CorrectiveActionDate").value = reformatDate(table.rows[Id].cells[6].innerText);
+            document.getElementById("Action_taken_by").value = table.rows[Id].cells[7].innerText;
+            document.getElementById('NC_status').value = table.rows[Id].cells[8].innerText;
+            document.getElementById("reviewed_by").value = table.rows[Id].cells[9].innerText;
+
+            document.getElementById("SubmitFinding").style.display = "";
+            document.getElementById("Save").style.display = "none";
+
+        }
+
+
+      
+                        function checkDate() {
+
+
+                            var dt2 = document.getElementById("CorrectionDate").value;
+                            var dt1 = document.getElementById("AuditDate").value;
+
+                            if (new Date(dt2).getTime() < new Date(dt1).getTime()) {
+
+                                bootbox.alert({
+                                    title: 'Correction date',
+                                    message: 'Correction date cannot be before Audit date.'
+                                });
+                                $('#CorrectionDate').val("");
+                            }
+                        }
+
+
+                        function checkDate2() {
+
+
+                            var dt2 = document.getElementById("CorrectiveActionDate").value;
+                            var dt1 = document.getElementById("AuditDate").value;
+
+                            if (new Date(dt1).getTime() > new Date(dt2).getTime()) {
+
+                                bootbox.alert({
+                                    title: 'Corrective Action date',
+                                    message: 'Corrective Action date cannot be before Audit date.'
+                                });
+                                $('#CorrectiveActionDate').val("");
+                            }
+                        }
+                          function GetDeptList() {
+            var selectedValues = [];
+            $("#branch :selected").each(function () {
+                selectedValues.push($(this).val());
+            });  
+                jQuery.ajax({
+                    url: '@Url.Action("FunGetAllDeptList", "EmployeeDetails")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'branch': selectedValues },
+                    success: function (result) {
+                        GetLocList(selectedValues);
+                        $("#Department").children('option').remove();
+                        $("#Department").trigger('change');
+                        if (result != null && result.length > 0) {
+                            $.each(result, function (index, item) {
+                                $("#Department").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                                $("#Department").trigger('change');
+                            });
+                            return;
+                        }
+                        //else {
+                        //    bootbox.alert({
+                        //        title: 'Department List',
+                        //        message: 'No Department exists.'
+                        //    });
+                        //}
+                    }
+                });          
+        }
+
+
+        function GetLocList(selectedValues) {                   
+            jQuery.ajax({
+                url: '@Url.Action("FunGetAllLocList", "EmployeeDetails")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'branch': selectedValues },
+                success: function (result) {
+                    $("#Location").children('option').remove();
+                    $("#Location").trigger('change');
+                    if (result != null && result.length > 0) {
+                        $.each(result, function (index, item) {
+                            $("#Location").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                            $("#Location").trigger('change');
+                        });
+                        return;
+                    }
+                    //else {
+                    //    bootbox.alert({
+                    //        title: 'Location List',
+                    //        message: 'No Location exists.'
+                    //    });
+                    //}
+                }
+            });       
+        }
+
+                    </script>
+                   
+                }

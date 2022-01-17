@@ -1,0 +1,760 @@
+﻿@model ISOStd.Models.MeetingModels
+@using System.Data;
+
+
+@{
+    ViewBag.Title = "AddMeeting";
+    ISOStd.Models.MeetingModelsList AttendList = new ISOStd.Models.MeetingModelsList();
+    DataSet dsAgenda = new DataSet();
+
+    if (ViewBag.AgendaList != null)
+    {
+        dsAgenda = ViewBag.AgendaList;
+    }
+    int icnt = 0;
+    if (ViewBag.objList != null)
+    {
+        AttendList = ViewBag.objList;
+        icnt = AttendList.MeetingMList.Count;
+    }
+}
+
+
+
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("MeetingList", "Meeting", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Meetings</span>
+                    </a>
+                    <span class="breadcrumb-item active">Update Meetings Schedule</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+}
+
+
+@using (Html.BeginForm("MeetingScheduleEdit", "Meeting", FormMethod.Post, new { id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+
+    <input type="hidden" id="meeting_id" name="meeting_id" value="@Model.meeting_id" />
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Update Meetings Schedule </h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+
+                <table class="table table-lg">
+    <tr class="row">
+        <td class="col" colspan="8" style="background-color: #4cc4dd; color: #fff; font-weight: bold;">MOM Details</td>
+    </tr>
+    <tr class="row">
+        <td class="col-xs-3 col-md-2">
+
+            @Html.LabelFor(model => model.meeting_ref)
+
+        </td>
+        <td class="col">
+
+            @Html.DisplayFor(model => model.meeting_ref)
+            <input type="hidden" id="meeting_ref" name="meeting_ref" value="@Model.meeting_ref" />
+
+        </td>
+        <td class="col-xs-3 col-md-2">
+            @Html.LabelFor(model => model.meeting_date)
+
+        </td>
+        <td class="col-xs-3 col-md-3">
+            @if (Model.meeting_date > Convert.ToDateTime("01/01/0001"))
+            {
+                <input class="form-control" type="date" id="meeting_date" name="meeting_date" value="@Model.meeting_date.ToString("yyyy-MM-dd")"
+                       required="required" />
+            }
+            else
+            {
+                <input type="date" id="meeting_date" name="meeting_date" required="required" />
+            }
+            <p>
+                Hr: <select class="select-fixed-single" data-fouc name="PlanTimeInHour" id="PlanTimeInHour">
+                    @if (ViewBag.PlanTimeInHour != null)
+                    {
+                        foreach (var data in ViewBag.PlanTimeInHour)
+                        {
+                            if (Convert.ToInt16(Model.meeting_date.ToString("HH")) == Convert.ToInt16(data))
+                            {
+                                <option value='@data' selected>@data</option>
+                            }
+                            else
+                            {
+                                <option value='@data'>@data</option>
+                            }
+                        }
+                    }
+                </select>
+                Min:
+                <select class="select-fixed-single" data-fouc name="PlanTimeInMin" id="PlanTimeInMin">
+                    @if (ViewBag.PlanTimeInMin != null)
+                    {
+                        foreach (var data in ViewBag.PlanTimeInMin)
+                        {
+                            if (Convert.ToInt16(Model.meeting_date.ToString("mm")) == Convert.ToInt16(data))
+                            {
+                                <option value='@data' selected>@data</option>
+                            }
+                            else
+                            {
+                                <option value='@data'>@data</option>
+                            }
+                        }
+                    }
+                </select>
+            </p>
+
+        </td>
+    </tr>
+    <tr class="row">
+        <td class="col-xs-3 col-md-2">
+
+            @Html.LabelFor(model => model.AttendeesUser)<text style="color:red;">*</text>
+
+        </td>
+        <td class="col">
+
+            <select class="form-control select-fixed-multiple" data-fouc id="AttendeesUser" name="AttendeesUser" required="required" multiple>
+                @if (ViewBag.EmpLists != null)
+                {
+                    foreach (var item in ViewBag.EmpLists)
+                    {
+                        if (Array.IndexOf(Model.AttendeesUser.ToString().Split(','), item.Value) >= 0)
+                        {
+                            <option value='@item.Value' selected>@item.Text</option>
+                        }
+                        else
+                        {
+                            <option value='@item.Value'>@item.Text</option>
+                        }
+                    }
+                }
+            </select>
+
+
+        </td>
+        <td class="col-xs-3 col-md-2">
+
+            @Html.LabelFor(model => model.Venue)
+
+        </td>
+        <td class="col">
+
+            @Html.TextAreaFor(model => model.Venue, new { @maxlength = "2000", @placeholder = "Textarea", @style = "overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;", @rows = "4", @cols = "4", @class = "form-control elastic maxlength-badge-position" })
+
+        </td>
+    </tr>
+    <tr class="row">
+        <td class="col-xs-3 col-md-2">
+            @Html.LabelFor(model => model.ext_attendees)
+        </td>
+        <td class="col">
+
+            @if (ViewBag.YesNo != null)
+            {
+                foreach (var item in ViewBag.YesNo)
+                {
+                    if (item == Model.ext_attendees)
+                    {
+                        <input type="radio" name="ext_attendees" id="ext_attendees" data-name='@item' value='@item' onclick="setType()" checked />@item
+                    }
+                    else
+                    {
+                        <input type="radio" name="ext_attendees" id="ext_attendees" data-name='@item' value='@item' onclick="setType()" />@item
+                    }
+
+                }
+            }
+        </td>
+        @*<td class="col-xs-3 col-md-2">
+                @Html.LabelFor(model => model.ext_email)
+            </td>
+            <td class="col">
+                <input type="text" class="form-control" id="ext_email" name="ext_email" value="@Model.ext_email" />
+            </td>*@
+    </tr>
+  
+            </table>
+                <fieldset id="attendee" class="border p-2" style="display:none">
+                    <legend class="font-weight-semibold text-success">External Attendees</legend>
+                    <table class="table table-lg">
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.DisplayNameFor(model => model.company_name)<text style="color: red;">*</text>
+                            </td>
+                            <td class="col">
+                                <input type="text" class="form-control" id="company_name" name="company_name" />
+                                <span class="field-validation-error"><span id="company_name-message" style="display: none;">This field is required.</span></span>
+                                @Html.ValidationMessageFor(model => model.company_name)
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                @Html.DisplayNameFor(model => model.attendee_name)<text style="color: red;">*</text>
+                            </td>
+                            <td class="col">
+                                <input type="text" class="form-control" id="attendee_name" name="attendee_name" />
+                                <span class="field-validation-error"><span id="attendee_name-message" style="display: none;">This field is required.</span></span>
+                                @Html.ValidationMessageFor(model => model.attendee_name)
+                            </td>
+                        </tr>
+
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @Html.DisplayNameFor(model => model.designation)<text style="color: red;">*</text>
+                            </td>
+                            <td class="col">
+                                <input type="text" class="form-control" id="designation" name="company_name" />
+                                <span class="field-validation-error"><span id="designation-message" style="display: none;">This field is required.</span></span>
+                                @Html.ValidationMessageFor(model => model.designation)
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                @Html.DisplayNameFor(model => model.email_id)<text style="color: red;">*</text>
+                            </td>
+                            <td class="col">
+                                <input type="text" class="form-control" id="email_id" name="attendee_name" />
+                                <span class="field-validation-error"><span id="email_id-message" style="display: none;">This field is required.</span></span>
+                                @Html.ValidationMessageFor(model => model.email_id)
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-1">
+                                <input type="button" value="Add" class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" onclick="AddData()" />
+                            </td>
+                        </tr>
+                    </table>
+                </fieldset>
+                <br />
+                <div class="card invisible" id="hidden card1" style="display:none">
+                    <div class="card-body scrollbar-container">
+                        <input type="hidden" id="itemcnt" name="itemcnt" value="@icnt" />
+                        <div class="card card-table table-responsive shadow-0 mb-0 scrollbar">
+                            <table class="table" id="team-list1">
+                                <tr class="bg-blue">
+                                    <th>Delete</th>
+                                    <th>Company Name</th>
+                                    <th>Attendee Name</th>
+                                    <th>Designation</th>
+                                    <th>Email Id</th>
+                                </tr>
+                                @if (AttendList.MeetingMList != null && AttendList.MeetingMList.Count > 0)
+                                {
+                                    for (int index = 0; index < AttendList.MeetingMList.Count; index++)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <span class="badge badge-info" onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span>
+                                                <input type="hidden" id="meeting_id@(index)" name="meeting_id@(index)" value="@AttendList.MeetingMList[index].meeting_id" />
+                                            </td>
+
+                                            <td>
+                                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="6" class="form-control elastic maxlength-badge-position" id='company_name@(index)' name="company_name@(index)">@AttendList.MeetingMList[index].company_name</textarea>
+                                            </td>
+                                            <td>
+                                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="6" class="form-control elastic maxlength-badge-position" id='attendee_name@(index)' name="attendee_name@(index)">@AttendList.MeetingMList[index].attendee_name</textarea>
+                                            </td>
+                                            <td>
+                                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="6" class="form-control elastic maxlength-badge-position" id='designation@(index)' name="designation@(index)">@AttendList.MeetingMList[index].designation</textarea>
+                                            </td>
+                                            <td>
+                                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="6" class="form-control elastic maxlength-badge-position" id='email_id@(index)' name="email_id@(index)">@AttendList.MeetingMList[index].email_id</textarea>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <table id="tabcontent" class="table table-lg">
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+
+                            Email Notification<text style="color:red;">*</text>
+
+                        </td>
+                        <td class="col">
+                            <div class="form-group form-group-float">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="NotificationPeriod" name="NotificationPeriod">
+                                    @if (ViewBag.NotificationPeriod != null)
+                                    {
+                                        foreach (var data in ViewBag.NotificationPeriod)
+                                        {
+                                            if (data.Key == Model.NotificationPeriod)
+                                            {
+                                                <option value='@data.Key' selected>@data.Value</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@data.Key'>@data.Value</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                            </div>
+                            <div class="form-group form-group-float">
+                                <input class="form-control" type="number" id="NotificationValue" name="NotificationValue" value="@Model.NotificationValue" required />
+                                <span class="form-text text-muted"><code>(Alert on or before Target date)</code></span>
+                            </div>
+                        </td>
+
+
+                        <td class="col-xs-3 col-md-2">
+
+                            MeetingType<text style="color:red;">*</text>
+
+                        </td>
+                        <td class="col">
+
+                            <select class="form-control select-search select2-hidden-accessible" data-fouc id="meeting_type_desc" name="meeting_type_desc" required="" onchange="PopulateAgenda()">
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.MeetingType != null)
+                                {
+                                    foreach (var item in ViewBag.MeetingType)
+                                    {
+                                        if (Model.meeting_type_desc == (item.Value))
+                                        {
+                                            <option value='@item.Value' selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                            <input type="hidden" id="AgendaId" name="AgendaId" />
+
+
+                        </td>
+
+                        @*<td>
+                    <div class="editor-label">
+                        Last Meeting Ref
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-label">
+                        <div id="PreviousMeeting" style="display: none;">
+                            <input type="hidden" id="last_meeting_id" name="last_meeting_id" />
+                            <a href="#" id="last_meeting_idRefLink" target="_blank"></a>
+                        </div>
+
+                    </div>
+                </td> *@
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.remarks)
+                        </td>
+                        <td class="col">
+                            @Html.TextAreaFor(model => model.remarks, new { @maxlength = "2000", @placeholder = "Textarea", @style = "overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;", @rows = "4", @cols = "4", @class = "form-control elastic maxlength-badge-position" })
+                        </td>
+                    </tr>
+                </table>
+                <div id="dvAgendaItems">
+                    <fieldset class="border p-2">
+                        <legend id="divAgendasTitle" class="font-weight-semibold"><i class="icon-file-text ml-2 mr-2"></i> Agenda List</legend>
+                        
+
+                      
+                        @*<table id="tbl_Agenda" style="float: left; margin-top: -2px; width: 20%; padding-right: 50px;">
+            <tr style="background-color: #4cc4dd; color: #fff; font-weight: bold; font-size: 14px;">
+                <th>Name</th>
+                <th>Details</th>
+            </tr>
+          @foreach (var item in ViewBag.AgendaList)
+         {
+             string sAgendas = ViewBag.MeetingAgendas;
+             string Details = ViewBag.Agendadetails;
+         <tr>
+             <td>
+                 @if (ViewBag.MeetingAgendas != null && sAgendas.Contains(item.Text))
+                 {
+                     <input type='checkbox' id='Agendas' name='Agendas' value='@item.Value' checked required />@item.Text
+                 }
+                 else
+                 {
+                     <input type='checkbox' id='Agendas' name='Agendas' value='@item.Value' required />@item.Text
+                 }
+             </td>
+             <td>
+                 @if (ViewBag.Agendadetails != null && Details.Contains(item.Text))
+                 {
+                     <input type='text' id='Details' name='Details' value='@item.Value' readonly />@item.Text
+                 }
+                 else
+                 {
+                     <input type='text' id='Details' name='Details' value='@item.Value' readonly />@item.Text
+                 }
+             </td>
+         </tr>
+
+        }
+            </table>*@
+
+
+                        <table class="table table-lg" id="tbl_Agenda">
+                            @if (dsAgenda.Tables.Count > 0 && dsAgenda.Tables[0].Rows.Count > 0)
+                            {
+
+                                <tr class="row" style="background-color: #e5eafe; color: #0099ff; font-weight: bold;">
+                                    <th class="col">Name</th>
+                                    <th class="col">Details</th>
+                                </tr>
+
+                                for (int item = 0; item < dsAgenda.Tables[0].Rows.Count; item++)
+                                {
+
+                                    <tr class="row">
+                                        @if (ViewBag.MeetingAgendas != null && ViewBag.MeetingAgendas.Contains(dsAgenda.Tables[0].Rows[item]["Agenda_Desc"].ToString()))
+                                        {
+                                            <td class="col">
+                                                <input type="checkbox" id="Agendas"
+                                                       name="Agendas" value="@dsAgenda.Tables[0].Rows[item]["Agenda_Id"].ToString()" checked />@dsAgenda.Tables[0].Rows[item]["Agenda_Desc"].ToString()
+                                                </td>
+                                            }
+                                            else
+                                            {
+                                                <td class="col">
+                                                    <input type="checkbox" id="Agendas"
+                                                           name="Agendas" value="@dsAgenda.Tables[0].Rows[item]["Agenda_Id"].ToString()" />@dsAgenda.Tables[0].Rows[item]["Agenda_Desc"].ToString()
+                                                    </td>
+                                                }
+
+                                        <td class="col">
+                                            <input type="hidden" id="Agenda_Details"
+                                                   name="Agenda_Details" value="@dsAgenda.Tables[0].Rows[item]["Agenda_Details"].ToString()" />@dsAgenda.Tables[0].Rows[item]["Agenda_Details"].ToString()
+                                            </td>
+
+                                        </tr>
+                                    }
+                                }
+                        </table>
+                    </fieldset>
+                </div>
+            </div>
+
+
+        </div>
+
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+
+            @Html.ActionLink("Back to List", "MeetingList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+
+            <button type="submit" id="btnCreate" value="Save"  class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Save</button>
+
+            @*<input type="submit" id="btnCreate" value="Save" class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" onclick="ProgressIconFunction('#form1')" />*@
+            @*<input type="button" value="Add" class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" onclick="AddPlanner()" />*@
+        </div>
+    </div>
+        }
+
+
+
+
+        @section Scripts {
+            @Scripts.Render("~/bundles/jqueryval")
+            <script type="text/javascript">
+                  
+                          //----zzz
+    $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+      
+
+      
+
+ 
+    });
+                //zzz----
+                var showClass = 'is-visible';
+                var hideClass = 'invisible';
+
+                var radioValue = $("input[name='ext_attendees']:checked").data('name');
+                if (radioValue == "Yes") {
+                    document.getElementById("attendee").style.display = "block";
+                    document.getElementById("hidden card1").style.display = "block";
+                    document.getElementById("hidden card1").classList.remove(hideClass);
+                    document.getElementById("hidden card1").classList.add(showClass);
+                }
+                else {
+                    document.getElementById("attendee").style.display = "none";
+
+                }
+                function setType() {
+                    var radioValue = $("input[name='ext_attendees']:checked").data('name');
+                    if (radioValue == "Yes") {
+                        document.getElementById("attendee").style.display = "block";
+                    }
+                    else {
+                        document.getElementById("attendee").style.display = "none";
+
+                    }
+                }
+
+             
+                function deleteRow(btn) {
+                    var row = btn.parentNode.parentNode;
+                    row.parentNode.removeChild(row);
+                }
+                function Validation() {
+                    var validflg = true;
+                    var ssnMessage = "";
+                    if (document.getElementById("company_name").value == "") {
+                        ssnMessage = $('#company_name-message');
+                        ssnMessage.show();
+                        validflg = false;
+                    }
+                    else {
+                        ssnMessage = $('#company_name-message');
+                        ssnMessage.hide();
+                    }
+                    if (document.getElementById("attendee_name").value == "") {
+                        ssnMessage = $('#attendee_name-message');
+                        ssnMessage.show();
+                        validflg = false;
+                    }
+                    else {
+                        ssnMessage = $('#attendee_name-message');
+                        ssnMessage.hide();
+                    }
+                    if (document.getElementById("designation").value == "") {
+                        ssnMessage = $('#designation-message');
+                        ssnMessage.show();
+                        validflg = false;
+                    }
+                    else {
+                        ssnMessage = $('#designation-message');
+                        ssnMessage.hide();
+                    }
+                    if (document.getElementById("email_id").value == "") {
+                        ssnMessage = $('#email_id-message');
+                        ssnMessage.show();
+                        validflg = false;
+                    }
+                    else {
+                        ssnMessage = $('#email_id-message');
+                        ssnMessage.hide();
+                    }
+                    return validflg;
+                }
+
+                function AddData() {
+                    if (Validation() == true) {
+                        document.getElementById("hidden card1").style.display = "block";
+                        var cnt = document.getElementById("itemcnt").value;
+
+                        document.getElementById("itemcnt").value = cnt;
+                        // Find a <table> element with id="myTable":
+                        var table = document.getElementById("team-list1");
+
+
+                        // Create an empty <tr> element and add it to the 1st position of the table:
+                        var row = table.insertRow();
+
+                        // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                        var cell0 = row.insertCell(0);
+                        var cell1 = row.insertCell(1);
+                        var cell2 = row.insertCell(2);
+                        var cell3 = row.insertCell(3);
+                        var cell4 = row.insertCell(4);
+
+
+                        var company_name = $('#company_name').val();
+                        var attendee_name = $('#attendee_name').val();
+                        var designation = $('#designation').val();
+                        var email_id = $('#email_id').val();
+
+
+                        cell0.innerHTML = "<span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span>";
+                        cell1.innerHTML = "<textarea id='company_name" + cnt + "' name='company_name" + cnt + "' style='overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;' class='form-control elastic maxlength-badge-position' cols='4' rows='4' placeholder='Textarea' maxlength='2000'>" + company_name + "</textarea>";
+                        cell2.innerHTML = "<textarea id='attendee_name" + cnt + "' name='attendee_name" + cnt + "' style='overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;' class='form-control elastic maxlength-badge-position' cols='4' rows='4' placeholder='Textarea' maxlength='2000'>" + attendee_name + "</textarea>";
+                        cell3.innerHTML = "<textarea id='designation" + cnt + "' name='designation" + cnt + "' style='overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;' class='form-control elastic maxlength-badge-position' cols='4' rows='4' placeholder='Textarea' maxlength='2000'>" + designation + "</textarea>";
+                        cell4.innerHTML = "<textarea id='email_id" + cnt + "' name='email_id" + cnt + "' style='overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;' class='form-control elastic maxlength-badge-position' cols='4' rows='4' placeholder='Textarea' maxlength='2000'>" + email_id + "</textarea>";
+
+                        cnt++;
+                        document.getElementById("itemcnt").value = cnt;
+
+                        //reintialisation
+
+                        // Badge position
+                        $('.maxlength-badge-position').maxlength({
+                            alwaysShow: true,
+                            placement: 'top'
+                        });
+                        //auto resize
+                        autosize($('.elastic'));
+
+                        document.getElementById("hidden card1").classList.remove(hideClass);
+                        document.getElementById("hidden card1").classList.add(showClass);
+                        document.getElementById("company_name").value = "";
+                        document.getElementById("attendee_name").value = "";
+                        document.getElementById("designation").value = "";
+                        document.getElementById("email_id").value = "";
+
+                    }
+
+                }
+           function PopulateAgenda() {
+               var MeetingTypeId = $('#meeting_type_desc').val();
+               jQuery.ajax({
+                   url: '@Url.Action("GetAgendaList", "Meeting")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'sMeetingTypeId': MeetingTypeId },
+                    success: function (result) {
+                        var table = document.getElementById("tbl_Agenda");
+                        document.getElementById("dvAgendaItems").style.display = "";
+                        document.getElementById("divAgendasTitle").style.display = "";
+
+
+                        while (table.rows.length > 0) {
+                            table.deleteRow(0);
+                        }
+
+                        if (result != "") {
+
+                            var theaderRow = table.insertRow();
+                                theaderRow.className = "row";
+                            theaderRow.style = "background-color: #4cc4dd; color: #fff; font-weight: bold;";
+                          var cellth0 = theaderRow.insertCell(0);
+                            var cellth1 = theaderRow.insertCell(1);
+                            cellth0.className = "col-6";
+
+                            cellth1.className = "col-6";
+                            cellth0.innerHTML = "Name";
+                            cellth1.innerHTML = "Details";
+
+                          
+
+                            var list = result;
+                            $.each(list, function (index, item) {
+
+                              // Create an empty <tr> element and add it to the 1st position of the table:
+                                var row = table.insertRow();
+                                row.className = "row";
+                                // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                                var cell0 = row.insertCell(0);
+                                var cell1 = row.insertCell(1);
+                                cell0.className = "col-6";
+
+                                cell1.className = "col-6";
+
+                                //var AgendaName = item.Text;
+                                var Id = item.Value;
+
+                                 var data = item.Text;
+                                var dataarray = new Array();
+                                 dataarray = data.split("_");
+
+
+                                   cell0.innerHTML = "<input type='checkbox' id='Agendas' name='Agendas' value='" + Id + "' required />" + dataarray[0];
+                              
+                                cell1.innerHTML = "<input type='hidden' id='Agenda_Details' name='Agenda_Details' value='" + dataarray[1] + "' />" + dataarray[1];
+
+                             
+                            });
+                        }
+                        else {
+                            bootbox.alert({
+                                title: 'Agenda',
+                                message: 'No Agenda exists, please add agenda and then try again'
+                            });
+                        }
+                    }
+                });
+
+                GetPreviousMeetingRef(MeetingTypeId);
+            }
+
+
+            function GetPreviousMeetingRef(MeetingTypeId) {
+
+                //var MeetingTypeId = $('#MeetingType').val();
+                //alert(AuditDepartment);
+                jQuery.ajax({
+                    url: '@Url.Action("GetPreviousMeetingRef", "Meeting")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'sMeetingTypeId': MeetingTypeId },
+                success: function (result) {
+                    if (result != "") {
+                        //document.getElementById("PreviousMeeting").style.display = "";
+
+                        document.getElementById("last_meeting_idRefLink").href = "/Meeting/MeetingDetails?meeting_ref=" + result;
+                        document.getElementById("last_meeting_idRefLink").innerText = result;
+                        document.getElementById("last_meeting_id").value = result;
+                    }
+                }
+            });
+            }
+            </script>
+        }

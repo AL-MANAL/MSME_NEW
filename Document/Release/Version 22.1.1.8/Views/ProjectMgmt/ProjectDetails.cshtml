@@ -1,0 +1,325 @@
+﻿@model ISOStd.Models.ProjectMgmtModels
+@using System.Data
+
+@{
+    ViewBag.Title = "ProjectDetails";
+    DataSet dsDesignDetails = ViewBag.ProjectDesignDetails;
+    ISOStd.Models.clsGlobal obj = new ISOStd.Models.clsGlobal();
+    
+}
+<div class="groupedassets margin10">
+    <span class="groupedassetshead margin10 onestphdcolor">Project Design Review Details</span>
+</div>
+<div>
+       @* @Html.ActionLink("Edit",  "ObjectivesEdit", new { Objectives_Id = Model.Objectives_Id }, new { @class = "ActionLink", onclick="HyperLinkProgressIconFunction()" })*@
+        @Html.ActionLink("Back to List", "ProjectList", null, new {@class = "ActionLink", onclick="HyperLinkProgressIconFunction()" })
+    </div>
+ <div id="divmsg">
+        @if (TempData["alertdata"] != null)
+        {
+            <span class="errMsg" style="color: red;font-weight: bold;">@TempData["alertdata"]</span>
+        }
+        @if (TempData["Successdata"] != null)
+        {
+            <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+        }
+    </div>
+<br />
+<fieldset>
+    <legend>ProjectModels</legend>
+
+    <div>
+        <table style="width: 100%">
+            <tr>
+                 
+                <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.ProjectNo)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.ProjectNo)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.ProjectName)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.ProjectName)
+                    </div>
+                </td>
+            </tr>
+            <tr>
+
+                <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.Location)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.Location)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.Customer)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.Customer)
+                    </div>
+                </td>
+            </tr>
+            <tr>
+
+                <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.ProjectManager)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.ProjectManager)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.Team)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.Team)
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.ProjectStatus)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.ProjectStatus)
+                    </div>
+                </td>
+               <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.StartDate)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                      
+                        @if (Model.StartDate > Convert.ToDateTime("01/01/0001"))
+                        {
+                            
+                        @Model.StartDate.ToString("dd/MM/yyyy")
+                        }
+                    </div>
+                </td>
+                </tr>
+            <tr>
+                 <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.PlannedEndDate)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @if (Model.PlannedEndDate > Convert.ToDateTime("01/01/0001"))
+                        {
+                            
+                           @Model.StartDate.ToString("dd/MM/yyyy")
+                        }
+                    </div>
+                </td>
+               <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.ActualEndDate)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @if (Model.ActualEndDate > Convert.ToDateTime("01/01/0001"))
+                        {
+                            
+                          @Model.StartDate.ToString("dd/MM/yyyy")
+                        }
+                    </div>
+                </td>
+
+            </tr>
+
+              <tr>
+                 <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.Remarks)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.Remarks)
+                    </div>
+                </td>
+               <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.ProjectDocs)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @if (Model.ProjectDocs != null && Model.ProjectDocs != "" && Model.ProjectDocs.Length > 0)
+                        {
+                            foreach (var docs in Model.ProjectDocs.Trim(',').Split(','))
+                            {
+                            <p style="margin: 0px;">
+                               
+                                <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" style="color: orange;">
+                                 @System.IO.Path.GetFileName(docs)</a>
+                            </p>
+                              }
+                        }
+                    </div>
+                </td>
+
+            </tr>
+           
+           
+             
+            
+        </table>
+    </div>
+</fieldset>
+
+@if (dsDesignDetails != null && dsDesignDetails.Tables.Count > 0 && dsDesignDetails.Tables[0].Rows.Count > 0)
+{
+    <div id="Items">
+        <div class="editor-label">
+            <label for="Audit Details" style="background-color: #4cc4dd; width: 100%; color: white; padding-left: 5px;">Design Review Details</label>
+        </div>
+        <table id="team-list">
+            <tr>
+                
+                <th>Dicipline</th>
+                <th>Revno</th>
+                <th>DrawingNumber</th>
+                <th>History</th>
+                <th>ReviewedBy</th>        
+                <th>ReviewStatus</th>
+                <th>ReviewedDate</th>
+                <th>ReviewerComment</th>
+                <th>ApprovedBy</th>
+                <th>ApproveStatus</th>
+                <th>ApprovedDate</th>
+                <th>ApproverComment</th>
+                <th>Drawing</th>
+                 <th>Customer Approval Date</th>
+                 <th>Design Sent Date</th>
+                 <th>Customer Feedback</th>
+                 <th>Rev No</th>
+                 <th>Customer Approval Status</th>
+                
+            </tr>
+            @for (int i = 0; i < dsDesignDetails.Tables[0].Rows.Count; i++)
+            {
+                <tr>
+                    
+                    <td>
+                        @obj.GetDropdownitemById(dsDesignDetails.Tables[0].Rows[i]["Dicipline"].ToString())
+                    </td>
+                    <td>
+                        @dsDesignDetails.Tables[0].Rows[i]["IntRevno"].ToString()
+                    </td>
+                    <td>
+                        @dsDesignDetails.Tables[0].Rows[i]["DrawingNumber"].ToString()
+                    </td>
+                    <td style="width:50px; min-width:50px; max-width:50px;word-wrap:break-word">
+                            <a href='@Url.Action("ProjectDesignHistory", "ProjectMgmt", new { id_projectdesign = dsDesignDetails.Tables[0].Rows[i]["id_projectdesign"].ToString() })' title="View History" onclick="HyperLinkProgressIconFunction()">
+                                <img src="@Url.Content("~/Images/historyicon.png")" onclick="HyperLinkProgressIconFunction()" />
+                            </a>
+                        </td>
+                    <td>
+                        @obj.GetEmpHrNameById(dsDesignDetails.Tables[0].Rows[i]["ReviewedBy"].ToString())
+                    </td>
+                    <td>
+                        @dsDesignDetails.Tables[0].Rows[i]["ReviewStatus"].ToString()           
+                    </td>
+                     <td>
+                        @if (dsDesignDetails.Tables[0].Rows[i]["ReviewedDate"].ToString() != "" && dsDesignDetails.Tables[0].Rows[i]["ReviewedDate"].ToString() != null)
+                        {
+                         @Convert.ToDateTime(dsDesignDetails.Tables[0].Rows[i]["ReviewedDate"].ToString()).ToString("dd/MM/yyyy")
+                        }
+                      
+                                        
+                    </td>
+                     <td>
+                        @dsDesignDetails.Tables[0].Rows[i]["ReviewerComment"].ToString()           
+                    </td>
+                      <td>
+                        @obj.GetEmpHrNameById(dsDesignDetails.Tables[0].Rows[i]["ApprovedBy"].ToString())
+                    </td>
+                    <td>
+                        @dsDesignDetails.Tables[0].Rows[i]["ApproveStatus"].ToString()           
+                    </td>
+                     <td>
+                         @if (dsDesignDetails.Tables[0].Rows[i]["ApprovedDate"].ToString() != "" && dsDesignDetails.Tables[0].Rows[i]["ApprovedDate"].ToString() != null)
+                        {
+                         @Convert.ToDateTime(dsDesignDetails.Tables[0].Rows[i]["ApprovedDate"].ToString()).ToString("dd/MM/yyyy")
+                        }
+                                  
+                    </td>
+                     <td>
+                        @dsDesignDetails.Tables[0].Rows[i]["ApproverComment"].ToString()           
+                    </td>
+                    <td>                        
+                        @{
+                            string[] sSUpload=new string[1000];
+                            string Upload = dsDesignDetails.Tables[0].Rows[i]["Upload"].ToString();
+                            sSUpload = Upload.Split(',');
+                            int s=sSUpload.Count();
+                            for (int j = 0; j < sSUpload.Count(); j++)
+                            {
+                                <a href='@Url.Action("DisplayDocument", "Reports", new { Document =sSUpload[j] }) 'target="_blank">Preview</a><br />
+
+                            }
+                                
+                          }
+                       
+                    </td>
+                    <td>
+                          @if (dsDesignDetails.Tables[0].Rows[i]["CustApprDate"].ToString() != "" && dsDesignDetails.Tables[0].Rows[i]["CustApprDate"].ToString() != null)
+                          {
+                      @Convert.ToDateTime(dsDesignDetails.Tables[0].Rows[i]["CustApprDate"].ToString()).ToString("dd/MM/yyyy")
+                          }
+                    </td>
+                    <td>
+                         @if (dsDesignDetails.Tables[0].Rows[i]["DgnSntDate"].ToString() != "" && dsDesignDetails.Tables[0].Rows[i]["DgnSntDate"].ToString() != null)
+                         {
+                         @Convert.ToDateTime(dsDesignDetails.Tables[0].Rows[i]["DgnSntDate"].ToString()).ToString("dd/MM/yyyy")
+                         }
+                    </td>
+                    <td>
+                        @dsDesignDetails.Tables[0].Rows[i]["CustFeedback"].ToString()
+                    </td>
+                    <td>
+                        @dsDesignDetails.Tables[0].Rows[i]["RevNo"].ToString()
+                    </td>
+                    <td>
+                        @obj.GetDropdownitemById(dsDesignDetails.Tables[0].Rows[i]["CustApprStatus"].ToString())
+                    </td>
+                   
+                </tr>
+            }
+        </table>
+    </div>
+}
+
+ 

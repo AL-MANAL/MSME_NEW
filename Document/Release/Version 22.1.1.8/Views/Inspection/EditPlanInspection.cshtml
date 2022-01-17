@@ -1,0 +1,649 @@
+﻿@model ISOStd.Models.InspctionQuestionModels
+
+@{
+    ViewBag.Title = "";
+    ISOStd.Models.InspctionQuestionList objList = new ISOStd.Models.InspctionQuestionList();
+    int icnt = 0;
+    if (ViewBag.objList != null)
+    {
+        objList = ViewBag.objList;
+        icnt = objList.InspectionQstList.Count;
+    }
+}
+@section featured {
+    <div class="page-header page-header-light">
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Home</span>
+                    </a>
+                    <a href="@Url.Action("PlanInspectionlist", "Inspection", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Plan Insepctions list</span>
+                    </a>
+                    <span class="breadcrumb-item active">Edit Plan Insepctions</span>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@using (Html.BeginForm("EditPlanInspection", "Inspection", FormMethod.Post,
+                                                         new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Edit Plan Insepctions</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+                <input type="hidden" id="id_inspection_plan" name="id_inspection_plan" value="@Model.id_inspection_plan" />
+                <input type="hidden" id="dept" name="dept" value="@Model.dept" />
+                <input type="hidden" id="itemcnt" name="itemcnt" value="@icnt" />
+                <table class="table table-lg">
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.dept)<text style="color: red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                              <input type="text" class="form-control" id="" name="" value="@Model.dept_name" readonly/>
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.Section)<text style="color: red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="Section" name="Section" required multiple>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.Section != null)
+                                    {
+                                        foreach (var data in ViewBag.Section)
+                                        {
+                                            if (Array.IndexOf(Model.Section.ToString().Split(','), data.Value) >= 0)
+                                            {
+                                                <option value='@data.Value' selected>@data.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@data.Value'>@data.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.insp_area)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="insp_area" name="insp_area" required multiple>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.InspArea != null)
+                                    {
+                                        foreach (var item in ViewBag.InspArea)
+                                        {
+                                            if (item.Value == Model.insp_area)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.location)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <select class="form-control select-search select2-hidden-accessible" data-fouc id="location" name="location">
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.Location != null)
+                                {
+                                    foreach (var item in ViewBag.Location)
+                                    {
+                                        if (item.Value == Model.location)
+                                        {
+                                            <option value='@item.Value' selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.insp_type)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input type="text" class="form-control" id="" name="" value="@Model.insp_type" readonly />
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.insp_detail)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="insp_detail" name="insp_detail">@Model.insp_detail</textarea>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.checklist_ref)<text style="color: red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input type="text" class="form-control" id="" name="" value="@Model.checklist_ref" readonly />
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.insp_freq)<text style="color: red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <select class="form-control select-search select2-hidden-accessible" data-fouc id="insp_freq" name="insp_freq" required>
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.Frequency != null)
+                                {
+                                    foreach (var item in ViewBag.Frequency)
+                                    {
+                                        if (item.Value == Model.insp_freq)
+                                        {
+                                            <option value='@item.Value' selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.project)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input type="text" class="form-control" id="project" name="project"  value="@Model.project" />
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+
+                <fieldset class="border p-2">
+                    <legend class="font-weight-semibold text-success">Date(s) of inspection</legend>
+                    <table class="table table-lg">
+                        <tr class="row">
+                            <td class="col">
+                                <div class="editor-label">
+                                    @Html.DisplayNameFor(model => model.insp_date)<text style="color: red;">*</text>
+                                </div>
+                            </td>
+
+
+                            <td class="col">
+                                <div class="editor-label">
+                                    @Html.DisplayNameFor(model => model.pers_resp)<text style="color: red;">*</text>
+                                </div>
+                            </td>
+                            <td class="col"></td>
+
+                        </tr>
+                        <tr class="row">
+                            <td class="col">
+                                <div class="editor-field">
+                                    <input type="date" class="form-control" id="insp_date" name="insp_date" />
+                                    <span class="field-validation-error"><span id="insp_date-message" style="display: none;">This field is required</span></span>
+                                </div>
+                            </td>
+                            <td class="col">
+                                <div class="editor-field">
+                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="pers_resp" name="pers_resp" multiple>
+                                        @if (ViewBag.EmpList != null)
+                                        {
+                                            foreach (var item in ViewBag.EmpList)
+                                            {
+                                                 <option value='@item.Value'>@item.Text</option>                                          
+                                            }
+                                        }
+                                    </select>
+                                    <span class="field-validation-error"><span id="pers_resp-message" style="display: none;">This field is required</span></span>
+                                </div>
+                            </td>
+                            <td class="col">
+                                <input type="button" value="Add" class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" onclick="AddData()" />
+                            </td>
+                        </tr>
+
+                    </table>
+                </fieldset>
+                <br />
+                <div class="card" id="hidden card">
+
+                    <div class="card-body scrollbar-container">
+                        <div class="card card-table table-responsive shadow-0 mb-0 scrollbar">
+                            <table class="table" id="team-list">
+                                <tr class="bg-blue">
+                                    <th>Delete</th>
+                                    <th>Date(s) of inspection</th>
+                                    <th>Personnel Responsible</th>
+
+                                </tr>
+                                @if (objList.InspectionQstList != null && objList.InspectionQstList.Count > 0)
+                                {
+                                    for (int index = 0; index < objList.InspectionQstList.Count; index++)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <span class="badge badge-info" onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span>
+
+                                                <input type='hidden' id='id_inspection_date@(index)' name="id_inspection_date@(index)" value='@objList.InspectionQstList[index].id_inspection_date' />
+                                            </td>
+                                            <td>
+                                                @if (objList.InspectionQstList[index].insp_date != null && objList.InspectionQstList[index].insp_date > Convert.ToDateTime("01/01/0001"))
+                                                {
+                                                    <input class="form-control" type="date" id='insp_date@(index)' name='insp_date@(index)' value="@objList.InspectionQstList[index].insp_date.ToString("yyyy-MM-dd")" />
+                                                }
+                                                else
+                                                {
+                                                    <input class="form-control" type="date" id='insp_date@(index)' name='insp_date@(index)' />
+                                                }
+                                            </td>
+                                            <td>
+                                                <select class="form-control select-search select2-hidden-accessible" id="pers_resp@(index)" name="pers_resp@(index)" multiple>
+                                                    <option value='' hidden>Select</option>
+                                                    @if (ViewBag.EmpList != null)
+                                                    {
+                                                        foreach (var data in ViewBag.EmpList)
+                                                        {                           
+                                                            if (Array.IndexOf(objList.InspectionQstList[index].pers_resp.ToString().Split(','), data.Value) >= 0)
+                                                            {
+                                                                <option value='@data.Value' selected>@data.Text</option>
+                                                            }
+                                                            else
+                                                            {
+                                                                <option value='@data.Value'>@data.Text</option>
+                                                            }
+                                                        }
+                                                    }
+                                                </select>
+
+                                            </td>
+                                        
+
+                                        </tr>
+                                    }
+                                }
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <table class="table table-lg">
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.approved_by)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="approved_by" name="approved_by">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.ApprovedBy != null)
+                                    {
+                                        foreach (var item in ViewBag.ApprovedBy)
+                                        {
+                                            if (item.Value == Model.approved_by)
+                                            {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.notified_to)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="notified_to" name="notified_to" multiple>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.EmpList != null)
+                                    {
+                                        foreach (var data in ViewBag.EmpList)
+                                        {
+                                            if (Array.IndexOf(Model.notified_to.ToString().Split(','), data.Value) >= 0)
+                                            {
+                                                <option value='@data.Value' selected>@data.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value='@data.Value'>@data.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+                @Html.ActionLink("Back to List", "PlanInspectionlist", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+                <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Save</button>
+            </div>
+        </div>
+    </div>
+}
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            @if (TempData["alertdata"] != null)
+            {
+                     @: new Noty({
+                                                     @:     text: '@TempData["alertdata"]',
+                                                     @:     type: 'error'
+                                                     @:}).show();
+                                    }
+
+
+            @if (@TempData["Successdata"] != null)
+            {
+
+            @:new Noty({
+                                       @:text: '@TempData["Successdata"]',
+                                       @: type: 'success'
+                                       @:}).show();
+                        }
+
+        });
+
+        function deleteRow(btn) {
+            var row = btn.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+        }
+
+        function Validation() {
+            var validflg = true;
+            var ssnMessage = "";
+            if (document.getElementById("insp_date").value == "") {
+                ssnMessage = $('#insp_date-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#insp_date-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("pers_resp").value == "") {
+                ssnMessage = $('#pers_resp-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#pers_resp-message');
+                ssnMessage.hide();
+            }
+            return validflg;
+        }
+        function AddData() {
+            if (Validation() == true) {
+
+                var cnt = document.getElementById("itemcnt").value;
+
+                document.getElementById("itemcnt").value = cnt;
+                // Find a <table> element with id="myTable":
+                var table = document.getElementById("team-list");
+
+
+                // Create an empty <tr> element and add it to the 1st position of the table:
+                var row = table.insertRow();
+
+                // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                var cell0 = row.insertCell(0);
+                var cell1 = row.insertCell(1);
+                var cell2 = row.insertCell(2);
+
+
+
+                var insp_date = $('#insp_date').val();
+                var pers_resp = $.map($("#pers_resp option:selected"), function (el, i) {
+                    return $(el).text();
+                });
+                var pers_respVal = $("#pers_resp").val();
+
+                cell0.innerHTML = "<span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span>";
+                cell1.innerHTML = "<input class='form-control' type='date' id='insp_date" + cnt + "' name='insp_date" + cnt + "' value='" + insp_date + "' />";
+                cell2.innerHTML = "<select class='select-fixed-single' id='pers_resp" + cnt + "' name='pers_resp" + cnt + "' multiple><option value='" + pers_respVal + "' selected>" + pers_resp + "</option>@if (ViewBag.EmpList != null)
+                {
+                    foreach (var item in ViewBag.EmpList)
+                    { <option value='@item.Value'>@item.Text</option> }
+                    }</select>";
+                //sGetPersResp(cnt, pers_respVal);
+                cnt++;
+                document.getElementById("itemcnt").value = cnt;
+
+                //reintialisation
+
+                // Badge position
+                $('.maxlength-badge-position').maxlength({
+                    alwaysShow: true,
+                    placement: 'top'
+                });
+                //auto resize
+                autosize($('.elastic'));
+                $('.select-fixed-single').select2({
+                    minimumResultsForSearch: Infinity,
+                    width: 150
+                });
+                document.getElementById("insp_date").value = "";
+                $("#pers_resp").val('').trigger('change');
+            }
+        }
+
+
+        function GetSection() {
+            $("#Section").empty();
+            var dept = $('#dept').val();
+            jQuery.ajax({
+                url: '@Url.Action("FunGetDeptSectionList", "Inspection")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'dept': dept },
+                success: function (result) {
+
+                    if (result != null && result.length > 0) {
+                        $("#Section").append("<option value=''>" + "Select" + "</option>");
+                        $.each(result, function (index, item) {
+                            $("#Section").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                            $("#Section").trigger('change');
+                        });
+                        return;
+                    }
+                    //else {
+                    //    bootbox.alert({
+                    //        title: 'Team Code',
+                    //        message: 'Please add Team code to this Group selected'
+                    //    });
+                    //    return;
+                    //}
+                }
+            });
+            GetApprover();
+            //GetPersResp();
+        }
+
+
+
+        function GetChecklistRef() {
+            $("#checklist_ref").empty();
+            var insp_type = $('#insp_type').val();
+            jQuery.ajax({
+                url: '@Url.Action("FunGetChecklistRefList", "Inspection")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'insp_type': insp_type },
+                success: function (result) {
+
+                    if (result != null && result.length > 0) {
+                        $("#checklist_ref").append("<option value=''>" + "Select" + "</option>");
+                        $.each(result, function (index, item) {
+                            $("#checklist_ref").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                            $("#checklist_ref").trigger('change');
+                        });
+                        return;
+                    }
+                    //else {
+                    //    bootbox.alert({
+                    //        title: 'Team Code',
+                    //        message: 'Please add Team code to this Group selected'
+                    //    });
+                    //    return;
+                    //}
+                }
+            });
+        }
+
+        function GetApprover() {
+            $("#approved_by").empty();
+            var dept = $('#dept').val();
+            jQuery.ajax({
+                url: '@Url.Action("FunGetApproverList", "Inspection")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'dept': dept },
+                success: function (result) {
+
+                    if (result != null && result.length > 0) {
+                        $("#approved_by").append("<option value=''>" + "Select" + "</option>");
+                        $.each(result, function (index, item) {
+                            $("#approved_by").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                            $("#approved_by").trigger('change');
+                        });
+                        return;
+                    }
+                    //else {
+                    //    bootbox.alert({
+                    //        title: 'Team Code',
+                    //        message: 'Please add Team code to this Group selected'
+                    //    });
+                    //    return;
+                    //}
+                }
+            });
+        }
+        function GetPersResp() {
+            $("#pers_resp").empty();
+            var dept = $('#dept').val();
+            jQuery.ajax({
+                url: '@Url.Action("FunGetPersRespList", "Inspection")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'dept': dept },
+                success: function (result) {
+
+                    if (result != null && result.length > 0) {
+                        //$("#pers_resp").append("<option value=''>" + "Select" + "</option>");
+                        $.each(result, function (index, item) {
+                           $("#pers_resp").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                            $("#pers_resp").trigger('change');
+                        });
+                        return;
+                    }
+                    //else {
+                    //    bootbox.alert({
+                    //        title: 'Team Code',
+                    //        message: 'Please add Team code to this Group selected'
+                    //    });
+                    //    return;
+                    //}
+                }
+            });
+        }
+        function sGetPersResp(i, arr) {
+
+            var dept = $('#dept').val();
+            jQuery.ajax({
+                url: '@Url.Action("FunGetPersRespList", "Inspection")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'dept': dept },
+                success: function (result) {
+
+                    if (result != null && result.length > 0) {
+                        //$("#pers_resp" +i).append("<option value=''>" + "Select" + "</option>");
+                        $.each(result, function (index, item) {
+                        $("#pers_resp" + i).append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+
+                        });
+                        $("#pers_resp" + i).val(arr);
+                        $("#pers_resp" + i).trigger('change');
+                        return;
+                    }
+                    //else {
+                    //    bootbox.alert({
+                    //        title: 'Team Code',
+                    //        message: 'Please add Team code to this Group selected'
+                    //    });
+                    //    return;
+                    //}
+                }
+            });
+        }
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

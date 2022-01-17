@@ -1,0 +1,129 @@
+﻿@model ISOStd.Models.GenerateAuditChecklistModels
+@{
+    Layout = null;
+    //System.Data.DataSet dsrating = new System.Data.DataSet();
+
+    //if (ViewBag.AuditRating != null)
+    //{
+    //    dsrating = ViewBag.AuditRating;
+    //}
+
+    //ISOStd.Models.AuditPerformanceModelsList objChecklist = new ISOStd.Models.AuditPerformanceModelsList();
+
+    //if (ViewBag.AuditElement != null)
+    //{
+    //    objChecklist = ViewBag.AuditElement;
+    //}
+    ISOStd.Models.GenerateAuditChecklistModelsList AuditTransList = new ISOStd.Models.GenerateAuditChecklistModelsList();
+    if (ViewBag.AuditTransList != null)
+    {
+        AuditTransList = ViewBag.AuditTransList;
+    }
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+}
+
+
+
+<div class="card alpha-success border-success">
+    <div class="card-header bg-info text-white">
+        <h4 class="text-center">Audit Checklist Info</h4>
+    </div>
+    <div class="card-body">
+        <p>
+            Checklist Reference:<code>
+                @Html.DisplayFor(model => model.ChecklistRef)
+            </code>
+            Directorate:<code>
+                @Html.DisplayFor(model => model.directorate)
+            </code>
+        </p>
+        <p>
+
+            Group:
+            <code>
+                @if (Model.grp_common == "common")
+                {
+                    @Html.DisplayFor(model => model.grp_common)
+                }
+                else
+                {
+                    @Html.DisplayFor(model => model.grp)
+                }
+            </code>
+            Team:
+            <code>
+                @if (Model.team_common == "common")
+                {
+                    @Html.DisplayFor(model => model.team_common)
+                }
+                else
+                {
+                    @Html.DisplayFor(model => model.team)
+                }
+            </code>
+        </p>
+        <p>
+            Created On:<code>
+                @if (Model.created_on != null && Model.created_on > Convert.ToDateTime("01/01/0001"))
+                {
+                    @Model.created_on.ToString("dd/MM/yyyy")
+                }
+            </code>
+            Ammended On:<code>
+                @if (Model.ammended_on != null && Model.ammended_on > Convert.ToDateTime("01/01/0001"))
+                {
+                    @Model.ammended_on.ToString("dd/MM/yyyy")
+                }
+            </code>
+        </p>
+        <p>
+            Prepared By:<code>
+                @Html.DisplayFor(model => model.prepared_by)
+            </code>
+            Notified To:<code>@Html.DisplayFor(model => model.notified_to)</code>
+        </p>
+      
+       @if(ViewBag.AuditTransList != null)
+       {
+        <table class="table-xs table-bordered table-striped">
+            <tr>
+                <th style="background-color: #e5eafe; color: #0099ff;">
+                    Sr. No.
+                </th>
+                <th style="background-color: #e5eafe; color: #0099ff;">
+                    Standard/Procedure
+                </th>
+                <th style="background-color: #e5eafe; color: #0099ff;">
+                    Clause/Section No
+                </th>
+                <th style="background-color: #e5eafe; color: #0099ff;">
+                    Questions
+                </th>
+            </tr>
+            @if (ViewBag.AuditTransList != null)
+            {
+                int iSrno = 0;
+                foreach (var item in AuditTransList.AuditCheckList)
+                {
+                    iSrno = iSrno + 1;
+            <tr>
+                <td>
+                    @iSrno
+                </td>
+                <td>
+                    @item.IsoStd
+                </td>
+                <td>
+                    @item.Clause
+                </td>
+                <td>
+                    @item.Questions
+                </td>
+            </tr>
+                }
+            }
+        </table>
+       }
+    </div>
+
+</div>

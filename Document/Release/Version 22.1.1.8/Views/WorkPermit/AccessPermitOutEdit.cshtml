@@ -1,0 +1,162 @@
+﻿@model ISOStd.Models.WorkPermitModels
+
+@{
+    ISOStd.Models.WorkPermitModelsList objInList = new ISOStd.Models.WorkPermitModelsList();
+    ISOStd.Models.WorkPermitModelsList objOutList = new ISOStd.Models.WorkPermitModelsList();
+    ISOStd.Models.clsGlobal obj = new ISOStd.Models.clsGlobal();
+    int icnts = 0;
+
+    //if (ViewBag.objOutList != null)
+    //{
+    //    objOutList = ViewBag.objOutList;
+    //    icnts = objOutList.PermitList.Count;
+    //}
+
+    if (ViewBag.objInList != null)
+    {
+        objInList = ViewBag.objInList;
+        icnts = objInList.PermitList.Count;
+    }
+}
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                  <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Home</span>
+                    </a>
+                    <a href="@Url.Action("AccessPermitList", "WorkPermit", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Access Permit</span>
+                    </a>
+                    <span class="breadcrumb-item active">Update Access Permit</span>
+                </div>
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+}
+
+@using (Html.BeginForm("AccessPermitOutEdit", "WorkPermit", FormMethod.Post,
+                     new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+   <input type="hidden" id="id_access_permit" name="id_access_permit" value="@Model.id_access_permit" />
+   <input type="hidden" id="itemcnts" name="itemcnts" value="@icnts" />
+   <div class="card">
+       <div class="card-header header-elements-inline bg-primary">
+           <h5 class="card-title">Authorized Personnel In and Out List</h5>
+           <div class="header-elements">
+               <div class="list-icons">
+                   <a class="list-icons-item" data-action="collapse"></a>
+               </div>
+           </div>
+       </div>
+
+       <div class="card-body">
+
+           <div class="card card-table table-responsive shadow-0 mb-0">
+               <table class="table" id="team-list">
+                   <tr class="bg-blue">
+                       <th>Name</th>
+                       <th>ID No</th>
+                       <th>Date</th>
+                       <th>Out Date</th>
+                   </tr>
+                   @if (objInList.PermitList != null && objInList.PermitList.Count > 0)
+                   {
+                       for (int index = 0; index < objInList.PermitList.Count; index++)
+                       {
+                           <tr>
+
+                               <td>
+                                   <input type='hidden' id='id_access_permit_in@(index)' name="id_access_permit_in@(index)" value='@objInList.PermitList[index].id_access_permit_in' />
+
+                                   <input type='hidden' id='pers_name@(index)' name="pers_name@(index)" value='@objInList.PermitList[index].pers_name'>@objInList.PermitList[index].pers_name
+                               </td>
+                               <td>
+                                   <input type='hidden' id='idno@(index)' name="idno@(index)" value='@objInList.PermitList[index].idno'>@objInList.PermitList[index].idno
+                               </td>
+                               <td>
+                                   @if (objInList.PermitList[index].date_in != null && objInList.PermitList[index].date_in > Convert.ToDateTime("01/01/0001"))
+                                   {
+                                       <input type='hidden' id='date_in@(index)' name="date_in@(index)" value='@objInList.PermitList[index].date_in' style="width:100px">@objInList.PermitList[index].date_in.ToString("dd/MM/yyyy")
+                                   }
+
+                               </td>
+                               <td>
+                                   @if (objInList.PermitList[index].date_out != null && objInList.PermitList[index].date_out > Convert.ToDateTime("01/01/0001"))
+                                   {
+                                       <input class="form-control" type='date' id='date_out@(index)' name="date_out@(index)" value='@objInList.PermitList[index].date_out.ToString("yyyy-MM-dd")' style="width:150px">
+                                   }
+                                   else
+                                   {
+                                       <input class="form-control" type='date' id='date_out@(index)' name="date_out@(index)" style="width:150px">
+                                   }
+                               </td>
+                           </tr>
+                       }
+                   }
+               </table>
+
+           </div>
+       </div>
+
+       @if (obj.GetCurrentUserSession().AccessPermit.Contains("3"))
+       {
+           <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+               @Html.ActionLink("Back to List", "AccessPermitList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+
+               <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i>Save</button>
+           </div>
+       }
+   </div>
+}
+
+@section scripts {
+                <script type="text/javascript">
+                    $(document).ready(function () {
+
+        @if (TempData["alertdata"] != null ) {
+
+           @: new Noty({
+                                               @:     text: '@TempData["alertdata"]',
+                                               @:     type: 'error'
+                                               @: }).show();
+                                   }
+
+        @if (@TempData["Successdata"] != null ) {
+
+        @:    new Noty({
+                                             @:       text: '@TempData["Successdata"]',
+                                             @:       type: 'success'
+         @:}).show();
+                           }
+ });
+   </script>
+
+            }

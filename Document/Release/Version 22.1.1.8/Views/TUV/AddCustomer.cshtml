@@ -1,0 +1,465 @@
+﻿@model ISOStd.Models.TUVCustomerModels
+
+@{
+    ViewBag.Title = "AddCustomer";
+}
+
+<div class="groupedassets margin10">
+    <span class="groupedassetshead margin10 onestphdcolor">Add Customer</span>
+</div>
+<div id="divmsg">
+    @if (TempData["alertdata"] != null)
+    {
+        <span class="errMsg" style="color: red; font-weight: bold;">@TempData["alertdata"]</span>
+    }
+    @if (TempData["Successdata"] != null)
+    {
+        <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+    }
+</div>
+
+@using (Html.BeginForm("AddCustomer", "TUV", FormMethod.Post,
+                         new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <fieldset>
+
+        <legend>CustomerModels</legend>
+        <div style="max-width: 50%;">
+            <table id="tabcontent" style="float: left;">
+                <tr>
+                    <td colspan="4" style="background-color: #4cc4dd; color: #fff; font-weight: bold; font-size: 14px;">Customer</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.CompanyName)<text style="color: red;">*</text>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.CompanyName, new { htmlAttributes = new { @required = "required" } })
+                            @Html.ValidationMessageFor(model => model.CompanyName)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Cust_Code)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <input type="text" id="Cust_Code" name="Cust_Code" />
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Address)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <textarea id="Address" name="Address"></textarea>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Country)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <input type="text" id="Country" name="Country" />
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.City)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <input type="text" id="City" name="City" />
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.PostalCode)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <input type="text" id="PostalCode" name="PostalCode" />
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.FaxNumber)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <input type="text" id="FaxNumber" name="FaxNumber" />
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Email_Id)<text style="color: red;"> *</text>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <input type="email" id="Email_Id" name="Email_Id" required />
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.CustType)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <select id="CustType" name="CustType" style="width: 180px;">
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.CustType != null)
+                                {
+                                    foreach (var item in ViewBag.CustType)
+                                    {
+                                    <option value='@item.Value'>@item.Text</option>
+                                    }
+                                }
+                            </select>
+
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="4" style="text-align: center;">
+                        <p style="font-size: 11px;">(Add atleast a Project master to Create Customer)</p>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div style="max-width: 50%; float: right;">
+            <table style="margin-top: 18px; margin-bottom: 20px;">
+                <tr>
+                    <td colspan="4" style="background-color: #4cc4dd; color: #fff; font-weight: bold; font-size: 14px;">Project Master detail</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Project_no)<text style="color: red;">*</text>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.Project_no)
+                            <span class="field-validation-error"><span id="Project_no-message" style="display: none;">Project_no field is required.</span></span>
+                            @Html.ValidationMessageFor(model => model.Project_no)
+                        </div>
+                    </td>
+
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Project_desc)<text style="color: red;">*</text>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            @Html.TextAreaFor(model => model.Project_desc)
+                            <span class="field-validation-error"><span id="Project_desc-message" style="display: none;">Description field is required.</span></span>
+                            @Html.ValidationMessageFor(model => model.Project_desc)
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.ISOStd)<text style="color: red;">*</text>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <select id="ISOStd" name="ISOStd" style="height: 100px; width: 180px;" multiple>
+                                <text style="color: red;">*</text>
+                                @if (ViewBag.IsoStdList != null)
+                                {
+                                    foreach (var item in ViewBag.IsoStdList)
+                                    {
+                                    <option value='@item.Value'>@item.Text</option>
+                                    }
+                                }
+                            </select>
+                            <span class="field-validation-error"><span id="ISOStd-message" style="display: none;">Audit Criteria field is required.</span></span>
+                            @Html.ValidationMessageFor(model => model.ISOStd)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Audit_team)<text style="color: red;">*</text>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.Audit_team)
+                            <span class="field-validation-error"><span id="Audit_team-message" style="display: none;">Audit team field is required.</span></span>
+                            @Html.ValidationMessageFor(model => model.Audit_team)
+                        </div>
+                    </td>
+
+                </tr>
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Contract_from)<text style="color: red;">*</text>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <input type="text" id="Contract_from" name="Contract_from" readonly />
+                            <span class="field-validation-error"><span id="Contract_from-message" style="display: none;">Contract From date field is required.</span></span>
+                            @Html.ValidationMessageFor(model => model.Contract_from)
+                        </div>
+                    </td>
+
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Contract_to)<text style="color: red;">*</text>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <input type="text" id="Contract_to" name="Contract_to" readonly />
+                            <span class="field-validation-error"><span id="Contract_to-message" style="display: none;">Contract To date field is required.</span></span>
+                            @Html.ValidationMessageFor(model => model.Contract_to)
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+            </table>
+        </div>
+    </fieldset>
+    <div style="width: 100%; padding-left: 136px;">
+        @Html.ActionLink("Back to List", "CustomerList", "TUV", null, new { Class = "ActionLink", onclick = "HyperLinkProgressIconFunction()" })
+        <input type="submit" id="btnCreate" value="Save" style="display: none;" onclick="ProgressIconFunction('#form1')" />
+        <div style="float: right; padding-right: 200px;">
+            <input type="button" value="Add" onclick="AddProject()" />
+        </div>
+    </div>
+    <div id="dvItems" style="overflow: auto; display: none;">
+        <input type="hidden" id="itemcnt" name="itemcnt" value="0" />
+        <div class="editor-label" style="background-color: #4cc4dd; width: 100%; height: 30px; cursor: pointer;">
+            <label for="Objective_Details" style="color: white; padding-left: 5px;">Project Detail</label>
+        </div>
+
+        <table id="team-list" style="width: 100%">
+            <tr>
+                <th>Action</th>
+                <th>Project No</th>
+                <th>Description</th>
+                <th>Audit Criteria</th>
+                <th>Audit Team</th>
+                <th>Contract From</th>
+                <th>Contract To</th>
+            </tr>
+        </table>
+    </div>         
+}
+
+@section Scripts {
+    <script>
+
+        function Validation() {
+            var validflg = true;
+            var ssnMessage = "";
+            if (document.getElementById("Project_no").value == "") {
+                ssnMessage = $('#Project_no-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#Project_no-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("Project_desc").value == "") {
+                ssnMessage = $('#Project_desc-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#Project_desc-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("ISOStd").value == "") {
+                ssnMessage = $('#ISOStd-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#ISOStd-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("Audit_team").value == "") {
+                ssnMessage = $('#Audit_team-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#Audit_team-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("Contract_from").value == "") {
+                ssnMessage = $('#Contract_from-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#Contract_from-message');
+                ssnMessage.hide();
+            }
+            if (document.getElementById("Contract_to").value == "") {
+                ssnMessage = $('#Contract_to-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#Contract_to-message');
+                ssnMessage.hide();
+            }
+            return validflg;
+        }
+
+        function AddProject() {
+
+            if (Validation() == true) {
+
+                document.getElementById("dvItems").style.display = "";
+                var cnt = document.getElementById("itemcnt").value;
+
+                document.getElementById("itemcnt").value = cnt;
+                // Find a <table> element with id="myTable":
+                var table = document.getElementById("team-list");
+
+
+                // Create an empty <tr> element and add it to the 1st position of the table:
+                var row = table.insertRow();
+
+                // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                var cell0 = row.insertCell(0);
+                var cell1 = row.insertCell(1);
+                var cell2 = row.insertCell(2);
+                var cell3 = row.insertCell(3);
+                var cell4 = row.insertCell(4);
+                var cell5 = row.insertCell(5);
+                var cell6 = row.insertCell(6);
+
+                var Project_no = $('#Project_no').val();
+                var Project_desc = $('#Project_desc').val();
+
+                var ISOStd = [];
+                var ISOStdText = $.map($("#ISOStd option:selected"), function (el, i) {
+                    return $(el).text();
+                });
+                var ISOStdVal = $("#ISOStd").val();
+
+                var Audit_team = $('#Audit_team').val();
+                var Contract_from = $('#Contract_from').val();
+                var Contract_to = $('#Contract_to').val();
+
+                cell0.innerHTML = " <img src='@Url.Content("~/images/cancel.png")' onclick='deleteRow(this)' style='cursor:pointer; padding-right: 5px;'/>";
+                cell1.innerHTML = "<input type='hidden' id='Project_no" + cnt + "' name='Project_no" + cnt + "' value='" + Project_no + "'>" + Project_no;
+                cell2.innerHTML = "<input type='hidden' id='Project_desc" + cnt + "' name='Project_desc" + cnt + "' value='" + Project_desc + "'>" + Project_desc;
+                cell3.innerHTML = "<input type='hidden' id='ISOStd" + cnt + "' name='ISOStd" + cnt + "' value='" + ISOStdVal + "'>" + ISOStdText;
+                cell4.innerHTML = "<input type='hidden' id='Audit_team" + cnt + "' name='Audit_team" + cnt + "' value='" + Audit_team + "'>" + Audit_team;
+                cell5.innerHTML = "<input type='hidden' id='Contract_from" + cnt + "' name='Contract_from" + cnt + "' value='" + Contract_from + "'>" + Contract_from;
+                cell6.innerHTML = "<input type='hidden' id='Contract_to" + cnt + "' name='Contract_to" + cnt + "' value='" + Contract_to + "'>" + Contract_to;
+
+                cnt++;
+                document.getElementById("itemcnt").value = cnt;
+                document.getElementById("btnCreate").style.display = "";
+
+                ResetControl();
+            }
+
+        }
+
+        function ResetControl() {
+
+            document.getElementById("Project_no").value = "";
+            document.getElementById("Project_desc").value = "";
+            $("#ISOStd").val('').trigger("chosen:updated");
+            document.getElementById("Audit_team").value = "";
+            $("#Contract_from").datepicker("setDate", new Date());
+            $("#Contract_to").datepicker("setDate", new Date());
+
+
+            var ssnMessage = $('#Project_no-message');
+            ssnMessage.hide();
+            ssnMessage = $('#Project_desc-message');
+            ssnMessage.hide();
+            ssnMessage = $('#ISOStd-message');
+            ssnMessage.hide();
+            ssnMessage = $('#Audit_team-message');
+            ssnMessage.hide();
+            ssnMessage = $('#Contract_from-message');
+            ssnMessage.hide();
+            ssnMessage = $('#Contract_to-message');
+            ssnMessage.hide();
+        }
+
+        function deleteRow(btn) {
+            var row = btn.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+        }
+
+
+        $(function () {
+            $("#ISOStd").chosen();
+            $('#Contract_from').datepicker({
+                dateFormat: "dd/mm/yy",
+                buttonImageOnly: true,
+                buttonImage: '../Images/Calender.png',
+                showOn: 'both',
+                changeMonth: true,
+                changeYear: true
+            });
+            $('#Contract_to').datepicker({
+                dateFormat: "dd/mm/yy",
+                buttonImageOnly: true,
+                buttonImage: '../Images/Calender.png',
+                showOn: 'both',
+                changeMonth: true,
+                changeYear: true
+            });
+
+            $("#Contract_from").datepicker("setDate", new Date());
+            $("#Contract_to").datepicker("setDate", new Date());
+        });
+
+
+        function FileFormatValidation(file) {
+            var ext = file.value.split(".").pop().toLowerCase();
+            if ($.inArray(ext, ["doc", "pdf", "docx", "jpg", "jpeg", "gif", "png"]) == -1) {
+                file.value = "";
+                jAlert("Invalid file format, please upload only doc, pdf, docx, jpg, jpeg, gif, png format");
+            }
+
+        }
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

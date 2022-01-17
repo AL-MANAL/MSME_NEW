@@ -1,0 +1,674 @@
+﻿@model ISOStd.Models.IncidentReportModels
+
+@{
+    ViewBag.Title = "AddIncidentReport";
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+    ISOStd.Models.IncidentLTIModelsList objIncidentLTIList = new ISOStd.Models.IncidentLTIModelsList();
+    ISOStd.Models.IncidentReportModelsList objActionList = new ISOStd.Models.IncidentReportModelsList();
+    ISOStd.Models.IncidentReportModelsList objCloseList = new ISOStd.Models.IncidentReportModelsList();
+
+    if (ViewBag.objIncidentLTIList != null)
+    {
+        objIncidentLTIList = ViewBag.objIncidentLTIList;
+    }
+    if (ViewBag.objActionList != null)
+    {
+        objActionList = ViewBag.objActionList;
+      
+    }
+    if (ViewBag.objCloseList != null)
+    {
+        objCloseList = ViewBag.objCloseList;
+      
+    }
+}
+
+
+@*@using (Html.BeginForm("IncidentReportPDF", "IncidentReport", FormMethod.Post, new { id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+
+    <input type="hidden" id="Incident_Id" name="Incident_Id" value="@Model.Incident_Id" />
+    <div style="float: right;padding-right: 50px;">
+        <button type="submit" class="btn btn-success btn-lg" style="width: 85px; height: 33px;background-color: #449d44 !important; padding: 0px;">
+            <span class="glyphicon glyphicon-print"></span>Report
+        </button>
+    </div>
+}*@
+
+@section featured {
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+
+
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("IncidentReportList", "IncidentReport", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Accident Investigation Report List</span>
+                    </a>
+                    <span class="breadcrumb-item active">Accident Investigation Report Details</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+           
+        </div>
+    </div>
+}
+
+<div class="card">
+    <div class="card-header header-elements-inline bg-primary">
+        <h5 class="card-title">
+            Accident Investigation Report Details</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+
+                </div>
+            </div>
+</div>
+    <div>
+        <div class="card-header bg-white header-elements-sm-inline">
+
+            <div class="header-elements">
+                @if (Obj.GetCurrentUserSession().IncidentRpt.Contains("3"))
+                {
+
+                    <a class="btn bg-orange btn-labeled btn-labeled-left" data-style="radius" href='@Url.Action("IncidentReportEdit", "IncidentReport", new { Incident_Id = Model.Incident_Id.ToString()  })' title="Edit" onclick="HyperLinkProgressIconFunction()">
+                        <b>  <i class="icon-add-to-list"></i></b> Edit
+                    </a>
+                }
+                @Html.ActionLink("Back to List", "IncidentReportList", null, new { @class = "btn btn-outline bg-orange text-orange border-orange ml-3", onclick = "HyperLinkProgressIconFunction()" })
+            </div>
+        </div>
+    </div>
+
+
+    <div class="card-body">
+        <div class="container-fluid">
+            <table class="table table-dark table-bordered table-striped table-hover bg-blue-800">
+                <thead></thead>
+                <tbody>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-3">
+
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.Incident_Num)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+
+                                @Html.DisplayFor(model => model.Incident_Num)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-3">
+
+                            <p class="bg-brown py-1 px-2 rounded">
+                                Accident Type
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+
+                                @Html.DisplayFor(model => model.Incident_Type)
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-3">
+
+                            <p class="bg-brown py-1 px-2 rounded">
+                                Date and timing of Accident
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+
+                                @if (Model.acc_date > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    @Model.acc_date.ToString("dd/MM/yyyy hh:mm")
+                                }
+
+
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-3">
+
+                            <p class="bg-brown py-1 px-2 rounded">
+                                Date of Accident Report
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+
+                                @if (Model.reported_date > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    @Model.reported_date.ToString("dd/MM/yyyy")
+                                }
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-3">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                Reported By
+                            </p>
+                        </td>
+
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+
+                                @Html.DisplayFor(model => model.reported_by)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-3">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                Details of accident
+                            </p>
+                        </td>
+
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+
+                                @Html.DisplayFor(model => model.details)
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-3">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.Consequences)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+
+                                @Html.DisplayFor(model => model.Consequences)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-3">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.Corrective_Measures)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+
+                                @Html.DisplayFor(model => model.Corrective_Measures)
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-3">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.Incident_Reasons)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+
+                                @Html.DisplayFor(model => model.Incident_Reasons)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-3">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.witness_stmt)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+
+                                @Html.DisplayFor(model => model.witness_stmt)
+                            </p>
+                        </td>
+                    </tr>
+                    @*<tr class="row">
+            <td class="col-xs-3 col-md-3">
+                <p class="bg-brown py-1 px-2 rounded">
+                    @Html.DisplayNameFor(model => model.Injuries)
+                </p>
+            </td>
+            <td class="col">
+                <p class="bg-dark py-1 px-2 rounded">
+
+                    @Html.DisplayFor(model => model.Injuries)
+                </p>
+            </td>
+            <td class="col-xs-3 col-md-3">
+                <p class="bg-brown py-1 px-2 rounded">
+                    @Html.DisplayNameFor(model => model.invest_team)
+                </p>
+            </td>
+            <td class="col">
+                <p class="bg-dark py-1 px-2 rounded">
+
+                    @Html.DisplayFor(model => model.invest_team)
+                </p>
+            </td>
+        </tr>*@
+
+
+
+                    @*<td class="col-xs-3 col-md-3">
+            <p class="bg-brown py-1 px-2 rounded">
+                @Html.DisplayNameFor(model => model.InWork_Premises)
+            </p>
+        </td>
+        <td class="col">
+            <p class="bg-dark py-1 px-2 rounded">
+                @Html.DisplayFor(model => model.InWork_Premises)
+            </p>
+        </td>*@
+
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-3">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.WitnessedBy)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+
+                                @Html.DisplayFor(model => model.WitnessedBy)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-3">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.Witness_StmtDoc)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+
+                                @if (Model.Witness_StmtDoc != "" && Model.Witness_StmtDoc != null && Model.Witness_StmtDoc.Length > 0)
+                                {
+                                    foreach (var docs in Model.Witness_StmtDoc.Trim(',').Split(','))
+                                    {
+                                        <span class="bg-dark py-1 px-2 rounded">
+                                            <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank">Preview</a>
+                                        </span>
+                                    }
+                                }
+                                else
+                                {
+
+                                    <span class="bg-dark py-1 px-2 rounded text-danger">No File</span>
+                                }
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-3">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.risk_incident)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+
+                                @Html.DisplayFor(model => model.risk_incident)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-3">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.ext_witness)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.ext_witness)
+                            </p>
+                        </td>
+                    </tr>
+                  
+                        @*<td class="col-xs-3 col-md-3">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.Consequences)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+
+                                @Html.DisplayFor(model => model.Consequences)
+                            </p>
+                        </td>*@    
+
+                    @*<td class="col-xs-3 col-md-3">
+            <p class="bg-brown py-1 px-2 rounded">
+                @Html.DisplayNameFor(model => model.Actions_Taken)
+            </p>
+        </td>
+        <td class="col">
+            <p class="bg-dark py-1 px-2 rounded">
+                @Html.DisplayFor(model => model.Actions_Taken)
+            </p>
+        </td>*@
+
+
+                    <tr class="row">
+
+
+                        <td class="col-xs-3 col-md-3">
+
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.DueDate)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-3">
+                            <p class="bg-dark py-1 px-2 rounded">
+
+                                @if (Model.DueDate > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    @Model.DueDate.ToString("dd/MM/yyyy")
+                                }
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-3">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.report_upload)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+
+                                @if (Model.report_upload != "" && Model.report_upload != null && Model.report_upload.Length > 0)
+                                {
+                                    foreach (var docs in Model.report_upload.Trim(',').Split(','))
+                                    {
+                                        <span class="bg-dark py-1 px-2 rounded">
+                                            <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank">Preview</a>
+                                        </span>
+                                    }
+                                }
+                                else
+                                {
+
+                                    <span class="bg-dark py-1 px-2 rounded text-danger">No File</span>
+                                }
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        @*<td class="col-xs-3 col-md-3">
+            <p class="bg-brown py-1 px-2 rounded">
+                @Html.DisplayNameFor(model => model.overall_status)
+            </p>
+        </td>
+        <td class="col">
+            <p class="bg-dark py-1 px-2 rounded">
+
+                @Html.DisplayFor(model => model.overall_status)
+            </p>
+        </td>*@
+                        <td class="col-xs-3 col-md-3">
+
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.LoggedBy)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+
+                                @Html.DisplayFor(model => model.LoggedBy)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-3">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.hse_officer)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+
+                                @Html.DisplayFor(model => model.hse_officer)
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-3">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.invest_team)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-3">
+                            <p class="bg-dark py-1 px-2 rounded">
+
+                                @Html.DisplayFor(model => model.invest_team)
+                            </p>
+                        </td>
+                    </tr>
+
+
+</table>
+            @if (objIncidentLTIList.lstIncidentLTIModels != null && objIncidentLTIList.lstIncidentLTIModels.Count > 0)
+            {
+
+
+                <h2 class="bg-dark pl-sm-2">  Accident Details</h2>
+
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped table-hover datatable-responsive">
+
+
+                        <thead>
+                            <tr class="bg-brown">
+                                <th>Injury details</th>
+                                <th>Type of Injury</th>
+                                <th>Investigation start date</th>
+                                <th>Investigation end date</th>
+                                <th>Name</th>
+                                <th>LTI (Hrs)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            @for (int index = 0; index < objIncidentLTIList.lstIncidentLTIModels.Count; index++)
+                            {
+                                <tr>
+                                    <td>@objIncidentLTIList.lstIncidentLTIModels[index].AccidentType</td>
+                                    <td>@objIncidentLTIList.lstIncidentLTIModels[index].injury_type</td>
+                                    <td>
+                                        @if (objIncidentLTIList.lstIncidentLTIModels[index].invest_start_date != null && objIncidentLTIList.lstIncidentLTIModels[index].invest_start_date > Convert.ToDateTime("01/01/0001"))
+                                        {
+                                            @Html.Label(objIncidentLTIList.lstIncidentLTIModels[index].invest_start_date.ToString("dd/MM/yyyy"))
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (objIncidentLTIList.lstIncidentLTIModels[index].invest_end_date != null && objIncidentLTIList.lstIncidentLTIModels[index].invest_end_date > Convert.ToDateTime("01/01/0001"))
+                                        {
+                                            @Html.Label(objIncidentLTIList.lstIncidentLTIModels[index].invest_end_date.ToString("dd/MM/yyyy"))
+                                        }
+                                    </td>
+                                    <td>@objIncidentLTIList.lstIncidentLTIModels[index].Emp_Id</td>
+                                    <td>@objIncidentLTIList.lstIncidentLTIModels[index].LTI_Hrs</td>
+                                </tr>
+                            }
+
+
+                        </tbody>
+                    </table>
+                </div>
+
+            }
+            <br />
+            @if (objActionList.lstIncidentReportModels != null && objActionList.lstIncidentReportModels.Count > 0)
+            {
+
+
+                <h2 class="bg-dark pl-sm-2">Action Details</h2>
+
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped table-hover datatable-responsive">
+
+
+                        <thead>
+                            <tr class="bg-brown">
+                                <th>Action to be taken</th>
+                                <th>Responsible Person</th>
+                                <th>Target Date</th>
+                                
+                                <th>Contractor</th>
+                                <th>Report</th>
+                                <th>Action Status</th>
+                                <th>Remarks</th>
+                                <th>Update Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            @for (int index = 0; index < objActionList.lstIncidentReportModels.Count; index++)
+                            {
+                                <tr>
+                                    <td>@objActionList.lstIncidentReportModels[index].incident_action</td>
+                                    <td>@objActionList.lstIncidentReportModels[index].resp_pers</td>
+                                    <td>
+                                        @if (objActionList.lstIncidentReportModels[index].target_date != null && objActionList.lstIncidentReportModels[index].target_date > Convert.ToDateTime("01/01/0001"))
+                                        {
+                                            @Html.Label(objActionList.lstIncidentReportModels[index].target_date.ToString("dd/MM/yyyy"))
+                                        }
+                                    </td>
+                                   
+                                    <td>@objActionList.lstIncidentReportModels[index].contractor</td>
+                                    <td>
+                                        @if (objActionList.lstIncidentReportModels[index].action_report != null && objActionList.lstIncidentReportModels[index].action_report != "" && objActionList.lstIncidentReportModels[index].action_report.Length > 0)
+                                        {
+
+                                            foreach (var docs in objActionList.lstIncidentReportModels[index].action_report.Trim(',').Split(','))
+                                            {
+                                                <span class="bg-dark py-1 px-2 rounded">
+                                                    <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank">Preview</a>
+                                                </span>
+                                            }
+                                        }
+                                        else
+                                        {
+
+                                            <span class="bg-dark py-1 px-2 rounded text-danger">No File</span>
+                                        }
+                                    </td>
+                                    <td>@objActionList.lstIncidentReportModels[index].incident_status</td>
+                                    <td>@objActionList.lstIncidentReportModels[index].remarks</td>
+                                    <td>
+                                        @if (objActionList.lstIncidentReportModels[index].update_date != null && objActionList.lstIncidentReportModels[index].update_date > Convert.ToDateTime("01/01/0001"))
+                                        {
+                                            @Html.Label(objActionList.lstIncidentReportModels[index].update_date.ToString("dd/MM/yyyy"))
+                                        }
+                                    </td>
+                                </tr>
+                            }
+
+
+                        </tbody>
+                    </table>
+
+                </div>
+
+            }
+            <br />
+            @if (objCloseList.lstIncidentReportModels != null && objCloseList.lstIncidentReportModels.Count > 0)
+            {
+
+
+                <h2 class="bg-dark pl-sm-2">Closeout Details</h2>
+
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped table-hover datatable-responsive">
+
+
+                        <thead>
+                            <tr class="bg-brown">
+                                <th>Closed By</th>
+                                <th>Investigation Results</th>
+                                <th>Report</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            @for (int index = 0; index < objCloseList.lstIncidentReportModels.Count; index++)
+                            {
+                                <tr>
+                                    <td>@objCloseList.lstIncidentReportModels[index].closed_by</td>
+                                    <td>@objCloseList.lstIncidentReportModels[index].invest_result</td>
+
+                                    <td>
+                                        @if (objCloseList.lstIncidentReportModels[index].invest_upload != null && objCloseList.lstIncidentReportModels[index].invest_upload != "" && objCloseList.lstIncidentReportModels[index].invest_upload.Length > 0)
+                                        {
+
+                                            foreach (var docs in objCloseList.lstIncidentReportModels[index].invest_upload.Trim(',').Split(','))
+                                            {
+                                                <span class="bg-dark py-1 px-2 rounded">
+                                                    <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank">Preview</a>
+                                                </span>
+                                            }
+                                        }
+                                        else
+                                        {
+
+                                            <span class="bg-dark py-1 px-2 rounded text-danger">No File</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+
+
+                        </tbody>
+                    </table>
+                </div>
+
+            }
+
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script type="text/javascript">
+                    //----zzz
+
+
+     $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+    });
+
+    //zzz----
+
+
+
+
+
+
+
+    </script>
+}

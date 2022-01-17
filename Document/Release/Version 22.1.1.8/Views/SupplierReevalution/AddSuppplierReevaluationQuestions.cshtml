@@ -1,0 +1,337 @@
+﻿@model ISOStd.Models.SurveyModels
+@using System.Data;
+@{
+    ViewBag.Title = "";
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+    DataSet dsSurveyRating = ViewBag.dsSurveyRating;
+}
+@section featured {
+
+    <div class="page-header page-header-light">
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Home</span>
+                    </a>
+                    <a href="@Url.Action("SupplierReevalutionList", "SupplierReevalution", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Supplier Reevaluation</span>
+                    </a>
+                    <span class="breadcrumb-item active">Supplier Reevaluation Questions and Rating factor</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            <div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+                    @*<div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>*@
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@using (Html.BeginForm("AddSuppplierReevaluationQuestions", "SupplierReevalution", FormMethod.Post, new { id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Supplier Reevaluation Questions and Rating factor</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+
+            <div class="row">
+                <div class="col-md-8">
+                    <fieldset class="border p-2">
+                        <legend class="font-weight-semibold"><i class="icon-file-text mr-2"></i>Supplier Re-evaluation Question Add/Remove</legend>
+                        <div class="form-group">
+                            Type
+                            <br />
+                            <input class="form-control" type="text" readonly id="Survey_TypeId" name="Survey_TypeId" value="Supplier Reevaluation" />
+                        </div>
+                        <div class="form-group">
+                            Question
+                            <br />
+                            <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="Questions" name="Questions" required></textarea>
+
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Add</button>
+                        </div>
+                    </fieldset>
+                </div>
+
+                @*<div class="col-md-4">
+                        <fieldset class="border p-2">
+                        <legend class="font-weight-semibold"><i class="icon-file-text mr-2"></i>Supplier Performance Questions</legend>
+                        <table class="table table-lg" id="tblMeetingList">
+
+                        </table>
+                         </fieldset>
+                    </div>*@
+
+                <div class="col-md-4">
+                    <fieldset class="border p-2">
+                        <legend class="font-weight-semibold"><i class="icon-file-text mr-2"></i>Rating factor list</legend>
+                        <table class="table table-lg" id="tbl_Agenda"></table>
+                    </fieldset>
+                </div>
+
+
+            </div>
+
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <fieldset class="border p-2">
+                    <legend class="font-weight-semibold"><i class="icon-file-text mr-2"></i>Supplier Reevaluation Questions</legend>
+                    <table class="table table-lg" id="tblMeetingList"></table>
+                </fieldset>
+            </div>
+        </div>
+    </div>
+
+}
+@section Scripts {
+    <script>
+
+        $(document).ready(function () {
+
+        @if (TempData["alertdata"] != null ) {
+
+           @: new Noty({
+                                               @:     text: '@TempData["alertdata"]',
+                                               @:     type: 'error'
+                                               @: }).show();
+                                                      }
+
+        @if (@TempData["Successdata"] != null ) {
+
+        @:    new Noty({
+                                             @:       text: '@TempData["Successdata"]',
+                                             @:       type: 'success'
+         @:}).show();
+                      }
+          });
+
+        $(function () {
+            GetSurveyQuestions();
+            GetSurveyRatings();
+
+        });
+        function UpdateQuestion(SQId) {
+
+            var Question = document.getElementById("Question " + SQId).value;
+
+
+            jQuery.ajax({
+                url: '@Url.Action("SuppReevalQuestionUpdate", "SupplierReevalution")',
+                type: 'POST',
+                dataType: "json",
+                data: {
+                    'SQId': SQId, 'Questions': Question
+                },
+                success: function (result) {
+                    var params = {
+                        View: 1
+                    };
+
+                    //// Add new params to the querystring dictionary
+                    queryString = $.param(params);
+
+                    window.location.href =
+                        window.location.protocol + "//" +
+                        window.location.host +
+                        window.location.pathname +
+                       '?' + queryString;
+                }
+            });
+
+        }
+
+
+        function GetSurveyQuestions() {
+            //var Survey_Type = $('#Survey_TypeId').val();
+            var Survey_Type = document.getElementById("Survey_TypeId").value;
+            //document.getElementById("Survey_Id").value = Survey_Type;
+            if (Survey_Type != "") {
+                jQuery.ajax({
+                    url: '@Url.Action("GetSurveyQuestions", "Survey")',
+                     type: 'POST',
+                     dataType: "json",
+                     data: { 'Survey_Type': Survey_Type },
+                     success: function (result) {
+
+                         var table = document.getElementById("tblMeetingList");
+                         //document.getElementById("divAgendasTitle").style.display = "";
+
+
+                         while (table.rows.length > 0) {
+                             table.deleteRow(0);
+                         }
+
+                         if (result != "") {
+
+                             document.getElementById("tblMeetingList").style.display = "";
+
+                             //var thTitleRow = table.insertRow();
+                             //thTitleRow.style = "background-color: #4cc4dd; color: #fff; font-weight: bold; font-size: 14px; height: 30px;";
+                             //var cellTitle0 = thTitleRow.insertCell(0);
+
+                             //cellTitle0.innerHTML = "Supplier Performance Questions";
+                             //table.rows[0].cells[0].colSpan = 2;
+                             //table.rows[0].cells[0].style = "color:#fff";
+
+
+                             var theaderRow = table.insertRow();
+
+                             //theaderRow.style = "background-color: #e5eafe; font-weight: bold; font-size: 14px;";
+                             var cellth0 = theaderRow.insertCell(0);
+                             var cellth1 = theaderRow.insertCell(1);
+                             // var cellth2 = theaderRow.insertCell(2);
+
+                             cellth0.innerHTML = "<th class='col-xs-6 col-md-6'>Questions</th>";
+                             cellth1.innerHTML = "<th class='col-xs-3 col-md-1'>Action</th>";
+                             // cellth2.innerHTML = "<th></th>";
+
+                             //table.rows[1].cells[0].style = "color:#0099ff";
+                             //table.rows[1].cells[1].style = "color:#0099ff";
+                             // table.rows[1].cells[2].style = "color:#0099ff";
+
+                             var list = result;
+                             for (var i = 0; i < result.length; i++) {
+
+                                 // Create an empty <tr> element and add it to the 1st position of the table:
+                                 var row = table.insertRow();
+
+                                 // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                                 var cell0 = row.insertCell(0);
+                                 var cell1 = row.insertCell(1);
+
+                                 var Id = result[i].Value;
+
+                                 cell0.innerHTML = " <textarea id='Question " + Id + "' name='Question " + Id + "' maxlength='2000' placeholder='Textarea' style='overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;'  class='form-control elastic maxlength-badge-position'>" + result[i].Text + "</textarea>";
+
+                                 cell1.innerHTML = " <span class='badge badge-info' title='Update' onclick='UpdateQuestion(" + Id + ")' style='cursor:pointer;'>Update</span>"
+                                 + "<a href='@Url.Action("SuppReevalQuestionsDelete", "SupplierReevalution")?SQId=" + Id
+                                 + "' title='Delete Supplier Reevaluation Question'> <span class='badge badge-danger'>Delete</span></a>";
+
+                             }
+                         }
+                         else {
+                             document.getElementById("tblMeetingList").style.display = "none";
+                             bootbox.alert({
+                                 title: '',
+                                 message: 'No Item exists, please add Items and then try again'
+                             });
+                         }
+
+                     }
+                 });
+             }
+         }
+
+         function GetSurveyRatings() {
+
+             var Survey_Type = document.getElementById("Survey_TypeId").value;
+             if (Survey_Type != "") {
+                 jQuery.ajax({
+                     url: '@Url.Action("GetSurveyRatings", "Survey")',
+                     type: 'POST',
+                     dataType: "json",
+                     data: { 'Survey_Type': Survey_Type },
+                     success: function (result) {
+
+                         var table = document.getElementById("tbl_Agenda");
+
+                         while (table.rows.length > 0) {
+                             table.deleteRow(0);
+                         }
+
+                         if (result != "") {
+
+                             document.getElementById("tbl_Agenda").style.display = "";
+
+                             //var thTitleRow = table.insertRow();
+                             ////thTitleRow.style = "background-color: #4cc4dd; color: #fff; font-weight: bold; font-size: 14px; height: 30px;";
+                             //var cellTitle0 = thTitleRow.insertCell(0);
+
+                             //cellTitle0.innerHTML = "Rating factor list";
+                             //table.rows[0].cells[0].colSpan = 3;
+                             //table.rows[0].cells[0].style = "color:#fff";
+
+                             var theaderRow = table.insertRow();
+
+                             //theaderRow.style = "background-color: #e5eafe; font-weight: bold; font-size: 14px;";
+                             var cellth0 = theaderRow.insertCell(0);
+                             var cellth1 = theaderRow.insertCell(1);
+                             //var cellth2 = theaderRow.insertCell(2);
+
+                             cellth0.innerHTML = "<th class='col-xs-3 col-md-2'>Rating Factor</th>";
+                             cellth1.innerHTML = "<th class='col-xs-3 col-md-2'>Weightage</th>";
+                             // cellth2.innerHTML = "<th>Action</th>";
+
+                             //table.rows[1].cells[0].style = "color:#0099ff";
+                             //table.rows[1].cells[1].style = "color:#0099ff";
+                             // table.rows[1].cells[2].style = "color:#0099ff";
+
+                             var list = JSON.parse(result);
+
+                             for (var i = 0; i < list.length; i++) {
+
+                                 // Create an empty <tr> element and add it to the 1st position of the table:
+                                 var row = table.insertRow();
+
+                                 // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                                 var cell0 = row.insertCell(0);
+                                 var cell1 = row.insertCell(1);
+                                 //   var cell2 = row.insertCell(2);
+                                 var Id = list[i].SQ_OptionsId;
+                                 var TypeId = list[i].Survey_TypeId;
+                                 //cell0.innerHTML = " <textarea readonly id='RatingOptions " + Id + "' name='RatingOptions " + Id + "'>" + list[i].RatingOptions + "</textarea>";
+                                 //cell1.innerHTML = " <textarea readonly id='Weightage " + Id + "' name='Weightage " + Id + "'>" + list[i].Weightage + "</textarea>";
+
+                                 cell0.innerHTML =  list[i].RatingOptions ;
+                                 cell1.innerHTML =  list[i].Weightage ;
+
+                             }
+                         }
+                         else {
+                             document.getElementById("tbl_Agenda").style.display = "none";
+                             bootbox.alert({
+                                 title: '',
+                                 message: 'No Item exists, please add Items and then try again'
+                             });
+                         }
+                     }
+                 });
+             }
+         }
+    </script>
+
+    @Scripts.Render("~/bundles/jqueryval")
+}

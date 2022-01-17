@@ -1,0 +1,282 @@
+﻿@model ISOStd.Models.TUVPerformAuditModels
+
+@{
+    ViewBag.Title = "PerformAudit";
+    System.Data.DataSet dsrating = new System.Data.DataSet();
+
+    if (ViewBag.AuditRating != null)
+    {
+        dsrating = ViewBag.AuditRating;
+    }
+}
+
+<div class="groupedassets margin10">
+    <span class="groupedassetshead margin10 onestphdcolor">Perform Audit</span>
+</div>
+<div id="divmsg">
+    @if (TempData["alertdata"] != null)
+        {
+        <span class="errMsg" style="color: red; font-weight: bold;">@TempData["alertdata"]</span>
+        }
+    @if (TempData["Successdata"] != null)
+        {
+        <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+        }
+</div>
+
+@using (Html.BeginForm("PerformAudit", "TUV", FormMethod.Post,
+                         new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <fieldset>
+        <legend>PerformAudit</legend>
+        <div class="editor-label">
+            <input type="hidden" id="id_audit_trans" name="id_audit_trans" value="@Model.id_audit_trans" />
+            <input type="hidden" id="CustID" name="CustID" value="@Model.CustID" />
+            <input type="hidden" id="Project_no" name="Project_no" value="@Model.Project_no" />
+            <input type="hidden" id="SupplierID" name="SupplierID" value="@Model.SupplierID" />
+
+        </div>
+        <table id="tabcontent">
+            <tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.SupplierName)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        @Html.DisplayFor(model => model.SupplierName)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.Audit_criteria)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        @Html.DisplayFor(model => model.Audit_criteria)
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.Audit_date)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <input type="text" id="Audit_date" name="Audit_date" readonly required style="width: 150px;" />
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.Auditors)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <textarea id="Auditors" name="Auditors" required></textarea>
+                    </div>
+                </td>
+
+            </tr>
+            <tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.Auditee)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <textarea id="Auditee" name="Auditee" required></textarea>
+                    </div>
+                </td>
+            </tr>
+        </table>
+        <table id="tabcontent">
+            <tr>
+                <th style="background-color: #e5eafe; color: #0099ff; width: 5px">Sr. No.
+                </th>
+                <th style="background-color: #e5eafe; color: #0099ff; width: 200px; min-width: 200px; max-width: 200px;">Element Checked
+                </th>
+                @if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                {
+                    for (int item = 0; item < dsrating.Tables[0].Rows.Count; item++)
+                    {
+                    <th style="background-color: #e5eafe; color: #0099ff; width: 5px">
+                        @dsrating.Tables[0].Rows[item]["Options"].ToString()
+                    </th>
+                    }
+                 }
+                <th style="background-color: #e5eafe; color: #0099ff; width: 5px">Finding Category</th>
+                <th style="background-color: #e5eafe; color: #0099ff; width: 5px">Remarks/NC Description</th>
+                <th style="background-color: #e5eafe; color: #0099ff; width: 5px">Evidence
+                </th>
+
+            </tr>
+            @if (ViewBag.AuditElements != null)
+            {
+                int iSrno = 0,itmctn=0;
+                foreach (var item in ViewBag.AuditElements)
+                {
+                  
+                    iSrno = iSrno + 1;
+                    itmctn = itmctn + 1;
+                <tr>
+                    <td>
+                        @iSrno
+                    </td>
+                    <td style="width: 200px; min-width: 200px; max-width: 200px;">
+                        @item.Text
+                        <input type="hidden" id="Questions @item.Value" name="Questions @item.Value" value="@item.Value"/>
+                    </td>
+                    @if (dsrating.Tables.Count > 0 && dsrating.Tables[0].Rows.Count > 0)
+                    {
+                        
+                        for (int rating = 0; rating < dsrating.Tables[0].Rows.Count; rating++)
+                        {
+                        <td style="width: 5px">
+                            <input type="radio" id="id_auditratings @item.Value" 
+                                    name="id_auditratings @item.Value" 
+                                    class="id_auditratings @item.Value" value="@dsrating.Tables[0].Rows[rating]["id_auditratings"].ToString()" required/>
+                        </td>
+                            }
+                        }
+                    <td>
+                        <div class="editor-field">
+                            <select class="chosen" id="finding_category @itmctn" name="finding_category @itmctn" >
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.FindingCategory != null)
+                            {
+                                foreach (var data in ViewBag.FindingCategory)
+                               {
+                                    <option value='@data'>@data</option>
+                                }
+                            }
+                            </select>
+                        </div>
+                    </td>
+                    <td style="width: 5px">
+
+                        <input type="text" id="comment @itmctn" name="comment @itmctn" style="height:60px;width:200px"/>
+                    </td>
+                    <td>
+                        <input type="file" name="evidence_upload @itmctn" id="evidence_upload @itmctn" onchange="FileFormatValidation(this,@itmctn)" accept=".pdf" style="height: 38px;"/>
+
+                    </td>
+
+                </tr>
+              
+               }
+                <tr style="display: none">
+                    <td>
+                        <input type="hidden" id="itmctn" name="itmctn" value="@itmctn" />
+
+                    </td>
+                </tr>
+            }
+
+        </table>
+
+    </fieldset>
+    <div style="width: 100%; text-align: center;">
+        @Html.ActionLink("Back to List", "AuditDetails", new { id_audit = Model.id_audit }, new { @class = "ActionLink", onclick = "HyperLinkProgressIconFunction()" })
+        <input type="submit" value="Save" onclick="ProgressIconFunction('#form1')" />
+
+    </div>
+    <div id="dvItems" style="overflow: auto; display: none;">
+        <table id="team-list" style="width: 100%">
+            <tr>
+                <th>Evidence</th>
+
+            </tr>
+        </table>
+    </div>
+}
+
+@section Scripts {
+    <script>
+       
+         $(function () {
+             $('.chosen').chosen();
+             $('#Audit_date').datepicker({
+                 dateFormat: "dd/mm/yy",
+                 buttonImageOnly: true,
+                 buttonImage: '../Images/Calender.png',
+                 showOn: 'both',
+                 changeMonth: true,
+                 changeYear: true,
+                 gotoCurrent: true,
+                 //maxDate: 0
+             });
+
+             $("#AuditDate").datepicker("setDate", new Date());
+
+         });
+       
+       
+         function FileFormatValidation(file,cnt) {
+            
+             var ext = file.value.split(".").pop().toLowerCase();
+             if ($.inArray(ext, ["doc", "pdf", "docx", "jpg", "jpeg", "gif"]) == -1) {
+                 file.value = "";
+                 jAlert("Invalid file format, please upload only doc, pdf, docx, jpg, jpeg, gif format");
+             }
+             else {
+               
+                 AddEvidence(cnt)
+             }
+            
+         }
+             function AddEvidence(cnt) {
+                
+                
+            
+                 var table = document.getElementById("team-list");      
+                 var row = table.insertRow();
+                 var cell0 = row.insertCell(0);
+                 var n = "evidence_upload" + " " + cnt;
+                 var evidence_upload = document.getElementById(n).value;
+                
+                 evidence_uploadServerPath = UploadDocument(cnt);           
+                 cell0.innerHTML = "<input type='hidden' id='evidence_upload" + cnt + "' name='evidence_upload" + cnt + "' value='" + evidence_uploadServerPath + "'>" + evidence_upload;
+              
+             }
+
+             function UploadDocument(ind) {
+                
+               
+                 var evidence_upload = ($("#evidence_upload" +" "+ ind)).files; //$('#testfile').file;
+                
+                 var formData = new FormData();
+            
+                 var totalFiles = document.getElementById("evidence_upload" + " "+ ind).files.length;
+                 
+                 for (var i = 0; i < totalFiles; i++) {
+                     var file = document.getElementById("evidence_upload" + " " + ind).files[i];
+                     formData.append("evidence_upload", file);
+                 }
+                 jQuery.ajax({
+                     url: '@Url.Action("UploadDocument", "TUV")',
+                     type: 'POST',
+                     contentType: false,
+                     processData: false,
+                     data: formData,
+                     success: function (result) {
+                        
+                         //document.getElementById("evidence_upload" + " " + ind).value = result;
+                         document.getElementById("evidence_upload" + ind).value = result;
+                         evidence_uploadServerPath = result;
+                         return result;
+                     }
+
+                 });
+             }
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

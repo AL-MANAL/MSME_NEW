@@ -1,0 +1,865 @@
+﻿@model ISOStd.Models.SurveySetupModel
+@{
+    ViewBag.Title = "SurveySetupWizard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+
+                    <span class="breadcrumb-item active"> Survey Setup</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+
+
+}
+
+@{
+    var step = 0;
+
+}
+
+
+<!-- Basic setup -->
+<div class="card">
+    <div class="card-header bg-white header-elements-inline">
+        <h6 class="card-title">Survey Setup</h6>
+        <div class="header-elements">
+            <div class="list-icons">
+                <a class="list-icons-item" data-action="collapse"></a>
+              
+            </div>
+        </div>
+    </div>
+
+    <form class="wizard-form steps-basic" action="#" data-fouc>
+        <h6>Survey Remote Url</h6>
+        <fieldset>
+
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+
+                        <i data-toggle="popover" class="icon-info22 float-right"></i>
+
+
+                        <label>Cloud Url:  </label>
+                        @if (ViewBag.Step1 != null && ViewBag.Step1 != "")
+                        {
+
+                            <input type="text" name="Cloud" id="Cloud" class="form-control jURL required" placeholder="Url for Survey" value="@ViewBag.Step1">
+
+
+
+                            step++;
+
+                        }
+                        else
+                        {
+                            <div>
+                                <input type="text" name="Cloud" id="Cloud" class="form-control jURL required" placeholder="Url for Survey">
+
+                            </div>
+                        }
+                    </div>
+                </div>
+
+
+            </div>
+
+        </fieldset>
+
+
+        <h6>User Check</h6>
+        <fieldset>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Email Id:</label>
+                        <input type="Email" name="CheckUser" id="CheckUser" placeholder="Email of existing user" class="form-control required">
+
+                    </div>
+
+
+
+
+
+                </div>
+
+
+            </div>
+        </fieldset>
+
+
+
+        <h6>Credentials</h6>
+        <fieldset>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group" id="Survey_email_cancel">
+                        <label>Email Id:</label>
+                        <input type="Email" readonly id="Survey_email" name="Survey_email" placeholder="Email of existing user" class="form-control required">
+
+                        <div class="form-group-feedback form-group-feedback-right invisible" id="Survey_email_div">
+                            <div class="form-control-feedback text-success">
+                                <i class="icon-checkmark-circle"></i>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="form-group" id="Survey_password_cancel">
+                        <label>Password:</label>
+                        <input type="password" readonly id="Survey_password" name="Survey_password" placeholder="password" class="form-control required">
+
+                        <div class="form-group-feedback form-group-feedback-right invisible" id="Survey_password_div">
+                            <div class="form-control-feedback text-success">
+                                <i class="icon-checkmark-circle"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+
+
+
+        </fieldset>
+
+
+
+    </form>
+
+
+
+
+
+
+
+
+
+
+
+</div>
+<!-- /basic setup -->
+
+
+
+<div class="card invisible" id="login_check_card">
+    <div class="card-header">
+        <div class="row">
+            <div class="col-md-10 offset-md-1">
+                <div class="header-elements-inline">
+                    <h5 class="card-title">Login Form Check</h5>
+                    <div class="header-elements">
+                        <div class="list-icons">
+                            <a class="list-icons-item" data-action="collapse"></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body">
+
+        <div class="col-md-10 offset-md-1">
+            @if (ViewBag.Step1 != null && ViewBag.Step1 != "")
+            {
+                using (Html.BeginForm(null, null, FormMethod.Post, new { onsubmit = "ConfirmUerCredentials();", id = "Survey_Login", @class = "form-horizontal", role = "form", action = ViewBag.Step1 + "/Survey/Account/LoginManal", target = "_blank" }))
+                {
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Email:</label>
+                            <input required type="email" id="main_email" name="Email" placeholder="Email" class="form-control">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Password:</label>
+                            <input required type="password" id="main_password" name="Password" class="form-control">
+                        </div>
+
+                        <div class="form-group d-flex align-items-center">
+
+
+                            <button type="button" class="btn btn-info" onclick="forgotManal()" id="Forgotbutton">Forgot password?</button>
+                        </div>
+                    </div>
+
+                    <div class="text-right">
+                        <button type="submit" class="btn btn-primary">Submit form <i class="icon-paperplane ml-2"></i></button>
+                    </div>
+                }
+            }
+            else
+            {
+                using (Html.BeginForm(null, null, FormMethod.Post, new { onsubmit = "ConfirmUerCredentials();", id = "Survey_Login", @class = "form-horizontal", role = "form", action = "", target = "_blank" }))
+                {
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Email:</label>
+                            <input required type="email" id="main_email" name="Email" placeholder="Email" class="form-control">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Password:</label>
+                            <input required type="password" id="main_password" name="Password" class="form-control">
+                        </div>
+
+                        <div class="form-group d-flex align-items-center">
+
+
+                            <button type="button" class="btn btn-info" onclick="forgotManal()" id="Forgotbutton">Forgot password?</button>
+                        </div>
+                    </div>
+
+                    <div class="text-right">
+                        <button type="submit" class="btn btn-primary">Submit form <i class="icon-paperplane ml-2"></i></button>
+                    </div>
+                }
+            }
+
+            
+
+
+
+            @if (ViewBag.Step1 != null && ViewBag.Step1 != "")
+            {
+                using (Html.BeginForm(null, null, FormMethod.Get, new { id = "Survey_ManalReset", @class = "form-horizontal invisible", role = "form", action = ViewBag.Step1 + "/Survey/Account/ResetPasswordManal", target = "_blank" }))
+                {
+                    <div class="col-md-6">
+
+                        <div class="form-group">
+                            <label>Manal Reset Code:</label>
+                            <input required type="password" name="code" class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="text-left">
+                        <button type="submit" class="btn btn-primary">Submit Code <i class="icon-code ml-2"></i></button>
+                    </div>
+                }
+            }
+            else
+            {
+
+                using (Html.BeginForm(null, null, FormMethod.Get, new { id = "Survey_ManalReset", @class = "form-horizontal invisible", role = "form", action = "", target = "_blank" }))
+                {
+                    <div class="col-md-6">
+
+                        <div class="form-group">
+                            <label>Manal Reset Code:</label>
+                            <input required type="password" name="code" class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="text-left">
+                        <button type="submit" class="btn btn-primary">Submit Code <i class="icon-code ml-2"></i></button>
+                    </div>
+                }
+
+            }
+
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+@section Scripts {
+
+
+    <script>
+ //----zzz
+    $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+
+        $('[data-toggle="popover"]').popover({
+
+            html: true,
+            content: "<div class='popover border-primary'><h3 class='popover-header'>EXAMPLE URLS</h3><div class='popover-body text-white'><div class='text-danger'>52.163.208.223</div><div class='text-success' > http://52.163.208.223,https://52.163.208.223</div></div></div>",
+            container: 'body'
+            //data: setData,
+
+
+        });
+
+        //Initialize tooltips
+
+
+        // Defaults
+
+
+    });
+    //zzz----
+
+        var swalInit = swal.mixin({
+            buttonsStyling: false,
+            confirmButtonClass: 'btn btn-primary',
+            cancelButtonClass: 'btn btn-light'
+        });
+
+
+        function forgotManal() {
+
+            $("#Survey_ManalReset").addClass('visible').removeClass('invisible');
+
+        }
+
+        function ChangeAction() {
+            var cloud = document.getElementById("Cloud").value;
+            cloud = cloud.replace(/\/$/, "");
+            document.getElementById("Survey_Login").action = cloud +"/Survey/Account/LoginManal";
+            document.getElementById("Survey_ManalReset").action = cloud +"/Survey/Account/ResetPasswordManal";
+
+
+        }
+             
+
+
+        function ConfirmUerCredentials() {
+
+            bootbox.confirm({
+                title: 'Confirm dialog',
+                message: 'Was Login Succesful? Click Yes , save credentials',
+                buttons: {
+                    confirm: {
+                        label: 'Yes',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'Cancel',
+                        className: 'btn-link'
+                    }
+                }, callback: function (r) {
+                    if (r == true) {
+                        var email = document.getElementById("main_email").value;
+                        var password = document.getElementById("main_password").value;
+                        document.getElementById("Survey_email").value = email;
+                        document.getElementById("Survey_password").value = password;
+
+                        $("#Survey_email_div").removeClass('invisible');
+                        $("#Survey_email_div").append($("#Survey_email").addClass('border-success'));
+                        $("#Survey_password_div").removeClass('invisible');
+                        $("#Survey_password_div").append($("#Survey_password").addClass('border-success'));
+                        var form2 = $('.steps-basic').show();
+                        form2.valid();
+
+
+                        return true;
+                    }
+                    else if (r == false) {
+                        $("#Survey_email_div").addClass('invisible');
+                        $("#Survey_password_div").addClass('invisible');
+                        $("#Survey_email_cancel").append($("#Survey_email").removeClass('border-success'));
+                        $("#Survey_password_cancel").append($("#Survey_password").removeClass('border-success'));
+                        document.getElementById("Survey_email").value = null;
+                        document.getElementById("Survey_password").value = null;
+
+
+                        bootbox.hideAll();
+                        return false;
+                    }
+                }
+
+
+                });
+        }
+
+
+        var FormWizardSurvey = function () {
+
+               var regx = new RegExp("^" +
+    // protocol identifier
+    "(?:(?:https?|http)://)" +
+    // user:pass authentication
+"(?:\\S+(?::\\S*)?@("@"))?" +
+    "(?:" +
+      // IP address exclusion
+      // private & local networks
+      "(?!(?:10|127)(?:\\.\\d{1,3}){3})" +
+      "(?!(?:169\\.254|192\\.168)(?:\\.\\d{1,3}){2})" +
+      "(?!172\\.(?:1[6-9]|2\\d|3[0-1])(?:\\.\\d{1,3}){2})" +
+      // IP address dotted notation octets
+      // excludes loopback network 0.0.0.0
+      // excludes reserved space >= 224.0.0.0
+      // excludes network & broacast addresses
+      // (first & last IP address of each class)
+      "(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])" +
+      "(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}" +
+      "(?:\\.(?:[1-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))" +
+    "|" +
+      // host name
+      "(?:(?:[a-z\\u00a1-\\uffff0-9]-*)*[a-z\\u00a1-\\uffff0-9]+)" +
+      // domain name
+      "(?:\\.(?:[a-z\\u00a1-\\uffff0-9]-*)*[a-z\\u00a1-\\uffff0-9]+)*" +
+      // TLD identifier
+      "(?:\\.(?:[a-z\\u00a1-\\uffff]{2,}))" +
+    ")" +
+    // port number
+    "(?::\\d{2,5})?" +
+    // resource path
+    "(?:/\\S*)?" +
+    "$", "i" );
+
+        function testurl(zz) {
+
+
+            zz.value = zz.value.replace(/\/$/, "");
+            var isURL = regx.test(zz.value);
+            if (isURL == true) {
+
+
+                $("#Cloud").addClass('border-success').removeClass('border-danger');
+
+
+            }
+            else {
+                $("#Cloud").addClass('border-danger').removeClass('border-success');
+
+            }
+
+            return isURL;
+        }
+
+
+            //
+            // Setup module components
+            //
+            // Wizard
+            var _componentWizard = function () {
+                if (!$().steps) {
+                    console.warn('Warning - steps.min.js is not loaded.');
+                    return;
+                }
+                var form2 = $('.steps-basic').show();
+
+                // Basic wizard setup
+                $('.steps-basic').steps({
+                    headerTag: 'h6',
+                    bodyTag: 'fieldset',
+                    transitionEffect: 'fade',
+                    titleTemplate: '<span class="number">#index#</span> #title#',
+                    labels: {
+                        previous: '<i class="icon-arrow-left13 mr-2" /> Previous',
+                        next: 'Next <i class="icon-arrow-right14 ml-2" />',
+                        finish: 'Submit form <i class="icon-arrow-right14 ml-2" />'
+                    },
+                    startIndex: @step,
+
+                    
+                    onStepChanging: function (event, currentIndex, newIndex) {
+
+                        // Allways allow previous action even if the current form is not valid!
+                        if (currentIndex > newIndex) {
+                            $("#login_check_card").addClass('invisible').removeClass('visible');
+                            $("#Survey_ManalReset").addClass('invisible').removeClass('visible');
+
+                            return true;
+                        }
+
+                        // Needed in some cases if the user went back (clean up)
+                        if (currentIndex < newIndex) {
+
+                            // To remove error styles
+                            form2.find('.body:eq(' + newIndex + ') label.error').remove();
+                            form2.find('.body:eq(' + newIndex + ') .error').removeClass('error');
+                        }
+
+                        form2.validate().settings.ignore = ':disabled,:hidden';
+                        form2.valid();
+
+                        if (currentIndex == 0 && form2.valid()) { //I suppose 0 is the first step
+
+
+                            var res = Step1();
+
+                            return res;
+                        }
+                        else if (currentIndex == 1 && form2.valid()) {
+
+                            $("#login_check_card").addClass('invisible').removeClass('visible');
+
+                            var res = step2();
+
+                            return res;
+
+
+                        }
+
+
+                    },
+
+                    onFinished: function (event, currentIndex) {
+                        if (form2.valid()) {
+                            Step3();
+                        }
+                    }
+                });
+
+
+
+                function Step1() {
+
+                    var cloud = document.getElementById("Cloud").value;
+                    cloud = cloud.replace(/\/$/, "");
+                    var resultmain;
+                    var url = testurl(document.getElementById("Cloud"));
+
+                    if (url == true) {
+
+
+
+                        var zz = jQuery.ajax({
+                            url: '@Url.Action("AddCloud", "SurveySetup")',
+                            type: 'POST',
+                            dataType: "json",
+                            async: false,
+                            data: { 'cloud': cloud },
+                            success: function (result) {
+                                if (result == "Success") {
+                                    new Noty({
+                                        text: 'Url for Cloud ,Saved Successfully',
+                                        type: 'success'
+                                    }).show();
+                                    resultmain = true;
+                                    ChangeAction();
+                                    return true;
+                                }
+                                else {
+                                    new Noty({
+                                        text: 'Something Went Wrong ,Couldnt Save url',
+                                        type: 'error'
+                                    }).show();
+                                    resultmain = false;
+                                    return false;
+                                }
+
+
+                            },
+                            error: function () {
+                                new Noty({
+                                    text: 'Something Went Wrong',
+                                    type: 'error'
+                                }).show();
+
+                                resultmain = false;
+                                return false;
+
+                                //this will prevent to go to next step
+                            }
+                        });
+                        return resultmain;
+                    }
+                    else {
+
+                        new Noty({
+                            text: 'Url Incorrect',
+                            type: 'error'
+                        }).show();
+
+                        return url;
+
+                    }
+
+                }
+
+                function step2() {
+
+                    var cloud = document.getElementById("Cloud").value;
+                    var CheckUser = document.getElementById("CheckUser").value;
+
+
+                        var zz=jQuery.ajax({
+                            url: cloud+"/Survey/Account/Checkuser",
+                            type: 'Get',
+                            data: { 'Email': CheckUser },
+
+                        dataType: "json",
+                        async: false,
+
+                        success: function (result) {
+                            if (result == "Success") {
+                                new Noty({
+                                    text: 'User found',
+                                    type: 'success'
+                                }).show();
+
+                                $("#login_check_card").addClass('visible').removeClass('invisible');
+
+                                resultmain = true;
+                                return true;
+                            }
+                            else if (result == "Failed") {
+
+                                const el = document.createElement('div')
+                                el.innerHTML = "Here's The Link  <a href='" + cloud +'/Survey/Account/Login' +"'>Register</a>"
+                                swalInit.fire({
+                                    title: 'Registration Required',
+
+                                    html: el,
+
+                                    type: 'info'
+                                } ,function() {
+                                    window.location = "redirectURL";
+                                });
+                            resultmain = false;
+                                return false;
+                            }
+
+
+                        },
+                            error: function () {
+
+                            new Noty({
+                                text: 'Something Went Wrong',
+                                type: 'error'
+                            }).show();
+
+                            resultmain = false;
+                            return false;
+
+                            //this will prevent to go to next step
+                        }
+                        });
+
+                    return resultmain;
+
+                }
+
+
+
+
+
+
+                 function Step3() {
+
+                  
+                    var resultmain;
+                   
+
+                    
+                     var main_email = document.getElementById("main_email").value;
+                     var main_password = document.getElementById("main_password").value;
+
+
+                        var zz = jQuery.ajax({
+                            url: '@Url.Action("AddCredentials", "SurveySetup")',
+                            type: 'POST',
+                            dataType: "json",
+                            async: false,
+                            data: { 'user': main_email, 'password': main_password },
+                            success: function (result) {
+                                if (result == "Success") {
+
+
+                                    swalInit.fire({
+                                        title: 'Good job!',
+                                        text: 'Setup Completed Successfully!',
+                                        type: 'success',
+                                        
+
+                                    }).then(function () {
+
+
+                                        window.location.href =
+                                            window.location.protocol + "//" +
+                                            window.location.host +
+                                            window.location.pathname;
+
+                                    });
+                                    resultmain = true;
+                                    return true;
+                                }
+                                else {
+                                    new Noty({
+                                        text: 'Something Went Wrong ,Couldnt Save Credentials',
+                                        type: 'error'
+                                    }).show();
+                                    resultmain = false;
+                                    return false;
+                                }
+
+
+                            },
+                            error: function () {
+                                new Noty({
+                                    text: 'Something Went Wrong',
+                                    type: 'error'
+                                }).show();
+
+                                resultmain = false;
+                                return false;
+
+                                //this will prevent to go to next step
+                            }
+                        });
+                        return resultmain;
+                    }
+                   
+                
+
+
+
+
+
+
+
+                // Initialize validation
+                $('.steps-basic').validate({
+                    ignore: 'input[type=hidden], .select2-search__field', // ignore hidden fields
+                    errorClass: 'validation-invalid-label',
+                    highlight: function (element, errorClass) {
+                        $(element).removeClass(errorClass);
+                    },
+                    unhighlight: function (element, errorClass) {
+                        $(element).removeClass(errorClass);
+                    },
+
+                    // Different components require proper error label placement
+                    errorPlacement: function (error, element) {
+
+                        // Unstyled checkboxes, radios
+                        if (element.parents().hasClass('form-check')) {
+                            error.appendTo(element.parents('.form-check').parent());
+                        }
+
+                        // Input with icons and Select2
+                        else if (element.parents().hasClass('form-group-feedback') || element.hasClass('select2-hidden-accessible')) {
+                            error.appendTo(element.parent());
+                        }
+
+                        // Input group, styled file input
+                        else if (element.parent().is('.uniform-uploader, .uniform-select') || element.parents().hasClass('input-group')) {
+                            error.appendTo(element.parent().parent());
+                        }
+
+                        // Other elements
+                        else {
+                            error.insertAfter(element);
+                        }
+                    },
+                    rules: {
+                        email: {
+                            email: true
+                        }
+                    }
+                });
+
+
+                // Stop function if validation is missing
+                if (!$().validate) {
+                    console.warn('Warning - validate.min.js is not loaded.');
+                    return;
+                }
+
+             
+            };
+
+            // Uniform
+            var _componentUniform = function () {
+                if (!$().uniform) {
+                    console.warn('Warning - uniform.min.js is not loaded.');
+                    return;
+                }
+
+                // Initialize
+
+            };
+
+
+
+            //
+            // Return objects assigned to module
+            //
+
+            return {
+                init: function () {
+                    _componentWizard();
+                    _componentUniform();
+
+                }
+            }
+        }();
+
+
+        // Initialize module
+        // ------------------------------
+
+        document.addEventListener('DOMContentLoaded', function () {
+            FormWizardSurvey.init();
+        });
+
+
+    </script>
+
+
+
+}
+
+

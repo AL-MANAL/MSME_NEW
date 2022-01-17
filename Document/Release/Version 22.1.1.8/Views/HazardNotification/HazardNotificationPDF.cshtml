@@ -1,0 +1,310 @@
+﻿@using System.Data
+@using ISOStd.Models;
+
+@{
+    ViewBag.Title = "HazardNotificationPDF";
+
+    ISOStd.Models.HazardNotificationModels obj = new ISOStd.Models.HazardNotificationModels();
+    if (ViewBag.Hazard != null)
+    {
+        obj = ViewBag.Hazard;
+    }
+    DataSet dsCompany = new DataSet();
+    if (ViewBag.CompanyInfo != null)
+    {
+        dsCompany = ViewBag.CompanyInfo;
+    }
+
+    Layout = "~/Views/Shared/_PrintLayout.cshtml";
+}
+
+<STYLE TYPE="text/css">
+    .breakhere {
+        page-break-after: always
+    }
+</STYLE>
+
+@Html.Partial("_ReportHeader", dsCompany)
+
+<div style="background-color:white">
+    <div>
+
+        <table class="table table-lg table-bordered">
+            <tr class="row">
+                <td colspan="4">
+                    <h3>Report Details</h3>
+                </td>
+            </tr>
+            <tr>
+                @*<td class="font-size-lg font-weight-bold">
+                    <div class="display-label">
+                        Control No
+                    </div>
+                </td>*@
+                <td class="font-size-lg font-weight-bold">
+                    <div class="display-label">
+
+                        Observed By
+
+                    </div>
+                </td>
+                <td class="font-size-lg font-weight-bold">
+                    <div class="display-label">
+
+                        Reported By
+
+                    </div>
+                </td>
+                <td class="font-size-lg font-weight-bold">
+                    <div class="display-label">
+
+                        Date
+
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                @*<td class="font-size-lg">
+                    <div class="display-field">
+                        @obj.control_no
+                    </div>
+                </td>*@
+                <td class="font-size-lg">
+                    <div class="display-field">
+                        @obj.observed_by
+                    </div>
+                </td>
+                <td class="font-size-lg">
+                    <div class="display-field">
+                        @obj.reported_by
+                    </div>
+                </td>
+                <td class="font-size-lg">
+                    <div class="display-field">
+                        @if (obj.notify_date != null && obj.notify_date > Convert.ToDateTime("01/01/0001"))
+                        {
+                            @obj.notify_date.ToString("dd/MM/yyyy")
+                        }
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td class="font-size-lg font-weight-bold">
+                    <div class="display-label">
+
+                        Department
+
+                    </div>
+                </td>
+                <td class="font-size-lg font-weight-bold">
+                    <div class="display-label">
+
+                        Division
+
+                    </div>
+                </td>
+                <td class="font-size-lg font-weight-bold">
+                    <div class="display-label">
+
+                        Location
+
+                    </div>
+                </td>
+                <td class="font-size-lg font-weight-bold">
+                    <div class="display-label">
+
+                        Activity Type
+
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td class="font-size-lg">
+                    <div class="display-field">
+                        @obj.dept
+                    </div>
+                </td>
+                <td class="font-size-lg">
+                    <div class="display-field">
+                        @obj.branch
+                    </div>
+                </td>
+                <td class="font-size-lg">
+                    <div class="display-field">
+                        @obj.location
+                    </div>
+                </td>
+                <td class="font-size-lg">
+                    <div class="display-field">
+                        @obj.activity_type
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="4">
+                    <div class="font-size-lg font-weight-bold">
+
+                        DESCRIPTION OF ACTIVITY/OPERATION:
+
+                    </div>
+                    <br />
+                    <div class="font-size-lg">
+                        @obj.description
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="4">
+                    <div class="font-size-lg font-weight-bold">
+
+                        HAZARD /ASPECT:
+
+                    </div>
+                    <br />
+                    <div class="font-size-lg">
+                        @obj.hazard_aspect
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="4">
+                    <div class="font-size-lg font-weight-bold">
+
+                        WHEN / IN WHAT CONDITIONS THE HARM / IMPACT CAN HAPPEN?
+
+                    </div>
+                    <br />
+                    <div class="font-size-lg">
+                        @obj.condition_impact
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="4">
+                    <div class="font-size-lg font-weight-bold">
+
+                        PEOPLE/ ENVIRONMENT LIKELY TO BE AFFECTED:
+
+                    </div>
+                    <br />
+                    <div class="font-size-lg">
+                        @obj.affected_env
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" class="font-size-lg font-weight-bold">
+                    REVIEW (By DMR) :  @obj.reviewed_by
+                </td>
+            </tr>
+            <tr>
+                <td class="font-size-lg font-weight-bold">
+                    <div class="display-label">
+
+                        Estimated Level of Risk:
+
+                    </div>
+                </td>
+                <td class="font-size-lg">
+                    <div class="display-field">
+                        @obj.level_risk
+                    </div>
+                </td>
+                <td class="font-size-lg font-weight-bold">
+                    <div class="display-label">
+
+                        Should the Work be Stopped immediately?
+
+                    </div>
+                </td>
+                <td class="font-size-lg">
+                    <div class="display-field">
+                        @obj.work_stopped
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td class="font-size-lg font-weight-bold">
+                    <div class="display-label">
+
+                        Immediate Control Measures Implemented:
+
+                    </div>
+                </td>
+                <td class="font-size-lg">
+                    <div class="display-field">
+                        @obj.control_measure
+                    </div>
+                </td>
+                <td class="font-size-lg font-weight-bold">
+                    <div class="display-label">
+
+                        Incorporated in HIRA/EIA Doc No.
+
+                    </div>
+                </td>
+                <td class="font-size-lg">
+                    <div class="display-field">
+                        @obj.incorporated_HIRA
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td class="font-size-lg font-weight-bold">
+                    <div class="display-label">
+
+                        Immediate Control Measures Implemented By:
+
+                    </div>
+                </td>
+                <td class="font-size-lg">
+                    <div class="display-field">
+                        @obj.incorporated_by
+                    </div>
+                </td>
+                <td class="font-size-lg font-weight-bold">
+                    <div class="display-label">
+
+                        Immediate Control Measures Implemented Date:
+
+                    </div>
+                </td>
+                <td class="font-size-lg">
+                    <div class="display-field">
+                        @if (obj.incorporated_date != null && obj.incorporated_date > Convert.ToDateTime("01/01/0001"))
+                        {
+                            @obj.incorporated_date.ToString("dd/MM/yyyy")
+                        }
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td class="font-size-lg font-weight-bold">
+                    <div class="display-label">
+
+                        Division Head
+
+                    </div>
+                </td>
+                <td class="font-size-lg">
+                    <div class="display-field">
+                        @obj.dept_head
+                    </div>
+                </td>
+                <td class="font-size-lg font-weight-bold">
+                    <div class="display-label">
+
+                        CMR-HSE
+
+                    </div>
+                </td>
+                <td class="font-size-lg">
+                    <div class="display-field">
+                        @obj.cmr_name
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+

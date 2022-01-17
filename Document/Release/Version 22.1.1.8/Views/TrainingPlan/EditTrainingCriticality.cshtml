@@ -1,0 +1,132 @@
+﻿@model ISOStd.Models.TrainingPlanModels
+
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4><span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Home</span>
+                    </a>
+                    <a href="@Url.Action("TrainingCriticalityList", "TrainingPlan", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Training Criticality</span>
+                    </a>
+                    <span class="breadcrumb-item active">Edit Training Criticality</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+}
+
+
+@using (Html.BeginForm("EditTrainingCriticality", "TrainingPlan", FormMethod.Post,
+           new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <input type="hidden" id="id_training_criticality" name="id_training_criticality" value="@Model.id_training_criticality" />
+
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Edit Training Criticality</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+                <table class="table table-lg">
+                    <tr class="row">
+                     
+                        <td class="col-xs-3 col-md-2">
+
+                            Type of training<text style="color:red;">*</text>
+
+                        </td>
+                        <td class="col">
+                            <input class="form-control" type="text" id="training_type" name="training_type" value="@Model.training_type" required/>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+
+                            No of days<text style="color:red;">*</text>
+
+                        </td>
+                        <td class="col">
+                            <input class="form-control" type="text" id="no_days" name="no_days" value="@Model.no_days" required />
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            Criticality<text style="color:red;">*</text>
+                        </td>
+
+                        <td class="col">
+                            <select class="form-control select-fixed-multiple" data-fouc id="criticality" name="criticality" required>
+                                <option value=''>Select</option>
+                                @if (ViewBag.criticality != null)
+                                {
+                                    foreach (var item in ViewBag.criticality)
+                                    {
+                                        if (item.Value == Model.criticality)
+                                        {
+                                            <option value='@item.Value' selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+            @Html.ActionLink("Back to List", "TrainingCriticalityList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+            <button type="submit" id="btnCreate" value="Update" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i>Update</button>
+        </div>
+    </div>
+}
+
+
+@section Scripts {
+    <script type="text/javascript">
+            //----zzz
+          $(document).ready(function () {
+
+
+
+                @if (TempData["alertdata"] != null ) {
+
+           @: new Noty({
+                                                   @:     text: '@TempData["alertdata"]',
+                                                   @:     type: 'error'
+                                                   @: }).show();
+                                        }
+
+                @if (@TempData["Successdata"] != null ) {
+
+        @:    new Noty({
+                                                 @:       text: '@TempData["Successdata"]',
+                                                 @:       type: 'success'
+                                                 @:   }).show();
+                                        }
+          });
+      
+    </script>
+}

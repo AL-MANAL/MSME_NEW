@@ -1,0 +1,268 @@
+﻿@{
+    ViewBag.Title = "QMS";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+
+                    <a href="@Url.Action("InspectionList", "Inspection", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Inspection List</span>
+                    </a>
+                    <span class="breadcrumb-item active"> Add Inspection Ratings</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+                    
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title></title>
+    <script type="text/javascript" src='@Url.Content("~/Charts/js/dashboard.js")'></script>
+</head>
+<body>
+
+    <div class="card-deck bg-secondary py-2">
+        <div class="card text-primary border-primary">
+            <div class="card-header">Management System Summary</div>
+            <div class="row">
+                <div class="col-sm-6 py-2">
+                    <div class="card text-white text-center card-body h-100 bg-danger">
+                        <h5 id="empcnt" class="card-tite"></h5>
+                        <p class="card-text">Active Employees</p>
+                    </div>
+                </div>
+                <div class="col-sm-6 py-2">
+                    <div class="card text-white text-center card-body h-100 bg-success">
+                        <h5 id="auditcnt" class="card-tite"></h5>
+                        <p class="card-text">Internal Audits</p>
+                    </div>
+                </div>
+                <div class="col-sm-6 py-2">
+                    <div class="card text-white text-center card-body h-100 bg-primary">
+                        <h5 id="nccnt" class="card-tite"></h5>
+                        <p class="card-text">Open NCs</p>
+                    </div>
+                </div>
+                <div class="col-sm-6 py-2">
+                    <div class="card text-white text-center card-body h-100 bg-warning">
+                        <h5 id="riskcnt" class="card-tite"></h5>
+                        <p class="card-text">Identified Risks</p>
+                    </div>
+                </div>
+                <div class="col-sm-6 py-2">
+                    <div class="card text-white text-center card-body h-100 bg-dark">
+                        <h5 id="doccnt" class="card-tite"></h5>
+                        <p class="card-text">No of documents</p>
+                    </div>
+                </div>
+                <div class="col-sm-6 py-2">
+                    <div class="card text-white text-center card-body h-100 bg-secondary">
+                        <h5 id="custcnt" class="card-tite"></h5>
+                        <p class="card-text">No of Customers</p>
+                    </div>
+                </div>
+                <div class="col-sm-6 py-2">
+                    <div class="card text-white text-center card-body h-100 bg-success">
+                        <h5 id="supcnt" class="card-tite"></h5>
+                        <p class="card-text">Approved Suppliers</p>
+                    </div>
+                </div>
+                <div class="col-sm-6 py-2">
+                    <div class="card text-white text-center card-body h-100 bg-info">
+                        <h5 id="Evesupcnt" class="card-tite"></h5>
+                        <p class="card-text">Evaluated Suppliers</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="card text-primary border-primary">
+            <div class="card-header">
+                Non Conformances(By Department)
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <div class="chart has-fixed-height" id="ncchart"></div>
+                </div>
+            </div>
+        </div>
+        <div class="card text-primary border-primary">
+            <div class="card-header">
+                Documents(By Document Type)
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <div class="chart has-fixed-height" id="docchart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-deck bg-secondary py-2">
+        <div class="card text-primary border-primary">
+            <div class="card-header">
+                Customer Complaints (By Monthly)
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <div class="chart has-fixed-height" id="complchart"></div>
+                </div>
+            </div>
+        </div>
+        <div class="card text-primary border-primary">
+            <div class="card-header">
+                Objectives
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <div class="chart has-fixed-height" id="hseobjectv"></div>
+                </div>
+            </div>
+        </div>
+        <div class="card text-primary border-primary">
+            <div class="card-header">
+                Risk Management
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <div class="chart has-fixed-height" id="risk"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-deck bg-secondary py-2">
+        <div class="card text-primary border-primary">
+            <div class="card-header">Action Tracking Summary</div>
+            <div class="row">
+                <div class="col-sm-6 py-2">
+                    <div class="card text-white text-center card-body h-100 bg-danger">
+                        <h5 id="extauditcnt" class="card-tite"></h5>
+                        <p class="card-text">External Audit</p>
+                    </div>
+                </div>
+                @*<div class="col-sm-6 py-2">
+                        <div class="card text-white text-center card-body h-100 bg-success">
+                            <h5 id="incidentcnt" class="card-tite"></h5>
+                            <p class="card-text">Incident Report</p>
+                        </div>
+                    </div>*@
+                <div class="col-sm-6 py-2">
+                    <div class="card text-white text-center card-body h-100 bg-primary">
+                        <h5 id="interauditcnt" class="card-tite"></h5>
+                        <p class="card-text">Internal Audit</p>
+                    </div>
+                </div>
+                <div class="col-sm-6 py-2">
+                    <div class="card text-white text-center card-body h-100 bg-warning">
+                        <h5 id="meetingcnt" class="card-tite"></h5>
+                        <p class="card-text">Meeting</p>
+                    </div>
+                </div>
+                <div class="col-sm-6 py-2">
+                    <div class="card text-white text-center card-body h-100 bg-success">
+                        <h5 id="nearmisscnt" class="card-tite"></h5>
+                        <p class="card-text">Near Miss</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card text-primary border-primary">
+            <div class="card-header">
+                BreakDown and Preventive Maintenance
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <div class="chart has-fixed-height" id="BPMaintenanceV"></div>
+                </div>
+            </div>
+        </div>
+        <div class="card text-primary border-primary">
+            <div class="card-header">
+                Trainings
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <div class="chart has-fixed-height" id="Trainingchart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
+@section Scripts {
+
+    <script>
+
+
+         //----zzz
+    $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+    });
+    //zzz----
+
+    </script>
+    <script type="text/javascript" src='@Url.Content("~/Charts/js/dashboard.js")'></script>
+
+    @Scripts.Render("~/bundles/jqueryval")
+}

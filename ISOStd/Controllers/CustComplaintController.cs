@@ -51,7 +51,7 @@ namespace ISOStd.Controllers
                 objUser = objGlobaldata.GetCurrentUserSession();
                 ViewBag.Name = objUser.firstname;
                 ViewBag.DeptName = objGlobaldata.GetDeptNameById(objUser.DeptID);
-                ViewBag.Designation = objUser.Designation;
+                ViewBag.Designation =objGlobaldata.GetDropdownitemById(objUser.Designation);
 
                 ViewBag.ForwardTo = objGlobaldata.GetSceenNotificationEmpList("Customer Complaints", "Forward complaint to");
                 //try
@@ -194,14 +194,17 @@ namespace ISOStd.Controllers
                 //UserCredentials objUser = new UserCredentials();
                 //objUser = objGlobaldata.GetCurrentUserSession();
                 //ViewBag.User = objUser.firstname;
+                string user = objGlobaldata.GetCurrentUserSession().empid;
                 string sBranch_name = objGlobaldata.GetCurrentUserSession().division;
                 string sBranchtree = objGlobaldata.GetCurrentUserSession().BranchTree;
                 ViewBag.Branch = objGlobaldata.GetMultiBranchListByID(sBranchtree);
 
                 //DATE_FORMAT(AuditDate,'%d/%m/%Y') AS
-                string sSqlstmt = "select id_complaint,ComplaintNo,LoggedDate,LoggedBy,CustomerName,ProjectName,ReceivedDate,ReportedBy,ModeOfComplaint,"
-                    + "Details,ForwardTo,ComplaintStatus,Document,ForwarderAssign,CustomerRef,a.branch,registered_on from t_custcomplaint a,t_customer_info b where" +
-                    " a.Active=1 and a.CustomerName=b.CustID";
+                string sSqlstmt = "select id_complaint,ComplaintNo,LoggedDate,LoggedBy,CustomerName,ProjectName,ReceivedDate,ReportedBy,ModeOfComplaint,Details,ForwardTo,ComplaintStatus,Document,a.ForwarderAssign,"
+                +"CustomerRef,a.branch,registered_on from t_custcomplaint a, t_customer_info b where a.Active = 1 and a.CustomerName = b.CustID and(find_in_set('"+user+ "', LoggedBy) or  find_in_set('" + user + "', ForwardTo)) UNION"
+                + " select  distinct a.id_complaint,ComplaintNo,LoggedDate,LoggedBy,CustomerName,ProjectName,"
+                +"ReceivedDate,ReportedBy,ModeOfComplaint,Details,ForwardTo,ComplaintStatus,Document,a.ForwarderAssign,CustomerRef,a.branch,registered_on"
+                + " from t_custcomplaint a, t_customer_info b,t_custcomplaint_nc t where a.Active = 1 and a.CustomerName = b.CustID and t.id_complaint = a.id_complaint and find_in_set('" + user + "', t.ForwarderAssign) ";
 
                 string sSearchtext = "";
 
@@ -216,14 +219,14 @@ namespace ISOStd.Controllers
                 //    ViewBag.yearval = objGlobaldata.GetDropdownitemById(year);
                 //    sSearchtext = sSearchtext + " and year(ReceivedDate) = '" + objGlobaldata.GetDropdownitemById(year) + "'";
                 //}
-                if (branch_name != null && branch_name != "")
-                {
-                    sSearchtext = sSearchtext + " and find_in_set('" + branch_name + "', a.branch)";
-                    ViewBag.Branch_name = branch_name;
-                }
+                //if (branch_name != null && branch_name != "")
+                //{
+                //    sSearchtext = sSearchtext + " and (find_in_set('" + branch_name + "', a.branch)";
+                //    ViewBag.Branch_name = branch_name;
+                //}
                 //else
                 //{
-                //    sSearchtext = sSearchtext + " and find_in_set('" + sBranch_name + "', a.branch)";
+                //    sSearchtext = sSearchtext + " and (find_in_set('" + sBranch_name + "', a.branch)";
                 //}
                 //if (ChangeIn != null && ChangeIn != "Select")
                 //{
@@ -251,7 +254,7 @@ namespace ISOStd.Controllers
                 //    }
                 //}
 
-                sSqlstmt = sSqlstmt + sSearchtext + "  order by ReceivedDate desc";
+                sSqlstmt = sSqlstmt + sSearchtext + " order by ReceivedDate desc";
                 DataSet dsComplaintModelsList = objGlobaldata.Getdetails(sSqlstmt);
 
                 if (dsComplaintModelsList.Tables.Count > 0 && dsComplaintModelsList.Tables[0].Rows.Count > 0)
@@ -3601,7 +3604,7 @@ namespace ISOStd.Controllers
                         PhoneNumber = (dsList.Tables[0].Rows[0]["PhoneNumber"].ToString()),
                         EmailId = (dsList.Tables[0].Rows[0]["EmailId"].ToString()),
                         MobileNumber = (dsList.Tables[0].Rows[0]["MobileNumber"].ToString()),
-                        designation = (dsList.Tables[0].Rows[0]["designation"].ToString())
+                        designation =objGlobaldata.GetDropdownitemById(dsList.Tables[0].Rows[0]["designation"].ToString())
                     };
                 }
                 return Json(objModels);

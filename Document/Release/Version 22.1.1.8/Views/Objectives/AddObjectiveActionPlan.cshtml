@@ -1,0 +1,450 @@
+﻿@*@model ISOStd.Models.ObjectivesModels*@
+@model IEnumerable<ISOStd.Models.ObjectivesModels>
+
+@{
+    ViewBag.Title = "AddObjectiveActionPlan";
+    DateTime dtTodate = Convert.ToDateTime(ViewBag.Obj_Estld_On);
+    dtTodate = dtTodate.AddDays(1);
+    int icont = 0;
+}
+
+
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a class="breadcrumb-item" onclick="HyperLinkProgressIconFunction();" href='@Url.Action("ObjectivesList", "Objectives", new { Objectives_Id = ViewBag.Objectives_Id,View=ViewBag.View } )'>
+                        <span class="breadcrumb-item"> Objectives</span>
+                    </a>
+                    <span class="breadcrumb-item active">Objective Action Plan</span>
+                </div>
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+}
+
+@using (Html.BeginForm("AddObjectiveActionPlan", "Objectives", FormMethod.Post,
+                         new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Objective Action Plan</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+                <input type="hidden" id="ObjectivesTrans_Id" name="ObjectivesTrans_Id" value="@ViewBag.ObjectivesTrans_Id" />
+                <input type="hidden" id="Objectives_Id" name="Objectives_Id" value="@ViewBag.Objectives_Id" />
+                <input type="hidden" id="view" name="view" value="@ViewBag.View" />
+                @*<h2 class="bg-dark pl-sm-2"> Objective Details</h2>
+                    <br />
+                    <table class="table table-lg">
+                        <thead></thead>
+                        <tbody>
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+                                    @Html.LabelFor(model => model.Objectives_val)
+                                </td>
+                                <td class="col">
+                                    <b><textarea class="form-control" id="Objectives_val" name="Objectives_val" readonly>@ViewBag.Objectives_val </textarea></b>
+                                </td>
+                            </tr>
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+                                    @Html.LabelFor(model => model.Obj_Target)
+                                </td>
+                                <td class="col">
+                                    <input class="form-control" type="text" id="Obj_Target" name="Obj_Target" value="@ViewBag.Obj_Target" readonly />
+                                <td class="col-xs-3 col-md-2">
+                                    @Html.LabelFor(model => model.Base_Line_Value)
+                                </td>
+                                <td class="col">
+                                    <input class="form-control" type="text" id="Base_Line_Value" name="Base_Line_Value" value="@ViewBag.Base_Line_Value" readonly />
+                                </td>
+                            </tr>
+                            <tr class="row">
+                                <td class="col-xs-3 col-md-2">
+                                    @Html.LabelFor(model => model.Monitoring_Mechanism)
+                                </td>
+                                <td class="col">
+                                    <input class="form-control" type="text" id="Monitoring_Mechanism" name="Monitoring_Mechanism" value="@ViewBag.Monitoring_Mechanism" readonly />
+                                </td>
+                                <td class="col-xs-3 col-md-2">
+                                    @Html.LabelFor(model => model.Target_Date)
+                                </td>
+                                <td class="col">
+                                    <input class="form-control" type="text" id="Target_Date" name="Target_Date" value="@ViewBag.Target_Date" readonly />
+                                </td>
+                            </tr>
+                    </table>
+                    <br />
+                    <h2 class="bg-dark pl-sm-2"> Add Task Details</h2>*@
+                <table class="table table-lg" id="tabcontent">
+                    <thead></thead>
+                    <tbody>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @*@Html.LabelFor(model => model.Obj_Ref)*@
+                                Action Plan Ref.<text style="color:red;">*</text>
+                            </td>
+                            <td class="col">
+                                @ViewBag.Obj_ref
+                                <input type="hidden" id="action_ref_no" name="action_ref_no" value="@ViewBag.Obj_ref" required />
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                @*@Html.LabelFor(model => model.begin_date)*@
+                                Planned On<text style="color:red;">*</text>
+                            </td>
+                            <td class="col">
+                                <input class="form-control" type="date" id="begin_date" name="begin_date" required />
+                            </td>
+                        </tr>
+
+
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @*@Html.LabelFor(model => model.actionplan)*@
+                                Action to be taken<text style="color:red;">*</text>
+                            </td>
+                            <td class="col">
+                                @*@Html.EditorFor(model => model.actionplan, new { htmlAttributes = new { @maxlength = "2000", @placeholder = "Textarea", @style = "overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;", @rows = "4", @cols = "4", @class = "form-control elastic maxlength-badge-position" } })*@
+
+                                <textarea class="form-control" type="text" id="actionplan" name="actionplan" required ></textarea>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                @*@Html.LabelFor(model => model.resource)*@
+                                Resource required
+                            </td>
+                            <td class="col">
+                                <textarea class="form-control" type="text" id="resource" name="resource"></textarea>
+                                @*@Html.EditorFor(model => model.resource, new { htmlAttributes = new { @maxlength = "2000", @placeholder = "Textarea", @style = "overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;", @rows = "4", @cols = "4", @class = "form-control elastic maxlength-badge-position" } })*@
+                            </td>
+                        </tr>
+
+                        <tr class="row">
+
+                            @*<td class="col-xs-3 col-md-2">
+                                    @Html.LabelFor(model => model.action_status)<text style="color:red;">*</text>
+                                </td>
+                                <td class="col">
+                                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="action_status" name="action_status" required="required">
+                                        <option value='' hidden>Select</option>
+                                        @if (ViewBag.Status != null)
+                                        {
+                                            foreach (var item in ViewBag.Status)
+                                            {
+                                                <option value='@item.Value'>@item.Text</option>
+                                            }
+                                        }
+                                    </select>
+                                </td>*@
+                            <td class="col-xs-3 col-md-2">
+                                @*@Html.LabelFor(model => model.end_date)*@
+                                Target Completion Date<text style="color:red;">*</text>
+                            </td>
+                            <td class="col">
+                                <input class="form-control" type="date" id="end_date" name="end_date" required onchange="checkDate();" />
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                @*@Html.LabelFor(model => model.resp_person)*@
+                                Personnel Responsible<text style="color:red;">*</text>
+                            </td>
+                            <td class="col">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="resp_person" name="resp_person" required="required">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.EmpList != null)
+                                    {
+                                        foreach (var item in ViewBag.EmpList)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                @*@Html.LabelFor(model => model.upload)*@
+                                File Upload
+                            </td>
+                            <td class="col">
+                                <input type="file" name="upload" id="upload" title="Objective Plan Upload" multiple onchange="FileFormatValidation(this)" accept=".pdf, .doc, .docx, .xls, .xlsx, .jpg, .jpeg, .png, image/*"
+                                       class="bootstrap-uploader" data-fouc />
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+            @Html.ActionLink("Back to List", "ObjectivesList", new { ObjectivesTrans_Id = ViewBag.ObjectivesTrans_Id, Objectives_Id = ViewBag.Objectives_Id, View = ViewBag.View }, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+            <button class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" type="submit" value="Save" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Save</button>
+        </div>
+    </div>
+}
+
+
+<div class="card">
+    <div class="card-body">
+        <h2 class="bg-dark pl-sm-2"> Objective Action Plan List</h2>
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped table-hover datatable-responsive" id="table1">
+                <thead>
+                    <tr class="bg-blue">
+                        <th>
+                            Action No
+                        </th>
+                        <th>
+                            Ref. Action Plan
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.begin_date)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.actionplan)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.resource)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.end_date)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.resp_person)
+                        </th>
+                        <th class="not-export-column">
+                            @Html.DisplayNameFor(model => model.upload)
+                        </th>
+                        <th class="not-export-column">Edit</th>
+                        <th class="not-export-column">Delete</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Count() > 0)
+                    {
+                        int i = 0;
+                        foreach (var item in Model)
+                        {
+                            i = i + 1;
+                    <tr>
+                        <td>
+                            @i.ToString()
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.action_ref_no)
+                        </td>
+                        <td>
+                            @if (item.begin_date != null && item.begin_date > Convert.ToDateTime("01/01/0001"))
+                            {
+                                @Html.Label(item.begin_date.ToString("dd/MM/yyyy"))
+                            }
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.actionplan)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.resource)
+                        </td>
+                        <td>
+                            @if (item.end_date != null && item.end_date > Convert.ToDateTime("01/01/0001"))
+                            {
+                                @Html.Label(item.end_date.ToString("dd/MM/yyyy"))
+                            }
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.resp_person)
+                        </td>
+                        <td>
+                            @*@if (item.upload != "")
+            {
+                <a href='@Url.Action("DisplayDocument", "Reports", new { Document = item.upload })' target="_blank">Preview</a>
+            }
+            else
+            {
+                <span class="badge badge-danger">No File was Uploaded</span>
+            }*@
+                            @if (item.upload != null && item.upload != "" && item.upload.Length > 0)
+                            {
+                                foreach (var docs in item.upload.Trim(',').Split(','))
+                                {
+                                    <p style="margin: 0px;">
+
+                                        <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" style="color: orange;">
+                                            Preview
+                                        </a>
+                                    </p>
+                                }
+                            }
+                            else
+                            {
+                                <span class="badge badge-danger">No File was Uploaded</span>
+                            }
+                        </td>
+                        <td>
+                            <a href='@Url.Action("ObjectiveActionPlanEdit", "Objectives", new { id_objective_action = item.id_objective_action , View= ViewBag.View })' title="Edit Objective Plan details"
+                               onclick="HyperLinkProgressIconFunction()">
+                                <span class="badge badge-info">Edit</span>
+                            </a>
+                        </td>
+                        <td>
+                            @*<a href='@Url.Action("ObjectiveActionPlanDelete", "Objectives", new { id_objective_action = item.id_objective_action , View= ViewBag.View })' title="Delete Objective Plan details"
+                               onclick="HyperLinkProgressIconFunction()">
+                                <span class="badge badge-danger">Delete</span>
+                            </a>*@
+                            <a onclick="DeleteItems(@item.id_objective_action)" title="Delete Objective Plan details">
+                               <span class="badge badge-danger">Delete</span>
+                            </a>
+                           
+                        </td>
+                    </tr>
+                        }
+                    }
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript">
+
+         $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }      
+        });
+
+        function checkDate() {
+
+            var dt1 = document.getElementById("begin_date").value;
+            var dt2 = document.getElementById("end_date").value;
+
+            if (new Date(dt2).getTime() < new Date(dt1).getTime()) {
+
+                bootbox.alert({
+                    title: 'To Date',
+                    message: 'End date cannot be before Begin date.'
+                });
+                $('#end_date').val("");
+            }
+        }
+
+        function FileFormatValidation(file) {
+            var ext = file.value.split(".").pop().toLowerCase();
+            if ($.inArray(ext, ["pdf", "jpg", "jpeg", "gif", "png","xls","xlsx","doc","docx"]) == -1) {
+                file.value = "";
+                bootbox.alert({
+                    title: 'File type',
+                    message: 'Invalid file format, please upload Pdf,docx,doc,xls,xlsx,png,gif,jpg,jpeg format.'
+                });
+            }
+        }
+
+        function DeleteItems(id_objective_action) {
+            bootbox.confirm({
+                title: 'Confirm dialog',
+                message: 'Are you Sure you want to Delete the current Record?',
+                buttons: {
+                    confirm: {
+                        label: 'Yes',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'Cancel',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (r) {
+                    if (r == true) {
+                      
+                        var sView = document.getElementById("view").value;
+                        var ObjectivesTrans_Id = document.getElementById("ObjectivesTrans_Id").value;
+                        
+                      jQuery.ajax({
+                           url: '@Url.Action("ObjectiveActionPlanDelete", "Objectives")',
+                           type: 'POST',
+                           dataType: "json",
+                          data: { 'id_objective_action': id_objective_action },
+                           success: function (result) {
+                            var params = {                             
+                                View: sView,
+                                ObjectivesTrans_Id: ObjectivesTrans_Id
+                            };
+                            queryString = $.param(params);
+
+
+                            window.location.href =
+                                window.location.protocol + "//" +
+                                window.location.host +
+                                window.location.pathname +
+                                '?' + queryString;
+
+                        }
+                    });
+                    return true;
+                }
+                else if (r == false) {
+                        bootbox.hideAll();
+                        return false;
+                    }
+                }
+            });
+        }
+
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
+

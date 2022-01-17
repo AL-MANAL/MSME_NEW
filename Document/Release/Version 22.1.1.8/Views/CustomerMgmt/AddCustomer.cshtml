@@ -1,0 +1,570 @@
+﻿@model ISOStd.Models.CustomerModels
+
+@{
+    ViewBag.Title = "Add Customer profile details";
+}
+
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                  <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Home</span>
+                    </a>
+                    <a href="@Url.Action("CustomerList", "CustomerMgmt", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Customer List</span>
+                    </a>
+                    <span class="breadcrumb-item active">Add Customer Details</span>
+                </div>
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+}
+
+@using (Html.BeginForm("AddCustomer", "CustomerMgmt", FormMethod.Post,
+                     new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Add Customer Details</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+
+                <table class="table table-lg">
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.branch)
+                        </td>
+                        <td class="col">
+                            <select class="form-control select-fixed-multiple" multiple="multiple" data-fouc id="branch" name="branch" onchange="GetDeptList()">
+                                @*<option value='' hidden>Select</option>*@
+                                @if (ViewBag.Branch != null)
+                                {
+                                    foreach (var data in ViewBag.Branch)
+                                    {
+                                        if (Array.IndexOf(Model.branch.ToString().Split(','), data.Value) >= 0)
+                                        {
+                                <option value='@data.Value' selected>@data.Text</option>
+                                        }
+                                        else
+                                        {
+                                <option value='@data.Value'>@data.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.Department)<text style="color:red;">*</text>
+                        </td>
+                        <td class="col">
+                            <select class="form-control select-fixed-multiple" data-fouc id="Department" name="Department" multiple="multiple" required>
+                                @if (ViewBag.Department != null)
+                                {
+                                    foreach (var item in ViewBag.Department)
+                                    {
+                                        if (Array.IndexOf(Model.Department.ToString().Split(','), item.Value) >= 0)
+                                        {
+                                <option value='@item.Value' selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                            <br />
+                            @Html.ValidationMessageFor(m => m.Department)
+                        </td>
+
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.Location)<text style="color:red;">*</text>
+                        </td>
+                        <td class="col">
+                            <select class="form-control select-fixed-multiple" data-fouc id="Location" name="Location" multiple="multiple" required>
+                                @if (ViewBag.Location != null)
+                                {
+                                    foreach (var item in ViewBag.Location)
+                                    {
+                                        if (Array.IndexOf(Model.Location.ToString().Split(','), item.Value) >= 0)
+                                        {
+                                <option value='@item.Value' selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                            <br />
+                            @Html.ValidationMessageFor(m => m.Location)
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.CompanyName)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.CompanyName, new { htmlAttributes = new { @required = "required", @class = "form-control" } })
+                                @Html.ValidationMessageFor(m => m.CompanyName)
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Address)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="Address" name="Address"></textarea>
+
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Cust_Code)
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.Cust_Code, new { htmlAttributes = new { @class = "form-control" } })
+
+                            </div>
+                        </td>
+                        @*<td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.FaxNumber)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                             
+                                <input class="form-control" type="text" id="FaxNumber" name="FaxNumber" />
+                            </div>
+                        </td>*@
+                    </tr>
+
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.City)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.City, new { htmlAttributes = new { @class = "form-control" } })
+
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Country)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.Country, new { htmlAttributes = new { @class = "form-control" } })
+
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.PostalCode)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.PostalCode, new { htmlAttributes = new { @class = "form-control" } })
+
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.CustType) <text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="CustType" name="CustType" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.CustType != null)
+                                    {
+                                        foreach (var item in ViewBag.CustType)
+                                        {
+                                            if (item.Text == "External")
+                                            {
+                                    <option value='@item.Value' selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                    <option value='@item.Value'>@item.Text</option>
+                                            }
+
+                                        }
+                                    }
+                                </select>
+                                <br />
+                                @Html.ValidationMessageFor(m => m.CustType)
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Email_Id)
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <div class="editor-field">
+                                @* @Html.EditorFor(model => model.Email_Id, new { htmlAttributes = new {  @class = "form-control"  } })
+                                *@
+                                <input class="form-control" type="text" id="Email_Id" name="Email_Id" />
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.VatNo)
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <div class="editor-field">
+                                <input class="form-control" type="text" id="VatNo" name="VatNo" />
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.LicenceExpiry)
+                        </td>
+                        <td class="col">
+                            <input class="form-control" type="date" id="LicenceExpiry" name="LicenceExpiry" />
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.upload)
+                        </td>
+                        <td class="col">
+                            <input type="file" name="upload" id="upload" title="Plan Report documents" onchange="FileFormatValidation(this)" multiple="multiple"
+                                   accept=".pdf,.xlsx,.xls,.jpeg,.jpg,.png,.doc,.docx,image/*" class="bootstrap-uploader" data-fouc />
+
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+  
+
+
+        <fieldset class="border p-2">
+            <legend class="font-weight-semibold"><i class="icon-file-text mr-2"></i>Customer Contact Person Details</legend>
+
+            <table class="table table-lg">
+
+                <tr class="row">
+
+                    <td class="col-xs-3 col-md-2">
+                        <div class="editor-label">
+                            Contact Person Name
+                        </div>
+                        <div class="editor-field">
+                            <input class="form-control" type="text" id="ContactPerson" name="ContactPerson" />
+                            <span class="field-validation-error"><label id="ContactPerson-message" class="validation-invalid-label" style="display:none" for="basic">This field is required.</label> </span>
+                        </div>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        <div class="editor-label">
+                            Designation
+                        </div>
+                        <div class="editor-field">
+                            <input class="form-control" type="text" id="designation" name="designation" />
+                        </div>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        <div class="editor-label">
+                            Email Id
+                        </div>
+                        <div class="editor-field">
+                            <input class="form-control" type="text" id="EmailId" name="EmailId" />
+                        </div>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        <div class="editor-label">
+                            Office Number
+                        </div>
+                        <div class="editor-field">
+                            <input class="form-control" type="text" id="PhoneNumber" name="PhoneNumber" />
+                        </div>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        <div class="editor-label">
+                            Mobile Number
+                        </div>
+                        <div class="editor-field">
+                            <input class="form-control" type="text" id="MobileNumber" name="MobileNumber" />
+                        </div>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        <input type="button" value="Add" class="btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400" onclick="AddLTI()" />
+
+                    </td>
+                </tr>
+
+            </table>
+        </fieldset>
+
+
+
+        <div class="card invisible" id="hidden card" style="display:none">
+            <div class="card-header header-elements-inline">
+                <h5 class="card-title">Customer Contact Person Details</h5>
+                <div class="header-elements">
+                    <div class="list-icons">
+                        <a class="list-icons-item" data-action="collapse"></a>
+
+                        <a class="list-icons-item" data-action="remove"></a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body">
+
+                <input type="hidden" id="itemcnt" name="itemcnt" value="0" />
+
+                <div class="card card-table table-responsive shadow-0 mb-0">
+                    <table class="table" id="team-list">
+                        <tr class="bg-blue">
+                            <th>Action</th>
+                            <th>Contact Person Name</th>
+                            <th>Designation</th>
+                            <th>Email Id</th>
+                            <th>Office Number</th>
+                            <th>Mobile Number</th>
+                        </tr>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+            @Html.ActionLink("Back to List", "CustomerList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+
+            <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i>Save</button>
+        </div>
+    </div>
+}
+
+
+@section Scripts {
+    <script>
+
+
+        $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+                @:     text: '@TempData["alertdata"]',
+                @:     type: 'error'
+                @: }).show();
+                   }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+                @:       text: '@TempData["Successdata"]',
+                @:       type: 'success'
+        @:}).show();
+                   }
+        });
+
+
+
+        var showClass = 'is-visible';
+        var hideClass = 'invisible';
+
+        function Validation() {
+            var validflg = true;
+            var ssnMessage = "";
+         
+            if (document.getElementById("ContactPerson").value == "") {
+                ssnMessage = $('#ContactPerson-message');
+                ssnMessage.show();
+                validflg = false;
+            }
+            else {
+                ssnMessage = $('#ContactPerson-message');
+                ssnMessage.hide();
+            }
+           
+            return validflg;
+        }
+        function deleteRow(btn) {
+            var row = btn.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+        }
+        function AddLTI() {
+
+             if (Validation() == true) 
+            {
+
+                var cnt = document.getElementById("itemcnt").value;
+                document.getElementById("hidden card").style.display = "block";
+                document.getElementById("itemcnt").value = cnt;
+                // Find a <table> element with id="myTable":
+                var table = document.getElementById("team-list");
+
+
+                // Create an empty <tr> element and add it to the 1st position of the table:
+                var row = table.insertRow();
+
+
+                // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                var cell0 = row.insertCell(0);
+                var cell1 = row.insertCell(1);
+                var cell2 = row.insertCell(2);
+                var cell3 = row.insertCell(3);
+                var cell4 = row.insertCell(4);
+                var cell5 = row.insertCell(5);
+
+               
+                var ContactPerson = $('#ContactPerson').val();
+                var designation = $('#designation').val();
+                var EmailId = $('#EmailId').val();
+                var PhoneNumber = $('#PhoneNumber').val();
+                var MobileNumber = $('#MobileNumber').val();
+
+                cell0.innerHTML = " <img src='@Url.Content("~/images/cancel.png")' onclick='deleteRow(this)' style='cursor:pointer; padding-right: 5px;'/>Remove";
+                cell1.innerHTML = "<input type='hidden' id='ContactPerson " + cnt + "' name='ContactPerson " + cnt + "' value='" + ContactPerson + "'/>" + ContactPerson;
+                cell2.innerHTML = "<input type='hidden' id='designation " + cnt + "' name='designation " + cnt + "' value='" + designation + "'/>" + EmailId;
+                cell3.innerHTML = "<input type='hidden' id='EmailId " + cnt + "' name='EmailId " + cnt + "' value='" + EmailId + "'/>" + EmailId;
+                cell4.innerHTML = "<input type='hidden' id='PhoneNumber " + cnt + "' name='PhoneNumber " + cnt + "' value='" + PhoneNumber + "'/>" + PhoneNumber;
+                cell5.innerHTML = "<input type='hidden' id='MobileNumber " + cnt + "' name='MobileNumber " + cnt + "' value='" + MobileNumber + "'/>" + MobileNumber;
+
+                cnt++;
+                document.getElementById("itemcnt").value = cnt;
+
+                document.getElementById("hidden card").classList.remove(hideClass);
+                document.getElementById("hidden card").classList.add(showClass);
+
+                document.getElementById("ContactPerson").value = "";
+                document.getElementById("designation").value = "";
+                document.getElementById("EmailId").value = "";
+                document.getElementById("PhoneNumber").value = "";
+                document.getElementById("MobileNumber").value = "";
+
+                ssnMessage = $('#ContactPerson-message');
+                ssnMessage.hide();
+              
+            }
+
+        }
+
+        function FileFormatValidation(file) {
+            var ext = file.value.split(".").pop().toLowerCase();
+            if ($.inArray(ext, ["doc", "pdf", "docx", "xlsx","xls","jpg", "jpeg", "gif", "png"]) == -1) {
+                file.value = "";
+                jAlert("Invalid file format, please upload only doc, pdf, docx, jpg, jpeg, gif, png format");
+            }
+        }
+
+         function GetDeptList() {
+            var selectedValues = [];
+            $("#branch :selected").each(function () {
+                selectedValues.push($(this).val());
+            });  
+                jQuery.ajax({
+                    url: '@Url.Action("FunGetAllDeptList", "EmployeeDetails")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'branch': selectedValues },
+                    success: function (result) {
+                        GetLocList(selectedValues);
+                        $("#Department").children('option').remove();
+                        $("#Department").trigger('change');
+                        if (result != null && result.length > 0) {
+                            $.each(result, function (index, item) {
+                                $("#Department").append("<option value='" + item.Value + "'>" + item.Text + "</option>");                              
+                            });
+                            $("#Department").trigger('change');
+                            return;
+                        }                        
+                    }
+                });          
+        }
+
+
+        function GetLocList(selectedValues) {                   
+            jQuery.ajax({
+                url: '@Url.Action("FunGetAllLocList", "EmployeeDetails")',
+                type: 'POST',
+                dataType: "json",
+                data: { 'branch': selectedValues },
+                success: function (result) {
+                    $("#Location").children('option').remove();
+                    $("#Location").trigger('change');
+                    if (result != null && result.length > 0) {
+                        $.each(result, function (index, item) {
+                            $("#Location").append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                            $("#Location").trigger('change');
+                        });
+                        return;
+                    }                  
+                }
+            });       
+        }
+
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

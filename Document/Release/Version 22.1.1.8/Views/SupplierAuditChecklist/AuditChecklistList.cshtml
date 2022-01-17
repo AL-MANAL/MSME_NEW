@@ -1,0 +1,186 @@
+﻿@using PagedList;
+@using PagedList.Mvc;
+
+@model IPagedList<ISOStd.Models.SupplierAuditChecklistModels>
+
+@{
+    ViewBag.Title = "AuditChecklist";
+}
+
+<div class="groupedassets margin10">
+    <span class="groupedassetshead margin10 onestphdcolor">Audit Checklists</span>
+</div>
+    @*<div class = "ActionLink">@Html.ActionLink("Add New", "AddMgmtDocuments", null, new { @class = "ActionLink", onclick="HyperLinkProgressIconFunction()" })</div>*@
+
+<div id="divmsg">
+    @if (TempData["alertdata"] != null)
+    {
+        <span class="errMsg" style="color: red;font-weight: bold;">@TempData["alertdata"]</span>
+    }
+    @if (TempData["Successdata"] != null)
+    {
+        <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+    }
+</div>
+    <br />
+@using (Html.BeginForm("AuditChecklistList", "SupplierAuditChecklist", FormMethod.Post, new { id = "form1", name = "form1" }))
+{
+    <div class="editor-field">
+             
+    <span style="margin-left:20px"> @Html.ActionLink("Audit Questions", "AddAuditElements", null, new { @class = "ActionLink",onclick = "HyperLinkProgressIconFunction()" })</span>
+    <span style="margin-left:20px"> @Html.ActionLink("Generate Audit Checklist", "GenerateAuditChecklist", null, new { @class = "ActionLink",onclick = "HyperLinkProgressIconFunction()" })</span>
+            </div>   
+}
+<br />
+
+
+
+    @Html.PagedListPager(Model, page => Url.Action("SupplierAuditChecklist",
+    new
+    {
+        page,
+        SearchText = Request.QueryString["SearchText"],
+
+    }),
+    new PagedListRenderOptions() { Display = PagedListDisplayMode.IfNeeded, DisplayPageCountAndCurrentLocation = true })
+
+
+<div id="content">
+    <table id="table1">
+        <thead>
+            <tr>
+                <th style="width:100px;min-width:100px; max-width:100px;">
+                    @Html.DisplayNameFor(model => model.First().Itemno)
+                </th>
+                <th style="width:250px;min-width:250px; max-width:250px;">
+                    @Html.DisplayNameFor(model => model.First().Department)
+                </th>
+                <th style="width:250px;min-width:250px; max-width:250px;">
+                    @Html.DisplayNameFor(model => model.First().Business)
+                </th>
+                <th style="width:250px;min-width:250px; max-width:250px;">
+                    @Html.DisplayNameFor(model => model.First().Supplier)
+                </th>
+                <th style="width:250px;min-width:250px; max-width:1000px;">
+                    @Html.DisplayNameFor(model => model.First().AuditCriteria)
+                </th>    
+                <th style="width:100px;min-width:100px; max-width:100px;">Edit Checklist</th>
+                <th style="width:100px;min-width:100px; max-width:100px;">Perform Audit</th>
+                 <th style="width:100px;min-width:100px; max-width:100px;">Audit Checklist Details</th>
+               
+                 @if (ViewBag.DeleteFlg != null && ViewBag.DeleteFlg == true)
+                {
+                    <th style="width: 60px; min-width: 60px; max-width: 60px;">Delete</th>
+                }
+               
+          
+                
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Count() > 0)
+            {
+                foreach (var item in Model)
+                {
+                    <tr>
+                        <td style="width:100px; min-width:100px; max-width:100px;">
+                              @Html.DisplayFor(modelItem => item.Itemno)
+                        </td>
+                       <td style="width:250px; min-width:250px; max-width:250px;">
+                            @Html.DisplayFor(modelItem => item.Department)
+                        </td>
+                        <td style="width:250px; min-width:250px; max-width:250px;">
+                            @Html.DisplayFor(modelItem => item.Business)
+                        </td>
+                        <td style="width:250px; min-width:250px; max-width:250px;">
+                            @Html.DisplayFor(modelItem => item.Supplier)
+                        </td>
+                        <td style="width:250px; min-width:250px; max-width:1000px;">
+                            @Html.Raw(HttpUtility.HtmlDecode(item.AuditCriteria))
+                        </td>
+                        
+                        <td style="width:100px;min-width:100px; max-width:100px;">
+                      
+                                <a href='@Url.Action("AuditChecklistEdit", "SupplierAuditChecklist", new { id_AuditChecklist = item.id_AuditChecklist })' title="Edit Audit Checklist" onclick="HyperLinkProgressIconFunction()">
+                               <span class="glyphicon glyphicon glyphicon-edit iocnstatus-edit" onclick="HyperLinkProgressIconFunction()"></span>
+                                 </a>
+                 
+                        </td>
+                        
+                         <td style="width:100px;min-width:100px; max-width:100px;">
+                            <a href='@Url.Action("PerformAudit", "SupplierAuditChecklist", new { id_AuditChecklist = item.id_AuditChecklist })'  title="Perform Audit" onclick="HyperLinkProgressIconFunction()">
+                               <span class="glyphicon glyphicon glyphicon-user iocnstatus-edit" onclick="HyperLinkProgressIconFunction()"></span>
+                                 </a>
+                          
+                        </td>
+                         <td style="width:100px;min-width:100px; max-width:100px;">     
+                         
+                          <a href='@Url.Action("AuditList", "SupplierAuditChecklist", new { id_AuditChecklist = item.id_AuditChecklist  })'  title="Audit checklist Details" onclick="HyperLinkProgressIconFunction()" >
+                               <span class="glyphicon glyphicon glyphicon-menu-hamburger iocnstatus-edit" onclick="HyperLinkProgressIconFunction()"></span>
+                          </a>               
+                          </td>
+                        
+                        
+                        @if (ViewBag.DeleteFlg != null && ViewBag.DeleteFlg == true)
+                        {
+                            <td style="width: 60px; min-width: 60px; max-width: 60px;">
+
+                                @*<a href='@Url.Action("CustomerEnquiryDelete", "CustomerEnquiry", new { enquiry_id = item.Enquiry_id.ToString() })' title="Delete Enquiry" >*@
+                                <img src="@Url.Content("~/Images/delete.png")" title="Delete Checklist" onclick="DeleteItems(@item.id_AuditChecklist)" style="cursor:pointer;" />
+                            </td>
+                        }
+
+                       
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="10">
+                        <div style="text-align: center;">
+                            <h4 style="color: grey;">No data exists</h4>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+</table>
+</div>
+@section scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript">
+
+        function DeleteItems(id_AuditChecklist) {
+            jConfirm('Do you want to delete?', 'Are you Sure?', function (r) {
+                if (r == true) {
+                    jQuery.ajax({
+                        url: '@Url.Action("AuditChecklistDocDelete", "SupplierAuditChecklist")',
+                        type: 'POST',
+                        dataType: "json",
+                        data: { 'id_AuditChecklist': id_AuditChecklist },
+                        success: function (result) {
+                            var params = {
+                                View: 1
+                            };
+
+                            //// Add new params to the querystring dictionary
+                            queryString = $.param(params);
+
+                            window.location.href =
+                                window.location.protocol + "//" +
+                                window.location.host +
+                                window.location.pathname +
+                               '?' + queryString;
+                        }
+                    });
+                    return true;
+                }
+                else if (r == false) {
+                    return false;
+                }
+            });
+        }
+    </script>
+
+}

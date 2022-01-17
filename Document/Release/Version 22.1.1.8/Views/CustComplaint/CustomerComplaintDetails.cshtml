@@ -1,0 +1,1315 @@
+﻿@model ISOStd.Models.CustComplaintModels
+@using System.Data;
+
+@{
+    ViewBag.Title = "";
+
+    ISOStd.Models.clsGlobal objGlobal = new ISOStd.Models.clsGlobal();
+    ISOStd.Models.CustComplaintModels obj = new ISOStd.Models.CustComplaintModels();
+
+    ISOStd.Models.CustComplaintModelsList NcOverallList = new ISOStd.Models.CustComplaintModelsList();
+    if (ViewBag.NcOverallList != null)
+    {
+        NcOverallList = ViewBag.NcOverallList;
+    }
+}
+
+
+@section featured {
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4><span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Home</span>
+                    </a>
+                    <a href="@Url.Action("CustomerComplaintList", "CustComplaint", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Customer Complaints</span>
+                    </a>
+                    <span class="breadcrumb-item active">Customer Complaints Detail</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+            <div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+                    @*@if (objGlobal.GetCurrentUserSession().Complaints.Contains("4"))
+        {
+            using (Html.BeginForm("CustomerComplaintReport", "CustComplaint", FormMethod.Post, new { id = "form1", name = "form1" }))
+            {
+                @Html.AntiForgeryToken()
+                <div class="breadcrumb-elements-item dropdown p-0">
+                    <input type="hidden" id="id_complaint" name="id_complaint" value="@Model.id_complaint" />
+                    <button type="submit" class="dropdown-item">
+                        <i class="icon-printer2"></i> Report
+                    </button>
+                </div>
+            }
+        }*@
+                    @if (objGlobal.GetCurrentUserSession().Complaints.Contains("4"))
+                    {
+                            @Html.AntiForgeryToken()
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href='@Url.Action("CustomerComplaintReport", "CustComplaint", new { id_complaint = Model.id_complaint })' title="PDF Report">
+                            <i class="icon-printer2"></i>Report
+                        </a>
+                        &nbsp;&nbsp;&nbsp;&nbsp;
+                        <a href='@Url.Action("CustComplaintPDFReportFormat", "CustComplaint", new { id_complaint = Model.id_complaint })' title="Format PDF Report">
+                            <i class="icon-printer2"></i>Report Setting
+                        </a>
+                    </div>                       
+                    }
+                  
+                </div>
+            </div>
+        </div>
+    </div>
+
+}
+
+<div class="card-body">
+    <div class="container-fluid">
+
+        <table class="table table-dark table-bordered table-striped table-hover bg-blue-800">
+            <thead></thead>
+            <tr class="row">
+                <td class="col-xs-3 col-md-2">
+                    <p class="bg-brown py-1 px-2 rounded">
+                        @Html.DisplayNameFor(model => model.ComplaintNo)
+                    </p>
+                </td>
+
+                <td class="col">
+                    <span class="bg-dark py-1 px-2 rounded">
+                        @Html.DisplayFor(model => model.ComplaintNo)
+                    </span>
+                </td>
+            </tr>
+
+            <tr class="row">
+                <td class="col-xs-3 col-md-2">
+                    <p class="bg-brown py-1 px-2 rounded">
+                        @Html.DisplayNameFor(model => model.ReceivedDate)
+                    </p>
+                </td>
+
+                <td class="col">
+                    <span class="bg-dark py-1 px-2 rounded">
+                        @if (Model.ReceivedDate != null && Model.ReceivedDate > Convert.ToDateTime("01/01/0001"))
+                        {
+                            @Html.Label(Model.ReceivedDate.ToString("dd/MM/yyyy"))
+                        }
+                    </span>
+                </td>
+
+                <td class="col-xs-3 col-md-2">
+                    <p class="bg-brown py-1 px-2 rounded">
+                        @Html.DisplayNameFor(model => model.registered_on)
+                    </p>
+                </td>
+                <td class="col">
+                    <span class="bg-dark py-1 px-2 rounded">
+                        @if (Model.registered_on != null && Model.registered_on > Convert.ToDateTime("01/01/0001"))
+                        {
+                            @Html.Label(Model.registered_on.ToString("dd/MM/yyyy"))
+                        }
+                    </span>
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="col-xs-3 col-md-2">
+                    <p class="bg-brown py-1 px-2 rounded">
+                        @Html.DisplayNameFor(model => model.CustomerRef)
+                    </p>
+                </td>
+
+                <td class="col">
+                    <span class="bg-dark py-1 px-2 rounded">
+                        @Html.DisplayFor(model => model.CustomerRef)
+                    </span>
+                </td>
+                <td class="col-xs-3 col-md-2">
+                    <p class="bg-brown py-1 px-2 rounded">
+                        @Html.DisplayNameFor(model => model.ModeOfComplaint)
+                    </p>
+                </td>
+
+                <td class="col">
+                    <span class="bg-dark py-1 px-2 rounded">
+                        @Html.DisplayFor(model => model.ModeOfComplaint)
+                    </span>
+                </td>
+
+            </tr>
+            <tr class="row">
+                <td class="col-xs-3 col-md-2">
+                    <p class="bg-brown py-1 px-2 rounded">
+                        @*@Html.DisplayNameFor(model => model.Document)*@
+                        Uploaded Document
+                    </p>
+                </td>
+
+                <td class="col">
+                    <span class="bg-dark py-1 px-2 rounded">
+                        @if (Model.Document != "" && Model.Document != null && Model.Document.Length > 0)
+                        {
+                            foreach (var docs in Model.Document.Trim(',').Split(','))
+                            {
+                                <span class="bg-dark py-1 px-2 rounded">
+                                    <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank">Preview</a>
+                                </span>
+                            }
+                        }
+                        else
+                        {
+
+                            <span class="bg-dark py-1 px-2 rounded text-danger">No File</span>
+                        }
+                    </span>
+                </td>
+
+                <td class="col-xs-3 col-md-2">
+                    <p class="bg-brown py-1 px-2 rounded">
+                        @Html.DisplayNameFor(model => model.ForwardTo)
+                    </p>
+                </td>
+
+                <td class="col">
+                    <span class="bg-dark py-1 px-2 rounded">
+                        @Html.DisplayFor(model => model.ForwardTo)
+                    </span>
+                </td>
+            </tr>
+
+
+
+            @*@if (objGlobal.GetCurrentUserSession().Complaints.Contains("4"))
+        {*@
+
+            <tr class="row">
+                <td class="col-xs-3 col-md-2">
+                    <p class="bg-brown py-1 px-2 rounded">
+                        @Html.DisplayNameFor(model => model.CustomerName)
+                    </p>
+                </td>
+                <td class="col">
+                    <span class="bg-dark py-1 px-2 rounded">
+                        @Html.DisplayFor(model => model.CustomerName)
+                    </span>
+                </td>
+                <td class="col-xs-3 col-md-2">
+                    <p class="bg-brown py-1 px-2 rounded">
+                        @Html.DisplayNameFor(model => model.ProjectName)
+                    </p>
+                </td>
+
+                <td class="col">
+                    <span class="bg-dark py-1 px-2 rounded">
+                        @Html.DisplayFor(model => model.ProjectName)
+                    </span>
+                </td>
+                @*<td class="col-xs-3 col-md-2">
+                    <p class="bg-brown py-1 px-2 rounded">
+                        @Html.DisplayNameFor(model => model.branch)
+                    </p>
+                </td>
+                <td class="col">
+                    <span class="bg-dark py-1 px-2 rounded">
+                        @Html.DisplayFor(model => model.branch)
+                    </span>
+                </td>*@
+            </tr>
+            @*<tr class="row">
+                <td class="col-xs-3 col-md-2">
+                    <p class="bg-brown py-1 px-2 rounded">
+                        @Html.DisplayNameFor(model => model.Department)
+                    </p>
+                </td>
+
+                <td class="col">
+                    <span class="bg-dark py-1 px-2 rounded">
+                        @Html.DisplayFor(model => model.Department)
+                    </span>
+                </td>
+
+                <td class="col-xs-3 col-md-2">
+                    <p class="bg-brown py-1 px-2 rounded">
+                        @Html.DisplayNameFor(model => model.Location)
+                    </p>
+                </td>
+
+                <td class="col">
+                    <span class="bg-dark py-1 px-2 rounded">
+                        @Html.DisplayFor(model => model.Location)
+                    </span>
+                </td>
+            </tr>*@
+            @*<tr class="row">
+                <td class="col-xs-3 col-md-2">
+                    <p class="bg-brown py-1 px-2 rounded">
+                        @Html.DisplayNameFor(model => model.ProjectName)
+                    </p>
+                </td>
+
+                <td class="col">
+                    <span class="bg-dark py-1 px-2 rounded">
+                        @Html.DisplayFor(model => model.ProjectName)
+                    </span>
+                </td>
+            </tr>*@
+            <tr class="row">
+                <td class="col" style="text-align:center">
+                    Complaint reported by details
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="col-xs-3 col-md-2">
+                    <p class="bg-brown py-1 px-2 rounded">
+                        @*@Html.DisplayNameFor(model => model.ReportedBy)*@Reported by
+                    </p>
+                </td>
+
+                <td class="col">
+                    <span class="bg-dark py-1 px-2 rounded">
+                        @Html.DisplayFor(model => model.ReportedBy)
+                    </span>
+                </td>
+                <td class="col-xs-3 col-md-2">
+                    <p class="bg-brown py-1 px-2 rounded">
+                        @*@Html.DisplayNameFor(model => model.reportedby_email)*@
+                        Email
+                    </p>
+                </td>
+
+                <td class="col">
+                    <span class="bg-dark py-1 px-2 rounded">
+                        @Html.DisplayFor(model => model.reportedby_email)
+                    </span>
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="col-xs-3 col-md-2">
+                    <p class="bg-brown py-1 px-2 rounded">
+                        @*@Html.DisplayNameFor(model => model.reportedby_desig)*@
+                        Designation
+                    </p>
+                </td>
+                <td class="col">
+                    <span class="bg-dark py-1 px-2 rounded">
+                        @Html.DisplayFor(model => model.reportedby_desig)
+                    </span>
+                </td>
+                <td class="col-xs-3 col-md-2">
+                    <p class="bg-brown py-1 px-2 rounded">
+                        @*@Html.DisplayNameFor(model => model.reportedby_no)*@
+                        Contact Number
+                    </p>
+                </td>
+
+                <td class="col">
+                    <span class="bg-dark py-1 px-2 rounded">
+                        @Html.DisplayFor(model => model.reportedby_no)
+                    </span>
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="col-xs-3 col-md-2">
+                    <p class="bg-brown py-1 px-2 rounded">
+                        @Html.DisplayNameFor(model => model.Details)
+                    </p>
+                </td>
+                <td class="col" colspan="3">
+                    @* <span class="bg-dark py-1 px-2 rounded">*@
+                    @Html.Raw(HttpUtility.HtmlDecode(Model.Details))
+
+                    @* </span>*@
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="col-xs-3 col-md-2">
+                    <p class="bg-brown py-1 px-2 rounded">
+                        @Html.DisplayNameFor(model => model.ComplaintStatus)
+                    </p>
+                </td>
+
+                <td class="col">
+                    <span class="bg-dark py-1 px-2 rounded">
+                        @Html.DisplayFor(model => model.ComplaintStatus)
+                    </span>
+                </td>
+                <td class="col-xs-3 col-md-2">
+                    <p class="bg-brown py-1 px-2 rounded">
+                        @Html.DisplayNameFor(model => model.LoggedBy)
+                    </p>
+                </td>
+
+                <td class="col">
+                    <span class="bg-dark py-1 px-2 rounded">
+                        @Html.DisplayFor(model => model.LoggedBy)
+                    </span>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+<hr />
+
+
+
+@if (Model.complaint_valid != null && Model.complaint_valid != "")
+{
+    <h2 class="bg-dark pl-sm-2"> Customer Complaint Review Output</h2>
+    <div class="card-body">
+        <div class="container-fluid">
+            <table class="table table-dark table-bordered table-striped table-hover bg-blue-800">
+                <thead></thead>
+                <tbody>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.complaint_valid)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Model.complaint_valid
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.complaint_deviation)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @objGlobal.GetDropdownitemById(Model.complaint_deviation)
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.complain_review_sdate)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @if (Model.complain_review_sdate != null && Model.complain_review_sdate > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    @Html.Label(Model.complain_review_sdate.ToString("dd/MM/yyyy"))
+                                }
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.complain_review_date)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @if (Model.complain_review_date != null && Model.complain_review_date > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    @Html.Label(Model.complain_review_date.ToString("dd/MM/yyyy"))
+                                }
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.complaint_review_status)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Model.complaint_review_status
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.complaint_remark)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Model.complaint_remark
+                            </p>
+                        </td>
+                    </tr>
+                    @if ((Model.rej_reason != null && Model.rej_reason != "") && Model.complaint_valid.ToLower() == "no")
+                    {
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.rej_reason)
+                                </p>
+                            </td>
+                            <td class="col">
+                                <span class="bg-dark py-1 px-2 rounded">
+                                    @Model.rej_reason
+                                </span>
+                            </td>
+
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.rej_upload)
+                                </p>
+                            </td>
+                            <td class="col">
+                                @if (Model.rej_upload.ToString() != null && Model.rej_upload.ToString().Length > 0)
+                                {
+                                    foreach (var docs in Model.rej_upload.ToString().Trim(',').Split(','))
+                                    {
+                                        <p class="bg-dark py-1 px-2 rounded" style="margin: 0px;">
+                                            <span class="bg-dark py-1 px-2 rounded">
+                                                <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank">Preview</a>
+                                            </span>
+                                        </p>
+                                    }
+                                }
+                            </td>
+                        </tr>
+                    }
+                    else if ((Model.ForwarderAssign != null && Model.ForwarderAssign != "") && Model.complaint_valid.ToLower() == "yes")
+                    {
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    Complaint to be Resolved by
+                                </p>
+                            </td>
+                            <td class="col">
+                                <span class="bg-dark py-1 px-2 rounded">
+                                    @objGlobal.GetMultiHrEmpNameById(Model.ForwarderAssign)
+                                </span>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.AssignDate)
+                                </p>
+                            </td>
+                            <td class="col">
+                                <span class="bg-dark py-1 px-2 rounded">
+                                    @if (Model.AssignDate != null && Model.AssignDate > Convert.ToDateTime("01/01/0001"))
+                                    {
+                                        @Html.Label(Model.AssignDate.ToString("dd/MM/yyyy"))
+                                    }
+                                </span>
+                            </td>
+                            <td class="col-xs-3 col-md-2">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.TargetDate)
+                                </p>
+                            </td>
+                            <td class="col">
+                                <span class="bg-dark py-1 px-2 rounded">
+                                    @if (Model.TargetDate != null && Model.TargetDate > Convert.ToDateTime("01/01/0001"))
+                                    {
+                                        @Html.Label(Model.TargetDate.ToString("dd/MM/yyyy"))
+                                    }
+                                </span>
+                            </td>
+                        </tr>
+                    }
+            </table>
+        </div>
+    </div>
+}
+
+<hr />
+
+<table class="table table-lg" style="text-align:center;font-size:200%">
+    <tr class="row">
+        <td class="col">
+            @if (NcOverallList.CustComplaintList != null && NcOverallList.CustComplaintList.Count > 0)
+            {
+                <b>Complaint to be resolved by : </b>
+                for (int data = 0; data < NcOverallList.CustComplaintList.Count; data++)
+                {
+                    <label><input type="radio" id="chkradio @data" name="chkradio" value="@objGlobal.GetEmpHrNameById(NcOverallList.CustComplaintList[data].ForwarderAssign)" onclick="CheckedbyRequired(@data)" />@objGlobal.GetEmpHrNameById(NcOverallList.CustComplaintList[data].ForwarderAssign)</label>
+                }
+            }
+        </td>
+    </tr>
+</table>
+<hr />
+
+<div id="Divscustcomp1">
+    @if (NcOverallList.CustComplaintList != null && NcOverallList.CustComplaintList.Count > 0)
+    {
+        for (int inc = 0; inc < NcOverallList.CustComplaintList.Count; inc++)
+        {
+            <div id="Divs @inc" class="test">
+                @if (NcOverallList.CustComplaintList[inc].disp_notifeddate.ToString() != null && NcOverallList.CustComplaintList[inc].disp_notifeddate.ToString() != "" && Convert.ToDateTime(NcOverallList.CustComplaintList[inc].disp_notifeddate) > Convert.ToDateTime("01/01/0001"))
+                {
+
+                    <h2 class="bg-danger pl-sm-2">Complaint to be resolved by  : @objGlobal.GetEmpHrNameById(NcOverallList.CustComplaintList[inc].ForwarderAssign)</h2>
+                    <hr />
+
+                    <h2 class="bg-dark pl-sm-2"> Immediate Action(Disposition)</h2>
+                    <div class="card-body">
+                        <div class="container-fluid">
+                            <table class="table table-dark table-bordered table-striped table-hover bg-blue-800">
+                                <thead></thead>
+                                <tbody>
+                                    <tr class="row">
+                                        <td class="col-xs-3 col-md-2">
+                                            <p class="bg-brown py-1 px-2 rounded">
+                                                @Html.DisplayNameFor(model => model.disp_action_taken)
+                                            </p>
+                                        </td>
+                                        <td class="col">
+                                            <p class="bg-dark py-1 px-2 rounded">
+                                                @NcOverallList.CustComplaintList[inc].disp_action_taken
+                                            </p>
+                                        </td>
+                                        <td class="col-xs-3 col-md-2">
+                                            <p class="bg-brown py-1 px-2 rounded">
+                                                @Html.DisplayNameFor(model => model.disp_explain)
+                                            </p>
+                                        </td>
+                                        <td class="col">
+                                            <p class="bg-dark py-1 px-2 rounded">
+                                                @NcOverallList.CustComplaintList[inc].disp_explain
+                                            </p>
+                                        </td>
+                                    </tr>
+                                    <tr class="row">
+                                        <td class="col-xs-3 col-md-2">
+                                            <p class="bg-brown py-1 px-2 rounded">
+                                                @Html.DisplayNameFor(model => model.disp_notifiedto)
+                                            </p>
+                                        </td>
+                                        <td class="col">
+                                            <p class="bg-dark py-1 px-2 rounded">
+                                                @NcOverallList.CustComplaintList[inc].disp_notifiedto
+                                            </p>
+                                        </td>
+
+                                        <td class="col-xs-3 col-md-2">
+                                            <p class="bg-brown py-1 px-2 rounded">
+                                                @Html.DisplayNameFor(model => model.disp_notifeddate)
+                                            </p>
+                                        </td>
+                                        <td class="col">
+                                            <span class="bg-dark py-1 px-2 rounded">
+                                                @if (NcOverallList.CustComplaintList[inc].disp_notifeddate != null && NcOverallList.CustComplaintList[inc].disp_notifeddate.ToString() != "")
+                                                {
+                                                    @Convert.ToDateTime(NcOverallList.CustComplaintList[inc].disp_notifeddate.ToString()).ToString("dd/MM/yyyy")
+                                                }
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr class="row">
+                                        <td class="col-xs-3 col-md-2">
+                                            <p class="bg-brown py-1 px-2 rounded">
+                                                @*@Html.DisplayNameFor(model => model.disp_upload)*@
+                                                Uploaded Document
+                                            </p>
+                                        </td>
+                                        <td class="col">
+                                            @if (NcOverallList.CustComplaintList[inc].disp_upload.ToString() != null && NcOverallList.CustComplaintList[inc].disp_upload.ToString() != "" && NcOverallList.CustComplaintList[inc].disp_upload.ToString().Length > 0)
+                                            {
+                                                foreach (var docs in NcOverallList.CustComplaintList[inc].disp_upload.ToString().Trim(',').Split(','))
+                                                {
+                                                    <p class="bg-dark py-1 px-2 rounded" style="margin: 0px;">
+                                                        <span class="bg-dark py-1 px-2 rounded">
+                                                            <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank">Preview</a>
+                                                        </span>
+                                                    </p>
+                                                }
+                                            }
+                                        </td>
+                                    </tr>
+
+                            </table>
+                            @if (NcOverallList.CustComplaintList[inc].DispList != null && NcOverallList.CustComplaintList[inc].DispList.Count > 0)
+                            {
+                                <table class="table table-bordered table-striped table-hover datatable-responsive" id="table1">
+                                    <thead>
+                                        <tr class="bg-brown">
+                                            <th>Sl No</th>
+                                            <th>Action Taken/To be Taken</th>
+                                            <th>Person Responsible</th>
+                                            <th>Action completed on / Target date to complete</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @for (int index = 0, j = 1; index < NcOverallList.CustComplaintList[inc].DispList.Count; index++, j++)
+                                        {
+                                            <tr>
+
+                                                <td>
+                                                    @j
+                                                </td>
+                                                <td>
+                                                    @(NcOverallList.CustComplaintList[inc].DispList[index].disp_action)
+                                                </td>
+                                                <td>
+                                                    @(NcOverallList.CustComplaintList[inc].DispList[index].disp_resp_person)
+                                                </td>
+                                                <td>
+                                                    @if (NcOverallList.CustComplaintList[inc].DispList[index].disp_complete_date != null && NcOverallList.CustComplaintList[inc].DispList[index].disp_complete_date > Convert.ToDateTime("01/01/0001"))
+                                                    {
+                                                        @Convert.ToDateTime(NcOverallList.CustComplaintList[inc].DispList[index].disp_complete_date.ToString()).ToString("dd/MM/yyyy")
+                                                    }
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            }
+
+                        </div>
+                    </div>
+
+
+                    @*if (NcOverallList.CustComplaintList[inc].team_targetdate != null && NcOverallList.CustComplaintList[inc].team_targetdate.ToString() != "" && Convert.ToDateTime(NcOverallList.CustComplaintList[inc].team_targetdate) > Convert.ToDateTime("01/01/0001"))
+                    {
+                        <h2 class="bg-dark pl-sm-2">Team</h2>
+
+                        <div class="card-body">
+                            <div class="container-fluid">
+                                <table class="table table-dark table-bordered table-striped table-hover bg-blue-800">
+                                    <thead></thead>
+                                    <tbody>
+                                        <tr class="row">
+                                            <td class="col-xs-3 col-md-2">
+                                                <p class="bg-brown py-1 px-2 rounded">
+                                                    @Html.DisplayNameFor(model => model.nc_team)
+                                                </p>
+                                            </td>
+                                            <td class="col">
+                                                <p class="bg-dark py-1 px-2 rounded">
+                                                    @NcOverallList.CustComplaintList[inc].nc_team
+                                                </p>
+                                            </td>
+
+                                            <td class="col-xs-3 col-md-2">
+                                                <p class="bg-brown py-1 px-2 rounded">
+                                                    @Html.DisplayNameFor(model => model.team_targetdate)
+                                                </p>
+                                            </td>
+                                            <td class="col">
+                                                <span class="bg-dark py-1 px-2 rounded">
+                                                    @if (NcOverallList.CustComplaintList[inc].team_targetdate != null && NcOverallList.CustComplaintList[inc].team_targetdate.ToString() != "")
+                                                    {
+                                                        @Convert.ToDateTime(NcOverallList.CustComplaintList[inc].team_targetdate).ToString("dd/MM/yyyy")
+                                                    }
+                                                </span>
+                                            </td>
+                                        </tr>
+                                </table>
+                            </div>
+                        </div>
+                    }*@
+
+                    if (NcOverallList.CustComplaintList[inc].rca_details != null && NcOverallList.CustComplaintList[inc].rca_details != "")
+                    {
+                        <h2 class="bg-dark pl-sm-2">Root Cause Analysis</h2>
+
+                        <div class="card-body">
+                            <div class="container-fluid">
+                                <table class="table table-dark table-bordered table-striped table-hover bg-blue-800">
+                                    <thead></thead>
+                                    <tbody>
+                                        <tr class="row">
+                                            <td class="col-xs-3 col-md-2">
+                                                <p class="bg-brown py-1 px-2 rounded">
+                                                    @Html.DisplayNameFor(model => model.rca_startdate)
+                                                </p>
+                                            </td>
+                                            <td class="col">
+                                                <span class="bg-dark py-1 px-2 rounded">
+                                                    @if (NcOverallList.CustComplaintList[inc].rca_startdate != null && NcOverallList.CustComplaintList[inc].rca_startdate.ToString() != "" && Convert.ToDateTime(NcOverallList.CustComplaintList[inc].rca_startdate.ToString()) > Convert.ToDateTime("01/01/0001"))
+                                                    {
+                                                        @Convert.ToDateTime(NcOverallList.CustComplaintList[inc].rca_startdate).ToString("dd/MM/yyyy")
+                                                    }
+                                                </span>
+                                            </td>
+                                            <td class="col-xs-3 col-md-2">
+                                                <p class="bg-brown py-1 px-2 rounded">
+                                                    @Html.DisplayNameFor(model => model.rca_technique)
+                                                </p>
+                                            </td>
+                                            <td class="col">
+                                                <p class="bg-dark py-1 px-2 rounded">
+                                                    @NcOverallList.CustComplaintList[inc].rca_technique
+                                                </p>
+                                            </td>
+                                        </tr>
+                                        <tr class="row">
+                                            <td class="col-xs-3 col-md-2">
+                                                <p class="bg-brown py-1 px-2 rounded">
+                                                    @Html.DisplayNameFor(model => model.rca_details)
+                                                </p>
+                                            </td>
+                                            <td class="col">
+                                                <p class="bg-dark py-1 px-2 rounded">
+                                                    @NcOverallList.CustComplaintList[inc].rca_details
+                                                </p>
+                                            </td>
+
+                                        </tr>
+                                        <tr class="row">
+                                            <td class="col-xs-3 col-md-2">
+                                                <p class="bg-brown py-1 px-2 rounded">
+                                                    @Html.DisplayNameFor(model => model.rca_upload)
+                                                </p>
+                                            </td>
+                                            <td class="col">
+                                                @if (NcOverallList.CustComplaintList[inc].rca_upload.ToString() != null && NcOverallList.CustComplaintList[inc].rca_upload.ToString() != "" && NcOverallList.CustComplaintList[inc].rca_upload.Length > 0)
+                                                {
+                                                    foreach (var docs in NcOverallList.CustComplaintList[inc].rca_upload.ToString().Trim(',').Split(','))
+                                                    {
+                                                        <p class="bg-dark py-1 px-2 rounded" style="margin: 0px;">
+                                                            <span class="bg-dark py-1 px-2 rounded">
+                                                                <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank">Preview</a>
+                                                            </span>
+                                                        </p>
+                                                    }
+                                                }
+                                            </td>
+                                        </tr>
+                                        <tr class="row">
+                                            <td class="col-xs-3 col-md-2">
+                                                <p class="bg-brown py-1 px-2 rounded">
+                                                    @Html.DisplayNameFor(model => model.rca_action)
+                                                </p>
+                                            </td>
+                                            <td class="col">
+                                                <p class="bg-dark py-1 px-2 rounded">
+                                                    @NcOverallList.CustComplaintList[inc].rca_action
+                                                </p>
+                                            </td>
+                                            <td class="col-xs-3 col-md-2">
+                                                <p class="bg-brown py-1 px-2 rounded">
+                                                    @Html.DisplayNameFor(model => model.rca_justify)
+                                                </p>
+                                            </td>
+                                            <td class="col">
+                                                <p class="bg-dark py-1 px-2 rounded">
+                                                    @NcOverallList.CustComplaintList[inc].rca_justify
+                                                </p>
+                                            </td>
+                                        </tr>
+                                        @if (NcOverallList.CustComplaintList[inc].rca_action == "No")
+                                        {
+                                            <tr class="row">
+                                                <td class="col-xs-3 col-md-2">
+                                                    <p class="bg-brown py-1 px-2 rounded">
+                                                        @Html.DisplayNameFor(model => model.ca_verfiry_duedate)
+                                                    </p>
+                                                </td>
+                                                <td class="col">
+                                                    <p class="bg-dark py-1 px-2 rounded">
+                                                        @if (NcOverallList.CustComplaintList[inc].ca_verfiry_duedate != null && NcOverallList.CustComplaintList[inc].ca_verfiry_duedate.ToString() != "" && Convert.ToDateTime(NcOverallList.CustComplaintList[inc].ca_verfiry_duedate.ToString()) > Convert.ToDateTime("01/01/0001"))
+                                                        {
+                                                            @Convert.ToDateTime(NcOverallList.CustComplaintList[inc].ca_verfiry_duedate).ToString("dd/MM/yyyy")
+                                                        }
+                                                    </p>
+                                                </td>
+                                                <td class="col-xs-3 col-md-2">
+                                                    <p class="bg-brown py-1 px-2 rounded">
+                                                        @Html.DisplayNameFor(model => model.ca_proposed_by)
+                                                    </p>
+                                                </td>
+                                                <td class="col">
+                                                    <p class="bg-dark py-1 px-2 rounded">
+                                                        @NcOverallList.CustComplaintList[inc].ca_proposed_by
+                                                    </p>
+                                                </td>
+                                            </tr>
+                                        }
+                                        <tr class="row">
+                                            <td class="col-xs-3 col-md-2">
+                                                <p class="bg-brown py-1 px-2 rounded">
+                                                    @Html.DisplayNameFor(model => model.rca_reportedby)
+                                                </p>
+                                            </td>
+                                            <td class="col">
+                                                <p class="bg-dark py-1 px-2 rounded">
+                                                    @NcOverallList.CustComplaintList[inc].rca_reportedby
+                                                </p>
+                                            </td>
+                                            <td class="col-xs-3 col-md-2">
+                                                <p class="bg-brown py-1 px-2 rounded">
+                                                    @Html.DisplayNameFor(model => model.rca_reporteddate)
+                                                </p>
+                                            </td>
+                                            <td class="col">
+                                                <span class="bg-dark py-1 px-2 rounded">
+                                                    @if (NcOverallList.CustComplaintList[inc].rca_reporteddate != null && NcOverallList.CustComplaintList[inc].rca_reporteddate.ToString() != "" && Convert.ToDateTime(NcOverallList.CustComplaintList[inc].rca_reporteddate.ToString()) > Convert.ToDateTime("01/01/0001"))
+                                                    {
+                                                        @Convert.ToDateTime(NcOverallList.CustComplaintList[inc].rca_reporteddate).ToString("dd/MM/yyyy")
+                                                    }
+                                                </span>
+                                            </td>
+                                        </tr>
+                                        <tr class="row">
+                                            <td class="col-xs-3 col-md-2">
+                                                <p class="bg-brown py-1 px-2 rounded">
+                                                    @Html.DisplayNameFor(model => model.rca_notifiedto)
+                                                </p>
+                                            </td>
+                                            <td class="col">
+                                                <span class="bg-dark py-1 px-2 rounded">
+                                                    @NcOverallList.CustComplaintList[inc].rca_notifiedto
+                                                </span>
+                                            </td>
+                                        </tr>
+                                </table>
+                            </div>
+                        </div>
+                    }
+
+                    if (NcOverallList.CustComplaintList[inc].ca_notifed_date != null && NcOverallList.CustComplaintList[inc].ca_notifed_date.ToString() != "" && Convert.ToDateTime(NcOverallList.CustComplaintList[inc].ca_notifed_date) > Convert.ToDateTime("01/01/0001"))
+                    {
+                        <h2 class="bg-dark pl-sm-2"> Corrective Action</h2>
+
+                        <div class="card-body">
+                            <div class="container-fluid">
+                                <table class="table table-dark table-bordered table-striped table-hover bg-blue-800">
+                                    <thead></thead>
+                                    <tbody>
+                                        <tr class="row">
+                                            <td class="col-xs-3 col-md-2">
+                                                <p class="bg-brown py-1 px-2 rounded">
+                                                    @Html.DisplayNameFor(model => model.ca_verfiry_duedate)
+                                                </p>
+                                            </td>
+                                            <td class="col">
+                                                <p class="bg-dark py-1 px-2 rounded">
+                                                    @if (NcOverallList.CustComplaintList[inc].ca_verfiry_duedate != null && NcOverallList.CustComplaintList[inc].ca_verfiry_duedate.ToString() != "" && Convert.ToDateTime(NcOverallList.CustComplaintList[inc].ca_verfiry_duedate.ToString()) > Convert.ToDateTime("01/01/0001"))
+                                                    {
+                                                        @Convert.ToDateTime(NcOverallList.CustComplaintList[inc].ca_verfiry_duedate).ToString("dd/MM/yyyy")
+                                                    }
+                                                </p>
+                                            </td>
+                                            <td class="col-xs-3 col-md-2">
+                                                <p class="bg-brown py-1 px-2 rounded">
+                                                    @Html.DisplayNameFor(model => model.ca_proposed_by)
+                                                </p>
+                                            </td>
+                                            <td class="col">
+                                                <p class="bg-dark py-1 px-2 rounded">
+                                                    @NcOverallList.CustComplaintList[inc].ca_proposed_by
+                                                </p>
+                                            </td>
+                                        </tr>
+                                        <tr class="row">
+                                            <td class="col-xs-3 col-md-2">
+                                                <p class="bg-brown py-1 px-2 rounded">
+                                                    @Html.DisplayNameFor(model => model.ca_notifiedto)
+                                                </p>
+                                            </td>
+                                            <td class="col">
+                                                <p class="bg-dark py-1 px-2 rounded">
+                                                    @NcOverallList.CustComplaintList[inc].ca_notifiedto
+                                                </p>
+                                            </td>
+
+                                            <td class="col-xs-3 col-md-2">
+                                                <p class="bg-brown py-1 px-2 rounded">
+                                                    @Html.DisplayNameFor(model => model.ca_notifed_date)
+                                                </p>
+                                            </td>
+                                            <td class="col">
+                                                <p class="bg-dark py-1 px-2 rounded">
+                                                    @if (NcOverallList.CustComplaintList[inc].ca_notifed_date != null && NcOverallList.CustComplaintList[inc].ca_notifed_date.ToString() != "")
+                                                    {
+                                                        @Convert.ToDateTime(NcOverallList.CustComplaintList[inc].ca_notifed_date).ToString("dd/MM/yyyy")
+                                                    }
+                                                </p>
+                                            </td>
+                                        </tr>
+
+                                </table>
+                                @if (NcOverallList.CustComplaintList[inc].CAList != null && NcOverallList.CustComplaintList[inc].CAList.Count > 0)
+                                {
+                                    <table class="table table-bordered table-striped table-hover datatable-responsive" id="table1">
+                                        <thead>
+                                            <tr class="bg-brown">
+                                                <th>Sl No</th>
+                                                <th>Corrective action</th>
+                                                <th>Person responsible</th>
+                                                <th>Target date</th>
+                                                <th>Resource required</th>
+
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @for (int index = 0, j = 1; index < NcOverallList.CustComplaintList[inc].CAList.Count; index++, j++)
+                                            {
+                                                <tr>
+
+                                                    <td>
+                                                        @j
+                                                    </td>
+                                                    <td>
+                                                        @(NcOverallList.CustComplaintList[inc].CAList[index].ca_ca)
+                                                    </td>
+                                                    <td>
+                                                        @(NcOverallList.CustComplaintList[inc].CAList[index].ca_resp_person)
+                                                    </td>
+                                                    <td>
+                                                        @if (NcOverallList.CustComplaintList[inc].CAList[index].ca_target_date.ToString() != null && NcOverallList.CustComplaintList[inc].CAList[index].ca_target_date > Convert.ToDateTime("01/01/0001"))
+                                                        {
+                                                            @Convert.ToDateTime(NcOverallList.CustComplaintList[inc].CAList[index].ca_target_date.ToString()).ToString("dd/MM/yyyy")
+                                                        }
+                                                    </td>
+                                                    <td>
+                                                        @(NcOverallList.CustComplaintList[inc].CAList[index].ca_resource)
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                }
+                            </div>
+                        </div>
+                    }
+
+
+                    if (NcOverallList.CustComplaintList[inc].v_status != null && NcOverallList.CustComplaintList[inc].v_status != "")
+                    {
+                        <h2 class="bg-dark pl-sm-2"> Verification</h2>
+                        <div class="card-body">
+                            <div class="container-fluid">
+                                <table class="table table-dark table-bordered table-striped table-hover bg-blue-800">
+                                    <thead></thead>
+                                    <tbody>
+
+                                        <tr class="row">
+                                            <td class="col-xs-3 col-md-2">
+                                                <p class="bg-brown py-1 px-2 rounded">
+                                                    @Html.DisplayNameFor(model => model.v_implement)
+                                                </p>
+                                            </td>
+                                            <td class="col">
+                                                <p class="bg-dark py-1 px-2 rounded">
+                                                    @(NcOverallList.CustComplaintList[inc].v_implement)
+                                                </p>
+                                            </td>
+                                            <td class="col-xs-3 col-md-2">
+                                                <p class="bg-brown py-1 px-2 rounded">
+                                                    @Html.DisplayNameFor(model => model.v_implement_explain)
+                                                </p>
+                                            </td>
+                                            <td class="col">
+                                                <p class="bg-dark py-1 px-2 rounded">
+                                                    @(NcOverallList.CustComplaintList[inc].v_implement_explain)
+                                                </p>
+                                            </td>
+                                        </tr>
+                                        <tr class="row">
+                                            <td class="col-xs-3 col-md-2">
+                                                <p class="bg-brown py-1 px-2 rounded">
+                                                    @Html.DisplayNameFor(model => model.v_rca)
+                                                </p>
+                                            </td>
+                                            <td class="col">
+                                                <p class="bg-dark py-1 px-2 rounded">
+                                                    @(NcOverallList.CustComplaintList[inc].v_rca)
+                                                </p>
+                                            </td>
+
+                                            <td class="col-xs-3 col-md-2">
+                                                <p class="bg-brown py-1 px-2 rounded">
+                                                    @Html.DisplayNameFor(model => model.v_rca_explain)
+                                                </p>
+                                            </td>
+                                            <td class="col">
+                                                <p class="bg-dark py-1 px-2 rounded">
+                                                    @(NcOverallList.CustComplaintList[inc].v_rca_explain)
+                                                </p>
+                                            </td>
+                                        </tr>
+                                        <tr class="row">
+                                            <td class="col-xs-3 col-md-2">
+                                                <p class="bg-brown py-1 px-2 rounded">
+                                                    @Html.DisplayNameFor(model => model.v_discrepancies)
+                                                </p>
+                                            </td>
+                                            <td class="col">
+                                                <p class="bg-dark py-1 px-2 rounded">
+                                                    @(NcOverallList.CustComplaintList[inc].v_discrepancies)
+                                                </p>
+                                            </td>
+
+                                            <td class="col-xs-3 col-md-2">
+                                                <p class="bg-brown py-1 px-2 rounded">
+                                                    @Html.DisplayNameFor(model => model.v_discrep_explain)
+                                                </p>
+                                            </td>
+                                            <td class="col">
+                                                <p class="bg-dark py-1 px-2 rounded">
+                                                    @(NcOverallList.CustComplaintList[inc].v_discrep_explain)
+                                                </p>
+                                            </td>
+                                        </tr>
+                                        <tr class="row">
+                                            <td class="col-xs-3 col-md-2">
+                                                <p class="bg-brown py-1 px-2 rounded">
+                                                    @Html.DisplayNameFor(model => model.v_upload)
+                                                </p>
+                                            </td>
+                                            <td class="col">
+                                                @if (NcOverallList.CustComplaintList[inc].v_upload != null && NcOverallList.CustComplaintList[inc].v_upload != "" && NcOverallList.CustComplaintList[inc].v_upload.Length > 0)
+                                                {
+                                                    foreach (var docs in NcOverallList.CustComplaintList[inc].v_upload.Trim(',').Split(','))
+                                                    {
+                                                        <p style="margin: 0px;" class="bg-dark py-1 px-2 rounded">
+                                                            <span class="bg-dark py-1 px-2 rounded">
+                                                                <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank">Preview</a>
+                                                            </span>
+                                                        </p>
+                                                    }
+                                                }
+                                            </td>
+
+                                            <td class="col-xs-3 col-md-2">
+                                                <p class="bg-brown py-1 px-2 rounded">
+                                                    @Html.DisplayNameFor(model => model.v_status)
+                                                </p>
+                                            </td>
+                                            <td class="col">
+                                                <p class="bg-dark py-1 px-2 rounded">
+                                                    @NcOverallList.CustComplaintList[inc].v_status
+                                                </p>
+                                            </td>
+                                        </tr>
+                                        <tr class="row">
+                                            <td class="col-xs-3 col-md-2">
+                                                <p class="bg-brown py-1 px-2 rounded">
+                                                    @Html.DisplayNameFor(model => model.v_closed_date)
+                                                </p>
+                                            </td>
+                                            <td class="col">
+                                                <p class="bg-dark py-1 px-2 rounded">
+                                                    @if (NcOverallList.CustComplaintList[inc].v_closed_date != null && NcOverallList.CustComplaintList[inc].v_closed_date.ToString() != "")
+                                                    {
+                                                        @Convert.ToDateTime(NcOverallList.CustComplaintList[inc].v_closed_date).ToString("dd/MM/yyyy")
+                                                    }
+                                                </p>
+                                            </td>
+                                            <td class="col-xs-3 col-md-2">
+                                                <p class="bg-brown py-1 px-2 rounded">
+                                                    @Html.DisplayNameFor(model => model.v_verified_date)
+                                                </p>
+                                            </td>
+                                            <td class="col">
+                                                <p class="bg-dark py-1 px-2 rounded">
+                                                    @if (NcOverallList.CustComplaintList[inc].v_verified_date != null && NcOverallList.CustComplaintList[inc].v_verified_date.ToString() != "")
+                                                    {
+                                                        @Convert.ToDateTime(NcOverallList.CustComplaintList[inc].v_verified_date).ToString("dd/MM/yyyy")
+                                                    }
+                                                </p>
+                                            </td>
+
+                                        </tr>
+                                        <tr class="row">
+                                            <td class="col-xs-3 col-md-2">
+                                                <p class="bg-brown py-1 px-2 rounded">
+                                                    @Html.DisplayNameFor(model => model.v_verifiedto)
+                                                </p>
+                                            </td>
+                                            <td class="col">
+                                                <p class="bg-dark py-1 px-2 rounded">
+                                                    @NcOverallList.CustComplaintList[inc].v_verifiedto
+                                                </p>
+                                            </td>
+                                            <td class="col-xs-3 col-md-2">
+                                                <p class="bg-brown py-1 px-2 rounded">
+                                                    @Html.DisplayNameFor(model => model.v_notifiedto)
+                                                </p>
+                                            </td>
+                                            <td class="col">
+                                                <p class="bg-dark py-1 px-2 rounded">
+                                                    @NcOverallList.CustComplaintList[inc].v_notifiedto
+                                                </p>
+                                            </td>
+                                        </tr>
+                                </table>
+                                @if (NcOverallList.CustComplaintList[inc].CustList != null && NcOverallList.CustComplaintList[inc].CustList.Count > 0)
+                                {
+                                    <table class="table table-bordered table-striped table-hover datatable-responsive" id="table1">
+                                        <thead>
+                                            <tr class="bg-brown">
+                                                <th>Sl No</th>
+                                                <th>Corrective Action Proposed</th>
+                                                <th>Implementation status</th>
+                                                <th>Is Corrective Action effective?</th>
+                                                <th>If No, reasons</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @for (int index = 0, j = 1; index < NcOverallList.CustComplaintList[inc].CustList.Count; index++, j++)
+                                            {
+                                                <tr>
+
+                                                    <td>
+                                                        @j
+                                                    </td>
+                                                    <td>
+                                                        @(NcOverallList.CustComplaintList[inc].CustList[index].ca_ca)
+                                                    </td>
+                                                    <td>
+                                                        @(NcOverallList.CustComplaintList[inc].CustList[index].implement_status)
+                                                    </td>
+                                                    <td>
+                                                        @(NcOverallList.CustComplaintList[inc].CustList[index].ca_effective)
+                                                    </td>
+                                                    <td>
+                                                        @(NcOverallList.CustComplaintList[inc].CustList[index].reason)
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                }
+                            </div>
+                        </div>
+                    }
+                    <hr />
+                }
+            </div>
+        }
+    }
+</div>
+
+<hr />
+@if (Model.c_response != null && Model.c_response != "")
+{
+    <h2 class="bg-dark pl-sm-2"> Customer Complaint Response</h2>
+    <div class="card-body">
+        <div class="container-fluid">
+            <table class="table table-dark table-bordered table-striped table-hover bg-blue-800">
+                <thead></thead>
+                <tbody>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.c_response)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Model.c_response
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.c_response_date)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @if (Model.c_response_date != null && Model.c_response_date > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    @Html.Label(Model.c_response_date.ToString("dd/MM/yyyy"))
+                                }
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.c_response_details)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Model.c_response_details
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.c_reponse_upload)
+                            </p>
+                        </td>
+                        <td class="col">
+                            @if (Model.c_reponse_upload != null && Model.c_reponse_upload.ToString().Length > 0)
+                            {
+                                foreach (var docs in Model.c_reponse_upload.ToString().Trim(',').Split(','))
+                                {
+                                    <p class="bg-dark py-1 px-2 rounded" style="margin: 0px;">
+                                        <span class="bg-dark py-1 px-2 rounded">
+                                            <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank">Preview</a>
+                                        </span>
+                                    </p>
+                                }
+                            }
+                        </td>
+                    </tr>
+            </table>
+        </div>
+    </div>
+}
+@section scripts {
+    <script>
+                //----zzz
+
+
+                $(document).ready(function () {
+
+                                                            @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+                                                @:     text: '@TempData["alertdata"]',
+                                                @:     type: 'error'
+                                                @: }).show();
+                                                                                             }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+                                                @:       text: '@TempData["Successdata"]',
+                                                @:       type: 'success'
+                @:}).show();
+                                                        }
+                });
+
+
+
+
+        function CheckedbyRequired(data) {
+            //$('div[id ^= "Divs"]').css("display", "none");
+
+            var testclass = document.getElementsByClassName('test');
+            for (var i = 0; i < testclass.length; i++) {
+                if (i == data) {
+                    testclass[i].style.display = 'block';
+                }
+                else {
+                    testclass[i].style.display = 'none';
+                }
+            }
+            var radioid = "chkradio " + data;
+            var sPerson = $("input[type='radio'][id='"+radioid+"']:checked").val();
+            //bootbox.alert({
+            //    title: sPerson,
+            //    message:"Displays only "+sPerson +" Details"
+            //});
+
+            //document.getElementById("Divs " + data).style.display = "block";
+
+        }
+    </script>
+
+
+}
+

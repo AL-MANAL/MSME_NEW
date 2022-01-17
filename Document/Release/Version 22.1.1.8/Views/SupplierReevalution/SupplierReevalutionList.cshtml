@@ -1,0 +1,630 @@
+﻿@using PagedList;
+@using PagedList.Mvc;
+
+@model List<ISOStd.Models.SupplierReevalutionModels>
+@{
+    ViewBag.Title = "SupplierReevalutionList";
+}
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Home</span>
+                    </a>
+                    <span class="breadcrumb-item active">Supplier Reevaluation</span>
+                </div>
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+}
+
+<div class="card">
+
+    <div class="card-header header-elements-inline bg-primary">
+        <h5 class="card-title">Supplier Reevaluation</h5>
+        <div class="header-elements">
+            <div class="list-icons">
+                <a class="list-icons-item" data-action="collapse"></a>
+            </div>
+        </div>
+    </div>
+    <div>
+        <div class="card-header bg-white header-elements-sm-inline">
+            <div class="header-elements">
+                <a class="btn btn-outline bg-orange text-orange border-orange btn-ladda btn-ladda-progress ladda-button" data-style="radius" href='@Url.Action("AddSupplierReevalution", "SupplierReevalution")' title="Add New">
+                    <span class="ladda-label">Add Supplier Reevaluation </span>
+                    <span class="ladda-spinner"></span>
+                </a>
+            </div>
+            <div class="header-elements">
+                <a class="btn btn-outline bg-orange text-orange border-orange btn-ladda btn-ladda-progress ladda-button" data-style="radius" href='@Url.Action("AddSuppplierReevaluationQuestions", "SupplierReevalution")' title="Add New">
+                    <span class="ladda-label">Add Questions</span>
+                    <span class="ladda-spinner"></span>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="options d-flex flex-fill">
+            @using (Html.BeginForm("SupplierReevalutionList", "SupplierReevalution", FormMethod.Post, new { id = "form1", name = "form1", style = "width:25%" }))
+            {
+                if (ViewBag.Branch != null)
+                {
+                    <select class="form-control select-search select2-hidden-accessible" data-fouc id="branch_name" name="branch_name" onchange="getDetails()">
+                        <option value='' hidden>Division</option>
+                        @if (ViewBag.Branch != null)
+                        {
+                            foreach (var item in ViewBag.Branch)
+                            {
+                                if (item.Value == ViewBag.Branch_name)
+                                {
+                                    <option value='@item.Value' selected>@item.Text</option>
+                                }
+                                else
+                                {
+                                    <option value='@item.Value'>@item.Text</option>
+                                }
+                            }
+                        }
+                    </select>
+                }
+            }
+        </div>
+    </div>
+
+    <div class="card-body">
+        <table class="table table-bordered table-striped table-hover datatable-responsive" id="supplier">
+            <thead>
+                <tr>
+                    <th>
+                        Sl No
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().supplier)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().perf_review_year)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().branch)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().Department)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().Location)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().auditor_name)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().certification)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().audit_upload)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().recommanded)
+                    </th>
+                    @*<th class="not-export-column">Edit</th>
+                    <th class="not-export-column">Delete</th>*@
+                    <th data-priority="2" class="text-center not-export-column">Actions</th>
+
+
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Count() > 0)
+                {
+                    int i = 0;
+                    foreach (var item in Model)
+                    {
+                        i = i + 1;
+                <tr>
+                    <td>
+                        @i
+                    </td>
+                    <td>
+                        @Html.ActionLink(item.supplier.ToString(), "SupplierReevalutionDetails", new { id_reevaluation = item.id_reevaluation.ToString() }, new { data_toggle = "popover", data_trigger = "hover", id = item.id_reevaluation, onclick = "HyperLinkProgressIconFunction()" })
+                    </td>
+                    <td>
+                        @*@if (item.perf_review_year != null && item.perf_review_year > Convert.ToDateTime("01/01/0001"))
+            {
+                @Html.Label(item.perf_review_year.ToString("dd/MM/yyyy"))
+            }*@
+                        @Html.DisplayFor(modelItem => item.perf_review_year)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.branch)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Department)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Location)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.auditor_name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.certification)
+                        @Html.DisplayFor(modelItem => item.other_certification)
+                    </td>
+                    <td>
+                        @*@if (item.audit_upload != "")
+            {
+                <a href='@Url.Action("DisplayDocument", "Reports", new { Document = item.audit_upload })' target="_blank">Preview</a>
+            }*@
+                        @if (item.audit_upload != null && item.audit_upload != "" && item.audit_upload.Length > 0)
+                        {
+                            foreach (var docs in item.audit_upload.Trim(',').Split(','))
+                            {
+                                <p>
+
+                                    <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" style="color: orange;">
+                                        Preview
+                                    </a>
+                                </p>
+                            }
+                        }
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.recommanded)
+                    </td>
+                    <td class="text-center">
+                        <div class="list-icons">
+                            <div class="list-icons-item dropdown">
+                                <a href="#" class="list-icons-item caret-0 dropdown-toggle" data-toggle="dropdown">
+                                    <i class="icon-gear mr-2"></i>
+                                </a>
+
+                                <div class="dropdown-menu dropdown-menu-right">
+
+                                    <a class="dropdown-item" href='@Url.Action("SupplierReevalutionEdit", "SupplierReevalution", new { id_reevaluation = item.id_reevaluation })' title="Edit" onclick="HyperLinkProgressIconFunction()">
+                                        <i class="icon-pencil7"></i>Edit
+                                    </a>
+
+                                    <div class="dropdown-divider"></div>
+
+
+                                    <span class="dropdown-item text-center" title="Delete" onclick="DeleteItems(@item.id_reevaluation)" style="cursor:pointer;"><i class="icon-bin"></i>Delete</span>
+
+
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+
+                    @*<td>
+                        <a href='@Url.Action("SupplierReevalutionEdit", "SupplierReevalution", new { id_reevaluation = item.id_reevaluation })' title="Edit" onclick="HyperLinkProgressIconFunction()">
+                            <span class="badge badge-info">Edit</span>
+                        </a>
+                    </td>
+                    <td>
+                        <span class="badge badge-danger" title="Delete" onclick="DeleteItems(@item.id_reevaluation)" style="cursor:pointer;">Delete</span>
+                    </td>*@
+                </tr>
+                    }
+                }
+
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section scripts {
+    <script type="text/javascript">
+
+                    //----zzz
+                    $(document).ready(function () {
+
+        @if (TempData["alertdata"] != null ) {
+
+           @: new Noty({
+                                   @:     text: '@TempData["alertdata"]',
+                                   @:     type: 'error'
+                                   @: }).show();
+                                        }
+
+        @if (@TempData["Successdata"] != null ) {
+
+        @:    new Noty({
+                                 @:       text: '@TempData["Successdata"]',
+                                 @:       type: 'success'
+         @:}).show();
+        }
+                    });
+                    //zzz----
+
+
+                    function setData(id) {
+
+                        var set_data = '';
+                        var element = $(this);
+                        var id = element.attr("id");
+                        $.ajax({
+                            url: '@Url.Action("SupplierReevalutionInfo", "SupplierReevalution")',
+                            methos: "post",
+                            async: false,
+                            data: { id: id },
+                            success: function (data) {
+                                set_data = data;
+
+                            }
+                        });
+
+                        return set_data;
+                    }
+
+                    var supplier = function () {
+
+                        //
+                        // Setup module components
+                        //
+
+                        // Basic Datatable examples
+                        var _componentDatatableBasic = function () {
+                            if (!$().DataTable) {
+                                console.warn('Warning - datatables.min.js is not loaded.');
+                                return;
+                            }
+
+                            //Setting datatable defaults
+                            $.extend($.fn.dataTable.defaults, {
+                                autoWidth: false,
+                                responsive: true,
+                                columnDefs: [{
+                                    orderable: false,
+                                    //width: 100,
+                                    targets: 'not-export-column'
+
+                                }],
+                                colReorder: false,
+                                dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                                //dom: 'lBfrtip',
+                                language: {
+                                    search: '<span>Filter:</span> _INPUT_',
+                                    searchPlaceholder: 'Type to filter...',
+                                    lengthMenu: '<span>Show:</span> _MENU_',
+                                    paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                                }
+                            });
+
+
+                            var table = $('#supplier').DataTable({
+                                drawCallback: function () {
+                                    $('[data-toggle="popover"]').popover({
+
+                                        html: true,
+                                        content: setData,
+                                        container: 'body'
+                                        //data: setData,
+
+
+                                    });
+                                    var dropdownMenu;
+
+                                    // and when you show it, move it to the body                                     
+                                    $('.datatable-responsive').on('show.bs.dropdown', function (e) {
+
+                                        // grab the menu        
+                                        dropdownMenu = $(e.target).find('.dropdown-menu');
+
+                                        // detach it and append it to the body
+                                        $('body').append(dropdownMenu.detach());
+
+                                        // grab the new offset position
+                                        var eOffset = $(e.target).offset();
+
+                                        // make sure to place it where it would normally go (this could be improved)
+                                        dropdownMenu.css({
+                                            'display': 'block',
+                                            'top': eOffset.top + $(e.target).outerHeight(),
+                                            'left': eOffset.left
+                                        });
+                                    });
+
+                                    // and when you hide it, reattach the drop down, and hide it normally                                                   
+                                    $('.datatable-responsive').on('hide.bs.dropdown', function (e) {
+                                        $(e.target).append(dropdownMenu.detach());
+                                        dropdownMenu.hide();
+                                    });
+                                },
+                                lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                                colReorder: {
+                                    fixedColumnsLeft: 1
+                                },
+                                stateSave: true,
+                                //orderCellsTop: true,
+                                //fixedHeader: {
+                                //    header: true,
+
+                                //},
+                                //scrollX: true,
+                                //scrollY: '350px',
+                                scrollCollapse: true,
+                                //fixedHeader:true,
+                                //fixedColumns: true,
+
+                                //responsive: {
+                                //    details: {
+                                //        type: 'column',
+                                //        target: -1
+                                //    }
+                                //},
+                                //columnDefs: [
+                                //    {
+                                //        className: 'control',
+                                //        orderable: false,
+                                //        targets: -1
+                                //    },
+                                //    {
+                                //        width: "100px",
+                                //        targets: [5]
+                                //    },
+                                //    {
+                                //        orderable: false,
+                                //        targets: [5]
+                                //    }
+                                //],
+
+                                keys: {
+                                    className: 'focus focus-success'
+                                },
+
+                                buttons: {
+                                    buttons: [
+                                        {
+                                            extend: 'copyHtml5',
+                                            className: 'btn btn-light',
+                                            title: 'supplier Data export',
+                                            exportOptions: {
+                                                columns: ':visible :not(.not-export-column)'
+                                            },
+                                        },
+                                        {
+                                            extend: 'excelHtml5',
+                                            className: 'btn btn-light',
+                                            title: 'supplier Data export',
+                                            exportOptions: {
+                                                columns: ':visible :not(.not-export-column)'
+                                            },
+
+                                        },
+                                        {
+                                            extend: 'pdfHtml5',
+                                            className: 'btn btn-light',
+                                            title: 'supplier Data export',
+                                            exportOptions: {
+                                                columns: ':visible :not(.not-export-column)'
+                                            },
+                                        },
+                                        {
+                                            extend: 'csvHtml5',
+                                            className: 'btn btn-light',
+                                            title: 'supplier Data export',
+                                            exportOptions: {
+                                                columns: ':visible :not(.not-export-column)'
+                                            },
+                                        },
+                                        {
+                                            extend: 'print',
+                                            className: 'btn btn-light',
+                                            title: 'supplier Data export',
+                                            exportOptions: {
+                                                columns: ':visible :not(.not-export-column)'
+                                            },
+                                        },
+
+                                        {
+                                            extend: 'colvis',
+                                            text: '<i class="icon-three-bars"></i>',
+                                            className: 'btn bg-blue btn-icon dropdown-toggle'
+                                        }
+                                    ]
+                                }
+                            });
+                            // Adjust columns on window resize
+                            setTimeout(function () {
+                                $(window).on('resize', function () {
+                                    table.columns.adjust();
+                                });
+                            }, 100);
+
+
+                            //Redraw table on click toggle. -------table.columns.adjust doesn't work properly upon calling after toggle (width increase/decrease = redraw table.).
+                            $('.sidebar-control').on('click', function () {
+
+                                setTimeout(function () {
+                                    //alert("gii");
+
+                                    table.columns.adjust().draw();
+                                    $("#supplier").resize();
+                                }, 100);
+
+                            });
+                            //}
+
+                            $('#supplier').on('page.dt', function () {
+                                //table.draw();
+                                //alert("zzz1");
+                                $("#supplier").resize();
+
+                            });
+
+                            $('#supplier').on('column-visibility.dt', function () {
+                                //table.draw();
+                                //alert("zzz2");
+                                $("#supplier").resize();
+
+                            });
+
+                            $('#supplier').on('order.dt', function () {
+                                //table.draw();
+                                //alert("zzz3");
+                                $("#supplier").resize();
+
+                            });
+
+
+                            $('#supplier').on('responsive-display.dt', function () {
+                                //table.draw();
+                                //alert("zzz4");
+                                $("#supplier").resize();
+
+                            });
+
+
+                            $('#supplier').on('responsive-resize.dt', function () {
+                                //table.draw();
+                                //alert("zzz4");
+                                $("#supplier").resize();
+
+                            });
+
+
+                            //.on('order.dt', function () {
+                            //    table.columns.adjust().draw();
+                            //    $("#qhse").resize(); })
+                            //.on('search.dt', function () {
+                            //    table.columns.adjust().draw();
+                            //    $("#qhse").resize(); })
+
+                            //.on('column-visibility.dt', function () {
+                            //    table.columns.adjust().draw();
+                            //    $("#qhse").resize();
+                            //})
+                        };
+
+                        // Select2 for length menu styling
+                        var _componentSelect2 = function () {
+                            if (!$().select2) {
+                                console.warn('Warning - select2.min.js is not loaded.');
+                                return;
+                            }
+
+                            // Initialize
+                            $('.dataTables_length select').select2({
+                                minimumResultsForSearch: Infinity,
+                                dropdownAutoWidth: true,
+                                width: 'auto'
+                            });
+                        };
+
+
+                        //
+                        // Return objects assigned to module
+                        //
+
+                        return {
+                            init: function () {
+                                _componentDatatableBasic();
+                                _componentSelect2();
+                            }
+                        }
+                    }();
+
+
+                    // Initialize module
+                    // ------------------------------
+
+                    document.addEventListener('DOMContentLoaded', function () {
+                        supplier.init();
+                    });
+
+                    function DeleteItems(id_reevaluation) {
+                        bootbox.confirm({
+                            title: 'Confirm dialog',
+                            message: 'Are you Sure you want to Delete the current Record?',
+                            buttons: {
+                                confirm: {
+                                    label: 'Yes',
+                                    className: 'btn-primary'
+                                },
+                                cancel: {
+                                    label: 'Cancel',
+                                    className: 'btn-link'
+                                }
+                            },
+                            callback: function (r) {
+                                if (r == true) {
+                                    jQuery.ajax({
+
+                                url: '@Url.Action("SupplierReevalutionDel", "SupplierReevalution")',
+                                type: 'POST',
+                                dataType: "json",
+                                data: { 'id_reevaluation': id_reevaluation },
+                                success: function (result) {
+
+                                    //// Add new params to the querystring dictionary
+
+                                    window.location.href =
+                                        window.location.protocol + "//" +
+                                        window.location.host +
+                                        window.location.pathname
+
+                                }
+                            });
+                            return true;
+                        }
+                        else if (r == false) {
+                            bootbox.hideAll();
+                            return false;
+                        }
+                    }
+                });
+                    }
+
+                    function getDetails() {
+                var branch_name = document.getElementById("branch_name").value;
+
+                   jQuery.ajax({
+                                url: '@Url.Action("SupplierReevalutionListSearch", "SupplierReevalution")',
+                        type: 'POST',
+                        dataType: "json",
+                        data: { 'branch_name': branch_name },
+                        success: function (result) {
+                            var params = {
+                                branch_name: branch_name
+                            };
+                            queryString = $.param(params);
+
+                            window.location.href =
+                                window.location.protocol + "//" +
+                                window.location.host +
+                                window.location.pathname +
+                               '?' + queryString;
+
+                        }
+                    });
+            }
+    </script>
+
+}

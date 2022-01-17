@@ -701,10 +701,12 @@ namespace ISOStd.Controllers
 
                 if (sPerformance_EvalId != null && sPerformance_EvalId != "")
                 {
+
                     string sSqlstmt = "select Performance_EvalId, emp_id, Designation, Dept_id, Evaluation_DoneOn, Evaluated_From, Evaluated_To, Eval_DoneBy, Eval_DoneBy_Desig,"
                     + " Eval_DoneBy_DeptId, Weakness, Strengths, Training_Reqd, Actions_Taken, Eval_ReviewedBy, Eval_ReviewedBy_Desig, Eval_ReviewedBy_DeptId, "
                     + " LoggedBy,DocUploadPath,JrMgr,Comment_JrMgr,JrMgr_Comment_Date,SrMgr,Comment_SrMgr,SrMgr_Comment_Date," +
-                    "(case when (Comment_JrMgr is null || Comment_JrMgr = '')then 'Pending Reviewer' when (Comment_SrMgr is null || Comment_SrMgr = '') then 'Pending Approval' else 'Evaluation Completed' end) as sstatus" +
+                    "training_need,remarks,recommendation,notified_to,eval_period,eval_category,top_mgmt," +
+                    "(case when eval_status='0' then 'Pending for Manger update' when eval_status='1' then 'Pending for HR update'  when eval_status='2' then 'Pending for Top Mgmt update' else 'Evaluation Completed'  end) as eval_status" +
                     " from t_emp_performance_eval where Performance_EvalId='" + sPerformance_EvalId + "'";
 
                     DataSet dsPerformance = objGlobaldata.Getdetails(sSqlstmt);
@@ -717,6 +719,7 @@ namespace ISOStd.Controllers
                             emp_id = objGlobaldata.GetEmpHrNameById(dsPerformance.Tables[0].Rows[0]["emp_id"].ToString()),
                             Designation = dsPerformance.Tables[0].Rows[0]["Designation"].ToString(),
                             Dept_id = objGlobaldata.GetDeptNameById(dsPerformance.Tables[0].Rows[0]["Dept_id"].ToString()),
+                            Eval_DoneById = (dsPerformance.Tables[0].Rows[0]["Eval_DoneBy"].ToString()),
                             Eval_DoneBy = objGlobaldata.GetEmpHrNameById(dsPerformance.Tables[0].Rows[0]["Eval_DoneBy"].ToString()),
                             Eval_DoneBy_Desig = dsPerformance.Tables[0].Rows[0]["Eval_DoneBy_Desig"].ToString(),
                             Eval_DoneBy_DeptId = objGlobaldata.GetDeptNameById(dsPerformance.Tables[0].Rows[0]["Eval_DoneBy_DeptId"].ToString()),
@@ -724,16 +727,26 @@ namespace ISOStd.Controllers
                             Strengths = (dsPerformance.Tables[0].Rows[0]["Strengths"].ToString()),
                             Training_Reqd = dsPerformance.Tables[0].Rows[0]["Training_Reqd"].ToString(),
                             Actions_Taken = dsPerformance.Tables[0].Rows[0]["Actions_Taken"].ToString(),
-                            DocUploadPath = dsPerformance.Tables[0].Rows[0]["DocUploadPath"].ToString(),
                             //Eval_ReviewedBy = objGlobaldata.GetEmpHrNameById(dsPerformance.Tables[0].Rows[0]["Eval_ReviewedBy"].ToString()),
                             //Eval_ReviewedBy_Desig = dsPerformance.Tables[0].Rows[0]["Eval_ReviewedBy_Desig"].ToString(),
                             //Eval_ReviewedBy_DeptId = objGlobaldata.GetDeptNameById(dsPerformance.Tables[0].Rows[0]["Eval_ReviewedBy_DeptId"].ToString()),
-                            LoggedBy = objGlobaldata.GetEmpHrNameById(dsPerformance.Tables[0].Rows[0]["LoggedBy"].ToString()),
+                            LoggedBy = (dsPerformance.Tables[0].Rows[0]["LoggedBy"].ToString()),
+                            DocUploadPath = dsPerformance.Tables[0].Rows[0]["DocUploadPath"].ToString(),
                             JrMgr = objGlobaldata.GetEmpHrNameById(dsPerformance.Tables[0].Rows[0]["JrMgr"].ToString()),
+                            JrMgrId = (dsPerformance.Tables[0].Rows[0]["JrMgr"].ToString()),
                             Comment_JrMgr = dsPerformance.Tables[0].Rows[0]["Comment_JrMgr"].ToString(),
                             SrMgr = objGlobaldata.GetEmpHrNameById(dsPerformance.Tables[0].Rows[0]["SrMgr"].ToString()),
+                            SrMgrId = (dsPerformance.Tables[0].Rows[0]["SrMgr"].ToString()),
                             Comment_SrMgr = dsPerformance.Tables[0].Rows[0]["Comment_SrMgr"].ToString(),
-                            sstatus = dsPerformance.Tables[0].Rows[0]["sstatus"].ToString(),
+                            //sstatus = dsPerformance.Tables[0].Rows[0]["sstatus"].ToString(),
+                            training_need = dsPerformance.Tables[0].Rows[0]["training_need"].ToString(),
+                            remarks = dsPerformance.Tables[0].Rows[0]["remarks"].ToString(),
+                            recommendation = objGlobaldata.GetDropdownitemById(dsPerformance.Tables[0].Rows[0]["recommendation"].ToString()),
+                            notified_to = objGlobaldata.GetMultiHrEmpNameById(dsPerformance.Tables[0].Rows[0]["notified_to"].ToString()),
+                            eval_period = objGlobaldata.GetDropdownitemById(dsPerformance.Tables[0].Rows[0]["eval_period"].ToString()),
+                            eval_category = objGlobaldata.GetDropdownitemById(dsPerformance.Tables[0].Rows[0]["eval_category"].ToString()),
+                            eval_status = dsPerformance.Tables[0].Rows[0]["eval_status"].ToString(),
+                            top_mgmt = dsPerformance.Tables[0].Rows[0]["top_mgmt"].ToString(),
                         };
 
                         DateTime dtValue;
@@ -757,26 +770,57 @@ namespace ISOStd.Controllers
                         {
                             objPerformance.SrMgr_Comment_Date = dtValue;
                         }
-                        CompanyModels objCompany = new CompanyModels();
-                        dsPerformance = objCompany.GetCompanyDetailsForReport(dsPerformance);
-
-                        string loggedby = objGlobaldata.GetCurrentUserSession().empid;
-                        dsPerformance = objGlobaldata.GetReportDetails(dsPerformance, objPerformance.Performance_EvalId, loggedby, "EMPLOYEE PERFORMANCE EVALUATION REPORT");
-                        ViewBag.CompanyInfo = dsPerformance;
+                        ViewBag.EmpList = objGlobaldata.GetHrEmployeeListbox();
                         //sSqlstmt = "SELECT Performance_Id, Performance_EvalId, SQId, SQ_OptionsId FROM t_emp_performance_elements where Performance_EvalId='"
                         //    + objPerformance.Performance_EvalId + "'";
-                        //DataSet dsPerformanceElement = objGlobaldata.Getdetails(sSqlstmt);
+
                         //sSqlstmt = " SELECT Performance_Id, Performance_EvalId, tt.SQId, SQ_OptionsId,Section FROM t_emp_performance_elements t," +
-                        //  " t_emp_performance_eval_questions tt where Performance_EvalId = '" + objPerformance.Performance_EvalId + "' and t.SQId = tt.SQId order by Section asc, Performance_Id asc";
+                        //    " t_emp_performance_eval_questions tt where Performance_EvalId = '" + objPerformance.Performance_EvalId + "' and t.SQId = tt.SQId order by Section asc, Performance_Id asc";
+
+                        //training
+                        sSqlstmt = "select id_training,Performance_EvalId,training_topic,criticality from t_emp_performance_training where Performance_EvalId='" + objPerformance.Performance_EvalId + "'";
+                        ViewBag.dsList = objGlobaldata.Getdetails(sSqlstmt);
 
                         string sSqlstmt1 = "select max(Weightage) as Weightage  from t_emp_performance_eval_rating where active=1";
                         ViewBag.MaxRate = objGlobaldata.Getdetails(sSqlstmt1);
 
-                        sSqlstmt = "SELECT Performance_Id, Performance_EvalId, tt.SQId, t.SQ_OptionsId,Section,item_fulldesc as Section_Weightage,tttt.Weightage " +
-                            "FROM t_emp_performance_elements t, t_emp_performance_eval_questions tt,dropdownitems ttt, t_emp_performance_eval_rating tttt " +
-                            "where Performance_EvalId = '" + objPerformance.Performance_EvalId + "' and t.SQId = tt.SQId and tt.Section = ttt.item_id and t.SQ_OptionsId = tttt.SQ_OptionsId order by Section asc, Performance_Id asc";
+                        sSqlstmt = "SELECT Performance_Id, Performance_EvalId, tt.SQId, SQ_OptionsId,Section,item_fulldesc as Section_Weightage FROM t_emp_performance_elements t, " +
+                            "t_emp_performance_eval_questions tt,dropdownitems ttt where Performance_EvalId = '" + objPerformance.Performance_EvalId + "' and t.SQId = tt.SQId" +
+                            " and tt.Section = ttt.item_id order by Section asc, Performance_Id asc";
 
-                        ViewBag.PerformanceElement = objGlobaldata.Getdetails(sSqlstmt);
+                        DataSet dsPerformanceElement = objGlobaldata.Getdetails(sSqlstmt);
+
+                        EmpPerformanceElementsModelsList objEmpPerformanceEvalList = new EmpPerformanceElementsModelsList();
+                        objEmpPerformanceEvalList.lstEmpPerformanceElements = new List<EmpPerformanceElementsModels>();
+
+                        EmpPerformanceElementsModels objElementMdl = new EmpPerformanceElementsModels();
+
+                        for (int i = 0; dsPerformanceElement.Tables.Count > 0 && i < dsPerformanceElement.Tables[0].Rows.Count; i++)
+                        {
+                            EmpPerformanceElementsModels objElements = new EmpPerformanceElementsModels
+                            {
+                                SQId = objElementMdl.GetQuestionNameById(dsPerformanceElement.Tables[0].Rows[i]["SQId"].ToString()),
+                                SQ_OptionsId = objElementMdl.GetRatingNameById(dsPerformanceElement.Tables[0].Rows[i]["SQ_OptionsId"].ToString()),
+                                SQ_Weightage = objElementMdl.GetRatingWeightageById(dsPerformanceElement.Tables[0].Rows[i]["SQ_OptionsId"].ToString()),
+                                Section = (dsPerformanceElement.Tables[0].Rows[i]["Section"].ToString()),
+                                Section_Weightage = (dsPerformanceElement.Tables[0].Rows[i]["Section_Weightage"].ToString()),
+                            };
+
+                            objEmpPerformanceEvalList.lstEmpPerformanceElements.Add(objElements);
+                        }
+
+                        ViewBag.PerformanceElement = objEmpPerformanceEvalList;
+                        ViewBag.PeformanceSection = objElementMdl.GetSectionsList();
+
+                        string sql = "select SQ_OptionsId,count(Performance_Id) tot_quest from t_emp_performance_elements  where Performance_EvalId='" + sPerformance_EvalId + "' group by SQ_OptionsId";
+                        ViewBag.dsData = objGlobaldata.Getdetails(sql);
+
+                        objPerformance.Weightage = objElementMdl.GetMaxRatingWeightage();
+
+                        string loggedby = objGlobaldata.GetCurrentUserSession().empid;
+
+                        dsPerformance = objGlobaldata.GetReportDetails(dsPerformance, objPerformance.Performance_EvalId, loggedby, "EMPLOYEE PERFORMANCE EVALUATION REPORT");
+                        ViewBag.CompanyInfo = dsPerformance;
 
                         ViewBag.EmpEVal = objPerformance;
                     }

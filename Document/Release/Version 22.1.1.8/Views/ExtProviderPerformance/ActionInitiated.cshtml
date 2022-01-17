@@ -1,0 +1,472 @@
+﻿@model ISOStd.Models.ExtProviderPerformanceModels
+@{
+    ViewBag.Title = "";
+    int actby_cnt = 0;
+    //action taken by
+    string[] actbyArray = new string[0];
+
+    if (ViewBag.actbyArray != null)
+    {
+        actbyArray = ViewBag.actbyArray;
+        actby_cnt = actbyArray.Length;
+    }
+    //notified to
+    int not_cnt = 0;
+    string[] NotifiedToArray = new string[0];
+
+    if (ViewBag.NotifiedToArray != null)
+    {
+        NotifiedToArray = ViewBag.NotifiedToArray;
+        not_cnt = NotifiedToArray.Length;
+    }
+    ISOStd.Models.clsGlobal objGlobaldata = new ISOStd.Models.clsGlobal();
+}
+@section featured {
+    <div class="page-header page-header-light">
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("ExtProviderPerformanceList", "ExtProviderPerformance", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Performance Evaluation</span>
+                    </a>
+                    <span class="breadcrumb-item active">Action Initiated</span>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+@using (Html.BeginForm("ActionInitiated", "ExtProviderPerformance", FormMethod.Post,
+       new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Action Initiated</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+                <input type="hidden" id="Id_Performace" name="Id_Performace" value="@Model.Id_Performace" />
+                <table class="table table-lg">
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.ReportNo)
+                        </td>
+                        <td class="col">
+                            <p class="bg-grey-300 py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.ReportNo)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.Ext_Provider_Name)
+                        </td>
+                        <td class="col">
+                            <p class="bg-grey-300 py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.Ext_Provider_Name)
+                            </p>
+                        </td>
+                    </tr>            
+                </table>
+
+                <table class="table table-lg">
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.initiated_date)<text style="color: red;">*</text>
+                        </td>
+                        <td class="col">
+
+                            @if (Model.initiated_date > Convert.ToDateTime("01/01/0001"))
+                            {
+                                <input type="date" id="initiated_date" name="initiated_date" value="@Model.initiated_date.ToString("yyyy-MM-dd")" class="form-control" />
+                            }
+                            else
+                            {
+                                <input type="date" id="initiated_date" name="initiated_date" required class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                            }
+
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.action_taken)<text style="color: red;">*</text>
+                        </td>
+                        <td class="col">
+                            <select class="form-control select-search select2-hidden-accessible" data-fouc id="action_taken" name="action_taken" required>
+                                <option value='' hidden>Select</option>
+                                @if (ViewBag.Action != null)
+                                {
+                                    foreach (var item in ViewBag.Action)
+                                    {
+                                        if (item.Value == Model.action_taken)
+                                        {
+                                            <option value='@item.Value' selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.Due_Date)<text style="color: red;">*</text>
+                        </td>
+                        <td class="col">
+
+                            @if (Model.Due_Date > Convert.ToDateTime("01/01/0001"))
+                            {
+                                <input type="date" id="Due_Date" name="Due_Date" value="@Model.Due_Date.ToString("yyyy-MM-dd")" class="form-control" />
+                            }
+                            else
+                            {
+                                <input type="date" id="Due_Date" name="Due_Date" required class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                            }
+
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.action_by)
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="action_by" name="action_by" onchange="GetActionByDetails()">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.EmpList != null)
+                                    {
+                                        foreach (var item in ViewBag.EmpList)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                    </tr>
+                    </table>
+                <div id="action" style="display:none">
+                    <div class="card-body">
+                        <input type="hidden" id="actby_cnt" name="actby_cnt" value="@actby_cnt" />
+
+                        <div class="card card-table table-responsive shadow-0 mb-0">
+                            <table class="table" id="action-list">
+                                <tr class="bg-blue">
+                                    <th>Action</th>
+                                    <th>Id</th>
+                                    <th>Action taken by</th>
+                                    <th>Division</th>
+                                    <th>Location</th>
+                                    <th>Department</th>
+                                    <th>Email</th>
+                                </tr>
+
+                                @if (ViewBag.actbyArray != null && actbyArray != null && actbyArray.Length > 0)
+                                {
+                                    for (int index = 0; index < actbyArray.Length; index++)
+                                    {
+                                        //string[] sEmp = @objIncidentLTIList.lstIncidentLTIModels[index].Emp_Id.Split(';');
+                                        <tr>
+                                            <td>
+                                                <span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span>
+                                                @*<img src='@Url.Content("~/images/cancel.png")' onclick='deleteRow1(this)' style='cursor:pointer; padding-right: 5px;' />Remove*@
+                                                <input type='hidden' id='act_empno @index' name="act_empno @index" value='@actbyArray[index]' />
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='empid @index' name="empid @index" readonly>@objGlobaldata.GetEmpIDByEmpNo(actbyArray[index])
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='empname @index' name="empname @index" readonly>@objGlobaldata.GetEmpHrNameById(actbyArray[index])
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='empdiv @index' name="empdiv @index" readonly>@objGlobaldata.GetCompanyBranchNameById(objGlobaldata.GetDivisionIdByHrEmpId(actbyArray[index]))
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='emploc @index' name="emploc @index" readonly>@objGlobaldata.GetDivisionLocationById(objGlobaldata.GetWorkLocationIdByHrEmpId(actbyArray[index]))
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='empdept @index' name="empdept @index" readonly>@objGlobaldata.GetDeptNameById(objGlobaldata.GetDeptIdByHrEmpId(actbyArray[index]))
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='empemail @index' name="empemail @index" readonly>@objGlobaldata.GetHrEmpEmailIdById(actbyArray[index])
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <table class="table table-lg">
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.action_notified_to)
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="action_notified_to" name="action_notified_to" onchange="GetNotifiedByDetails()">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.EmpList != null)
+                                    {
+                                        foreach (var item in ViewBag.EmpList)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+                <div id="notified" style="display:none">
+                    <div class="card-body">
+                        <input type="hidden" id="notified_cnt" name="notified_cnt" value="@not_cnt" />
+
+                        <div class="card card-table table-responsive shadow-0 mb-0">
+                            <table class="table" id="notified-list">
+                                <tr class="bg-blue">
+                                    <th>Action</th>
+                                    <th>Id</th>
+                                    <th>Notified To</th>
+                                    <th>Division</th>
+                                    <th>Location</th>
+                                    <th>Department</th>
+                                    <th>Email</th>
+                                </tr>
+
+                                @if (ViewBag.NotifiedToArray != null && NotifiedToArray != null && NotifiedToArray.Length > 0)
+                                {
+                                    for (int index = 0; index < NotifiedToArray.Length; index++)
+                                    {
+                                        //string[] sEmp = @objIncidentLTIList.lstIncidentLTIModels[index].Emp_Id.Split(';');
+                                        <tr>
+                                            <td>
+                                                <span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span>
+                                                @*<img src='@Url.Content("~/images/cancel.png")' onclick='deleteRow1(this)' style='cursor:pointer; padding-right: 5px;' />Remove*@
+                                                <input type='hidden' id='empno @index' name="empno @index" value='@NotifiedToArray[index]' />
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='empid @index' name="empid @index" readonly>@objGlobaldata.GetEmpIDByEmpNo(NotifiedToArray[index])
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='empname @index' name="empname @index" readonly>@objGlobaldata.GetEmpHrNameById(NotifiedToArray[index])
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='empdiv @index' name="empdiv @index" readonly>@objGlobaldata.GetCompanyBranchNameById(objGlobaldata.GetDivisionIdByHrEmpId(NotifiedToArray[index]))
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='emploc @index' name="emploc @index" readonly>@objGlobaldata.GetDivisionLocationById(objGlobaldata.GetWorkLocationIdByHrEmpId(NotifiedToArray[index]))
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='empdept @index' name="empdept @index" readonly>@objGlobaldata.GetDeptNameById(objGlobaldata.GetDeptIdByHrEmpId(NotifiedToArray[index]))
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='empemail @index' name="empemail @index" readonly>@objGlobaldata.GetHrEmpEmailIdById(NotifiedToArray[index])
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                  
+                
+            </div>
+            <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+                @Html.ActionLink("Back to List", "ExtProviderPerformanceList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+                <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Save</button>
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script type="text/javascript">
+        //----zzz
+
+
+        $(document).ready(function () {
+
+            @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+                                        @:     text: '@TempData["alertdata"]',
+                                        @:     type: 'error'
+                                        @:     }).show();
+
+                            }
+
+            @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+                                        @:       text: '@TempData["Successdata"]',
+                                        @:       type: 'success'
+                                        @:        }).show();
+
+                            }
+        });
+        var act_cnt = document.getElementById("actby_cnt").value;
+        var not_cnt = document.getElementById("notified_cnt").value;
+        if(act_cnt >=1)
+        {
+            document.getElementById("action").style.display = 'block';
+
+        }
+        if (not_cnt>=1)
+        {
+            document.getElementById("notified").style.display = 'block';
+
+}
+        function deleteRow(btn) {
+            var row = btn.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+        }
+        function GetActionByDetails() {
+            var action_by = $('#action_by').val();
+            if (action_by != "" && action_by != null) {
+                jQuery.ajax({
+                    url: '@Url.Action("FunGetEmpDetails", "NC")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'semp_no': action_by },
+                    success: function (result) {
+                        if (result != null) {
+
+                            document.getElementById("action").style.display = 'block';
+
+                            var act_empno = $('#action_by option:Selected').val();
+                            var empid = result.emp_id;
+                            var empname = result.empname;
+                            var empdiv = result.division;
+                            var empdept = result.department;
+                            var emploc = result.location;
+                            var empemail = result.EmailId;
+
+                            if (empid != null) {
+                                var cnt = document.getElementById("actby_cnt").value;
+
+                                document.getElementById("actby_cnt").value = cnt;
+                                // Find a <table> element with id="myTable":
+                                var table = document.getElementById("action-list");
+
+                                // Create an empty <tr> element and add it to the 1st position of the table:
+                                var row = table.insertRow();
+
+
+                                // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                                var cell0 = row.insertCell(0);
+                                var cell1 = row.insertCell(1);
+                                var cell2 = row.insertCell(2);
+                                var cell3 = row.insertCell(3);
+                                var cell4 = row.insertCell(4);
+                                var cell5 = row.insertCell(5);
+                                var cell6 = row.insertCell(6);
+
+                                cell0.innerHTML = "<span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span> <input type = 'hidden' id = 'act_empno " + cnt + "' name = 'act_empno " + cnt + "' value = '" + act_empno + "'>";
+                                cell1.innerHTML = "<input type='hidden' id='empid " + cnt + "' name='empid " + cnt + "' value='" + empid + "'>" + empid;
+                                cell2.innerHTML = "<input type='hidden' id='empname " + cnt + "' name='empname " + cnt + "' value='" + empname + "'>" + empname;
+                                cell3.innerHTML = "<input type='hidden' id='empdiv " + cnt + "' name='empdiv " + cnt + "' value='" + empdiv + "'>" + empdiv;
+                                cell4.innerHTML = "<input type='hidden' id='emploc " + cnt + "' name='emploc " + cnt + "' value='" + emploc + "'>" + emploc;
+                                cell5.innerHTML = "<input type='hidden' id='empdept " + cnt + "' name='empdept " + cnt + "' value='" + empdept + "'>" + empdept;
+                                cell6.innerHTML = "<input type='hidden' id='empemail " + cnt + "' name='empemail " + cnt + "' value='" + empemail + "'>" + empemail;
+
+                                cnt++;
+                                document.getElementById("actby_cnt").value = cnt;
+
+
+                                $("#action_by").val('').trigger('change');
+                            }
+
+                        }
+                    }
+                });
+            }
+        }
+        function GetNotifiedByDetails() {
+            var action_notified_to = $('#action_notified_to').val();
+            if (action_notified_to != "" && action_notified_to != null) {
+                jQuery.ajax({
+                    url: '@Url.Action("FunGetEmpDetails", "NC")',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { 'semp_no': action_notified_to },
+                    success: function (result) {
+                        if (result != null) {
+
+                            document.getElementById("notified").style.display = 'block';
+
+                            var empno = $('#action_notified_to option:Selected').val();
+                            var empid = result.emp_id;
+                            var empname = result.empname;
+                            var empdiv = result.division;
+                            var empdept = result.department;
+                            var emploc = result.location;
+                            var empemail = result.EmailId;
+
+                            if (empid != null) {
+                                var cnt = document.getElementById("notified_cnt").value;
+
+                                document.getElementById("notified_cnt").value = cnt;
+                                // Find a <table> element with id="myTable":
+                                var table = document.getElementById("notified-list");
+
+                                // Create an empty <tr> element and add it to the 1st position of the table:
+                                var row = table.insertRow();
+
+
+                                // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                                var cell0 = row.insertCell(0);
+                                var cell1 = row.insertCell(1);
+                                var cell2 = row.insertCell(2);
+                                var cell3 = row.insertCell(3);
+                                var cell4 = row.insertCell(4);
+                                var cell5 = row.insertCell(5);
+                                var cell6 = row.insertCell(6);
+
+                                cell0.innerHTML = "<span class='badge badge-info' onclick='deleteRow(this)' style='cursor:pointer;'>Delete</span> <input type = 'hidden' id = 'empno " + cnt + "' name = 'empno " + cnt + "' value = '" + empno + "'>";
+                                cell1.innerHTML = "<input type='hidden' id='empid " + cnt + "' name='empid " + cnt + "' value='" + empid + "'>" + empid;
+                                cell2.innerHTML = "<input type='hidden' id='empname " + cnt + "' name='empname " + cnt + "' value='" + empname + "'>" + empname;
+                                cell3.innerHTML = "<input type='hidden' id='empdiv " + cnt + "' name='empdiv " + cnt + "' value='" + empdiv + "'>" + empdiv;
+                                cell4.innerHTML = "<input type='hidden' id='emploc " + cnt + "' name='emploc " + cnt + "' value='" + emploc + "'>" + emploc;
+                                cell5.innerHTML = "<input type='hidden' id='empdept " + cnt + "' name='empdept " + cnt + "' value='" + empdept + "'>" + empdept;
+                                cell6.innerHTML = "<input type='hidden' id='empemail " + cnt + "' name='empemail " + cnt + "' value='" + empemail + "'>" + empemail;
+
+                                cnt++;
+                                document.getElementById("notified_cnt").value = cnt;
+
+
+                                $("#action_notified_to").val('').trigger('change');
+                            }
+
+                        }
+                    }
+                });
+            }
+        }
+        function setType() {
+            var audit_status = $("#Audit_Status option:selected").text();
+            if (audit_status == "Cancelled" || audit_status == "Postponed") {
+                document.getElementById("remarks").required = true;
+            }
+            else {
+                document.getElementById("remarks").required = false;
+            }
+        }
+
+    </script>
+
+}

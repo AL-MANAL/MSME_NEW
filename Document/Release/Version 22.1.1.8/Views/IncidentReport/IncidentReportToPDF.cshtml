@@ -1,0 +1,461 @@
+﻿@using System.Data
+@model ISOStd.Models.IncidentReportModels
+
+@{
+    ViewBag.Title = "AddIncidentReport";
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+    ISOStd.Models.IncidentLTIModelsList objIncidentLTIList = new ISOStd.Models.IncidentLTIModelsList();
+    ISOStd.Models.IncidentReportModelsList objActionList = new ISOStd.Models.IncidentReportModelsList();
+    ISOStd.Models.IncidentReportModelsList objCloseList = new ISOStd.Models.IncidentReportModelsList();
+    ISOStd.Models.IncidentReportModels objModel = new ISOStd.Models.IncidentReportModels();
+
+
+    if (ViewBag.Incident != null)
+    {
+        objModel = ViewBag.Incident;
+    }
+    if (ViewBag.objIncidentLTIList != null)
+    {
+        objIncidentLTIList = ViewBag.objIncidentLTIList;
+    }
+    if (ViewBag.objActionList != null)
+    {
+        objActionList = ViewBag.objActionList;
+
+    }
+    if (ViewBag.objCloseList != null)
+    {
+        objCloseList = ViewBag.objCloseList;
+
+    }
+    DataSet dsCompany = new DataSet();
+    if (ViewBag.CompanyInfo != null)
+    {
+        dsCompany = ViewBag.CompanyInfo;
+    }
+    Layout = "~/Views/Shared/_PrintLayout.cshtml";
+   
+}
+
+
+@Html.Partial("_ReportHeader", dsCompany)
+<div style="background-color:white">
+
+    <div>
+        <table class="table table-lg table-bordered">
+            <tr class="row">
+                <td colspan="4">
+                    <h3>Report Details</h3>
+                </td>
+            </tr>
+            <tr class="row">
+                @*<td class="font-size-lg font-weight-bold">
+                Incident No.
+
+            </td>
+            <td class="font-size-lg">
+                @objModel.Incident_Num
+
+            </td>*@
+                <td class="font-size-lg font-weight-bold">
+                    Incident Type
+                </td>
+                <td class="font-size-lg">
+                    @objModel.Incident_Type
+
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+                    <div class="editor-label">
+                        Date and timing of Accident
+                    </div>
+                </td>
+                <td class="font-size-lg">
+                    <div class="editor-field">
+
+                        @if (objModel.acc_date > Convert.ToDateTime("01/01/0001"))
+                        {
+                            @objModel.acc_date.ToString("dd/MM/yyyy hh:mm:ss")
+                        }
+
+                    </div>
+                </td>
+                <td class="font-size-lg font-weight-bold">
+                    <div class="editor-label">
+                        Date of Accident Report
+                    </div>
+                </td>
+                <td class="font-size-lg">
+                    <div class="editor-field">
+
+                        @if (objModel.reported_date > Convert.ToDateTime("01/01/0001"))
+                        {
+                            @objModel.reported_date.ToString("dd/MM/yyyy")
+                        }
+
+                    </div>
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+                    <div class="editor-label">
+                        Reported By
+                    </div>
+                </td>
+                <td class="font-size-lg">
+                    <div class="editor-field">
+                        @objModel.reported_by
+
+                    </div>
+                </td>
+                <td class="font-size-lg font-weight-bold">
+                    <div class="editor-label">
+                        Details of accident
+                    </div>
+                </td>
+                <td class="font-size-lg">
+                    <div class="editor-field">
+                        @objModel.details
+
+                    </div>
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+                    <div class="editor-label">
+                        Consequences of an Accident
+                    </div>
+                </td>
+                <td class="font-size-lg">
+                    <div class="editor-field">
+                        @objModel.damage
+
+                    </div>
+                </td>
+               
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+
+                    Injuries
+
+                </td>
+                <td class="font-size-lg">
+
+
+                    @objModel.Injuries
+
+                </td>
+                <td class="font-size-lg font-weight-bold">
+
+                    Investigation team
+
+                </td>
+                <td class="font-size-lg">
+
+
+                    @objModel.invest_team
+
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+
+                    Risk due to Incident
+
+                </td>
+                <td class="font-size-lg">
+
+
+                    @objModel.risk_incident
+
+                </td>
+                <td class="font-size-lg font-weight-bold">
+
+                    Witness statement
+
+                </td>
+                <td class="font-size-lg">
+
+
+                    @objModel.witness_stmt
+
+                </td>
+            </tr>
+            <tr class="row">
+
+                @*<td class="font-size-lg font-weight-bold">
+
+                    Is incident occurred within the work premises?
+
+                </td>
+                <td class="font-size-lg">
+
+
+                    @objModel.InWork_Premises
+
+                </td>*@
+
+                <td class="font-size-lg font-weight-bold">
+
+                    Incident witnessed by (name and other detail)
+
+                </td>
+                <td class="font-size-lg">
+
+
+                    @objModel.WitnessedBy
+
+                </td>
+
+            </tr>
+            <tr class="row">
+
+                @*<td class="font-size-lg font-weight-bold">
+
+                    Consequences of an Incident
+
+                </td>
+                <td class="font-size-lg">
+
+                    @objModel.Consequences
+
+                </td>*@
+                <td class="font-size-lg font-weight-bold">
+
+                    HSE officer
+
+                </td>
+                <td class="font-size-lg">
+
+
+                    @objModel.hse_officer
+
+                </td>
+            </tr>
+
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+
+                    External Witness
+
+                </td>
+                <td class="font-size-lg">
+
+
+                    @objModel.ext_witness
+
+                </td>
+
+                @*<td class="font-size-lg font-weight-bold">
+
+                    Immediate actions taken(containment action)
+
+                </td>
+                <td class="font-size-lg">
+
+
+                    @objModel.Actions_Taken
+
+                </td>*@
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+
+                    Reasons for Incident Occurrence
+
+                </td>
+                <td class="font-size-lg">
+
+
+                    @objModel.Incident_Reasons
+
+                </td>
+
+                <td class="font-size-lg font-weight-bold">
+
+                    Corrective measures proposed (specify the resources required)
+
+                </td>
+                <td class="font-size-lg">
+
+
+                    @objModel.Corrective_Measures
+
+                </td>
+            </tr>
+            <tr class="row">
+
+
+                <td class="font-size-lg font-weight-bold">
+
+
+                    Due date for the implementation of Corrective measures
+
+                </td>
+                <td class="font-size-lg">
+
+
+                    @if (objModel.DueDate > Convert.ToDateTime("01/01/0001"))
+                    {
+                        @objModel.DueDate.ToString("dd/MM/yyyy")
+                    }
+
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="font-size-lg font-weight-bold">
+
+                    Overall Status
+
+                </td>
+                <td class="font-size-lg">
+
+
+                    @objModel.overall_status
+
+                </td>
+                <td class="font-size-lg font-weight-bold">
+
+
+                    Logged By
+
+                </td>
+                <td class="font-size-lg">
+
+
+                    @objModel.LoggedBy
+
+                </td>
+            </tr>
+
+        </table>
+
+    </div>
+   
+        @if (objIncidentLTIList.lstIncidentLTIModels != null && objIncidentLTIList.lstIncidentLTIModels.Count > 0)
+        {
+            <div>
+                <h2>  Accident Details</h2>
+                <table class="table table-lg table-bordered">
+                    <thead>
+                        <tr class="bg-blue font-weight-bold">
+
+                            <th>Accident Type</th>
+                            <th>Name</th>
+                            <th>LTI (Hrs)</th>
+                        </tr>
+                    </thead>
+
+                    @for (int index = 0; index < objIncidentLTIList.lstIncidentLTIModels.Count; index++)
+                    {
+                <tbody>
+                    <tr class="row">
+                        <td>@objIncidentLTIList.lstIncidentLTIModels[index].AccidentType</td>
+                        <td>@objIncidentLTIList.lstIncidentLTIModels[index].Emp_Id</td>
+                        <td>@objIncidentLTIList.lstIncidentLTIModels[index].LTI_Hrs</td>
+                    </tr>
+                </tbody>
+                    }
+                </table>
+            </div>
+        }
+        <br />
+
+
+        @if (objActionList.lstIncidentReportModels != null && objActionList.lstIncidentReportModels.Count > 0)
+            {
+
+
+            <h2>Action Details</h2>
+
+            <div>
+                <table class="table table-lg table-bordered">
+
+
+                    <thead>
+                        <tr class="bg-blue font-weight-bold">
+                            <th>Action to be taken</th>
+                            <th>Responsible Person</th>
+                            <th>Target Date</th>
+                          
+                            <th>Contractor</th>
+                            <th>Action Status</th>
+                            <th>Remarks</th>
+                            <th>Update Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @for (int index = 0; index < objActionList.lstIncidentReportModels.Count; index++)
+                        {
+                            <tr class="row">
+                                <td>@objActionList.lstIncidentReportModels[index].incident_action</td>
+                                <td>@objActionList.lstIncidentReportModels[index].resp_pers</td>
+                                <td>
+                                    @if (objActionList.lstIncidentReportModels[index].target_date != null && objActionList.lstIncidentReportModels[index].target_date > Convert.ToDateTime("01/01/0001"))
+                                    {
+                                        @Html.Label(objActionList.lstIncidentReportModels[index].target_date.ToString("dd/MM/yyyy"))
+                                    }
+                                </td>
+                               
+                                <td>@objActionList.lstIncidentReportModels[index].contractor</td>
+                                <td>@objActionList.lstIncidentReportModels[index].incident_status</td>
+                                <td>@objActionList.lstIncidentReportModels[index].remarks</td>
+                                <td>
+                                    @if (objActionList.lstIncidentReportModels[index].update_date != null && objActionList.lstIncidentReportModels[index].update_date > Convert.ToDateTime("01/01/0001"))
+                                    {
+                                        @Html.Label(objActionList.lstIncidentReportModels[index].update_date.ToString("dd/MM/yyyy"))
+                                    }
+                                </td>
+
+                            </tr>
+                        }
+
+
+                    </tbody>
+                </table>
+
+            </div>
+
+        }
+
+        <br />
+        @if (objCloseList.lstIncidentReportModels != null && objCloseList.lstIncidentReportModels.Count > 0)
+            {
+
+
+            <h2>Closeout Details</h2>
+            <div>
+                <table class="table table-lg table-bordered">
+                    <thead>
+                        <tr class="bg-blue font-weight-bold">
+                            <th>Closed By</th>
+                            <th>Investigation Results</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @for (int index = 0; index < objCloseList.lstIncidentReportModels.Count; index++)
+                            {
+                        <tr class="row">
+                            <td>@objCloseList.lstIncidentReportModels[index].closed_by</td>
+                            <td>@objCloseList.lstIncidentReportModels[index].invest_result</td>
+
+
+                        </tr>
+                            }
+
+
+                    </tbody>
+                </table>
+            </div>
+
+        }
+</div>
+
+
+
+
+

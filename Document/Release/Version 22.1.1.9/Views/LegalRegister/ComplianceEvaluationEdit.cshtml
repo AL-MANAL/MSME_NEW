@@ -1,0 +1,635 @@
+﻿@model ISOStd.Models.LegalRegisterModel
+
+@{
+    ViewBag.Title = "ComplianceEvaluationEdit";
+    // string[] NotifiedtoArray = new string[0];
+    //int itemcnts = 0;
+
+    //if (ViewBag.notified_Array != null)
+    //{
+    //    NotifiedtoArray = ViewBag.notified_Array;
+    //    itemcnts = NotifiedtoArray.Length;
+    //}
+
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+    ISOStd.Models.LegalRegisterModelsList LRList = new ISOStd.Models.LegalRegisterModelsList();
+    int itemcount = 0;
+
+    if (ViewBag.Law_article != null)
+    {
+        LRList = ViewBag.Law_article;
+        itemcount = LRList.LegalRegisterMList.Count;
+    }
+}
+
+@section featured {
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("ComplianceList", "LegalRegister", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Legal Register</span>
+                    </a>
+                    <span class="breadcrumb-item active">Update Compliance Evaluation</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                    <div class="breadcrumb justify-content-center">
+                        <div class="breadcrumb-elements-item dropdown p-0">
+                            <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                                <i class="icon-gear mr-2"></i>
+                                Settings
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <div class="dropdown-divider"></div>
+                                <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>*@
+        </div>
+    </div>
+}
+<script src="/Scripts/jquery.validate.js"></script>
+<script src="/Scripts/jquery.validate.unobtrusive.js"></script>
+
+@using (Html.BeginForm("ComplianceEvaluationEdit", "LegalRegister", FormMethod.Post,
+                     new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <input type="hidden" id="id_law" name="id_law" value="@Model.id_law" />
+
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Compliance Evaluation</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+                <table class="table table-lg">
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.branch)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @Html.DisplayFor(model => model.branch)
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.deptid)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @Html.DisplayFor(model => model.deptid)
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.Eve_date)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @if (Model.Eve_date != null && Model.Eve_date > Convert.ToDateTime("01/01/0001"))
+                                {
+                                    @Html.DisplayFor(model => model.Eve_date)
+                                }
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.Location)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @Html.DisplayFor(model => model.Location)
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-4 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.lawNo)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @Html.DisplayFor(model => model.lawNo)
+                            </div>
+                        </td>
+                        <td class="col-xs-4 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.lawTitle)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @Html.DisplayFor(model => model.lawTitle)
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+                <hr />
+                <div> <b>Law Article Details:</b> </div>
+                <br />
+
+                <div class="card is-visible" id="hidden_card_count">
+                    <div class="card-header header-elements-inline">
+                        <h5 class="card-title">Compliance Evaluation Details</h5>
+                        <div class="header-elements">
+                            <div class="list-icons">
+                                <a class="list-icons-item" data-action="collapse"></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+                        <input type="hidden" id="itemcount" name="itemcount" value="@itemcount" />
+                        <div class="card card-table table-responsive shadow-0 mb-0">
+                            <table class="table" id="team-list-count">
+                                <tr class="bg-blue">
+                                    <th>History</th>
+                                    <th>Article Date</th>
+                                    <th>Article Number</th>
+                                    <th>Article Details</th>
+                                    <th>Compliance Status</th>
+                                    <th>Description</th>
+                                    <th>Action To Be Taken</th>
+                                    <th>Target Date</th>
+                                    <th>Report Date</th>
+                                    <th>Personnel Responsible</th>
+                                    <th>Upload Document</th>
+                                </tr>
+                                @if (LRList.LegalRegisterMList != null && LRList.LegalRegisterMList.Count > 0)
+                                {
+                                    for (int index = 0; index < LRList.LegalRegisterMList.Count; index++)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <a class="dropdown-item" href='@Url.Action("ComplianceEvaluationHistory", "LegalRegister", new { id_law = Model.id_law,id_article = LRList.LegalRegisterMList[index].id_article.ToString() })' title="View History" onclick="HyperLinkProgressIconFunction()">
+                                                    <i class="icon-history"></i>
+                                                </a>
+                                            </td>
+                                            @*<td>
+                                                    <img src='@Url.Content("~/images/cancel.png")' onclick='deleteRow1(@LRList.LegalRegisterMList[index].id_article)' style='cursor:pointer; padding-right: 5px;' />Remove
+                                                </td>*@
+                                            <td>
+                                                <input type='hidden' id='id_article @index' name="id_article @index" value='@LRList.LegalRegisterMList[index].id_article' />
+                                                <input type='hidden' id='article_date @index' name="article_date @index" value='@LRList.LegalRegisterMList[index].article_date.ToString("yyyy-MM-dd")'>@LRList.LegalRegisterMList[index].article_date.ToString("yyyy-MM-dd")
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='article_no @index' name="article_no @index" value='@LRList.LegalRegisterMList[index].article_no'>@LRList.LegalRegisterMList[index].article_no
+                                            </td>
+                                            <td>
+                                                <input type='hidden' id='article_detail @index' name="article_detail @index" value='@LRList.LegalRegisterMList[index].article_detail'>@LRList.LegalRegisterMList[index].article_detail
+                                            </td>
+                                            <td>
+                                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="compliance_status @index" name="compliance_status @index" onchange="GetComplianceStatus(@index)">
+                                                    <option value='' hidden>Select</option>
+                                                    @if (ViewBag.ComplianceStatus != null)
+                                                    {
+                                                        foreach (var item in ViewBag.ComplianceStatus)
+                                                        {
+                                                            if (item.Value == LRList.LegalRegisterMList[index].compliance_status)
+                                                            {
+                                                                <option value='@item.Value' selected>@item.Text</option>
+                                                            }
+                                                            else
+                                                            {
+                                                                <option value='@item.Value'>@item.Text</option>
+                                                            }
+                                                        }
+                                                    }
+                                                </select>
+                                            </td>
+                                            <td>
+                                                @if (LRList.LegalRegisterMList[index].article_desc != null && LRList.LegalRegisterMList[index].article_desc != "")
+                                                {
+                                                    <textarea id='article_desc @index' name="article_desc @index" maxlength="1500" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 6em;width:10em;" class="form-control elastic maxlength-badge-position" > @LRList.LegalRegisterMList[index].article_desc</textarea>
+                                                }
+                                                else
+                                                {
+                                                    <textarea id='article_desc @index' name="article_desc @index" maxlength="1500" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 6em;width:10em;" class="form-control elastic maxlength-badge-position" ></textarea>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (LRList.LegalRegisterMList[index].action_taken != null && LRList.LegalRegisterMList[index].action_taken != "")
+                                                {
+                                                    <textarea maxlength="1500" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 6em;width:10em;" class="form-control elastic maxlength-badge-position" id='action_taken @index' name="action_taken @index" required>@LRList.LegalRegisterMList[index].action_taken</textarea>
+
+                                                }
+                                                else
+                                                {
+                                                    <textarea maxlength="1500" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 6em; width: 10em;" class="form-control elastic maxlength-badge-position" id='action_taken @index' name="action_taken @index" required></textarea>
+                                                }
+                                                @*<span class="field-validation-error"><span id="action_taken @index-message" style="display: none;">Action Taken is required.</span></span>*@
+                                            </td>
+                                            <td>
+                                                @if (LRList.LegalRegisterMList[index].target_date != null && LRList.LegalRegisterMList[index].target_date > Convert.ToDateTime("01/01/0001"))
+                                                {
+                                                    <input type="date" class="form-control" id='target_date @index' name="target_date @index" value="@LRList.LegalRegisterMList[index].target_date.ToString("yyyy-MM-dd")" required />
+                                                }
+                                                else
+                                                {
+                                                    <input type="date" class="form-control" id='target_date @index' name="target_date @index" required />
+                                                }
+                                                @*<span class="field-validation-error"><span id="target_date @index-message" style="display: none;">Target date is required.</span></span>*@
+                                            </td>
+                                            <td>
+                                                @if (LRList.LegalRegisterMList[index].report_date != null && LRList.LegalRegisterMList[index].report_date > Convert.ToDateTime("01/01/0001"))
+                                                {
+                                                    <input type="date" class="form-control" id='report_date @index' name="report_date @index" value="@LRList.LegalRegisterMList[index].report_date.ToString("yyyy-MM-dd")" required />
+                                                }
+                                                else
+                                                {
+                                                    <input type="date" class="form-control" id='report_date @index' name="report_date @index" required />
+                                                }
+                                                @*<span class="field-validation-error"><span id="target_date @index-message" style="display: none;">Target date is required.</span></span>*@
+                                            </td>
+                                            <td>
+                                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="person_resp @index" name="person_resp @index" required>
+                                                    <option value='' hidden>Select</option>
+                                                    @if (ViewBag.EmpList != null)
+                                                    {
+                                                        foreach (var item in ViewBag.EmpList)
+                                                        {
+                                                            if (item.Value == LRList.LegalRegisterMList[index].person_resp)
+                                                            {
+                                                                <option value='@item.Value' selected>@item.Text</option>
+                                                            }
+                                                            else
+                                                            {
+                                                                <option value='@item.Value'>@item.Text</option>
+                                                            }
+                                                        }
+                                                    }
+                                                </select>
+                                                @*<span class="field-validation-error"><span id="person_resp @index-message" style="display: none;">Person Responsible is required.</span></span>*@
+                                            </td>
+                                            <td>
+                                                @*<input type="file" name="article_upload @index" id="article_upload @index" title="Upload Document" onchange="FileFormatValidation(this)"
+                                                           multiple="multiple" accept=".xls, .xlsx, .pdf, .doc, .docx,image/*" style="height: 38px;" />
+                                                    <span class="field-validation-error"><span id="article_upload-message" style="display: none;">Upload field is required.</span></span>
+                                                    @Html.ValidationMessageFor(model => model.article_upload)
+                                                    <p style="font-size: 11px; margin: 0px;">(Hold Ctrl Key in case of multiple files)</p>*@
+                                                @if (LRList.LegalRegisterMList[index].article_upload != "")
+                                                {
+                                                    <a href='@Url.Action("DisplayDocument", "Reports", new { Document = LRList.LegalRegisterMList[index].article_upload })' target="_blank">Preview</a>
+                                                }
+                                                <input type="file" name="article_upload @index" id="article_upload @index" onchange="FileFormatValidation(this,@index)" accept=".pdf,.xlsx,.xls,.jpeg,.jpg,.png,.doc,.docx,image/*" />
+
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+            @Html.ActionLink("Back to List", "ComplianceList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+            <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400"  onclick="ProgressIconFunction('#form1')" @*onclick="Validationstatus()"*@ ><i class="icon-checkmark3 mr-2"></i> Add</button>
+        </div>
+    </div>
+    <div id="dvItems" style="overflow: auto; display: none;">
+        <table id="team-list" style="width: 100%">
+            <tr>
+                <th>Upload</th>
+            </tr>
+        </table>
+    </div>
+}
+
+@section Scripts {
+    <script>
+
+    $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+        GetComplianceStatusEdit();
+    });
+
+    var showClass = 'is-visible';
+        var hideClass = 'invisible';
+
+
+        //function Validationstatus() {
+
+        //    var totallen = document.getElementById("itemcount").value;
+        //    for (var i = 0; i < totallen; i++) {
+
+        //        var e = document.getElementById("compliance_status " + i);
+        //        var compliance_statustext = e.options[e.selectedIndex].text;
+
+        //        if (compliance_statustext.toLowerCase() == "not complied") {
+
+        //            var validflg = true;
+        //            var ssnMessage = "";
+
+        //            if (document.getElementById("action_taken "+i).value == "") {
+        //                ssnMessage = $('#action_taken '+i+'-message');
+        //                ssnMessage.show();
+        //                validflg = false;
+        //            }
+        //            else {
+        //                ssnMessage = $('#action_taken ' + i +'-message');
+        //                ssnMessage.hide();
+        //            }
+
+        //            if (document.getElementById("target_date "+i).value == "") {
+        //                ssnMessage = $('#target_date '+i+'-message');
+        //                ssnMessage.show();
+        //                validflg = false;
+        //            }
+        //            else {
+        //                ssnMessage = $('#target_date ' + i +'-message');
+        //                ssnMessage.hide();
+        //            }
+        //            if (document.getElementById("person_resp "+i).value == "") {
+        //                ssnMessage = $('#person_resp '+i+'-message');
+        //                ssnMessage.show();
+        //                validflg = false;
+        //            }
+        //            else {
+        //                ssnMessage = $('#person_resp ' + i +'-message');
+        //                ssnMessage.hide();
+        //            }
+        //            if (validflg == false) {
+        //                return false;
+        //            }
+        //        }
+
+        //    }
+
+        //   // return validflag;
+        //    //if (validflg) {
+        //    //    ProgressIconFunction('#form1');
+        //    //}
+        //}
+
+          function FileFormatValidation(file, cnt) {
+
+                 var ext = file.value.split(".").pop().toLowerCase();
+              if ($.inArray(ext, ["pdf", "xlsx", "xls", "doc", "docx", "jpeg", "jpg", "png"]) == -1) {
+                     file.value = "";
+                     bootbox.alert({
+                         title: 'File type',
+                         message: 'Invalid file format, please upload only xlsx,xls,pdf,jpeg,jpg,png format.'
+                     });
+                 }
+                 else {
+
+                     AddEvidence(cnt)
+                 }
+        }
+
+          function AddEvidence(cnt) {
+
+                 var table = document.getElementById("team-list");
+                 var row = table.insertRow();
+                 var cell0 = row.insertCell(0);
+                 var n = "article_upload " + cnt;
+                 var article_upload = document.getElementById(n).value;
+
+                 evidence_uploadServerPath = UploadDocument(cnt);
+                 cell0.innerHTML = "<input type='hidden' id='article_upload" + cnt + "' name='article_upload" + cnt + "' value='" + evidence_uploadServerPath + "'>" + article_upload;
+
+             }
+
+             function UploadDocument(ind) {
+
+
+                 var article_upload = ($("#article_upload " + ind)).files;
+
+                 var formData = new FormData();
+                 var totalFiles = document.getElementById("article_upload "+ ind).files.length;
+
+                 for (var i = 0; i < totalFiles; i++) {
+                     var file = document.getElementById("article_upload " + ind).files[i];
+                     formData.append("article_upload", file);
+                 }
+                 jQuery.ajax({
+                     url: '@Url.Action("UploadDocument", "GenerateAuditChecklist")',
+                     type: 'POST',
+                     contentType: false,
+                     processData: false,
+                     data: formData,
+                     success: function (result) {
+                         document.getElementById("article_upload" + ind).value = result;
+
+                         return result;
+                     }
+
+                 });
+        }
+        //function checkDate() {
+
+        //    var dt1 = document.getElementById("evaluation_date").value;
+        //    if (new Date(dt1).getTime() > new Date().getTime()) {
+        //        bootbox.alert({
+        //            title: 'Evaluation Date',
+        //            message: 'Evaluation cannot be greater then today.'
+        //        });
+        //        $('#evaluation_date').val("");
+        //    }
+        //}
+
+
+         //function reformatDate(dateStr) {
+         //    dArr = dateStr.split("-");  // ex input 2010-01-18
+         //    return dArr[2] + "/" + dArr[1] + "/" + dArr[0]; //ex out: 2018/01/10
+         //}
+
+
+
+
+
+
+
+
+        //function GetVerficationDate1() {
+        //    var ca_verfiry_duedate = $("#ca_verfiry_duedate").val();
+        //    var ca_target_date = $("#ca_target_date").val();
+        //    if (ca_verfiry_duedate != null && ca_verfiry_duedate > ("01/01/0001"))
+        //    {
+        //        if (ca_target_date > ca_verfiry_duedate) {
+        //            bootbox.alert({
+        //                title: 'Date',
+        //                message: 'Target date has to be less than Verfication Due date'
+        //            });
+        //            $("#ca_target_date").val('');
+        //        }
+        //    }
+        //}
+        function GetComplianceStatus(i) {
+            var e = document.getElementById("compliance_status " + i);
+            var compliance_statustext = e.options[e.selectedIndex].text;
+            
+            //alert(compliance_statustext);
+            if (compliance_statustext.toLowerCase() == "not complied") {
+                document.getElementById("action_taken " + i).required = true;
+                document.getElementById("person_resp " + i).required = true;
+                document.getElementById("target_date " + i).required = true;
+                document.getElementById("article_desc " + i).required = true;
+                document.getElementById("report_date " + i).required = true;
+
+                document.getElementById("action_taken " + i).disabled = false;
+                document.getElementById("person_resp " + i).disabled = false;
+                document.getElementById("target_date " + i).disabled = false;
+                document.getElementById("article_desc " + i).disabled = false;
+                document.getElementById("report_date " + i).disabled = false;
+            }
+            else if (compliance_statustext.toLowerCase() == "complied") {
+                document.getElementById("article_desc " + i).value = "";
+                document.getElementById("action_taken " + i).value = "";
+                document.getElementById("target_date " + i).value = "";
+
+                document.getElementById("article_desc " + i).disabled = true;
+                document.getElementById("action_taken " + i).disabled = true;
+                document.getElementById("target_date " + i).disabled = true;
+
+                document.getElementById("person_resp " + i).disabled = false;
+                document.getElementById("report_date " + i).disabled = false;
+
+                document.getElementById("person_resp " + i).required = true;
+                document.getElementById("report_date " + i).required = true;
+
+
+            }
+            else {
+                document.getElementById("article_desc " + i).value = "";
+                document.getElementById("action_taken " + i).value = "";
+                document.getElementById("target_date " + i).value = "";
+
+                $("#person_resp " + i).val('').trigger('change');
+
+                document.getElementById("article_desc " + i).required = false;
+                document.getElementById("action_taken " + i).required = false;
+                document.getElementById("target_date " + i).required = false;
+                document.getElementById("person_resp " + i).required = false;
+                document.getElementById("report_date " + i).required = false;
+
+                document.getElementById("article_desc " + i).disabled = true;
+                document.getElementById("action_taken " + i).disabled = true;
+                document.getElementById("target_date " + i).disabled = true;
+                document.getElementById("person_resp " + i).disabled = true;
+                document.getElementById("report_date " + i).disabled = true;
+            }
+        }
+
+
+        function GetComplianceStatusEdit() {
+
+            var totallen = document.getElementById("itemcount").value;
+            for (var i = 0; i < totallen; i++) {
+
+                var e = document.getElementById("compliance_status " + i);
+                var compliance_statustext = e.options[e.selectedIndex].text;
+
+                if (compliance_statustext.toLowerCase() == "not complied") {
+                    document.getElementById("action_taken " + i).required = true;
+                    document.getElementById("person_resp " + i).required = true;
+                    document.getElementById("target_date " + i).required = true;
+                    document.getElementById("article_desc " + i).required = true;
+                    document.getElementById("report_date " + i).required = true;
+
+                    document.getElementById("action_taken " + i).disabled = false;
+                    document.getElementById("person_resp " + i).disabled = false;
+                    document.getElementById("target_date " + i).disabled = false;
+                    document.getElementById("article_desc " + i).disabled = false;
+                    document.getElementById("report_date " + i).disabled = false;
+                }
+                else if (compliance_statustext.toLowerCase() == "complied") {
+                    document.getElementById("article_desc " + i).value = "";
+                    document.getElementById("action_taken " + i).value = "";
+                    document.getElementById("target_date " + i).value = "";
+
+                    document.getElementById("article_desc " + i).disabled = true;
+                    document.getElementById("action_taken " + i).disabled = true;
+                    document.getElementById("target_date " + i).disabled = true;
+
+                    document.getElementById("person_resp " + i).disabled = false;
+                    document.getElementById("report_date " + i).disabled = false;
+
+                    document.getElementById("person_resp " + i).required = true;
+                    document.getElementById("report_date " + i).required = true;
+
+
+                }
+                else {
+                    document.getElementById("article_desc " + i).value = "";
+                    document.getElementById("action_taken " + i).value = "";
+                    document.getElementById("target_date " + i).value = "";
+   
+                    $("#person_resp " + i).val('').trigger('change');
+
+                    document.getElementById("article_desc " + i).required = false;
+                    document.getElementById("action_taken " + i).required = false;
+                    document.getElementById("target_date " + i).required = false;
+                    document.getElementById("person_resp " + i).required = false;
+                    document.getElementById("report_date " + i).required = false;
+
+                    document.getElementById("article_desc " + i).disabled = true;
+                    document.getElementById("action_taken " + i).disabled = true;
+                    document.getElementById("target_date " + i).disabled = true;
+                    document.getElementById("person_resp " + i).disabled = true;
+                    document.getElementById("report_date " + i).disabled = true;
+                }
+            }
+
+            return;
+        }
+
+
+
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
+
+

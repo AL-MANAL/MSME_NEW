@@ -680,10 +680,10 @@ namespace ISOStd.Controllers
             try
             {
                 SafetyViolationLogModels objMgmtDocuments = new SafetyViolationLogModels();
-                string filename = Path.GetFileName(Document);
-                FileStream fsSource = new FileStream(Server.MapPath(Document), FileMode.Open, FileAccess.Read);
+                //string filename = Path.GetFileName(Document);
+                //FileStream fsSource = new FileStream(Server.MapPath(Document), FileMode.Open, FileAccess.Read);
 
-                if (objMgmtDocuments.FunSViolationApproveOrReject(ViolationLog_Id, iStatus, fsSource, filename))
+                if (objMgmtDocuments.FunSViolationApproveOrReject(ViolationLog_Id, iStatus, null, ""))
                 {
                     return Json("Success" + iStatus);
                 }

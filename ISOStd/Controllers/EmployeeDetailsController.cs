@@ -1847,7 +1847,7 @@ namespace ISOStd.Controllers
             EmployeePassModels objEmployee = new EmployeePassModels();
             try
             {
-                ViewBag.PassType = objGlobaldata.GetDropdownList("Employee Pass Type");
+                ViewBag.PassType = objGlobaldata.GetDropdownList("Employee Document Type");
                 if (Request.QueryString["emp_no"] != null && Request.QueryString["emp_no"] != "")
                 {
                     string semp_no = Request.QueryString["emp_no"];
@@ -1987,7 +1987,7 @@ namespace ISOStd.Controllers
 
             try
             {
-                ViewBag.PassType = objGlobaldata.GetDropdownList("Employee Pass Type");
+                ViewBag.PassType = objGlobaldata.GetDropdownList("Employee Document Type");
                 if (Request.QueryString["id_pass"] != null && Request.QueryString["id_pass"] != "")
                 {
                     string sid_pass = Request.QueryString["id_pass"];

@@ -1,0 +1,294 @@
+﻿@model ISOStd.Models.TrainingPlanModels
+
+@{
+    ViewBag.Title = "";
+
+}
+
+@section featured {
+    <div class="page-header page-header-light">
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                    <a href="@Url.Action("TrainingPlanList", "TrainingPlan", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Training Plan List</span>
+                    </a>
+                    <span class="breadcrumb-item active">Update Training Status</span>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+}
+@using (Html.BeginForm("UpdateTrainingStatus", "TrainingPlan", FormMethod.Post,
+ new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Update Training Status</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+                <input type="hidden" id="id_training_plan" name="id_training_plan" value="@Model.id_training_plan" />
+                <table class="table table-lg">
+
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.status_updated_date)<text style="color: red;">*</text>
+                        </td>
+                        <td class="col">
+                            @if (Model.status_updated_date > Convert.ToDateTime("01/01/0001"))
+                            {
+                                <input type="date" id="status_updated_date" name="status_updated_date" value="@Model.status_updated_date.ToString("yyyy-MM-dd")" class="form-control" />
+                            }
+                            else
+                            {
+                                <input type="date" id="status_updated_date" name="status_updated_date" required class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                            }
+
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.training_status)<text style="color: red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-fixed-multiple" data-fouc id="training_status" name="training_status" required onchange="setStatus()">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.Status != null)
+                                    {
+                                        foreach (var item in ViewBag.Status)
+                                        {
+                                            if (item.Text != "Pending" && item.Text != "Planned")
+                                            {
+                                                if (item.Value == Model.training_status)
+                                                {
+                                                <option value='@item.Value' selected>@item.Text</option>
+                                                }
+                                                else
+                                                {
+                                                <option value='@item.Value'>@item.Text</option>
+                                                }
+                                            }
+
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+
+
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.training_start_date)<text style="color: red;">*</text>
+                        </td>
+                        <td class="col">
+                            @if (Model.training_start_date > Convert.ToDateTime("01/01/0001"))
+                            {
+                                <input type="date" id="training_start_date" name="training_start_date" value="@Model.training_start_date.ToString("yyyy-MM-dd")" class="form-control" />
+                            }
+                            else
+                            {
+                                <input type="date" id="training_start_date" name="training_start_date" required class="form-control" />
+                            }
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.training_completed_date)<text style="color: red;">*</text>
+                        </td>
+                        <td class="col">
+                            @if (Model.training_completed_date > Convert.ToDateTime("01/01/0001"))
+                            {
+                                <input type="date" id="training_completed_date" name="training_completed_date" value="@Model.training_completed_date.ToString("yyyy-MM-dd")" class="form-control" />
+                            }
+                            else
+                            {
+                                <input type="date" id="training_completed_date" name="training_completed_date" required class="form-control" />
+                            }
+                        </td>
+                    </tr>               
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.upload)
+                        </td>
+                        <td class="col">
+                            <input type="file" name="upload" id="upload" title="Documents" multiple="multiple" onchange="FileFormatValidation(this)" accept=".pdf, .doc, .docx, .jpg, .jpeg,.png,.xls,.xlsx,image/*" @*class="bootstrap-uploader"*@ />
+                            <span class="form-text text-muted"><code>(Hold Ctrl Key in case of multiple files)</code></span>
+                            @if (Model.upload != null && Model.upload != "" && Model.upload.Length > 0)
+                            {
+                                <div class="editor-label">
+                                    <p style="font-weight: bold; margin: 0px;"> Docs. List:</p>
+                                </div>
+                                    <p style="font-size: 11px; margin: 0px; color: red;">(Uncheck in case to remove a uploaded file)</p>
+                                foreach (var docs in Model.upload.Trim(',').Split(','))
+                                {
+                                    <p style="margin: 0px;">
+                                        <input type="checkbox" id="QCDocsVal" name="QCDocsVal" class="QCDocsVal" value="@docs.Trim(',')" checked title="Uncheck in case to remove a uploaded file" />
+                                        <input type="hidden" id="QCDocsValselectall" name="QCDocsValselectall" />
+                                        <span class="py-1 px-2 rounded">
+                                            <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs})' target="_blank">Preview</a>
+                                        </span>
+                                    </p>
+                                }
+                            }
+                        </td>
+
+                    </tr>
+         
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.reshedule_from_date)
+                        </td>
+                        <td class="col">
+                            @if (Model.reshedule_from_date > Convert.ToDateTime("01/01/0001"))
+                            {
+                                <input type="date" id="reshedule_from_date" name="reshedule_from_date" value="@Model.reshedule_from_date.ToString("yyyy-MM-dd")" class="form-control" disabled />
+                            }
+                            else
+                            {
+                                <input type="date" id="reshedule_from_date" name="reshedule_from_date" class="form-control" disabled />
+                            }
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.reshedule_to_date)
+                        </td>
+                        <td class="col">
+                            @if (Model.reshedule_to_date > Convert.ToDateTime("01/01/0001"))
+                            {
+                                <input type="date" id="reshedule_to_date" name="reshedule_to_date" value="@Model.reshedule_to_date.ToString("yyyy-MM-dd")" class="form-control" disabled />
+                            }
+                            else
+                            {
+                                <input type="date" id="reshedule_to_date" name="reshedule_to_date" class="form-control" disabled />
+                            }
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.DisplayNameFor(model => model.reason_reschedule)
+                        </td>
+                        <td class="col">
+                            <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="reason_reschedule" name="reason_reschedule" disabled>@Model.reason_reschedule</textarea>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.DisplayNameFor(model => model.reason_cancell)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="reason_cancell" name="reason_cancell" disabled>@Model.reason_cancell</textarea>
+                            </div>
+                        </td> 
+                    </tr>               
+                </table>
+            </div>
+            <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+                @Html.ActionLink("Back to List", "TrainingPlanList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+                <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Save</button>
+            </div>
+        </div>
+    </div>
+}
+
+
+@section Scripts {
+    <script>
+        $("#QCDocsVal").click(function () {
+            if ($("#QCDocsVal").prop('checked')) {
+                {
+                    $(this).prop('checked', true);
+                }
+            }
+            else {
+                $(this).prop('checked', false);
+                document.getElementById("QCDocsValselectall").value = "DeleteQC";
+            }
+        });
+        setStatus();
+        function setStatus() {
+            var training_status = $("#training_status option:selected").text();
+            if (training_status == "Rescheduled") {
+                $("#reshedule_from_date").attr('required', true);
+                $("#reshedule_to_date").attr('required', true);
+                $("#reason_reschedule").attr('required', true);
+
+                $("#reshedule_from_date").attr('disabled', false);
+                $("#reshedule_to_date").attr('disabled', false);
+                $("#reason_reschedule").attr('disabled', false);
+
+
+                $("#reason_cancell").attr('disabled', true);
+                $("#reason_cancell").attr('required', false);
+                document.getElementById("reason_cancell").value = "";
+
+            }
+            else if (training_status == "Cancelled") {
+                $("#reason_cancell").attr('disabled', false);
+                $("#reason_cancell").attr('required', true);
+               
+                $("#reshedule_from_date").attr('required', false);
+                $("#reshedule_to_date").attr('required', false);
+                $("#reason_reschedule").attr('required', false);
+
+                $("#reshedule_from_date").attr('disabled', true);
+                $("#reshedule_to_date").attr('disabled', true);
+                $("#reason_reschedule").attr('disabled', true);
+
+                document.getElementById("reshedule_from_date").value = "";
+                document.getElementById("reshedule_to_date").value = "";
+                document.getElementById("reason_reschedule").value = "";
+            }
+            else
+            {
+                $("#reshedule_from_date").attr('disabled', true);
+                $("#reshedule_to_date").attr('disabled', true);
+                $("#reason_reschedule").attr('disabled', true);
+                $("#reason_cancell").attr('disabled', true);
+
+                $("#reshedule_from_date").attr('required', false);
+                $("#reshedule_to_date").attr('required', false);
+                $("#reason_reschedule").attr('required', false);
+                $("#reason_cancell").attr('required', false);
+
+                document.getElementById("reshedule_from_date").value = "";
+                document.getElementById("reshedule_to_date").value = "";
+                document.getElementById("reason_reschedule").value = "";
+                document.getElementById("reason_cancell").value = "";
+
+            }
+        }
+        function FileFormatValidation(file) {
+
+            var ext = file.value.split(".").pop().toLowerCase();
+            if ($.inArray(ext, ["pdf", "xlsx", "xls", "doc", "docx", "jpg", "jpeg", "gif", ".png"]) == -1) {
+                file.value = "";
+                bootbox.alert({
+                    title: 'File type',
+                    message: 'Invalid file format, please upload only doc, pdf, docx, xls, xls,jpg, jpeg, gif, png format'
+                });
+            }
+        }
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

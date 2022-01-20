@@ -1,0 +1,449 @@
+﻿@model ISOStd.Models.CompanyModels
+@using System.Data;
+@{
+    ViewBag.Title = "CompanyDetails";
+    DataSet dsBranch = ViewBag.Branches;
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+}
+
+@*<div class="groupedassets margin10">
+    <span class="groupedassetshead margin10 onestphdcolor">Company Profile Details </span>
+</div>*@
+@*<div class="ActionLink">
+    @Html.ActionLink("Edit", "CompanyEdit", new { CompanyID = Model.CompanyID }, new { @class = "ActionLink", onclick = "ProgressIconFunction('#form1')" })
+</div>*@
+
+
+@section featured {
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+
+                        <span class="breadcrumb-item"> Home</span>
+                    </a>
+                  
+                    <span class="breadcrumb-item active"> Company Profile</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            <div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+
+                    @*<div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>*@
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@using (Html.BeginForm("CompanyDetails", "Company", FormMethod.Post, new { id = "form1", name = "form1" }))
+{
+
+
+    <!-- Cover area -->
+    <div class="profile-cover">
+        <div class="profile-cover-img bg-blue-800">
+
+            <div class="media align-items-center text-center text-md-left flex-column flex-md-row m-0">
+                @*<div class="mr-md-3 mb-2 mb-md-0">
+                    <img src="@Url.Content(@Model.logo)" class="img-thumbnail" alt="">
+                </div>*@
+
+                <div class="media-body text-white">
+                    <h1 class="mb-0">   @Html.DisplayFor(model => model.CompanyName)</h1>
+                    @*<span class="d-block">UX/UI designer</span>*@
+                </div>
+
+                @if (Obj.GetCurrentUserSession().Company.Contains("3"))
+                {
+                    <div class="ml-md-3 mt-2 mt-md-0">
+                        <ul class="list-inline list-inline-condensed mb-0">
+
+                            <li class="list-inline-item"><a href='@Url.Action("CompanyEdit", "Company", new { CompanyID = Model.CompanyID })' class="btn btn-light border-transparent ripple bg-orange-800"><i class="icon-add-to-list"></i> Edit</a></li>
+                        </ul>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    <!-- /cover area -->
+
+
+
+
+
+
+<div class="card">
+   
+
+    <div class="card-body">
+
+        <div class="container-fluid">
+            <table class="table table-dark table-bordered table-striped table-hover bg-blue-800">
+                <thead></thead>
+                <tbody>
+
+
+                    <tr class="row">
+                        @*<td>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CompanyName)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CompanyName)
+                        </div>
+                    </td>*@
+                        <td class="col-xs-3 col-md-2">
+
+
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.Address)
+                            </p>
+
+                        </td>
+                        <td class="col">
+
+
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.Address)
+                            </p>
+
+                        </td>
+                    </tr>
+
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.City)
+                            </p>
+
+                        </td>
+                        <td class="col">
+
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.City)
+                            </p>
+
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.Country)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.Country)
+                            </p>
+                        </td>
+                    </tr>
+
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.Email_Id)
+                            </p>
+                        </td>
+                        <td class="col">
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.Email_Id)
+                            </p>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="display-label">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.PostalCode)
+                                </p>
+                            </div>
+                        </td>
+                        <td class="col">
+
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.PostalCode)
+                            </p>
+
+                        </td>
+                    </tr>
+
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.PhoneNumber)
+                            </p>
+
+                        </td>
+                        <td class="col">
+
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.PhoneNumber)
+                            </p>
+
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.FaxNumber)
+                            </p>
+
+                        </td>
+                        <td class="col">
+
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.FaxNumber)
+                            </p>
+
+                        </td>
+                    </tr>
+
+                    @*<tr>
+                    <td>
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.Audit_location)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.Audit_location)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.BranchAddress)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.BranchAddress)
+                        </div>
+                    </td>
+
+                </tr>*@
+
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="display-label">
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.Audit_Criteria)
+                                </p>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="display-field">
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @Html.DisplayFor(model => model.Audit_Criteria)
+                                </p>
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.Exclusion)
+                            </p>
+
+                        </td>
+                        <td class="col">
+
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.Exclusion)
+                            </p>
+
+                        </td>
+
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.Scope)
+                            </p>
+
+                        </td>
+                        <td class="col">
+
+                            <p class="bg-dark py-1 px-2 rounded">
+                                @Html.DisplayFor(model => model.Scope)
+                            </p>
+
+                        </td>
+
+
+
+
+                        @*<td>
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.logo)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="display-field">
+                            @if (Model != null && Model.logo != null && Model.logo != "")
+                            {
+                                <img src="@Url.Content(@Model.logo)" style="width:90px;" />
+                            }
+                        </div>
+                    </td>*@
+                    </tr>
+                    <tr class="row">
+                        @if (Obj.GetCurrentUserSession().Company.Contains("4"))
+                        {
+                            <td class="col-xs-3 col-md-2">
+
+                                <p class="bg-brown py-1 px-2 rounded">
+                                    @Html.DisplayNameFor(model => model.License)
+                                </p>
+
+                            </td>
+                            <td class="col">
+
+                                @if (Model.License != null && Model.License != "" && Model.License.Length > 0)
+                                {
+                                    foreach (var docs in Model.License.Trim(',').Split(','))
+                                    {
+                                        <p class="bg-dark py-1 px-2 rounded">
+                                            <a href='@Url.Action("DisplayDocument", "Reports", new { Document = docs })' target="_blank" style="color: orange;">
+                                                @*@System.IO.Path.GetFileName(docs)*@preview
+                                            </a>
+                                        </p>
+                                    }
+                                }
+
+                            </td>
+                        }
+                        <td class="col-xs-3 col-md-2">
+
+                            <p class="bg-brown py-1 px-2 rounded">
+                                @Html.DisplayNameFor(model => model.expiry_date)
+                            </p>
+
+                        </td>
+                        <td class="col">
+
+                            @if (Model.expiry_date != null && Model.expiry_date > Convert.ToDateTime("01/01/0001"))
+                            {
+                                <p class="bg-dark py-1 px-2 rounded">
+                                    @Html.Label(Model.expiry_date.ToString("dd/MM/yyyy"))
+                                </p>
+                            }
+
+                        </td>
+                    </tr>
+
+                </tbody>
+            </table>
+            <br />
+            @if (dsBranch != null && dsBranch.Tables.Count > 0 && dsBranch.Tables[0].Rows.Count > 0)
+            {
+                @*<div class="editor-label">
+                <label for="Branch_Details" style="background-color: #4cc4dd; width: 100%; color: white;">Branch Details</label>
+            </div>*@
+                <h2 class="bg-dark pl-sm-2"> Division Details</h2>
+                <div class="card card-table table-responsive shadow-0 mb-0">
+                    <table class="table table-lg" id="team-list">
+                        <tr class="bg-brown">
+                            <th>Division Name</th>
+                            <th>Division Code</th>
+                            <th>Country</th>
+                            @*<th>Currency Code</th>*@
+                            <th>Scope</th>
+                        </tr>
+                        @for (int i = 0; i < dsBranch.Tables[0].Rows.Count; i++)
+                        {
+                            <tr>
+                                <td>
+                                    @dsBranch.Tables[0].Rows[i]["BranchName"].ToString()
+                                </td>
+                                <td>
+                                    @dsBranch.Tables[0].Rows[i]["BranchCode"].ToString()
+                                </td>
+                                <td>
+                                    @Obj.GetCountryNameById(dsBranch.Tables[0].Rows[i]["Address"].ToString())
+                                </td>
+                                @*<td>
+                                    @dsBranch.Tables[0].Rows[i]["item_desc"].ToString()
+                                </td>*@
+                                <td>
+                                    @dsBranch.Tables[0].Rows[i]["scope"].ToString()
+                                </td>
+                            </tr>
+
+                        }
+                    </table>
+                      </div>
+                    }
+                </div>
+            </div>
+
+</div>
+
+        }
+
+        @section Scripts {
+            @Scripts.Render("~/bundles/jqueryval")
+            <script type="text/javascript">
+
+
+
+                   //----zzz
+
+
+     $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+        @:     text: '@TempData["alertdata"]',
+        @:     type: 'error'
+        @: }).show();
+    }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+        @:       text: '@TempData["Successdata"]',
+        @:       type: 'success'
+        @:   }).show();
+    }
+    });
+
+    //zzz----
+
+
+                function FileFormatValidation(file) {
+                    var ext = file.value.split(".").pop().toLowerCase();
+                    if ($.inArray(ext, ["doc", "pdf", "docx", "jpg", "jpeg", "gif", "png", "dwg", "dxf"]) == -1) {
+                        file.value = "";
+                        //jAlert("Invalid file format, please upload only doc, pdf, docx, jpg, jpeg, gif, png format");
+                    }
+                }
+            </script>
+        }

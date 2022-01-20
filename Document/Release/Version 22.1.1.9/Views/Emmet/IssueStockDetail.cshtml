@@ -1,0 +1,132 @@
+﻿@model ISOStd.Models.EmmetModels
+@{
+    ViewBag.Title = "";
+    ISOStd.Models.EmmetModelsList objTranList = new ISOStd.Models.EmmetModelsList();
+    ISOStd.Models.EmmetModels objModel = new ISOStd.Models.EmmetModels();
+    ISOStd.Models.clsGlobal obj = new ISOStd.Models.clsGlobal();
+
+    int icnts = 0;
+
+    if (ViewBag.objList != null)
+    {
+        objTranList = ViewBag.objList;
+        icnts = objTranList.EmmetList.Count;
+    }
+}
+<div class="groupedassets margin10">
+    <span class="groupedassetshead margin10 onestphdcolor">Stock Issue Details</span>
+</div>
+
+<div id="divmsg">
+    @if (TempData["alertdata"] != null)
+    {
+        <span class="errMsg" style="color: red; font-weight: bold;">@TempData["alertdata"]</span>
+    }
+    @if (TempData["Successdata"] != null)
+    {
+        <span class="errMsg" style="color: green; font-weight: bold;">@TempData["Successdata"]</span>
+    }
+</div>
+<div>
+
+   
+    @Html.ActionLink("Back to List", "IssueStockList", null, new { @class = "ActionLink", onclick = "HyperLinkProgressIconFunction()" })
+</div>
+<br>
+<div>
+    <fieldset>
+        <legend></legend>
+     
+        <table id="tabcontent">
+            <tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.issue_date)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        @if (Model.issue_date != null && Model.issue_date > Convert.ToDateTime("01/01/0001"))
+                    {
+                            @Html.Label(Model.issue_date.ToString("dd/MM/yyyy"))
+                    }
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.jobno)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        @Html.DisplayFor(model => model.jobno)
+                    </div>
+                </td>
+            </tr>
+           
+        </table>
+    </fieldset>
+</div>
+<div id="dvDescItems">
+   
+   
+    <table id="team-list1">
+        <tr>
+              <th colspan="8" style="background-color: #4cc4dd;color: white">
+                            Stock Issue List
+                        </th>
+        </tr>
+        <tr>
+           
+           <th style="width: 50px; min-width: 50px; max-width: 50px;">Sl No</th>
+                    <th style="width: 200px; min-width: 200px; max-width: 200px;">Employee</th>
+                    <th style="width: 200px; min-width: 200px; max-width: 200px;">Category</th>
+                    <th style="width: 200px; min-width: 200px; max-width: 200px;">Material</th>
+                    <th style="width: 200px; min-width: 200px; max-width: 200px;">Issue Qty</th>
+                    <th style="width: 200px; min-width: 200px; max-width: 200px;">Return Qty</th>
+                    <th style="width: 200px; min-width: 200px; max-width: 200px;">Balance Qty</th>
+                    <th style="width: 100px; min-width: 100px; max-width: 100px;">Return Stock</th>
+        </tr>
+          <tr>
+                       
+                    </tr>
+        @if (objTranList.EmmetList != null && objTranList.EmmetList.Count > 0)
+        {
+
+            for (int index = 0,i=1; index < objTranList.EmmetList.Count; index++,i++)
+            {
+                <tr>
+                    <td style="width: 50px; min-width: 50px; max-width: 50px;">
+                           @i
+                        </td>
+                     <td style="width: 150px; min-width: 150px; max-width: 150px;">
+                            @obj.GetEmpHrNameById(objTranList.EmmetList[index].empid)
+                        </td>
+                    <td style="width: 150px; min-width: 150px; max-width: 150px;">
+                            @obj.GetDropdownitemById(objTranList.EmmetList[index].category)
+                        </td>
+                     <td style="width: 150px; min-width: 150px; max-width: 150px;">
+                            @obj.getMaterialById(objTranList.EmmetList[index].material)
+                        </td>
+                    <td style="width: 150px; min-width: 150px; max-width: 150px;">
+                            @(objTranList.EmmetList[index].issue_qty)
+                        </td>
+                        <td style="width: 150px; min-width: 150px; max-width: 150px;">
+                            @(objTranList.EmmetList[index].return_qty)
+                        </td>
+                        <td style="width: 150px; min-width: 150px; max-width: 150px;">
+                            @(objTranList.EmmetList[index].balance_qty)
+                        </td>
+                   <td>    
+                        <a href='@Url.Action("ReturnStock", "Emmet", new { id_stock_issue_trans=objTranList.EmmetList[index].id_stock_issue_trans.ToString(),id_stock_issue=objTranList.EmmetList[index].id_stock_issue.ToString() })'>
+                         <img src="@Url.Content("~/Images/icon_add.png")" title="Return Stock"/></a>
+                        <a href='@Url.Action("ReturnStockList", "Emmet", new { id_stock_issue_trans=objTranList.EmmetList[index].id_stock_issue_trans.ToString(),id_stock_issue=objTranList.EmmetList[index].id_stock_issue.ToString() })'>
+                         <img src="@Url.Content("~/Images/icon_list.png")" title="Return Stock list"/></a>                        
+                    </td>
+                </tr>
+               
+
+            }
+        }
+    </table>
+</div>

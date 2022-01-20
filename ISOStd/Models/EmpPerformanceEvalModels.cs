@@ -948,7 +948,7 @@ namespace ISOStd.Models
             {
                 string sbranch = objGlobalData.GetCurrentUserSession().division;
 
-                string sSqlstmt = "SELECT SQId, Questions FROM t_emp_performance_eval_questions  where branch = '" + sbranch + "' and eval_period='"+ eval_period + "' and eval_category='"+ eval_category + "' and active=1 order by Section,SQId asc";
+                string sSqlstmt = "SELECT SQId, Questions FROM t_emp_performance_eval_questions  where  eval_period='"+ eval_period + "' and eval_category='"+ eval_category + "' and active=1 order by Section,SQId asc";
 
                 DataSet dsEmp = objGlobalData.Getdetails(sSqlstmt);
                 if (dsEmp.Tables.Count > 0 && dsEmp.Tables[0].Rows.Count > 0)

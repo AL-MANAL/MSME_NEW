@@ -1,0 +1,561 @@
+﻿@model ISOStd.Models.HSEActionsTrackingRegisterModels
+
+@{
+    ViewBag.Title = "";
+}
+
+@section featured {
+
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4> <span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Home</span>
+                    </a>
+                    <a href="@Url.Action("HSEActionsTrackingRegisterList", "HSEActionsTrackingRegister", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">HSE Action Tracking Register</span>
+                    </a>
+                    <span class="breadcrumb-item active">Add HSE Action Tracking Register</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+
+            @*<div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i> All settings</a>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+}
+
+@using (Html.BeginForm("AddHSEActionsTrackingRegister", "HSEActionsTrackingRegister", FormMethod.Post,
+                     new { enctype = "multipart/form-data", id = "form1", name = "form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <div class="card">
+        <div class="card-header header-elements-inline bg-primary">
+            <h5 class="card-title">Add HSE Action Tracking Register</h5>
+            <div class="header-elements">
+                <div class="list-icons">
+                    <a class="list-icons-item" data-action="collapse"></a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+                <table class="table table-lg">
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.branch)
+                        </td>
+                        <td class="col">
+                            <select class="form-control select-fixed-multiple" multiple="multiple" data-fouc id="branch" name="branch" onchange="GetDeptList()">
+                                @*<option value='' hidden>Select</option>*@
+                                @if (ViewBag.Branch != null)
+                                {
+                                    foreach (var data in ViewBag.Branch)
+                                    {
+                                        if (Array.IndexOf(Model.branch.ToString().Split(','), data.Value) >= 0)
+                                        {
+                                            <option value='@data.Value' selected>@data.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@data.Value'>@data.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.Resp_Dept)<text style="color:red;">*</text>
+                        </td>
+                        <td class="col">
+                            <select class="form-control select-fixed-multiple" data-fouc id="Resp_Dept" name="Resp_Dept" multiple="multiple" @*onchange="GetEmployeeList()"*@ required>
+                                @if (ViewBag.Department != null)
+                                {
+                                    foreach (var item in ViewBag.Department)
+                                    {
+                                        if (Array.IndexOf(Model.Resp_Dept.ToString().Split(','), item.Value) >= 0)
+                                        {
+                                            <option value='@item.Value' selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                        </td>
+
+                        <td class="col-xs-3 col-md-2">
+                            @Html.LabelFor(model => model.Applicable_Site)<text style="color:red;">*</text>
+                        </td>
+                        <td class="col">
+                            <select class="form-control select-fixed-multiple" data-fouc id="Applicable_Site" name="Applicable_Site" multiple="multiple" @*onchange="GetEmployeeList()"*@ required>
+                                @if (ViewBag.Location != null)
+                                {
+                                    foreach (var item in ViewBag.Location)
+                                    {
+                                        if (Array.IndexOf(Model.Applicable_Site.ToString().Split(','), item.Value) >= 0)
+                                        {
+                                            <option value='@item.Value' selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                          </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Action_No)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.Action_No, new { htmlAttributes = new { @required = "required", @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.Action_No)
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Action_Initiated_On)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input class="form-control" type="date" id="Action_Initiated_On" name="Action_Initiated_On" required />
+                                @Html.ValidationMessageFor(model => model.Action_Initiated_On)
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Action_Taken)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="Action_Taken" name="Action_Taken"></textarea>
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Reason_Initiating_Action)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="Reason_Initiating_Action" name="Reason_Initiating_Action"></textarea>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Initiated_By)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="Initiated_By" name="Initiated_By">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.EmpList != null)
+                                    {
+                                        foreach (var item in ViewBag.EmpList)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Personnel_Resp)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="Personnel_Resp" name="Personnel_Resp">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.EmpList != null)
+                                    {
+                                        foreach (var item in ViewBag.EmpList)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Due_Date)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input class="form-control" type="date" id="Due_Date" name="Due_Date" onchange="checkDate();" />
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Action_Status)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="Action_Status" name="Action_Status">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.Action_Status != null)
+                                    {
+                                        foreach (var item in ViewBag.Action_Status)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Upload_Report)
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <div class="editor-field">
+                                <input type="file" name="Upload_Report" id="Upload_Report" onchange="FileFormatValidation(this)" multiple accept=".pdf,.xlsx,.xls,.jpeg,.jpg,.png,.doc,.docx,image/*" class="bootstrap-uploader" data-fouc />
+                                <span class="form-text text-muted"><code>(Hold Ctrl Key in case of multiple files or drag multiple files and drop here)</code></span>
+                            </div>
+                        </td>
+
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Report_date)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input class="form-control" type="date" id="Report_date" name="Report_date" required />
+                                @Html.ValidationMessageFor(model => model.Report_date)
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Short_Fall_Source)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="Short_Fall_Source" name="Short_Fall_Source" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.ShortFallSource != null)
+                                    {
+                                        foreach (var item in ViewBag.ShortFallSource)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                                @Html.ValidationMessageFor(model => model.Short_Fall_Source)
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Category)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="Category" name="Category">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.HSECategory != null)
+                                    {
+                                        foreach (var item in ViewBag.HSECategory)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Resp_Section)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.Resp_Section, new { htmlAttributes = new { @class = "form-control" } })
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Risk_Rank)<text style="color:red;">*</text>
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="Risk_Rank" name="Risk_Rank" required>
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.RiskRank != null)
+                                    {
+                                        foreach (var item in ViewBag.RiskRank)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                                @Html.ValidationMessageFor(model => model.Risk_Rank)
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.KPI_Completion_Date)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <input class="form-control" type="date" id="KPI_Completion_Date" name="KPI_Completion_Date" />
+                                @Html.ValidationMessageFor(model => model.KPI_Completion_Date)
+                            </div>
+                        </td>
+                    </tr>                   
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.EndorsedBy)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="EndorsedBy" name="EndorsedBy">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.EmpList != null)
+                                    {
+                                        foreach (var item in ViewBag.EmpList)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.ApprovedBy)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="ApprovedBy" name="ApprovedBy">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.ApproverList != null)
+                                    {
+                                        foreach (var item in ViewBag.ApproverList)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.ReviewedBy)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <select class="form-control select-search select2-hidden-accessible" data-fouc id="ReviewedBy" name="ReviewedBy">
+                                    <option value='' hidden>Select</option>
+                                    @if (ViewBag.ReviewerList != null)
+                                    {
+                                        foreach (var item in ViewBag.ReviewerList)
+                                        {
+                                            <option value='@item.Value'>@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Remarks)
+                            </div>
+                        </td>
+                        <td class="col">
+                            <div class="editor-field">
+                                <textarea maxlength="2000" placeholder="Textarea" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 96px;" rows="4" cols="4" class="form-control elastic maxlength-badge-position" id="Remarks" name="Remarks"></textarea>
+
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="col-xs-3 col-md-2">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Additional_Attachment)
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-4">
+                            <div class="editor-field">
+                                <input type="file" name="Additional_Attachment" id="Additional_Attachment" onchange="FileFormatValidation(this)" multiple accept=".pdf,.xlsx,.xls,.jpeg,.jpg,.png,.doc,.docx,image/*" class="bootstrap-uploader" data-fouc />
+                                <span class="form-text text-muted"><code>(Hold Ctrl Key in case of multiple files or drag multiple files and drop here)</code></span>
+                            </div>
+                        </td>
+                        <td class="col-xs-3 col-md-2">
+
+                            @Html.LabelFor(model => model.NotificationPeriod)
+
+                        </td>
+                        <td class="col">
+                            <div class="form-group form-group-float">
+                                <select class="form-control select-search select2-hidden-accessible" id="NotificationPeriod" name="NotificationPeriod" data-fouc>
+                                    @if (ViewBag.NotificationPeriod != null)
+                                    {
+                                        foreach (var item in ViewBag.NotificationPeriod)
+                                        {
+                                            <option value='@item.Key'>@item.Value</option>
+                                        }
+                                    }
+                                </select>
+
+                            </div>
+                            <div class="form-group form-group-float">
+                                <input class="form-control" type="number" id="NotificationValue" name="NotificationValue" value="0" max="3" />
+                                <span class="form-text text-muted"><code>(Alert on or before Target date)</code></span>
+                            </div>
+                        </td>
+                    </tr>
+
+                </table>
+            </div>
+        </div>
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+            @Html.ActionLink("Back to List", "HSEActionsTrackingRegisterList", null, new { @class = "btn btn-outline bg-indigo-400 text-indigo-400 border-indigo-400", onclick = "HyperLinkProgressIconFunction()" })
+
+            <button type="submit" id="btnCreate" value="Save" class="btn bg-indigo-400" onclick="ProgressIconFunction('#form1')"><i class="icon-checkmark3 mr-2"></i> Add</button>
+        </div>
+    </div>
+        }
+
+@section Scripts {
+    <script>
+
+        function FileFormatValidation(file) {
+            var ext = file.value.split(".").pop().toLowerCase();
+            if ($.inArray(ext, ["pdf", "xlsx", "xls", "doc", "docx", "jpeg", "jpg", "png"]) == -1) {
+                file.value = "";
+                bootbox.alert({
+                    title: 'File type',
+                    message: 'Invalid file format, please upload only xlsx,xls,pdf,jpeg,jpg,png format.'
+                });
+            }
+        }
+        function checkDate() {
+            var dt1 = document.getElementById("Due_Date").value;
+            var dt2 = document.getElementById("Action_Initiated_On").value;
+
+            if (new Date(dt2).getTime() > new Date(dt1).getTime()) {
+
+                bootbox.alert({
+                    title: 'Due_Date',
+                    message: 'Action initiated date cannot be before Due Date'
+                });
+                $('Due_Date').val("");
+            }
+        }
+
+
+
+      function GetDeptList() {
+            var selectedValues = [];
+            $("#branch :selected").each(function () {
+                selectedValues.push($(this).val());
+            });
+            var svalue = selectedValues.join(",");
+          /*  GetEmployeeList();*/
+            updateDeptnlocation(svalue, "Applicable_Site", "location");
+          updateDeptnlocation(svalue, "Resp_Dept", "department");
+        }
+
+        function GetEmployeeList() {
+            var sbranch = $.map($("#branch option:selected"), function (el, i) {
+                return $(el).val();
+            });
+            var sbvalue = (sbranch.join(","));
+
+            var sDepartment = $.map($("#Resp_Dept option:selected"), function (el, i) {
+                return $(el).val();
+            });
+            var sdvalue = (sDepartment.join(","));
+
+            var sLocation = $.map($("#Applicable_Site option:selected"), function (el, i) {
+                return $(el).val();
+            });
+            var slvalue = (sLocation.join(","));
+
+            updateEmployeeList(sbvalue, sdvalue, slvalue, "Initiated_By");
+            updateEmployeeList(sbvalue, sdvalue, slvalue, "Personnel_Resp");
+            updateEmployeeList(sbvalue, sdvalue, slvalue, "EndorsedBy");
+            updateRoleList(sbvalue, sdvalue, slvalue, "ReviewedBy", "Reviewer");
+            updateRoleList(sbvalue, sdvalue, slvalue, "ApprovedBy", "Approver");
+        }
+
+
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

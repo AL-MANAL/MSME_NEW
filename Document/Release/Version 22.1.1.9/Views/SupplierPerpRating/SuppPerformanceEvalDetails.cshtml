@@ -1,0 +1,370 @@
+﻿@model ISOStd.Models.SupplierPerpRatingModels
+@using System.Data;
+
+@{
+    ViewBag.Title = "";
+    ISOStd.Models.SupplierPerpRatingModelsList objList = new ISOStd.Models.SupplierPerpRatingModelsList();
+    ISOStd.Models.clsGlobal Obj = new ISOStd.Models.clsGlobal();
+
+    if (ViewBag.PerformanceElement != null)
+    {
+        objList = ViewBag.PerformanceElement;
+    }
+    /*int iSrno = 0;*/
+    int Weightage = 0;
+    decimal TotalScore = 0;
+}
+
+@section featured {
+    <div class="page-header page-header-light">
+
+        <div class="page-header-content header-elements-md-inline">
+            <div class="page-title d-flex">
+                <h4><span class="font-weight-semibold">MSME - Management System Made Easy</span></h4>
+
+            </div>
+        </div>
+
+        <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+            <div class="d-flex">
+                <div class="breadcrumb">
+
+                    <a href="@Url.Action("Index", "Home", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Home</span>
+                    </a>
+                    <a href="@Url.Action("SuppPerformanceEvalList", "SupplierPerpRating", null)" class="breadcrumb-item">
+                        <span class="breadcrumb-item">Supplier Rating</span>
+                    </a>
+                    <span class="breadcrumb-item active">Supplier Rating Details</span>
+                </div>
+
+                <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+            </div>
+            <div class="header-elements d-none">
+                <div class="breadcrumb justify-content-center">
+
+                    <div class="breadcrumb-elements-item dropdown p-0">
+                        @using (Html.BeginForm("SuppPerformanceEvalPDF", "SupplierPerpRating", FormMethod.Post, new { id = "form1", name = "form1" }))
+                        {
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" id="id_sup_rating" name="id_sup_rating" value="@Model.id_sup_rating" />
+
+                        <button type="submit" class="dropdown-item">
+                            <i class="icon-printer2"></i> Report
+                        </button>
+                        }
+                    </div>
+                    @*<div class="breadcrumb-elements-item dropdown p-0">
+                        <a href="#" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-gear mr-2"></i>
+                            Settings
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="icon-gear"></i>All settings</a>
+                        </div>
+                    </div>*@
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<div class="card">
+
+    <div class="card-header header-elements-inline bg-primary">
+        <h5 class="card-title">Supplier Rating Details</h5>
+        <div class="header-elements">
+            <div class="list-icons">
+                <a class="list-icons-item" data-action="collapse"></a>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <div class="card-header bg-white header-elements-sm-inline">
+
+            <div class="header-elements">
+                <div class="mt-2 mt-sm-0">
+                    <a class="btn bg-orange btn-labeled btn-labeled-left" data-style="radius" href='@Url.Action("SuppPerformanceEvalEdit", "SupplierPerpRating", new { id_sup_rating = Model.id_sup_rating })' title="Edit" onclick="HyperLinkProgressIconFunction()">
+                        <b><i class="icon-add-to-list"></i></b>Edit
+                    </a>
+                    @Html.ActionLink("Back to List", "SuppPerformanceEvalList", null, new { @class = "btn btn-outline bg-orange text-orange border-orange", onclick = "HyperLinkProgressIconFunction()" })
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="card-body">
+        <div class="container-fluid">
+
+            <table class="table table-dark table-bordered table-striped table-hover bg-blue-800">
+                <thead></thead>
+                <tr class="row">                    
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.branch)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.branch)
+                        </span>
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.Department)
+                        </p>
+                    </td>
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.Department)
+                        </span>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.Location)
+                        </p>
+                    </td>
+
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.Location)
+                        </span>
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.supplier_name)
+                        </p>
+                    </td>
+
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.supplier_name)
+                        </span>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.evalu_date)
+                        </p>
+                    </td>
+
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @if (Model.evalu_date != null && Model.evalu_date > Convert.ToDateTime("01/01/0001"))
+                            {
+                                @Html.Label(Model.evalu_date.ToString("dd/MM/yyyy"))
+                            }
+                        </span>
+                    </td>
+                </tr>
+                @*<tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.auditee)
+                        </p>
+                    </td>
+
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.auditee)
+                        </span>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.auditor)
+                        </p>
+                    </td>
+
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.auditor)
+                        </span>
+                    </td>
+                </tr>*@
+                <tr class="row">
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.evaluated_by)
+                        </p>
+                    </td>
+
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.evaluated_by)
+                        </span>
+                    </td>
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.upload)
+                        </p>
+                    </td>
+
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @if (Model.upload != "")
+                            {
+                                <span class="bg-dark py-1 px-2 rounded">
+                                    <a href='@Url.Action("DisplayDocument", "Reports", new { Document = Model.upload})' target="_blank">Preview</a>
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="bg-dark py-1 px-2 rounded text-danger">No File</span>
+                            }
+                        </span>
+                    </td>
+                </tr>
+                <tr class="row">
+                  
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.overall_perf)
+                        </p>
+                    </td>
+
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.overall_perf)
+                        </span>
+                    </td>
+             
+                    <td class="col-xs-3 col-md-2">
+                        <p class="bg-brown py-1 px-2 rounded">
+                            @Html.DisplayNameFor(model => model.actions_init)
+                        </p>
+                    </td>
+
+                    <td class="col">
+                        <span class="bg-dark py-1 px-2 rounded">
+                            @Html.DisplayFor(model => model.actions_init)
+                        </span>
+                    </td>
+                </tr>
+            </table>
+                </div>
+            
+
+        </div>
+
+    </div>
+
+<div class="card">
+<div class="card-body">
+    <div style="overflow-x:auto;">
+                     <table class="table table-lg">
+                    <thead>
+                        <tr>
+                            <th>
+                                Sl.No
+                            </th>
+                            <th>
+                                Questions
+                            </th>
+                            <th>
+                                Rating
+                            </th>
+                            @*<th>Weightage</th>*@
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (ViewBag.PerformanceElement != null)
+                        {
+                            int iSrno = 0;
+                            foreach (var item in objList.PerpList)
+                            {
+                                iSrno = iSrno + 1;
+                                Weightage = Weightage + Convert.ToInt16(item.SQ_Weightage);
+                        <tr>
+                            <td>
+                                @iSrno
+                            </td>
+                            <td>
+                                @item.SQId
+                            </td>
+                            <td>
+                                @item.SQ_OptionsId
+                            </td>
+                            @*<td>
+                                @item.SQ_Weightage
+                            </td>*@
+                        </tr>
+                            }
+                            //{
+                            //    TotalScore = Weightage * 100 / (iSrno * 10);
+                            //}
+
+                        }
+                       
+                    </tbody>
+                </table>
+        </div>
+            </div>
+    
+</div>
+
+<div class="card">
+<div class="card-body">
+
+    <table class="table table-lg">
+
+        <tr class="row">
+            <td class="col-xs-3 col-md-2">
+                Excellent <br /><span class="bg-dark py-1 px-2 rounded text-danger">  @Model.exceptional</span>
+            </td>
+            <td class="col-xs-3 col-md-2">
+                Good  <br /><span class="bg-dark py-1 px-2 rounded text-danger">@Model.satisfactory</span>
+            </td>
+            <td class="col-xs-3 col-md-2">
+                Average<br /> <span class="bg-dark py-1 px-2 rounded text-danger">@Model.insufficient  </span>
+            </td>
+           
+            <td class="col-xs-3 col-md-3">
+                Poor<br /> <span class="bg-dark py-1 px-2 rounded text-danger">@Model.unsatisfactory</span>
+            </td>
+        </tr>
+        @*<tr class="row">
+            <td> Total Score</td>
+            <td>@TotalScore</td>
+        </tr>*@
+    </table>
+
+</div>
+   
+
+</div>
+ @section scripts {
+            <script>
+                //----zzz
+
+
+                $(document).ready(function () {
+
+    @if (TempData["alertdata"] != null)
+    {
+
+        @: new Noty({
+                                        @:     text: '@TempData["alertdata"]',
+                                        @:     type: 'error'
+                                        @: }).show();
+                                                                         }
+
+    @if (@TempData["Successdata"] != null)
+    {
+
+        @:    new Noty({
+                                        @:       text: '@TempData["Successdata"]',
+                                        @:       type: 'success'
+                @:}).show();
+                                    }
+                });
+
+</script>
+
+
+        }
